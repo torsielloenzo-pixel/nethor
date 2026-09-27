@@ -680,21 +680,25 @@ async function boot(){
 }
 boot();
 
-/* Mobile chat viewport: use the visible iOS/Android area directly.
-   The top stays fixed; only the bottom follows the virtual keyboard. */
+/* Mobile chat viewport: the shell follows the real visual viewport.
+   No body positioning, no keyboard-height compensation. */
 (function bindStableMobileChatViewport(){
- let raf=0;
+ let raf=0,lastTop=-1,lastHeight=-1;
  const sync=()=>{
   cancelAnimationFrame(raf);
   raf=requestAnimationFrame(()=>{
    const root=document.documentElement;
    if(window.innerWidth>780){
-    root.style.removeProperty('--chat-visible-h');
+    root.style.removeProperty('--chat-vv-top');
+    root.style.removeProperty('--chat-vv-h');
+    lastTop=lastHeight=-1;
     return;
    }
    const vv=window.visualViewport;
-   const visibleH=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
-   root.style.setProperty('--chat-visible-h',visibleH+'px');
+   const top=Math.max(0,Math.round(vv?.offsetTop||0));
+   const height=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
+   if(top!==lastTop){root.style.setProperty('--chat-vv-top',top+'px');lastTop=top}
+   if(height!==lastHeight){root.style.setProperty('--chat-vv-h',height+'px');lastHeight=height}
   });
  };
  sync();
@@ -707,11 +711,13 @@ boot();
  document.addEventListener('focusin',e=>{
   if(e.target?.id!=='message')return;
   sync();
-  setTimeout(sync,60);
-  setTimeout(sync,240);
+  setTimeout(sync,50);
+  setTimeout(sync,180);
+  setTimeout(sync,360);
  },true);
  document.addEventListener('focusout',e=>{
   if(e.target?.id!=='message')return;
-  setTimeout(sync,120);
+  setTimeout(sync,80);
+  setTimeout(sync,220);
  },true);
 })();
