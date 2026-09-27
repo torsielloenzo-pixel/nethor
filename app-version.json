@@ -1,10 +1,10 @@
 {
-  "version": 137,
-  "label": "v1.37",
-  "important": false,
+  "version": 138,
+  "label": "v1.38",
+  "important": true,
   "mode": "manual",
-  "title": "Nouvel accueil mobile",
-  "message": "L’accueil mobile devient un tableau de bord opérationnel avec planning, heures, congés, informations, équipe et accès rapides. Chaque widget peut être affiché ou masqué par rôle et sous-rôle depuis Rôles & permissions.",
+  "title": "Terminologie des horaires mise à jour",
+  "message": "Les libellés liés aux horaires ont été harmonisés autour de la prise de poste et des jours de repos. Cette mise à jour force aussi le rafraîchissement des fichiers pour garantir l’affichage des nouveaux intitulés sur mobile.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
