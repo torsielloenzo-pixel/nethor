@@ -334,7 +334,48 @@ function addStyle(){
    body.nettoHasMobileBar .chatApp{height:calc(100dvh - 56px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom))!important}
    body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 12px)!important}
  }
- `;document.head.appendChild(s)
+ 
+
+ /* Nethor v100 — reliable mobile sheets for notifications/profile */
+ @media (max-width:900px),(pointer:coarse){
+   html.nettoMobileDropOpen header{
+     z-index:9000!important;overflow:visible!important;
+     backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+     transform:none!important;filter:none!important;contain:none!important
+   }
+   html.nettoMobileDropOpen .nettoGlobalTools{z-index:9300!important}
+   .nettoDropBackdrop.open{
+     display:block!important;position:fixed!important;inset:0!important;
+     z-index:9100!important;background:rgba(15,23,42,.30)!important;
+     backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important
+   }
+   .nettoBellWrap,.nettoUserWrap,.nettoLoginWrap{position:static!important}
+   .nettoNotifDrop,.nettoDrop:not(.nettoNotifDrop){
+     position:fixed!important;
+     left:max(8px,env(safe-area-inset-left))!important;
+     right:max(8px,env(safe-area-inset-right))!important;
+     top:auto!important;
+     bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 8px)!important;
+     width:auto!important;max-width:none!important;margin:0!important;
+     z-index:9400!important;overscroll-behavior:contain!important;
+     box-shadow:0 -18px 54px rgba(15,23,42,.24)!important
+   }
+   .nettoNotifDrop{
+     max-height:min(72dvh,680px)!important;overflow:hidden!important;border-radius:24px!important
+   }
+   #nettoUserDrop,#nettoLoginDrop{
+     max-height:min(64dvh,560px)!important;overflow-y:auto!important;
+     -webkit-overflow-scrolling:touch!important;border-radius:24px!important;padding:9px!important
+   }
+   #nettoUserDrop:before,#nettoLoginDrop:before{
+     content:"";display:block;width:38px;height:4px;border-radius:999px;
+     background:#d7dade;margin:0 auto 8px
+   }
+   .nettoNotifList{overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important}
+   .nettoNavBtn{min-height:50px!important}
+ }
+ :root[data-theme="dark"] #nettoUserDrop:before,:root[data-theme="dark"] #nettoLoginDrop:before{background:#565c63}
+`;document.head.appendChild(s)
 }
 function paint(el,url,name,color,frame){if(!el)return;el.style.setProperty('--profile-accent',color||'#ff5a2a');setAvatarFrame(el,frame);if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else{el.classList.remove('hasPhoto');el.style.backgroundImage='';el.textContent=initials(name)}}
 function makeButton(icon,title,sub,url,cls=''){return '<button class="nettoNavBtn '+cls+'" data-url="'+esc(url||'')+'"><span>'+icon+'</span><span><strong>'+esc(title)+'</strong><small>'+esc(sub||'')+'</small></span></button>'}
@@ -601,7 +642,7 @@ function toggleMobilePreview(){
  try{sounds.play('menuOpen')}catch(_){}
 }
 function syncMobileDropState(open){
- const mobile=window.matchMedia?.('(max-width:700px)')?.matches;
+ const mobile=window.matchMedia?.('(max-width:900px),(pointer:coarse)')?.matches;
  const backdrop=document.getElementById('nettoDropBackdrop');
  backdrop?.classList.toggle('open',!!open&&!!mobile);
  document.documentElement.classList.toggle('nettoMobileDropOpen',!!open&&!!mobile)
