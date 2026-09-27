@@ -157,7 +157,7 @@ async function sendMessage(){
    name=state.selectedFile.name;type=state.selectedFile.type||'application/octet-stream';size=state.selectedFile.size
   }
   const payload={conversation_id:state.activeId,user_id:state.session.user.id,display_name:state.profile.display_name||'Utilisateur',body:body||null,attachment_path:path,attachment_name:name,attachment_type:type,attachment_size:size,reply_to:state.replyTo?.id||null};
-  const {error}=await db.from('chat_messages').insert(payload);if(error)throw error;
+  const {data:sent,error}=await db.from('chat_messages').insert(payload).select('id').single();if(error)throw error;try{await db.functions.invoke('planning-push',{body:{action:'chat-message',conversation_id:state.activeId,message_id:sent.id}})}catch(_){};
   ta.value='';state.replyTo=null;clearAttachment();renderComposeBanner();autoGrow();window.NettoSounds?.play?.('message');await Promise.all([loadMessages(),loadConversations()]);await markRead()
  }catch(err){if(path){try{await db.storage.from('chat-files').remove([path])}catch(_){}}console.error(err);showToast('Envoi impossible')}
  finally{btn.disabled=false}
