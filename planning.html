@@ -422,8 +422,20 @@ function planningAnomalies(){
  });
  const cov=coverageForDay(day),first=cov.findIndex(x=>x.count>0),last=cov.length-1-[...cov].reverse().findIndex(x=>x.count>0);
  if(first>=0&&last>=first){
-  const low=cov.slice(first,last+1).filter(x=>x.count===1);
-  if(low.length){const firstLow=low[0];out.push({level:'warn',icon:'1',title:'Couverture réduite',detail:'Une seule personne planifiée autour de '+fmtTime(firstLow.time)+(low.length>1?' et sur '+low.length+' créneaux de 15 min.':'.')})}
+  const activeWindow=cov.slice(first,last+1),low=activeWindow.filter(x=>x.count===1);
+  if(low.length){
+   const lowRanges=[];let startIdx=null;
+   for(let i=0;i<=activeWindow.length;i++){
+    const isLow=i<activeWindow.length&&activeWindow[i].count===1;
+    if(isLow&&startIdx===null)startIdx=i;
+    if(!isLow&&startIdx!==null){
+     const start=activeWindow[startIdx].time,end=activeWindow[i-1].time+.25;
+     lowRanges.push({start,end,count:i-startIdx});startIdx=null
+    }
+   }
+   const rangesText=lowRanges.map((r,i)=>(i===0?'de ':'de ')+fmtTime(r.start)+' à '+fmtTime(r.end)).join(', puis ');
+   out.push({level:'warn',icon:'1',title:'Couverture réduite',detail:'Une seule personne planifiée '+rangesText+' ('+low.length+' créneau'+(low.length>1?'x':'')+' de 15 min).'})
+  }
  }
  return out.slice(0,12)
 }
