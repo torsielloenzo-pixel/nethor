@@ -2,15 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#242930">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#242930">\n<meta name="mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Nethor — Maintenance</title>
 <link rel="manifest" href="manifest.webmanifest?v=56">
 <link rel="icon" href="assets/app-icon-v54.svg?v=56" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <style>
 :root{--bg:#252a31;--bg2:#1f242a;--text:#f7f8fa;--muted:#9ba1ab;--orange:#ff7a24;--red:#ff321f}
-*{box-sizing:border-box}
+*{box-sizing:border-box}\nhtml{width:100%;max-width:100%;overflow-x:hidden;touch-action:pan-x pan-y;overscroll-behavior:none;-webkit-text-size-adjust:100%}body{width:100%;max-width:100%;overflow-x:hidden}
 html,body{min-height:100%;margin:0}
 body{min-height:100vh;min-height:100dvh;display:grid;place-items:center;background:
 radial-gradient(circle at 50% 42%,#333941 0,#2b3037 35%,var(--bg) 64%,var(--bg2) 100%);
@@ -60,5 +60,5 @@ setInterval(maintenanceState,15000);
 window.addEventListener('focus',maintenanceState);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)maintenanceState()});
 </script>
-</body>
+<script>['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});</script>\n</body>
 </html>
