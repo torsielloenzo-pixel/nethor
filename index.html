@@ -947,7 +947,8 @@ async function login(e){
  const {data:authData,error}=await db.auth.signInWithPassword({email:authEmail,password:$('password').value});
  if(error)return loginDenied('Email ou mot de passe incorrect.');
  const uid=authData?.user?.id;if(!uid){await db.auth.signOut({scope:'local'});return showLogin('Compte non autorisé.')}
- applyCachedProfileTheme(uid);showProfileLoader('Chargement de ton profil…');
+ try{localStorage.removeItem('nettoGlobalUI:'+uid)}catch(_){}
+ applyCachedProfileTheme(uid);showProfileLoader('Chargement de ton profil et de tes accès…');
  const {data:p,error:pe}=await loadSessionProfile(uid,'display_name,email,role,ui_preferences');
  if(pe){await hideProfileLoader(180);return showLogin('Connexion momentanément indisponible. Ta session a bien été créée : recharge la page.')}
  if(!p){await db.auth.signOut({scope:'local'});await hideProfileLoader(180);return showLogin('Compte non autorisé.')}
