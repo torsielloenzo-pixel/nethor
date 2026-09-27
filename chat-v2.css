@@ -135,3 +135,9 @@ header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bac
 
 
 @media(min-width:781px){.conversationActionBackdrop{display:none!important}}
+
+.contactInfoRow{width:100%;border:0;text-align:left;color:inherit;cursor:pointer;font:inherit}
+.contactInfoRow:hover{background:#fff4ef}
+.contactHero .activeAvatar{width:92px;height:92px;border-radius:26px;font-size:24px;box-shadow:0 12px 28px #ff5a2a24}
+.convRow{-webkit-touch-callout:none;user-select:none}
+:root[data-theme="dark"] .contactInfoRow:hover{background:#30251f}
