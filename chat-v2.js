@@ -233,7 +233,8 @@ function fallbackVoicePeaks(seed){
 function paintVoiceWave(root,peaks){
  const wave=root?.querySelector('.voiceWaveform');if(!wave)return;
  const values=(Array.isArray(peaks)&&peaks.length?peaks:fallbackVoicePeaks(root.dataset.audioPath)).slice(0,VOICE_BAR_COUNT);
- wave.innerHTML=values.map((v,i)=>'<i class="voiceBar" data-bar="'+i+'" style="--voice-h:'+Math.round(8+Math.max(.08,Math.min(1,v))*27)+'px"></i>').join('');
+ const bars=values.map((v,i)=>'<i class="voiceBar" data-bar="'+i+'" style="--voice-h:'+Math.round(8+Math.max(.08,Math.min(1,v))*27)+'px"></i>').join('');
+ wave.innerHTML='<span class="voiceWaveLayer voiceWaveBase">'+bars+'</span><span class="voiceWaveLayer voiceWavePlayed">'+bars+'</span>';
  updateVoiceProgress(root)
 }
 async function computeVoicePeaks(root,audio){
@@ -258,19 +259,28 @@ async function computeVoicePeaks(root,audio){
  }catch(e){console.warn('Waveform vocal:',e)}
 }
 function updateVoiceProgress(root){
- if(!root)return;const audio=root.querySelector('.voiceAudio'),bars=[...root.querySelectorAll('.voiceBar')],current=root.querySelector('.voiceCurrent'),total=root.querySelector('.voiceTotal'),play=root.querySelector('.voicePlayIcon');
- if(!audio)return;const duration=Number.isFinite(audio.duration)?audio.duration:0,currentTime=Number.isFinite(audio.currentTime)?audio.currentTime:0,progress=duration?currentTime/duration:0,played=Math.floor(progress*bars.length);
- bars.forEach((bar,i)=>bar.classList.toggle('played',i<played));
- root.style.setProperty('--voice-progress',Math.max(0,Math.min(1,progress)));
+ if(!root)return;const audio=root.querySelector('.voiceAudio'),current=root.querySelector('.voiceCurrent'),total=root.querySelector('.voiceTotal'),play=root.querySelector('.voicePlayIcon');
+ if(!audio)return;const duration=Number.isFinite(audio.duration)?audio.duration:0,currentTime=Number.isFinite(audio.currentTime)?audio.currentTime:0,progress=duration?currentTime/duration:0;
+ root.style.setProperty('--voice-progress',String(Math.max(0,Math.min(1,progress))));
  if(current)current.textContent=formatVoiceTime(currentTime);if(total)total.textContent=duration?formatVoiceTime(duration):'--:--';
  if(play)play.textContent=audio.paused?'▶':'❚❚';root.classList.toggle('playing',!audio.paused)
+}
+function startVoiceProgressLoop(root){
+ if(!root)return;cancelAnimationFrame(Number(root.dataset.voiceRaf||0));
+ const tick=()=>{const audio=root.querySelector('.voiceAudio');if(!audio||audio.paused||audio.ended){root.dataset.voiceRaf='';updateVoiceProgress(root);return}updateVoiceProgress(root);root.dataset.voiceRaf=String(requestAnimationFrame(tick))};
+ root.dataset.voiceRaf=String(requestAnimationFrame(tick))
+}
+function stopVoiceProgressLoop(root){
+ if(!root)return;const id=Number(root.dataset.voiceRaf||0);if(id)cancelAnimationFrame(id);root.dataset.voiceRaf='';updateVoiceProgress(root)
 }
 function initVoiceMessage(root){
  if(!root||root.dataset.voiceReady==='1')return;root.dataset.voiceReady='1';
  const audio=root.querySelector('.voiceAudio');if(!audio)return;paintVoiceWave(root,fallbackVoicePeaks(root.dataset.audioPath));
- ['loadedmetadata','durationchange','timeupdate','play','pause','ended','seeked'].forEach(type=>audio.addEventListener(type,()=>updateVoiceProgress(root)));
+ ['loadedmetadata','durationchange','timeupdate','seeked'].forEach(type=>audio.addEventListener(type,()=>updateVoiceProgress(root)));
+ audio.addEventListener('play',()=>{updateVoiceProgress(root);startVoiceProgressLoop(root)});
+ audio.addEventListener('pause',()=>stopVoiceProgressLoop(root));
  audio.addEventListener('loadedmetadata',()=>computeVoicePeaks(root,audio),{once:true});
- audio.addEventListener('ended',()=>{audio.currentTime=0;state.activeVoiceId=null;updateVoiceProgress(root)});
+ audio.addEventListener('ended',()=>{stopVoiceProgressLoop(root);audio.currentTime=0;state.activeVoiceId=null;updateVoiceProgress(root)});
  if(audio.readyState>=1){updateVoiceProgress(root);computeVoicePeaks(root,audio)}
 }
 function initVoiceMessages(scope=document){scope.querySelectorAll?.('.voiceMessage').forEach(initVoiceMessage)}
@@ -280,7 +290,7 @@ function pauseOtherVoices(id){
 function toggleVoicePlayback(event,id){
  event?.stopPropagation?.();const root=voiceRoot(id),audio=root?.querySelector('.voiceAudio');if(!audio)return;
  pauseOtherVoices(id);
- if(audio.paused){audio.play().then(()=>{state.activeVoiceId=String(id);updateVoiceProgress(root)}).catch(()=>showToast('Lecture du vocal impossible'))}
+ if(audio.paused){audio.play().then(()=>{state.activeVoiceId=String(id);updateVoiceProgress(root);startVoiceProgressLoop(root)}).catch(()=>showToast('Lecture du vocal impossible'))}
  else{audio.pause();if(state.activeVoiceId===String(id))state.activeVoiceId=null}
 }
 function seekVoiceMessage(event,id){
@@ -425,17 +435,14 @@ async function renderDesktopDetails(){
  const canArchive=!(isGeneral&&state.profile?.role!=='admin');
  const media=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&/^(image|video)\//.test(m.attachment_type||''));
  const files=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&!/^(image|video)\//.test(m.attachment_type||''));
- const previews=people.slice(0,5).map(m=>avatarHtml(m,'detailsParticipantAvatar')).join('');
  box.innerHTML='<div class="detailsHero">'+hero+'<h2>'+esc(title)+'</h2><span class="detailsRole">'+esc(role)+'</span><p>'+esc(presence)+'</p></div>'+
-  '<div class="detailsActions">'+
-   (isDirect?'<button class="detailsAction" type="button" onclick="openContactCard(\''+direct.id+'\')"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19c1.2-3.3 3.6-5 6.5-5s5.3 1.7 6.5 5"/></svg></span><span>Profil</span></button>':'<button class="detailsAction" type="button" onclick="openConversationParticipants()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3.5 19c.8-3.4 2.7-5 5.5-5s4.7 1.6 5.5 5"/><path d="M14.5 15c2.6 0 4.3 1.3 5 4"/></svg></span><span>Participants</span></button>')+
+  '<div class="detailsActions detailsActionsCompact">'+
    '<button class="detailsAction" type="button" onclick="toggleMessageSearch()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4 4"/></svg></span><span>Rechercher</span></button>'+
-   (canAdd?'<button class="detailsAction" type="button" onclick="openAddMembersFromConversation()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><path d="M3.5 19c.8-3.4 2.7-5 5.5-5"/><path d="M18 7v7M14.5 10.5h7"/></svg></span><span>Ajouter</span></button>':(canArchive?'<button class="detailsAction" type="button" onclick="desktopArchiveActive()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M3 4h18v4H3z"/><path d="M9 12h6"/></svg></span><span>Archiver</span></button>':'<button class="detailsAction" type="button" onclick="openConversationInfo()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg></span><span>Infos</span></button>'))+
+   (canAdd?'<button class="detailsAction" type="button" onclick="openAddMembersFromConversation()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><path d="M3.5 19c.8-3.4 2.7-5 5.5-5"/><path d="M18 7v7M14.5 10.5h7"/></svg></span><span>Ajouter</span></button>':'')+
   '</div>'+
   '<details class="detailsSection" open><summary>Informations sur la discussion</summary><div class="detailsSectionBody">'+
    '<button class="detailsRow" type="button" onclick="'+(isDirect&&direct?'openContactCard(\''+direct.id+'\')':'openConversationParticipants()')+'"><span class="detailsRowIcon">👥</span><span class="detailsRowCopy"><strong>'+(isDirect?'Profil du contact':'Participants')+'</strong><small>'+esc(isDirect?presence:(people.length+' membre'+(people.length>1?'s':'')))+'</small></span><span>›</span></button>'+
    '<button class="detailsRow" type="button" onclick="openConversationInfo()"><span class="detailsRowIcon">⚙</span><span class="detailsRowCopy"><strong>Paramètres de la discussion</strong><small>Notifications'+(isGroup?' et gestion du groupe':'')+'</small></span><span>›</span></button>'+
-   (!isDirect?'<div class="detailsRow"><span class="detailsRowIcon">●</span><span class="detailsRowCopy"><strong>Membres</strong><small><span class="detailsParticipants">'+previews+(people.length>5?'<span class="detailsParticipantsMore">+'+(people.length-5)+'</span>':'')+'</span></small></span><span></span></div>':'')+
   '</div></details>'+
   '<details class="detailsSection" open><summary>Fichiers et contenus multimédias</summary><div class="detailsSectionBody">'+
    '<button class="detailsRow" type="button" onclick="openAttachmentBrowser(\'media\')"><span class="detailsRowIcon">▧</span><span class="detailsRowCopy"><strong>Photos et vidéos</strong><small>'+media.length+' élément'+(media.length>1?'s':'')+'</small></span><span>›</span></button>'+
