@@ -24,9 +24,9 @@
   root.dataset.pwPersonal=widgetVisible(cfg,'personal_stats',role)?'1':'0';
   root.dataset.pwAnomalies=widgetVisible(cfg,'anomalies',role)?'1':'0';
   root.dataset.pwCoverage=widgetVisible(cfg,'coverage',role)?'1':'0';
-  root.dataset.pwAbsences=abs!=='hidden'?'1':'0';
-  root.dataset.planningAbsence=abs;
-  root.dataset.planningLogs=(permission==='manage'||abs==='manage')?'1':'0';
+  root.dataset.pwAbsences='0';
+  root.dataset.planningAbsence='pending';
+  root.dataset.planningLogs='0';
   root.dataset.planningAccess='cache';
   window.__planningFastContext=ctx
  };
@@ -1818,10 +1818,9 @@ async function waitForProfileContext(uid,ms=1800){
  }
  return api?.session?.user?.id===uid?api.profile:null
 }
-async function syncFreshPlanningAccess(){
- const api=window.NettoProfileUI;if(!api?.refresh)return;
+async function syncFreshPlanningAccess(fresh=window.NettoProfileUI?.profile){
+ const api=window.NettoProfileUI;if(!fresh||!api)return;
  try{
-  const fresh=await api.refresh();if(!fresh)return;
   role=fresh.role||role||'lecture';
   planningPermissionLevel=api.permissionLevel?.('planning',fresh)||'none';
   if(planningPermissionLevel==='none'){location.replace('home.html');return}
@@ -1833,6 +1832,10 @@ async function syncFreshPlanningAccess(){
   renderAll()
  }catch(e){console.warn('Actualisation accès planning:',e)}
 }
+window.addEventListener('netto:profile',e=>{
+ if(!document.body?.classList.contains('planningReady')||e.detail?.cached)return;
+ syncFreshPlanningAccess(e.detail?.profile).catch(()=>{})
+});
 async function init(){
  bindPlanningCalendarViewport();applyPlanningDeviceUI();applyPlanningDeepLink();
  try{localStorage.removeItem('nettoPlanningView')}catch(_){}
@@ -1875,7 +1878,6 @@ async function init(){
  document.body.classList.add('planningReady');
  renderAll();
  setPlanningView(savedView,{sound:false});
- if(api?.refresh)syncFreshPlanningAccess()
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'}),{once:true});
 else init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'});
