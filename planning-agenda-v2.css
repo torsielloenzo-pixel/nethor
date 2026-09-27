@@ -26,3 +26,44 @@ html[data-theme="dark"] .planningLayoutBar,html[data-theme="dark"] .agendaMount,
  .agendaGrid{grid-template-columns:112px repeat(7,88px);min-width:728px}.agendaCorner,.agendaDayHead{padding:9px 5px}.agendaCorner{font-size:10px}.agendaDayHead strong{font-size:11px}.agendaDayHead span{font-size:10px}.agendaEmployee{min-height:68px;padding:6px 7px;gap:6px}.agendaEmployee .planningIdentityAvatar{width:28px;height:28px;min-width:28px;border-radius:50%}.agendaEmployee .planningIdentityText strong{font-size:10px}.agendaEmployeeTotal{font-size:8px}.agendaCell{min-height:68px;padding:5px}.agendaShift{padding:6px 5px;margin:0;border-radius:9px;text-align:center}.agendaShift strong{font-size:11px;white-space:nowrap}.agendaShift small{font-size:8px}
  html[data-theme="dark"] .mobileAgendaModeBar{background:#101214}html[data-theme="dark"] .mobileAgendaDay,html[data-theme="dark"] .agendaDayArrow,html[data-theme="dark"] .agendaStat{background:#1b1d20;border-color:#34383d;color:#f6f7f8}html[data-theme="dark"] .mobileAgendaDay.active{background:#32241c;border-color:#ff764d}
 }
+
+
+/* Planning Agenda v3 — chargement stable et mobile prioritaire */
+.agendaLoading{
+ display:flex;align-items:center;justify-content:center;gap:11px;
+ min-height:150px;padding:24px;color:#626973;background:#fff
+}
+.agendaLoading strong{display:block;font-size:13px;color:#25292e}
+.agendaLoading small{display:block;margin-top:3px;font-size:10px;color:#8a9098}
+.agendaLoadingSpinner{
+ width:22px;height:22px;border:2px solid #e0e4e8;border-top-color:#ff6b2c;
+ border-radius:50%;animation:agendaSpin .75s linear infinite;flex:none
+}
+@keyframes agendaSpin{to{transform:rotate(360deg)}}
+html[data-theme="dark"] .agendaLoading{background:#1b1d20;color:#b8bec6}
+html[data-theme="dark"] .agendaLoading strong{color:#f2f4f6}
+@media(max-width:760px){
+ .agendaView{width:100%;min-width:0}
+ .agendaHeader{padding:6px 2px 8px}
+ .agendaHeader h2{font-size:18px}
+ .agendaHeader p{font-size:10px;margin-top:3px}
+ .mobileAgendaModeBar{margin-bottom:8px}
+ .mobileAgendaModeBtn{min-height:40px;font-size:12px}
+ .mobileAgendaDays{
+   grid-template-columns:34px repeat(7,minmax(42px,1fr)) 34px;
+   gap:4px;margin-bottom:9px;padding-bottom:1px
+ }
+ .mobileAgendaDay,.agendaDayArrow{min-height:48px;border-radius:10px}
+ .mobileAgendaDay{min-width:43px}
+ .mobileAgendaDay span{font-size:9px}.mobileAgendaDay strong{font-size:14px}
+ .agendaStats{gap:6px;margin-bottom:8px}
+ .agendaStat{padding:8px 10px;border-radius:11px}
+ .agendaStatIcon{width:25px;height:25px;border-radius:8px;font-size:13px}
+ .agendaStat strong{font-size:13px}.agendaStat small{font-size:8px}
+ .agendaMount{border-radius:13px}
+ .agendaDayCard{padding:9px 8px;gap:8px}
+ .agendaDayShift{padding:9px 10px}
+ .agendaDayShift strong{font-size:15px}
+ .agendaDayShift>span{display:none}
+ .agendaLoading{min-height:132px;border-radius:13px}
+}
