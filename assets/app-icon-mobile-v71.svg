@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Nethor">
+  <defs>
+    <linearGradient id="bg" x1="34" y1="22" x2="478" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#485565"/>
+      <stop offset=".22" stop-color="#343e4b"/>
+      <stop offset=".66" stop-color="#202631"/>
+      <stop offset="1" stop-color="#171c25"/>
+    </linearGradient>
+    <linearGradient id="n" x1="132" y1="112" x2="384" y2="404" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd36b"/>
+      <stop offset=".18" stop-color="#ff9a35"/>
+      <stop offset=".48" stop-color="#ff5a22"/>
+      <stop offset=".76" stop-color="#f22622"/>
+      <stop offset="1" stop-color="#b30e21"/>
+    </linearGradient>
+    <linearGradient id="n2" x1="329" y1="116" x2="376" y2="404" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffbd59"/>
+      <stop offset=".42" stop-color="#ff5725"/>
+      <stop offset="1" stop-color="#8d0c22"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".16"/>
+      <stop offset=".48" stop-color="#ffffff" stop-opacity=".025"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="nShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="11" stdDeviation="9" flood-color="#000000" flood-opacity=".34"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="250" fill="url(#shine)"/>
+  <g transform="translate(256 256) scale(1.10) translate(-256 -256)" filter="url(#nShadow)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M156 356V170" stroke="url(#n)" stroke-width="78"/>
+    <path d="M156 171L354 357" stroke="url(#n)" stroke-width="78"/>
+    <path d="M356 356V170" stroke="url(#n2)" stroke-width="78"/>
+  </g>
+  <path d="M146 162L364 367" transform="translate(256 256) scale(1.10) translate(-256 -256)" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="5" stroke-linecap="round"/>
+</svg>
