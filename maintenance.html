@@ -71,7 +71,7 @@ async function maintenanceState(){
    db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
   ]);
   const enabled=setting?.value?.maintenance?.enabled===true;
-  if(!session){if(!enabled)location.replace('index.html');return}
+  if(!session){location.replace('index.html?logout=1');return}
   const {data:profile}=await db.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
   if(profile?.role==='admin'){location.replace('home.html');return}
   if(!enabled)location.replace('home.html')
@@ -83,6 +83,7 @@ async function leaveMaintenanceToLogin(){
  leaving=true;
  const btn=document.getElementById('maintenanceLogout');
  if(btn){btn.disabled=true;btn.querySelector('span').textContent='Déconnexion…'}
+ try{sessionStorage.setItem('nettoForceLogin','1')}catch(_){}
  try{await db.auth.signOut({scope:'local'})}catch(e){console.warn('Déconnexion:',e)}
  try{
   for(let i=localStorage.length-1;i>=0;i--){
