@@ -1,9 +1,9 @@
 {
-  "version": 105,
-  "label": "v1.05",
+  "version": 106,
+  "label": "v1.06",
   "important": true,
-  "title": "Correctif vue Année mobile",
-  "message": "La vue Année du planning a été reconstruite pour mobile : plein écran stable, navigation sur deux niveaux, mois sans débordement et barre d’app masquée pendant l’affichage.",
-  "published_at": "2026-09-27T18:02:00+02:00",
+  "title": "Menu Calendrier mobile",
+  "message": "Sur mobile, le planning identifie iOS ou Android. Le bouton Année devient un menu Calendrier qui ouvre l’interface annuelle et se referme avec une petite croix.",
+  "published_at": "2026-09-27T18:07:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
