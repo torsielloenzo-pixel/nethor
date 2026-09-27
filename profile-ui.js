@@ -41,17 +41,24 @@ function syncMobileKeyboardViewport(){
  const root=document.documentElement,body=document.body;
  if(!isMobileViewport()){
   root.classList.remove('nettoKeyboardOpen');body?.classList.remove('nettoKeyboardOpen');
-  root.style.removeProperty('--netto-visual-viewport-h');mobileKeyboardViewportBaseline=0;return
+  root.style.removeProperty('--netto-visual-viewport-h');
+  root.style.removeProperty('--netto-visual-viewport-top');
+  root.style.removeProperty('--netto-keyboard-inset');
+  mobileKeyboardViewportBaseline=0;return
  }
  const vv=window.visualViewport;
  const h=Math.max(1,Math.round(vv?.height||window.innerHeight||0));
+ const viewportTop=Math.max(0,Math.round(vv?.offsetTop||0));
  root.style.setProperty('--netto-visual-viewport-h',h+'px');
+ root.style.setProperty('--netto-visual-viewport-top',viewportTop+'px');
  const editing=isMobileTextEntry(document.activeElement);
  if(!editing||!mobileKeyboardViewportBaseline)mobileKeyboardViewportBaseline=h;
  if(!editing)mobileKeyboardViewportBaseline=h;
  const drop=Math.max(0,mobileKeyboardViewportBaseline-h);
  const occluded=vv?Math.max(0,Math.round((window.innerHeight||h)-vv.height-(vv.offsetTop||0))):0;
- const keyboardOpen=editing&&Math.max(drop,occluded)>120;
+ const keyboardInset=Math.max(drop,occluded);
+ root.style.setProperty('--netto-keyboard-inset',keyboardInset+'px');
+ const keyboardOpen=editing&&keyboardInset>120;
  root.classList.toggle('nettoKeyboardOpen',keyboardOpen);
  body?.classList.toggle('nettoKeyboardOpen',keyboardOpen)
 }
@@ -749,9 +756,6 @@ function addStyle(){
  @media (max-width:900px),(pointer:coarse){
    html.nettoKeyboardOpen body.nettoHasMobileBar{padding-bottom:0!important}
    html.nettoKeyboardOpen .nettoMobileQuickBar{display:none!important}
-   html.nettoKeyboardOpen body.nettoHasMobileBar .chatApp{
-     height:calc(var(--netto-visual-viewport-h,100dvh) - 56px - env(safe-area-inset-top))!important
-   }
    :root{--netto-mobile-bar-h:64px}
    body>#nettoDropBackdrop.nettoMobilePortaledBackdrop.open{
      display:block!important;position:fixed!important;inset:0!important;
