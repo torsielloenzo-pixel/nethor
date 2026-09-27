@@ -240,3 +240,41 @@ header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bac
   .messageMeta{font-size:8.5px;margin-top:5px}
   .replyQuote strong,.replyQuote span{font-size:9px}
 }
+
+
+/* Desktop — liste Discussions : titre plus lisible sans dépasser */
+@media (min-width:781px){
+  .convRow{
+    grid-template-columns:48px minmax(0,1fr) 48px;
+  }
+  .convCopy{
+    min-width:0;
+    overflow:hidden;
+  }
+  .convTitleLine{
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+  }
+  .convTitleLine strong{
+    display:block;
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .convPreview{
+    display:block;
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .convMeta{
+    width:48px;
+    min-width:48px;
+    overflow:hidden;
+  }
+}
