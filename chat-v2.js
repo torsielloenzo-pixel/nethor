@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
- messages:[],participants:[],reactions:[],selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
+ messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
  signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[]
 };
@@ -32,14 +32,29 @@ function conversationTitle(c){if(!c)return'Discussion';if(c.conversation_type===
 function conversationMember(c){if(!c||c.conversation_type!=='direct')return null;const other=(c.member_ids||[]).find(id=>id!==state.session?.user?.id);return member(other)}
 function conversationAvatar(c,active=false){const cls=active?'activeAvatar':'convAvatar';if(c?.conversation_type==='general')return '<div class="'+cls+' general"><img src="assets/logo-equipe.svg" alt=""></div>';if(c?.conversation_type==='direct')return avatarHtml(conversationMember(c),cls);const title=conversationTitle(c);return '<div class="'+cls+'" style="background:linear-gradient(135deg,#ff3422,#ff8524)">'+esc(initials(title))+'</div>'}
 function activeConversation(){return state.conversations.find(c=>c.conversation_id===state.activeId)||null}
-function conversationPresence(c){if(!c)return'';const ids=(c.member_ids||[]).filter(id=>id!==state.session?.user?.id);const online=ids.filter(id=>state.onlineIds.has(id)).length;if(c.conversation_type==='direct')return online?'En ligne':'Hors ligne';return (c.member_ids||[]).length+' membre'+((c.member_ids||[]).length>1?'s':'')+(online?' · '+online+' en ligne':'')}
+function lastSeenLabel(userId){
+ const row=state.presenceHistory.get(userId);if(!row?.last_seen_at)return'Hors ligne';
+ const d=new Date(row.last_seen_at),now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
+ const time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+ if(d.toDateString()===now.toDateString())return'En ligne aujourd’hui à '+time;
+ if(d.toDateString()===y.toDateString())return'En ligne hier à '+time;
+ return'En ligne le '+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' à '+time
+}
+function conversationPresence(c){if(!c)return'';const ids=(c.member_ids||[]).filter(id=>id!==state.session?.user?.id);const online=ids.filter(id=>state.onlineIds.has(id)).length;if(c.conversation_type==='direct'){const other=ids[0];return online?'En ligne':lastSeenLabel(other)}return (c.member_ids||[]).length+' membre'+((c.member_ids||[]).length>1?'s':'')+(online?' · '+online+' en ligne':'')}
+async function loadPresenceHistory(){
+ const ids=state.members.map(m=>m.id);if(!ids.length){state.presenceHistory=new Map();return}
+ const {data,error}=await db.from('chat_presence_history').select('user_id,online_since,last_seen_at,last_session_seconds,total_online_seconds').in('user_id',ids);
+ if(error){console.warn('Présence chat:',error);return}
+ state.presenceHistory=new Map((data||[]).map(r=>[r.user_id,r]));
+ renderConversationHeader();renderConversations()
+}
 async function loadMembers(){
  const {data,error}=await db.rpc('list_team_members');if(error){console.warn(error);return}
  const rows=[...(data||[])];if(state.session?.user?.id&&state.profile&&!rows.some(x=>x.id===state.session.user.id))rows.push({id:state.session.user.id,...state.profile});
  state.members=await Promise.all(rows.map(async m=>{if(m.avatar_path){const {data:a}=await db.storage.from('profile-avatars').createSignedUrl(m.avatar_path,3600);m.avatar_url=a?.signedUrl||null}return m}));
- renderConversations();renderNewChatMembers();renderConversationHeader()
+ await loadPresenceHistory();renderConversations();renderNewChatMembers();renderConversationHeader()
 }
-function syncPresence(ids){state.onlineIds=new Set(ids||window.NettoProfileUI?.onlineIds||[]);renderConversations();renderConversationHeader();renderTyping()}
+function syncPresence(ids){const before=new Set(state.onlineIds);state.onlineIds=new Set(ids||window.NettoProfileUI?.onlineIds||[]);renderConversations();renderConversationHeader();renderTyping();const left=[...before].some(id=>!state.onlineIds.has(id));if(left)setTimeout(()=>loadPresenceHistory(),700)}
 function startPresence(){syncPresence();window.addEventListener('netto:presence',e=>syncPresence(e.detail?.ids||[]))}
 async function loadConversations(){
  const {data,error}=await db.rpc('list_chat_conversations');if(error){console.error('Conversations:',error);showToast('Impossible de charger les discussions');return}
