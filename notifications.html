@@ -36,7 +36,7 @@ body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min
 .npFilterTools{display:flex;align-items:center;justify-content:flex-end;gap:7px;position:relative;margin-left:auto}
 .npCircleBtn{width:42px;height:42px;border:0;border-radius:50%;display:grid;place-items:center;background:#eef0f3;color:#2c3035;cursor:pointer}
 .npCircleBtn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-.npCircleBtn.more{font-size:20px;font-weight:950;letter-spacing:1px}
+.npCircleBtn.more{font-size:22px;font-weight:950;letter-spacing:0;line-height:1;white-space:nowrap;overflow:hidden}
 .npTopMenu{position:absolute;right:0;top:49px;width:min(270px,calc(100vw - 22px));padding:7px;border:1px solid var(--np-line);border-radius:15px;background:var(--np-surface);box-shadow:0 18px 50px #1118272b;z-index:50}
 .npTopMenu.hidden{display:none}
 .npTopMenu button{width:100%;min-height:44px;border:0;background:transparent;border-radius:10px;padding:9px 10px;text-align:left;font-size:11px;font-weight:800;color:inherit}
@@ -67,7 +67,7 @@ body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min
 .npAge{font-size:9px;font-weight:850;color:#9a9fa6}
 .npRow.unread .npAge{color:#dd552c}
 .npUnreadDot{width:7px;height:7px;border-radius:50%;background:var(--np-accent);display:inline-block}
-.npRowMore{width:38px;height:38px;border:0;border-radius:50%;background:transparent;display:grid;place-items:center;font-size:18px;font-weight:950;letter-spacing:1px;color:#555d66;cursor:pointer}
+.npRowMore{width:38px;height:38px;min-width:38px;max-width:38px;flex:none;border:0;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;font-size:22px;font-weight:950;line-height:1;letter-spacing:0;white-space:nowrap;overflow:hidden;color:#555d66;cursor:pointer}
 .npRowMore:hover{background:#eceff2}
 .npRowMenu{position:absolute;right:10px;top:48px;z-index:25;width:205px;padding:6px;border:1px solid var(--np-line);border-radius:13px;background:var(--np-surface);box-shadow:0 14px 38px #1118272b}
 .npRowMenu.hidden{display:none}
@@ -103,7 +103,7 @@ body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min
   .npSearchWrap{padding:0 10px;margin:0 0 8px}
   .npList{border-left:0;border-right:0;border-radius:0}
   .npGroup{padding:14px 13px 8px;font-size:13px}
-  .npRow{grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;padding:11px 8px 11px 12px;min-height:78px}
+  .npRow{grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;padding:11px 8px 11px 12px;min-height:78px}.npRowMore{justify-self:center;align-self:center;min-width:42px;max-width:42px;width:42px;white-space:nowrap!important}
   .npIcon{width:56px;height:56px}
   .npRowText .npSentence{font-size:13.5px;line-height:1.38}
   .npRowText .npSentence b{font-size:14px}
@@ -115,7 +115,7 @@ body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min
   .npFilterTools{gap:6px}
   .npFilterState{padding-left:10px;padding-right:10px}
   .npCircleBtn{width:38px;height:38px}
-  .npRow{grid-template-columns:50px minmax(0,1fr) 38px;gap:8px;padding-left:9px;padding-right:6px}
+  .npRow{grid-template-columns:50px minmax(0,1fr) 38px;gap:8px;padding-left:9px;padding-right:6px}.npRowMore{min-width:38px;max-width:38px;width:38px}
   .npIcon{width:50px;height:50px}.npIcon span{width:31px;height:31px;font-size:15px}
   .npRowText .npSentence{font-size:12.5px}.npRowText .npSentence b{font-size:13px}
 }
@@ -139,7 +139,7 @@ body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min
       <button id="npSearchBtn" class="npCircleBtn" type="button" aria-label="Rechercher dans les notifications" title="Rechercher">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.3 4.3"/></svg>
       </button>
-      <button id="npMoreBtn" class="npCircleBtn more" type="button" aria-label="Options des notifications" aria-expanded="false" title="Options">•••</button>
+      <button id="npMoreBtn" class="npCircleBtn more" type="button" aria-label="Options des notifications" aria-expanded="false" title="Options">⋯</button>
       <div id="npTopMenu" class="npTopMenu hidden">
         <button id="npUnreadOnly" type="button">Afficher uniquement les non lues</button>
         <button id="npMarkAll" type="button">✓ Tout marquer comme lu</button>
@@ -194,7 +194,7 @@ function render(){
      '<div class="npIcon" aria-hidden="true"><span>'+icon(n)+'</span></div>'+
      '<div class="npRowText"><div class="npSentence"><b>'+esc(n.title||'Notification')+'</b> '+esc(n.message||'')+'</div>'+
      '<div class="npMeta">'+(!n.read_at?'<i class="npUnreadDot" aria-hidden="true"></i>':'')+'<span class="npCategory">'+esc(category(n))+'</span><span class="npAge">'+esc(age(n))+'</span></div></div>'+
-     '<button class="npRowMore" type="button" aria-label="Options de cette notification" aria-expanded="false">•••</button>'+
+     '<button class="npRowMore" type="button" aria-label="Options de cette notification" aria-expanded="false">⋯</button>'+
      '<div class="npRowMenu hidden">'+(!n.read_at?'<button data-action="read" type="button">Marquer comme lu</button>':'')+'<button data-action="open" type="button">Ouvrir</button><button data-action="delete" class="danger" type="button">Supprimer</button></div>'+
    '</article>'
  }
