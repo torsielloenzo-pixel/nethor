@@ -1646,7 +1646,7 @@ let updateRegistration=null;
 function ensureUpdateStyles(){
  if(document.getElementById('nettoUpdateStyle'))return;
  const s=document.createElement('style');s.id='nettoUpdateStyle';
- s.textContent='.nettoUpdateConfirmBackdrop{position:fixed;inset:0;z-index:2147482600;background:#0e1115a8;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.nettoUpdateConfirmCard{width:min(92vw,410px);background:#fff;color:#202328;border:1px solid #e0e3e7;border-radius:20px;padding:18px;box-shadow:0 28px 80px #0005}.nettoUpdateConfirmCard h3{margin:0;font-size:18px}.nettoUpdateConfirmCard p{margin:7px 0 0;color:#777c84;font-size:11px;line-height:1.5}.nettoUpdateConfirmActions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:17px}.nettoUpdateConfirmActions button{min-height:42px;border:0;border-radius:12px;font:850 11px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.nettoUpdateConfirmCancel{background:#eef0f2;color:#35383d}.nettoUpdateConfirmGo{background:linear-gradient(135deg,#ff4028,#ff8427);color:#fff;box-shadow:0 8px 22px #ff5a2a2b}:root[data-theme="dark"] .nettoUpdateConfirmCard{background:#202328;color:#f5f6f7;border-color:#383c43}:root[data-theme="dark"] .nettoUpdateConfirmCard p{color:#aeb2b9}:root[data-theme="dark"] .nettoUpdateConfirmCancel{background:#2c3036;color:#e9ebed}.nettoUpdateToast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translate(-50%,18px);width:min(94vw,520px);z-index:2147482500;background:rgba(25,27,30,.96);color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:15px;box-shadow:0 24px 70px rgba(0,0,0,.36);backdrop-filter:blur(18px);opacity:0;transition:opacity .2s ease,transform .2s ease}.nettoUpdateToast.show{opacity:1;transform:translate(-50%,0)}.nettoUpdateTop{display:flex;gap:12px;align-items:flex-start}.nettoUpdateIcon{width:48px;height:48px;border-radius:14px;object-fit:cover;background:#303236;flex:none}.nettoUpdateCopy{min-width:0;flex:1}.nettoUpdateCopy strong{display:block;font-size:14px;line-height:1.25}.nettoUpdateCopy span{display:block;margin-top:4px;color:#d3d6db;font-size:11px;line-height:1.45}.nettoUpdateVersion{display:inline-flex!important;width:auto!important;margin-top:8px!important;padding:4px 8px;border-radius:999px;background:#ffffff12;color:#ff9a72!important;font-size:9px!important;font-weight:900;letter-spacing:.4px}.nettoUpdateActions{display:flex;gap:8px;margin-top:13px}.nettoUpdateActions button{border:0;border-radius:12px;min-height:39px;padding:0 13px;font:800 11px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.nettoUpdateLater{background:#ffffff12;color:#f3f4f5}.nettoUpdateNow{margin-left:auto;background:linear-gradient(135deg,#ff4b2b,#ff8126);color:#fff;box-shadow:0 8px 22px rgba(255,91,37,.28)}.nettoUpdateNow:disabled{opacity:.65;cursor:wait}@media(max-width:520px){.nettoUpdateToast{width:calc(100vw - 20px);border-radius:18px}.nettoUpdateActions{display:grid;grid-template-columns:1fr 1.25fr}.nettoUpdateNow{margin-left:0}}';
+ s.textContent='.nettoUpdateConfirmBackdrop{position:fixed;inset:0;z-index:2147482600;background:#0e1115a8;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}.nettoUpdateConfirmCard{width:min(92vw,410px);background:#fff;color:#202328;border:1px solid #e0e3e7;border-radius:20px;padding:18px;box-shadow:0 28px 80px #0005}.nettoUpdateConfirmCard h3{margin:0;font-size:18px}.nettoUpdateConfirmCard p{margin:7px 0 0;color:#777c84;font-size:11px;line-height:1.5}.nettoUpdateConfirmActions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:17px}.nettoUpdateConfirmActions button{min-height:42px;border:0;border-radius:12px;font:850 11px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.nettoUpdateConfirmCancel{background:#eef0f2;color:#35383d}.nettoUpdateConfirmGo{background:linear-gradient(135deg,#ff4028,#ff8427);color:#fff;box-shadow:0 8px 22px #ff5a2a2b}:root[data-theme="dark"] .nettoUpdateConfirmCard{background:#202328;color:#f5f6f7;border-color:#383c43}:root[data-theme="dark"] .nettoUpdateConfirmCard p{color:#aeb2b9}:root[data-theme="dark"] .nettoUpdateConfirmCancel{background:#2c3036;color:#e9ebed}.nettoUpdateToast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translate(-50%,18px);width:min(94vw,520px);z-index:2147482500;background:rgba(25,27,30,.96);color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:15px;box-shadow:0 24px 70px rgba(0,0,0,.36);backdrop-filter:blur(18px);opacity:0;transition:opacity .2s ease,transform .2s ease}.nettoUpdateToast.show{opacity:1;transform:translate(-50%,0)}.nettoUpdateTop{display:flex;gap:12px;align-items:flex-start}.nettoUpdateIcon{width:48px;height:48px;border-radius:14px;object-fit:cover;background:#303236;flex:none}.nettoUpdateCopy{min-width:0;flex:1}.nettoUpdateCopy strong{display:block;font-size:14px;line-height:1.25}.nettoUpdateCopy span{display:block;margin-top:4px;color:#d3d6db;font-size:11px;line-height:1.45}.nettoUpdateVersion{display:inline-flex!important;width:auto!important;margin-top:8px!important;padding:4px 8px;border-radius:999px;background:#ffffff12;color:#ff9a72!important;font-size:9px!important;font-weight:900;letter-spacing:.4px}.nettoUpdateActions{display:flex;gap:8px;margin-top:13px}.nettoUpdateActions button{border:0;border-radius:12px;min-height:39px;padding:0 13px;font:800 11px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.nettoUpdateLater{background:#ffffff12;color:#f3f4f5}.nettoUpdateNow{margin-left:auto;background:linear-gradient(135deg,#ff4b2b,#ff8126);color:#fff;box-shadow:0 8px 22px rgba(255,91,37,.28)}.nettoUpdateNow:disabled{opacity:.65;cursor:wait}.nettoUpdateProgressWrap{margin:13px 0 2px;padding:11px 12px 12px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.045)}.nettoUpdateProgressWrap.hidden{display:none!important}.nettoUpdateProgressHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.nettoUpdateProgressLabel{min-width:0;font-size:10.5px;font-weight:800;color:#eef0f3;line-height:1.3}.nettoUpdateProgressValue{flex:none;font-size:10px;font-weight:950;color:#ff9a72}.nettoUpdateProgressBar{height:9px;width:100%;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.10);box-shadow:inset 0 1px 2px rgba(0,0,0,.28)}.nettoUpdateProgressFill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#ff4528,#ff8a25);box-shadow:0 0 14px rgba(255,112,46,.35);transition:width .25s ease}.nettoUpdateProgressDone{display:flex;align-items:center;gap:7px;margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(74,222,128,.10);color:#9bf1b8;font-size:10.5px;font-weight:900;line-height:1.3}.nettoUpdateProgressDone.hidden{display:none!important}.nettoUpdateProgressDone:before{content:"✓";width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:#22c55e;color:#fff;font-size:11px;flex:none}.nettoUpdateToast.updating .nettoUpdateLater{opacity:.48;pointer-events:none}.nettoUpdateToast.updated .nettoUpdateActions{display:none!important}@media(max-width:520px){.nettoUpdateToast{width:calc(100vw - 20px);border-radius:18px}.nettoUpdateActions{display:grid;grid-template-columns:1fr 1.25fr}.nettoUpdateNow{margin-left:0}}';
  document.head.appendChild(s)
 }
 function syncGlobalDesignAsset(){
@@ -1691,16 +1691,65 @@ async function notifyUpdateSystem(reg,info){
 function hideUpdateToast(){
  const el=document.getElementById('nettoUpdateToast');if(!el)return;el.classList.remove('show');setTimeout(()=>el.remove(),220)
 }
+function setUpdateProgress(value,label){
+ const wrap=document.getElementById('nettoUpdateProgressWrap'),fill=document.getElementById('nettoUpdateProgressFill'),text=document.getElementById('nettoUpdateProgressLabel'),val=document.getElementById('nettoUpdateProgressValue');
+ if(wrap)wrap.classList.remove('hidden');
+ const safe=Math.max(0,Math.min(100,Math.round(Number(value)||0)));
+ if(fill)fill.style.width=safe+'%';
+ if(val)val.textContent=safe+'%';
+ if(text&&label)text.textContent=label
+}
+function showUpdateSuccess(message='Nethor a bien été mis à jour'){
+ const toast=document.getElementById('nettoUpdateToast'),done=document.getElementById('nettoUpdateProgressDone');
+ setUpdateProgress(100,'Mise à jour terminée');
+ toast?.classList.remove('updating');toast?.classList.add('updated');
+ if(done){done.textContent=message;done.classList.remove('hidden')}
+ sounds.play('success')
+}
+function startUpdateProgress(){
+ let i=0,stopped=false;
+ const steps=[5,9,14,20,27,34,42,50,58,65,71,76,81,85,88,90];
+ setUpdateProgress(0,'Préparation de la mise à jour…');
+ const timer=setInterval(()=>{
+  if(stopped||i>=steps.length)return;
+  const value=steps[i++];
+  setUpdateProgress(value,value<70?'Téléchargement de la mise à jour…':'Installation en cours…')
+ },260);
+ return{
+  stop(){stopped=true;clearInterval(timer)},
+  finalize(){stopped=true;clearInterval(timer);setUpdateProgress(94,'Finalisation de la mise à jour…')}
+ }
+}
 async function activateWaitingUpdate(info){
  const reg=updateRegistration||await navigator.serviceWorker.getRegistration();const worker=reg&&reg.waiting;
  if(!worker){mobilePreviewNotice('La mise à jour n’est pas encore prête');return false}
- const btn=document.getElementById('nettoUpdateNow');if(btn){btn.disabled=true;btn.textContent='Mise à jour…'}
+ const toast=document.getElementById('nettoUpdateToast'),btn=document.getElementById('nettoUpdateNow'),later=document.getElementById('nettoUpdateLater');
+ toast?.classList.add('updating');
+ if(btn){btn.disabled=true;btn.textContent='Mise à jour…'}
+ if(later)later.disabled=true;
+ const progress=startUpdateProgress();
  const workerV=await workerVersion(worker),targetVersion=Math.max(Number(info?.version)||0,workerV||0,APP_RELEASE);
- let changed=false;
- const reload=()=>{if(changed)return;changed=true;try{localStorage.setItem('nettoAppVersion',String(targetVersion));localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())}catch(_){};syncAppIconLinks();location.reload()};
- navigator.serviceWorker.addEventListener('controllerchange',reload,{once:true});
+ let finished=false;
+ const complete=()=>{
+  if(finished)return;finished=true;progress.stop();
+  try{localStorage.setItem('nettoAppVersion',String(targetVersion));localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())}catch(_){}
+  syncAppIconLinks();showUpdateSuccess('Nethor a bien été mis à jour');
+  setTimeout(()=>location.reload(),1250)
+ };
+ navigator.serviceWorker.addEventListener('controllerchange',complete,{once:true});
+ setTimeout(()=>{if(!finished)progress.finalize()},3300);
+ setTimeout(async()=>{
+  if(finished)return;
+  const current=await workerVersion(navigator.serviceWorker.controller);
+  if(current&&current>=targetVersion){complete();return}
+  progress.stop();
+  setUpdateProgress(94,'Finalisation en attente…');
+  if(btn){btn.disabled=false;btn.textContent='Réessayer'}
+  if(later)later.disabled=false;
+  toast?.classList.remove('updating');
+  mobilePreviewNotice('La mise à jour prend plus de temps que prévu')
+ },7000);
  worker.postMessage({type:'SKIP_WAITING'});
- setTimeout(reload,4500);
  return true
 }
 async function showUpdateAvailable(reg,forcedVersion=0){
@@ -1713,7 +1762,7 @@ async function showUpdateAvailable(reg,forcedVersion=0){
  if(document.getElementById('nettoUpdateToast'))return;
  ensureUpdateStyles();
  const el=document.createElement('aside');el.id='nettoUpdateToast';el.className='nettoUpdateToast';el.setAttribute('role','status');el.setAttribute('aria-live','polite');
- const copy=publicUpdateCopy();el.innerHTML='<div class="nettoUpdateTop"><img class="nettoUpdateIcon" src="'+esc(info.icon||APP_ICON)+'" alt=""><div class="nettoUpdateCopy"><strong>'+esc(copy.title)+'</strong><span>'+esc(copy.message)+'</span><span class="nettoUpdateVersion">'+esc(displayVersion(version))+' • dernière version</span></div></div><div class="nettoUpdateActions"><button type="button" class="nettoUpdateLater" id="nettoUpdateLater">Plus tard</button><button type="button" class="nettoUpdateNow" id="nettoUpdateNow">Mettre à jour</button></div>';
+ const copy=publicUpdateCopy();el.innerHTML='<div class="nettoUpdateTop"><img class="nettoUpdateIcon" src="'+esc(info.icon||APP_ICON)+'" alt=""><div class="nettoUpdateCopy"><strong>'+esc(copy.title)+'</strong><span>'+esc(copy.message)+'</span><span class="nettoUpdateVersion">'+esc(displayVersion(version))+' • dernière version</span></div></div><div id="nettoUpdateProgressWrap" class="nettoUpdateProgressWrap hidden"><div class="nettoUpdateProgressHead"><span id="nettoUpdateProgressLabel" class="nettoUpdateProgressLabel">Préparation de la mise à jour…</span><strong id="nettoUpdateProgressValue" class="nettoUpdateProgressValue">0%</strong></div><div class="nettoUpdateProgressBar" aria-hidden="true"><div id="nettoUpdateProgressFill" class="nettoUpdateProgressFill"></div></div><div id="nettoUpdateProgressDone" class="nettoUpdateProgressDone hidden">Nethor a bien été mis à jour</div></div><div class="nettoUpdateActions"><button type="button" class="nettoUpdateLater" id="nettoUpdateLater">Plus tard</button><button type="button" class="nettoUpdateNow" id="nettoUpdateNow">Mettre à jour</button></div>';
  document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('show'));sounds.play('notification');
  document.getElementById('nettoUpdateLater').onclick=()=>{sessionStorage.setItem('nettoUpdateLater',String(version));hideUpdateToast()};
  document.getElementById('nettoUpdateNow').onclick=()=>activateWaitingUpdate(info);
