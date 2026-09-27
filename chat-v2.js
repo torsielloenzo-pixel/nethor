@@ -218,12 +218,16 @@ async function deleteConversation(){if(!confirm('Supprimer définitivement ce gr
 async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');await loadConversations();renderConversationHeader();renderMessages()}
 function startRealtime(){
  if(state.dataChannel)return;
- let timer=null;const refresh=()=>{clearTimeout(timer);timer=setTimeout(async()=>{await loadConversations();if(state.activeId){await Promise.all([loadParticipants(),loadMessages()]);await markRead()}},120)};
+ let msgTimer=null,partTimer=null,convTimer=null,reactTimer=null;
+ const onMessages=()=>{clearTimeout(msgTimer);msgTimer=setTimeout(async()=>{await loadConversations();if(state.activeId){await Promise.all([loadParticipants(),loadMessages()]);await markRead()}},110)};
+ const onParticipants=()=>{clearTimeout(partTimer);partTimer=setTimeout(async()=>{await loadConversations();if(state.activeId){await loadParticipants();await renderMessages();renderConversationHeader()}},130)};
+ const onConversations=()=>{clearTimeout(convTimer);convTimer=setTimeout(async()=>{await loadConversations();renderConversationHeader()},120)};
+ const onReactions=()=>{clearTimeout(reactTimer);reactTimer=setTimeout(async()=>{if(state.activeId){await loadReactions();await renderMessages()}},90)};
  state.dataChannel=db.channel('nethor-chat-v2-data')
-  .on('postgres_changes',{event:'*',schema:'public',table:'chat_messages'},refresh)
-  .on('postgres_changes',{event:'*',schema:'public',table:'chat_reactions'},refresh)
-  .on('postgres_changes',{event:'*',schema:'public',table:'chat_conversations'},refresh)
-  .on('postgres_changes',{event:'*',schema:'public',table:'chat_participants'},refresh)
+  .on('postgres_changes',{event:'*',schema:'public',table:'chat_messages'},onMessages)
+  .on('postgres_changes',{event:'*',schema:'public',table:'chat_reactions'},onReactions)
+  .on('postgres_changes',{event:'*',schema:'public',table:'chat_conversations'},onConversations)
+  .on('postgres_changes',{event:'*',schema:'public',table:'chat_participants'},onParticipants)
   .subscribe()
 }
 function startMemberRealtime(){if(state.memberChannel)return;state.memberChannel=db.channel('nethor-chat-members').on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>loadMembers()).subscribe()}
