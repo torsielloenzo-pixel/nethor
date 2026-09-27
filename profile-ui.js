@@ -785,7 +785,14 @@ function addStyle(){
      isolation:isolate!important
    }
    body>#nettoUserDrop.nettoMobilePortaledDrop{
-     max-height:min(66dvh,590px)!important
+     max-height:min(66dvh,590px)!important;
+     z-index:2147482000!important
+   }
+   body>#nettoLoginDrop.nettoMobilePortaledDrop{
+     z-index:2147482000!important
+   }
+   html.nettoMobileDropOpen .nettoMobileQuickBar{
+     z-index:2147481500!important
    }
    html.nettoKeyboardOpen body>.nettoMobilePortaledDrop{
      bottom:max(8px,env(safe-area-inset-bottom))!important
