@@ -38,7 +38,7 @@
    <div><h1>Discussions</h1><small>Équipe Nethor</small></div>
    <div class="listHeadActions">
     <button class="newChatBtn" type="button" onclick="openNewChat()" aria-label="Nouvelle discussion" title="Nouvelle discussion"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
-    <button id="chatMenuListBtn" class="chatMenuBtn mobileOnlyMenuBtn" type="button" onclick="toggleChatMenu(event)" aria-label="Menu des discussions" title="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+    <button id="chatMenuListBtn" class="chatMenuBtn" type="button" onclick="toggleDiscussionMenu(event)" aria-label="Gérer les discussions" title="Gérer les discussions"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
    </div>
   </div>
   <div class="convSearchWrap"><input id="conversationSearch" class="convSearch" type="search" placeholder="Rechercher une discussion…" oninput="searchConversations(this.value)" autocomplete="off"></div>
@@ -52,7 +52,7 @@
    <div class="activeIdentity"><strong id="activeTitle">Sélectionne une discussion</strong><small id="activeSubtitle"></small></div>
    <div class="chatHeadActions">
     <button id="messageSearchBtn" class="headIconBtn" type="button" onclick="toggleMessageSearch()" aria-label="Rechercher dans la conversation" title="Rechercher" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.2 4.2"/></svg></button>
-    <button id="infoBtn" class="headIconBtn chatMenuDesktopBtn" type="button" onclick="toggleChatMenu(event)" aria-label="Menu de la conversation" title="Menu" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+    <button id="conversationMenuBtn" class="headIconBtn" type="button" onclick="toggleConversationMenu(event)" aria-label="Gérer la conversation" title="Gérer la conversation" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
    </div>
   </div>
   <div id="messageSearchBar" class="messageSearchBar"><input id="messageSearchInput" type="search" placeholder="Rechercher dans les messages…" oninput="searchMessages(this.value)" autocomplete="off"><button type="button" onclick="toggleMessageSearch()">×</button></div>
@@ -72,12 +72,9 @@
  </section>
 </main>
 
-<div id="chatMenu" class="chatMenu hidden" role="menu">
- <button id="chatMenuInfoItem" class="chatMenuItem hidden" type="button" onclick="openConversationInfoFromMenu()">
-  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-4 3.4-6 7.5-6s6.6 2 7.5 6"/></svg></span><span><strong>Informations</strong><small>Conversation ou profil</small></span>
- </button>
- <div id="chatMenuConversationDivider" class="chatMenuDivider hidden"></div>
- <button class="chatMenuItem" type="button" onclick="openNewChat();closeChatMenu()">
+<div id="discussionMenu" class="chatMenu hidden" role="menu" aria-label="Gérer les discussions">
+ <div class="chatMenuTitle"><strong>Gérer les discussions</strong><small>Actions générales de la messagerie</small></div>
+ <button class="chatMenuItem" type="button" onclick="openNewChat();closeDiscussionMenu()">
   <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Nouvelle discussion</strong><small>Privée ou en groupe</small></span>
  </button>
  <button class="chatMenuItem" type="button" onclick="markAllRead()">
@@ -91,6 +88,26 @@
  </button>
  <button class="chatMenuItem" type="button" onclick="refreshChat()">
   <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M19 11a7 7 0 1 0 .4 4"/></svg></span><span><strong>Actualiser</strong><small>Recharger la messagerie</small></span>
+ </button>
+</div>
+
+<div id="conversationMenu" class="chatMenu conversationManageMenu hidden" role="menu" aria-label="Gérer la conversation">
+ <div class="chatMenuTitle"><strong>Gérer la conversation</strong><small id="conversationMenuSubtitle">Participants et options</small></div>
+ <button id="conversationParticipantsItem" class="chatMenuItem" type="button" onclick="openConversationParticipants()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19c.6-3.5 2.5-5.3 5.5-5.3s4.9 1.8 5.5 5.3"/><path d="M14.5 14.2c2.7 0 4.5 1.4 5 4"/></svg></span><span><strong>Participants</strong><small>Voir les personnes présentes</small></span>
+ </button>
+ <button id="conversationAddMembersItem" class="chatMenuItem hidden" type="button" onclick="openAddMembersFromConversation()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.5 2.5-5.3 5.5-5.3s4.9 1.8 5.5 5.3"/><path d="M18 7v7M14.5 10.5h7"/></svg></span><span><strong>Ajouter des membres</strong><small id="conversationAddMembersHint">Ajouter au groupe</small></span>
+ </button>
+ <button id="conversationSettingsItem" class="chatMenuItem hidden" type="button" onclick="openConversationInfoFromManageMenu()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></span><span><strong>Paramètres du groupe</strong><small>Nom, membres et notifications</small></span>
+ </button>
+ <div id="conversationDangerDivider" class="chatMenuDivider hidden"></div>
+ <button id="conversationLeaveItem" class="chatMenuItem chatMenuDanger hidden" type="button" onclick="leaveGroupFromMenu()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M10 5H5v14h5"/><path d="M14 8l4 4-4 4M9 12h9"/></svg></span><span><strong>Quitter le groupe</strong><small>Retirer ton compte de cette conversation</small></span>
+ </button>
+ <button id="conversationDeleteItem" class="chatMenuItem chatMenuDanger hidden" type="button" onclick="deleteConversationFromMenu()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="m7 7 1 13h8l1-13"/><path d="M10 11v5M14 11v5"/></svg></span><span><strong>Supprimer le groupe</strong><small>Réservé au créateur ou administrateur</small></span>
  </button>
 </div>
 
@@ -128,6 +145,15 @@
    <div class="adminArchiveTitle"><strong>Archives administrateur</strong><small>Groupes supprimés globalement et conservés pour traçabilité.</small></div>
    <div id="adminArchivesList" class="archivesList"></div>
   </section>
+ </div>
+</div>
+
+<div id="addMembersModal" class="modalBackdrop hidden" onclick="if(event.target===this)closeAddMembersModal()">
+ <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="addMembersTitle">
+  <div class="modalHead"><div><strong id="addMembersTitle">Ajouter des membres</strong><small id="addMembersSubtitle">Sélectionne les personnes à ajouter</small></div><button class="modalClose" type="button" onclick="closeAddMembersModal()">×</button></div>
+  <input id="addMembersSearch" class="modalSearch" type="search" placeholder="Rechercher un membre…" oninput="renderAddMembersList()" autocomplete="off">
+  <div id="addMembersList" class="modalMembers"></div>
+  <button id="addMembersSubmit" class="modalAction" type="button" onclick="saveAddedMembers()">Ajouter à la conversation</button>
  </div>
 </div>
 
