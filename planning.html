@@ -200,6 +200,78 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
   .planningViewBar{grid-template-columns:minmax(160px,.7fr) minmax(280px,1.3fr)!important;align-items:center!important}
   .weekNav .weekLabel{grid-column:1/-1!important}
 }
+
+/* Vue Année — interface dédiée */
+body.planningYearOpen{overflow:hidden!important}
+.yearView{
+  position:fixed!important;inset:0!important;z-index:4200!important;margin:0!important;
+  background:rgba(19,22,27,.48)!important;backdrop-filter:blur(8px)!important;
+  padding:18px!important;display:grid;place-items:center;
+}
+.yearView.hidden{display:none!important}
+.yearInterface{
+  width:min(1500px,calc(100vw - 36px));height:min(940px,calc(100dvh - 36px));
+  background:#f6f7f9;border:1px solid #dfe3e8;border-radius:24px;overflow:hidden;
+  box-shadow:0 34px 100px rgba(16,22,30,.28);display:grid;grid-template-rows:auto minmax(0,1fr)
+}
+.yearInterfaceHeader{
+  min-height:82px;padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(255,255,255,.96);border-bottom:1px solid #e3e6ea;backdrop-filter:blur(18px)
+}
+.yearInterfaceBrand{display:flex;align-items:center;gap:12px;min-width:0}
+.yearInterfaceBrand>div{min-width:0}
+.yearInterfaceKicker{display:block;font-size:8px;font-weight:950;letter-spacing:1.25px;color:#e34b27;margin-bottom:3px}
+.yearInterfaceBrand strong{display:block;font-size:20px;line-height:1.1;letter-spacing:-.35px}
+.yearInterfaceBrand small{display:block;font-size:10.5px;color:#7e838a;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yearBackBtn,.yearCloseBtn{
+  width:42px;height:42px;flex:none;border:1px solid #e0e4e8;border-radius:13px;background:#f7f8fa;color:#34383e;
+  display:grid;place-items:center;font-size:20px;font-weight:850;cursor:pointer
+}
+.yearBackBtn:hover,.yearCloseBtn:hover{background:#eef1f4}
+.yearCloseBtn{font-size:24px}
+.yearInterfaceBody{min-height:0;overflow:auto;padding:18px 20px 24px}
+.yearView .yearLegend{margin:0 0 14px;padding:10px 12px;background:#fff;border:1px solid #e3e6ea;border-radius:13px;font-size:10.5px}
+.yearView .yearGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.yearView .monthCard{padding:14px;border-radius:18px}
+.yearView .monthCard h3{font-size:15px}
+.yearView .monthStatus{font-size:8.5px}
+.yearView .monthWeekdays span{font-size:8.5px}
+.yearView .yearDay{min-height:34px;font-size:10px}
+.yearView .yearEmptySlot{min-height:34px}
+.yearView .yearHead{display:flex;align-items:center;gap:7px;flex:none}
+.yearView .yearCurrent{font-size:17px;min-width:104px}
+:root[data-theme="dark"] .yearView{background:rgba(0,0,0,.62)!important}
+:root[data-theme="dark"] .yearInterface{background:#181b1f;border-color:#343a41}
+:root[data-theme="dark"] .yearInterfaceHeader{background:rgba(31,35,40,.97);border-color:#3a4048}
+:root[data-theme="dark"] .yearInterfaceBrand strong{color:#f4f5f7}
+:root[data-theme="dark"] .yearInterfaceBrand small{color:#b5bcc5}
+:root[data-theme="dark"] .yearBackBtn,:root[data-theme="dark"] .yearCloseBtn{background:#2b3037;border-color:#454c55;color:#f0f2f4}
+:root[data-theme="dark"] .yearView .yearLegend{background:#23272d;border-color:#3d444d;color:#c1c7cf}
+
+@media(max-width:900px){
+  .yearView{padding:0!important;place-items:stretch}
+  .yearInterface{width:100vw;height:100dvh;border:0;border-radius:0;box-shadow:none}
+  .yearInterfaceHeader{min-height:72px;padding:10px 12px;position:sticky;top:0;z-index:5}
+  .yearInterfaceBrand{gap:9px}
+  .yearInterfaceBrand strong{font-size:18px}
+  .yearInterfaceBrand small{font-size:9.5px;max-width:48vw}
+  .yearBackBtn{width:39px;height:39px;border-radius:12px}
+  .yearCloseBtn{display:none}
+  .yearInterfaceHeader .yearHead{gap:5px}
+  .yearInterfaceHeader .yearTodayBtn{display:none}
+  .yearInterfaceHeader .yearNavBtn{width:35px;height:35px}
+  .yearInterfaceHeader .yearCurrent{min-width:70px;height:35px!important;font-size:14px;padding:0 8px!important}
+  .yearInterfaceBody{padding:12px 10px 24px}
+  .yearView .yearLegend{font-size:9.5px;gap:9px}
+  .yearView .yearGrid{grid-template-columns:1fr;gap:10px}
+  .yearView .monthCard{padding:12px}
+  .yearView .monthCard h3{font-size:16px}
+  .yearView .yearDay{min-height:38px;font-size:11px}
+  .yearView .yearEmptySlot{min-height:38px}
+}
+@media(min-width:901px) and (max-width:1180px){
+  .yearView .yearGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -417,7 +489,31 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
   </div>
 
   <div id="weekTotalsModal" class="weekTotalsModal hidden" onclick="if(event.target===this)closeWeekTotals()"><div class="weekTotalsCard" role="dialog" aria-modal="true" aria-labelledby="weekTotalsTitle"><div class="weekTotalsHead"><div><strong id="weekTotalsTitle">Total de la semaine</strong><small id="weekTotalsSubtitle"></small></div><button class="weekTotalsClose" type="button" onclick="closeWeekTotals()" aria-label="Fermer">×</button></div><div id="weekTotalsList" class="weekTotalsList"></div></div></div>
-  <section id="yearView" class="yearView hidden"><div class="yearHero"><div class="yearIntro"><strong>Vue annuelle du planning</strong><span id="yearSummary">Repère rapidement les semaines déjà publiées.</span></div><div class="yearHead"><button class="btn light yearNavBtn" onclick="changeYear(-1)" aria-label="Année précédente">←</button><button id="yearTitle" class="btn light yearCurrent" onclick="goCurrentYear()" title="Revenir à l’année actuelle"></button><button class="btn light yearNavBtn" onclick="changeYear(1)" aria-label="Année suivante">→</button><button class="btn light yearTodayBtn" onclick="goCurrentYear()">Cette année</button></div></div><div class="yearLegend"><span><i class="available"></i>Planning disponible</span><span><i class="todayMark"></i>Aujourd’hui</span><span>Appuie sur un jour pour ouvrir sa semaine</span></div><div id="yearGrid" class="yearGrid"></div></section>
+  <section id="yearView" class="yearView hidden" aria-hidden="true">
+    <div class="yearInterface" role="dialog" aria-modal="true" aria-labelledby="yearInterfaceTitle">
+      <div class="yearInterfaceHeader">
+        <div class="yearInterfaceBrand">
+          <button class="yearBackBtn" type="button" onclick="setPlanningView('week')" aria-label="Fermer la vue annuelle">←</button>
+          <div>
+            <span class="yearInterfaceKicker">PLANNING</span>
+            <strong id="yearInterfaceTitle">Vue annuelle</strong>
+            <small id="yearSummary">Repère rapidement les semaines déjà publiées.</small>
+          </div>
+        </div>
+        <div class="yearHead">
+          <button class="btn light yearNavBtn" onclick="changeYear(-1)" aria-label="Année précédente">←</button>
+          <button id="yearTitle" class="btn light yearCurrent" onclick="goCurrentYear()" title="Revenir à l’année actuelle"></button>
+          <button class="btn light yearNavBtn" onclick="changeYear(1)" aria-label="Année suivante">→</button>
+          <button class="btn light yearTodayBtn" onclick="goCurrentYear()">Cette année</button>
+          <button class="yearCloseBtn" type="button" onclick="setPlanningView('week')" aria-label="Fermer">×</button>
+        </div>
+      </div>
+      <div class="yearInterfaceBody">
+        <div class="yearLegend"><span><i class="available"></i>Planning disponible</span><span><i class="todayMark"></i>Aujourd’hui</span><span>Choisis un jour pour ouvrir directement sa semaine</span></div>
+        <div id="yearGrid" class="yearGrid"></div>
+      </div>
+    </div>
+  </section>
 </main><script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const COLOR={g:'#1FB714',b:'#00ABEA',r:'#DD0806',y:'#FFFF00',o:'#EDA900',w:'#FFFFFF'};
@@ -947,7 +1043,22 @@ async function clearPlanningLogs(){if(role!=='admin'||!confirm('Effacer tout l�
 
 async function changeWeek(delta){currentWeekStart=addDays(currentWeekStart,delta*7);currentDay=0;await loadWeek(currentWeekStart);playUISound()}
 async function goCurrentWeek(){const now=new Date();currentWeekStart=startOfWeek(now);currentDay=Math.max(0,Math.min(6,(now.getDay()+6)%7));await loadWeek(currentWeekStart)}
-function setPlanningView(v,opts={}){planningView=v==='year'?'year':'week';document.getElementById('weekView').classList.toggle('hidden',planningView!=='week');document.getElementById('yearView').classList.toggle('hidden',planningView!=='year');document.getElementById('weekViewBtn').classList.toggle('active',planningView==='week');document.getElementById('yearViewBtn').classList.toggle('active',planningView==='year');document.querySelector('.weekNav').classList.toggle('hidden',planningView!=='week');try{localStorage.setItem('nettoPlanningView',planningView)}catch(_){ }const u=new URL(location.href);u.searchParams.set('view',planningView);history.replaceState({},'',u);if(planningView==='year')renderYear();else renderAll();if(opts.sound!==false)window.NettoSounds?.play?.('switch')}
+function setPlanningView(v,opts={}){
+ planningView=v==='year'?'year':'week';
+ const yearView=document.getElementById('yearView');
+ document.getElementById('weekView').classList.toggle('hidden',false);
+ yearView.classList.toggle('hidden',planningView!=='year');
+ yearView.setAttribute('aria-hidden',planningView==='year'?'false':'true');
+ document.body.classList.toggle('planningYearOpen',planningView==='year');
+ document.getElementById('weekViewBtn').classList.toggle('active',planningView==='week');
+ document.getElementById('yearViewBtn').classList.toggle('active',planningView==='year');
+ document.querySelector('.weekNav').classList.toggle('hidden',planningView!=='week');
+ try{localStorage.setItem('nettoPlanningView',planningView)}catch(_){}
+ const u=new URL(location.href);u.searchParams.set('view',planningView);history.replaceState({},'',u);
+ if(planningView==='year'){renderYear();setTimeout(()=>document.querySelector('.yearBackBtn')?.focus(),40)}else renderAll();
+ if(opts.sound!==false)window.NettoSounds?.play?.('switch')
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&planningView==='year')setPlanningView('week')});
 async function changeYear(n){currentYear+=n;await renderYear()}
 async function goCurrentYear(){currentYear=new Date().getFullYear();await renderYear();window.NettoSounds?.play?.('tap')}
 async function renderYear(){
