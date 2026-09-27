@@ -1,10 +1,10 @@
 {
-  "version": 127,
-  "label": "v1.27",
+  "version": 128,
+  "label": "v1.28",
   "important": false,
   "mode": "manual",
-  "title": "Mise à jour accessible sur mobile",
-  "message": "Le menu utilisateur mobile propose désormais une entrée Mise à jour, placée sous Mode sombre et au-dessus de Déconnexion.",
+  "title": "Notifications mobile allégées",
+  "message": "Le grand cadre entourant la liste des notifications a été supprimé sur mobile pour un affichage plus léger.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
