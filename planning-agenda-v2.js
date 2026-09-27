@@ -90,20 +90,60 @@ function renderDayPicker(a){
  host.querySelectorAll('[data-day]').forEach(btn=>btn.onclick=()=>{currentDay=Number(btn.dataset.day);renderAgenda()});
  host.querySelectorAll('[data-move]').forEach(btn=>btn.onclick=()=>{const step=Number(btn.dataset.move),next=(typeof currentDay==='number'?currentDay:0)+step;if(next<0){loadWeek(addDays(currentWeekStart,-7)).then(()=>{currentDay=6;renderAgenda()})}else if(next>6){loadWeek(addDays(currentWeekStart,7)).then(()=>{currentDay=0;renderAgenda()})}else{currentDay=next;renderAgenda()}});
 }
+function isCurrentAgendaEmployee(emp){
+ try{
+  const p=planningProfileFor(emp?.name||'');
+  if(currentUser?.id&&p?.id)return String(p.id)===String(currentUser.id);
+  const mine=norm(currentUser?.name||''),label=norm(p?.display_name||emp?.name||'');
+  return !!mine&&mine===label
+ }catch(_){return false}
+}
+function rangesOverlapHours(a,b){
+ let total=0;
+ for(const x of a||[])for(const y of b||[])total+=Math.max(0,Math.min(x.b,y.b)-Math.max(x.a,y.a));
+ return total
+}
+function rangeDistanceHours(a,b){
+ if(!a?.length||!b?.length)return Number.POSITIVE_INFINITY;
+ let best=Number.POSITIVE_INFINITY;
+ for(const x of a)for(const y of b){
+  if(Math.min(x.b,y.b)>Math.max(x.a,y.a))return 0;
+  best=Math.min(best,Math.abs(x.a-y.b),Math.abs(y.a-x.b))
+ }
+ return best
+}
+function sortAgendaEmployeesForCurrentUser(items){
+ const mine=items.find(x=>x.isMe);
+ if(!mine)return items;
+ return [...items].sort((a,b)=>{
+  if(a.isMe!==b.isMe)return a.isMe?-1:1;
+  const ao=rangesOverlapHours(mine.ranges,a.ranges),bo=rangesOverlapHours(mine.ranges,b.ranges);
+  if(bo!==ao)return bo-ao;
+  const ad=rangeDistanceHours(mine.ranges,a.ranges),bd=rangeDistanceHours(mine.ranges,b.ranges);
+  if(ad!==bd)return ad-bd;
+  const as=a.ranges?.[0]?.a??99,bs=b.ranges?.[0]?.a??99;
+  if(as!==bs)return as-bs;
+  return String(a.label||'').localeCompare(String(b.label||''),'fr',{sensitivity:'base'})
+ })
+}
 function renderDayAgenda(a){
  const di=typeof currentDay==='number'?currentDay:0,dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],employees=model.employees||[],rows=day?.cells||[];
- const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle'),stats=document.getElementById('agendaStats');
+ const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle');
  if(title)title.textContent=dayFull(dt).replace(/^./,c=>c.toUpperCase());
  if(sub)sub.textContent='Planning du jour • horaires de travail uniquement';
- let planned=0,total=0;
- const cards=[];
+ const items=[];
  employees.forEach((emp,ri)=>{
-  const ranges=agendaRanges(rows[ri]||[]);if(!ranges.length)return;planned++;total+=shiftHours(ranges);
+  const ranges=agendaRanges(rows[ri]||[]);if(!ranges.length)return;
   const info=avatarFor(emp);
-  cards.push('<article class="agendaDayCard"><div class="agendaDayPerson">'+info.avatar+'<strong>'+escLocal(info.label)+'</strong></div><div class="agendaDayShifts">'+ranges.map(r=>'<div class="agendaDayShift" data-color="'+escLocal(r.c)+'"><div><strong>'+fmtTime(r.a)+' → '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+hoursLabel(r.b-r.a)+'</small></div><span>›</span></div>').join('')+'</div></article>');
+  items.push({emp,ri,ranges,info,label:info.label,isMe:isCurrentAgendaEmployee(emp)})
  });
- if(stats)stats.innerHTML='<div class="agendaStat"><span class="agendaStatIcon">♟</span><div><strong>'+planned+'</strong><small>employé'+(planned>1?'s':'')+'</small></div></div><div class="agendaStat"><span class="agendaStatIcon">◷</span><div><strong>'+hoursLabel(total)+'</strong><small>planifiées</small></div></div>';
- return '<div class="agendaDayList">'+(cards.length?cards.join(''):'<div class="agendaDayEmpty"><strong>Aucun horaire de travail</strong><span>Personne n’est planifié sur cette journée.</span></div>')+'</div>';
+ const sorted=sortAgendaEmployeesForCurrentUser(items);
+ const cards=sorted.map(item=>{
+  const overlapWithMe=sorted[0]?.isMe&&!item.isMe?rangesOverlapHours(sorted[0].ranges,item.ranges):0;
+  const cls='agendaDayCard'+(item.isMe?' agendaDayCardMe':'')+(overlapWithMe>0?' agendaDayCardCoworker':'');
+  return '<article class="'+cls+'"><div class="agendaDayPerson">'+item.info.avatar+'<strong>'+escLocal(item.info.label)+'</strong></div><div class="agendaDayShifts">'+item.ranges.map(r=>'<div class="agendaDayShift" data-color="'+escLocal(r.c)+'"><div><strong>'+fmtTime(r.a)+' → '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+hoursLabel(r.b-r.a)+'</small></div><span>›</span></div>').join('')+'</div></article>'
+ });
+ return '<div class="agendaDayList'+(sorted[0]?.isMe?' hasCurrentUser':'')+'">'+(cards.length?cards.join(''):'<div class="agendaDayEmpty"><strong>Aucun horaire de travail</strong><span>Personne n’est planifié sur cette journée.</span></div>')+'</div>';
 }
 function renderWeekAgenda(a){
  const b=addDays(a,6),todayKey=isoDate(new Date()),employees=model.employees||[];
@@ -133,7 +173,7 @@ function renderAgenda(){
   if(!model){host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return}
   const a=currentWeekStart;renderDayPicker(a);
   document.getElementById('mobileAgendaModeBar')?.classList.toggle('hidden',!isMobile());
-  document.getElementById('agendaStats')?.classList.toggle('hidden',!isMobile());
+  document.getElementById('agendaStats')?.classList.add('hidden');
   if(isMobile())host.innerHTML=mobileMode==='day'?renderDayAgenda(a):renderWeekAgenda(a);
   else{document.getElementById('agendaTitle').textContent='Agenda de la semaine';document.getElementById('agendaSubtitle').textContent='Du '+frDate(a)+' au '+frDate(addDays(a,6))+' • mêmes données et calculs que la vue classique';host.innerHTML=renderWeekAgenda(a)}
  }catch(e){console.error('Agenda render',e);host.innerHTML='<div class="agendaDayEmpty"><strong>Agenda indisponible</strong><span>Recharge la page pour réessayer.</span></div>'}
