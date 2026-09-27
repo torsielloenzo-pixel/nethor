@@ -214,7 +214,14 @@ function renderConversationInfo(){
 }
 async function setMuted(v){const {error}=await db.rpc('chat_set_muted',{p_conversation:state.activeId,p_muted:!!v});if(error)showToast('Impossible de modifier ce réglage');else{const p=state.participants.find(x=>x.user_id===state.session.user.id);if(p)p.muted=!!v;showToast(v?'Notifications en sourdine':'Notifications réactivées')}}
 async function saveGroupInfo(){const name=$('infoGroupName')?.value.trim();if(!name)return showToast('Nom du groupe requis');const ids=[...document.querySelectorAll('[data-info-member].selected')].map(x=>x.dataset.infoMember);const {error}=await db.rpc('chat_update_group',{p_conversation:state.activeId,p_name:name,p_member_ids:ids});if(error){console.error(error);return showToast('Modification impossible')}showToast('Groupe mis à jour');await Promise.all([loadConversations(),loadParticipants()]);renderConversationHeader();renderConversationInfo()}
-async function deleteConversation(){if(!confirm('Supprimer définitivement ce groupe et tous ses messages ?'))return;const {error}=await db.rpc('chat_delete_conversation',{p_conversation:state.activeId});if(error)return showToast('Suppression impossible');closeConversationInfo();state.activeId=null;state.messages=[];document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');await loadConversations();renderConversationHeader();renderMessages();showToast('Groupe supprimé')}
+async function deleteConversation(){
+ if(!state.activeId||!confirm('Supprimer définitivement ce groupe et tous ses messages ?'))return;
+ const conversationId=state.activeId;
+ const {data,error}=await db.functions.invoke('chat-actions',{body:{action:'delete-conversation',conversation_id:conversationId}});
+ if(error||!data?.ok){console.error('Suppression groupe:',error||data);return showToast('Suppression impossible')}
+ closeConversationInfo();state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');
+ await loadConversations();renderConversationHeader();renderMessages();showToast('Groupe supprimé')
+}
 async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');await loadConversations();renderConversationHeader();renderMessages()}
 function startRealtime(){
  if(state.dataChannel)return;
