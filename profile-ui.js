@@ -288,24 +288,51 @@ function addStyle(){
 
  .nettoMobileQuickBar{display:none}
  @media (max-width:900px),(pointer:coarse){
-   :root{--netto-mobile-bar-h:72px}
-   body.nettoHasMobileBar{padding-bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 18px)!important}
-   .nettoMobileQuickBar{display:grid;grid-template-columns:repeat(var(--netto-mobile-count,5),minmax(0,1fr));position:fixed;left:10px;right:10px;bottom:10px;z-index:4200;min-height:var(--netto-mobile-bar-h);padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(255,255,255,.94);border:1px solid #e7e9ec;border-radius:22px;box-shadow:0 14px 34px rgba(17,24,39,.14);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);gap:4px}
-   .nettoMobileQuickItem{min-width:0;min-height:50px;display:flex;align-items:center;justify-content:center;border-radius:16px;color:#6c7178;text-decoration:none!important;transition:transform .14s ease,background .14s ease,color .14s ease,box-shadow .14s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-   .nettoMobileQuickItem:active{transform:scale(.95)}
-   .nettoMobileQuickIcon{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;color:currentColor;background:transparent;transition:background .14s ease,color .14s ease,box-shadow .14s ease,transform .14s ease}
-   .nettoMobileQuickIcon svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;fill:none}
+   :root{--netto-mobile-bar-h:64px}
+   body.nettoHasMobileBar{padding-bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom))!important}
+   .nettoMobileQuickBar{
+     display:grid;grid-template-columns:repeat(var(--netto-mobile-count,5),minmax(0,1fr));
+     position:fixed;left:0;right:0;bottom:0;z-index:4200;
+     min-height:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom));
+     padding:4px max(6px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));
+     background:rgba(255,255,255,.97);border:0;border-top:1px solid #dfe3e8;border-radius:0;
+     box-shadow:0 -8px 24px rgba(17,24,39,.08);backdrop-filter:blur(22px) saturate(1.15);-webkit-backdrop-filter:blur(22px) saturate(1.15);gap:0
+   }
+   .nettoMobileQuickItem{
+     position:relative;min-width:0;min-height:56px;display:flex;align-items:center;justify-content:center;
+     border-radius:0;color:#707780;text-decoration:none!important;transition:color .14s ease,transform .12s ease;
+     -webkit-tap-highlight-color:transparent;touch-action:manipulation
+   }
+   .nettoMobileQuickItem:active{transform:scale(.94)}
+   .nettoMobileQuickItem.active:before{
+     content:"";position:absolute;top:-4px;left:50%;width:34px;height:3px;border-radius:0 0 6px 6px;
+     transform:translateX(-50%);background:linear-gradient(90deg,#f23b27,#f47c20)
+   }
+   .nettoMobileQuickIcon{
+     width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:currentColor;background:transparent;
+     transition:transform .14s ease,color .14s ease,background .14s ease
+   }
+   .nettoMobileQuickIcon svg{width:24px;height:24px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
    .nettoMobileQuickItem.active{color:#ef5a2f}
-   .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:linear-gradient(180deg,#fff1eb,#ffe4d7);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 14px rgba(239,90,47,.12);transform:translateY(-1px)}
-   .nettoMobileQuickItem:hover .nettoMobileQuickIcon{background:#fff5f1}
+   .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:#fff2ec;transform:translateY(-1px)}
    .nettoMobileQuickLabel{display:none!important}
-   :root[data-theme="dark"] .nettoMobileQuickBar{background:rgba(28,31,34,.94);border-color:#383d44;box-shadow:0 16px 34px rgba(0,0,0,.38)}
-   :root[data-theme="dark"] .nettoMobileQuickItem{color:#9298a1}
+   .nettoDrop:not(.nettoNotifDrop){
+     position:fixed!important;left:8px!important;right:8px!important;top:auto!important;
+     bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 8px)!important;
+     width:auto!important;max-height:min(72dvh,620px)!important;overflow:auto!important;border-radius:24px!important;
+     padding:8px!important;z-index:5000!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+     box-shadow:0 -14px 50px rgba(0,0,0,.22)!important
+   }
+   .nettoNotifDrop{
+     bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 8px)!important;
+     max-height:min(76dvh,720px)!important;border-radius:24px!important
+   }
+   :root[data-theme="dark"] .nettoMobileQuickBar{background:rgba(27,29,32,.97);border-color:#363b40;box-shadow:0 -10px 28px rgba(0,0,0,.32)}
+   :root[data-theme="dark"] .nettoMobileQuickItem{color:#9ca2aa}
    :root[data-theme="dark"] .nettoMobileQuickItem.active{color:#ff936d}
-   :root[data-theme="dark"] .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:linear-gradient(180deg,#3b2923,#4a2f26);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 8px 16px rgba(0,0,0,.24)}
-   :root[data-theme="dark"] .nettoMobileQuickItem:hover .nettoMobileQuickIcon{background:#2b2421}
-   body.nettoHasMobileBar .chatApp{height:calc(100dvh - 64px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom) - 18px)!important}
-   body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 28px)!important}
+   :root[data-theme="dark"] .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:#3b2923}
+   body.nettoHasMobileBar .chatApp{height:calc(100dvh - 56px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom))!important}
+   body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 12px)!important}
  }
  `;document.head.appendChild(s)
 }
@@ -773,7 +800,7 @@ function hydrateGlobalCache(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=97;
+const APP_RELEASE=98;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
