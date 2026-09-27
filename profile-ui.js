@@ -281,7 +281,7 @@ function addStyle(){
    .nettoDrop:not(.nettoNotifDrop){position:fixed!important;right:8px!important;left:8px!important;top:max(64px,calc(env(safe-area-inset-top) + 54px))!important;width:auto!important;max-height:calc(100dvh - 78px)!important;overflow:auto!important;border-radius:18px!important;z-index:5000!important;-webkit-overflow-scrolling:touch}
    .nettoNavBtn{min-height:50px;touch-action:manipulation}.nettoNavBtn strong{font-size:11px}.nettoNavBtn small{font-size:8.5px}
    .nettoDropBackdrop.open{display:block!important;position:fixed;inset:0;z-index:4900;border:0;padding:0;margin:0;background:#11182742;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);touch-action:manipulation}
-   html.nettoMobileDropOpen,html.nettoMobileDropOpen body{overflow:hidden!important;overscroll-behavior:none}html.nettoMobileDropOpen header{position:relative!important;z-index:9000!important;overflow:visible!important}html.nettoMobileDropOpen .nettoGlobalTools{z-index:9100!important}
+   html.nettoMobileDropOpen,html.nettoMobileDropOpen body{overflow:hidden!important;overscroll-behavior:none}html.nettoMobileDropOpen header{position:relative!important;z-index:4300!important;overflow:visible!important}html.nettoMobileDropOpen .nettoGlobalTools{z-index:5100!important}
    .backBtn,header>.top>.back,header .top>.back{display:none!important}
  }
  @media(max-width:430px){.nettoGlobalTools{gap:4px}.nettoUserBtn{width:44px;min-width:44px;max-width:44px;height:44px;grid-template-columns:32px;padding:5px}.nettoChevron,.nettoUserText{display:none}.nettoBellBtn{width:44px;height:44px}.nettoUpdateCheckBtn{width:44px!important;min-width:44px!important;height:44px!important}}
@@ -800,7 +800,7 @@ function hydrateGlobalCache(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=98;
+const APP_RELEASE=99;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
