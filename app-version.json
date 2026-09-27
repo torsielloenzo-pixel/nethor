@@ -1,9 +1,9 @@
 {
-  "version": 82,
-  "label": "v0.82",
+  "version": 83,
+  "label": "v0.83",
   "important": true,
-  "title": "Nouvelle version de Nethor",
-  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
-  "published_at": "2026-09-27T13:34:00+02:00",
+  "title": "Notifications réorganisées",
+  "message": "Le centre de notifications distingue désormais les informations communes des alertes importantes, avec des icônes et une présentation plus visuelle.",
+  "published_at": "2026-09-27T14:05:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
