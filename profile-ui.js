@@ -1639,10 +1639,9 @@ function notificationPortalEnabled(kind){return notificationPreferenceEnabled(no
 function notificationKindEnabled(kind){return notificationPushEnabled(kind)}
 async function loadNotifications(){
  if(!api.client||!api.session)return;
- if(!api.notificationPreferences)await loadNotificationPreferences();
- const {data,error}=await api.client.from('planning_notifications').select('id,kind,title,message,planning_date,week_start,target_url,read_at,created_at').eq('user_id',api.session.user.id).order('created_at',{ascending:false}).limit(200);
+ const {data,error}=await api.client.from('planning_notifications').select('id,kind,title,message,planning_date,week_start,target_url,read_at,created_at').eq('user_id',api.session.user.id).order('created_at',{ascending:false}).limit(80);
  if(error){console.warn('Notifications:',error);return}
- api.notifications=(data||[]).filter(n=>notificationPortalEnabled(n.kind)).slice(0,80);
+ api.notifications=data||[];
  renderNotifications();
  window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:api.notifications,unread:api.notifications.filter(n=>!n.read_at).length}}))
 }
