@@ -474,60 +474,25 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   .convTime{max-width:44px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 }
 
-
-/* Nethor chat mobile v12 — clavier iOS/Android sans soulèvement de la conversation */
+/* Nethor chat mobile v15 — comportement type Messenger */
 @media(max-width:780px){
-  html.nettoKeyboardOpen body.mobileConversationOpen{
-    overflow:hidden!important;
-    padding-bottom:0!important;
-  }
-  html.nettoKeyboardOpen body.mobileConversationOpen header{
-    position:fixed!important;
-    top:var(--netto-visual-viewport-top,0px)!important;
-    left:0!important;
-    right:0!important;
-    width:100%!important;
-    margin:0!important;
-  }
-  html.nettoKeyboardOpen body.mobileConversationOpen .chatApp{
-    position:fixed!important;
-    top:calc(var(--netto-visual-viewport-top,0px) + 56px + env(safe-area-inset-top))!important;
-    left:0!important;
-    right:0!important;
-    bottom:auto!important;
-    width:100%!important;
-    height:calc(var(--netto-visual-viewport-h,100dvh) - 56px - env(safe-area-inset-top))!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-  }
-  html.nettoKeyboardOpen body.mobileConversationOpen .conversationPane{
-    width:100%!important;
-    height:100%!important;
-    min-height:0!important;
-    max-height:100%!important;
-  }
-  html.nettoKeyboardOpen body.mobileConversationOpen .messages{
-    min-height:0!important;
-    overscroll-behavior:contain!important;
-  }
-  html.nettoKeyboardOpen body.mobileConversationOpen .composer{
-    padding-bottom:7px!important;
-  }
-  .composeIcon svg{
-    width:20px;height:20px;display:block;margin:auto;
-    fill:none;stroke:currentColor;stroke-width:1.9;
-    stroke-linecap:round;stroke-linejoin:round;
-  }
-}
-
-
-/* Nethor chat mobile v14 — en-tête fixe et clavier fluide */
-@media(max-width:780px){
-  /* Dans une conversation, les deux barres du haut restent totalement immobiles. */
+  /*
+   * Une seule géométrie, clavier fermé ou ouvert :
+   * - barre Nethor/Chat ancrée au haut du viewport visuel
+   * - barre du contact juste dessous, sans déplacement
+   * - seule la hauteur de la zone conversation varie
+   * - le composer reste au bas de cette zone, donc juste au-dessus du clavier
+   */
   body.mobileConversationOpen{
+    --chat-top-h:calc(56px + env(safe-area-inset-top));
+    --chat-bottom-reserve:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));
     overflow:hidden!important;
     overscroll-behavior:none!important;
+  }
+
+  html.nettoKeyboardOpen body.mobileConversationOpen{
+    --chat-bottom-reserve:0px;
+    padding-bottom:0!important;
   }
 
   body.mobileConversationOpen header{
@@ -537,25 +502,36 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     right:0!important;
     width:100%!important;
     margin:0!important;
+    translate:0 var(--netto-visual-viewport-top,0px);
     transform:translateZ(0);
     backface-visibility:hidden;
-    contain:layout style;
+    will-change:translate;
+    transition:none!important;
+    animation:none!important;
     z-index:110!important;
   }
 
   body.mobileConversationOpen .chatApp{
     position:fixed!important;
-    top:calc(56px + env(safe-area-inset-top))!important;
+    top:var(--chat-top-h)!important;
     left:0!important;
     right:0!important;
-    bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important;
+    bottom:auto!important;
     width:100%!important;
-    height:auto!important;
+    height:calc(
+      var(--netto-visual-viewport-h,100dvh)
+      - var(--chat-top-h)
+      - var(--chat-bottom-reserve)
+    )!important;
     min-height:0!important;
     margin:0!important;
     padding:0!important;
     overflow:hidden!important;
+    translate:0 var(--netto-visual-viewport-top,0px);
     transform:translateZ(0);
+    backface-visibility:hidden;
+    will-change:height,translate;
+    transition:none!important;
   }
 
   body.mobileConversationOpen .conversationPane{
@@ -574,15 +550,17 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     min-height:56px!important;
     height:56px!important;
     flex:none!important;
+    z-index:30!important;
     transform:translateZ(0);
     backface-visibility:hidden;
-    contain:layout paint style;
-    z-index:30!important;
+    transition:none!important;
+    animation:none!important;
   }
 
   body.mobileConversationOpen .messageSearchBar{
     position:relative!important;
     z-index:20!important;
+    flex:none!important;
   }
 
   body.mobileConversationOpen .messages{
@@ -590,41 +568,23 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     overflow-y:auto!important;
     overscroll-behavior-y:contain!important;
     -webkit-overflow-scrolling:touch!important;
+    scroll-behavior:auto!important;
   }
 
   body.mobileConversationOpen .typingLine,
   body.mobileConversationOpen .composer{
     position:relative!important;
     z-index:25!important;
-  }
-
-  /* Le clavier ne déplace plus l'en-tête. Seule la zone utile de la conversation se réduit. */
-  html.nettoKeyboardOpen body.mobileConversationOpen header{
-    top:0!important;
-    transform:translateZ(0)!important;
-  }
-
-  html.nettoKeyboardOpen body.mobileConversationOpen .chatApp{
-    top:calc(56px + env(safe-area-inset-top))!important;
-    bottom:auto!important;
-    height:calc(var(--netto-visual-viewport-h,100dvh) - 56px - env(safe-area-inset-top))!important;
-    min-height:0!important;
-    transform:translateZ(0)!important;
-  }
-
-  html.nettoKeyboardOpen body.mobileConversationOpen .conversationPane{
-    height:100%!important;
-    min-height:0!important;
+    flex:none!important;
   }
 
   html.nettoKeyboardOpen body.mobileConversationOpen .composer{
     padding-bottom:7px!important;
   }
 
-  /* Pas d'animation de position sur les barres fixes : évite les petits sauts iOS. */
-  body.mobileConversationOpen header,
-  body.mobileConversationOpen .chatHeader{
-    transition:none!important;
-    animation:none!important;
+  .composeIcon svg{
+    width:20px;height:20px;display:block;margin:auto;
+    fill:none;stroke:currentColor;stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round;
   }
 }
