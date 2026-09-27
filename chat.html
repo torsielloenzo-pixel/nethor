@@ -36,14 +36,10 @@
  <aside class="conversationListPane">
   <div class="listHead">
    <div><h1>Discussions</h1><small>Équipe Nethor</small></div>
-   <div class="listHeadActions"><button class="newChatBtn" type="button" onclick="openNewChat()" aria-label="Nouvelle discussion" title="Nouvelle discussion">＋</button><button id="chatMenuBtn" class="chatMenuBtn" type="button" onclick="toggleChatMenu(event)" aria-label="Actions des discussions" title="Actions">•••</button></div>
-  </div>
-  <div id="chatMenu" class="chatMenu hidden">
-   <button type="button" onclick="openNewChat();closeChatMenu()">＋ Nouvelle discussion</button>
-   <button type="button" onclick="markAllRead()">✓✓ Tout marquer comme lu</button>
-   <button id="unreadOnlyBtn" type="button" onclick="toggleUnreadOnly()">● Afficher seulement les non lus</button>
-   <button type="button" onclick="refreshChat()">↻ Actualiser</button>
-   <button id="chatArchivesBtn" class="hidden" type="button" onclick="openChatArchives()">▣ Archives</button>
+   <div class="listHeadActions">
+    <button class="newChatBtn" type="button" onclick="openNewChat()" aria-label="Nouvelle discussion" title="Nouvelle discussion"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button id="chatMenuListBtn" class="chatMenuBtn mobileOnlyMenuBtn" type="button" onclick="toggleChatMenu(event)" aria-label="Menu des discussions" title="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+   </div>
   </div>
   <div class="convSearchWrap"><input id="conversationSearch" class="convSearch" type="search" placeholder="Rechercher une discussion…" oninput="searchConversations(this.value)" autocomplete="off"></div>
   <div id="conversationList" class="conversationList"><div class="listEmpty">Chargement des discussions…</div></div>
@@ -55,8 +51,8 @@
    <div id="activeAvatarMount"></div>
    <div class="activeIdentity"><strong id="activeTitle">Sélectionne une discussion</strong><small id="activeSubtitle"></small></div>
    <div class="chatHeadActions">
-    <button id="messageSearchBtn" class="headIconBtn" type="button" onclick="toggleMessageSearch()" aria-label="Rechercher dans la conversation" disabled>⌕</button>
-    <button id="infoBtn" class="headIconBtn" type="button" onclick="openConversationInfo()" aria-label="Informations de la conversation" disabled>ⓘ</button>
+    <button id="messageSearchBtn" class="headIconBtn" type="button" onclick="toggleMessageSearch()" aria-label="Rechercher dans la conversation" title="Rechercher" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.2 4.2"/></svg></button>
+    <button id="infoBtn" class="headIconBtn chatMenuDesktopBtn" type="button" onclick="toggleChatMenu(event)" aria-label="Menu de la conversation" title="Menu" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
    </div>
   </div>
   <div id="messageSearchBar" class="messageSearchBar"><input id="messageSearchInput" type="search" placeholder="Rechercher dans les messages…" oninput="searchMessages(this.value)" autocomplete="off"><button type="button" onclick="toggleMessageSearch()">×</button></div>
@@ -75,6 +71,28 @@
   </div>
  </section>
 </main>
+
+<div id="chatMenu" class="chatMenu hidden" role="menu">
+ <button id="chatMenuInfoItem" class="chatMenuItem hidden" type="button" onclick="openConversationInfoFromMenu()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-4 3.4-6 7.5-6s6.6 2 7.5 6"/></svg></span><span><strong>Informations</strong><small>Conversation ou profil</small></span>
+ </button>
+ <div id="chatMenuConversationDivider" class="chatMenuDivider hidden"></div>
+ <button class="chatMenuItem" type="button" onclick="openNewChat();closeChatMenu()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Nouvelle discussion</strong><small>Privée ou en groupe</small></span>
+ </button>
+ <button class="chatMenuItem" type="button" onclick="markAllRead()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="m3.5 12.5 4 4 7-8"/><path d="m10 14 2.5 2.5 8-9"/></svg></span><span><strong>Tout marquer comme lu</strong><small>Réinitialiser les non-lus</small></span>
+ </button>
+ <button id="unreadOnlyBtn" class="chatMenuItem" type="button" onclick="toggleUnreadOnly()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M4 6.5h16v11H4z"/><path d="m4 7 8 6 8-6"/></svg></span><span><strong>Afficher les non lus</strong><small>Filtrer les discussions</small></span>
+ </button>
+ <button id="chatArchivesBtn" class="chatMenuItem" type="button" onclick="openChatArchives()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M3 4h18v4H3z"/><path d="M9 12h6"/></svg></span><span><strong>Conversations archivées</strong><small>Voir et restaurer</small></span>
+ </button>
+ <button class="chatMenuItem" type="button" onclick="refreshChat()">
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M19 11a7 7 0 1 0 .4 4"/></svg></span><span><strong>Actualiser</strong><small>Recharger la messagerie</small></span>
+ </button>
+</div>
 
 <div id="reactionPicker" class="reactionPicker hidden">
  <button type="button" onclick="pickReaction('👍')">👍</button>
@@ -103,9 +121,33 @@
 </div>
 
 <div id="archivesModal" class="modalBackdrop hidden" onclick="if(event.target===this)closeChatArchives()">
- <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="archivesTitle">
-  <div class="modalHead"><div><strong id="archivesTitle">Archives du chat</strong><small>Conversations supprimées visuellement · administrateur</small></div><button class="modalClose" type="button" onclick="closeChatArchives()">×</button></div>
+ <div class="modalCard archivesModalCard" role="dialog" aria-modal="true" aria-labelledby="archivesTitle">
+  <div class="modalHead"><div><strong id="archivesTitle">Conversations archivées</strong><small>Archives visibles uniquement sur ton compte</small></div><button class="modalClose" type="button" onclick="closeChatArchives()">×</button></div>
   <div id="archivesList" class="archivesList"><div class="listEmpty">Chargement…</div></div>
+  <section id="adminArchiveSection" class="adminArchiveSection hidden">
+   <div class="adminArchiveTitle"><strong>Archives administrateur</strong><small>Groupes supprimés globalement et conservés pour traçabilité.</small></div>
+   <div id="adminArchivesList" class="archivesList"></div>
+  </section>
+ </div>
+</div>
+
+<div id="contactModal" class="modalBackdrop hidden" onclick="if(event.target===this)closeContactCard()">
+ <div class="modalCard contactCardModal" role="dialog" aria-modal="true" aria-labelledby="contactCardTitle">
+  <div class="modalHead"><div><strong id="contactCardTitle">Contact</strong><small>Profil interne Nethor</small></div><button class="modalClose" type="button" onclick="closeContactCard()">×</button></div>
+  <div id="contactCardContent"></div>
+ </div>
+</div>
+
+<div id="conversationActionSheet" class="conversationActionBackdrop hidden" onclick="if(event.target===this)closeConversationActions()">
+ <div class="conversationActionSheet" role="dialog" aria-modal="true" aria-labelledby="conversationActionTitle">
+  <div class="conversationActionGrip"></div>
+  <div id="conversationActionHeader" class="conversationActionHeader"></div>
+  <div class="conversationActionList">
+   <button type="button" onclick="actionSheetInfo()"><span class="sheetIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-4 3.4-6 7.5-6s6.6 2 7.5 6"/></svg></span><span><strong>Informations</strong><small>Voir le profil ou les membres</small></span></button>
+   <button type="button" onclick="actionSheetArchive()"><span class="sheetIcon"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M3 4h18v4H3z"/><path d="M9 12h6"/></svg></span><span><strong>Archiver</strong><small>Masquer et conserver dans tes archives</small></span></button>
+   <button class="sheetDanger" type="button" onclick="actionSheetHide()"><span class="sheetIcon"><svg viewBox="0 0 24 24"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="m7 7 1 13h8l1-13"/><path d="M10 11v5M14 11v5"/></svg></span><span><strong>Supprimer de mes discussions</strong><small>Suppression visuelle uniquement pour toi</small></span></button>
+  </div>
+  <button class="conversationActionCancel" type="button" onclick="closeConversationActions()">Annuler</button>
  </div>
 </div>
 
