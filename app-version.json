@@ -1,9 +1,9 @@
 {
-  "version": 95,
-  "label": "v0.95",
+  "version": 96,
+  "label": "v0.96",
   "important": true,
-  "title": "Navigation mobile simplifiée",
-  "message": "La barre mobile utilise désormais des pictogrammes dédiés, minimalistes et sans texte, distincts des logos de l’accueil.",
-  "published_at": "2026-09-27T16:20:00+02:00",
+  "title": "Correctif général et fluidité",
+  "message": "Nettoyage des chargements redondants, stabilisation des images du chat et optimisation générale de l’interface web et mobile.",
+  "published_at": "2026-09-27T16:34:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
