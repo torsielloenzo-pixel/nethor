@@ -820,13 +820,13 @@ function renderNotifications(){
  if(allCount)allCount.textContent=String(api.notifications.length);
  if(unreadCount)unreadCount.textContent=String(unread);
  document.querySelectorAll('[data-notif-tab]').forEach(b=>b.classList.toggle('active',b.dataset.notifTab===api.notificationTab));
- const rows=api.notificationTab==='unread'?api.notifications.filter(n=>!n.read_at):api.notifications;
+ const rows=(api.notificationTab==='unread'?api.notifications.filter(n=>!n.read_at):[...api.notifications]).sort((a,b)=>{if(api.notificationTab==='all'){const au=!a.read_at?1:0,bu=!b.read_at?1:0;if(au!==bu)return bu-au}return new Date(b.created_at)-new Date(a.created_at)});
  if(!rows.length){
   list.innerHTML='<div class="nettoNotifEmpty"><div class="nettoNotifEmptyBox"><span class="nettoNotifEmptyIcon">'+(api.notificationTab==='unread'?'✓':'🔔')+'</span><strong>'+(api.notificationTab==='unread'?'Aucune notification non lue':'Aucune notification')+'</strong><span>'+(api.notificationTab==='unread'?'Tu as tout consulté.':'Les nouvelles activités apparaîtront ici.')+'</span></div></div>';return
  }
  let previousGroup='',html='';
  rows.forEach(n=>{
-  const group=notificationDayGroup(n.created_at);
+  const group=!n.read_at?'Nouveau':notificationDayGroup(n.created_at);
   if(group!==previousGroup){html+='<div class="nettoNotifSectionLabel">'+esc(group)+'</div>';previousGroup=group}
   html+='<article class="nettoNotifItem '+esc(n.kind)+' '+(!n.read_at?'unread':'')+'" role="button" tabindex="0" data-id="'+n.id+'" data-url="'+esc(n.target_url||'')+'"><span class="nettoNotifIcon">'+notificationIcon(n.kind)+'</span><div class="nettoNotifBody"><strong>'+esc(n.title)+'</strong><span>'+esc(n.message)+'</span><div class="nettoNotifCategory">'+esc(notificationCategory(n.kind))+'</div><small>'+notificationDate(n.created_at)+'</small></div><span class="nettoNotifSide"><i class="nettoNotifUnreadDot" aria-hidden="true"></i><button class="nettoNotifDelete" title="Supprimer" aria-label="Supprimer la notification">×</button></span></article>'
  });
