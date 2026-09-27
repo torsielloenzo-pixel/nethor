@@ -109,7 +109,20 @@ dialog{border:0;border-radius:18px;width:min(92vw,480px);padding:0;box-shadow:0 
   </div>
 </div>
 </div></section>
-<section id="logsView" class="panel hidden"><div class="logsPanel"><div class="panelHead" style="padding:0 0 12px;border:0"><div><strong>Journal complet</strong><small>Consultations, modifications, créations et suppressions</small></div><button class="btn secondary" onclick="loadLogs()">↻</button></div><div class="logsToolbar"><input id="logSearch" class="wide" placeholder="Rechercher dans le journal…" oninput="renderLogs()"><select id="logUser" onchange="renderLogs()"><option value="">Tous les utilisateurs</option></select><select id="logAction" onchange="renderLogs()"><option value="">Toutes les actions</option><option value="view">Pages consultées</option><option value="update">Modifications</option><option value="insert">Créations</option><option value="delete">Suppressions</option><option value="account_update">Compte modifié</option><option value="account_create">Compte créé</option></select><button class="btn secondary" onclick="clearLogFilters()">Effacer filtres</button></div><div id="allLogs" class="logList"><div class="empty">Chargement…</div></div></div></section>
+<section id="logsView" class="panel hidden"><div class="logsPanel">
+<div class="journalHead" role="button" tabindex="0" aria-expanded="false" onclick="toggleJournal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleJournal()}">
+  <div><strong>Journal complet</strong><small>Fréquentation du site et historique détaillé</small></div>
+  <div class="journalHeadRight"><span id="journalMetric" class="journalMetric">— visites</span><button class="btn secondary" type="button" onclick="event.stopPropagation();loadLogs();loadVisitStats()">↻</button><span class="journalChevron">⌄</span></div>
+</div>
+<div id="journalBody" class="journalBody collapsed">
+  <div class="visitPanel">
+    <div class="visitTop"><strong>Visites du site <small>· admin exclu</small></strong><div class="visitRange"><button type="button" data-visit-period="day" onclick="setVisitPeriod('day')">Jour</button><button type="button" data-visit-period="week" class="active" onclick="setVisitPeriod('week')">Semaine</button><button type="button" data-visit-period="month" onclick="setVisitPeriod('month')">Mois</button></div></div>
+    <div id="visitChart" class="visitChart"><div class="visitEmpty">Chargement…</div></div>
+  </div>
+  <div class="logsToolbar"><input id="logSearch" class="wide" placeholder="Rechercher dans le journal…" oninput="renderLogs()"><select id="logUser" onchange="renderLogs()"><option value="">Tous les utilisateurs</option></select><select id="logAction" onchange="renderLogs()"><option value="">Toutes les actions</option><option value="view">Pages consultées</option><option value="update">Modifications</option><option value="insert">Créations</option><option value="delete">Suppressions</option><option value="account_update">Compte modifié</option><option value="account_create">Compte créé</option></select><button class="btn secondary" onclick="clearLogFilters()">Effacer filtres</button></div>
+  <div id="allLogs" class="logList"><div class="empty">Chargement…</div></div>
+</div>
+</div></section>
 </main>
 <dialog id="subroleDialog"><div class="modal"><h2>Créer un sous-rôle</h2><div class="formGrid"><div class="field"><label>Nom interne</label><input id="newSubroleLabel" maxlength="40" placeholder="Ex. Référent F&L"></div></div><div id="newSubroleState" class="state"></div><div class="modalActions"><button class="btn secondary" onclick="$('subroleDialog').close()">Annuler</button><button id="createSubroleBtn" class="btn primary" onclick="createSubrole()">Créer le sous-rôle</button></div></div></dialog>
 <dialog id="roleDialog"><div class="modal"><h2>Créer un rôle</h2><div class="formGrid"><div class="field"><label>Nom du rôle</label><input id="newRoleLabel" maxlength="40" placeholder="Ex. Responsable adjoint"></div></div><div id="newRoleState" class="state"></div><div class="modalActions"><button class="btn secondary" onclick="$('roleDialog').close()">Annuler</button><button id="createRoleBtn" class="btn primary" onclick="createCustomRole()">Créer le rôle</button></div></div></dialog>
