@@ -437,16 +437,15 @@ textarea{line-height:1.5!important}
 
 /* Verrouillage application mobile Nethor */
 @media(max-width:900px){
-  html.nettoMobileAppLocked{
+  html{
     width:100%!important;
     max-width:100%!important;
     overflow-x:hidden!important;
-    overscroll-behavior:none;
-    touch-action:pan-x pan-y;
+    overscroll-behavior-x:none;
     -webkit-text-size-adjust:100%;
     text-size-adjust:100%;
   }
-  html.nettoMobileAppLocked body{
+  body{
     width:100%!important;
     max-width:100%!important;
     min-height:100vh!important;
@@ -455,29 +454,31 @@ textarea{line-height:1.5!important}
     overscroll-behavior-x:none;
     margin:0!important;
   }
-  html.nettoMobileAppLocked header,
-  html.nettoMobileAppLocked main,
-  html.nettoMobileAppLocked .top,
-  html.nettoMobileAppLocked .workspace,
-  html.nettoMobileAppLocked .panel,
-  html.nettoMobileAppLocked .pageCard,
-  html.nettoMobileAppLocked .planningInsights{
+  header,main,.top,.workspace,.panel,.pageCard,.planningInsights,.hero,.toolbar,.section{
     max-width:100%!important;
+    min-width:0;
   }
-  html.nettoMobileAppLocked img,
-  html.nettoMobileAppLocked video,
-  html.nettoMobileAppLocked canvas{
+  img,video,canvas,svg{
     max-width:100%;
   }
-  html.nettoMobileAppLocked .nettoDrop,
-  html.nettoMobileAppLocked .nMenu,
-  html.nettoMobileAppLocked .brandMenu,
-  html.nettoMobileAppLocked .userMenu{
+  .nettoDrop,.nMenu,.brandMenu,.userMenu{
     max-width:calc(100vw - 16px)!important;
   }
-  html.nettoMobileAppLocked input,
-  html.nettoMobileAppLocked select,
-  html.nettoMobileAppLocked textarea{
+  input,select,textarea{
+    max-width:100%;
+    min-width:0;
     font-size:16px!important;
+  }
+  button,a,[role="button"],input,select,textarea{
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  dialog,.modalCard,.planningModalCard,.pageViewsDialog{
+    max-width:calc(100vw - 16px)!important;
+    box-sizing:border-box!important;
+  }
+  .modalBackdrop,.planningModal{
+    padding-left:max(8px,env(safe-area-inset-left))!important;
+    padding-right:max(8px,env(safe-area-inset-right))!important;
   }
 }
