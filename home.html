@@ -505,6 +505,75 @@ main{position:relative;z-index:1}
   #homePages .adminViewStat{right:11px!important;bottom:61px!important}
 }
 </style>
+<style>
+/* Nethor home mobile app v98 */
+@media(max-width:700px){
+  body{background:#f0f2f5!important}
+  main{padding-top:12px!important;padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
+  .hello{
+    margin:0 0 12px!important;padding:17px 16px!important;border-radius:18px!important;
+    background:linear-gradient(135deg,#20242a 0%,#2b3037 62%,#49352c 100%)!important;
+    box-shadow:none!important;border:0!important;
+  }
+  .hello:before,.hello:after{display:none!important}
+  .hello .eyebrow{
+    display:inline-flex!important;margin:0 0 7px!important;padding:4px 8px!important;
+    border-radius:999px!important;background:#ffffff12!important;border:1px solid #ffffff12!important;
+    color:#ffd8ca!important;font-size:8px!important;letter-spacing:.75px!important
+  }
+  .hello h1{font-size:24px!important;line-height:1.08!important;margin:0 0 6px!important;color:#fff!important}
+  .hello p,.homeTodayMessage{font-size:11.5px!important;line-height:1.45!important;color:#d8dadd!important}
+  .helloMeta{display:none!important}
+  #homePages.pages{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+  }
+  #homePages .pageCardShell{min-height:128px!important}
+  #homePages .pageCard{
+    min-height:128px!important;height:100%!important;padding:13px!important;
+    display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+    border-radius:17px!important;border:1px solid #e0e4e8!important;
+    background:#fff!important;box-shadow:none!important;
+  }
+  #homePages .pageCard:before,#homePages .pageCard:after{display:none!important}
+  #homePages .cardTop{
+    min-height:0!important;padding:0!important;display:flex!important;align-items:flex-start!important;
+  }
+  #homePages .icon{
+    width:48px!important;height:48px!important;margin:0!important;border-radius:14px!important;
+    box-shadow:none!important;
+  }
+  #homePages .cardKicker{display:none!important}
+  #homePages .cardContent{
+    width:100%!important;padding:12px 0 0!important;align-self:auto!important;
+  }
+  #homePages .pageCard h2{
+    margin:0!important;font-size:15.5px!important;line-height:1.18!important;
+    letter-spacing:-.25px!important;
+  }
+  #homePages .pageCard p{display:none!important}
+  #homePages .cardFoot{display:none!important}
+  #homePages .adminViewStat{
+    right:8px!important;bottom:8px!important;min-height:25px!important;padding:4px 6px!important;
+    background:#f4f5f7e8!important;border-color:#e3e6ea!important;font-size:7px!important
+  }
+  #homePages .pageCard:active{transform:scale(.97)!important;background:#f8f9fa!important}
+  .homeEmpty{grid-column:1/-1!important}
+}
+@media(max-width:350px){
+  #homePages.pages{grid-template-columns:1fr!important}
+  #homePages .pageCardShell,#homePages .pageCard{min-height:104px!important}
+}
+:root[data-theme="dark"] body{background:#141619!important}
+@media(max-width:700px){
+  :root[data-theme="dark"] .hello{background:linear-gradient(135deg,#1b1e22,#24282d 62%,#342820)!important}
+  :root[data-theme="dark"] #homePages .pageCard{
+    background:#1d2023!important;border-color:#343a40!important;color:#f2efec!important;
+  }
+  :root[data-theme="dark"] #homePages .pageCard:active{background:#25292d!important}
+  :root[data-theme="dark"] #homePages .adminViewStat{background:#292d31e8!important;border-color:#3b4147!important}
+}
+</style>
 </head>
 <body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
 <header><div class="top"><div class="brand"><div class="nMenuWrap"><button class="mark nMenuBtn" onclick="location.href='home.html'" aria-label="Menu">N</button><div id="nMenu" class="nMenu hidden"><div class="nMenuTitle">Navigation</div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="location.href='index.html'"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="location.href='planning.html'"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="location.href='chat.html'"><span class="navToolLogo equipe"></span><div><strong>Équipe</strong><small>Messagerie interne</small></div></button><button onclick="location.href='articles.html'"><span class="navToolLogo article"></span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='bakery.html'"><span class="navToolLogo bakery"></span><div><strong>Boulangerie</strong><small>Stock • Consulter • Gestion</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='accounts.html'"><span>♙</span><div><strong>Comptes</strong><small>Utilisateurs et rôles</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="logoutItem" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><strong>Nethor</strong><small>Portail opérationnel</small></div></div><div class="userMenuWrap"><button id="userMenuBtn" class="userPill" onclick="toggleUserMenu(event)" aria-expanded="false"><span id="userAvatar" class="userAvatar">U</span><span class="userText"><strong id="userName">Utilisateur</strong><small id="userRole">Compte</small></span><span class="userChevron">⌄</span></button><div id="userMenu" class="userMenu hidden"><div class="userMenuHead"><span id="userMenuAvatar" class="userAvatar">U</span><div><strong id="userMenuName">Utilisateur</strong><small id="userMenuRole">Compte</small></div></div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Retour au portail</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="userThemeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="userLogout" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div></div></header>
