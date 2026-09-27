@@ -7,7 +7,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:''
+ signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:'',voicePeaks:new Map(),activeVoiceId:null
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -209,8 +209,87 @@ async function attachmentHtml(m){
  const type=m.attachment_type||'',name=esc(m.attachment_name||'Pièce jointe'),size=esc(sizeLabel(m.attachment_size));
  if(type.startsWith('image/'))return '<div class="attachment attachmentImage"><img src="'+esc(url)+'" alt="'+name+'" decoding="async" onclick="openImage(this.src)"><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
  if(type.startsWith('video/'))return '<div class="attachment"><video controls preload="metadata" src="'+esc(url)+'"></video><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
- if(type.startsWith('audio/'))return '<div class="attachment"><audio controls preload="metadata" src="'+esc(url)+'"></audio><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div></div></div>';
+ if(type.startsWith('audio/')){
+  const voiceId='voice-'+String(m.id).replace(/[^a-zA-Z0-9_-]/g,'');
+  return '<div id="'+voiceId+'" class="voiceMessage" data-voice-id="'+esc(String(m.id))+'" data-audio-path="'+esc(m.attachment_path)+'">'+
+   '<button class="voicePlay" type="button" onclick="toggleVoicePlayback(event,\''+esc(String(m.id))+'\')" aria-label="Lire le vocal"><span class="voicePlayIcon">▶</span></button>'+
+   '<button class="voiceWaveButton" type="button" onclick="seekVoiceMessage(event,\''+esc(String(m.id))+'\')" aria-label="Se déplacer dans le vocal"><span class="voiceWaveform" aria-hidden="true"></span></button>'+
+   '<div class="voiceTools"><button class="voiceSpeed" type="button" onclick="cycleVoiceSpeed(event,\''+esc(String(m.id))+'\')">1×</button><span class="voiceDuration"><span class="voiceCurrent">0:00</span><span class="voiceDurationSep"> / </span><span class="voiceTotal">--:--</span></span></div>'+
+   '<audio class="voiceAudio" preload="metadata" src="'+esc(url)+'"></audio>'+
+  '</div>'
+ }
  return '<div class="attachment"><div class="fileRow"><div class="fileIcon">📎</div><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Télécharger</a></div></div>'
+}
+
+const VOICE_BAR_COUNT=46;
+function voiceRoot(id){return document.getElementById('voice-'+String(id).replace(/[^a-zA-Z0-9_-]/g,''))}
+function formatVoiceTime(seconds){
+ seconds=Math.max(0,Number(seconds)||0);const m=Math.floor(seconds/60),s=Math.floor(seconds%60);return m+':'+String(s).padStart(2,'0')
+}
+function fallbackVoicePeaks(seed){
+ const str=String(seed||'voice');let n=0;for(let i=0;i<str.length;i++)n=(n*31+str.charCodeAt(i))>>>0;
+ return Array.from({length:VOICE_BAR_COUNT},(_,i)=>{n=(1664525*n+1013904223)>>>0;const base=.18+((n>>>8)%1000)/1000*.72;return Math.max(.16,Math.min(1,base*(.74+.26*Math.sin((i+2)*.63)**2)))})
+}
+function paintVoiceWave(root,peaks){
+ const wave=root?.querySelector('.voiceWaveform');if(!wave)return;
+ const values=(Array.isArray(peaks)&&peaks.length?peaks:fallbackVoicePeaks(root.dataset.audioPath)).slice(0,VOICE_BAR_COUNT);
+ wave.innerHTML=values.map((v,i)=>'<i class="voiceBar" data-bar="'+i+'" style="--voice-h:'+Math.round(8+Math.max(.08,Math.min(1,v))*27)+'px"></i>').join('');
+ updateVoiceProgress(root)
+}
+async function computeVoicePeaks(root,audio){
+ const path=root?.dataset.audioPath||'',cached=state.voicePeaks.get(path);if(cached){paintVoiceWave(root,cached);return}
+ paintVoiceWave(root,fallbackVoicePeaks(path));
+ try{
+  const response=await fetch(audio.currentSrc||audio.src,{credentials:'omit'});if(!response.ok)throw new Error('audio '+response.status);
+  const buf=await response.arrayBuffer(),Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+  const ctx=new Ctx(),decoded=await ctx.decodeAudioData(buf.slice(0));try{await ctx.close()}catch(_){}
+  const channels=decoded.numberOfChannels,frames=decoded.length,step=Math.max(1,Math.floor(frames/VOICE_BAR_COUNT)),peaks=[];
+  let maxPeak=.0001;
+  for(let b=0;b<VOICE_BAR_COUNT;b++){
+   const start=b*step,end=b===VOICE_BAR_COUNT-1?frames:Math.min(frames,start+step);let sum=0,count=0,peak=0;
+   for(let ch=0;ch<channels;ch++){
+    const data=decoded.getChannelData(ch),stride=Math.max(1,Math.floor((end-start)/180));
+    for(let i=start;i<end;i+=stride){const a=Math.abs(data[i]||0);sum+=a*a;count++;if(a>peak)peak=a}
+   }
+   const rms=Math.sqrt(sum/Math.max(1,count)),value=Math.max(rms*2.5,peak*.6);peaks.push(value);if(value>maxPeak)maxPeak=value
+  }
+  const normalized=peaks.map(v=>Math.max(.08,Math.min(1,v/maxPeak)));state.voicePeaks.set(path,normalized);
+  if(document.body.contains(root))paintVoiceWave(root,normalized)
+ }catch(e){console.warn('Waveform vocal:',e)}
+}
+function updateVoiceProgress(root){
+ if(!root)return;const audio=root.querySelector('.voiceAudio'),bars=[...root.querySelectorAll('.voiceBar')],current=root.querySelector('.voiceCurrent'),total=root.querySelector('.voiceTotal'),play=root.querySelector('.voicePlayIcon');
+ if(!audio)return;const duration=Number.isFinite(audio.duration)?audio.duration:0,currentTime=Number.isFinite(audio.currentTime)?audio.currentTime:0,progress=duration?currentTime/duration:0,played=Math.floor(progress*bars.length);
+ bars.forEach((bar,i)=>bar.classList.toggle('played',i<played));
+ root.style.setProperty('--voice-progress',Math.max(0,Math.min(1,progress)));
+ if(current)current.textContent=formatVoiceTime(currentTime);if(total)total.textContent=duration?formatVoiceTime(duration):'--:--';
+ if(play)play.textContent=audio.paused?'▶':'❚❚';root.classList.toggle('playing',!audio.paused)
+}
+function initVoiceMessage(root){
+ if(!root||root.dataset.voiceReady==='1')return;root.dataset.voiceReady='1';
+ const audio=root.querySelector('.voiceAudio');if(!audio)return;paintVoiceWave(root,fallbackVoicePeaks(root.dataset.audioPath));
+ ['loadedmetadata','durationchange','timeupdate','play','pause','ended','seeked'].forEach(type=>audio.addEventListener(type,()=>updateVoiceProgress(root)));
+ audio.addEventListener('loadedmetadata',()=>computeVoicePeaks(root,audio),{once:true});
+ audio.addEventListener('ended',()=>{audio.currentTime=0;state.activeVoiceId=null;updateVoiceProgress(root)});
+ if(audio.readyState>=1){updateVoiceProgress(root);computeVoicePeaks(root,audio)}
+}
+function initVoiceMessages(scope=document){scope.querySelectorAll?.('.voiceMessage').forEach(initVoiceMessage)}
+function pauseOtherVoices(id){
+ document.querySelectorAll('.voiceMessage .voiceAudio').forEach(a=>{const r=a.closest('.voiceMessage');if(r?.dataset.voiceId!==String(id)&&!a.paused)a.pause()})
+}
+function toggleVoicePlayback(event,id){
+ event?.stopPropagation?.();const root=voiceRoot(id),audio=root?.querySelector('.voiceAudio');if(!audio)return;
+ pauseOtherVoices(id);
+ if(audio.paused){audio.play().then(()=>{state.activeVoiceId=String(id);updateVoiceProgress(root)}).catch(()=>showToast('Lecture du vocal impossible'))}
+ else{audio.pause();if(state.activeVoiceId===String(id))state.activeVoiceId=null}
+}
+function seekVoiceMessage(event,id){
+ event?.stopPropagation?.();const root=voiceRoot(id),audio=root?.querySelector('.voiceAudio'),wave=root?.querySelector('.voiceWaveButton');if(!audio||!wave||!Number.isFinite(audio.duration))return;
+ const rect=wave.getBoundingClientRect(),x=Math.max(0,Math.min(rect.width,event.clientX-rect.left));audio.currentTime=(x/Math.max(1,rect.width))*audio.duration;updateVoiceProgress(root)
+}
+function cycleVoiceSpeed(event,id){
+ event?.stopPropagation?.();const root=voiceRoot(id),audio=root?.querySelector('.voiceAudio'),btn=root?.querySelector('.voiceSpeed');if(!audio)return;
+ const rates=[1,1.5,2],i=rates.findIndex(x=>Math.abs(x-audio.playbackRate)<.01),next=rates[(i+1+rates.length)%rates.length];audio.playbackRate=next;if(btn)btn.textContent=String(next).replace('.5',',5')+'×'
 }
 function replyHtml(m){
  if(!m.reply_to)return'';const r=state.messages.find(x=>String(x.id)===String(m.reply_to));if(!r)return'';
@@ -252,6 +331,7 @@ async function renderMessages(){
  state.lastMessageRenderKey=key;
  const wasNearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<120;
  box.innerHTML=html;
+ initVoiceMessages(box);
  if(!q&&(wasNearBottom||!box.dataset.rendered)){box.dataset.rendered='1';requestAnimationFrame(()=>box.scrollTop=box.scrollHeight)}
 }
 function toggleMessageActions(e,id){if(e.target.closest('button,a,img,video,audio'))return;const row=$('message-'+id);document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>{if(x!==row)x.classList.remove('actionsOpen')});row?.classList.toggle('actionsOpen')}
