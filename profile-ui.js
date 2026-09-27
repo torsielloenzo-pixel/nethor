@@ -753,6 +753,34 @@ function addStyle(){
      height:calc(var(--netto-visual-viewport-h,100dvh) - 56px - env(safe-area-inset-top))!important
    }
    :root{--netto-mobile-bar-h:64px}
+   body>#nettoDropBackdrop.nettoMobilePortaledBackdrop.open{
+     display:block!important;position:fixed!important;inset:0!important;
+     z-index:2147481000!important;background:rgba(15,23,42,.34)!important;
+     backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important
+   }
+   body>.nettoMobilePortaledDrop{
+     position:fixed!important;
+     left:max(8px,env(safe-area-inset-left))!important;
+     right:max(8px,env(safe-area-inset-right))!important;
+     top:auto!important;
+     bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 8px)!important;
+     width:auto!important;max-width:none!important;
+     max-height:min(68dvh,620px)!important;
+     margin:0!important;padding:9px!important;
+     overflow-y:auto!important;overflow-x:hidden!important;
+     border-radius:24px!important;
+     z-index:2147482000!important;
+     box-shadow:0 -18px 58px rgba(15,23,42,.30)!important;
+     -webkit-overflow-scrolling:touch!important;
+     overscroll-behavior:contain!important;
+     isolation:isolate!important
+   }
+   body>#nettoUserDrop.nettoMobilePortaledDrop{
+     max-height:min(66dvh,590px)!important
+   }
+   html.nettoKeyboardOpen body>.nettoMobilePortaledDrop{
+     bottom:max(8px,env(safe-area-inset-bottom))!important
+   }
    body.nettoHasMobileBar{padding-bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom))!important}
    .nettoMobileQuickBar{
      display:grid;grid-template-columns:repeat(var(--netto-mobile-count,5),minmax(0,1fr));
@@ -1213,16 +1241,49 @@ function toggleMobilePreview(){
  mobilePreviewNotice('Vision mobile activée');
  try{sounds.play('menuOpen')}catch(_){}
 }
-function syncMobileDropState(open){
- const mobile=window.matchMedia?.('(max-width:900px),(pointer:coarse)')?.matches;
+const mobileDropPortalState=new Map();
+function mobileDropMode(){return !!window.matchMedia?.('(max-width:900px),(pointer:coarse)')?.matches}
+function portalMobileLayer(el,extraClass){
+ if(!el||!document.body||mobileDropPortalState.has(el))return;
+ mobileDropPortalState.set(el,{parent:el.parentNode,next:el.nextSibling});
+ if(extraClass)el.classList.add(extraClass);
+ document.body.appendChild(el)
+}
+function restoreMobileLayer(el,extraClass){
+ if(!el)return;
+ const state=mobileDropPortalState.get(el);if(!state)return;
+ if(extraClass)el.classList.remove(extraClass);
+ const {parent,next}=state;
+ if(parent){
+  if(next&&next.parentNode===parent)parent.insertBefore(el,next);
+  else parent.appendChild(el)
+ }
+ mobileDropPortalState.delete(el)
+}
+function restoreMobileDropLayers(){
+ ['nettoNotifDrop','nettoUserDrop','nettoLoginDrop'].forEach(id=>restoreMobileLayer(document.getElementById(id),'nettoMobilePortaledDrop'));
+ restoreMobileLayer(document.getElementById('nettoDropBackdrop'),'nettoMobilePortaledBackdrop')
+}
+function mountMobileDropLayer(target){
+ if(!mobileDropMode()||!target)return;
+ restoreMobileDropLayers();
  const backdrop=document.getElementById('nettoDropBackdrop');
- backdrop?.classList.toggle('open',!!open&&!!mobile);
- document.documentElement.classList.toggle('nettoMobileDropOpen',!!open&&!!mobile)
+ portalMobileLayer(backdrop,'nettoMobilePortaledBackdrop');
+ portalMobileLayer(target,'nettoMobilePortaledDrop');
+ try{target.scrollTop=0}catch(_){}
+}
+function syncMobileDropState(open){
+ const mobile=mobileDropMode();
+ const backdrop=document.getElementById('nettoDropBackdrop');
+ backdrop?.classList.toggle('open',!!open&&mobile);
+ document.documentElement.classList.toggle('nettoMobileDropOpen',!!open&&mobile);
+ if(!open||!mobile)restoreMobileDropLayers()
 }
 function toggleDrop(which){
  const n=document.getElementById('nettoNotifDrop'),u=document.getElementById('nettoUserDrop'),l=document.getElementById('nettoLoginDrop'),nb=document.getElementById('nettoBellBtn'),ub=document.getElementById('nettoUserBtn'),lb=document.getElementById('nettoLoginBtn');
  const drops={notifications:n,user:u,logins:l},buttons={notifications:nb,user:ub,logins:lb},target=drops[which];if(!target)return;
  const open=target.classList.contains('hidden');sounds.play(open?'menuOpen':'menuClose');
+ if(open&&mobileDropMode())mountMobileDropLayer(target);
  Object.entries(drops).forEach(([key,el])=>{if(el)el.classList.toggle('hidden',key===which?!open:true)});
  Object.entries(buttons).forEach(([key,el])=>{if(el)el.setAttribute('aria-expanded',String(key===which&&open))});
  syncMobileDropState(open);
