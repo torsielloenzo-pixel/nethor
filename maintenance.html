@@ -84,7 +84,12 @@ async function leaveMaintenanceToLogin(){
  const btn=document.getElementById('maintenanceLogout');
  if(btn){btn.disabled=true;btn.querySelector('span').textContent='Déconnexion…'}
  try{sessionStorage.setItem('nettoForceLogin','1')}catch(_){}
- try{await db.auth.signOut({scope:'local'})}catch(e){console.warn('Déconnexion:',e)}
+ try{
+  await Promise.race([
+   db.auth.signOut({scope:'local'}),
+   new Promise(resolve=>setTimeout(resolve,1600))
+  ])
+ }catch(e){console.warn('Déconnexion:',e)}
  try{
   for(let i=localStorage.length-1;i>=0;i--){
    const key=localStorage.key(i);
