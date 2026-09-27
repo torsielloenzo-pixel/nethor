@@ -1,10 +1,10 @@
 {
-  "version": 132,
-  "label": "v1.32",
+  "version": 133,
+  "label": "v1.33",
   "important": false,
   "mode": "manual",
-  "title": "Fruits & Légumes mobile amélioré",
-  "message": "La page Fruits & Légumes mobile dispose maintenant d’un bouton retour cohérent avec les réglages de notifications, d’un affichage réorganisé et d’articles plus grands et plus lisibles.",
+  "title": "Correctifs d’affichage Fruits & Légumes",
+  "message": "Le résumé Stock express ne s’écrase plus sur mobile et le bouton Mettre à 0 a été compacté pour laisser davantage de place aux commandes moins et plus.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
