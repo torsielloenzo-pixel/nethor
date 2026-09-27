@@ -1,9 +1,9 @@
 {
-  "version": 104,
-  "label": "v1.04",
-  "important": false,
-  "title": "Détection d’anomalies repositionnée",
-  "message": "Le widget Détection d’anomalies se trouve maintenant juste au-dessus de l’historique du planning.",
-  "published_at": "2026-09-27T17:12:00+02:00",
+  "version": 105,
+  "label": "v1.05",
+  "important": true,
+  "title": "Correctif vue Année mobile",
+  "message": "La vue Année du planning a été reconstruite pour mobile : plein écran stable, navigation sur deux niveaux, mois sans débordement et barre d’app masquée pendant l’affichage.",
+  "published_at": "2026-09-27T18:02:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
