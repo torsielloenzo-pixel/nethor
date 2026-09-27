@@ -82,7 +82,7 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
 .typingLine{height:20px;padding:2px 18px 0;font-size:8.5px;color:#868b92;background:#f4f5f6}.typingLine:empty{height:0;padding:0}
 .composer{border-top:1px solid var(--chat-line);background:#fff;padding:9px 11px calc(9px + env(safe-area-inset-bottom))}
 .composeBanner{display:none;align-items:center;gap:8px;background:#f4f5f7;border-radius:10px;padding:7px 9px;margin-bottom:7px;border-left:3px solid #ff5a2a}.composeBanner.show{display:flex}.composeBanner div{min-width:0;flex:1}.composeBanner strong{display:block;font-size:8px;color:#e34b27}.composeBanner span{display:block;font-size:8.5px;color:#747a82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.composeBanner button{width:28px;height:28px;border:0;border-radius:8px;background:#e7eaee}
-.attachPreview{display:none;align-items:center;gap:8px;background:#f4f5f7;border-radius:10px;padding:7px 9px;margin-bottom:7px}.attachPreview.show{display:flex}.attachPreview span{flex:1;min-width:0;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.attachPreview button{width:28px;height:28px;border:0;border-radius:8px;background:#e7eaee}
+.attachPreview{display:none;align-items:center;gap:8px;background:#f4f5f7;border-radius:12px;padding:6px 8px;margin-bottom:7px}.attachPreview.show{display:flex}.attachPreview .attachThumb{display:none;flex:0 0 38px;width:38px;height:38px;min-width:38px;border-radius:9px;overflow:hidden;background:#e7eaee;border:1px solid #dde1e5}.attachPreview .attachThumb.show{display:block}.attachPreview .attachThumb img{display:block;width:100%;height:100%;object-fit:cover}.attachPreview .attachName{flex:1;min-width:0;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.attachPreview button{flex:0 0 28px;width:28px;height:28px;border:0;border-radius:8px;background:#e7eaee}
 .composeRow{display:grid;grid-template-columns:38px 38px minmax(0,1fr) 44px;gap:6px;align-items:end}.composeIcon{width:38px;height:40px;border:0;border-radius:11px;background:#f0f2f4;color:#555;font-size:18px}.composeIcon.recording{background:#ffe4df;color:#d62d1e;animation:recordPulse 1s ease infinite}.composer textarea{min-height:40px;max-height:120px;resize:none;border:1px solid var(--chat-line);border-radius:12px;padding:10px 11px;outline:none;font-size:12px;line-height:1.35;background:#fafbfc}.composer textarea:focus{border-color:#ff9f80;box-shadow:0 0 0 3px #ff5a2a11}.sendBtn{width:44px;height:40px;border:0;border-radius:11px;background:var(--chat-gradient);color:#fff;font-size:18px;font-weight:900;box-shadow:0 6px 16px #ff4b2424}.sendBtn:disabled{opacity:.5}
 @keyframes recordPulse{50%{transform:scale(.94);box-shadow:0 0 0 5px #ff5a2a12}}
 .reactionPicker{position:fixed;z-index:7000;display:flex;gap:4px;padding:6px;background:#fff;border:1px solid var(--chat-line);border-radius:999px;box-shadow:0 12px 34px #0003}.reactionPicker button{width:34px;height:34px;border:0;border-radius:50%;background:transparent;font-size:19px}.reactionPicker button:hover{background:#f0f2f4}
@@ -584,7 +584,7 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     display:grid!important;
     grid-template-rows:calc(56px + env(safe-area-inset-top)) auto minmax(0,1fr) auto auto!important;
     overflow:hidden!important;
-    background:#fff!important;
+    background:#f0f2f5!important;
   }
 
   body.mobileConversationOpen .chatHeader{
@@ -631,4 +631,22 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   html.nettoKeyboardOpen .nettoMobileQuickBar{
     display:none!important;
   }
+}
+
+
+/* Chat mobile v22 — canevas de conversation uniforme + aperçu photo */
+@media(max-width:780px){
+  body.mobileConversationOpen .conversationPane,
+  body.mobileConversationOpen .messages,
+  body.mobileConversationOpen .typingLine{
+    background:#f0f2f5!important;
+  }
+  .attachPreview .attachThumb{flex-basis:42px;width:42px;height:42px;min-width:42px;border-radius:10px}
+  :root[data-theme="dark"] body.mobileConversationOpen .conversationPane,
+  :root[data-theme="dark"] body.mobileConversationOpen .messages,
+  :root[data-theme="dark"] body.mobileConversationOpen .typingLine{
+    background:#141619!important;
+  }
+  :root[data-theme="dark"] .attachPreview{background:#292d31!important}
+  :root[data-theme="dark"] .attachPreview .attachThumb{background:#20242a;border-color:#3b4148}
 }
