@@ -105,30 +105,7 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
 :root[data-theme="dark"] .modeTabs,:root[data-theme="dark"] .modalClose,:root[data-theme="dark"] .headIconBtn,:root[data-theme="dark"] .mobileBack,:root[data-theme="dark"] .composeIcon,:root[data-theme="dark"] .composeBanner,:root[data-theme="dark"] .attachPreview{background:#282d34;color:#eceff2}
 :root[data-theme="dark"] .modeTabs button.active{background:#373d45;color:#fff}
 :root[data-theme="dark"] .replyQuote{background:#ffffff0b}
-@media(max-width:780px){
- header{height:64px}.sub{display:none}.title{font-size:17px}.top{width:100%;padding:0 10px}
- .chatApp{height:calc(100dvh - 64px);padding:0;display:block;width:100%}
- .conversationListPane,.conversationPane{height:100%;border:0;border-radius:0;box-shadow:none}
- .conversationPane{display:none}
- body.mobileConversationOpen .conversationListPane{display:none}
- body.mobileConversationOpen .conversationPane{display:grid}
- .mobileBack{display:grid;place-items:center}
- .listHead{padding-top:13px}
- .messages{padding:13px 9px 20px}
- .messageBlock{max-width:84%}
- .msgAvatar{width:26px;height:26px;border-radius:8px}
- .msgActions{display:none!important}
- .messageRow.actionsOpen .msgActions{display:flex!important}
- .bubble{padding:8px 9px 6px}
- .messageBody{font-size:12px}
- .composeRow{grid-template-columns:36px 36px minmax(0,1fr) 42px}
- .composeIcon{width:36px}.sendBtn{width:42px}
- .modalCard{border-radius:19px;padding:14px}
-}
-@media(max-width:430px){
- .convRow{grid-template-columns:44px minmax(0,1fr) auto}.convAvatar{width:44px;height:44px;border-radius:14px}
- .chatHeadActions{gap:3px}.headIconBtn{width:35px;height:35px}.activeAvatar{width:39px;height:39px}
-}
+
 
 .listHead{position:relative}.listHeadActions{display:flex;align-items:center;gap:8px}
 .chatMenuBtn{width:42px;height:42px;border:0;border-radius:13px;background:var(--chat-soft);color:#4d535b;display:grid;place-items:center}
@@ -196,33 +173,7 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
 .listHeadActions .chatMenuBtn{border:1px solid var(--chat-line)}
 .listHeadActions .chatMenuBtn:focus-visible,.headIconBtn:focus-visible{outline:3px solid #ff5a2a24;outline-offset:2px}
 
-/* Correctif mobile global — v87 */
-@media(max-width:780px){
- html,body{width:100%;max-width:100%;overflow-x:hidden}
- .chatApp,.conversationListPane,.conversationPane,.listHead,.convSearchWrap,.conversationList,.chatHead,.messageSearchBar,.messages,.composer,.composeRow{min-width:0;max-width:100%;box-sizing:border-box}
- .chatApp{height:calc(100dvh - 64px - env(safe-area-inset-bottom));overflow:hidden}
- .conversationListPane,.conversationPane{width:100%;max-width:100%}
- .conversationList{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
- .messages{-webkit-overflow-scrolling:touch;padding-bottom:max(20px,env(safe-area-inset-bottom))}
- .newChatBtn,.chatMenuBtn,.mobileBack,.headIconBtn,.composeIcon,.sendBtn,.modalClose{min-width:44px;min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
- .composeRow{grid-template-columns:44px 44px minmax(0,1fr) 44px;gap:5px}
- .composeIcon,.sendBtn{width:44px;height:44px}
- .composer{padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
- .composer textarea{width:100%;min-width:0;max-width:100%;font-size:16px!important}
- .chatMenu{left:max(8px,env(safe-area-inset-left))!important;right:max(8px,env(safe-area-inset-right))!important;top:auto!important;bottom:max(8px,env(safe-area-inset-bottom))!important;width:auto!important;max-width:none!important;max-height:70dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:20px}
- .chatMenu:before{display:none}
- .chatMenuItem{min-height:52px;touch-action:manipulation}
- .modalBackdrop{padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
- .modalCard{width:100%;max-width:100%;max-height:calc(100dvh - max(16px,env(safe-area-inset-top) + env(safe-area-inset-bottom)));box-sizing:border-box}
- .pickMember{min-height:52px;touch-action:manipulation}
-}
-@media(max-width:430px){
- .listHead{padding-left:10px;padding-right:10px}
- .convSearchWrap{padding-left:9px;padding-right:9px}
- .conversationList{padding-left:4px;padding-right:4px}
- .convRow{padding:8px 7px;grid-template-columns:44px minmax(0,1fr) auto}
- .messageBlock{max-width:88%}
-}
+
 
 .activeAvatarButton{border:0;background:transparent;padding:0;margin:0;border-radius:14px;display:grid;place-items:center;cursor:pointer}
 .activeAvatarButton:disabled{cursor:default}
@@ -304,153 +255,6 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
 }
 
 
-/* Nethor chat mobile app v98 */
-@media(max-width:780px){
-  html,body{background:#f0f2f5!important}
-  header{height:calc(56px + env(safe-area-inset-top))!important;min-height:calc(56px + env(safe-area-inset-top))!important;padding-top:env(safe-area-inset-top)!important;border-bottom:1px solid #e1e5e9!important;box-shadow:none!important}
-  header:after{display:none!important}
-  .chatApp{height:calc(100dvh - 56px - env(safe-area-inset-top))!important;background:#f0f2f5!important}
-  .conversationListPane,.conversationPane{
-    background:#fff!important;border:0!important;border-radius:0!important;box-shadow:none!important
-  }
-  .conversationListPane{grid-template-rows:auto auto auto minmax(0,1fr)!important}
-  .listHead{padding:12px 12px 8px!important}
-  .listHead h1{font-size:24px!important;letter-spacing:-.7px!important}
-  .listHead small{font-size:9px!important}
-  .listHeadActions{gap:6px!important}
-  .newChatBtn,.chatMenuBtn,.headIconBtn,.mobileBack{
-    width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
-    border-radius:50%!important;box-shadow:none!important
-  }
-  .newChatBtn{background:#fff0ea!important;color:#ef5a2f!important}
-  .chatMenuBtn,.headIconBtn,.mobileBack{background:#f0f2f5!important;border:0!important;color:#4e5661!important}
-  .convSearchWrap{padding:0 12px 8px!important}
-  .convSearch{
-    height:40px!important;border:0!important;border-radius:999px!important;
-    background:#f0f2f5!important;padding:0 15px!important;font-size:16px!important;box-shadow:none!important
-  }
-  .conversationFilters{
-    display:flex!important;align-items:center!important;align-self:start!important;
-    min-height:0!important;height:auto!important;max-height:42px!important;
-    padding:0 12px 8px!important;gap:6px!important;overflow-x:auto!important;overflow-y:hidden!important
-  }
-  .conversationFilter{
-    flex:0 0 auto!important;width:auto!important;height:30px!important;min-height:30px!important;max-height:30px!important;
-    padding:0 11px!important;border-radius:999px!important;display:inline-flex!important;
-    align-items:center!important;justify-content:center!important;line-height:1!important
-  }
-  .conversationList{padding:2px 6px 10px!important;background:#fff!important}
-  .convRow{
-    min-height:68px!important;padding:7px 8px!important;border-radius:14px!important;
-    grid-template-columns:52px minmax(0,1fr) auto!important;gap:10px!important
-  }
-  .convRow:hover,.convRow:active{background:#f4f5f7!important}
-  .convRow.active{background:#fff3ee!important}
-  .convAvatar{
-    width:52px!important;height:52px!important;border-radius:50%!important;
-    box-shadow:none!important;font-size:14px!important
-  }
-  .convAvatar.general img{padding:8px!important;border-radius:50%!important}
-  .convTitleLine strong{font-size:13.5px!important}
-  .convPreview{font-size:11px!important;line-height:1.35!important}
-  .convTime{font-size:8.5px!important}
-  .unreadBadge{min-width:19px!important;height:19px!important;border-radius:999px!important}
-  .chatHeader{
-    min-height:56px!important;padding:7px 8px!important;background:#fff!important;
-    border-bottom:1px solid #e5e8eb!important;box-shadow:none!important
-  }
-  .activeAvatar{width:40px!important;height:40px!important;border-radius:50%!important}
-  .activeIdentity strong{font-size:13.5px!important}
-  .activeIdentity small{font-size:9px!important}
-  .messages{
-    background:#f0f2f5!important;padding:12px 8px 18px!important;
-    overscroll-behavior-y:contain!important
-  }
-  .daySep{font-size:9px!important;color:#8a9199!important}
-  .messageRow{margin:4px 0!important;gap:6px!important}
-  .msgAvatar{width:26px!important;height:26px!important;border-radius:50%!important}
-  .messageBlock{max-width:83%!important}
-  .messageSender{font-size:8.5px!important;margin-left:8px!important}
-  .bubble{
-    border:0!important;border-radius:18px!important;padding:8px 11px 6px!important;
-    box-shadow:none!important;background:#fff!important
-  }
-  .messageRow:not(.mine) .bubble{border-bottom-left-radius:6px!important}
-  .mine .bubble{
-    background:linear-gradient(135deg,#f15a32,#f47c20)!important;color:#fff!important;
-    border:0!important;border-bottom-right-radius:6px!important
-  }
-  .mine .messageBody,.mine .messageMeta,.mine .readTicks,.mine .editedMark{color:#fff!important}
-  .messageBody{font-size:13px!important;line-height:1.4!important}
-  .messageMeta{font-size:7.5px!important;margin-top:3px!important}
-  .replyQuote{border-radius:12px!important}
-  .attachment{border:0!important;border-radius:16px!important;background:#fff!important;overflow:hidden!important}
-  .attachment img,.attachment video{border-radius:16px 16px 0 0!important;background:#111!important}
-  .attachmentImage img{min-height:120px!important;max-height:48dvh!important;object-fit:cover!important}
-  .fileRow{padding:7px 9px!important}
-  .composer{
-    padding:7px max(7px,env(safe-area-inset-right)) 7px max(7px,env(safe-area-inset-left))!important;
-    background:#fff!important;border-top:1px solid #e4e7ea!important
-  }
-  .composeRow{
-    grid-template-columns:36px 36px minmax(0,1fr) 38px!important;
-    gap:7px!important;
-    align-items:center!important
-  }
-  .composeIcon{
-    width:36px!important;height:36px!important;
-    min-width:36px!important;min-height:36px!important;
-    padding:0!important;border:0!important;border-radius:50%!important;
-    background:#f0f2f5!important;font-size:18px!important
-  }
-  .composer textarea{
-    min-height:38px!important;max-height:120px!important;padding:9px 13px!important;
-    border:0!important;border-radius:20px!important;background:#f0f2f5!important;
-    box-shadow:none!important;font-size:16px!important
-  }
-  .sendBtn{
-    width:38px!important;height:38px!important;
-    min-width:38px!important;min-height:38px!important;
-    padding:0!important;border-radius:50%!important;
-    box-shadow:none!important;font-size:17px!important
-  }
-  .typingLine{background:#f0f2f5!important}
-  .chatMenu{
-    left:8px!important;right:8px!important;bottom:calc(72px + env(safe-area-inset-bottom))!important;
-    border-radius:24px!important;box-shadow:0 -16px 48px rgba(0,0,0,.20)!important
-  }
-  .modalBackdrop{align-items:flex-end!important;padding:8px!important}
-  .modalCard{
-    width:100%!important;max-height:86dvh!important;margin:0!important;
-    border-radius:24px 24px 18px 18px!important;padding:14px!important;
-    box-shadow:0 -18px 54px rgba(0,0,0,.22)!important
-  }
-  .imageLightbox{padding:0!important;background:#090a0be8!important}
-  .imageLightbox img{max-width:100vw!important;max-height:100dvh!important;border-radius:0!important}
-}
-@media(max-width:430px){
-  .convRow{grid-template-columns:50px minmax(0,1fr) auto!important}
-  .convAvatar{width:50px!important;height:50px!important}
-  .messageBlock{max-width:86%!important}
-}
-@media(max-width:780px){
-  :root[data-theme="dark"] html,:root[data-theme="dark"] body,:root[data-theme="dark"] .chatApp{background:#141619!important}
-  :root[data-theme="dark"] .conversationListPane,:root[data-theme="dark"] .conversationPane,
-  :root[data-theme="dark"] .conversationList,:root[data-theme="dark"] .chatHeader,:root[data-theme="dark"] .composer{
-    background:#1c1f22!important
-  }
-  :root[data-theme="dark"] .messages,:root[data-theme="dark"] .typingLine{background:#141619!important}
-  :root[data-theme="dark"] .convSearch,:root[data-theme="dark"] .chatMenuBtn,:root[data-theme="dark"] .headIconBtn,
-  :root[data-theme="dark"] .mobileBack,:root[data-theme="dark"] .composeIcon,:root[data-theme="dark"] .composer textarea{
-    background:#292d31!important;color:#ece8e4!important
-  }
-  :root[data-theme="dark"] .convRow:hover,:root[data-theme="dark"] .convRow:active{background:#25292d!important}
-  :root[data-theme="dark"] .convRow.active{background:#372720!important}
-  :root[data-theme="dark"] .bubble{background:#25292d!important}
-  :root[data-theme="dark"] .mine .bubble{background:linear-gradient(135deg,#cf5033,#dd743e)!important}
-}
-
-
 /* Nethor v100 — mobile conversation list: never let preview text escape */
 
 .conversationFilters{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto}.conversationFilter{border:0;background:#f0f2f4;color:#656b73;border-radius:999px;padding:7px 10px;font-size:9px;font-weight:850;white-space:nowrap}.conversationFilter.active{background:#fff0ea;color:#e34b27;box-shadow:inset 0 0 0 1px #ffd3c4}
@@ -479,117 +283,270 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   .convTime{max-width:44px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 }
 
-/* Nethor chat mobile v15 — comportement type Messenger */
+/* Nethor chat mobile v17 — shell unique, stable pendant le clavier */
 @media(max-width:780px){
-  /*
-   * Une seule géométrie, clavier fermé ou ouvert :
-   * - barre Nethor/Chat ancrée au haut du viewport visuel
-   * - barre du contact juste dessous, sans déplacement
-   * - seule la hauteur de la zone conversation varie
-   * - le composer reste au bas de cette zone, donc juste au-dessus du clavier
-   */
-  body.mobileConversationOpen{
-    --chat-top-h:calc(56px + env(safe-area-inset-top));
-    --chat-bottom-reserve:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));
+  :root{
+    --chat-vv-top:0px;
+    --chat-vv-height:100dvh;
+  }
+
+  html,body{
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
     overflow:hidden!important;
     overscroll-behavior:none!important;
   }
 
-  html.nettoKeyboardOpen body.mobileConversationOpen{
-    --chat-bottom-reserve:0px;
-    padding-bottom:0!important;
+  body{
+    --chat-shell-header:calc(56px + env(safe-area-inset-top));
+    --chat-bottom-space:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));
+    background:#f0f2f5!important;
   }
+  body.mobileConversationOpen{--chat-bottom-space:0px}
 
-  body.mobileConversationOpen header{
+  /* Le haut suit le viewport visuel sans jamais glisser à l'écran. */
+  header{
     position:fixed!important;
-    top:0!important;
+    top:var(--chat-vv-top)!important;
     left:0!important;
     right:0!important;
     width:100%!important;
+    height:var(--chat-shell-header)!important;
+    min-height:var(--chat-shell-header)!important;
+    padding-top:env(safe-area-inset-top)!important;
     margin:0!important;
-    translate:0 var(--netto-visual-viewport-top,0px);
-    transform:translateZ(0);
-    backface-visibility:hidden;
-    will-change:translate;
+    border-bottom:1px solid #e1e5e9!important;
+    box-shadow:none!important;
     transition:none!important;
     animation:none!important;
     z-index:110!important;
   }
+  header:after{display:none!important}
+  header .top{
+    width:100%!important;
+    min-height:56px!important;
+    padding:0 max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))!important;
+  }
+  header .sub{display:none!important}
+  header .title{font-size:17px!important}
 
-  body.mobileConversationOpen .chatApp{
+  .chatApp{
     position:fixed!important;
-    top:var(--chat-top-h)!important;
+    top:calc(var(--chat-vv-top) + var(--chat-shell-header))!important;
     left:0!important;
     right:0!important;
     bottom:auto!important;
     width:100%!important;
-    height:calc(
-      var(--netto-visual-viewport-h,100dvh)
-      - var(--chat-top-h)
-      - var(--chat-bottom-reserve)
-    )!important;
+    max-width:100%!important;
+    height:calc(var(--chat-vv-height) - var(--chat-shell-header) - var(--chat-bottom-space))!important;
     min-height:0!important;
     margin:0!important;
     padding:0!important;
+    display:block!important;
     overflow:hidden!important;
-    translate:0 var(--netto-visual-viewport-top,0px);
-    transform:translateZ(0);
-    backface-visibility:hidden;
-    will-change:height,translate;
+    background:#f0f2f5!important;
     transition:none!important;
   }
 
+  .conversationListPane,.conversationPane{
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+    background:#fff!important;
+  }
+  .conversationListPane{
+    display:grid!important;
+    grid-template-rows:auto auto auto minmax(0,1fr)!important;
+  }
+  .conversationPane{display:none!important}
+  body.mobileConversationOpen .conversationListPane{display:none!important}
   body.mobileConversationOpen .conversationPane{
     display:grid!important;
     grid-template-rows:56px auto minmax(0,1fr) auto auto!important;
-    width:100%!important;
-    height:100%!important;
-    min-height:0!important;
-    max-height:100%!important;
-    overflow:hidden!important;
   }
 
-  body.mobileConversationOpen .chatHeader{
+  /* Une conversation est un écran plein : pas de barre principale en bas. */
+  html body.mobileConversationOpen.nettoHasMobileBar{padding-bottom:0!important}
+  html body.mobileConversationOpen .nettoMobileQuickBar{display:none!important}
+
+  .listHead{padding:12px 12px 8px!important}
+  .listHead h1{font-size:24px!important;letter-spacing:-.7px!important}
+  .listHead small{font-size:9px!important}
+  .listHeadActions{gap:6px!important}
+  .newChatBtn,.chatMenuBtn,.headIconBtn,.mobileBack{
+    width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
+    border-radius:50%!important;box-shadow:none!important;touch-action:manipulation
+  }
+  .newChatBtn{background:#fff0ea!important;color:#ef5a2f!important}
+  .chatMenuBtn,.headIconBtn,.mobileBack{background:#f0f2f5!important;border:0!important;color:#4e5661!important}
+
+  .convSearchWrap{padding:0 12px 8px!important}
+  .convSearch{
+    width:100%!important;height:40px!important;border:0!important;border-radius:999px!important;
+    background:#f0f2f5!important;padding:0 15px!important;font-size:16px!important;box-shadow:none!important
+  }
+  .conversationFilters{
+    display:flex!important;align-items:center!important;min-height:0!important;height:auto!important;max-height:42px!important;
+    padding:0 12px 8px!important;gap:6px!important;overflow-x:auto!important;overflow-y:hidden!important
+  }
+  .conversationFilter{
+    flex:0 0 auto!important;width:auto!important;height:30px!important;min-height:30px!important;
+    padding:0 11px!important;border-radius:999px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important
+  }
+  .conversationList{
+    min-width:0!important;max-width:100%!important;overflow-x:hidden!important;overflow-y:auto!important;
+    padding:2px 8px 10px!important;background:#fff!important;
+    overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important
+  }
+  .convRow{
+    width:100%!important;max-width:100%!important;min-width:0!important;min-height:68px!important;
+    padding:7px 8px!important;border-radius:14px!important;
+    grid-template-columns:52px minmax(0,1fr) 44px!important;gap:9px!important;overflow:hidden!important
+  }
+  .convRow:hover,.convRow:active{background:#f4f5f7!important}
+  .convRow.active{background:#fff3ee!important}
+  .convAvatar{width:52px!important;height:52px!important;border-radius:50%!important;box-shadow:none!important}
+  .convAvatar.general img{padding:8px!important;border-radius:50%!important}
+  .convCopy,.convTitleLine,.convPreview{min-width:0!important;max-width:100%!important;overflow:hidden!important}
+  .convTitleLine strong,.convPreview{
+    display:block!important;width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+  }
+  .convTitleLine strong{font-size:13.5px!important}
+  .convPreview{font-size:11px!important;line-height:1.35!important}
+  .convMeta{width:44px!important;min-width:44px!important;max-width:44px!important;overflow:hidden!important}
+  .convTime{max-width:44px!important;font-size:8.5px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+
+  /* Barre contact : première ligne immuable du panneau de conversation. */
+  .chatHeader{
     position:relative!important;
     top:auto!important;
+    width:100%!important;
     min-height:56px!important;
     height:56px!important;
+    padding:7px 8px!important;
     flex:none!important;
-    z-index:30!important;
-    transform:translateZ(0);
-    backface-visibility:hidden;
+    background:#fff!important;
+    border-bottom:1px solid #e5e8eb!important;
+    box-shadow:none!important;
     transition:none!important;
     animation:none!important;
+    z-index:30!important;
   }
+  .mobileBack{display:grid!important;place-items:center!important}
+  .activeAvatar{width:40px!important;height:40px!important;border-radius:50%!important}
+  .activeIdentity strong{font-size:13.5px!important}
+  .activeIdentity small{font-size:9px!important}
+  .chatHeadActions{gap:3px!important}
 
-  body.mobileConversationOpen .messageSearchBar{
-    position:relative!important;
-    z-index:20!important;
-    flex:none!important;
-  }
-
-  body.mobileConversationOpen .messages{
-    min-height:0!important;
-    overflow-y:auto!important;
+  .messageSearchBar{position:relative!important;z-index:20!important;flex:none!important}
+  .messages{
+    min-width:0!important;min-height:0!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+    padding:12px 8px 18px!important;
+    background:#f0f2f5!important;
     overscroll-behavior-y:contain!important;
     -webkit-overflow-scrolling:touch!important;
-    scroll-behavior:auto!important;
+    overflow-anchor:none!important;
+    scroll-behavior:auto!important
   }
+  .daySep{font-size:9px!important;color:#8a9199!important}
+  .messageRow{margin:4px 0!important;gap:6px!important}
+  .messageBlock{max-width:86%!important}
+  .msgAvatar{width:26px!important;height:26px!important;border-radius:50%!important}
+  .messageSender{font-size:8.5px!important;margin-left:8px!important}
+  .msgActions{display:none!important}
+  .messageRow.actionsOpen .msgActions{display:flex!important}
+  .bubble{
+    border:0!important;border-radius:18px!important;padding:8px 11px 6px!important;
+    box-shadow:none!important;background:#fff!important
+  }
+  .messageRow:not(.mine) .bubble{border-bottom-left-radius:6px!important}
+  .mine .bubble{
+    background:linear-gradient(135deg,#f15a32,#f47c20)!important;color:#fff!important;
+    border:0!important;border-bottom-right-radius:6px!important
+  }
+  .mine .messageBody,.mine .messageMeta,.mine .readTicks,.mine .editedMark{color:#fff!important}
+  .messageBody{font-size:13px!important;line-height:1.4!important}
+  .messageMeta{font-size:7.5px!important;margin-top:3px!important}
 
-  body.mobileConversationOpen .typingLine,
-  body.mobileConversationOpen .composer{
-    position:relative!important;
-    z-index:25!important;
-    flex:none!important;
+  .typingLine{position:relative!important;z-index:25!important;background:#f0f2f5!important;flex:none!important}
+  .composer{
+    position:relative!important;z-index:25!important;flex:none!important;
+    padding:7px max(7px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left))!important;
+    background:#fff!important;border-top:1px solid #e4e7ea!important
   }
+  html.chatKeyboardFocus body.mobileConversationOpen .composer,
+  html.nettoKeyboardOpen body.mobileConversationOpen .composer{padding-bottom:7px!important}
 
-  html.nettoKeyboardOpen body.mobileConversationOpen .composer{
-    padding-bottom:7px!important;
+  .composeRow{
+    display:grid!important;
+    grid-template-columns:36px 36px minmax(0,1fr) 38px!important;
+    gap:7px!important;align-items:center!important
   }
+  .composeIcon{
+    width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
+    padding:0!important;border:0!important;border-radius:50%!important;background:#f0f2f5!important;font-size:18px!important
+  }
+  .composer textarea{
+    width:100%!important;min-width:0!important;min-height:38px!important;max-height:120px!important;
+    padding:9px 13px!important;border:0!important;border-radius:20px!important;background:#f0f2f5!important;
+    box-shadow:none!important;font-size:16px!important
+  }
+  .sendBtn{
+    width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
+    padding:0!important;border-radius:50%!important;box-shadow:none!important;font-size:17px!important
+  }
+  .composeIcon svg{width:20px;height:20px;display:block;margin:auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
-  .composeIcon svg{
-    width:18px;height:18px;display:block;margin:auto;
-    fill:none;stroke:currentColor;stroke-width:1.9;
-    stroke-linecap:round;stroke-linejoin:round;
+  .replyQuote{border-radius:12px!important}
+  .attachment{border:0!important;border-radius:16px!important;background:#fff!important;overflow:hidden!important}
+  .attachment img,.attachment video{border-radius:16px 16px 0 0!important;background:#111!important}
+  .attachmentImage img{min-height:120px!important;max-height:48dvh!important;object-fit:cover!important}
+  .fileRow{padding:7px 9px!important}
+
+  .chatMenu{
+    left:max(8px,env(safe-area-inset-left))!important;right:max(8px,env(safe-area-inset-right))!important;
+    top:auto!important;bottom:max(8px,env(safe-area-inset-bottom))!important;
+    width:auto!important;max-width:none!important;max-height:70dvh!important;overflow-y:auto!important;
+    border-radius:20px!important;-webkit-overflow-scrolling:touch!important
   }
+  .chatMenu:before{display:none!important}
+  .chatMenuItem{min-height:52px!important;touch-action:manipulation}
+
+  .modalBackdrop{align-items:flex-end!important;padding:8px!important}
+  .modalCard{
+    width:100%!important;max-width:100%!important;max-height:86dvh!important;margin:0!important;
+    border-radius:24px 24px 18px 18px!important;padding:14px!important;
+    box-shadow:0 -18px 54px rgba(0,0,0,.22)!important
+  }
+  .imageLightbox{padding:0!important;background:#090a0be8!important}
+  .imageLightbox img{max-width:100vw!important;max-height:100dvh!important;border-radius:0!important}
+}
+
+@media(max-width:430px){
+  .convRow{grid-template-columns:50px minmax(0,1fr) 42px!important}
+  .convAvatar{width:50px!important;height:50px!important}
+  .messageBlock{max-width:88%!important}
+}
+
+@media(max-width:780px){
+  :root[data-theme="dark"] html,:root[data-theme="dark"] body,:root[data-theme="dark"] .chatApp{background:#141619!important}
+  :root[data-theme="dark"] .conversationListPane,:root[data-theme="dark"] .conversationPane,
+  :root[data-theme="dark"] .conversationList,:root[data-theme="dark"] .chatHeader,:root[data-theme="dark"] .composer{background:#1c1f22!important}
+  :root[data-theme="dark"] .messages,:root[data-theme="dark"] .typingLine{background:#141619!important}
+  :root[data-theme="dark"] .convSearch,:root[data-theme="dark"] .chatMenuBtn,:root[data-theme="dark"] .headIconBtn,
+  :root[data-theme="dark"] .mobileBack,:root[data-theme="dark"] .composeIcon,:root[data-theme="dark"] .composer textarea{
+    background:#292d31!important;color:#ece8e4!important
+  }
+  :root[data-theme="dark"] .convRow:hover,:root[data-theme="dark"] .convRow:active{background:#25292d!important}
+  :root[data-theme="dark"] .convRow.active{background:#372720!important}
+  :root[data-theme="dark"] .bubble{background:#25292d!important}
+  :root[data-theme="dark"] .mine .bubble{background:linear-gradient(135deg,#cf5033,#dd743e)!important}
 }
