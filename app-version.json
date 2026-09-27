@@ -1,9 +1,9 @@
 {
-  "version": 96,
-  "label": "v0.96",
+  "version": 97,
+  "label": "v0.97",
   "important": true,
-  "title": "Correctif général et fluidité",
-  "message": "Nettoyage des chargements redondants, stabilisation des images du chat et optimisation générale de l’interface web et mobile.",
-  "published_at": "2026-09-27T16:34:00+02:00",
+  "title": "Stabilité et nettoyage général",
+  "message": "Le chat a été stabilisé pour éviter les flashs d’images et les rechargements inutiles. Les chargements redondants et anciens assets ont également été nettoyés.",
+  "published_at": "2026-09-27T16:46:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
