@@ -1,9 +1,9 @@
 {
-  "version": 97,
-  "label": "v0.97",
+  "version": 98,
+  "label": "v0.98",
   "important": true,
-  "title": "Stabilité et nettoyage général",
-  "message": "Le chat a été stabilisé pour éviter les flashs d’images et les rechargements inutiles. Les chargements redondants et anciens assets ont également été nettoyés.",
-  "published_at": "2026-09-27T16:46:00+02:00",
+  "title": "Expérience mobile repensée",
+  "message": "Nethor adopte une interface mobile plus proche d’une vraie application : barre d’onglets fixe, écrans plus plats, accueil en tuiles, menus en feuilles et chat inspiré des apps de messagerie.",
+  "published_at": "2026-09-27T17:05:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
