@@ -2,319 +2,99 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#171717"><script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(e){}})();</script>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><title>Nethor — Équipe</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="profile-ui.js?v=69"></script>
-<style>
-:root{--red:#e30613;--red2:#b90710;--black:#171717;--line:#e2e2e5;--muted:#7b7b80;--bg:#f2f3f4}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;height:100dvh;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:linear-gradient(135deg,#eef0f1,#fafafa 48%,#f0f1f2)}
-button,input,textarea{font:inherit}button{cursor:pointer}
-header{height:70px;background:#ffffffef;border-bottom:1px solid #ddd;box-shadow:0 4px 18px #00000008;display:flex;align-items:center;position:relative;z-index:20}
-header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--red) 0 43%,var(--black) 43% 49%,#fff 49%)}
-.top{width:min(96vw,1120px);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px}.mark{width:40px;height:40px;border:0;border-radius:10px;background:#171717;color:#fff;display:grid;place-items:center;font-size:21px;font-weight:950;box-shadow:inset 0 -5px 0 var(--red),0 3px 10px #0002}.title{font-size:19px;font-weight:900}.sub{font-size:11px;color:#888;margin-top:2px}.back{border:1px solid #dedede;background:#fff;border-radius:11px;padding:9px 12px;font-weight:780}
-.wrap{width:min(96vw,1120px);height:calc(100dvh - 70px);margin:auto;display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;padding:14px 0}
-.side,.chat{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 26px #00000008;overflow:hidden}.side{padding:18px;display:flex;flex-direction:column}.side h2{margin:0 0 4px;font-size:20px}.side p{margin:0;color:#888;font-size:11px;line-height:1.4}.membersTitle{margin-top:20px;font-size:11px;font-weight:900;color:#555;text-transform:uppercase;letter-spacing:.7px}.membersSummary{font-size:9px;color:#8a8d93;margin-top:4px}.members{display:grid;gap:7px;margin-top:8px;overflow:auto;max-height:48vh;padding-right:2px}.member{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px;background:#f7f7f8;border-radius:12px}.memberAvatar{width:34px;height:34px;border-radius:10px;background:#1c1c1f;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900;box-shadow:inset 0 -3px 0 var(--red);overflow:hidden}.memberAvatar img{width:100%;height:100%;object-fit:cover}.memberInfo{min-width:0}.memberInfo strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.memberInfo small{display:block;color:#888;font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.memberInfo .memberStatus{color:#e6532e}.onlineDot{width:9px;height:9px;border-radius:50%;background:#c8c8cc;box-shadow:0 0 0 3px #00000006}.onlineDot.on{background:#2ba84a;box-shadow:0 0 0 3px #2ba84a18}.youTag{font-size:8px;font-weight:850;color:#b90710;margin-left:4px}.tips{margin-top:auto;font-size:10px;color:#999;line-height:1.5}.adminBox{margin-top:12px;padding-top:12px;border-top:1px solid #eee}.adminReset{width:100%;border:1px solid #ffd4d7;background:#fff5f6;color:#a30d15;border-radius:10px;padding:9px;font-weight:800;font-size:11px}
-.chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto}.chatHead{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid #eee}.chatHead strong{font-size:15px}.live{font-size:10px;color:#6a6a6f;display:flex;align-items:center;gap:5px}.live i{width:7px;height:7px;border-radius:50%;background:#2ba84a;box-shadow:0 0 0 3px #2ba84a18}.messages{overflow-y:auto;padding:17px 18px 24px;scroll-behavior:smooth}.daySep{display:flex;align-items:center;gap:9px;color:#999;font-size:10px;font-weight:750;margin:16px 0}.daySep:before,.daySep:after{content:"";height:1px;background:#ececef;flex:1}.msg{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:9px;margin:11px 0;align-items:start}.avatar{width:36px;height:36px;border-radius:11px;background:#1c1c1f;color:#fff;display:grid;place-items:center;font-weight:900;font-size:12px;box-shadow:inset 0 -3px 0 var(--red);overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.bubble{min-width:0;background:#f6f6f7;border:1px solid #ebebed;border-radius:6px 15px 15px 15px;padding:9px 11px}.mine .bubble{background:#fff7f7;border-color:#f2d9db}.msgTop{display:flex;align-items:center;gap:7px;margin-bottom:3px}.msgTop strong{font-size:12px}.msgTop time{font-size:9px;color:#999}.body{font-size:13px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}.attachment{margin-top:8px;border:1px solid #e3e3e6;border-radius:11px;overflow:hidden;background:#fff}.attachment img,.attachment video{display:block;width:min(100%,460px);max-height:310px;object-fit:contain;background:#111}.attachment img{cursor:zoom-in}.attachment img:hover{filter:brightness(.97)}.fileRow{display:flex;align-items:center;gap:9px;padding:10px}.fileIcon{width:34px;height:34px;border-radius:9px;background:#f0f0f2;display:grid;place-items:center}.fileInfo{min-width:0;flex:1}.fileInfo strong{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fileInfo small{font-size:9px;color:#999}.download{border:1px solid #ddd;background:#f8f8f8;border-radius:8px;padding:6px 8px;text-decoration:none;color:#222;font-size:10px;font-weight:800}.deleteMsg{border:0;background:#fff0f1;color:#b90710;border-radius:8px;width:30px;height:30px;font-size:16px}.composer{border-top:1px solid #e7e7e9;padding:11px 13px;background:#fff}.attachPreview{display:none;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:#f6f6f7;border-radius:10px;font-size:10px}.attachPreview.show{display:flex}.attachPreview span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.attachPreview button{border:0;background:#e9e9eb;border-radius:7px;width:25px;height:25px}.composeRow{display:grid;grid-template-columns:40px minmax(0,1fr) 46px;gap:8px;align-items:end}.attachBtn{width:40px;height:40px;border:1px solid #ddd;background:#f6f6f7;border-radius:11px;font-size:18px}.composer textarea{resize:none;max-height:120px;min-height:40px;border:1px solid #ddd;border-radius:12px;padding:10px 11px;outline:none;line-height:1.35}.composer textarea:focus{border-color:#e3061360;box-shadow:0 0 0 3px #e3061310}.send{width:46px;height:40px;border:0;border-radius:11px;background:#171717;color:#fff;font-size:19px;font-weight:900;box-shadow:inset 0 -3px 0 var(--red)}.send:disabled{opacity:.5}.empty{text-align:center;color:#999;padding:55px 15px;font-size:12px}
-.nMenuWrap{position:relative}.nMenu{position:absolute;left:0;top:49px;width:245px;padding:8px;background:#fffffff7;border:1px solid #dedee2;border-radius:15px;box-shadow:0 16px 44px #0003;backdrop-filter:blur(16px);z-index:100}.hidden{display:none!important}.nMenuTitle{padding:7px 10px 8px;color:#999;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.8px}.nMenu button{width:100%;display:grid;grid-template-columns:34px 1fr;gap:9px;align-items:center;text-align:left;padding:9px;border:0;border-radius:10px;background:transparent}.nMenu button:hover{background:#f4f4f5}.nMenu button>span{width:32px;height:32px;border-radius:9px;background:#f0f0f2;display:grid;place-items:center}.nMenu button strong{display:block;font-size:12px}.nMenu button small{display:block;font-size:10px;color:#888;margin-top:2px}.nMenu .logoutItem{margin-top:4px;border-top:1px solid #ececee;border-radius:0 0 9px 9px;color:#a30d15}.nMenu .logoutItem>span{background:#fff0f1;color:#b90710}
-@media(max-width:760px){header{height:64px}.wrap{width:100%;height:calc(100dvh - 64px);display:block;padding:0}.side{display:none}.chat{height:100%;border:0;border-radius:0}.top{width:calc(100% - 22px)}.messages{padding:13px 11px 22px}.msg{grid-template-columns:32px minmax(0,1fr) auto}.avatar{width:32px;height:32px;border-radius:9px}.chatHead{padding:12px 13px}.composer{padding:9px 10px}.nMenu{position:fixed;left:10px;right:10px;top:62px;width:auto}}
-
-.imageLightbox{position:fixed;inset:0;z-index:300;background:#111111d9;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:34px;animation:lbIn .18s ease}.imageLightbox.hidden{display:none!important}.imageLightbox img{max-width:min(94vw,1400px);max-height:90vh;object-fit:contain;border-radius:12px;box-shadow:0 20px 70px #0009;background:#111}.lightboxClose{position:fixed;right:22px;top:18px;width:42px;height:42px;border:1px solid #ffffff2e;border-radius:50%;background:#161616cc;color:#fff;font-size:24px;display:grid;place-items:center;cursor:pointer;z-index:2}.lightboxClose:hover{background:#fff;color:#111}@keyframes lbIn{from{opacity:0}to{opacity:1}}
-
-/* Mode clair / sombre global */
-:root[data-theme="dark"]{color-scheme:dark}
-:root[data-theme="dark"] body{background:#111214!important;color:#f3f3f4!important}
-:root[data-theme="dark"] body:before{background:#e3061310!important}
-:root[data-theme="dark"] body:after{background:#ffffff05!important}
-:root[data-theme="dark"] header{background:#17181bea!important;border-color:#2d2e32!important;box-shadow:0 4px 18px #0005!important}
-:root[data-theme="dark"] header:after{background:linear-gradient(90deg,#e30613 0 43%,#f5f5f5 43% 49%,#17181b 49%)!important}
-:root[data-theme="dark"] .title,:root[data-theme="dark"] h1,:root[data-theme="dark"] h2,:root[data-theme="dark"] h3,:root[data-theme="dark"] strong{color:#f4f4f5}
-:root[data-theme="dark"] .sub,:root[data-theme="dark"] .subtitle,:root[data-theme="dark"] .small,:root[data-theme="dark"] .meta,:root[data-theme="dark"] .hint,:root[data-theme="dark"] .status,:root[data-theme="dark"] .saveState,:root[data-theme="dark"] .panelIntro,:root[data-theme="dark"] .hello p,:root[data-theme="dark"] .pageCard p{color:#a6a6ab!important}
-:root[data-theme="dark"] .pageCard,:root[data-theme="dark"] .panel,:root[data-theme="dark"] .side,:root[data-theme="dark"] .chat,:root[data-theme="dark"] .sheet,:root[data-theme="dark"] .modal,:root[data-theme="dark"] dialog .modal,:root[data-theme="dark"] .tabPanel,:root[data-theme="dark"] .cat,:root[data-theme="dark"] .group{background:#1a1b1e!important;border-color:#303136!important;color:#f3f3f4}
-:root[data-theme="dark"] .pageCard:hover,:root[data-theme="dark"] .panel:hover{border-color:#44464d!important}
-:root[data-theme="dark"] .cardFoot,:root[data-theme="dark"] .chatHead,:root[data-theme="dark"] .composer,:root[data-theme="dark"] .row,:root[data-theme="dark"] .familySection{border-color:#303136!important}
-:root[data-theme="dark"] input,:root[data-theme="dark"] textarea,:root[data-theme="dark"] select,:root[data-theme="dark"] .search,:root[data-theme="dark"] .searchBox input{background:#202126!important;color:#f4f4f5!important;border-color:#393a40!important}
-:root[data-theme="dark"] input::placeholder,:root[data-theme="dark"] textarea::placeholder{color:#777b82}
-:root[data-theme="dark"] .light,:root[data-theme="dark"] .logout,:root[data-theme="dark"] .back,:root[data-theme="dark"] .btn:not(.dark),:root[data-theme="dark"] .suggestTop,:root[data-theme="dark"] .categoryFilter:not(.active){background:#242529!important;color:#eee!important;border-color:#393a40!important}
-:root[data-theme="dark"] .nMenu,:root[data-theme="dark"] .brandMenu,:root[data-theme="dark"] .userMenu{background:#1c1d20f5!important;border-color:#38393e!important;box-shadow:0 18px 50px #0008!important;color:#f4f4f5}
-:root[data-theme="dark"] .nMenu button:hover,:root[data-theme="dark"] .brandMenu button:hover,:root[data-theme="dark"] .userMenu button:hover{background:#292a2f!important}
-:root[data-theme="dark"] .nMenu button>span,:root[data-theme="dark"] .brandMenu button>span,:root[data-theme="dark"] .userMenu button>span{background:#2b2c31!important;color:#f2f2f3}
-:root[data-theme="dark"] .nMenu small,:root[data-theme="dark"] .brandMenu small,:root[data-theme="dark"] .userMenu small{color:#9c9da3!important}
-:root[data-theme="dark"] .themeToggle{border-top:1px solid #33343a!important;margin-top:4px;border-radius:0!important}
-:root[data-theme="dark"] .userPill{background:#1b1c20!important;border-color:#36373c!important;color:#f4f4f5}
-:root[data-theme="dark"] .bubble,:root[data-theme="dark"] .member,:root[data-theme="dark"] .me,:root[data-theme="dark"] .item,:root[data-theme="dark"] .editTools,:root[data-theme="dark"] .orderConfigField,:root[data-theme="dark"] .attachPreview{background:#232429!important;border-color:#36373c!important;color:#f1f1f2}
-:root[data-theme="dark"] .mine .bubble{background:#2b1d20!important;border-color:#5a2b30!important}
-:root[data-theme="dark"] .attachment,:root[data-theme="dark"] .fileRow{background:#1d1e22!important;border-color:#35363b!important}
-:root[data-theme="dark"] .cell,:root[data-theme="dark"] .name,:root[data-theme="dark"] .time,:root[data-theme="dark"] .total{border-color:#36373c!important}
-:root[data-theme="dark"] .name,:root[data-theme="dark"] .time,:root[data-theme="dark"] .total{background:#1c1d20!important;color:#f2f2f3!important}
-:root[data-theme="dark"] .cell:not(.on){background:#202126!important}
-:root[data-theme="dark"] .variants,:root[data-theme="dark"] .catBody{background:#17181b!important}
-:root[data-theme="dark"] .counter{background:#242529!important;border-color:#393a40!important}
-:root[data-theme="dark"] .counter button{background:#303137!important;color:#f4f4f5!important}
-:root[data-theme="dark"] .suggestTabList,:root[data-theme="dark"] .suggestTabs{background:#1a1b1e!important;border-color:#33343a!important}
-:root[data-theme="dark"] .suggestRow{background:#1a1b1e!important;border-color:#303136!important;color:#f3f3f4!important}
-:root[data-theme="dark"] .suggestRow:hover{background:#232429!important}
-:root[data-theme="dark"] .loginWrap{background:#111214!important}
-:root[data-theme="dark"] .loginCard{background:#1b1c1f!important;color:#f4f4f5!important}
-:root[data-theme="dark"] .loginCard input{background:#232429!important;color:#fff!important;border-color:#393a40!important}
-:root[data-theme="dark"] .notice{background:#202126!important;border-color:#36373c!important;color:#aaa!important}
-:root[data-theme="dark"] .actions{background:#1a1b1eee!important;border-color:#36373c!important}
-:root[data-theme="dark"] .editTabs{background:#242529!important}
-:root[data-theme="dark"] .editTab.active{background:#34353a!important;color:#fff!important}
-
-/* DA Netto rouge-orangé inspirée du visuel fourni */
-:root{
-  --netto-red:#ff2f1f;
-  --netto-red-2:#ff151f;
-  --netto-orange:#ff8500;
-  --netto-orange-soft:#ff9f1a;
-  --netto-gradient:linear-gradient(135deg,#ff2f1f 0%,#ff151f 44%,#ff8500 100%);
-  --netto-gradient-soft:linear-gradient(135deg,#fff2ef 0%,#fff7ed 100%);
-  --netto-ink:#182235;
-  --netto-surface:#ffffff;
-  --netto-border:#e7e9ed;
-}
-body{background:
-  radial-gradient(circle at 0% 16%,#ff2f1f0a 0,transparent 26%),
-  radial-gradient(circle at 100% 88%,#ff85000b 0,transparent 28%),
-  linear-gradient(135deg,#f7f8fa 0%,#ffffff 48%,#f3f5f7 100%)!important}
-header{background:#ffffffef!important;border-bottom:1px solid #e8e9ec!important;box-shadow:0 5px 20px #1b23300b!important}
-header:after{background:var(--netto-gradient)!important;height:3px!important}
-.mark,.brandMark,.loginMark,.welcomeMark{
-  background:var(--netto-gradient)!important;
-  color:#fff!important;
-  box-shadow:0 6px 16px #ff3b1f2d!important;
-  border:0!important;
-}
-.manage,.primary,.dark,.send,.loginSubmit{
-  background:var(--netto-gradient)!important;
-  color:#fff!important;
-  box-shadow:0 7px 18px #ff3b1f28!important;
-  border:0!important;
-}
-.manage:hover,.primary:hover,.dark:hover,.send:hover,.loginSubmit:hover{filter:brightness(.98);transform:translateY(-1px)}
-.fab,.cartCount{background:var(--netto-gradient)!important}
-.suggestTopIcon{background:#fff1ed!important;color:#ff3b1f!important;box-shadow:none!important}
-.suggestTop:hover .suggestTopIcon{background:var(--netto-gradient)!important;color:#fff!important}
-.nMenuTitle,.brandMenuTitle{color:#f33a22!important}
-.nMenu button:hover,.brandMenu button:hover,.userMenu button:hover{background:linear-gradient(90deg,#fff1ef,#fff8ef)!important}
-.nMenu button>span,.brandMenu button>span,.userMenu button>span{
-  background:linear-gradient(135deg,#fff0ed,#fff7ec)!important;
-  color:#f43a20!important;
-}
-.themeToggle .themeIcon,.userThemeToggle .themeIcon{color:#ff6f00!important}
-.logoutItem,.brandLogout,.userLogout{color:#b81717!important}
-.logoutItem>span,.brandLogout>span,.userLogout>span{background:#fff0ef!important;color:#e3261a!important}
-input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
-  border-color:#ff6a3d88!important;
-  box-shadow:0 0 0 3px #ff5a2a16!important;
-}
-.modal h2:after,.subtitle:before{background:var(--netto-gradient)!important}
-.editTab.active{box-shadow:inset 0 -3px 0 #ff4b22,0 2px 6px #0000000b!important}
-.categoryFilter.active,.suggestTab.active{box-shadow:0 7px 18px #ff4c2024!important}
-.userAvatar,.avatar,.memberAvatar{
-  background:var(--netto-gradient)!important;
-  box-shadow:0 4px 12px #ff3b1f2a!important;
-}
-.pageCard,.panel,.side,.chat,.sheet,.modal,.category,.cat,.group,.tabPanel{
-  border-color:#e5e7eb!important;
-  box-shadow:0 10px 28px #1a22300b!important;
-}
-.pageCard:hover,.panel:hover{box-shadow:0 16px 38px #ff522012!important;border-color:#ffd3c7!important}
-.cardKicker,.eyebrow{color:#ed2d1d!important}
-.stock .arrow,.chatCard .arrow{background:var(--netto-gradient)!important;color:#fff!important}
-.stock .icon,.planning .icon,.chatCard .icon{
-  background:linear-gradient(135deg,#fff0ec,#fff7ed)!important;
-  color:#f43b20!important;
-  border:1px solid #ffd8ca!important;
-  box-shadow:none!important;
-}
-.stock .icon{background:var(--netto-gradient)!important;color:#fff!important;border:0!important}
-.cardFoot{background:linear-gradient(180deg,#fff,#fffaf7)!important}
-.pageCard.stock:after,.pageCard.planning:after,.pageCard.chatCard:after{background:var(--netto-gradient)!important}
-.day.active,.paintChoice.active{background:var(--netto-gradient)!important;color:#fff!important;border-color:transparent!important}
-.btn.activeEdit{background:var(--netto-gradient)!important;color:#fff!important}
-.adminReset,.danger{background:#fff3ef!important;border-color:#ffd8cc!important;color:#c62518!important}
-.live i,.onlineDot.on{background:#23ad55!important}
-.notice{border-left:4px solid #ff5f1f!important}
-.loginVisual{background:
-  linear-gradient(145deg,#14161a 0 56%,#201a18 100%)!important}
-.loginVisual:before{border-color:#ff352331!important}
-.loginVisual:after{border-color:#ff910022!important}
-.loginArt span{background:linear-gradient(145deg,#ffffff0d,#ff6f0014)!important}
-.loginHello{color:#f43a20!important}
-.loginSubmit{box-shadow:0 8px 20px #ff3a1f30!important}
-@media(hover:hover){
-  .pageCard:hover .icon{transform:translateY(-2px)}
-}
-:root[data-theme="dark"]{
-  --netto-surface:#1b1d22;
-  --netto-border:#30333a;
-  --netto-ink:#f4f5f7;
-}
-:root[data-theme="dark"] body{background:
-  radial-gradient(circle at 0% 16%,#ff3b1f12 0,transparent 28%),
-  radial-gradient(circle at 100% 88%,#ff850010 0,transparent 30%),
-  #111317!important}
-:root[data-theme="dark"] header{background:#17191df0!important;border-color:#2d3036!important}
-:root[data-theme="dark"] .pageCard,:root[data-theme="dark"] .panel,:root[data-theme="dark"] .side,:root[data-theme="dark"] .chat,:root[data-theme="dark"] .sheet,:root[data-theme="dark"] .modal,:root[data-theme="dark"] .category,:root[data-theme="dark"] .cat,:root[data-theme="dark"] .group,:root[data-theme="dark"] .tabPanel{background:#1b1d22!important;border-color:#30333a!important;box-shadow:0 10px 28px #0005!important}
-:root[data-theme="dark"] .cardFoot{background:#1d2025!important}
-:root[data-theme="dark"] .stock .icon,:root[data-theme="dark"] .planning .icon,:root[data-theme="dark"] .chatCard .icon{background:linear-gradient(135deg,#4c241c,#39251a)!important;color:#ff9a55!important;border-color:#5a3023!important}
-:root[data-theme="dark"] .stock .icon{background:var(--netto-gradient)!important;color:#fff!important}
-:root[data-theme="dark"] .nMenu button:hover,:root[data-theme="dark"] .brandMenu button:hover,:root[data-theme="dark"] .userMenu button:hover{background:linear-gradient(90deg,#38211d,#2d241d)!important}
-:root[data-theme="dark"] .nMenu button>span,:root[data-theme="dark"] .brandMenu button>span,:root[data-theme="dark"] .userMenu button>span{background:#32231f!important;color:#ff8a55!important}
-
-/* chatNettoAccent */
-.chatHead{background:linear-gradient(90deg,#fff,#fff8f3)!important}.member{border:1px solid #eceef1}.mine .bubble{background:linear-gradient(135deg,#fff4f0,#fff8f4)!important;border-color:#ffd8cb!important}.attachBtn{background:linear-gradient(135deg,#fff1ed,#fff8ee)!important;color:#f43b20!important}
-
-/* Logos personnalisés des outils */
-.toolLogoImg{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
-.navToolLogo{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:transparent!important;overflow:hidden}
-.navToolLogo.stock{background-image:url('assets/logo-stock.svg')!important}
-.navToolLogo.planning{background-image:url('assets/logo-planning.svg')!important}
-.navToolLogo.equipe{background-image:url('assets/logo-equipe.svg')!important}.navToolLogo.article{background-image:url('assets/logo-article.svg')!important}
-.pageCard .icon{overflow:hidden;padding:0!important}
-.pageCard .icon img{width:100%;height:100%;object-fit:cover;display:block}
-
-@media(max-width:700px){
-  .nMenu,.brandMenu,.userMenu{
-    position:fixed!important;left:10px!important;right:10px!important;top:auto!important;bottom:10px!important;
-    width:auto!important;max-width:none!important;max-height:min(74dvh,620px)!important;overflow-y:auto!important;
-    overscroll-behavior:contain;padding:10px!important;border-radius:20px!important;
-    box-shadow:0 22px 70px #00000045!important;backdrop-filter:blur(22px)!important;z-index:500!important
-  }
-  .nMenu:before,.brandMenu:before,.userMenu:before{content:"";display:block;width:42px;height:4px;border-radius:99px;background:#c9c9ce;margin:1px auto 8px}
-  .nMenuTitle,.brandMenuTitle{padding:5px 10px 9px!important;font-size:9px!important}
-  .nMenu button,.brandMenu button,.userMenu button{min-height:50px!important;padding:8px 9px!important;border-radius:12px!important;grid-template-columns:38px 1fr!important;gap:10px!important}
-  .nMenu button>span,.brandMenu button>span,.userMenu button>span{width:36px!important;height:36px!important;border-radius:10px!important}
-  .nMenu button strong,.brandMenu button strong,.userMenu button strong{font-size:12px!important}
-  .nMenu button small,.brandMenu button small,.userMenu button small{font-size:9.5px!important}
-  .logoutItem,.brandLogout,.userLogout{margin-top:6px!important;padding-top:9px!important}
-}
-
-/* Menu N mobile — overlay plein écran fiable sur iOS/PWA */
-.mobileNavBackdrop{display:none}
-@media(max-width:700px){
-  body.mobileNavOpen{overflow:hidden!important}
-  body.mobileNavOpen .mobileNavBackdrop{display:block!important;position:fixed!important;inset:0!important;background:rgba(17,24,39,.38)!important;backdrop-filter:blur(2px)!important;z-index:998!important}
-  body.mobileNavOpen #nMenu{
-    display:block!important;position:fixed!important;left:10px!important;right:10px!important;top:max(64px,calc(env(safe-area-inset-top) + 50px))!important;bottom:auto!important;
-    width:auto!important;max-width:none!important;max-height:calc(100dvh - max(82px,calc(env(safe-area-inset-top) + 68px)))!important;
-    overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
-    padding:9px!important;border-radius:20px!important;z-index:999!important;
-    box-shadow:0 22px 70px rgba(0,0,0,.32)!important
-  }
-  body.mobileNavOpen #nMenu:before{display:none!important}
-}
-</style>
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#171717">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Nethor">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="stylesheet" href="design-v2.css?v=3"><link rel="stylesheet" href="design-v3.css?v=3">
-<link rel="stylesheet" href="design-v4.css?v=2">
+<title>Nethor — Équipe</title>
+<script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="profile-ui.js?v=80" defer></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+<link rel="stylesheet" href="design-v2.css?v=3">
+<link rel="stylesheet" href="design-v3.css?v=3">
+<link rel="stylesheet" href="design-v4.css?v=3">
+<link rel="stylesheet" href="chat-v2.css?v=1">
+<script src="chat-v2.js?v=1" defer></script>
 </head>
-<body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
-<header><div class="top"><div class="brand"><div class="nMenuWrap"><button class="mark" onclick="location.href='home.html'">N</button><div id="nMenu" class="nMenu hidden"><div class="nMenuTitle">Navigation</div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="location.href='index.html'"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="location.href='planning.html'"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="location.href='chat.html'"><span class="navToolLogo equipe"></span><div><strong>Équipe</strong><small>Messagerie interne</small></div></button><button onclick="location.href='articles.html'"><span class="navToolLogo article"></span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='accounts.html'"><span>♙</span><div><strong>Comptes</strong><small>Utilisateurs et rôles</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="logoutItem" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><div class="title">Équipe</div><div class="sub">Communication interne</div></div></div></div></header>
-<div class="wrap">
- <aside class="side"><h2>Chat équipe</h2><p>Un espace commun pour échanger pendant la journée.</p><div class="membersTitle">Membres</div><div id="membersSummary" class="membersSummary">0 en ligne · 0 membre</div><div id="members" class="members"><div class="empty">Chargement…</div></div><div id="adminBox" class="adminBox hidden"><button class="adminReset" onclick="resetChat()">Réinitialiser la conversation</button></div><div class="tips">Photos, vidéos et documents peuvent être joints aux messages. Les pièces jointes restent accessibles au téléchargement.</div></aside>
- <section class="chat">
-  <div class="chatHead"><strong>Conversation générale</strong><span id="liveCount" class="live"><i></i> 0 en ligne</span></div>
-  <div id="messages" class="messages"><div class="empty">Chargement des messages…</div></div>
-  <div class="composer">
-   <div id="attachPreview" class="attachPreview"><span id="attachName"></span><button onclick="clearAttachment()">×</button></div>
-   <div class="composeRow"><button class="attachBtn" onclick="document.getElementById('file').click()" title="Joindre un fichier">＋</button><input id="file" type="file" hidden accept="image/*,video/*,.pdf,.txt,.doc,.docx,.xls,.xlsx" onchange="selectAttachment(this)"><textarea id="message" rows="1" placeholder="Écrire un message…" onkeydown="handleKey(event)"></textarea><button id="send" class="send" onclick="sendMessage()">↑</button></div>
+<body>
+<header>
+ <div class="top">
+  <div class="brand">
+   <button class="mark" type="button" onclick="location.href='home.html'" aria-label="Accueil Nethor">N</button>
+   <div><div class="title">Équipe</div><div class="sub">Messagerie interne</div></div>
+  </div>
+ </div>
+</header>
+
+<main class="chatApp">
+ <aside class="conversationListPane">
+  <div class="listHead">
+   <div><h1>Discussions</h1><small>Équipe Nethor</small></div>
+   <button class="newChatBtn" type="button" onclick="openNewChat()" aria-label="Nouvelle discussion" title="Nouvelle discussion">＋</button>
+  </div>
+  <div class="convSearchWrap"><input id="conversationSearch" class="convSearch" type="search" placeholder="Rechercher une discussion…" oninput="searchConversations(this.value)" autocomplete="off"></div>
+  <div id="conversationList" class="conversationList"><div class="listEmpty">Chargement des discussions…</div></div>
+ </aside>
+
+ <section class="conversationPane">
+  <div class="chatHeader">
+   <button class="mobileBack" type="button" onclick="closeMobileConversation()" aria-label="Retour aux discussions">‹</button>
+   <div id="activeAvatarMount"></div>
+   <div class="activeIdentity"><strong id="activeTitle">Sélectionne une discussion</strong><small id="activeSubtitle"></small></div>
+   <div class="chatHeadActions">
+    <button id="messageSearchBtn" class="headIconBtn" type="button" onclick="toggleMessageSearch()" aria-label="Rechercher dans la conversation" disabled>⌕</button>
+    <button id="infoBtn" class="headIconBtn" type="button" onclick="openConversationInfo()" aria-label="Informations de la conversation" disabled>ⓘ</button>
+   </div>
+  </div>
+  <div id="messageSearchBar" class="messageSearchBar"><input id="messageSearchInput" type="search" placeholder="Rechercher dans les messages…" oninput="searchMessages(this.value)" autocomplete="off"><button type="button" onclick="toggleMessageSearch()">×</button></div>
+  <div id="messages" class="messages"><div class="noConversation"><div><div class="logo"><img src="assets/logo-equipe.svg" alt=""></div><strong>Messagerie Nethor</strong><span>Choisis une discussion ou crée une conversation.</span></div></div></div>
+  <div id="typingLine" class="typingLine"></div>
+  <div id="composer" class="composer hidden">
+   <div id="composeBanner" class="composeBanner"><div><strong id="composeBannerTitle"></strong><span id="composeBannerText"></span></div><button type="button" onclick="cancelComposeMode()">×</button></div>
+   <div id="attachPreview" class="attachPreview"><span id="attachName"></span><button type="button" onclick="clearAttachment()">×</button></div>
+   <div class="composeRow">
+    <button class="composeIcon" type="button" onclick="document.getElementById('file').click()" aria-label="Joindre un fichier" title="Joindre un fichier">＋</button>
+    <input id="file" type="file" hidden accept="image/*,video/*,audio/*,.pdf,.txt,.doc,.docx,.xls,.xlsx" onchange="selectAttachment(this)">
+    <button id="micBtn" class="composeIcon" type="button" onclick="toggleRecording()" aria-label="Message vocal" title="Message vocal">🎙</button>
+    <textarea id="message" rows="1" maxlength="5000" placeholder="Écrire un message…" oninput="composerInput()" onkeydown="handleKey(event)"></textarea>
+    <button id="sendBtn" class="sendBtn" type="button" onclick="sendMessage()" aria-label="Envoyer">↑</button>
+   </div>
   </div>
  </section>
-</div><div id="imageLightbox" class="imageLightbox hidden" onclick="closeImageLightbox(event)"><button class="lightboxClose" onclick="closeImageLightbox(event)">×</button><img id="lightboxImage" alt="Aperçu agrandi"></div>
-<script>
-const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let session=null,profile=null,canManageChat=false,messages=[],selectedFile=null,channel=null,presenceChannel=null,memberProfileChannel=null,members=[],onlineIds=new Set();
-const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const CHAT_ALLOWED_EXTENSIONS=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx']);
-const CHAT_ALLOWED_MIMES=new Set([
- 'image/jpeg','image/png','image/webp','image/gif','image/heic','image/heif',
- 'video/mp4','video/quicktime','video/webm','application/pdf','text/plain',
- 'application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document',
- 'application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-]);
-function attachmentAllowed(file){
- const ext=(file?.name?.split('.').pop()||'').toLowerCase();
- return CHAT_ALLOWED_EXTENSIONS.has(ext)&&(!file.type||CHAT_ALLOWED_MIMES.has(file.type));
-}
-function toggleMenu(e){e?.stopPropagation();$('nMenu').classList.toggle('hidden')}function closeMenu(){$('nMenu').classList.add('hidden')}
-document.addEventListener('click',e=>{if(!e.target.closest('.nMenuWrap'))closeMenu()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();if(!$('imageLightbox').classList.contains('hidden'))closeImageLightbox({target:$('imageLightbox')})}});
-function initials(n){return String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
-function renderMembers(){const box=$('members');if(!box)return;const summary=$('membersSummary'),onlineCount=members.filter(m=>onlineIds.has(m.id)).length;if(summary)summary.textContent=onlineCount+' en ligne · '+members.length+' membre'+(members.length>1?'s':'');const live=$('liveCount');if(live)live.innerHTML='<i></i> '+onlineCount+' en ligne';if(!members.length){box.innerHTML='<div class="empty">Aucun membre.</div>';return}const roleNames={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'};box.innerHTML=[...members].sort((a,b)=>(onlineIds.has(b.id)-onlineIds.has(a.id))||(a.display_name||'').localeCompare(b.display_name||'','fr')).map(m=>{const online=onlineIds.has(m.id),name=m.display_name||'Utilisateur',me=m.id===session?.user?.id,color=m.profile_color||'#ff5a2a';return '<div class="member" data-reward-user="'+esc(m.id)+'" title="'+esc(online?'En ligne':'Hors ligne')+'"><div class="memberAvatar" '+(m.avatar_frame?'data-avatar-frame="'+esc(m.avatar_frame)+'" ':'')+'style="background:'+esc(color)+'">'+(m.avatar_url?'<img src="'+esc(m.avatar_url)+'" alt="">':esc(initials(name)))+'</div><div class="memberInfo"><strong>'+esc(name)+(me?'<span class="youTag">TOI</span>':'')+'</strong><small>'+esc(window.NettoProfileUI?.roleLabel?.(m.role)||roleNames[m.role]||m.role||'Utilisateur')+' · '+(online?'En ligne':'Hors ligne')+'</small>'+'</div><i class="onlineDot '+(online?'on':'')+'" title="'+(online?'En ligne':'Hors ligne')+'"></i></div>'}).join('')}
-async function loadMembers(){const {data,error}=await db.rpc('list_team_members');if(error){$('members').innerHTML='<div class="empty">Impossible de charger les membres.</div>';return}const rows=[...(data||[])];if(session?.user?.id&&profile&&!rows.some(m=>m.id===session.user.id))rows.push({id:session.user.id,display_name:profile.display_name,role:profile.role,avatar_path:profile.avatar_path,profile_color:profile.profile_color,avatar_frame:profile.avatar_frame});members=await Promise.all(rows.map(async m=>{if(m.avatar_path){const {data:av}=await db.storage.from('profile-avatars').createSignedUrl(m.avatar_path,3600);m.avatar_url=av?.signedUrl||null}return m}));renderMembers()}
-function syncPresence(){if(window.NettoProfileUI){onlineIds=new Set(window.NettoProfileUI.onlineIds||[]);renderMembers();return}if(!presenceChannel)return;const state=presenceChannel.presenceState(),ids=new Set();Object.values(state).flat().forEach(x=>{if(x?.user_id)ids.add(x.user_id)});onlineIds=ids;renderMembers()}
-function startPresence(){if(window.NettoProfileUI){syncPresence();window.addEventListener('netto:presence',e=>{onlineIds=new Set(e.detail?.ids||[]);renderMembers()});return}presenceChannel=db.channel('team-presence',{config:{presence:{key:session.user.id}}}).on('presence',{event:'sync'},syncPresence).on('presence',{event:'join'},syncPresence).on('presence',{event:'leave'},syncPresence).subscribe(async status=>{if(status==='SUBSCRIBED'){await presenceChannel.track({user_id:session.user.id,display_name:profile.display_name||'Utilisateur',online_at:new Date().toISOString()});syncPresence()}})}
-function startMemberProfileRealtime(){
- if(memberProfileChannel)return;
- memberProfileChannel=db.channel('team-profile-avatars')
-  .on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},async payload=>{
-    const before=payload.old||{},after=payload.new||{};
-    if(before.avatar_path===after.avatar_path&&before.profile_color===after.profile_color&&before.avatar_frame===after.avatar_frame&&before.display_name===after.display_name)return;
-    await loadMembers();await renderMessages()
-  })
-  .subscribe()
-}
-function openImageLightbox(url){$('lightboxImage').src=url;$('imageLightbox').classList.remove('hidden');document.body.style.overflow='hidden'}
-function closeImageLightbox(e){if(e&&e.target!==$('imageLightbox')&&!e.target.classList.contains('lightboxClose'))return;$('imageLightbox').classList.add('hidden');$('lightboxImage').src='';document.body.style.overflow=''}
+</main>
 
-function dayLabel(v){const d=new Date(v),now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);if(d.toDateString()===now.toDateString())return "Aujourd’hui";if(d.toDateString()===y.toDateString())return "Hier";return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}
-function timeLabel(v){return new Date(v).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
-function sizeLabel(n){n=Number(n)||0;if(n<1024)return n+' o';if(n<1048576)return (n/1024).toFixed(1).replace('.',',')+' Ko';return (n/1048576).toFixed(1).replace('.',',')+' Mo'}
-async function signed(path){if(!path)return null;const {data}=await db.storage.from('chat-files').createSignedUrl(path,3600);return data?.signedUrl||null}
-async function renderMessages(){const box=$('messages');if(!messages.length){box.innerHTML='<div class="empty">Aucun message pour le moment.<br>Tu peux lancer la conversation.</div>';return}let html='',lastDay='';for(const m of messages){const day=dayLabel(m.created_at);if(day!==lastDay){html+='<div class="daySep">'+esc(day)+'</div>';lastDay=day}const mine=m.user_id===session?.user?.id;let attachment='';if(m.attachment_path){const url=await signed(m.attachment_path);if(url){const type=m.attachment_type||'';if(type.startsWith('image/'))attachment='<div class="attachment"><img src="'+esc(url)+'" alt="" onclick="openImageLightbox(this.src)" title="Cliquer pour agrandir"><div class="fileRow"><div class="fileInfo"><strong>'+esc(m.attachment_name||'Image')+'</strong><small>'+sizeLabel(m.attachment_size)+'</small></div><a class="download" href="'+esc(url)+'" target="_blank" rel="noopener">Télécharger</a></div></div>';else if(type.startsWith('video/'))attachment='<div class="attachment"><video controls preload="metadata" src="'+esc(url)+'"></video><div class="fileRow"><div class="fileInfo"><strong>'+esc(m.attachment_name||'Vidéo')+'</strong><small>'+sizeLabel(m.attachment_size)+'</small></div><a class="download" href="'+esc(url)+'" target="_blank" rel="noopener">Télécharger</a></div></div>';else attachment='<div class="attachment"><div class="fileRow"><div class="fileIcon">📎</div><div class="fileInfo"><strong>'+esc(m.attachment_name||'Pièce jointe')+'</strong><small>'+sizeLabel(m.attachment_size)+'</small></div><a class="download" href="'+esc(url)+'" target="_blank" rel="noopener">Télécharger</a></div></div>'}}const mm=members.find(x=>x.id===m.user_id),shownName=mm?.display_name||m.display_name||'Utilisateur',avatarHtml=mm?.avatar_url?'<img src="'+esc(mm.avatar_url)+'" alt="">':esc(initials(shownName)),avatarStyle=mm?.profile_color?' style="background:'+esc(mm.profile_color)+'"':'',avatarFrame=mm?.avatar_frame?' data-avatar-frame="'+esc(mm.avatar_frame)+'"':'';html+='<article data-reward-user="'+esc(m.user_id)+'" class="msg '+(mine?'mine':'')+'"><div class="avatar"'+avatarFrame+avatarStyle+'>'+avatarHtml+'</div><div class="bubble"><div class="msgTop"><strong>'+esc(shownName)+'</strong><time>'+esc(timeLabel(m.created_at))+'</time></div>'+(m.body?'<div class="body">'+esc(m.body)+'</div>':'')+attachment+'</div>'+(canManageChat?'<button class="deleteMsg" onclick="deleteMessage('+m.id+')" title="Supprimer">×</button>':'')+'</article>'}box.innerHTML=html;box.scrollTop=box.scrollHeight}
-async function loadMessages(){const {data,error}=await db.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(300);if(error){$('messages').innerHTML='<div class="empty"><strong>Chat indisponible.</strong><br>La base de données du chat doit être initialisée.</div>';return}messages=data||[];await renderMessages()}
-function selectAttachment(input){const f=input.files?.[0];if(!f)return;if(f.size>25*1024*1024){alert('Pièce jointe trop lourde : 25 Mo maximum.');input.value='';return}if(!attachmentAllowed(f)){alert('Format de fichier non autorisé.');input.value='';return}selectedFile=f;$('attachName').textContent=f.name+' • '+sizeLabel(f.size);$('attachPreview').classList.add('show')}
-function clearAttachment(){selectedFile=null;$('file').value='';$('attachPreview').classList.remove('show')}
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
-async function sendMessage(){const body=$('message').value.trim();if(!body&&!selectedFile)return;const btn=$('send');btn.disabled=true;try{let path=null,name=null,type=null,size=null;if(selectedFile){const ext=(selectedFile.name.split('.').pop()||'bin').replace(/[^a-z0-9]/gi,'').toLowerCase();path=session.user.id+'/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;const {error:up}=await db.storage.from('chat-files').upload(path,selectedFile,{upsert:false});if(up)throw up;name=selectedFile.name;type=selectedFile.type||'application/octet-stream';size=selectedFile.size}const {error}=await db.from('chat_messages').insert({user_id:session.user.id,display_name:profile.display_name||profile.email?.split('@')[0]||'Utilisateur',body:body||null,attachment_path:path,attachment_name:name,attachment_type:type,attachment_size:size});if(error){if(path)await db.storage.from('chat-files').remove([path]);throw error}$('message').value='';clearAttachment();window.NettoSounds?.play?.('message');await loadMessages()}catch(e){window.NettoSounds?.play?.('error');alert('Envoi impossible : '+e.message)}finally{btn.disabled=false}}
-async function deleteMessage(id){if(!canManageChat)return;const m=messages.find(x=>x.id===id);window.NettoSounds?.play?.('warning');if(!confirm('Supprimer ce message ?'))return;if(m?.attachment_path)await db.storage.from('chat-files').remove([m.attachment_path]);const {error}=await db.from('chat_messages').delete().eq('id',id);if(error){window.NettoSounds?.play?.('error');return alert('Suppression impossible : '+error.message)}window.NettoSounds?.play?.('delete');await loadMessages()}
-async function resetChat(){if(!canManageChat)return;window.NettoSounds?.play?.('warning');if(!confirm('Réinitialiser toute la conversation ? Cette action supprime aussi les pièces jointes.'))return;const paths=messages.map(m=>m.attachment_path).filter(Boolean);if(paths.length)await db.storage.from('chat-files').remove(paths);const {error}=await db.from('chat_messages').delete().gt('id',0);if(error){window.NettoSounds?.play?.('error');return alert('Réinitialisation impossible : '+error.message)}window.NettoSounds?.play?.('delete');await loadMessages()}
-async function logout(){closeMenu();await db.auth.signOut({scope:'local'});location.href='index.html'} async function menuLogout(){await logout()}
-async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!session){location.replace('index.html');return}const {data:p,error}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame').eq('id',session.user.id).maybeSingle();if(error||!p){location.replace('index.html');return}profile=p;window.currentRole=p.role;await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none';if(permission==='none'){location.replace('home.html');return}canManageChat=permission==='manage';document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',window.currentRole!=='admin'));await loadSharedSiteConfig();$('adminBox').classList.toggle('hidden',!canManageChat);await loadMembers();startPresence();startMemberProfileRealtime();await loadMessages();channel=db.channel('chat-general').on('postgres_changes',{event:'*',schema:'public',table:'chat_messages'},()=>loadMessages()).subscribe();setInterval(loadMessages,15000);setInterval(loadMembers,15000);window.addEventListener('focus',()=>loadMembers())}
-window.addEventListener('netto:profile',e=>{const fresh=e.detail?.profile;if(!fresh||!profile)return;profile={...profile,...fresh};loadMembers().then(()=>renderMessages()).catch(()=>{})});
-boot();
+<div id="reactionPicker" class="reactionPicker hidden">
+ <button type="button" onclick="pickReaction('👍')">👍</button>
+ <button type="button" onclick="pickReaction('❤️')">❤️</button>
+ <button type="button" onclick="pickReaction('😂')">😂</button>
+ <button type="button" onclick="pickReaction('😮')">😮</button>
+ <button type="button" onclick="pickReaction('✅')">✅</button>
+</div>
 
-async function loadSharedSiteConfig(){
- try{
-  if(!db)return null;
-  const {data}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
-  const cfg=data?.value;if(!cfg)return null;
-  applySharedSiteConfig(cfg);return cfg;
- }catch(e){console.warn('Réglages du site:',e);return null}
-}
-function setMenuEntry(urlKey,cfg){
- const n=cfg?.nav?.[urlKey];if(!n)return;
- const defaults={home:'home.html',stock:'index.html',planning:'planning.html',chat:'chat.html'};
- const old=defaults[urlKey];
- document.querySelectorAll('#nMenu button,#brandMenu button').forEach(b=>{
-  const oc=b.getAttribute('onclick')||'';
-  if(!oc.includes("'"+old+"'")&&!oc.includes('"'+old+'"'))return;
-  const icon=b.querySelector(':scope > span'),strong=b.querySelector('strong'),small=b.querySelector('small');
-  if(icon)icon.textContent=n.icon||icon.textContent;if(strong)strong.textContent=n.label||strong.textContent;if(small)small.textContent=n.subtitle||'';
-  const target=String(n.url||old).replace(/['"<>]/g,'');b.onclick=()=>location.href=target;
- });
-}
-function applySharedSiteConfig(cfg){
- ['home','stock','planning','chat','test'].forEach(k=>setMenuEntry(k,cfg));
- const pt=cfg?.pageTitles?.['chat'];
- if(pt){const t=document.querySelector('header .title');const s=document.querySelector('header .subtitle,header .sub');if(t&&pt.title)t.textContent=pt.title;if(s&&pt.subtitle)s.textContent=pt.subtitle}
- const settings=document.querySelectorAll('.settingsLink');settings.forEach(x=>x.classList.toggle('hidden',!(window.currentRole==='admin'||window.planningCanEdit||canManageChat)));
-}
+<div id="newChatModal" class="modalBackdrop hidden" onclick="if(event.target===this)closeNewChat()">
+ <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="newChatTitle">
+  <div class="modalHead"><div><strong id="newChatTitle">Nouvelle discussion</strong><small>Conversation privée ou groupe</small></div><button class="modalClose" type="button" onclick="closeNewChat()">×</button></div>
+  <div class="modeTabs"><button class="active" data-chat-mode="direct" type="button" onclick="setNewChatMode('direct')">Discussion privée</button><button data-chat-mode="group" type="button" onclick="setNewChatMode('group')">Nouveau groupe</button></div>
+  <input id="groupName" class="groupNameInput hidden" type="text" maxlength="80" placeholder="Nom du groupe">
+  <input id="newChatSearch" class="modalSearch" type="search" placeholder="Rechercher un membre…" oninput="renderNewChatMembers()" autocomplete="off">
+  <div id="newChatMembers" class="modalMembers"></div>
+  <button id="createGroupBtn" class="modalAction hidden" type="button" onclick="createGroup()">Créer le groupe</button>
+ </div>
+</div>
 
+<div id="infoModal" class="modalBackdrop hidden" onclick="if(event.target===this)closeConversationInfo()">
+ <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div class="modalHead"><div><strong id="infoTitle">Informations</strong><small>Discussion et participants</small></div><button class="modalClose" type="button" onclick="closeConversationInfo()">×</button></div>
+  <div id="infoContent"></div>
+ </div>
+</div>
 
-function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
-function applyTheme(theme){theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=theme;try{localStorage.setItem('nettoTheme',theme)}catch(e){}document.querySelectorAll('.themeIcon').forEach(x=>x.textContent=theme==='dark'?'☀':'☾');document.querySelectorAll('.themeLabel').forEach(x=>x.textContent=theme==='dark'?'Mode clair':'Mode sombre');document.querySelectorAll('.themeSub').forEach(x=>x.textContent=theme==='dark'?'Revenir au thème clair':'Passer au thème sombre');const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=theme==='dark'?'#111214':'#f4f4f6'}
-function toggleTheme(e){e?.stopPropagation();applyTheme(currentTheme()==='dark'?'light':'dark')}
-document.addEventListener('DOMContentLoaded',()=>applyTheme(currentTheme()));
-</script><script>
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
-</script>
-</body></html>
+<div id="imageLightbox" class="imageLightbox hidden" onclick="closeImage(event)"><button class="lightboxClose" type="button" onclick="closeImage(event)">×</button><img id="lightboxImage" alt="Aperçu"></div>
+</body>
+</html>
