@@ -109,50 +109,59 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 
 @media(max-width:1180px){.yearGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:900px){main{padding:14px 10px 50px}.top{width:100%}.yearGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.xlsTable col.nameCol{width:135px}.xlsTable .nameCell,.xlsTable .nameHead{max-width:135px}.excelDrop{grid-template-columns:38px minmax(0,1fr)}.excelDrop>b{display:none}}
-@media(max-width:620px){.sub{display:none}.title{font-size:18px}.planningViewBar{align-items:flex-start}.weekNav{width:100%}.days{width:100%}.planningActions{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}.saveState{width:100%;text-align:right}.compactImport{flex:1;min-width:0}.compactImport .excelDrop{min-height:42px;padding:6px 9px;justify-content:flex-start}.compactImport .excelIcon{width:29px;height:29px}.compactImport .excelDrop strong{font-size:9.5px}.compactImport .excelDrop small{display:none}.importState{left:0;right:auto;top:47px;max-width:min(82vw,320px)}.dateTitle{font-size:21px}.yearHero{display:grid;grid-template-columns:1fr;padding:13px;margin-bottom:10px}.yearIntro strong{font-size:13px}.yearHead{width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) 42px}.yearNavBtn{width:42px;height:42px}.yearCurrent{width:100%;height:42px}.yearTodayBtn{grid-column:1/-1;width:100%;height:38px}.yearLegend{gap:10px;margin:0 2px 10px}.yearGrid{grid-template-columns:1fr;gap:10px}.monthCard{padding:12px 13px;border-radius:15px}.monthCard:hover{transform:none}.monthCard h3{font-size:14px}.monthStatus{font-size:8px}.monthWeekdays,.monthDays{gap:5px}.monthWeekdays span{font-size:8px}.yearDay,.yearEmptySlot{min-height:38px}.yearDay{font-size:10.5px;border-radius:9px}.yearDay i{width:5px;height:5px;bottom:4px}.paintChoices{width:100%}.planningLogsHead{align-items:flex-start}.mobileSchedule{display:grid;gap:8px}.sheetViewport{display:none!important}body.planningEditing .mobileSchedule{display:none!important}body.planningEditing .sheetViewport{display:block!important}.xlsTable col.nameCol{width:145px}.xlsTable col.slotCol{width:27px}.xlsTable .slot{width:27px;min-width:27px}.readerHead{align-items:flex-start}.sourceBadge{max-width:48vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.legend{margin-top:8px}.editSaveBar{position:sticky;bottom:8px;z-index:60;box-shadow:0 10px 30px #0003}.editSaveBarText small{display:none}.saveFinishBtn{padding:10px 11px;font-size:10px}.planningLogs{padding:10px;margin-top:12px}.planningLogsList{max-height:none}.planningLog{grid-template-columns:32px minmax(0,1fr) auto;padding:9px}.logIcon{width:30px;height:30px}.logDelete{width:32px;height:32px;font-size:20px}.planningLog strong{font-size:10px}.planningLog span{font-size:9px}}
+@media(max-width:620px){.sub{display:none}.title{font-size:18px}.planningViewBar{align-items:flex-start}.weekNav{width:100%}.days{width:100%}.planningActions{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}.saveState{width:100%;text-align:right}.dateTitle{font-size:21px}.yearHero{display:grid;grid-template-columns:1fr;padding:13px;margin-bottom:10px}.yearIntro strong{font-size:13px}.yearHead{width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) 42px}.yearNavBtn{width:42px;height:42px}.yearCurrent{width:100%;height:42px}.yearTodayBtn{grid-column:1/-1;width:100%;height:38px}.yearLegend{gap:10px;margin:0 2px 10px}.yearGrid{grid-template-columns:1fr;gap:10px}.monthCard{padding:12px 13px;border-radius:15px}.monthCard:hover{transform:none}.monthCard h3{font-size:14px}.monthStatus{font-size:8px}.monthWeekdays,.monthDays{gap:5px}.monthWeekdays span{font-size:8px}.yearDay,.yearEmptySlot{min-height:38px}.yearDay{font-size:10.5px;border-radius:9px}.yearDay i{width:5px;height:5px;bottom:4px}.paintChoices{width:100%}.planningLogsHead{align-items:flex-start}.mobileSchedule{display:grid;gap:8px}.sheetViewport{display:none!important}body.planningEditing .mobileSchedule{display:none!important}body.planningEditing .sheetViewport{display:block!important}.xlsTable col.nameCol{width:145px}.xlsTable col.slotCol{width:27px}.xlsTable .slot{width:27px;min-width:27px}.readerHead{align-items:flex-start}.sourceBadge{max-width:48vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.legend{margin-top:8px}.editSaveBar{position:sticky;bottom:8px;z-index:60;box-shadow:0 10px 30px #0003}.editSaveBarText small{display:none}.saveFinishBtn{padding:10px 11px;font-size:10px}.planningLogs{padding:10px;margin-top:12px}.planningLogsList{max-height:none}.planningLog{grid-template-columns:32px minmax(0,1fr) auto;padding:9px}.logIcon{width:30px;height:30px}.logDelete{width:32px;height:32px;font-size:20px}.planningLog strong{font-size:10px}.planningLog span{font-size:9px}}
 
 
-.mobilePlanningActionsDock{display:none}
+.mobilePlanningActionsDock{
+  display:grid;
+  grid-template-columns:minmax(150px,1fr) minmax(150px,1fr);
+  gap:8px;
+  width:min(430px,100%);
+  margin:8px 0 10px auto;
+  align-items:stretch;
+}
+.mobilePlanningActionsDock:empty{display:none}
+.mobilePlanningActionsDock .compactImport{min-width:0!important;width:100%!important}
+.mobilePlanningActionsDock .excelDrop{
+  width:100%!important;
+  min-height:46px!important;
+  height:46px!important;
+  padding:7px 11px!important;
+  justify-content:center!important;
+  border-radius:11px!important;
+}
+.mobilePlanningActionsDock .excelIcon{width:27px!important;height:27px!important;font-size:13px!important}
+.mobilePlanningActionsDock .excelDrop strong{font-size:10px!important}
+.mobilePlanningActionsDock .excelDrop small{display:none!important}
+.mobilePlanningActionsDock #editPlanningBtn{
+  width:100%!important;
+  min-width:0!important;
+  min-height:46px!important;
+  height:46px!important;
+  padding:7px 11px!important;
+  border-radius:11px!important;
+  font-size:10.5px!important;
+  white-space:normal!important;
+  line-height:1.15!important;
+}
+.mobilePlanningActionsDock .importState{
+  left:0!important;
+  right:auto!important;
+  top:50px!important;
+  max-width:min(82vw,320px)!important;
+}
 @media(max-width:620px){
-  .mobilePlanningActionsDock{display:block;width:min(68vw,238px);max-width:100%;margin:7px 0 8px auto}
-  .mobilePlanningActionsDock:empty{display:none}
-  .mobilePlanningActionsDock .planningActions{
-    display:grid!important;
+  .mobilePlanningActionsDock{
     grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:7px!important;
-    width:100%!important;
-    align-items:stretch!important;
+    gap:7px;
+    width:min(68vw,238px);
+    max-width:100%;
+    margin:7px 0 8px auto;
   }
-  .mobilePlanningActionsDock .saveState{display:none!important}
-  .mobilePlanningActionsDock .compactImport{min-width:0!important;width:100%!important}
-  .mobilePlanningActionsDock .excelDrop{
-    width:100%!important;
-    height:46px!important;
-    min-height:46px!important;
-    padding:6px 9px!important;
-    justify-content:center!important;
-    border-radius:11px!important;
-  }
+  .mobilePlanningActionsDock .excelDrop{padding:6px 8px!important}
   .mobilePlanningActionsDock .excelIcon{width:24px!important;height:24px!important;font-size:12px!important}
   .mobilePlanningActionsDock .excelDrop strong{font-size:9px!important}
-  .mobilePlanningActionsDock .excelDrop small{display:none!important}
-  .mobilePlanningActionsDock #editPlanningBtn{
-    width:100%!important;
-    min-width:0!important;
-    min-height:46px!important;
-    height:46px!important;
-    padding:7px 9px!important;
-    border-radius:11px!important;
-    font-size:10px!important;
-    white-space:normal!important;
-    line-height:1.15!important;
-  }
-  .mobilePlanningActionsDock .importState{
-    left:0!important;
-    right:auto!important;
-    top:50px!important;
-    max-width:min(86vw,320px)!important;
-  }
+  .mobilePlanningActionsDock #editPlanningBtn{font-size:10px!important;padding:7px 8px!important}
 }
 
 /* Planning intelligence : couverture, anomalies, indisponibilités */
@@ -634,13 +643,12 @@ async function saveWeek(){
 
 function placePlanningActions(){
  const actions=document.getElementById('planningActions'),toolbar=document.getElementById('planningToolbar'),dock=document.getElementById('mobilePlanningActionsDock');
- if(!actions||!toolbar||!dock)return;
- const mobile=window.matchMedia('(max-width:620px)').matches;
- if(mobile){
-   if(actions.parentElement!==dock)dock.appendChild(actions);
- }else if(actions.parentElement!==toolbar){
-   toolbar.appendChild(actions);
- }
+ const status=document.getElementById('saveState'),importPanel=document.getElementById('importPanel'),editBtn=document.getElementById('editPlanningBtn');
+ if(!actions||!toolbar||!dock||!status||!importPanel||!editBtn)return;
+ if(actions.parentElement!==toolbar)toolbar.appendChild(actions);
+ if(status.parentElement!==actions)actions.appendChild(status);
+ if(importPanel.parentElement!==dock)dock.appendChild(importPanel);
+ if(editBtn.parentElement!==dock)dock.appendChild(editBtn);
 }
 let planningActionsResizeTimer=null;
 window.addEventListener('resize',()=>{clearTimeout(planningActionsResizeTimer);planningActionsResizeTimer=setTimeout(placePlanningActions,80)},{passive:true});
