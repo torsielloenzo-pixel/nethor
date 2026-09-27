@@ -138,12 +138,22 @@ function renderDayAgenda(a){
   items.push({emp,ri,ranges,info,label:info.label,isMe:isCurrentAgendaEmployee(emp)})
  });
  const sorted=sortAgendaEmployeesForCurrentUser(items);
- const cards=sorted.map(item=>{
-  const overlapWithMe=sorted[0]?.isMe&&!item.isMe?rangesOverlapHours(sorted[0].ranges,item.ranges):0;
+ if(!sorted.length)return '<div class="agendaDayList"><div class="agendaDayEmpty"><strong>Aucun horaire de travail</strong><span>Personne n’est planifié sur cette journée.</span></div></div>';
+
+ const mine=sorted.find(x=>x.isMe)||null;
+ const globalItems=mine?sorted.filter(x=>!x.isMe):sorted;
+ const makeCard=item=>{
+  const overlapWithMe=mine&&!item.isMe?rangesOverlapHours(mine.ranges,item.ranges):0;
   const cls='agendaDayCard'+(item.isMe?' agendaDayCardMe':'')+(overlapWithMe>0?' agendaDayCardCoworker':'');
   return '<article class="'+cls+'"><div class="agendaDayPerson">'+item.info.avatar+'<strong>'+escLocal(item.info.label)+'</strong></div><div class="agendaDayShifts">'+item.ranges.map(r=>'<div class="agendaDayShift" data-color="'+escLocal(r.c)+'"><div><strong>'+fmtTime(r.a)+' → '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+hoursLabel(r.b-r.a)+'</small></div><span>›</span></div>').join('')+'</div></article>'
- });
- return '<div class="agendaDayList'+(sorted[0]?.isMe?' hasCurrentUser':'')+'">'+(cards.length?cards.join(''):'<div class="agendaDayEmpty"><strong>Aucun horaire de travail</strong><span>Personne n’est planifié sur cette journée.</span></div>')+'</div>';
+ };
+
+ if(isMobile()&&mine){
+  const personal='<section class="agendaPersonalBlock" aria-label="Mon horaire">'+makeCard(mine)+'</section>';
+  const global=globalItems.length?'<section class="agendaGlobalBlock" aria-label="Planning de l’équipe">'+globalItems.map(makeCard).join('')+'</section>':'';
+  return '<div class="agendaDayList hasCurrentUser agendaSeparated">'+personal+(global?'<div class="agendaSectionGap" aria-hidden="true"></div>'+global:'')+'</div>'
+ }
+ return '<div class="agendaDayList'+(mine?' hasCurrentUser':'')+'">'+sorted.map(makeCard).join('')+'</div>';
 }
 function renderWeekAgenda(a){
  const b=addDays(a,6),todayKey=isoDate(new Date()),employees=model.employees||[];
