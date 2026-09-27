@@ -101,9 +101,10 @@ body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min
   .npCircleBtn svg{width:20px;height:20px}
   .npTopMenu{top:46px;right:0}
   .npSearchWrap{padding:0 10px;margin:0 0 8px}
-  .npList{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
-  .npGroup{padding:14px 13px 8px;font-size:13px}
-  .npRow{grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;padding:11px 8px 11px 12px;min-height:78px}.npRowMore{justify-self:center;align-self:center;min-width:42px;max-width:42px;width:42px;white-space:nowrap!important}
+  .npList{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;gap:8px!important;padding:0 10px 10px!important}
+  .npGroup{padding:14px 3px 1px;font-size:13px}
+  .npRow{grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;padding:11px 8px 11px 12px;min-height:78px;border:1px solid var(--np-line)!important;border-radius:17px!important;overflow:hidden!important;box-shadow:0 4px 14px rgba(17,24,39,.055)}.npRowMore{justify-self:center;align-self:center;min-width:42px;max-width:42px;width:42px;white-space:nowrap!important}
+  .npGroup+.npRow{border:1px solid var(--np-line)!important}
   .npIcon{width:56px;height:56px}
   .npRowText .npSentence{font-size:13.5px;line-height:1.38}
   .npRowText .npSentence b{font-size:14px}
