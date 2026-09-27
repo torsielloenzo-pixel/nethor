@@ -1,9 +1,9 @@
 {
-  "version": 100,
-  "label": "v1.00",
+  "version": 101,
+  "label": "v1.01",
   "important": true,
-  "title": "Correctif mobile — planning, notifications et discussions",
-  "message": "Le planning mobile est réorganisé et plus fluide. Les panneaux Notifications et Profil s’affichent désormais correctement au-dessus de l’interface, et les aperçus de discussions ne dépassent plus de leur carte.",
+  "title": "Correctif responsive du planning mobile",
+  "message": "Le sélecteur Semaine / Année reste maintenant dans le flux de la page et ne masque plus les jours. Le planning s’adapte aussi aux petits et grands écrans mobiles ainsi qu’au mode paysage.",
   "published_at": "2026-09-27T16:48:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
