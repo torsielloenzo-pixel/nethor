@@ -1,9 +1,9 @@
 {
-  "version": 114,
-  "label": "v1.14",
-  "important": false,
-  "title": "Accès plus rapides et sans saut visuel",
-  "message": "Les rôles et sous-rôles sont vérifiés avant l’affichage des menus. Les accès autorisés sont mis en cache par compte pour accélérer la navigation et éviter l’apparition temporaire de modules non disponibles.",
-  "published_at": "2026-09-27T20:45:00+02:00",
+  "version": 115,
+  "label": "v1.15",
+  "important": true,
+  "title": "Nouvelle version de Nethor",
+  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
+  "published_at": "2026-09-27T20:36:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
