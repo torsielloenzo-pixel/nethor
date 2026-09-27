@@ -7,8 +7,10 @@ function profilePage(){
  const wrap=document.createElement('div');wrap.className='field';wrap.innerHTML='<label for="planningViewSelect">Affichage du planning</label><select id="planningViewSelect"><option value="classic">Classique</option><option value="agenda">Agenda</option></select><span class="fieldHelp">Choisit la vue ouverte par défaut dans Planning. Les deux vues utilisent exactement le même import Excel.</span>';
  field.insertAdjacentElement('afterend',wrap);
  try{wrap.querySelector('select').value=prefValue(typeof profile!=='undefined'?profile:null)}catch(_){}
- const sync=()=>{try{if(typeof profile!=='undefined'&&profile){const p=profile.ui_preferences&&typeof profile.ui_preferences==='object'?profile.ui_preferences:{};profile.ui_preferences={...p,planning_view:wrap.querySelector('select').value}}}catch(_){}};
- wrap.querySelector('select').addEventListener('change',sync);
+ const select=wrap.querySelector('select');
+ const sync=()=>{try{if(typeof profile!=='undefined'&&profile){const p=profile.ui_preferences&&typeof profile.ui_preferences==='object'?profile.ui_preferences:{};profile.ui_preferences={...p,planning_view:select.value}}}catch(_){}};
+ select.addEventListener('change',sync);
+ (async()=>{try{if(typeof db==='undefined'||!db)return;const s=(await db.auth.getSession()).data?.session;if(!s)return;const {data}=await db.from('profiles').select('ui_preferences').eq('id',s.user.id).maybeSingle();select.value=prefValue(data||{});sync()}catch(e){console.warn('Chargement préférence planning',e)}})();
  try{
   if(typeof saveProfile==='function'&&!saveProfile.__planningPrefHook){const base=saveProfile;const hooked=async function(){sync();return base.apply(this,arguments)};hooked.__planningPrefHook=true;saveProfile=hooked}
  }catch(e){console.warn('Planning preference profile hook',e)}
