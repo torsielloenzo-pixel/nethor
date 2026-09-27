@@ -56,35 +56,6 @@ const SYSTEM_ROLES=Object.freeze(['admin','responsable','employe','lecture']);
 function roleKeys(config=api?.siteConfig){const defs=config?.role_definitions&&typeof config.role_definitions==='object'?Object.keys(config.role_definitions):[];return [...new Set([...SYSTEM_ROLES,...defs])]}
 function roleDefinition(key,config=api?.siteConfig){return config?.role_definitions?.[key]||null}
 function cleanColor(v,fallback=''){const s=String(v||'').trim();return /^#[0-9a-f]{6}$/i.test(s)?s:fallback}
-function customModules(config){
- const list=Array.isArray(config?.customMenus)?config.customMenus:[];
- return list.filter(x=>x&&x.id&&x.enabled!==false).map((x,index)=>{
-  const id=String(x.id).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,64);
-  return {
-   id,
-   custom:true,
-   label:String(x.label||'Menu personnalisé'),
-   homeLabel:String(x.label||'Menu personnalisé'),
-   subtitle:String(x.subtitle||x.description||'Menu personnalisé'),
-   description:String(x.description||''),
-   url:'custom-menu.html?id='+encodeURIComponent(id),
-   icon:String(x.icon||'◆').slice(0,8),
-   asset:String(x.image_url||''),
-   roles:null,
-   configuredRoles:Array.isArray(x.roles)?x.roles.filter(r=>roleKeys(config).includes(r)):roleKeys(config),
-   home:x.home!==false,
-   userMenu:x.user_menu===true,
-   defaultHome:x.default_home!==false,
-   defaultUser:x.default_user===true,
-   kicker:String(x.kicker||'ESPACE'),
-   action:String(x.action||'Ouvrir'),
-   cardClass:'portalThemeCard customPortalCard',
-   menuColor:cleanColor(x.color,'#ff2f1f'),
-   menuAccent:cleanColor(x.accent,'#ff8500'),
-   order:Number(x.order)||1000+index
-  }
- })
-}
 function rebuildModules(config={}){
  const pages=config?.pages&&typeof config.pages==='object'?config.pages:{};
  const base=BASE_MODULES.map(m=>{
@@ -110,7 +81,7 @@ function rebuildModules(config={}){
    configuredRoles:Array.isArray(p.roles)?p.roles.filter(r=>roleKeys(config).includes(r)):null
   }
  });
- NAV_MODULES=[...base,...customModules(config)];
+ NAV_MODULES=[...base];
  if(typeof api!=='undefined'){api.modules=NAV_MODULES;api.allRoles=roleKeys(config)}
 }
 function applyPortalTheme(config={}){
@@ -157,7 +128,48 @@ function preferenceMap(profile){const p=profile?.ui_preferences;return p&&typeof
 function moduleVisible(area,module,profile,config=api?.siteConfig){if(!moduleAllowed(module,profile,config))return false;if(area==='home'&&!module.home)return false;if(area==='user_menu'&&!module.userMenu)return false;const v=preferenceMap(profile)?.[area]?.[module.id];if(typeof v==='boolean')return v;return area==='home'?module.defaultHome!==false:module.defaultUser!==false}
 function visibleModules(area,profile,config=api?.siteConfig){return NAV_MODULES.filter(m=>moduleVisible(area,m,profile,config))}
 function moduleIcon(module){return module?.asset?'<img src="'+esc(module.asset)+'" alt="">':esc(module?.icon||'•')}
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,refresh,loadNotifications,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess()};
+const DEFAULT_MOBILE_BAR_IDS=Object.freeze(['home','stock','planning','chat','profile']);
+function mobileBarItems(config=api?.siteConfig){
+ const raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[];
+ const source=raw.length?raw:DEFAULT_MOBILE_BAR_IDS.map(id=>({id,enabled:true,label:''}));
+ const seen=new Set(),out=[];
+ for(const item of source){
+  const id=String(item?.id||'').trim();
+  if(!id||seen.has(id))continue;
+  const module=NAV_MODULES.find(m=>m.id===id);
+  if(!module)continue;
+  seen.add(id);
+  out.push({id,enabled:item?.enabled!==false,label:String(item?.label||'').trim().slice(0,18)});
+  if(out.length>=5)break;
+ }
+ return out
+}
+function mobileBarActive(module){
+ try{
+  const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
+  const u=new window.URL(module?.url||'home.html',location.href);
+  const target=(u.pathname.split('/').pop()||'home.html').toLowerCase();
+  return current===target
+ }catch(_){return false}
+}
+function renderMobileQuickBar(){
+ const old=document.getElementById('nettoMobileQuickBar');
+ if(!api.profile||api.siteConfig?.mobile_bar?.enabled===false){
+  old?.remove();document.body?.classList.remove('nettoHasMobileBar');return
+ }
+ const items=mobileBarItems(api.siteConfig)
+  .filter(x=>x.enabled!==false)
+  .map(x=>({item:x,module:NAV_MODULES.find(m=>m.id===x.id)}))
+  .filter(x=>x.module&&moduleAllowed(x.module,api.profile,api.siteConfig));
+ if(!items.length){old?.remove();document.body?.classList.remove('nettoHasMobileBar');return}
+ let nav=old;
+ if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
+ nav.style.setProperty('--netto-mobile-count',String(items.length));
+ nav.innerHTML=items.map(({item,module})=>'<a class="nettoMobileQuickItem '+(mobileBarActive(module)?'active':'')+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(item.label||module.label)+'"><span class="nettoMobileQuickIcon">'+moduleIcon(module)+'</span><span class="nettoMobileQuickLabel">'+esc(item.label||module.label)+'</span></a>').join('');
+ nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>sounds.play('navigate')));
+ document.body.classList.add('nettoHasMobileBar')
+}
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,refresh,loadNotifications,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess()};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -257,6 +269,28 @@ function addStyle(){
    .backBtn,header>.top>.back,header .top>.back{display:none!important}
  }
  @media(max-width:430px){.nettoGlobalTools{gap:4px}.nettoUserBtn{width:44px;min-width:44px;max-width:44px;height:44px;grid-template-columns:32px;padding:5px}.nettoChevron,.nettoUserText{display:none}.nettoBellBtn{width:44px;height:44px}.nettoUpdateCheckBtn{width:44px!important;min-width:44px!important;height:44px!important}}
+
+ .nettoMobileQuickBar{display:none}
+ @media (max-width:900px),(pointer:coarse){
+   :root{--netto-mobile-bar-h:70px}
+   body.nettoHasMobileBar{padding-bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom))!important}
+   .nettoMobileQuickBar{display:grid;grid-template-columns:repeat(var(--netto-mobile-count,5),minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:4200;min-height:var(--netto-mobile-bar-h);padding:5px max(7px,env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left));background:rgba(255,255,255,.96);border-top:1px solid #e2e4e7;box-shadow:0 -10px 30px #11182712;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+   .nettoMobileQuickItem{min-width:0;min-height:59px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:3px 2px;border-radius:13px;color:#26292e;text-decoration:none!important;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+   .nettoMobileQuickItem:active{transform:scale(.96)}
+   .nettoMobileQuickIcon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#fff5ef;color:#e95a31;font-size:18px;font-weight:900;overflow:hidden;transition:transform .15s ease,box-shadow .15s ease}
+   .nettoMobileQuickIcon img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+   .nettoMobileQuickLabel{max-width:100%;font-size:8.5px;line-height:1.05;font-weight:820;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+   .nettoMobileQuickItem.active{color:#ee5a30}
+   .nettoMobileQuickItem.active .nettoMobileQuickIcon{transform:translateY(-1px);box-shadow:0 5px 14px #ff5a2a22;background:#fff0e9}
+   :root[data-theme="dark"] .nettoMobileQuickBar{background:rgba(28,31,34,.97);border-color:#373c42;box-shadow:0 -12px 34px #0007}
+   :root[data-theme="dark"] .nettoMobileQuickItem{color:#e9e4df}
+   :root[data-theme="dark"] .nettoMobileQuickIcon{background:#342720;color:#ff9a75}
+   :root[data-theme="dark"] .nettoMobileQuickItem.active{color:#ff9a75}
+   :root[data-theme="dark"] .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:#412b23;box-shadow:0 5px 16px #0004}
+   body.nettoHasMobileBar .chatApp{height:calc(100dvh - 64px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom))!important}
+   body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 12px)!important}
+ }
+
  `;document.head.appendChild(s)
 }
 function paint(el,url,name,color,frame){if(!el)return;el.style.setProperty('--profile-accent',color||'#ff5a2a');setAvatarFrame(el,frame);if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else{el.classList.remove('hasPhoto');el.style.backgroundImage='';el.textContent=initials(name)}}
@@ -681,7 +715,7 @@ function startProfileRealtime(){
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles',filter:'id=eq.'+api.session.user.id},async()=>{await refresh()})
   .subscribe()
 }
-function updateKnownUI(){const p=api.profile;if(!p)return;const name=p.display_name||'Utilisateur',role=roleLabel(p.role);['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});['userAvatar','userMenuAvatar'].forEach(id=>paint(document.getElementById(id),api.avatarUrl,name,p.profile_color,p.avatar_frame));buildGlobalHeader()}
+function updateKnownUI(){const p=api.profile;if(!p)return;const name=p.display_name||'Utilisateur',role=roleLabel(p.role);['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});['userAvatar','userMenuAvatar'].forEach(id=>paint(document.getElementById(id),api.avatarUrl,name,p.profile_color,p.avatar_frame));buildGlobalHeader();renderMobileQuickBar()}
 function pageFile(){return (location.pathname.split('/').pop()||'home.html').toLowerCase()}
 function backFallback(){return 'home.html'}
 function goBack(){
@@ -711,7 +745,7 @@ async function rememberSiteBase(){
   await api.client.from('app_settings').upsert({key:'site_base_url',value:{url:base},updated_at:new Date().toISOString(),updated_by:api.session.user.id},{onConflict:'key'});
  }catch(e){console.warn('Enregistrement URL portail:',e)}
 }
-function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Équipe','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','custom-menu.html':'Menu personnalisé','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes'};return map[p]||document.title||'Portail'}
+function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Équipe','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes'};return map[p]||document.title||'Portail'}
 async function logPageView(){if(!api.client||!api.session)return;try{await api.client.rpc('audit_page_view',{p_area:pageArea(),p_path:(location.pathname||'')+(location.search||''),p_title:document.title||pageArea()})}catch(e){console.warn('Journal consultation:',e)}}
 function globalCacheKey(){return api.session?.user?.id?'nettoGlobalUI:'+api.session.user.id:null}
 function hydrateGlobalCache(){
@@ -723,7 +757,7 @@ function hydrateGlobalCache(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=88;
+const APP_RELEASE=93;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
