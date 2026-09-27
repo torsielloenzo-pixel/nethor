@@ -1,9 +1,9 @@
 {
-  "version": 107,
-  "label": "v1.07",
+  "version": 108,
+  "label": "v1.08",
   "important": true,
-  "title": "Planning stabilisé",
-  "message": "Le planning s’ouvre désormais toujours sur la semaine. Le calendrier annuel devient une interface temporaire, et plusieurs conflits mobile, permissions et ordre des widgets ont été corrigés.",
-  "published_at": "2026-09-27T19:10:00+02:00",
+  "title": "Nouvelle version de Nethor",
+  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
+  "published_at": "2026-09-27T19:12:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
