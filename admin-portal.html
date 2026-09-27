@@ -6,7 +6,7 @@
 <script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
 <title>Nethor</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="profile-ui.js?v=128"></script>
+<script src="profile-ui.js?v=129"></script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <link rel="stylesheet" href="design-v2.css?v=3"><link rel="stylesheet" href="design-v3.css?v=3"><link rel="stylesheet" href="design-v4.css?v=8">
@@ -41,7 +41,7 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
 <button class="active" data-tab="general" onclick="showTab('general',this)"><span class="sideIcon">◈</span><span><strong>Général</strong><small>Identité et couleurs</small></span></button>
 <button data-tab="system" onclick="showTab('system',this)"><span class="sideIcon">▦</span><span><strong>Pages système</strong><small>Modifier les menus existants</small></span></button>
 <button data-tab="mobile" onclick="showTab('mobile',this)"><span class="sideIcon">▣</span><span><strong>Barre mobile</strong><small>Choisir les accès rapides</small></span></button>
-<button data-tab="notifications" onclick="showTab('notifications',this);loadNotificationAdmin()"><span class="sideIcon">🔔</span><span><strong>Notifications</strong><small>Utilisateurs et tests</small></span></button>
+<button data-tab="notifications" onclick="showTab('notifications',this);loadNotificationAdmin()"><span class="sideIcon">🔔</span><span><strong>Notifications</strong><small>Envoi et règles</small></span></button>
 <button data-tab="logs" onclick="showTab('logs',this);loadPortalLogs()"><span class="sideIcon">≡</span><span><strong>Logs</strong><small>MAJ, patchs et historique</small></span></button>
 </nav>
 <div class="workspace">
