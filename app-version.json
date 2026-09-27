@@ -1,10 +1,10 @@
 {
-  "version": 124,
-  "label": "v1.24",
+  "version": 125,
+  "label": "v1.25",
   "important": false,
   "mode": "manual",
-  "title": "Chat mobile : en-têtes immobiles",
-  "message": "Le chat mobile utilise désormais un seul comportement clavier : les barres Chat et contact restent fixes, la navigation mobile disparaît uniquement pendant la saisie et seul le bas de la conversation remonte au-dessus du clavier.",
+  "title": "Navigation mobile sans en-têtes",
+  "message": "Sur mobile, les en-têtes globaux de toutes les pages sont supprimés. La navigation se fait désormais uniquement depuis la barre mobile, et le chat utilise tout l’espace disponible sans conserver la hauteur de l’ancien en-tête.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
