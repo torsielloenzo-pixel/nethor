@@ -679,3 +679,39 @@ async function boot(){
  window.addEventListener('focus',async()=>{await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()})
 }
 boot();
+
+/* Mobile chat viewport: use the visible iOS/Android area directly.
+   The top stays fixed; only the bottom follows the virtual keyboard. */
+(function bindStableMobileChatViewport(){
+ let raf=0;
+ const sync=()=>{
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+   const root=document.documentElement;
+   if(window.innerWidth>780){
+    root.style.removeProperty('--chat-visible-h');
+    return;
+   }
+   const vv=window.visualViewport;
+   const visibleH=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
+   root.style.setProperty('--chat-visible-h',visibleH+'px');
+  });
+ };
+ sync();
+ window.addEventListener('resize',sync,{passive:true});
+ window.addEventListener('orientationchange',sync,{passive:true});
+ if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',sync,{passive:true});
+  window.visualViewport.addEventListener('scroll',sync,{passive:true});
+ }
+ document.addEventListener('focusin',e=>{
+  if(e.target?.id!=='message')return;
+  sync();
+  setTimeout(sync,60);
+  setTimeout(sync,240);
+ },true);
+ document.addEventListener('focusout',e=>{
+  if(e.target?.id!=='message')return;
+  setTimeout(sync,120);
+ },true);
+})();
