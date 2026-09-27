@@ -283,7 +283,7 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   .convTime{max-width:44px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 }
 
-/* Nethor chat mobile v18 — en-têtes fixes, clavier simple */
+/* Nethor chat mobile base — une seule géométrie, sans ancien calcul clavier */
 @media(max-width:780px){
   html,body{
     width:100%!important;
@@ -293,53 +293,18 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     overscroll-behavior:none!important;
   }
 
-  body{
-    --chat-shell-header:calc(56px + env(safe-area-inset-top));
-    --chat-bottom-space:0px;
-    background:#f0f2f5!important;
-  }
-  body.nettoHasMobileBar{
-    --chat-bottom-space:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));
-  }
-  html.nettoKeyboardOpen body{
-    --chat-bottom-space:var(--netto-keyboard-inset,0px);
-  }
+  body{background:#f0f2f5!important}
 
-  /* Barre Chat : réellement fixe, aucun offset/translate lié au clavier. */
-  header{
-    position:fixed!important;
-    top:0!important;
-    left:0!important;
-    right:0!important;
-    width:100%!important;
-    height:var(--chat-shell-header)!important;
-    min-height:var(--chat-shell-header)!important;
-    padding-top:env(safe-area-inset-top)!important;
-    margin:0!important;
-    border-bottom:1px solid #e1e5e9!important;
-    box-shadow:none!important;
-    transform:none!important;
-    translate:none!important;
-    transition:none!important;
-    animation:none!important;
-    z-index:110!important;
-  }
-  header:after{display:none!important}
-  header .top{
-    width:100%!important;
-    min-height:56px!important;
-    padding:0 max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))!important;
-  }
-  header .sub{display:none!important}
-  header .title{font-size:17px!important}
+  /* Le bandeau global Nethor n'existe pas dans le chat mobile. */
+  header{display:none!important}
 
-  /* Le corps du chat ne bouge jamais en haut. Seul son bas remonte avec le clavier. */
+  /* Liste des discussions : plein écran, au-dessus de la navigation basse. */
   .chatApp{
     position:fixed!important;
-    top:var(--chat-shell-header)!important;
+    top:env(safe-area-inset-top)!important;
     left:0!important;
     right:0!important;
-    bottom:var(--chat-bottom-space)!important;
+    bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important;
     width:100%!important;
     max-width:100%!important;
     height:auto!important;
@@ -352,6 +317,9 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     transform:none!important;
     translate:none!important;
     transition:none!important;
+  }
+  html.nettoKeyboardOpen body:not(.mobileConversationOpen) .chatApp{
+    bottom:0!important;
   }
 
   .conversationListPane,.conversationPane{
@@ -430,15 +398,6 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     background:#fff!important;
     border-top:1px solid #e4e7ea!important;
   }
-  html.nettoKeyboardOpen body.mobileConversationOpen .composer{
-    padding-bottom:7px!important;
-  }
-
-  /* Barre de navigation / notifications : masquée uniquement pendant la saisie. */
-  html.nettoKeyboardOpen .nettoMobileQuickBar{
-    display:none!important;
-  }
-
   .listHead{padding:12px 12px 8px!important}
   .listHead h1{font-size:24px!important;letter-spacing:-.7px!important}
   .listHead small{font-size:9px!important}
