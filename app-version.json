@@ -1,10 +1,10 @@
 {
-  "version": 123,
-  "label": "v1.23",
+  "version": 124,
+  "label": "v1.24",
   "important": false,
   "mode": "manual",
-  "title": "Chat mobile : structure simplifiée",
-  "message": "Les anciens correctifs de déplacement du chat ont été retirés. Les barres Chat et contact restent fixes, la barre mobile disparaît uniquement pendant la saisie et seul le bas de la conversation s’adapte au clavier.",
+  "title": "Chat mobile : en-têtes immobiles",
+  "message": "Le chat mobile utilise désormais un seul comportement clavier : les barres Chat et contact restent fixes, la navigation mobile disparaît uniquement pendant la saisie et seul le bas de la conversation remonte au-dessus du clavier.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
