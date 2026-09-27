@@ -1,9 +1,9 @@
 {
-  "version": 71,
-  "label": "v0.71",
+  "version": 72,
+  "label": "v0.72",
   "important": true,
-  "title": "Avatars de poste",
-  "message": "La personnalisation avancée propose désormais des avatars illustrés liés aux postes du magasin : employé, responsable de rayon, caisse, réception-stock et gérant.",
-  "published_at": "2026-09-26T19:55:00+02:00",
+  "title": "Correctif icône mobile",
+  "message": "L’icône Nethor sur mobile est désormais plein cadre, sans bordure blanche ni marge transparente. Le logo desktop reste inchangé.",
+  "published_at": "2026-09-27T10:56:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
