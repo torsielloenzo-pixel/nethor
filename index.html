@@ -721,6 +721,101 @@ input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
 <style id="flDesktopZoom">
 @media (min-width:781px){
   body:has(#site:not(.hidden)){zoom:1.25}
+
+  /* Fruits & Légumes — lisibilité desktop renforcée */
+  #site>header{padding:15px 20px 13px!important}
+  #site>header .brand .title{font-size:31px!important;line-height:1.05!important;letter-spacing:-.8px!important}
+  #site>header .subtitle{font-size:12px!important;margin-top:5px!important}
+  #site>main{max-width:1080px!important;padding:20px 20px 44px!important}
+
+  .stockWorkspace{gap:16px!important;margin-bottom:20px!important}
+  .stockModeNav{gap:9px!important;padding:8px!important;border-radius:18px!important;top:76px!important}
+  .stockModeBtn{
+    min-height:52px!important;padding:12px 12px!important;border-radius:14px!important;
+    gap:9px!important;font-size:13px!important
+  }
+  .stockModeBtn>span{font-size:19px!important}
+
+  .stockModeIntro{gap:16px!important;padding:4px 3px 1px!important}
+  .stockModeIntro strong{font-size:20px!important;line-height:1.2!important}
+  .stockModeIntro small{font-size:11.5px!important;margin-top:4px!important;line-height:1.4!important}
+  .stockModeStat{font-size:11px!important;padding:8px 12px!important}
+  .resetStockOpen{font-size:11.5px!important;padding:10px 13px!important;min-height:40px!important}
+
+  .stockSearchTools{gap:11px!important}
+  .stockSearchTools .searchBox input{
+    height:54px!important;border-radius:17px!important;padding-left:47px!important;
+    padding-right:44px!important;font-size:15.5px!important
+  }
+  .stockSearchTools .searchIcon{left:16px!important;font-size:20px!important}
+  .stockSearchTools .clearSearch{width:32px!important;height:32px!important;font-size:18px!important}
+  .quickCatBar{gap:8px!important;padding:2px 0 6px!important}
+  .quickCat{padding:9px 14px!important;font-size:11.5px!important}
+  .quickCat b{font-size:9.5px!important;margin-left:5px!important}
+
+  .quickSection{margin-bottom:14px!important}
+  .quickSectionHead{padding:9px 4px 8px!important;font-size:12px!important}
+  .quickSectionHead span{font-size:18px!important}
+  .quickRows{gap:11px!important}
+  .quickStockRow{
+    grid-template-columns:56px minmax(0,1fr) auto!important;gap:12px!important;
+    min-height:78px!important;padding:11px!important;border-radius:16px!important
+  }
+  .quickPic{width:56px!important;height:56px!important;border-radius:13px!important;font-size:24px!important}
+  .quickInfo strong{font-size:14px!important;line-height:1.25!important}
+  .quickInfo small{font-size:10.5px!important;margin-top:5px!important}
+  .quickInfoBtn{width:27px!important;height:27px!important;font-size:12px!important}
+  .quickControls{grid-template-columns:42px 60px 42px!important;gap:6px!important}
+  .quickControls button{height:44px!important;border-radius:11px!important;font-size:24px!important}
+  .quickQty{font-size:23px!important}
+  .quickZero{height:24px!important;font-size:9.5px!important}
+
+  .consultGrid{gap:13px!important}
+  .consultCard{padding:12px!important;border-radius:17px!important}
+  .consultVisual{border-radius:13px!important;font-size:32px!important}
+  .consultName{font-size:14.5px!important;margin-top:9px!important}
+  .consultMeta{font-size:10.5px!important;margin-top:4px!important}
+  .consultBottom{margin-top:10px!important}
+  .consultStock{font-size:11.5px!important;padding:7px 9px!important}
+  .consultOpen{font-size:10px!important}
+
+  .workspaceHero{padding:20px!important;border-radius:20px!important}
+  .workspaceHero strong{font-size:20px!important}
+  .workspaceHero small{font-size:11px!important;margin-top:5px!important}
+  .workspaceHero b{font-size:27px!important}
+  .workspaceActionGrid{gap:12px!important}
+  .workspaceAction{padding:17px!important;border-radius:18px!important;min-height:125px!important}
+  .workspaceAction .waIcon{width:46px!important;height:46px!important;border-radius:13px!important;font-size:22px!important}
+  .workspaceAction strong{font-size:14px!important}
+  .workspaceAction small{font-size:10.5px!important}
+  .workspaceAction b{font-size:10.5px!important}
+
+  .priorityPanel{padding:15px!important;border-radius:18px!important}
+  .priorityPanelHead strong{font-size:13px!important}
+  .priorityList{gap:7px!important}
+  .priorityRow{padding:11px 12px!important;border-radius:11px!important}
+  .priorityRow strong{font-size:12px!important}
+  .priorityRow small{font-size:9.5px!important}
+  .priorityQty{font-size:11px!important}
+  .priorityStock{font-size:10px!important}
+
+  .manageSummary{gap:10px!important}
+  .manageSummary div{padding:13px!important;border-radius:14px!important}
+  .manageSummary b{font-size:22px!important}
+  .manageSummary small{font-size:9.5px!important}
+
+  /* Anciennes cartes stock encore utilisées selon le mode */
+  .category{border-radius:21px!important;margin-bottom:16px!important}
+  .catHeader{min-height:82px!important;padding:17px 19px!important}
+  .catHeader .catTitle{font-size:23px!important}
+  .catArt{font-size:34px!important}
+  .card{padding:12px!important;border-radius:19px!important}
+  .name{font-size:17px!important;margin-top:10px!important}
+  .packaging,.productMeta{font-size:13px!important}
+  .infoBtn{width:33px!important;height:33px!important;font-size:15px!important}
+  .counter{grid-template-columns:48px 1fr 48px!important;gap:8px!important}
+  .counter button{height:46px!important;border-radius:12px!important;font-size:27px!important}
+  .qty{font-size:24px!important}
 }
 </style>
 </head><body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
