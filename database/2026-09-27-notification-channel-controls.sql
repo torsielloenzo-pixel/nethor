@@ -1,17 +1,39 @@
 -- Nethor — contrôle indépendant des canaux de notification
--- État final correspondant à la release v1.34.
+-- État final correspondant à la release v1.35.
 
 alter table public.notification_preferences
-  add column if not exists push_enabled boolean default true not null,
-  add column if not exists portal_enabled boolean default true not null;
+  add column if not exists push_enabled boolean,
+  add column if not exists portal_enabled boolean;
+
+update public.notification_preferences
+set push_enabled=coalesce(push_enabled,enabled),
+    portal_enabled=coalesce(portal_enabled,true)
+where push_enabled is null or portal_enabled is null;
+
+alter table public.notification_preferences
+  alter column push_enabled set default true,
+  alter column push_enabled set not null,
+  alter column portal_enabled set default true,
+  alter column portal_enabled set not null;
 
 alter table public.notification_rules
-  add column if not exists portal_enabled boolean default true not null,
-  add column if not exists push_enabled boolean default true not null;
+  add column if not exists portal_enabled boolean,
+  add column if not exists push_enabled boolean;
+
+update public.notification_rules
+set portal_enabled=coalesce(portal_enabled,enabled),
+    push_enabled=coalesce(push_enabled,enabled and push_allowed)
+where portal_enabled is null or push_enabled is null;
 
 update public.notification_rules
 set push_enabled=false
 where push_allowed=false;
+
+alter table public.notification_rules
+  alter column portal_enabled set default true,
+  alter column portal_enabled set not null,
+  alter column push_enabled set default true,
+  alter column push_enabled set not null;
 
 grant select on table public.notification_rules to authenticated;
 grant select on table public.notification_controls to authenticated;
@@ -79,6 +101,69 @@ $function$;
 
 revoke execute on function public.my_notification_channel_preferences() from public,anon;
 grant execute on function public.my_notification_channel_preferences() to authenticated;
+
+create or replace function public.my_notification_preferences()
+returns table(
+  rule_key text,
+  label text,
+  description text,
+  trigger_text text,
+  user_enabled boolean,
+  global_enabled boolean,
+  push_allowed boolean,
+  effective_enabled boolean
+)
+language sql
+security invoker
+set search_path=''
+as $function$
+ select
+   r.key,r.label,r.description,r.trigger_text,
+   coalesce(p.push_enabled,p.enabled,r.default_user_enabled),
+   r.enabled,
+   r.push_allowed,
+   coalesce(c.enabled,true)
+     and r.enabled
+     and r.push_allowed
+     and r.push_enabled
+     and coalesce(p.push_enabled,p.enabled,r.default_user_enabled)
+ from public.notification_rules r
+ left join public.notification_preferences p
+   on p.user_id=(select auth.uid()) and p.rule_key=r.key
+ left join public.notification_controls c
+   on c.user_id=(select auth.uid())
+ where (select auth.uid()) is not null
+   and r.user_visible=true
+ order by r.sort_order,r.label
+$function$;
+
+create or replace function public.set_my_notification_preference(
+  p_rule_key text,
+  p_enabled boolean
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path=''
+as $function$
+begin
+  if auth.uid() is null then raise exception 'unauthorized'; end if;
+  if not exists(select 1 from public.notification_rules where key=p_rule_key) then
+    raise exception 'unknown_rule';
+  end if;
+
+  insert into public.notification_preferences(
+    user_id,rule_key,enabled,push_enabled,portal_enabled,updated_at
+  )
+  values(auth.uid(),p_rule_key,p_enabled,p_enabled,true,now())
+  on conflict(user_id,rule_key) do update
+  set enabled=excluded.enabled,
+      push_enabled=excluded.push_enabled,
+      updated_at=excluded.updated_at;
+
+  return true;
+end
+$function$;
 
 create or replace function public.set_my_notification_channels(
   p_rule_key text,
