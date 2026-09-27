@@ -272,6 +272,9 @@ body.planningYearOpen{overflow:hidden!important}
 @media(min-width:901px) and (max-width:1180px){
   .yearView .yearGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+
+.anomalyHistoryRow{margin-top:17px}
+.anomalyHistoryRow .planningInsightCard{margin:0}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -448,6 +451,15 @@ body.planningYearOpen{overflow:hidden!important}
     <div id="emptyState" class="emptyState hidden"><strong>Aucun planning importé pour cette semaine</strong><span>Un administrateur ou responsable peut glisser le fichier Excel correspondant.</span></div>
     <div id="sheetViewport" class="sheetViewport hidden"><div id="sheetMount"></div></div><div id="mobileSchedule" class="mobileSchedule hidden"></div>
     <div class="legend"><span><i class="sw" style="background:#1FB714"></i>Matin</span><span><i class="sw" style="background:#00ABEA"></i>Après-midi</span></div><div id="editSaveBar" class="editSaveBar hidden"><div class="editSaveBarText"><strong>Modifications du planning</strong><small>Quand tout est correct, enregistre et quitte le mode modification.</small></div><button class="btn saveFinishBtn" onclick="saveAndFinishEdit()">✓ Enregistrer et terminer</button></div>
+
+    <div class="anomalyHistoryRow">
+      <article id="anomalyWidget" class="planningInsightCard compactInsightCard">
+        <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePlanningInsight('anomalies')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePlanningInsight('anomalies')}"><div><strong>Détection d’anomalies</strong><small>Contrôles automatiques d’organisation. Ils ne remplacent pas un contrôle RH ou réglementaire.</small></div><div class="compactInsightHeadRight"><span id="anomalyMetric" class="insightMetric">0</span><span class="compactInsightChevron" aria-hidden="true">⌄</span></div></div>
+        <div id="anomalyInsightBody" class="compactInsightBody collapsed">
+          <div id="anomalyList" class="anomalyList"></div>
+        </div>
+      </article>
+    </div>
 <section id="planningLogs" class="planningLogs"><div class="planningLogsHead"><div><strong>Historique du planning</strong><small>Imports et modifications du tableau</small></div><button id="clearPlanningLogs" class="btn light hidden" onclick="clearPlanningLogs()">Effacer les logs</button></div><div id="planningLogsList" class="planningLogsList"><span class="logsEmpty">Aucune activité enregistrée.</span></div></section>
     <div class="absencesWideRow">
       <article id="absencesWidget" class="planningInsightCard">
@@ -466,12 +478,7 @@ body.planningYearOpen{overflow:hidden!important}
             </article>
     </div>
     <div class="anomalyWideRow">
-      <article id="anomalyWidget" class="planningInsightCard compactInsightCard">
-        <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePlanningInsight('anomalies')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePlanningInsight('anomalies')}"><div><strong>Détection d’anomalies</strong><small>Contrôles automatiques d’organisation. Ils ne remplacent pas un contrôle RH ou réglementaire.</small></div><div class="compactInsightHeadRight"><span id="anomalyMetric" class="insightMetric">0</span><span class="compactInsightChevron" aria-hidden="true">⌄</span></div></div>
-        <div id="anomalyInsightBody" class="compactInsightBody collapsed">
-          <div id="anomalyList" class="anomalyList"></div>
-        </div>
-      </article>
+      
     </div>
   </section>
 
