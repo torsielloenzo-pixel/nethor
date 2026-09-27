@@ -572,3 +572,113 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   :root[data-theme="dark"] .bubble{background:#25292d!important}
   :root[data-theme="dark"] .mine .bubble{background:linear-gradient(135deg,#cf5033,#dd743e)!important}
 }
+
+
+/* Nethor chat mobile v19 — conversation immobile, clavier sous le composeur */
+@media(max-width:780px){
+  body.mobileConversationOpen{
+    position:fixed!important;
+    inset:0!important;
+    width:100%!important;
+    height:100dvh!important;
+    min-height:0!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+    --chat-bottom-space:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));
+  }
+
+  /* En conversation mobile, seule la barre du contact reste en haut. */
+  body.mobileConversationOpen>header{
+    display:none!important;
+  }
+
+  body.mobileConversationOpen .chatApp{
+    position:fixed!important;
+    inset:0 0 var(--chat-bottom-space) 0!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    bottom:var(--chat-bottom-space)!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    transform:none!important;
+    translate:none!important;
+    transition:none!important;
+    animation:none!important;
+  }
+
+  body.mobileConversationOpen .conversationPane{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    display:grid!important;
+    grid-template-rows:calc(56px + env(safe-area-inset-top)) auto minmax(0,1fr) auto auto!important;
+    overflow:hidden!important;
+  }
+
+  body.mobileConversationOpen .chatHeader{
+    position:relative!important;
+    top:0!important;
+    width:100%!important;
+    height:calc(56px + env(safe-area-inset-top))!important;
+    min-height:calc(56px + env(safe-area-inset-top))!important;
+    padding:calc(7px + env(safe-area-inset-top)) 8px 7px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+    transition:none!important;
+    animation:none!important;
+  }
+
+  body.mobileConversationOpen .messages{
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-y:contain!important;
+  }
+
+  body.mobileConversationOpen .typingLine,
+  body.mobileConversationOpen .composer{
+    flex:none!important;
+    transform:none!important;
+    translate:none!important;
+    transition:none!important;
+    animation:none!important;
+  }
+
+  /* Le clavier réduit uniquement la hauteur visible du chat.
+     Aucun offset vertical n'est appliqué : la conversation ne saute plus. */
+  html.nettoKeyboardOpen body.mobileConversationOpen{
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    bottom:auto!important;
+    height:var(--chat-visible-h,100dvh)!important;
+    min-height:var(--chat-visible-h,100dvh)!important;
+    max-height:var(--chat-visible-h,100dvh)!important;
+    --chat-bottom-space:0px;
+  }
+
+  html.nettoKeyboardOpen body.mobileConversationOpen .chatApp{
+    inset:0!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    bottom:auto!important;
+    width:100%!important;
+    height:var(--chat-visible-h,100dvh)!important;
+    min-height:0!important;
+    max-height:var(--chat-visible-h,100dvh)!important;
+  }
+
+  html.nettoKeyboardOpen body.mobileConversationOpen .composer{
+    padding-bottom:7px!important;
+  }
+}
