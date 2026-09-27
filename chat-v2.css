@@ -520,3 +520,111 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
     stroke-linecap:round;stroke-linejoin:round;
   }
 }
+
+
+/* Nethor chat mobile v14 — en-tête fixe et clavier fluide */
+@media(max-width:780px){
+  /* Dans une conversation, les deux barres du haut restent totalement immobiles. */
+  body.mobileConversationOpen{
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+  }
+
+  body.mobileConversationOpen header{
+    position:fixed!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    width:100%!important;
+    margin:0!important;
+    transform:translateZ(0);
+    backface-visibility:hidden;
+    contain:layout style;
+    z-index:110!important;
+  }
+
+  body.mobileConversationOpen .chatApp{
+    position:fixed!important;
+    top:calc(56px + env(safe-area-inset-top))!important;
+    left:0!important;
+    right:0!important;
+    bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    transform:translateZ(0);
+  }
+
+  body.mobileConversationOpen .conversationPane{
+    display:grid!important;
+    grid-template-rows:56px auto minmax(0,1fr) auto auto!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+  }
+
+  body.mobileConversationOpen .chatHeader{
+    position:relative!important;
+    top:auto!important;
+    min-height:56px!important;
+    height:56px!important;
+    flex:none!important;
+    transform:translateZ(0);
+    backface-visibility:hidden;
+    contain:layout paint style;
+    z-index:30!important;
+  }
+
+  body.mobileConversationOpen .messageSearchBar{
+    position:relative!important;
+    z-index:20!important;
+  }
+
+  body.mobileConversationOpen .messages{
+    min-height:0!important;
+    overflow-y:auto!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  body.mobileConversationOpen .typingLine,
+  body.mobileConversationOpen .composer{
+    position:relative!important;
+    z-index:25!important;
+  }
+
+  /* Le clavier ne déplace plus l'en-tête. Seule la zone utile de la conversation se réduit. */
+  html.nettoKeyboardOpen body.mobileConversationOpen header{
+    top:0!important;
+    transform:translateZ(0)!important;
+  }
+
+  html.nettoKeyboardOpen body.mobileConversationOpen .chatApp{
+    top:calc(56px + env(safe-area-inset-top))!important;
+    bottom:auto!important;
+    height:calc(var(--netto-visual-viewport-h,100dvh) - 56px - env(safe-area-inset-top))!important;
+    min-height:0!important;
+    transform:translateZ(0)!important;
+  }
+
+  html.nettoKeyboardOpen body.mobileConversationOpen .conversationPane{
+    height:100%!important;
+    min-height:0!important;
+  }
+
+  html.nettoKeyboardOpen body.mobileConversationOpen .composer{
+    padding-bottom:7px!important;
+  }
+
+  /* Pas d'animation de position sur les barres fixes : évite les petits sauts iOS. */
+  body.mobileConversationOpen header,
+  body.mobileConversationOpen .chatHeader{
+    transition:none!important;
+    animation:none!important;
+  }
+}
