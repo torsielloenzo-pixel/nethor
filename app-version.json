@@ -1,9 +1,9 @@
 {
-  "version": 108,
-  "label": "v1.08",
+  "version": 109,
+  "label": "v1.09",
   "important": true,
-  "title": "Nouvelle version de Nethor",
-  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
-  "published_at": "2026-09-27T19:12:00+02:00",
+  "title": "Calendrier mobile refermable",
+  "message": "La hauteur du calendrier mobile suit désormais la zone réellement visible sur iOS et Android. La croix de fermeture reste ancrée à l’écran même lorsque les barres du navigateur changent de hauteur.",
+  "published_at": "2026-09-27T19:17:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
