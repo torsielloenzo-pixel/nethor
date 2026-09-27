@@ -799,9 +799,65 @@ input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
   .stockModeBtn{font-size:8px!important}
   .quickStockRow{grid-template-columns:50px minmax(0,1fr) auto!important;padding:8px!important;gap:8px!important}
   .quickPic{width:50px!important;height:50px!important}
-  .quickControls{grid-template-columns:34px 44px 34px!important}
-  .quickControls button{height:39px!important}
+  .quickControls{grid-template-columns:38px 38px 38px!important}
+  .quickControls button:not(.quickZero){height:40px!important}
   .quickQty{font-size:18px!important}
+}
+
+/* Correctifs mobile F&L — empêche l'écrasement du titre et compacte “Mettre à 0” */
+@media(max-width:700px){
+  .stockModeIntro{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    width:100%!important;
+    min-width:0!important
+  }
+  .stockModeIntro>div:first-child{min-width:0!important}
+  .stockModeIntroActions{
+    width:auto!important;
+    min-width:0!important;
+    flex:0 0 auto!important;
+    justify-content:flex-end!important
+  }
+  .resetStockOpen{
+    flex:0 0 36px!important;
+    width:36px!important;
+    min-width:36px!important;
+    max-width:36px!important
+  }
+  .stockModeStat{max-width:118px!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .quickControls{
+    grid-template-columns:42px 42px 42px!important;
+    gap:5px!important;
+    justify-content:end!important
+  }
+  .quickControls button:not(.quickZero){
+    width:42px!important;
+    min-width:42px!important;
+    height:42px!important
+  }
+  .quickControls .quickZero{
+    grid-column:1/-1!important;
+    justify-self:center!important;
+    width:auto!important;
+    min-width:68px!important;
+    max-width:82px!important;
+    height:18px!important;
+    min-height:18px!important;
+    padding:0 7px!important;
+    font-size:7.5px!important;
+    line-height:18px!important;
+    border-radius:6px!important;
+    white-space:nowrap!important
+  }
+}
+@media(max-width:380px){
+  .stockModeIntro{grid-template-columns:minmax(0,1fr) auto!important;gap:6px!important}
+  .stockModeStat{max-width:104px!important}
+  .quickControls{grid-template-columns:38px 38px 38px!important;gap:4px!important}
+  .quickControls button:not(.quickZero){width:38px!important;min-width:38px!important;height:40px!important}
+  .quickControls .quickZero{min-width:62px!important;max-width:72px!important;font-size:7px!important}
 }
 :root[data-theme="dark"] .flMobileBack{background:#22252a;color:#f1eeea;border-color:#343940}
 :root[data-theme="dark"] .flMobileTitle h1{color:#f1eeea}
