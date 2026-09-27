@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="profile-ui.js?v=135" defer></script>
+<script src="profile-ui.js?v=136" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
@@ -160,7 +160,7 @@ function channelOptions(r){
  const portalAvailable=r.global_portal_enabled!==false;
  const pushAvailable=r.push_allowed!==false&&r.global_push_enabled!==false;
  const current=ruleMode(r),disabled=!r.global_enabled||(!portalAvailable&&!pushAvailable);
- const options=[['off','Désactivé']];
+ const options=[['off','Aucun']];
  if(portalAvailable)options.push(['portal','Portail']);
  if(pushAvailable)options.push(['push','Push']);
  if(portalAvailable&&pushAvailable)options.push(['both','Les deux']);
