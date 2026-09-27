@@ -873,17 +873,28 @@ function displayVersion(value){
  const n=Math.max(0,Math.trunc(Number(value)||0)),major=Math.floor(n/100),minor=String(n%100).padStart(2,'0');
  return 'v'+major+'.'+minor
 }
+function readWorkerVersion(worker){
+ return new Promise(resolve=>{
+  if(!worker){resolve(0);return}
+  const ch=new MessageChannel(),timer=setTimeout(()=>resolve(0),900);
+  ch.port1.onmessage=e=>{clearTimeout(timer);resolve(Number(e.data?.version)||0)};
+  try{worker.postMessage({type:'GET_VERSION'},[ch.port2])}catch(_){clearTimeout(timer);resolve(0)}
+ })
+}
 async function installedAppVersion(){
- let found=0;
  try{
-  if('caches' in window){const keys=await caches.keys();for(const key of keys){const m=String(key).match(/^netto-tools-v(\d+)$/);if(m)found=Math.max(found,Number(m[1])||0)}}
-  found=Math.max(found,Number(localStorage.getItem('nettoAppVersion')||0)||0);
-  if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
-   const v=await new Promise(resolve=>{const ch=new MessageChannel(),timer=setTimeout(()=>resolve(0),700);ch.port1.onmessage=e=>{clearTimeout(timer);resolve(Number(e.data?.version)||0)};try{navigator.serviceWorker.controller.postMessage({type:'GET_VERSION'},[ch.port2])}catch(_){clearTimeout(timer);resolve(0)}});
-   found=Math.max(found,v)
+  if('serviceWorker' in navigator){
+   const reg=await navigator.serviceWorker.getRegistration().catch(()=>null);
+   const active=navigator.serviceWorker.controller||reg?.active;
+   const activeVersion=await readWorkerVersion(active);
+   if(activeVersion>0)return activeVersion
   }
- }catch(_){}
- return found
+  const stored=Number(localStorage.getItem('nettoAppVersion')||0)||0;
+  if(stored>0)return stored;
+  let found=0;
+  if('caches' in window){const keys=await caches.keys();for(const key of keys){const m=String(key).match(/^netto-tools-v(\d+)$/);if(m)found=Math.max(found,Number(m[1])||0)}}
+  return found
+ }catch(_){return 0}
 }
 function waitForWaitingWorker(reg,timeout=3500){
  return new Promise(resolve=>{
@@ -915,15 +926,20 @@ async function checkLatestVersionAtLogin(target){
  const latest=Number(info?.version)||0;if(!latest)return true;
  const installed=await installedAppVersion();
  if(installed>=latest){try{localStorage.setItem('nettoAppVersion',String(installed))}catch(_){};return true}
- let reg;
- try{reg=await navigator.serviceWorker.register('./sw.js');await reg.update().catch(()=>{});await waitForWaitingWorker(reg)}catch(_){}
- const choice=await loginUpdatePrompt(info);
+ let reg,worker;
+ try{
+  reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+  await reg.update().catch(()=>{});
+  worker=reg.waiting||await waitForWaitingWorker(reg,6000)
+ }catch(_){}
+ if(!worker)return true;
+ const waitingVersion=await readWorkerVersion(worker),targetVersion=Math.max(latest,waitingVersion||0);
+ info.version=targetVersion;
+ const mode=String(info?.mode||'manual').toLowerCase()==='auto'?'auto':'manual';
+ const choice=mode==='auto'?'update':await loginUpdatePrompt(info);
  if(choice!=='update')return true;
  const btn=document.getElementById('loginUpdateNow');if(btn){btn.disabled=true;btn.textContent='Mise à jour…'}
- const worker=reg?.waiting||await waitForWaitingWorker(reg,2500);
- if(!worker){document.getElementById('loginUpdatePrompt')?.remove();return true}
- try{localStorage.setItem('nettoAppVersion',String(latest))}catch(_){}
- let moved=false;const go=()=>{if(moved)return;moved=true;location.href=target};
+ let moved=false;const go=()=>{if(moved)return;moved=true;try{localStorage.setItem('nettoAppVersion',String(targetVersion));localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())}catch(_){};location.href=target};
  navigator.serviceWorker.addEventListener('controllerchange',go,{once:true});
  worker.postMessage({type:'SKIP_WAITING'});setTimeout(go,4200);
  return false
