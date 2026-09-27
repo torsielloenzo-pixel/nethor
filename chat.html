@@ -19,8 +19,8 @@
 <link rel="stylesheet" href="design-v2.css?v=3">
 <link rel="stylesheet" href="design-v3.css?v=3">
 <link rel="stylesheet" href="design-v4.css?v=3">
-<link rel="stylesheet" href="chat-v2.css?v=1">
-<script src="chat-v2.js?v=2" defer></script>
+<link rel="stylesheet" href="chat-v2.css?v=3">
+<script src="chat-v2.js?v=4" defer></script>
 </head>
 <body>
 <header>
@@ -36,7 +36,14 @@
  <aside class="conversationListPane">
   <div class="listHead">
    <div><h1>Discussions</h1><small>Équipe Nethor</small></div>
-   <button class="newChatBtn" type="button" onclick="openNewChat()" aria-label="Nouvelle discussion" title="Nouvelle discussion">＋</button>
+   <div class="listHeadActions"><button class="newChatBtn" type="button" onclick="openNewChat()" aria-label="Nouvelle discussion" title="Nouvelle discussion">＋</button><button id="chatMenuBtn" class="chatMenuBtn" type="button" onclick="toggleChatMenu(event)" aria-label="Actions des discussions" title="Actions">•••</button></div>
+  </div>
+  <div id="chatMenu" class="chatMenu hidden">
+   <button type="button" onclick="openNewChat();closeChatMenu()">＋ Nouvelle discussion</button>
+   <button type="button" onclick="markAllRead()">✓✓ Tout marquer comme lu</button>
+   <button id="unreadOnlyBtn" type="button" onclick="toggleUnreadOnly()">● Afficher seulement les non lus</button>
+   <button type="button" onclick="refreshChat()">↻ Actualiser</button>
+   <button id="chatArchivesBtn" class="hidden" type="button" onclick="openChatArchives()">▣ Archives</button>
   </div>
   <div class="convSearchWrap"><input id="conversationSearch" class="convSearch" type="search" placeholder="Rechercher une discussion…" oninput="searchConversations(this.value)" autocomplete="off"></div>
   <div id="conversationList" class="conversationList"><div class="listEmpty">Chargement des discussions…</div></div>
@@ -92,6 +99,13 @@
  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
   <div class="modalHead"><div><strong id="infoTitle">Informations</strong><small>Discussion et participants</small></div><button class="modalClose" type="button" onclick="closeConversationInfo()">×</button></div>
   <div id="infoContent"></div>
+ </div>
+</div>
+
+<div id="archivesModal" class="modalBackdrop hidden" onclick="if(event.target===this)closeChatArchives()">
+ <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="archivesTitle">
+  <div class="modalHead"><div><strong id="archivesTitle">Archives du chat</strong><small>Conversations supprimées visuellement · administrateur</small></div><button class="modalClose" type="button" onclick="closeChatArchives()">×</button></div>
+  <div id="archivesList" class="archivesList"><div class="listEmpty">Chargement…</div></div>
  </div>
 </div>
 
