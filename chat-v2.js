@@ -753,10 +753,10 @@ async function boot(){
 }
 boot();
 
-/* Mobile chat viewport: the shell follows the real visual viewport.
-   No body positioning, no keyboard-height compensation. */
+/* Mobile chat viewport v22:
+   le haut du chat reste fixé. Seule la hauteur utile se réduit avec le clavier. */
 (function bindStableMobileChatViewport(){
- let raf=0,lastTop=-1,lastHeight=-1,followRaf=0;
+ let raf=0,lastHeight=-1,followRaf=0;
  const messageBox=()=>document.getElementById('messages');
  const composerFocused=()=>document.activeElement?.id==='message';
  const followLatestMessage=()=>{
@@ -780,36 +780,42 @@ boot();
    if(window.innerWidth>780){
     root.style.removeProperty('--chat-vv-top');
     root.style.removeProperty('--chat-vv-h');
-    lastTop=lastHeight=-1;
+    lastHeight=-1;
     return;
    }
    const vv=window.visualViewport;
-   const top=Math.max(0,Math.round(vv?.offsetTop||0));
-   const height=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
-   const viewportChanged=top!==lastTop||height!==lastHeight;
-   if(top!==lastTop){root.style.setProperty('--chat-vv-top',top+'px');lastTop=top}
-   if(height!==lastHeight){root.style.setProperty('--chat-vv-h',height+'px');lastHeight=height}
+   const viewportTop=Math.max(0,Math.round(vv?.offsetTop||0));
+   const viewportHeight=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
+   /* On conserve toujours top:0 côté CSS.
+      offsetTop est uniquement ajouté à la hauteur disponible pour garder
+      le composeur juste au-dessus du clavier sans déplacer l'entête. */
+   const visibleBottom=Math.max(1,viewportTop+viewportHeight);
+   root.style.setProperty('--chat-vv-top','0px');
+   const viewportChanged=visibleBottom!==lastHeight;
+   if(viewportChanged){
+    root.style.setProperty('--chat-vv-h',visibleBottom+'px');
+    lastHeight=visibleBottom
+   }
    if(viewportChanged&&composerFocused())followLatestMessage()
-  });
+  })
  };
  sync();
  window.addEventListener('resize',sync,{passive:true});
  window.addEventListener('orientationchange',sync,{passive:true});
  if(window.visualViewport){
   window.visualViewport.addEventListener('resize',sync,{passive:true});
-  window.visualViewport.addEventListener('scroll',sync,{passive:true});
+  window.visualViewport.addEventListener('scroll',sync,{passive:true})
  }
  document.addEventListener('focusin',e=>{
   if(e.target?.id!=='message')return;
-  sync();
-  settleLatest();
+  sync();settleLatest();
   setTimeout(sync,50);
   setTimeout(sync,180);
-  setTimeout(sync,360);
+  setTimeout(sync,360)
  },true);
  document.addEventListener('focusout',e=>{
   if(e.target?.id!=='message')return;
   setTimeout(sync,80);
-  setTimeout(sync,220);
- },true);
+  setTimeout(sync,220)
+ },true)
 })();
