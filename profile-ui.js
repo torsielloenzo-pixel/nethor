@@ -813,7 +813,7 @@ function ensureUpdateStyles(){
 function syncGlobalDesignAsset(){
  document.querySelectorAll('link[rel="stylesheet"]').forEach(link=>{
   const href=link.getAttribute('href')||'';
-  if(/design-v4\.css(?:\?v=\d+)?$/i.test(href)&&href!=='design-v4.css?v=6')link.setAttribute('href','design-v4.css?v=6')
+  if(/design-v4\.css(?:\?v=\d+)?$/i.test(href)&&href!=='design-v4.css?v=7')link.setAttribute('href','design-v4.css?v=7')
  })
 }
 function syncAppIconLinks(){
