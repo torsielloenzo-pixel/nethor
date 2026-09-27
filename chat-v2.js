@@ -756,7 +756,23 @@ boot();
 /* Mobile chat viewport: the shell follows the real visual viewport.
    No body positioning, no keyboard-height compensation. */
 (function bindStableMobileChatViewport(){
- let raf=0,lastTop=-1,lastHeight=-1;
+ let raf=0,lastTop=-1,lastHeight=-1,followRaf=0;
+ const messageBox=()=>document.getElementById('messages');
+ const composerFocused=()=>document.activeElement?.id==='message';
+ const followLatestMessage=()=>{
+  if(window.innerWidth>780||!document.body.classList.contains('mobileConversationOpen'))return;
+  cancelAnimationFrame(followRaf);
+  followRaf=requestAnimationFrame(()=>{
+   const box=messageBox();if(!box)return;
+   box.scrollTop=box.scrollHeight
+  })
+ };
+ const settleLatest=()=>{
+  followLatestMessage();
+  setTimeout(followLatestMessage,40);
+  setTimeout(followLatestMessage,140);
+  setTimeout(followLatestMessage,300)
+ };
  const sync=()=>{
   cancelAnimationFrame(raf);
   raf=requestAnimationFrame(()=>{
@@ -770,8 +786,10 @@ boot();
    const vv=window.visualViewport;
    const top=Math.max(0,Math.round(vv?.offsetTop||0));
    const height=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
+   const viewportChanged=top!==lastTop||height!==lastHeight;
    if(top!==lastTop){root.style.setProperty('--chat-vv-top',top+'px');lastTop=top}
    if(height!==lastHeight){root.style.setProperty('--chat-vv-h',height+'px');lastHeight=height}
+   if(viewportChanged&&composerFocused())followLatestMessage()
   });
  };
  sync();
@@ -784,6 +802,7 @@ boot();
  document.addEventListener('focusin',e=>{
   if(e.target?.id!=='message')return;
   sync();
+  settleLatest();
   setTimeout(sync,50);
   setTimeout(sync,180);
   setTimeout(sync,360);
