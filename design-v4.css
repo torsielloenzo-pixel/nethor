@@ -433,3 +433,51 @@ textarea{line-height:1.5!important}
   .hero h1{font-size:36px!important}
   .pageCard h2{font-size:22px!important}
 }
+
+
+/* Verrouillage application mobile Nethor */
+@media(max-width:900px){
+  html.nettoMobileAppLocked{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:none;
+    touch-action:pan-x pan-y;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+  }
+  html.nettoMobileAppLocked body{
+    width:100%!important;
+    max-width:100%!important;
+    min-height:100vh!important;
+    min-height:100dvh!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-x:none;
+    margin:0!important;
+  }
+  html.nettoMobileAppLocked header,
+  html.nettoMobileAppLocked main,
+  html.nettoMobileAppLocked .top,
+  html.nettoMobileAppLocked .workspace,
+  html.nettoMobileAppLocked .panel,
+  html.nettoMobileAppLocked .pageCard,
+  html.nettoMobileAppLocked .planningInsights{
+    max-width:100%!important;
+  }
+  html.nettoMobileAppLocked img,
+  html.nettoMobileAppLocked video,
+  html.nettoMobileAppLocked canvas{
+    max-width:100%;
+  }
+  html.nettoMobileAppLocked .nettoDrop,
+  html.nettoMobileAppLocked .nMenu,
+  html.nettoMobileAppLocked .brandMenu,
+  html.nettoMobileAppLocked .userMenu{
+    max-width:calc(100vw - 16px)!important;
+  }
+  html.nettoMobileAppLocked input,
+  html.nettoMobileAppLocked select,
+  html.nettoMobileAppLocked textarea{
+    font-size:16px!important;
+  }
+}
