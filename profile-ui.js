@@ -23,7 +23,52 @@ function lockMobileAppViewport(){
  document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
  document.addEventListener('dblclick',stopGesture,{passive:false})
 }
+
 lockMobileAppViewport();
+
+/* Mobile keyboard: keep the bottom navigation behind the virtual keyboard. */
+let mobileKeyboardViewportBaseline=0;
+function isMobileTextEntry(el){
+ if(!el||el.nodeType!==1||el.disabled||el.readOnly)return false;
+ if(el.isContentEditable)return true;
+ const tag=String(el.tagName||'').toUpperCase();
+ if(tag==='TEXTAREA')return true;
+ if(tag!=='INPUT')return false;
+ const type=String(el.type||'text').toLowerCase();
+ return !['button','checkbox','radio','range','file','submit','reset','color','hidden','image'].includes(type)
+}
+function syncMobileKeyboardViewport(){
+ const root=document.documentElement,body=document.body;
+ if(!isMobileViewport()){
+  root.classList.remove('nettoKeyboardOpen');body?.classList.remove('nettoKeyboardOpen');
+  root.style.removeProperty('--netto-visual-viewport-h');mobileKeyboardViewportBaseline=0;return
+ }
+ const vv=window.visualViewport;
+ const h=Math.max(1,Math.round(vv?.height||window.innerHeight||0));
+ root.style.setProperty('--netto-visual-viewport-h',h+'px');
+ const editing=isMobileTextEntry(document.activeElement);
+ if(!editing||!mobileKeyboardViewportBaseline)mobileKeyboardViewportBaseline=h;
+ if(!editing)mobileKeyboardViewportBaseline=h;
+ const drop=Math.max(0,mobileKeyboardViewportBaseline-h);
+ const occluded=vv?Math.max(0,Math.round((window.innerHeight||h)-vv.height-(vv.offsetTop||0))):0;
+ const keyboardOpen=editing&&Math.max(drop,occluded)>120;
+ root.classList.toggle('nettoKeyboardOpen',keyboardOpen);
+ body?.classList.toggle('nettoKeyboardOpen',keyboardOpen)
+}
+function bindMobileKeyboardViewport(){
+ let raf=0;
+ const sync=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(syncMobileKeyboardViewport)};
+ document.addEventListener('focusin',sync,true);
+ document.addEventListener('focusout',()=>setTimeout(sync,90),true);
+ window.addEventListener('resize',sync,{passive:true});
+ if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',sync,{passive:true});
+  window.visualViewport.addEventListener('scroll',sync,{passive:true})
+ }
+ sync()
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboardViewport,{once:true});
+else bindMobileKeyboardViewport();
 
 const FAST_ACCESS_TTL=120000;
 const FAST_ACCESS_ROUTES=Object.freeze({
@@ -702,6 +747,11 @@ function addStyle(){
 
  .nettoMobileQuickBar{display:none}
  @media (max-width:900px),(pointer:coarse){
+   html.nettoKeyboardOpen body.nettoHasMobileBar{padding-bottom:0!important}
+   html.nettoKeyboardOpen .nettoMobileQuickBar{display:none!important}
+   html.nettoKeyboardOpen body.nettoHasMobileBar .chatApp{
+     height:calc(var(--netto-visual-viewport-h,100dvh) - 56px - env(safe-area-inset-top))!important
+   }
    :root{--netto-mobile-bar-h:64px}
    body.nettoHasMobileBar{padding-bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom))!important}
    .nettoMobileQuickBar{
