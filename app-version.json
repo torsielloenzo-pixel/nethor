@@ -1,9 +1,9 @@
 {
-  "version": 98,
-  "label": "v0.98",
+  "version": 99,
+  "label": "v0.99",
   "important": true,
-  "title": "Expérience mobile repensée",
-  "message": "Nethor adopte une interface mobile plus proche d’une vraie application : barre d’onglets fixe, écrans plus plats, accueil en tuiles, menus en feuilles et chat inspiré des apps de messagerie.",
-  "published_at": "2026-09-27T17:05:00+02:00",
+  "title": "Correctif d’empilement mobile",
+  "message": "Le menu principal et l’en-tête ne passent plus au-dessus des fenêtres, modales et feuilles de l’application sur mobile.",
+  "published_at": "2026-09-27T17:14:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
