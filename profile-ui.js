@@ -294,7 +294,12 @@ function renderMobileQuickBar(){
  if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
  nav.style.setProperty('--netto-mobile-count',String(items.length));
  nav.innerHTML=items.map(({item,module})=>{const label=item.label||module.label||'Menu',badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';return '<a class="nettoMobileQuickItem '+(mobileBarActive(module)?'active':'')+'" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
- nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>sounds.play('navigate')));
+ nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{
+  if(a.dataset.mobileId==='profile'&&mobileDropMode()){
+   e.preventDefault();e.stopPropagation();toggleDrop('user');return
+  }
+  sounds.play('navigate')
+ }));
  updateMobileNotificationBadge();
  document.body.classList.add('nettoHasMobileBar')
 }
@@ -833,7 +838,7 @@ function addStyle(){
 
    /* Nethor v113 — notifications in mobile bottom bar */
    @media (max-width:900px),(pointer:coarse){
-     .nettoBellWrap{display:none!important}
+     .nettoBellWrap,.nettoUserWrap{display:none!important}
      .nettoMobileNotifBadge{
        position:absolute;top:5px;left:calc(50% + 9px);min-width:18px;height:18px;padding:0 5px;
        border-radius:999px;background:#f02836;color:#fff;border:2px solid rgba(255,255,255,.98);
