@@ -1488,7 +1488,10 @@ async function setupAppUpdates(){
 function maintenanceActive(config=api?.siteConfig){return config?.maintenance?.enabled===true}
 function enforceMaintenanceAccess(){
  const file=(location.pathname.split('/').pop()||'home.html').toLowerCase();
- const isMaintenance=file==='maintenance.html';
+ const isMaintenance=file==='maintenance.html',isLogin=file==='index.html';
+ let forceLogin=false;
+ try{forceLogin=new URLSearchParams(location.search).get('logout')==='1'||sessionStorage.getItem('nettoForceLogin')==='1'}catch(_){}
+ if(isLogin&&forceLogin)return false;
  const isAdmin=api.profile?.role==='admin';
  if(maintenanceActive()&&!isAdmin&&!isMaintenance){location.replace('maintenance.html');return true}
  if(isMaintenance&&(isAdmin||!maintenanceActive())){location.replace('home.html');return true}
