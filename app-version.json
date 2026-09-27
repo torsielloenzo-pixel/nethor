@@ -1,9 +1,10 @@
 {
-  "version": 119,
-  "label": "v1.19",
-  "important": false,
-  "title": "Chat mobile : en-têtes fixes",
-  "message": "Sur mobile, la barre Chat et la barre du contact restent désormais parfaitement fixes. L’ouverture du clavier réduit uniquement la zone des messages pour un rendu plus fluide.",
-  "published_at": "2026-09-27T21:49:00+02:00",
+  "version": 120,
+  "label": "v1.20",
+  "important": true,
+  "mode": "manual",
+  "title": "Nouvelle version de Nethor",
+  "message": "Cette mise à jour améliore le système de mise à jour de Nethor et renforce la lisibilité de Fruits & Légumes sur web.",
+  "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
