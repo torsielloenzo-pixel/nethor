@@ -19,7 +19,19 @@ const ALLOWED_MIME=new Set([
 ]);
 function initials(name){return String(name||'?').trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')||'?'}
 function member(id){return state.members.find(x=>x.id===id)||null}
-function roleLabel(role){return window.NettoProfileUI?.roleLabel?.(role)||({admin:'Administrateur',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'}[role]||role||'Utilisateur')}
+function roleLabel(role){return window.NettoProfileUI?.roleLabel?.(role)||({admin:'Administrateur',point_vente:'Point de vente',surface_vente:'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'}[role]||role||'Utilisateur')}
+function chatRoleKey(m){
+ const raw=String(m?.role||'').trim().toLowerCase(),label=String(roleLabel(m?.role)||'').trim().toLowerCase();
+ if(raw==='admin'||label.includes('administrateur'))return'admin';
+ if(raw==='point_vente'||raw==='surface_vente'||label.includes('point de vente')||label.includes('surface de vente'))return'point-vente';
+ if(raw==='responsable'||label.includes('responsable'))return'responsable';
+ if(raw==='lecture'||label.includes('lecture seule'))return'lecture';
+ return'employe'
+}
+function generalSenderHtml(author,name){
+ const role=chatRoleKey(author),label=author?.role?roleLabel(author.role):'Membre';
+ return '<div class="messageSender generalSender role-'+role+'"><span class="senderRole">'+esc(label)+'</span><span class="senderName">'+esc(name)+'</span></div>'
+}
 function showToast(message){let t=$('chatToast');if(!t){t=document.createElement('div');t.id='chatToast';t.className='toast';document.body.appendChild(t)}t.textContent=message;t.classList.remove('show');requestAnimationFrame(()=>t.classList.add('show'));clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove('show'),2200)}
 function timeShort(v){if(!v)return'';const d=new Date(v),n=new Date();if(d.toDateString()===n.toDateString())return d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}
 function messageTime(v){return new Date(v).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
@@ -201,11 +213,12 @@ async function renderMessages(){
  const box=$('messages');if(!state.activeId){box.innerHTML='<div class="noConversation"><div><div class="logo"><img src="assets/logo-equipe.svg" alt=""></div><strong>Messagerie Nethor</strong><span>Choisis une discussion ou crée une conversation privée ou un groupe.</span></div></div>';return}
  const q=state.messageSearch.trim().toLowerCase();const visible=state.messages.filter(m=>!q||(m.body||'').toLowerCase().includes(q)||(m.attachment_name||'').toLowerCase().includes(q));
  if(!visible.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucun message trouvé.':'Aucun message pour le moment.<br>Écris le premier message.')+'</div>';return}
- const attachments=await Promise.all(visible.map(attachmentHtml));let html='',lastDay='';
+ const attachments=await Promise.all(visible.map(attachmentHtml));let html='',lastDay='',general=activeConversation()?.conversation_type==='general';
  visible.forEach((m,i)=>{const day=dayLabel(m.created_at);if(day!==lastDay){html+='<div class="daySep">'+esc(day)+'</div>';lastDay=day}
   const mine=m.user_id===state.session?.user?.id,author=member(m.user_id),name=author?.display_name||m.display_name||'Utilisateur',canDelete=mine||state.canManage,canEdit=mine&&!m.deleted_at;
   const body=m.deleted_at?'<div class="messageDeleted">Message supprimé</div>':(m.body?'<div class="messageBody">'+esc(m.body)+'</div>':'');
-  html+='<div id="message-'+m.id+'" class="messageRow '+(mine?'mine':'')+'">'+(!mine?avatarHtml(author,'msgAvatar'):'')+'<div class="messageBlock">'+(!mine?'<div class="messageSender">'+esc(name)+'</div>':'')+
+  const sender=general?generalSenderHtml(author,name):(!mine?'<div class="messageSender">'+esc(name)+'</div>':'');
+  html+='<div id="message-'+m.id+'" class="messageRow '+(mine?'mine':'')+' '+(general?'generalMessage':'')+'">'+(!mine?avatarHtml(author,'msgAvatar'):'')+'<div class="messageBlock">'+sender+
    '<div class="bubble" onclick="toggleMessageActions(event,\''+m.id+'\')">'+replyHtml(m)+body+attachments[i]+
    '<div class="messageMeta">'+(m.edited_at?'<span class="editedMark">modifié</span>':'')+'<span>'+esc(messageTime(m.created_at))+'</span>'+readTicks(m)+'</div>'+
    (!m.deleted_at?'<div class="msgActions"><button onclick="replyToMessage(event,\''+m.id+'\')" title="Répondre">↩</button><button onclick="openReactionPicker(event,\''+m.id+'\')" title="Réagir">♡</button>'+(canEdit?'<button onclick="editMessage(event,\''+m.id+'\')" title="Modifier">✎</button>':'')+(canDelete?'<button class="dangerAction" onclick="deleteMessage(event,\''+m.id+'\')" title="Supprimer">⌫</button>':'')+'</div>':'')+
