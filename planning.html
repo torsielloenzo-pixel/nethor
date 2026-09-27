@@ -1880,6 +1880,7 @@ async function init(){
  document.body.classList.add('planningReady');
  renderAll();
  setPlanningView(savedView,{sound:false});
+ if(api?.profile)syncFreshPlanningAccess(api.profile).catch(()=>{});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'}),{once:true});
 else init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'});
