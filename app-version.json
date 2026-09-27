@@ -1,9 +1,9 @@
 {
-  "version": 88,
-  "label": "v0.88",
+  "version": 93,
+  "label": "v0.93",
   "important": true,
-  "title": "Nouvelle version de Nethor",
-  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
+  "title": "Barre de navigation mobile",
+  "message": "Une barre d’accès rapide est désormais disponible en bas de toutes les pages mobiles. L’administrateur peut choisir et ordonner jusqu’à cinq raccourcis depuis l’Éditeur du portail.",
   "published_at": "2026-09-27T15:42:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
