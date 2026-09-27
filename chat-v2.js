@@ -7,7 +7,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),search:'',messageSearch:''
+ signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[]
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -49,11 +49,12 @@ async function loadConversations(){
 function renderConversations(){
  const box=$('conversationList');if(!box)return;
  const q=(state.search||'').trim().toLowerCase();
- const list=state.conversations.filter(c=>{if(!q)return true;return(conversationTitle(c)+' '+(c.last_message||'')).toLowerCase().includes(q)});
+ const list=state.conversations.filter(c=>{if(state.onlyUnread&&Number(c.unread_count)<=0)return false;if(!q)return true;return(conversationTitle(c)+' '+(c.last_message||'')).toLowerCase().includes(q)});
  if(!list.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucune discussion trouvée.':'Aucune discussion pour le moment.')+'</div>';return}
  box.innerHTML=list.map(c=>{
   const title=conversationTitle(c),active=c.conversation_id===state.activeId,preview=(c.last_sender===state.session?.user?.id?'Vous : ':'')+(c.last_message||'Nouvelle discussion'),direct=conversationMember(c),online=direct&&state.onlineIds.has(direct.id);
-  return '<button class="convRow '+(active?'active':'')+'" onclick="openConversation(\''+c.conversation_id+'\',{showMobile:true})">'+conversationAvatar(c)+
+  const ownerGroup=c.conversation_type==='group'&&c.created_by===state.session?.user?.id;
+  return '<button class="convRow '+(active?'active ':'')+(ownerGroup?'ownerGroup':'')+'" onclick="openConversation(\''+c.conversation_id+'\',{showMobile:true})">'+conversationAvatar(c)+
    '<span class="convCopy"><span class="convTitleLine"><strong>'+esc(title)+'</strong>'+(online?'<i class="onlineMini"></i>':'')+'</span><span class="convPreview">'+esc(preview)+'</span></span>'+
    '<span class="convMeta"><span class="convTime">'+esc(timeShort(c.last_message_at||c.updated_at))+'</span>'+(Number(c.unread_count)>0?'<b class="unreadBadge">'+Math.min(99,Number(c.unread_count))+'</b>':'')+'</span></button>'
  }).join('')
@@ -188,6 +189,41 @@ function toggleMessageSearch(){const b=$('messageSearchBar');b.classList.toggle(
 function searchMessages(v){state.messageSearch=v;renderMessages()}
 function openImage(url){$('lightboxImage').src=url;$('imageLightbox').classList.remove('hidden')}
 function closeImage(e){if(e&&e.target!==$('imageLightbox')&&!e.target.closest('.lightboxClose'))return;$('imageLightbox').classList.add('hidden');$('lightboxImage').src=''}
+function toggleChatMenu(e){e?.stopPropagation?.();$('chatMenu')?.classList.toggle('hidden')}
+function closeChatMenu(){$('chatMenu')?.classList.add('hidden')}
+async function markAllRead(){
+ closeChatMenu();
+ const {error}=await db.rpc('chat_mark_all_read');
+ if(error){console.error(error);return showToast('Impossible de marquer les discussions comme lues')}
+ state.conversations.forEach(x=>{x.unread_count=0;x.last_read_at=new Date().toISOString()});
+ renderConversations();showToast('Toutes les discussions sont marquées comme lues')
+}
+function toggleUnreadOnly(){
+ state.onlyUnread=!state.onlyUnread;
+ $('unreadOnlyBtn')?.classList.toggle('active',state.onlyUnread);
+ renderConversations();
+ showToast(state.onlyUnread?'Discussions non lues uniquement':'Toutes les discussions affichées')
+}
+async function refreshChat(){closeChatMenu();await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await Promise.all([loadParticipants(),loadMessages()]);showToast('Discussions actualisées')}
+async function openChatArchives(){
+ closeChatMenu();if(state.profile?.role!=='admin')return;
+ $('archivesModal')?.classList.remove('hidden');const box=$('archivesList');if(box)box.innerHTML='<div class="listEmpty">Chargement…</div>';
+ const {data,error}=await db.rpc('list_chat_archives');
+ if(error){console.error(error);if(box)box.innerHTML='<div class="listEmpty">Archives indisponibles.</div>';return}
+ state.archives=data||[];renderChatArchives()
+}
+function closeChatArchives(){$('archivesModal')?.classList.add('hidden')}
+function renderChatArchives(){
+ const box=$('archivesList');if(!box)return;
+ if(!state.archives.length){box.innerHTML='<div class="listEmpty">Aucune conversation archivée.</div>';return}
+ box.innerHTML=state.archives.map(a=>'<div class="archiveRow"><div><strong>'+esc(a.conversation_name||a.conversation_type||'Conversation')+'</strong><small>'+Number(a.member_count||0)+' membre(s) · '+Number(a.message_count||0)+' message(s) · archivée le '+new Date(a.archived_at).toLocaleString('fr-FR')+'</small></div><div class="archiveActions"><button class="archiveRestore" type="button" onclick="restoreArchivedConversation(\''+a.conversation_id+'\')">Restaurer</button></div></div>').join('')
+}
+async function restoreArchivedConversation(id){
+ if(state.profile?.role!=='admin')return;
+ const {error}=await db.rpc('chat_restore_conversation',{p_conversation:id});
+ if(error){console.error(error);return showToast('Restauration impossible')}
+ showToast('Conversation restaurée');await Promise.all([openChatArchives(),loadConversations()])
+}
 function openNewChat(){state.newMode='direct';state.groupMembers.clear();$('newChatSearch').value='';$('groupName').value='';$('newChatModal').classList.remove('hidden');setNewChatMode('direct')}
 function closeNewChat(){ $('newChatModal').classList.add('hidden') }
 function setNewChatMode(mode){state.newMode=mode;document.querySelectorAll('[data-chat-mode]').forEach(b=>b.classList.toggle('active',b.dataset.chatMode===mode));$('groupName').classList.toggle('hidden',mode!=='group');$('createGroupBtn').classList.toggle('hidden',mode!=='group');renderNewChatMembers()}
@@ -209,18 +245,21 @@ function renderConversationInfo(){
  html+='<label class="infoToggle"><span>Mettre les notifications en sourdine</span><input type="checkbox" '+(mine?.muted?'checked':'')+' onchange="setMuted(this.checked)"></label>';
  if(canGroupManage)html+='<div class="infoSection"><div class="infoSectionTitle">Nom du groupe</div><input id="infoGroupName" class="groupNameInput" value="'+esc(c.conversation_name||'')+'" maxlength="80"></div><div class="infoSection"><div class="infoSectionTitle">Membres du groupe</div><div class="modalMembers">'+state.members.filter(m=>m.id!==state.session.user.id).map(m=>{const selected=state.participants.some(p=>p.user_id===m.id);return '<button class="pickMember '+(selected?'selected':'')+'" onclick="this.classList.toggle(\'selected\')" data-info-member="'+m.id+'">'+avatarHtml(m,'pickAvatar')+'<span><strong>'+esc(m.display_name||'Utilisateur')+'</strong><small>'+esc(roleLabel(m.role))+'</small></span><i class="pickCheck">✓</i></button>'}).join('')+'</div><button class="modalAction" onclick="saveGroupInfo()">Enregistrer le groupe</button></div>';
  else html+='<div class="infoSection"><div class="infoSectionTitle">Participants</div><div class="infoMembers">'+state.participants.map(infoMemberRow).join('')+'</div></div>';
- if(c.conversation_type==='group'){if(canGroupManage)html+='<button class="infoDanger" onclick="deleteConversation()">Supprimer le groupe</button>';else if(mine?.role!=='owner')html+='<button class="infoDanger" onclick="leaveGroup()">Quitter le groupe</button>'}
+ if(c.conversation_type==='group'){if(canGroupManage)html+='<div class="infoHint">Le créateur peut renommer le groupe, ajouter ou retirer des membres et le supprimer visuellement. Une suppression est conservée dans les archives administrateur.</div><button class="infoDanger" onclick="deleteConversation()">Supprimer le groupe</button>';else if(mine?.role!=='owner')html+='<button class="infoDanger" onclick="leaveGroup()">Quitter le groupe</button>'}
  box.innerHTML=html
 }
 async function setMuted(v){const {error}=await db.rpc('chat_set_muted',{p_conversation:state.activeId,p_muted:!!v});if(error)showToast('Impossible de modifier ce réglage');else{const p=state.participants.find(x=>x.user_id===state.session.user.id);if(p)p.muted=!!v;showToast(v?'Notifications en sourdine':'Notifications réactivées')}}
 async function saveGroupInfo(){const name=$('infoGroupName')?.value.trim();if(!name)return showToast('Nom du groupe requis');const ids=[...document.querySelectorAll('[data-info-member].selected')].map(x=>x.dataset.infoMember);const {error}=await db.rpc('chat_update_group',{p_conversation:state.activeId,p_name:name,p_member_ids:ids});if(error){console.error(error);return showToast('Modification impossible')}showToast('Groupe mis à jour');await Promise.all([loadConversations(),loadParticipants()]);renderConversationHeader();renderConversationInfo()}
 async function deleteConversation(){
- if(!state.activeId||!confirm('Supprimer définitivement ce groupe et tous ses messages ?'))return;
+ const conv=activeConversation();if(!conv||conv.conversation_type==='general')return;
+ const creator=conv.created_by===state.session?.user?.id,admin=state.profile?.role==='admin';
+ if(!creator&&!admin)return showToast('Seul le créateur du groupe peut le supprimer');
+ if(!confirm('Supprimer visuellement ce groupe ?\n\nIl sera retiré des discussions. L’administrateur en conservera une trace dans les archives.'))return;
  const conversationId=state.activeId;
- const {data,error}=await db.functions.invoke('chat-actions',{body:{action:'delete-conversation',conversation_id:conversationId}});
- if(error||!data?.ok){console.error('Suppression groupe:',error||data);return showToast('Suppression impossible')}
+ const {error}=await db.rpc('chat_archive_conversation',{p_conversation:conversationId});
+ if(error){console.error('Archivage groupe:',error);return showToast('Suppression impossible')}
  closeConversationInfo();state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');
- await loadConversations();renderConversationHeader();renderMessages();showToast('Groupe supprimé')
+ await loadConversations();renderConversationHeader();renderMessages();showToast('Groupe supprimé des discussions')
 }
 async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');await loadConversations();renderConversationHeader();renderMessages()}
 function startRealtime(){
@@ -238,13 +277,13 @@ function startRealtime(){
   .subscribe()
 }
 function startMemberRealtime(){if(state.memberChannel)return;state.memberChannel=db.channel('nethor-chat-members').on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>loadMembers()).subscribe()}
-document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'))});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
+document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#chatMenu')&&!e.target.closest('#chatMenuBtn'))closeChatMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeChatMenu();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
 window.addEventListener('resize',()=>{if(window.innerWidth>780&&state.activeId)document.body.classList.add('mobileConversationOpen')},{passive:true});
 async function boot(){
  const {data:{session}}=await db.auth.getSession();state.session=session;if(!session){location.replace('index.html');return}
  const {data:p,error}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame').eq('id',session.user.id).maybeSingle();if(error||!p){location.replace('index.html');return}
- state.profile=p;window.currentRole=p.role;await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none';if(permission==='none'){location.replace('home.html');return}state.canManage=permission==='manage';
+ state.profile=p;window.currentRole=p.role;$('chatArchivesBtn')?.classList.toggle('hidden',p.role!=='admin');await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none';if(permission==='none'){location.replace('home.html');return}state.canManage=permission==='manage';
  await loadMembers();startPresence();await loadConversations();startRealtime();startMemberRealtime();
  const requested=new URLSearchParams(location.search).get('c'),general=state.conversations.find(c=>c.conversation_type==='general')?.conversation_id,initial=(requested&&state.conversations.some(c=>c.conversation_id===requested))?requested:general;
  if(initial)await openConversation(initial,{showMobile:!!requested||window.innerWidth>780});else{renderConversationHeader();renderMessages()}
