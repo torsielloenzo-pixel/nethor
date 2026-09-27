@@ -508,6 +508,38 @@ body.planningYearOpen{overflow:hidden!important}
     font-size:17px!important;
   }
 }
+
+/* Calendrier mobile : menu + détection iOS / Android */
+.yearTabMobile{display:none}
+.yearTabDesktop{display:inline}
+.yearInterfaceKicker b{font:inherit;color:#ff6b36}
+@media(max-width:900px){
+  .yearMenuBtn{display:flex!important;align-items:center!important;justify-content:center!important}
+  .yearTabDesktop{display:none!important}
+  .yearTabMobile{display:grid!important;place-items:center!important;gap:1px!important;line-height:1.05!important}
+  .yearTabMobile>span{font-size:12px!important;font-weight:900!important}
+  .yearTabMobile small{font-size:8px!important;font-weight:800!important;opacity:.7!important;letter-spacing:.2px!important}
+  .yearInterfaceHeader{position:relative!important;padding-right:52px!important}
+  .yearBackBtn{display:none!important}
+  .yearInterfaceBrand{grid-template-columns:minmax(0,1fr)!important;padding-right:2px!important}
+  .yearCloseBtn{
+    display:grid!important;
+    position:absolute!important;
+    right:10px!important;
+    top:max(10px,env(safe-area-inset-top))!important;
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    border-radius:10px!important;
+    padding:0!important;
+    font-size:20px!important;
+    line-height:1!important;
+    z-index:12!important;
+  }
+  .yearInterfaceKicker{padding-right:2px!important}
+}
+:root[data-planning-device="ios"] .yearMenuBtn{--device-accent:#ff633a}
+:root[data-planning-device="android"] .yearMenuBtn{--device-accent:#ff7a1f}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -647,7 +679,7 @@ body.planningYearOpen{overflow:hidden!important}
 </style>
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
   <div class="planningViewBar">
-    <div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab" onclick="setPlanningView('year')">Année</button></div>
+    <div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div>
     <div class="weekNav"><button class="btn light miniNav" onclick="changeWeek(-1)">←</button><button class="btn light" onclick="goCurrentWeek()">Cette semaine</button><button class="btn light miniNav" onclick="changeWeek(1)">→</button><span id="weekLabel" class="weekLabel"></span></div>
   </div>
   <section id="weekView">
@@ -735,7 +767,7 @@ body.planningYearOpen{overflow:hidden!important}
         <div class="yearInterfaceBrand">
           <button class="yearBackBtn" type="button" onclick="setPlanningView('week')" aria-label="Fermer la vue annuelle">←</button>
           <div>
-            <span class="yearInterfaceKicker">PLANNING</span>
+            <span class="yearInterfaceKicker">PLANNING <b id="yearPlatformBadge"></b></span>
             <strong id="yearInterfaceTitle">Vue annuelle</strong>
             <small id="yearSummary">Repère rapidement les semaines déjà publiées.</small>
           </div>
@@ -775,6 +807,22 @@ function showToast(msg){let t=document.getElementById('planningToast');if(!t){t=
 function setSaveState(v){const e=document.getElementById('saveState');if(e)e.textContent=v}
 function playUISound(){window.NettoSounds?.play?.('tap')}
 
+function detectPlanningDevice(){
+ const ua=String(navigator.userAgent||'');
+ const platform=String(navigator.userAgentData?.platform||navigator.platform||'');
+ const ipadAsMac=/Mac/i.test(platform)&&navigator.maxTouchPoints>1;
+ if(/iPhone|iPad|iPod/i.test(ua)||ipadAsMac)return{key:'ios',label:'iOS'};
+ if(/Android/i.test(ua)||/Android/i.test(platform))return{key:'android',label:'Android'};
+ return{key:'mobile',label:'Mobile'}
+}
+function applyPlanningDeviceUI(){
+ const device=detectPlanningDevice();
+ document.documentElement.dataset.planningDevice=device.key;
+ const label=document.getElementById('planningDeviceLabel');
+ const badge=document.getElementById('yearPlatformBadge');
+ if(label)label.textContent=device.label;
+ if(badge)badge.textContent='• '+device.label;
+}
 function slots(m=model){const count=m?.slotCount||58,start=m?.startTime??6;return Array.from({length:count},(_,i)=>start+i*.25)}
 function dayKey(index=currentDay){return isoDate(addDays(currentWeekStart,index))}
 function modelDay(index=currentDay){return model?.days?.[dayKey(index)]||null}
@@ -1356,7 +1404,7 @@ async function applyPlanningWidgetPermissions(userRole){
  }
  document.getElementById('planningInsights')?.classList.toggle('hidden',visible===0)
 }
-async function init(){applyPlanningDeepLink();const qs=new URLSearchParams(location.search),savedView=qs.get('view')||localStorage.getItem('nettoPlanningView')||'week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);placePlanningActions();/*mobile-actions*/document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden'||(absenceAccess==='manage'&&role!=='admin'));document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
+async function init(){applyPlanningDeviceUI();applyPlanningDeepLink();const qs=new URLSearchParams(location.search),savedView=qs.get('view')||localStorage.getItem('nettoPlanningView')||'week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);placePlanningActions();/*mobile-actions*/document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden'||(absenceAccess==='manage'&&role!=='admin'));document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
 init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'});
 
 function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
