@@ -1,9 +1,9 @@
 {
-  "version": 84,
-  "label": "v0.84",
+  "version": 85,
+  "label": "v0.85",
   "important": true,
-  "title": "Centre de notifications modernisé",
-  "message": "Le menu Notifications a été entièrement modernisé sur ordinateur et mobile, avec cartes plus lisibles, regroupement par date, onglets retravaillés et panneau mobile optimisé.",
-  "published_at": "2026-09-27T14:18:00+02:00",
+  "title": "Nouvelle version de Nethor",
+  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
+  "published_at": "2026-09-27T14:26:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
