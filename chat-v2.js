@@ -7,7 +7,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set()
+ signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:''
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -176,10 +176,14 @@ function renderConversationHeader(){
  av.innerHTML=conversationAvatar(c,true);if(avatarBtn)avatarBtn.disabled=false;title.textContent=conversationTitle(c);sub.textContent=conversationPresence(c);info.disabled=false;search.disabled=false;composer.classList.remove('hidden')
 }
 async function loadMessages(){
- if(!state.activeId){state.messages=[];state.reactions=[];renderMessages();return}
- const {data,error}=await db.from('chat_messages').select('id,user_id,display_name,body,attachment_path,attachment_name,attachment_type,attachment_size,created_at,conversation_id,reply_to,edited_at,deleted_at').eq('conversation_id',state.activeId).order('created_at',{ascending:true}).limit(400);
+ if(!state.activeId){state.messages=[];state.reactions=[];state.lastMessageRenderKey='';renderMessages();return}
+ const conversationId=state.activeId,seq=++state.messageLoadSeq;
+ const {data,error}=await db.from('chat_messages').select('id,user_id,display_name,body,attachment_path,attachment_name,attachment_type,attachment_size,created_at,conversation_id,reply_to,edited_at,deleted_at').eq('conversation_id',conversationId).order('created_at',{ascending:true}).limit(400);
+ if(seq!==state.messageLoadSeq||state.activeId!==conversationId)return;
  if(error){console.error(error);$('messages').innerHTML='<div class="listEmpty">Impossible de charger les messages.</div>';return}
- state.messages=data||[];await loadReactions();await renderMessages()
+ state.messages=data||[];await loadReactions();
+ if(seq!==state.messageLoadSeq||state.activeId!==conversationId)return;
+ await renderMessages()
 }
 async function loadReactions(){
  const ids=state.messages.map(m=>m.id);if(!ids.length){state.reactions=[];return}
@@ -189,7 +193,7 @@ async function loadReactions(){
 async function attachmentHtml(m){
  if(!m.attachment_path||m.deleted_at)return'';const url=await signed(m.attachment_path);if(!url)return'';
  const type=m.attachment_type||'',name=esc(m.attachment_name||'Pièce jointe'),size=esc(sizeLabel(m.attachment_size));
- if(type.startsWith('image/'))return '<div class="attachment"><img src="'+esc(url)+'" alt="'+name+'" onclick="openImage(this.src)"><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
+ if(type.startsWith('image/'))return '<div class="attachment attachmentImage"><img src="'+esc(url)+'" alt="'+name+'" decoding="async" onclick="openImage(this.src)"><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
  if(type.startsWith('video/'))return '<div class="attachment"><video controls preload="metadata" src="'+esc(url)+'"></video><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
  if(type.startsWith('audio/'))return '<div class="attachment"><audio controls preload="metadata" src="'+esc(url)+'"></audio><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div></div></div>';
  return '<div class="attachment"><div class="fileRow"><div class="fileIcon">📎</div><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Télécharger</a></div></div>'
@@ -210,10 +214,16 @@ function readTicks(m){
  const read=others.every(p=>p.last_read_at&&new Date(p.last_read_at)>=new Date(m.created_at));return '<span class="readTicks '+(read?'read':'')+'">'+(read?'✓✓':'✓')+'</span>'
 }
 async function renderMessages(){
- const box=$('messages');if(!state.activeId){box.innerHTML='<div class="noConversation"><div><div class="logo"><img src="assets/logo-equipe.svg" alt=""></div><strong>Messagerie Nethor</strong><span>Choisis une discussion ou crée une conversation privée ou un groupe.</span></div></div>';return}
+ const box=$('messages'),conversationId=state.activeId,renderSeq=++state.messageRenderSeq;
+ if(!conversationId){state.lastMessageRenderKey='';box.innerHTML='<div class="noConversation"><div><div class="logo"><img src="assets/logo-equipe.svg" alt=""></div><strong>Messagerie Nethor</strong><span>Choisis une discussion ou crée une conversation privée ou un groupe.</span></div></div>';return}
  const q=state.messageSearch.trim().toLowerCase();const visible=state.messages.filter(m=>!q||(m.body||'').toLowerCase().includes(q)||(m.attachment_name||'').toLowerCase().includes(q));
- if(!visible.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucun message trouvé.':'Aucun message pour le moment.<br>Écris le premier message.')+'</div>';return}
- const attachments=await Promise.all(visible.map(attachmentHtml));let html='',lastDay='',general=activeConversation()?.conversation_type==='general';
+ if(!visible.length){state.lastMessageRenderKey='empty:'+conversationId+':'+q;box.innerHTML='<div class="listEmpty">'+(q?'Aucun message trouvé.':'Aucun message pour le moment.<br>Écris le premier message.')+'</div>';return}
+ const general=activeConversation()?.conversation_type==='general';
+ const key=conversationId+'|'+q+'|'+(general?'g':'d')+'|'+visible.map(m=>[m.id,m.body||'',m.attachment_path||'',m.edited_at||'',m.deleted_at||'',m.reply_to||''].join(':')).join(';')+'|'+state.reactions.map(r=>[r.message_id,r.user_id,r.emoji].join(':')).join(';')+'|'+state.participants.map(p=>[p.user_id,p.last_read_at||''].join(':')).join(';');
+ if(key===state.lastMessageRenderKey)return;
+ const attachments=await Promise.all(visible.map(attachmentHtml));
+ if(renderSeq!==state.messageRenderSeq||state.activeId!==conversationId)return;
+ let html='',lastDay='';
  visible.forEach((m,i)=>{const day=dayLabel(m.created_at);if(day!==lastDay){html+='<div class="daySep">'+esc(day)+'</div>';lastDay=day}
   const mine=m.user_id===state.session?.user?.id,author=member(m.user_id),name=author?.display_name||m.display_name||'Utilisateur',canDelete=mine||state.canManage,canEdit=mine&&!m.deleted_at;
   const body=m.deleted_at?'<div class="messageDeleted">Message supprimé</div>':(m.body?'<div class="messageBody">'+esc(m.body)+'</div>':'');
@@ -224,7 +234,11 @@ async function renderMessages(){
    (!m.deleted_at?'<div class="msgActions"><button onclick="replyToMessage(event,\''+m.id+'\')" title="Répondre">↩</button><button onclick="openReactionPicker(event,\''+m.id+'\')" title="Réagir">♡</button>'+(canEdit?'<button onclick="editMessage(event,\''+m.id+'\')" title="Modifier">✎</button>':'')+(canDelete?'<button class="dangerAction" onclick="deleteMessage(event,\''+m.id+'\')" title="Supprimer">⌫</button>':'')+'</div>':'')+
    '</div>'+reactionsHtml(m.id)+'</div></div>'
  });
- box.innerHTML=html;if(!q)requestAnimationFrame(()=>box.scrollTop=box.scrollHeight)
+ if(renderSeq!==state.messageRenderSeq||state.activeId!==conversationId)return;
+ state.lastMessageRenderKey=key;
+ const wasNearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<120;
+ box.innerHTML=html;
+ if(!q&&(wasNearBottom||!box.dataset.rendered)){box.dataset.rendered='1';requestAnimationFrame(()=>box.scrollTop=box.scrollHeight)}
 }
 function toggleMessageActions(e,id){if(e.target.closest('button,a,img,video,audio'))return;const row=$('message-'+id);document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>{if(x!==row)x.classList.remove('actionsOpen')});row?.classList.toggle('actionsOpen')}
 function scrollToMessage(id){const el=$('message-'+id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'center'});el.animate([{filter:'brightness(1)'},{filter:'brightness(.88)'},{filter:'brightness(1)'}],{duration:700})}
@@ -467,10 +481,11 @@ async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {err
 function startRealtime(){
  if(state.dataChannel)return;
  let msgTimer=null,partTimer=null,convTimer=null,reactTimer=null;
- const onMessages=()=>{clearTimeout(msgTimer);msgTimer=setTimeout(async()=>{await loadConversations();if(state.activeId){await Promise.all([loadParticipants(),loadMessages()]);await markRead()}},110)};
- const onParticipants=()=>{clearTimeout(partTimer);partTimer=setTimeout(async()=>{await loadConversations();if(state.activeId){await loadParticipants();await renderMessages();renderConversationHeader()}},130)};
- const onConversations=()=>{clearTimeout(convTimer);convTimer=setTimeout(async()=>{await loadConversations();renderConversationHeader()},120)};
- const onReactions=()=>{clearTimeout(reactTimer);reactTimer=setTimeout(async()=>{if(state.activeId){await loadReactions();await renderMessages()}},90)};
+ const conversationFromPayload=payload=>payload?.new?.conversation_id||payload?.old?.conversation_id||null;
+ const onMessages=payload=>{const changedConversation=conversationFromPayload(payload);clearTimeout(msgTimer);msgTimer=setTimeout(async()=>{await loadConversations();if(state.activeId&&(!changedConversation||changedConversation===state.activeId)){await Promise.all([loadParticipants(),loadMessages()]);await markRead()}},120)};
+ const onParticipants=payload=>{const changedConversation=conversationFromPayload(payload);clearTimeout(partTimer);partTimer=setTimeout(async()=>{await loadConversations();if(state.activeId&&(!changedConversation||changedConversation===state.activeId)){await loadParticipants();await renderMessages();renderConversationHeader()}},140)};
+ const onConversations=()=>{clearTimeout(convTimer);convTimer=setTimeout(async()=>{await loadConversations();renderConversationHeader()},140)};
+ const onReactions=payload=>{clearTimeout(reactTimer);reactTimer=setTimeout(async()=>{if(state.activeId){await loadReactions();await renderMessages()}},100)};
  state.dataChannel=db.channel('nethor-chat-v2-data')
   .on('postgres_changes',{event:'*',schema:'public',table:'chat_messages'},onMessages)
   .on('postgres_changes',{event:'*',schema:'public',table:'chat_reactions'},onReactions)
