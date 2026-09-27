@@ -769,7 +769,7 @@ function renderNotifications(){
  rows.forEach(n=>{
   const group=notificationDayGroup(n.created_at);
   if(group!==previousGroup){html+='<div class="nettoNotifSectionLabel">'+esc(group)+'</div>';previousGroup=group}
-  html+='<article class="nettoNotifItem '+esc(n.kind)+' '+(!n.read_at?'unread':'')+'" role="button" tabindex="0" data-id="'+n.id+'" data-url="'+esc(n.target_url||'')+'"><span class="nettoNotifIcon">'+notificationIcon(n.kind)+'</span><div class="nettoNotifBody"><strong>'+esc(n.title)+'</strong><span>'+esc(n.message)+'</span><div class="nettoNotifCategory">'+esc(notificationCategory(n.kind))+'</div><small>'+notificationDate(n.created_at)+'</small></div><button class="nettoNotifDelete" title="Supprimer" aria-label="Supprimer la notification">×</button></article>'
+  html+='<article class="nettoNotifItem '+esc(n.kind)+' '+(!n.read_at?'unread':'')+'" role="button" tabindex="0" data-id="'+n.id+'" data-url="'+esc(n.target_url||'')+'"><span class="nettoNotifIcon">'+notificationIcon(n.kind)+'</span><div class="nettoNotifBody"><strong>'+esc(n.title)+'</strong><span>'+esc(n.message)+'</span><div class="nettoNotifCategory">'+esc(notificationCategory(n.kind))+'</div><small>'+notificationDate(n.created_at)+'</small></div><span class="nettoNotifSide"><i class="nettoNotifUnreadDot" aria-hidden="true"></i><button class="nettoNotifDelete" title="Supprimer" aria-label="Supprimer la notification">×</button></span></article>'
  });
  list.innerHTML=html;
  const activate=el=>{
@@ -977,7 +977,7 @@ const rewardScript=document.createElement('script');rewardScript.src='reward-pro
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
   /* Notifications web • liste sociale */
-  .nettoNotifMoreWrap{position:relative}
+  .nettoNotifMoreWrap{position:relative;display:none}
   .nettoNotifMoreBtn{width:36px!important;height:36px!important;padding:0!important;border:0!important;border-radius:50%!important;background:#f2f3f5!important;display:grid!important;place-items:center!important;font-size:18px!important;font-weight:900!important;letter-spacing:1px!important;color:#5d6269!important}
   .nettoNotifMoreBtn:hover{background:#e7e9ec!important}
   .nettoNotifMoreMenu{position:absolute;right:0;top:42px;z-index:30;width:210px;padding:6px;background:#fff;border:1px solid #e3e6e9;border-radius:13px;box-shadow:0 16px 42px #14171a24}
@@ -985,6 +985,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   .nettoNotifMoreMenu button:hover{background:#f2f4f6!important}
   .nettoNotifMoreMenu button.danger{color:#be3427!important}
   @media(min-width:701px){
+    .nettoNotifMoreWrap{display:block}
     .nettoNotifDrop{width:min(390px,calc(100vw - 20px));border-radius:17px!important}
     .nettoNotifHead{align-items:center;padding:14px 15px 8px;background:#fff!important}
     .nettoNotifTitle{gap:0}.nettoNotifTitleIcon{display:none}
@@ -1009,11 +1010,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     .nettoNotifBody>span:before{content:" "}
     .nettoNotifCategory{display:none}
     .nettoNotifBody small{margin-top:4px;font-size:8.5px!important;font-weight:800;color:#0866ff}
-    .nettoNotifDelete{width:20px;height:20px;border:0;background:transparent;color:transparent;font-size:0;padding:0;position:relative}
-    .nettoNotifDelete:before{content:"";position:absolute;inset:4px;border-radius:50%;background:#0866ff;opacity:0}
-    .nettoNotifItem.unread .nettoNotifDelete:before{opacity:1}
-    .nettoNotifItem:hover .nettoNotifDelete:before{opacity:0}
-    .nettoNotifItem:hover .nettoNotifDelete:after{content:"•••";position:absolute;right:-3px;top:-7px;color:#60656c;font-size:12px;letter-spacing:1px}
+    .nettoNotifSide{width:20px;min-height:28px;display:grid;place-items:center;position:relative}
+    .nettoNotifUnreadDot{width:9px;height:9px;border-radius:50%;background:#0866ff;opacity:0}
+    .nettoNotifItem.unread .nettoNotifUnreadDot{opacity:1}
+    .nettoNotifDelete{position:absolute;inset:-2px -5px auto auto;width:28px;height:28px;border:0;border-radius:50%;background:#eef0f2;color:#5f646b;font-size:0;padding:0;opacity:0;pointer-events:none}
+    .nettoNotifDelete:after{content:"•••";font-size:11px;letter-spacing:1px}
+    .nettoNotifItem:hover .nettoNotifUnreadDot{opacity:0}
+    .nettoNotifItem:hover .nettoNotifDelete{opacity:1;pointer-events:auto}
+    .nettoNotifDelete:hover{background:#e2e5e8;color:#272b30}
     .nettoNotifEmpty{min-height:185px}
   }
   :root[data-theme="dark"] .nettoNotifMoreBtn{background:#2b2f34!important;color:#dfe3e7!important}
