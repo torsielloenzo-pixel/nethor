@@ -1,9 +1,9 @@
 {
-  "version": 110,
-  "label": "v1.10",
-  "important": true,
-  "title": "Calendrier iPhone corrigé",
-  "message": "Le calendrier annuel est désormais ancré en haut de la fenêtre visible sur iPhone. Il recouvre correctement l’en-tête Nethor et la croix de fermeture reste toujours accessible.",
-  "published_at": "2026-09-27T19:22:00+02:00",
+  "version": 111,
+  "label": "v1.11",
+  "important": false,
+  "title": "Interface web agrandie",
+  "message": "La version ordinateur de Nethor adopte une échelle visuelle proche d’un zoom navigateur à 125 %, avec textes, boutons, cartes, menus et contrôles plus grands, sans modifier le mobile.",
+  "published_at": "2026-09-27T19:28:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
