@@ -1015,7 +1015,7 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   .sourceActions:empty{display:none!important}
 }
 </style>
-<link rel="stylesheet" href="planning-agenda-v2.css?v=3">
+<link rel="stylesheet" href="planning-agenda-v2.css?v=3"><link rel="preload" href="planning-agenda-v2.js?v=5" as="script"><script src="planning-agenda-v2.js?v=5" defer></script>
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
   <div class="planningViewBar">
     <div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div>
@@ -1785,11 +1785,13 @@ async function applyPlanningWidgetPermissions(userRole,configOverride=null,permi
  }
  planningSiteConfig=config;
  absenceAccess=absencePermission(config,userRole);
- try{
-  const {data,error}=await db.rpc('planning_absence_my_permission');
-  if(!error&&['hidden','request','manage'].includes(data))absenceAccess=data;
-  else if(error)console.warn('Permission Indisponibilités / Congés:',error)
- }catch(e){console.warn('Permission Indisponibilités / Congés:',e)}
+ if(absenceAccess!=='hidden'){
+  try{
+   const {data,error}=await db.rpc('planning_absence_my_permission');
+   if(!error&&['hidden','request','manage'].includes(data))absenceAccess=data;
+   else if(error)console.warn('Permission Indisponibilités / Congés:',error)
+  }catch(e){console.warn('Permission Indisponibilités / Congés:',e)}
+ }
  applyPlanningAccessDataset(config,userRole,permissionOverride,absenceAccess);
  for(const [key,id] of Object.entries(PLANNING_WIDGETS)){
   const el=document.getElementById(id);if(!el)continue;
@@ -1889,5 +1891,4 @@ document.addEventListener('DOMContentLoaded',()=>applyTheme(currentTheme()));
 </script><script>
 
 </script>
-<script src="planning-agenda-v2.js?v=5"></script>
 </body></html>
