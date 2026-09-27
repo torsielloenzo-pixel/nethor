@@ -1,9 +1,9 @@
 {
-  "version": 101,
-  "label": "v1.01",
+  "version": 102,
+  "label": "v1.02",
   "important": true,
-  "title": "Correctif responsive du planning mobile",
-  "message": "Le sélecteur Semaine / Année reste maintenant dans le flux de la page et ne masque plus les jours. Le planning s’adapte aussi aux petits et grands écrans mobiles ainsi qu’au mode paysage.",
-  "published_at": "2026-09-27T16:48:00+02:00",
+  "title": "Suppression définitive des messages par l’admin",
+  "message": "L’administrateur peut maintenant faire disparaître complètement un message du chat. Les utilisateurs standards conservent la suppression logique de leurs propres messages.",
+  "published_at": "2026-09-27T16:58:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
