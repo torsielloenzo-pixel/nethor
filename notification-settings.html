@@ -89,6 +89,13 @@ function setPushUI(mode,title,text){
  help.classList.toggle('show',mode==='install');
 }
 async function currentPushSubscription(){if(!pushSupported())return null;const reg=await navigator.serviceWorker.ready;return reg.pushManager.getSubscription()}
+async function syncExistingPushSubscription(){
+ if(!pushSupported()||Notification.permission!=='granted')return;
+ try{
+  const sub=await currentPushSubscription();if(!sub)return;
+  await db.functions.invoke('planning-push',{body:{action:'subscribe',subscription:sub.toJSON(),user_agent:navigator.userAgent}})
+ }catch(e){console.warn('Synchronisation Push:',e)}
+}
 async function refreshPushStatus(){
  if(!pushSupported()){setPushUI('unsupported','Non compatible','Ce navigateur ne prend pas en charge les notifications Push.');return}
  if(isIOS()&&!isStandalone()){setPushUI('install','Installation requise','Ajoute Nethor à l’écran d’accueil pour recevoir les notifications sur iPhone.');return}
@@ -156,7 +163,7 @@ async function setPreference(key,enabled,input){
 }
 async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
- await Promise.all([loadRules(),refreshPushStatus()])
+ await syncExistingPushSubscription();await Promise.all([loadRules(),refreshPushStatus()])
 }
 boot();
 </script>
