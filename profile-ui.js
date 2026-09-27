@@ -1677,7 +1677,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=125;
+const APP_RELEASE=126;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -1721,10 +1721,9 @@ function updateInstallMode(info){return String(info?.mode||'manual').toLowerCase
 async function releaseInfo(){
  try{const r=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));const info=await r.json();return{...info,mode:updateInstallMode(info)}}catch(_){const copy=publicUpdateCopy();return{version:APP_RELEASE,label:displayVersion(APP_RELEASE),important:true,mode:'manual',title:copy.title,message:copy.message,icon:APP_ICON}}
 }
-async function notifyUpdateSystem(reg,info){
- if(!reg||typeof Notification==='undefined'||Notification.permission!=='granted')return;
- const key='nettoUpdateSystemNotified:'+String(info.version||APP_RELEASE);
- try{if(localStorage.getItem(key)==='1')return;const copy=publicUpdateCopy();await reg.showNotification(copy.title,{body:copy.message,icon:info.icon||APP_ICON,badge:info.icon||APP_ICON,tag:'nethor-update-'+String(info.version||APP_RELEASE),renotify:false,data:{url:'home.html',kind:'app_update'}});localStorage.setItem(key,'1')}catch(_){}
+async function notifyUpdateSystem(){
+ /* Les mises à jour Nethor ne doivent jamais déclencher de notification système/push. */
+ return
 }
 function hideUpdateToast(){
  const el=document.getElementById('nettoUpdateToast');if(!el)return;el.classList.remove('show');setTimeout(()=>el.remove(),220)
