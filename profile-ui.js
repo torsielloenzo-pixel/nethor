@@ -403,10 +403,7 @@ function addStyle(){
     .nettoNotifItem{grid-template-columns:50px minmax(0,1fr) 20px;gap:9px;align-items:center;padding:7px 7px;margin:0;border:0;border-radius:10px;background:#fff!important;box-shadow:none!important;min-height:64px}
     .nettoNotifItem:hover{transform:none;background:#f4f5f6!important;border:0;box-shadow:none!important}
     .nettoNotifItem.unread:before{display:none}
-    /* Icônes notifications web plein cadre */
-    .nettoNotifIcon{width:50px;height:50px;border-radius:50%!important;font-size:34px!important;line-height:1!important;box-shadow:none!important;position:relative;overflow:hidden;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;text-align:center!important}
-    .nettoNotifIcon::first-line{line-height:1}
-    .nettoNotifIcon{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif!important}
+    .nettoNotifIcon{width:50px;height:50px;border-radius:50%!important;box-shadow:none!important;position:relative;overflow:hidden;display:grid!important;place-items:center!important;padding:0!important;font-size:0!important}
     .nettoNotifIcon:after{content:"";position:absolute;right:1px;bottom:1px;width:17px;height:17px;border-radius:50%;background:linear-gradient(135deg,#ff3b22,#ff8518);border:2px solid #fff}
     .nettoNotifBody strong{display:inline;font-size:10.5px!important;line-height:1.28;color:#1f2328;font-weight:850}
     .nettoNotifBody>span{display:inline!important;-webkit-line-clamp:unset;font-size:10.5px!important;line-height:1.3;color:#2f343a;margin:0}
@@ -436,6 +433,19 @@ function addStyle(){
     :root[data-theme="dark"] .nettoNotifIcon:after{border-color:#1d2024}
   }
 
+
+  /* Notifications web • glyphe final */
+  @media(min-width:701px){
+    .nettoNotifIcon .nettoNotifGlyph{
+      width:100%!important;height:100%!important;
+      display:grid!important;place-items:center!important;
+      font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif!important;
+      font-size:39px!important;line-height:1!important;
+      transform:scale(1.06)!important;
+      transform-origin:center!important;
+      margin:0!important;padding:0!important;
+    }
+  }
 
 `;document.head.appendChild(s)
 }
