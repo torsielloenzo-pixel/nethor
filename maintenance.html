@@ -39,7 +39,7 @@ h1{font-size:58px;line-height:1;margin:20px 0 8px;font-weight:900;letter-spacing
 }
 .maintenanceLogout:hover{background:#ffffff16;border-color:#ffffff32;transform:translateX(-50%) translateY(-1px)}
 .maintenanceLogout:active{transform:translateX(-50%) scale(.98)}
-.maintenanceLogout:disabled{opacity:.55;cursor:wait}
+.maintenanceLogout:disabled,.maintenanceLogout.busy{opacity:.55;cursor:wait;pointer-events:none}
 .maintenanceLogout svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .maintenanceLogout span{white-space:nowrap}
 @media(max-width:560px){.maintenance{padding:24px 18px 92px}.logo{width:104px;height:104px}h1{font-size:45px}.subtitle{font-size:13px;letter-spacing:5px}.status{min-height:52px;padding:0 18px;font-size:16px}.gear{font-size:24px}.maintenanceLogout{bottom:calc(16px + env(safe-area-inset-bottom));min-width:190px;min-height:46px;font-size:12px}}
@@ -53,10 +53,10 @@ h1{font-size:58px;line-height:1;margin:20px 0 8px;font-weight:900;letter-spacing
  <p class="subtitle">Portail interne</p>
  <div class="status"><span class="gear" aria-hidden="true">⚙</span><span>Maintenance en cours</span></div>
 </main>
-<button id="maintenanceLogout" class="maintenanceLogout" type="button" aria-label="Se déconnecter et revenir à la connexion">
+<a id="maintenanceLogout" class="maintenanceLogout" href="https://nethor.fr/index.html?logout=1&v=115" aria-label="Se déconnecter et revenir à la connexion">
  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
  <span>Retour à la connexion</span>
-</button>
+</a>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script>
 const URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
@@ -71,23 +71,27 @@ async function maintenanceState(){
    db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
   ]);
   const enabled=setting?.value?.maintenance?.enabled===true;
-  if(!session){location.replace('index.html?logout=1');return}
+  if(!session){location.replace('https://nethor.fr/index.html?logout=1&v=115');return}
   const {data:profile}=await db.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
   if(profile?.role==='admin'){location.replace('home.html');return}
   if(!enabled)location.replace('home.html')
  }catch(e){console.warn('Maintenance:',e)}
  finally{checking=false}
 }
-async function leaveMaintenanceToLogin(){
- if(leaving)return;
+async function leaveMaintenanceToLogin(event){
+ if(event)event.preventDefault();
+ const target='https://nethor.fr/index.html?logout=1&v=115';
+ if(leaving){location.href=target;return false}
  leaving=true;
  const btn=document.getElementById('maintenanceLogout');
- if(btn){btn.disabled=true;btn.querySelector('span').textContent='Déconnexion…'}
+ if(btn){btn.classList.add('busy');btn.setAttribute('aria-disabled','true');const label=btn.querySelector('span');if(label)label.textContent='Déconnexion…'}
  try{sessionStorage.setItem('nettoForceLogin','1')}catch(_){}
+ // Secours indépendant de Supabase : la navigation est forcée même si signOut se bloque.
+ const fallback=setTimeout(()=>{location.href=target},900);
  try{
   await Promise.race([
    db.auth.signOut({scope:'local'}),
-   new Promise(resolve=>setTimeout(resolve,1600))
+   new Promise(resolve=>setTimeout(resolve,650))
   ])
  }catch(e){console.warn('Déconnexion:',e)}
  try{
@@ -100,7 +104,9 @@ async function leaveMaintenanceToLogin(){
    if(key&&key.startsWith('sb-')&&key.includes('auth-token'))sessionStorage.removeItem(key)
   }
  }catch(_){}
- location.replace('index.html?logout=1')
+ clearTimeout(fallback);
+ location.replace(target);
+ return false
 }
 document.getElementById('maintenanceLogout').addEventListener('click',leaveMaintenanceToLogin);
 maintenanceState();
