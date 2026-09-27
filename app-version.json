@@ -1,9 +1,9 @@
 {
-  "version": 86,
-  "label": "v0.86",
+  "version": 87,
+  "label": "v0.87",
   "important": true,
   "title": "Nouvelle version de Nethor",
   "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
-  "published_at": "2026-09-27T14:33:00+02:00",
+  "published_at": "2026-09-27T15:38:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
