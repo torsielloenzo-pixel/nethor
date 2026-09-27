@@ -1,10 +1,10 @@
 {
-  "version": 136,
-  "label": "v1.36",
+  "version": 135,
+  "label": "v1.35",
   "important": false,
   "mode": "manual",
-  "title": "Contrôle complet des notifications",
-  "message": "Chaque type de notification peut désormais être diffusé via Aucun, Portail, Push ou Les deux. Les préférences utilisateur respectent les limites globales et les mises à jour Nethor restent sans Push système.",
+  "title": "Menu utilisateur mobile plus stable",
+  "message": "Sur mobile, toucher de nouveau le bouton Menu lorsqu’il est déjà ouvert ne ferme ni ne recharge l’interface. Les liens du menu vers la page courante ne provoquent plus d’action inutile.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
