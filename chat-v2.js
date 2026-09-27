@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
- messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
+ messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,attachmentPreviewUrl:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
  signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:'',voicePeaks:new Map(),activeVoiceId:null
 };
@@ -355,7 +355,25 @@ function closeReactionPicker(){const p=$('reactionPicker');if(p)p.classList.add(
 async function pickReaction(emoji){const id=$('reactionPicker').dataset.message;closeReactionPicker();if(id)await toggleReaction(id,emoji)}
 async function toggleReaction(id,emoji){const mine=state.reactions.find(r=>String(r.message_id)===String(id)&&r.user_id===state.session.user.id&&r.emoji===emoji);if(mine)await db.from('chat_reactions').delete().eq('message_id',id).eq('user_id',state.session.user.id).eq('emoji',emoji);else await db.from('chat_reactions').insert({message_id:id,user_id:state.session.user.id,emoji});await loadReactions();renderMessages()}
 function selectAttachment(input){const f=input.files?.[0];if(!f)return;if(f.size>25*1024*1024){showToast('25 Mo maximum');input.value='';return}if(!attachmentAllowed(f)){showToast('Format non autorisé');input.value='';return}state.selectedFile=f;renderAttachmentPreview()}
-function renderAttachmentPreview(){const p=$('attachPreview');if(!state.selectedFile){p.classList.remove('show');$('attachName').textContent='';return}p.classList.add('show');$('attachName').textContent=state.selectedFile.name+' • '+sizeLabel(state.selectedFile.size)}
+function renderAttachmentPreview(){
+ const p=$('attachPreview'),name=$('attachName'),thumb=$('attachThumb'),img=$('attachThumbImage');
+ if(state.attachmentPreviewUrl){try{URL.revokeObjectURL(state.attachmentPreviewUrl)}catch(_){}state.attachmentPreviewUrl=null}
+ if(!state.selectedFile){
+  p?.classList.remove('show');if(name)name.textContent='';
+  thumb?.classList.remove('show');if(img){img.removeAttribute('src');img.onerror=null}
+  return
+ }
+ p?.classList.add('show');if(name)name.textContent=state.selectedFile.name+' • '+sizeLabel(state.selectedFile.size);
+ const isImage=String(state.selectedFile.type||'').toLowerCase().startsWith('image/');
+ if(isImage&&thumb&&img){
+  state.attachmentPreviewUrl=URL.createObjectURL(state.selectedFile);
+  img.onerror=()=>thumb.classList.remove('show');
+  img.src=state.attachmentPreviewUrl;
+  thumb.classList.add('show')
+ }else{
+  thumb?.classList.remove('show');if(img){img.removeAttribute('src');img.onerror=null}
+ }
+}
 function clearAttachment(){state.selectedFile=null;$('file').value='';renderAttachmentPreview()}
 function autoGrow(){const ta=$('message');ta.style.height='40px';ta.style.height=Math.min(120,Math.max(40,ta.scrollHeight))+'px'}
 let typingStopTimer=null,lastTypingSent=0;
