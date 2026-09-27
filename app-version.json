@@ -1,10 +1,10 @@
 {
-  "version": 136,
-  "label": "v1.36",
+  "version": 137,
+  "label": "v1.37",
   "important": false,
   "mode": "manual",
-  "title": "Entête du chat mobile verrouillé",
-  "message": "Dans une conversation mobile, la barre du contact reste désormais strictement fixe lors de l’ouverture et de la fermeture du clavier. Seule la zone utile du fil et du composeur s’adapte.",
+  "title": "Nouvel accueil mobile",
+  "message": "L’accueil mobile devient un tableau de bord opérationnel avec planning, heures, congés, informations, équipe et accès rapides. Chaque widget peut être affiché ou masqué par rôle et sous-rôle depuis Rôles & permissions.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
