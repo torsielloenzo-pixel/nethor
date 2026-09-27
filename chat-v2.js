@@ -665,45 +665,6 @@ function startRealtime(){
   .on('postgres_changes',{event:'*',schema:'public',table:'chat_participants'},onParticipants)
   .subscribe()
 }
-function bindChatVisualViewport(){
- const root=document.documentElement;
- const sync=()=>{
-  if(window.innerWidth>780)return;
-  const vv=window.visualViewport;
-  const h=Math.max(1,Math.round(vv?.height||window.innerHeight||0));
-  const top=Math.max(0,Math.round(vv?.offsetTop||0));
-  root.style.setProperty('--chat-vv-height',h+'px');
-  root.style.setProperty('--chat-vv-top',top+'px');
-  const active=document.activeElement;
-  const typing=active&&((active.id==='message')||(active.id==='messageSearchInput'));
-  root.classList.toggle('chatKeyboardFocus',!!typing);
-  if(typing&&state.activeId){
-   const box=$('messages');
-   if(box)requestAnimationFrame(()=>{box.scrollTop=box.scrollHeight})
-  }
- };
- const onFocus=e=>{
-  if(e.target?.id!=='message'&&e.target?.id!=='messageSearchInput')return;
-  root.classList.add('chatKeyboardFocus');
-  sync();
-  requestAnimationFrame(sync);
-  setTimeout(sync,50);
-  setTimeout(sync,180)
- };
- const onBlur=e=>{
-  if(e.target?.id!=='message'&&e.target?.id!=='messageSearchInput')return;
-  setTimeout(()=>{sync();if(document.activeElement?.id!=='message'&&document.activeElement?.id!=='messageSearchInput')root.classList.remove('chatKeyboardFocus')},120)
- };
- document.addEventListener('focusin',onFocus,true);
- document.addEventListener('focusout',onBlur,true);
- window.addEventListener('resize',sync,{passive:true});
- window.addEventListener('orientationchange',()=>setTimeout(sync,80),{passive:true});
- if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',sync,{passive:true});
-  window.visualViewport.addEventListener('scroll',sync,{passive:true})
- }
- sync()
-}
 function startMemberRealtime(){if(state.memberChannel)return;state.memberChannel=db.channel('nethor-chat-members').on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>loadMembers()).subscribe()}
 document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#discussionMenu')&&!e.target.closest('#chatMenuListBtn'))closeDiscussionMenu();if(!e.target.closest('#conversationMenu')&&!e.target.closest('#conversationMenuBtn'))closeConversationMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeAllChatMenus();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('contactModal')?.classList.add('hidden');$('addMembersModal')?.classList.add('hidden');$('conversationActionSheet')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
@@ -717,5 +678,4 @@ async function boot(){
  if(initial)await openConversation(initial,{showMobile:!!requested||window.innerWidth>780});else{renderConversationHeader();renderMessages()}
  window.addEventListener('focus',async()=>{await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()})
 }
-bindChatVisualViewport();
 boot();
