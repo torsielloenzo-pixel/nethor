@@ -25,6 +25,53 @@ function lockMobileAppViewport(){
 }
 lockMobileAppViewport();
 
+const FAST_ACCESS_TTL=120000;
+const FAST_ACCESS_ROUTES=Object.freeze({
+ stock:'index.html',planning:'planning.html',chat:'chat.html',articles:'articles.html',
+ rewards:'rewards.html',bakery:'bakery.html',accounts:'accounts.html',
+ portal_admin:'admin-portal.html',settings:'settings.html'
+});
+function storedSupabaseUserId(){
+ try{
+  for(let i=0;i<localStorage.length;i++){
+   const key=localStorage.key(i)||'';
+   if(!/^sb-.*-auth-token$/.test(key))continue;
+   const raw=JSON.parse(localStorage.getItem(key)||'null');
+   const uid=raw?.user?.id||raw?.currentSession?.user?.id||raw?.session?.user?.id;
+   if(uid)return String(uid)
+  }
+ }catch(_){}
+ return''
+}
+function fastAccessSelector(file){
+ const q=String(file||'').replace(/"/g,'');
+ return 'a[href*="'+q+'"],button[onclick*="'+q+'"]'
+}
+function readFastAccessSnapshot(){
+ try{
+  const uid=storedSupabaseUserId();if(!uid)return null;
+  const x=JSON.parse(localStorage.getItem('nettoGlobalUI:'+uid)||'null');
+  if(!x||Date.now()-Number(x.saved_at||0)>FAST_ACCESS_TTL)return null;
+  const snap=x.accessSnapshot;
+  if(!snap||!Array.isArray(snap.allowed))return null;
+  return {uid,allowed:new Set(snap.allowed),role:snap.role||x.profile?.role||''}
+ }catch(_){return null}
+}
+function applyFastAccessBoot(){
+ const root=document.documentElement,snap=readFastAccessSnapshot(),all=Object.entries(FAST_ACCESS_ROUTES);
+ let style=document.getElementById('nettoFastAccessStyle');
+ if(!style){style=document.createElement('style');style.id='nettoFastAccessStyle';document.head?.appendChild(style)}
+ const denied=snap?all.filter(([id])=>id!=='settings'&&!snap.allowed.has(id)):all.filter(([id])=>id!=='settings');
+ const rules=denied.map(([,file])=>fastAccessSelector(file)).join(',');
+ style.textContent=(rules?rules+'{display:none!important;}':'')+
+  'html.nettoAccessPageVerifying main{visibility:hidden!important}';
+ const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
+ const currentEntry=all.find(([,file])=>file===current);
+ if(currentEntry&&currentEntry[0]!=='settings'&&(!snap||!snap.allowed.has(currentEntry[0])))root.classList.add('nettoAccessPageVerifying');
+ root.dataset.nettoFastAccess=snap?'cache':'pending'
+}
+applyFastAccessBoot();
+
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const ROLE={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'};
@@ -1278,7 +1325,27 @@ function startProfileRealtime(){
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles',filter:'id=eq.'+api.session.user.id},async()=>{await refresh()})
   .subscribe()
 }
-function updateKnownUI(){const p=api.profile;if(!p)return;const name=p.display_name||'Utilisateur',role=roleLabel(p.role);['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});['userAvatar','userMenuAvatar'].forEach(id=>paint(document.getElementById(id),api.avatarUrl,name,p.profile_color,p.avatar_frame));buildGlobalHeader();renderMobileQuickBar()}
+function moduleForLegacyElement(el){
+ const raw=(el?.getAttribute?.('href')||'')+' '+(el?.getAttribute?.('onclick')||'');
+ for(const m of NAV_MODULES){const file=(String(m.baseUrl||m.url||'').split('?')[0].split('/').pop()||'').toLowerCase();if(file&&raw.toLowerCase().includes(file))return m}
+ return null
+}
+function enforceLegacyAccessUI(root=document){
+ if(!api.profile)return;
+ root.querySelectorAll('a[href],button[onclick]').forEach(el=>{
+  const m=moduleForLegacyElement(el);if(!m)return;
+  const allowed=moduleAllowed(m,api.profile,api.siteConfig);
+  if(!allowed){el.classList.add('hidden');el.dataset.nettoAccessHidden='1'}
+  else if(el.dataset.nettoAccessHidden==='1'){el.classList.remove('hidden');delete el.dataset.nettoAccessHidden}
+ });
+ const current=pageFile(),m=NAV_MODULES.find(x=>(String(x.baseUrl||x.url||'').split('?')[0].split('/').pop()||'').toLowerCase()===current);
+ if(m&&!moduleAllowed(m,api.profile,api.siteConfig)){document.documentElement.classList.add('nettoAccessPageVerifying');location.replace('home.html');return false}
+ document.documentElement.classList.remove('nettoAccessPageVerifying');
+ document.documentElement.dataset.nettoFastAccess='ready';
+ document.getElementById('nettoFastAccessStyle')?.remove();
+ return true
+}
+function updateKnownUI(){const p=api.profile;if(!p)return;const name=p.display_name||'Utilisateur',role=roleLabel(p.role);['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});['userAvatar','userMenuAvatar'].forEach(id=>paint(document.getElementById(id),api.avatarUrl,name,p.profile_color,p.avatar_frame));enforceLegacyAccessUI();buildGlobalHeader();renderMobileQuickBar()}
 function pageFile(){return (location.pathname.split('/').pop()||'home.html').toLowerCase()}
 function backFallback(){return 'home.html'}
 function goBack(){
@@ -1308,7 +1375,7 @@ async function rememberSiteBase(){
   await api.client.from('app_settings').upsert({key:'site_base_url',value:{url:base},updated_at:new Date().toISOString(),updated_by:api.session.user.id},{onConflict:'key'});
  }catch(e){console.warn('Enregistrement URL portail:',e)}
 }
-function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Équipe','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes'};return map[p]||document.title||'Portail'}
+function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes'};return map[p]||document.title||'Portail'}
 async function logPageView(){if(!api.client||!api.session)return;try{await api.client.rpc('audit_page_view',{p_area:pageArea(),p_path:(location.pathname||'')+(location.search||''),p_title:document.title||pageArea()})}catch(e){console.warn('Journal consultation:',e)}}
 function globalCacheKey(){return api.session?.user?.id?'nettoGlobalUI:'+api.session.user.id:null}
 function hydrateGlobalCache(){
@@ -1317,10 +1384,15 @@ function hydrateGlobalCache(){
   if(!x.profile)return false;api.profile=x.profile;api.siteConfig=x.siteConfig||{};api.subrolePermissions=x.subrolePermissions||{};api.avatarUrl=x.avatarUrl||null;applyProfileTheme(api.profile,false);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return true;document.documentElement.style.setProperty('--profile-accent',api.profile.profile_color||'#ff5a2a');updateKnownUI();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:api.profile,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig,cached:true}}));return true
  }catch(_){return false}
 }
-function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl}))}catch(_){}}
+function buildAccessSnapshot(){
+ const permissions={},allowed=[];
+ NAV_MODULES.forEach(m=>{const level=permissionLevel(m,api.profile,api.siteConfig);permissions[m.id]=level;if(level!=='none')allowed.push(m.id)});
+ return {role:api.profile?.role||'',allowed,permissions}
+}
+function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=113;
+const APP_RELEASE=114;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -1443,7 +1515,7 @@ function startAccessibleNameObserver(){
  observer.observe(document.body,{childList:true,subtree:true});
  window.__nettoA11yObserver=observer;
 }
-async function init(){addStyle();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();setupAppUpdates();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session)return;api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cached=hydrateGlobalCache(),fresh=refresh();if(!cached)await fresh;else fresh.catch(()=>{});rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotifications()};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
+async function init(){addStyle();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();setupAppUpdates();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session)return;api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cached=hydrateGlobalCache(),fresh=refresh();if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotifications()};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
 const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
