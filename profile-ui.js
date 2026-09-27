@@ -271,6 +271,7 @@ function mobileBarItems(config=api?.siteConfig){
 function mobileBarActive(module){
  try{
   const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
+  if(current==='notification-settings.html'&&module?.id==='profile')return true;
   const u=new window.URL(module?.url||'home.html',location.href);
   const target=(u.pathname.split('/').pop()||'home.html').toLowerCase();
   return current===target
