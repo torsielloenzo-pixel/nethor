@@ -2,8 +2,8 @@
   "version": 74,
   "label": "v0.74",
   "important": true,
-  "title": "Actions du planning sur mobile",
-  "message": "Sur mobile, Importer Excel et Modifier le planning sont désormais placés côte à côte à droite, juste au-dessus du tableau.",
-  "published_at": "2026-09-27T12:14:00+02:00",
+  "title": "Planning réorganisé",
+  "message": "Détection d’anomalies passe en bandeau horizontal sous la légende du planning, et Couverture magasin gagne en largeur.",
+  "published_at": "2026-09-27T12:22:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
