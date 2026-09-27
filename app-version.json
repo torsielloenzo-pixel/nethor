@@ -1,10 +1,10 @@
 {
-  "version": 134,
-  "label": "v1.34",
+  "version": 135,
+  "label": "v1.35",
   "important": false,
   "mode": "manual",
-  "title": "Navigation mobile plus fluide",
-  "message": "Sur mobile, toucher l’onglet déjà ouvert ne recharge plus la page. Le même comportement s’applique aux liens du menu utilisateur pointant vers la page courante.",
+  "title": "Contrôle Push et Portail",
+  "message": "Les canaux Portail et Push peuvent désormais être contrôlés séparément par type de notification, au niveau administrateur et utilisateur. Les mises à jour Nethor restent sans Push système.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
