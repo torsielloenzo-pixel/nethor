@@ -7,7 +7,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:''
+ signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:''
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -39,6 +39,7 @@ function dayLabel(v){const d=new Date(v),n=new Date(),y=new Date(n);y.setDate(n.
 function sizeLabel(n){n=Number(n)||0;if(n<1024)return n+' o';if(n<1048576)return(n/1024).toFixed(1).replace('.',',')+' Ko';return(n/1048576).toFixed(1).replace('.',',')+' Mo'}
 function attachmentAllowed(file){const ext=(file?.name?.split('.').pop()||'').toLowerCase();return ALLOWED_EXT.has(ext)&&(!file.type||ALLOWED_MIME.has(file.type))}
 async function signed(path){if(!path)return null;const cached=state.signedCache.get(path);if(cached&&cached.exp>Date.now())return cached.url;const {data}=await db.storage.from('chat-files').createSignedUrl(path,3600);const url=data?.signedUrl||null;if(url)state.signedCache.set(path,{url,exp:Date.now()+3300000});return url}
+async function signedAvatar(path){if(!path)return null;const cached=state.avatarSignedCache.get(path);if(cached&&cached.exp>Date.now())return cached.url;const {data}=await db.storage.from('profile-avatars').createSignedUrl(path,3600);const url=data?.signedUrl||null;if(url)state.avatarSignedCache.set(path,{url,exp:Date.now()+3300000});return url}
 function avatarHtml(m,cls='convAvatar'){const name=m?.display_name||'Utilisateur',frame=m?.avatar_frame?' data-avatar-frame="'+esc(m.avatar_frame)+'"':'',style=' style="background:'+(esc(m?.profile_color||'#ff5a2a'))+'"';return '<div class="'+cls+'"'+frame+style+'>'+(m?.avatar_url?'<img src="'+esc(m.avatar_url)+'" alt="">':esc(initials(name)))+'</div>'}
 function conversationTitle(c){if(!c)return'Discussion';if(c.conversation_type==='general')return'Général';if(c.conversation_type==='group')return c.conversation_name||'Groupe';const other=(c.member_ids||[]).find(id=>id!==state.session?.user?.id);return member(other)?.display_name||'Discussion privée'}
 function conversationMember(c){if(!c||c.conversation_type!=='direct')return null;const other=(c.member_ids||[]).find(id=>id!==state.session?.user?.id);return member(other)}
@@ -64,10 +65,10 @@ async function loadPresenceHistory(){
 async function loadMembers(){
  const {data,error}=await db.rpc('list_team_members');if(error){console.warn(error);return}
  const rows=[...(data||[])];if(state.session?.user?.id&&state.profile&&!rows.some(x=>x.id===state.session.user.id))rows.push({id:state.session.user.id,...state.profile});
- state.members=await Promise.all(rows.map(async m=>{if(m.avatar_path){const {data:a}=await db.storage.from('profile-avatars').createSignedUrl(m.avatar_path,3600);m.avatar_url=a?.signedUrl||null}return m}));
+ state.members=await Promise.all(rows.map(async m=>{if(m.avatar_path)m.avatar_url=await signedAvatar(m.avatar_path);return m}));
  await loadPresenceHistory();renderConversations();renderNewChatMembers();renderConversationHeader()
 }
-function syncPresence(ids){const before=new Set(state.onlineIds);state.onlineIds=new Set(ids||window.NettoProfileUI?.onlineIds||[]);renderConversations();renderConversationHeader();renderTyping();const left=[...before].some(id=>!state.onlineIds.has(id));if(left)setTimeout(()=>loadPresenceHistory(),700)}
+function syncPresence(ids){const before=new Set(state.onlineIds),next=new Set(ids||window.NettoProfileUI?.onlineIds||[]);const changed=before.size!==next.size||[...before].some(id=>!next.has(id));state.onlineIds=next;if(changed){state.lastConversationRenderKey='';renderConversations();renderConversationHeader()}renderTyping();const left=[...before].some(id=>!next.has(id));if(left)setTimeout(()=>loadPresenceHistory(),700)}
 function startPresence(){syncPresence();window.addEventListener('netto:presence',e=>syncPresence(e.detail?.ids||[]))}
 async function loadConversations(){
  const {data,error}=await db.rpc('list_chat_conversations');if(error){console.error('Conversations:',error);showToast('Impossible de charger les discussions');return}
@@ -78,6 +79,10 @@ function renderConversations(){
  const box=$('conversationList');if(!box)return;
  const q=(state.search||'').trim().toLowerCase();
  const list=state.conversations.filter(c=>{if(state.onlyUnread&&Number(c.unread_count)<=0)return false;if(!q)return true;return(conversationTitle(c)+' '+(c.last_message||'')).toLowerCase().includes(q)});
+ const memberVisual=state.members.map(m=>[m.id,m.avatar_url||'',m.profile_color||'',m.avatar_frame||''].join(':')).join(';');
+ const key=q+'|'+(state.onlyUnread?'1':'0')+'|'+(state.activeId||'')+'|'+[...state.onlineIds].sort().join(',')+'|'+memberVisual+'|'+list.map(c=>[c.conversation_id,c.conversation_name||'',c.last_message||'',c.last_message_at||'',c.updated_at||'',c.unread_count||0,c.created_by||''].join(':')).join(';');
+ if(key===state.lastConversationRenderKey)return;
+ state.lastConversationRenderKey=key;
  if(!list.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucune discussion trouvée.':state.onlyUnread?'Aucune discussion non lue.':'Aucune discussion pour le moment.')+'</div>';return}
  box.innerHTML=list.map(c=>{
   const title=conversationTitle(c),active=c.conversation_id===state.activeId,preview=(c.last_sender===state.session?.user?.id?'Vous : ':'')+(c.last_message||'Nouvelle discussion'),direct=conversationMember(c),online=direct&&state.onlineIds.has(direct.id);
