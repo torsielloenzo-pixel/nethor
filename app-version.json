@@ -1,9 +1,9 @@
 {
-  "version": 90,
-  "label": "v0.90",
-  "important": true,
-  "title": "Notifications mobile corrigées",
-  "message": "Le bouton parasite à côté de MAJ a été supprimé et le panneau de notifications est de nouveau correctement positionné et cliquable sur mobile.",
-  "published_at": "2026-09-27T15:56:00+02:00",
+  "version": 91,
+  "label": "v0.91",
+  "important": false,
+  "title": "Chat desktop plus lisible",
+  "message": "Les titres, noms et messages du chat sont maintenant plus grands et plus lisibles sur ordinateur, sans modifier la version mobile.",
+  "published_at": "2026-09-27T16:00:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
