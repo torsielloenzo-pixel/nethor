@@ -2,8 +2,8 @@
   "version": 87,
   "label": "v0.87",
   "important": true,
-  "title": "Nouvelle version de Nethor",
-  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
-  "published_at": "2026-09-27T15:38:00+02:00",
+  "title": "Correctif mobile global",
+  "message": "La version mobile a été fiabilisée : notifications tactiles, panneau sans conflit CSS, zones de clic agrandies, débordements bloqués et chat optimisé pour iPhone et petits écrans.",
+  "published_at": "2026-09-27T15:35:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
