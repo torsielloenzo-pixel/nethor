@@ -48,7 +48,7 @@
  <section class="conversationPane">
   <div class="chatHeader">
    <button class="mobileBack" type="button" onclick="closeMobileConversation()" aria-label="Retour aux discussions">‹</button>
-   <div id="activeAvatarMount"></div>
+   <button id="activeAvatarButton" class="activeAvatarButton" type="button" onclick="openHeaderConversationActions(event)" aria-label="Actions personnelles de la discussion" title="Actions de la discussion" disabled><div id="activeAvatarMount"></div></button>
    <div class="activeIdentity"><strong id="activeTitle">Sélectionne une discussion</strong><small id="activeSubtitle"></small></div>
    <div class="chatHeadActions">
     <button id="messageSearchBtn" class="headIconBtn" type="button" onclick="toggleMessageSearch()" aria-label="Rechercher dans la conversation" title="Rechercher" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.2 4.2"/></svg></button>
