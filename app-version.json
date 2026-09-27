@@ -1,10 +1,10 @@
 {
-  "version": 126,
-  "label": "v1.26",
+  "version": 127,
+  "label": "v1.27",
   "important": false,
   "mode": "manual",
-  "title": "Personnalisation mobile allégée",
-  "message": "Le widget Barre utilisateur n’est plus affiché sur mobile dans la page Personnalisation.",
+  "title": "Mise à jour accessible sur mobile",
+  "message": "Le menu utilisateur mobile propose désormais une entrée Mise à jour, placée sous Mode sombre et au-dessus de Déconnexion.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
