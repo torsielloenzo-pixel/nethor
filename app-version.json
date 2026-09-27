@@ -3,8 +3,8 @@
   "label": "v1.30",
   "important": false,
   "mode": "manual",
-  "title": "Navigation mobile instantanée",
-  "message": "La barre mobile utilise désormais le cache local en priorité, active immédiatement l’onglet touché et actualise les données en arrière-plan pour des changements de page beaucoup plus fluides.",
+  "title": "Préférences Push simplifiées",
+  "message": "Les choix utilisateur concernent désormais uniquement les notifications Push, avec trois catégories activées par défaut et une interface mobile harmonisée.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
