@@ -94,3 +94,59 @@ html[data-theme="dark"] .agendaLoading strong{color:#f2f4f6}
   }
   html[data-theme="dark"] .agendaDayCardCoworker{background:#1b1d20!important}
 }
+
+
+/* Planning Agenda v5 — mon agenda isolé du planning équipe */
+@media(max-width:760px){
+  .agendaMount{
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+  }
+  .agendaDayList.agendaSeparated{
+    display:block!important;
+    background:transparent!important;
+  }
+  .agendaPersonalBlock,
+  .agendaGlobalBlock{
+    display:block;
+    overflow:hidden;
+    background:#fff;
+    border:1px solid #dde1e5;
+    border-radius:14px;
+    box-shadow:0 4px 14px rgba(15,23,42,.045);
+  }
+  .agendaPersonalBlock .agendaDayCardMe{
+    margin:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:#fff!important;
+  }
+  .agendaSectionGap{
+    display:block;
+    height:14px;
+    margin:0;
+    background:#f0f2f5;
+  }
+  .agendaGlobalBlock .agendaDayCard{
+    border-radius:0!important;
+    margin:0!important;
+  }
+  .agendaGlobalBlock .agendaDayCard:last-child{
+    border-bottom:0!important;
+  }
+  html[data-theme="dark"] .agendaPersonalBlock,
+  html[data-theme="dark"] .agendaGlobalBlock{
+    background:#1b1d20;
+    border-color:#32363b;
+    box-shadow:0 4px 14px rgba(0,0,0,.14);
+  }
+  html[data-theme="dark"] .agendaPersonalBlock .agendaDayCardMe{
+    background:#202328!important;
+  }
+  html[data-theme="dark"] .agendaSectionGap{
+    background:#141619;
+  }
+}
