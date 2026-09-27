@@ -1,9 +1,9 @@
 {
-  "version": 81,
-  "label": "v0.81",
+  "version": 82,
+  "label": "v0.82",
   "important": true,
-  "title": "Nouvelle version de Nethor",
-  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
-  "published_at": "2026-09-27T13:35:00+02:00",
+  "title": "Chat Équipe amélioré",
+  "message": "Les créateurs de groupes peuvent gérer et supprimer visuellement leurs groupes. Un menu d’actions ajoute Tout marquer comme lu, filtre des non lus, actualisation et archives administrateur avec restauration.",
+  "published_at": "2026-09-27T13:45:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
