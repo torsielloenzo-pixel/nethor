@@ -142,7 +142,8 @@ function arrangeMobilePlanningWidgets(){
  const bar=document.querySelector('.planningViewBar'),week=document.getElementById('weekView'),agenda=document.getElementById('agendaView'),main=document.getElementById('planningApp');
  if(!bar||!week||!agenda||!main)return;
  if(isMobile()){
-  if(bar.parentElement!==week||bar.nextElementSibling!==agenda)week.insertBefore(bar,agenda)
+  /* Sur mobile, l'Agenda reste prioritaire : Semaine / Calendrier vient juste dessous. */
+  if(bar.parentElement!==week||agenda.nextElementSibling!==bar)week.insertBefore(bar,agenda.nextElementSibling)
  }else if(bar.parentElement!==main){
   main.insertBefore(bar,week)
  }
