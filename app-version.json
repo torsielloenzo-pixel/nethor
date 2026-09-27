@@ -1,10 +1,10 @@
 {
-  "version": 129,
-  "label": "v1.29",
+  "version": 130,
+  "label": "v1.30",
   "important": false,
   "mode": "manual",
-  "title": "Préférences de notifications",
-  "message": "Nethor dispose désormais d’un centre de réglages des notifications avec préférences par type, gestion Push et règles globales administrables.",
+  "title": "Navigation mobile instantanée",
+  "message": "La barre mobile utilise désormais le cache local en priorité, active immédiatement l’onglet touché et actualise les données en arrière-plan pour des changements de page beaucoup plus fluides.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
