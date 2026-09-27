@@ -261,7 +261,7 @@ async function computeVoicePeaks(root,audio){
 function updateVoiceProgress(root){
  if(!root)return;const audio=root.querySelector('.voiceAudio'),current=root.querySelector('.voiceCurrent'),total=root.querySelector('.voiceTotal'),play=root.querySelector('.voicePlayIcon');
  if(!audio)return;const duration=Number.isFinite(audio.duration)?audio.duration:0,currentTime=Number.isFinite(audio.currentTime)?audio.currentTime:0,progress=duration?currentTime/duration:0;
- root.style.setProperty('--voice-progress',String(Math.max(0,Math.min(1,progress))));
+ const p=Math.max(0,Math.min(1,progress));root.style.setProperty('--voice-progress',String(p));root.style.setProperty('--voice-remaining',(100-p*100)+'%');
  if(current)current.textContent=formatVoiceTime(currentTime);if(total)total.textContent=duration?formatVoiceTime(duration):'--:--';
  if(play)play.textContent=audio.paused?'▶':'❚❚';root.classList.toggle('playing',!audio.paused)
 }
@@ -436,10 +436,6 @@ async function renderDesktopDetails(){
  const media=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&/^(image|video)\//.test(m.attachment_type||''));
  const files=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&!/^(image|video)\//.test(m.attachment_type||''));
  box.innerHTML='<div class="detailsHero">'+hero+'<h2>'+esc(title)+'</h2><span class="detailsRole">'+esc(role)+'</span><p>'+esc(presence)+'</p></div>'+
-  '<div class="detailsActions detailsActionsCompact">'+
-   '<button class="detailsAction" type="button" onclick="toggleMessageSearch()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4 4"/></svg></span><span>Rechercher</span></button>'+
-   (canAdd?'<button class="detailsAction" type="button" onclick="openAddMembersFromConversation()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><path d="M3.5 19c.8-3.4 2.7-5 5.5-5"/><path d="M18 7v7M14.5 10.5h7"/></svg></span><span>Ajouter</span></button>':'')+
-  '</div>'+
   '<details class="detailsSection" open><summary>Informations sur la discussion</summary><div class="detailsSectionBody">'+
    '<button class="detailsRow" type="button" onclick="'+(isDirect&&direct?'openContactCard(\''+direct.id+'\')':'openConversationParticipants()')+'"><span class="detailsRowIcon">👥</span><span class="detailsRowCopy"><strong>'+(isDirect?'Profil du contact':'Participants')+'</strong><small>'+esc(isDirect?presence:(people.length+' membre'+(people.length>1?'s':'')))+'</small></span><span>›</span></button>'+
    '<button class="detailsRow" type="button" onclick="openConversationInfo()"><span class="detailsRowIcon">⚙</span><span class="detailsRowCopy"><strong>Paramètres de la discussion</strong><small>Notifications'+(isGroup?' et gestion du groupe':'')+'</small></span><span>›</span></button>'+
