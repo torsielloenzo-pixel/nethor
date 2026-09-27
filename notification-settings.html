@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f3f4f6">
+<title>Nethor</title>
+<script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="profile-ui.js?v=128" defer></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+<link rel="stylesheet" href="design-v2.css?v=3">
+<link rel="stylesheet" href="design-v3.css?v=3">
+<link rel="stylesheet" href="design-v4.css?v=8">
+<style>
+:root{--ns-bg:#f3f4f6;--ns-card:#fff;--ns-text:#1c2025;--ns-muted:#7b828b;--ns-line:#e4e7eb;--ns-accent:#f15a2b;--ns-soft:#fff1eb}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100dvh;background:var(--ns-bg);color:var(--ns-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body>header{display:none!important}
+button{font:inherit}
+main{width:min(100%,760px);margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 12px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))}
+.nsTop{display:flex;align-items:center;gap:11px;margin:2px 2px 16px}
+.nsBack{width:42px;height:42px;border:1px solid var(--ns-line);border-radius:14px;background:var(--ns-card);display:grid;place-items:center;color:inherit;font-size:24px;font-weight:700;cursor:pointer}
+.nsTitle{min-width:0}.nsTitle h1{margin:0;font-size:28px;letter-spacing:-.8px;line-height:1.05}.nsTitle p{margin:5px 0 0;color:var(--ns-muted);font-size:10px;line-height:1.35}
+.nsCard{margin-bottom:13px;background:var(--ns-card);border:1px solid var(--ns-line);border-radius:20px;box-shadow:0 8px 28px rgba(15,23,42,.045);overflow:hidden}
+.nsCardHead{padding:15px 16px 10px}.nsCardHead h2{margin:0;font-size:17px}.nsCardHead p{margin:5px 0 0;color:var(--ns-muted);font-size:10px;line-height:1.45}
+.pushPanel{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin:2px 14px 14px;padding:13px;border:1px solid var(--ns-line);border-radius:15px;background:#f8f9fa}
+.pushStatus{display:flex;align-items:flex-start;gap:10px}.pushDot{width:10px;height:10px;border-radius:50%;background:#a4a7ad;box-shadow:0 0 0 4px #a4a7ad18;margin-top:3px;flex:none}.pushStatus.active .pushDot{background:#1b9a50;box-shadow:0 0 0 4px #1b9a5018}.pushStatus.blocked .pushDot{background:#d23b2d;box-shadow:0 0 0 4px #d23b2d18}.pushStatus.warning .pushDot{background:#d88400;box-shadow:0 0 0 4px #d8840018}.pushStatus strong{display:block;font-size:11px}.pushStatus span{display:block;color:#81858c;font-size:9px;line-height:1.4;margin-top:3px}
+.pushActions{display:flex;gap:7px}.btn{border:0;border-radius:11px;min-height:40px;padding:0 12px;font-weight:850;cursor:pointer}.primary{background:linear-gradient(135deg,#ff3f26,#ff8426);color:#fff;box-shadow:0 7px 18px #ff5a2a22}.danger{background:#fff0ed;color:#ba382b}.hidden{display:none!important}.pushState{padding:0 16px 13px;font-size:9px;color:var(--ns-muted);min-height:13px}.pushInstallHelp{display:none;margin:0 14px 14px;padding:10px 12px;border-radius:12px;background:#fff7ec;border:1px solid #f7d9a9;font-size:9px;line-height:1.45;color:#7a5220}.pushInstallHelp.show{display:block}
+.ruleList{display:grid}.ruleRow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--ns-line)}.ruleRow:first-child{border-top:0}.ruleIcon{width:42px;height:42px;border-radius:14px;background:var(--ns-soft);color:var(--ns-accent);display:grid;place-items:center;font-size:19px}.ruleCopy{min-width:0}.ruleCopy strong{display:flex;align-items:center;gap:7px;font-size:13px;line-height:1.2}.ruleCopy p{margin:4px 0 0;color:var(--ns-muted);font-size:9.5px;line-height:1.4}.ruleCopy small{display:block;margin-top:5px;color:#9a7a68;font-size:8.5px;font-weight:700;line-height:1.35}.ruleBadge{display:inline-flex;align-items:center;min-height:19px;padding:0 6px;border-radius:999px;background:#f2f3f5;color:#777;font-size:7.5px;font-weight:900}.ruleBadge.appOnly{background:#fff0e8;color:#cf5d2d}.ruleBadge.off{background:#ffeceb;color:#bd3b31}
+.switch{position:relative;width:46px;height:28px;display:block;flex:none}.switch input{position:absolute;opacity:0;pointer-events:none}.switch span{position:absolute;inset:0;border-radius:999px;background:#d9dde2;transition:.18s}.switch span:after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 2px 5px #0002;transition:.18s}.switch input:checked+span{background:linear-gradient(135deg,#ff4a29,#ff8426)}.switch input:checked+span:after{transform:translateX(18px)}.switch input:disabled+span{opacity:.45}
+.nsInfo{margin:0 14px 14px;padding:10px 12px;border-radius:12px;background:#f7f8fa;border:1px solid var(--ns-line);font-size:9px;color:var(--ns-muted);line-height:1.5}
+:root[data-theme="dark"]{--ns-bg:#17191d;--ns-card:#22252a;--ns-text:#f1eeea;--ns-muted:#aaa59f;--ns-line:#343940;--ns-soft:#392821}
+:root[data-theme="dark"] .pushPanel,:root[data-theme="dark"] .nsInfo{background:#1e2125}
+:root[data-theme="dark"] .pushInstallHelp{background:#302719;border-color:#554122;color:#e8c995}
+:root[data-theme="dark"] .ruleBadge{background:#30343a;color:#bbb}:root[data-theme="dark"] .ruleBadge.appOnly{background:#3a2b23;color:#ffad83}:root[data-theme="dark"] .ruleBadge.off{background:#412725;color:#ffaaa2}
+@media(max-width:560px){main{padding-left:10px;padding-right:10px}.nsTop{margin-bottom:13px}.nsTitle h1{font-size:26px}.pushPanel{grid-template-columns:1fr}.pushActions .btn{flex:1}.ruleRow{grid-template-columns:42px minmax(0,1fr) auto;padding:12px}.ruleIcon{width:40px;height:40px}.ruleCopy strong{font-size:12.5px}}
+</style>
+</head>
+<body>
+<header><div class="top"></div></header>
+<main>
+ <div class="nsTop">
+  <button class="nsBack" type="button" onclick="backToUserMenu()" aria-label="Retour au menu utilisateur">‹</button>
+  <div class="nsTitle"><h1>Notifications</h1><p>Choisis les alertes que tu souhaites recevoir.</p></div>
+ </div>
+
+ <section class="nsCard">
+  <div class="nsCardHead"><h2>Notifications mobiles</h2><p>Active ou désactive les notifications Push sur cet appareil.</p></div>
+  <div class="pushPanel">
+   <div id="pushStatus" class="pushStatus"><span class="pushDot"></span><div><strong id="pushStatusTitle">Vérification…</strong><span id="pushStatusText">État des notifications sur cet appareil.</span></div></div>
+   <div class="pushActions"><button id="pushEnableBtn" class="btn primary" type="button" onclick="enablePushNotifications()">Activer</button><button id="pushDisableBtn" class="btn danger hidden" type="button" onclick="disablePushNotifications()">Désactiver</button></div>
+  </div>
+  <div id="pushInstallHelp" class="pushInstallHelp">Sur iPhone, ouvre Nethor depuis l’icône ajoutée à l’écran d’accueil avant d’activer les notifications.</div>
+  <div id="pushState" class="pushState" aria-live="polite"></div>
+ </section>
+
+ <section class="nsCard">
+  <div class="nsCardHead"><h2>Types de notifications</h2><p>Ces réglages s’appliquent aux notifications du portail et, lorsque disponible, aux notifications Push.</p></div>
+  <div id="ruleList" class="ruleList"><div class="nsInfo">Chargement des préférences…</div></div>
+ </section>
+
+ <div class="nsInfo">Les réglages globaux définis par l’administrateur restent prioritaires. Les notifications de mise à jour Nethor restent <strong>dans l’application uniquement</strong> et ne déclenchent jamais de Push système.</div>
+</main>
+
+<script>
+const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let session=null,rules=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const icons={planning_changes:'🗓️',direct_message:'💬',group_message:'👥',absence:'🏖️',admin_message:'📣',app_update:'⬆️',maintenance:'🛠️',security:'🔐'};
+
+function backToUserMenu(){location.href='home.html?open_user_menu=1'}
+function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1}
+function isStandalone(){return window.matchMedia?.('(display-mode: standalone)')?.matches===true||navigator.standalone===true}
+function pushSupported(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window}
+function base64UrlToUint8Array(value){const pad='='.repeat((4-value.length%4)%4),base64=(value+pad).replace(/-/g,'+').replace(/_/g,'/'),raw=atob(base64),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
+function setPushUI(mode,title,text){
+ const box=$('pushStatus'),enable=$('pushEnableBtn'),disable=$('pushDisableBtn'),help=$('pushInstallHelp');
+ if(!box||!enable||!disable||!help)return;
+ box.className='pushStatus'+(mode?' '+mode:'');$('pushStatusTitle').textContent=title;$('pushStatusText').textContent=text;
+ enable.classList.toggle('hidden',mode==='active'||mode==='blocked'||mode==='unsupported'||mode==='install');
+ disable.classList.toggle('hidden',mode!=='active');
+ help.classList.toggle('show',mode==='install');
+}
+async function currentPushSubscription(){if(!pushSupported())return null;const reg=await navigator.serviceWorker.ready;return reg.pushManager.getSubscription()}
+async function refreshPushStatus(){
+ if(!pushSupported()){setPushUI('unsupported','Non compatible','Ce navigateur ne prend pas en charge les notifications Push.');return}
+ if(isIOS()&&!isStandalone()){setPushUI('install','Installation requise','Ajoute Nethor à l’écran d’accueil pour recevoir les notifications sur iPhone.');return}
+ try{
+  const {data:control}=await db.from('notification_controls').select('enabled').eq('user_id',session.user.id).maybeSingle();
+  if(control?.enabled===false){setPushUI('blocked','Notifications désactivées par l’administrateur','Les envois sont suspendus pour ton compte.');return}
+ }catch(e){console.warn('Contrôle notifications:',e)}
+ if(Notification.permission==='denied'){setPushUI('blocked','Notifications bloquées','Réactive les notifications de Nethor dans les réglages de ton appareil.');return}
+ try{
+  const sub=await currentPushSubscription();
+  if(sub&&Notification.permission==='granted')setPushUI('active','Notifications activées','Les alertes autorisées peuvent être reçues sur cet appareil.');
+  else setPushUI('','Notifications désactivées','Active-les pour recevoir les alertes autorisées.');
+ }catch(e){setPushUI('warning','État indisponible','Impossible de vérifier l’abonnement Push pour le moment.')}
+}
+async function enablePushNotifications(){
+ const state=$('pushState'),btn=$('pushEnableBtn');state.textContent='';
+ if(!pushSupported()||(isIOS()&&!isStandalone())){await refreshPushStatus();return}
+ btn.disabled=true;state.textContent='Activation des notifications…';
+ try{
+  const permission=await Notification.requestPermission();
+  if(permission!=='granted'){state.textContent=permission==='denied'?'Autorisation refusée.':'Activation annulée.';await refreshPushStatus();return}
+  const reg=await navigator.serviceWorker.ready;
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub){
+   const {data:keyData,error:keyError}=await db.functions.invoke('planning-push',{body:{action:'public-key'}});
+   if(keyError||!keyData?.public_key)throw keyError||new Error('Clé Push indisponible');
+   sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:base64UrlToUint8Array(keyData.public_key)});
+  }
+  const {error}=await db.functions.invoke('planning-push',{body:{action:'subscribe',subscription:sub.toJSON(),user_agent:navigator.userAgent}});
+  if(error)throw error;
+  state.textContent='✓ Notifications mobiles activées sur cet appareil.';window.NettoSounds?.play?.('success');await refreshPushStatus()
+ }catch(e){console.error('Activation Push:',e);state.textContent='Impossible d’activer les notifications pour le moment.';window.NettoSounds?.play?.('error');await refreshPushStatus()}
+ finally{btn.disabled=false}
+}
+async function disablePushNotifications(){
+ const state=$('pushState'),btn=$('pushDisableBtn');btn.disabled=true;state.textContent='Désactivation…';
+ try{
+  const sub=await currentPushSubscription();
+  if(sub){try{await db.functions.invoke('planning-push',{body:{action:'unsubscribe',endpoint:sub.endpoint}})}catch(_){}await sub.unsubscribe()}
+  state.textContent='Notifications mobiles désactivées sur cet appareil.';window.NettoSounds?.play?.('delete');await refreshPushStatus()
+ }catch(e){console.error('Désactivation Push:',e);state.textContent='Impossible de désactiver les notifications.';window.NettoSounds?.play?.('error')}
+ finally{btn.disabled=false}
+}
+function renderRules(){
+ const host=$('ruleList');
+ if(!rules.length){host.innerHTML='<div class="nsInfo">Aucun type de notification disponible.</div>';return}
+ host.innerHTML=rules.map(r=>'<div class="ruleRow"><span class="ruleIcon">'+esc(icons[r.rule_key]||'🔔')+'</span><div class="ruleCopy"><strong>'+esc(r.label)+(r.push_allowed?'<span class="ruleBadge">Push + portail</span>':'<span class="ruleBadge appOnly">Portail uniquement</span>')+(!r.global_enabled?'<span class="ruleBadge off">Désactivé globalement</span>':'')+'</strong><p>'+esc(r.description||'')+'</p><small>'+esc(r.trigger_text||'')+'</small></div><label class="switch" title="'+(r.global_enabled?'Activer ou désactiver':'Désactivé globalement par l’administrateur')+'"><input type="checkbox" data-rule="'+esc(r.rule_key)+'" '+(r.user_enabled?'checked':'')+' '+(!r.global_enabled?'disabled':'')+' onchange="setPreference(\''+esc(r.rule_key)+'\',this.checked,this)"><span></span></label></div>').join('')
+}
+async function loadRules(){
+ const host=$('ruleList');host.innerHTML='<div class="nsInfo">Chargement des préférences…</div>';
+ const {data,error}=await db.rpc('my_notification_preferences');
+ if(error){console.error(error);host.innerHTML='<div class="nsInfo">Impossible de charger les préférences pour le moment.</div>';return}
+ rules=Array.isArray(data)?data:[];renderRules()
+}
+async function setPreference(key,enabled,input){
+ input.disabled=true;
+ try{
+  const {data,error}=await db.rpc('set_my_notification_preference',{p_rule_key:key,p_enabled:enabled});
+  if(error||data!==true)throw error||new Error('Enregistrement impossible');
+  const row=rules.find(x=>x.rule_key===key);if(row)row.user_enabled=enabled;
+  window.NettoSounds?.play?.('switch');
+  await window.NettoProfileUI?.loadNotificationPreferences?.()
+ }catch(e){console.error(e);input.checked=!enabled;window.NettoSounds?.play?.('error')}
+ finally{input.disabled=!rules.find(x=>x.rule_key===key)?.global_enabled}
+}
+async function boot(){
+ const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
+ await Promise.all([loadRules(),refreshPushStatus()])
+}
+boot();
+</script>
+</body>
+</html>
