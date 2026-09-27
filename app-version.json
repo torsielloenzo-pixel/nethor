@@ -1,10 +1,10 @@
 {
-  "version": 128,
-  "label": "v1.28",
+  "version": 129,
+  "label": "v1.29",
   "important": false,
   "mode": "manual",
-  "title": "Notifications mobile allégées",
-  "message": "Le grand cadre entourant la liste des notifications a été supprimé sur mobile pour un affichage plus léger.",
+  "title": "Préférences de notifications",
+  "message": "Nethor dispose désormais d’un centre de réglages des notifications avec préférences par type, gestion Push et règles globales administrables.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
