@@ -393,12 +393,15 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
     background:#fff!important;border-top:1px solid #e4e7ea!important
   }
   .composeRow{
-    grid-template-columns:38px 38px minmax(0,1fr) 42px!important;gap:5px!important;
-    align-items:end!important
+    grid-template-columns:36px 36px minmax(0,1fr) 38px!important;
+    gap:7px!important;
+    align-items:center!important
   }
   .composeIcon{
-    width:38px!important;height:38px!important;border:0!important;border-radius:50%!important;
-    background:#f0f2f5!important
+    width:36px!important;height:36px!important;
+    min-width:36px!important;min-height:36px!important;
+    padding:0!important;border:0!important;border-radius:50%!important;
+    background:#f0f2f5!important;font-size:18px!important
   }
   .composer textarea{
     min-height:38px!important;max-height:120px!important;padding:9px 13px!important;
@@ -406,8 +409,10 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
     box-shadow:none!important;font-size:16px!important
   }
   .sendBtn{
-    width:42px!important;height:42px!important;border-radius:50%!important;
-    box-shadow:none!important
+    width:38px!important;height:38px!important;
+    min-width:38px!important;min-height:38px!important;
+    padding:0!important;border-radius:50%!important;
+    box-shadow:none!important;font-size:17px!important
   }
   .typingLine{background:#f0f2f5!important}
   .chatMenu{
@@ -583,7 +588,7 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   }
 
   .composeIcon svg{
-    width:20px;height:20px;display:block;margin:auto;
+    width:18px;height:18px;display:block;margin:auto;
     fill:none;stroke:currentColor;stroke-width:1.9;
     stroke-linecap:round;stroke-linejoin:round;
   }
