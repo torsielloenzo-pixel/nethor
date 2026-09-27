@@ -127,7 +127,10 @@ function renderWeekAgenda(a){
 function renderAgenda(){
  const host=document.getElementById('agendaMount');if(!host)return;
  try{
-  if(typeof model==='undefined'||!model){host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Le même import Excel alimente Classique et Agenda.</span></div>';return}
+  if(typeof model==='undefined'||(!document.body.classList.contains('planningReady')&&model==null)){
+   host.innerHTML='<div class="agendaLoading"><span class="agendaLoadingSpinner" aria-hidden="true"></span><div><strong>Chargement du planning</strong><small>Préparation de la semaine…</small></div></div>';return
+  }
+  if(!model){host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return}
   const a=currentWeekStart;renderDayPicker(a);
   document.getElementById('mobileAgendaModeBar')?.classList.toggle('hidden',!isMobile());
   document.getElementById('agendaStats')?.classList.toggle('hidden',!isMobile());
@@ -151,6 +154,11 @@ function arrangeMobilePlanningWidgets(){
 function handleViewport(){arrangeMobilePlanningWidgets();document.body.classList.toggle('mobileAgendaForced',isMobile());setLayout(isMobile()?'agenda':profileLayout,false)}
 function boot(){
  if(booted)return;inject();arrangeMobilePlanningWidgets();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
+ if(isMobile()){
+  try{mobileMode=localStorage.getItem('nettoAgendaMobileMode')==='week'?'week':'day'}catch(_){}
+  setLayout('agenda',false);
+  return
+ }
  const wait=()=>{if(typeof db!=='undefined'&&db){loadPreference()}else setTimeout(wait,120)};wait();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
