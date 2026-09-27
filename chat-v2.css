@@ -134,7 +134,6 @@ header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bac
 :root[data-theme="dark"] .conversationActionSheet{background:#1e2227;color:#f2f4f6}:root[data-theme="dark"] .conversationActionGrip{background:#4b515a}:root[data-theme="dark"] .conversationActionList button{color:#edf0f3}:root[data-theme="dark"] .conversationActionList button:active{background:#292e35}:root[data-theme="dark"] .sheetIcon{background:#2b3037}:root[data-theme="dark"] .conversationActionList .sheetDanger .sheetIcon{background:#402623}:root[data-theme="dark"] .conversationActionCancel{background:#2b3037;color:#edf0f3}:root[data-theme="dark"] .contactRole{background:#3a2822;color:#ffad85}
 
 
-@media(min-width:781px){.conversationActionBackdrop{display:none!important}}
 
 .contactInfoRow{width:100%;border:0;text-align:left;color:inherit;cursor:pointer;font:inherit}
 .contactInfoRow:hover{background:#fff4ef}
@@ -185,3 +184,16 @@ header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bac
  .convRow{padding:8px 7px;grid-template-columns:44px minmax(0,1fr) auto}
  .messageBlock{max-width:88%}
 }
+
+.activeAvatarButton{border:0;background:transparent;padding:0;margin:0;border-radius:14px;display:grid;place-items:center;cursor:pointer}
+.activeAvatarButton:disabled{cursor:default}
+.activeAvatarButton:not(:disabled):hover .activeAvatar{transform:translateY(-1px);box-shadow:0 8px 20px #ff5a2a24}
+.activeAvatarButton:not(:disabled):focus-visible{outline:3px solid #ff5a2a2b;outline-offset:3px}
+.activeAvatarButton .activeAvatar{transition:transform .16s ease,box-shadow .16s ease}
+@media(min-width:781px){
+ .conversationActionBackdrop.desktopContext{display:block!important;background:transparent!important;backdrop-filter:none!important}
+ .conversationActionBackdrop.desktopContext .conversationActionSheet{position:fixed;width:min(310px,calc(100vw - 20px));border-radius:18px;padding:8px 9px;box-shadow:0 22px 65px #11182735;border:1px solid #e1e5e9;animation:none}
+ .conversationActionBackdrop.desktopContext .conversationActionGrip,.conversationActionBackdrop.desktopContext .conversationActionCancel{display:none}
+ .conversationActionBackdrop.desktopContext .conversationActionHeader{padding:7px 7px 10px}
+}
+:root[data-theme="dark"] .conversationActionBackdrop.desktopContext .conversationActionSheet{border-color:#383d45}
