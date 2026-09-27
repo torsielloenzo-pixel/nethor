@@ -827,6 +827,13 @@ async function loadSessionProfile(uid,fields='display_name,role,ui_preferences')
  return{data:null,error:lastError}
 }
 async function boot(){
+ const forceLogin=new URLSearchParams(location.search).get('logout')==='1'||sessionStorage.getItem('nettoForceLogin')==='1';
+ if(forceLogin){
+  try{sessionStorage.removeItem('nettoForceLogin')}catch(_){}
+  try{await db.auth.signOut({scope:'local'})}catch(e){console.warn('Déconnexion forcée:',e)}
+  try{history.replaceState(null,'','index.html')}catch(_){}
+  profile=null;window.currentRole='';return showLogin()
+ }
  const {data:{session},error:sessionError}=await db.auth.getSession();if(sessionError){console.warn('Session:',sessionError);return showLogin('Impossible de vérifier la session. Réessaie dans un instant.')}if(!session)return showLogin();
  applyCachedProfileTheme(session.user.id);
  const {data,error}=await loadSessionProfile(session.user.id);
@@ -935,6 +942,7 @@ async function maintenanceTargetForRole(role,normalTarget){
 
 async function login(e){
  e.preventDefault();window.NettoSounds?.unlock?.();$('loginError').textContent='';
+ try{sessionStorage.removeItem('nettoForceLogin')}catch(_){}
  const ident=$('email').value.trim().toLowerCase(),authEmail=ident.includes('@')?ident:ident.replace(/[^a-z0-9._-]/g,'')+'@stock-fl.local';
  const {data:authData,error}=await db.auth.signInWithPassword({email:authEmail,password:$('password').value});
  if(error)return loginDenied('Email ou mot de passe incorrect.');
