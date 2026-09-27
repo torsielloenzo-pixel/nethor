@@ -280,7 +280,28 @@ async function sendMessage(){
  }catch(err){if(path){try{await db.storage.from('chat-files').remove([path])}catch(_){}}console.error(err);showToast('Envoi impossible')}
  finally{btn.disabled=false}
 }
-async function deleteMessage(e,id){e.stopPropagation();const m=state.messages.find(x=>String(x.id)===String(id));if(!m)return;if(!(m.user_id===state.session.user.id||state.canManage))return;if(!confirm('Supprimer ce message ?'))return;const {error}=await db.from('chat_messages').update({body:null,deleted_at:new Date().toISOString(),attachment_name:null,attachment_type:null,attachment_size:null}).eq('id',id);if(error)return showToast('Suppression impossible');if(m.attachment_path){try{await db.storage.from('chat-files').remove([m.attachment_path])}catch(_){}}window.NettoSounds?.play?.('delete');await loadMessages()}
+async function deleteMessage(e,id){
+ e.stopPropagation();
+ const m=state.messages.find(x=>String(x.id)===String(id));if(!m)return;
+ const isAdmin=state.profile?.role==='admin';
+ if(!(m.user_id===state.session.user.id||state.canManage))return;
+ const prompt=isAdmin?'Supprimer définitivement ce message ?\n\nCette action le fera disparaître complètement du chat.':'Supprimer ce message ?';
+ if(!confirm(prompt))return;
+ if(isAdmin){
+  const {data:attachmentPath,error}=await db.rpc('chat_admin_delete_message',{p_message:Number(id)});
+  if(error){console.error('Suppression définitive admin:',error);return showToast('Suppression impossible')}
+  const path=attachmentPath||m.attachment_path;
+  if(path){try{await db.storage.from('chat-files').remove([path])}catch(err){console.warn('Suppression pièce jointe:',err)}}
+  window.NettoSounds?.play?.('delete');
+  await Promise.all([loadMessages(),loadConversations()]);
+  showToast('Message supprimé définitivement');
+  return
+ }
+ const {error}=await db.from('chat_messages').update({body:null,deleted_at:new Date().toISOString(),attachment_name:null,attachment_type:null,attachment_size:null}).eq('id',id).eq('user_id',state.session.user.id);
+ if(error)return showToast('Suppression impossible');
+ if(m.attachment_path){try{await db.storage.from('chat-files').remove([m.attachment_path])}catch(_){}}
+ window.NettoSounds?.play?.('delete');await loadMessages()
+}
 async function markRead(){if(!state.activeId)return;await db.rpc('chat_mark_read',{p_conversation:state.activeId});const c=activeConversation();if(c){c.unread_count=0;c.last_read_at=new Date().toISOString()}renderConversations();try{await db.from('planning_notifications').update({read_at:new Date().toISOString()}).eq('user_id',state.session.user.id).eq('kind','chat_message').eq('target_url','chat.html?c='+state.activeId).is('read_at',null)}catch(_){}}
 function setupTypingChannel(){
  if(state.typingChannel){db.removeChannel(state.typingChannel);state.typingChannel=null}state.typing.clear();renderTyping();if(!state.activeId)return;
