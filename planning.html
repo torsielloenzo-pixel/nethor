@@ -18,7 +18,7 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 
 .importPanel{margin:0}.compactImport{position:relative}.excelDrop{display:flex;align-items:center;gap:9px;padding:7px 11px;border:1px solid #e4c4b8;background:linear-gradient(135deg,#fff9f6,#fffdfb);border-radius:12px;cursor:pointer;transition:background .16s,border-color .16s,box-shadow .16s,transform .12s;min-height:44px;box-shadow:0 4px 14px #c7431810}.excelDrop:hover,.excelDrop.drag{background:#fff3ed;border-color:#ff7952;box-shadow:0 7px 18px #ff5a2a18}.excelDrop:active{transform:scale(.985)}.excelIcon{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;display:grid;place-items:center;font-size:15px;font-weight:900;flex:none;box-shadow:0 5px 12px #ff4c2528}.excelDrop strong{display:block;font-size:10px;white-space:nowrap;color:#2a2d31}.excelDrop small{display:block;font-size:8px;color:#858990;margin-top:2px;white-space:nowrap}.excelDrop>b{display:none}.importState{position:absolute;right:0;top:49px;z-index:30;width:max-content;max-width:320px;font-size:9px;min-height:0;padding:0}.importState:not(:empty){background:#fff;border:1px solid #e4e6e9;border-radius:9px;padding:7px 9px;box-shadow:0 8px 22px #0002}.importState.ok{color:#188443;font-weight:800}.importState.err{color:#c22b33;font-weight:800}
 .editSaveBar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:11px;padding:11px 12px;border:1px solid #d9dde2;border-radius:13px;background:#fff;box-shadow:0 5px 18px #00000009}.editSaveBar.hidden{display:none!important}.editSaveBarText strong{display:block;font-size:11px}.editSaveBarText small{display:block;font-size:9px;color:#858991;margin-top:2px}.saveFinishBtn{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;white-space:nowrap}
-.readerHead{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin:8px 0 10px}.dateTitle{font-size:25px;font-weight:900}.readerMeta{font-size:11px;color:#767b83;margin-top:3px}.sourceBadge{font-size:10px;font-weight:800;background:#fff3ec;color:#d84b28;border:1px solid #ffd8c9;border-radius:999px;padding:6px 9px}
+.readerHead{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin:8px 0 10px}.dateTitle{font-size:25px;font-weight:900}.readerMeta{font-size:11px;color:#767b83;margin-top:3px}.sourceActions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}.sourceBadge{font-size:10px;font-weight:800;background:#fff3ec;color:#d84b28;border:1px solid #ffd8c9;border-radius:999px;padding:6px 9px}.sourceDownloadBtn{border:1px solid #d9dde2;background:#fff;color:#30343a;border-radius:9px;padding:6px 9px;font-size:9px;font-weight:850;cursor:pointer;white-space:nowrap}.sourceDownloadBtn:hover{border-color:#ff8a62;background:#fff6f2}.sourceDownloadBtn:disabled{opacity:.45;cursor:not-allowed}
 .editTools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px;padding:10px 12px;border:1px solid #e0e3e6;border-radius:13px;background:#fff}.editTools strong{font-size:11px}.paintChoices{display:flex;gap:6px;flex-wrap:wrap}.paintChoice{border:1px solid #dfe2e6;background:#f7f8f9;border-radius:9px;padding:7px 9px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:5px;cursor:pointer}.paintChoice i{width:10px;height:10px;border-radius:2px}.paintChoice.active{background:#202024;color:white;border-color:#202024}
 .emptyState{padding:40px 18px;text-align:center;background:#fff;border:1px solid #e1e4e8;border-radius:16px;color:#777}.emptyState strong{display:block;color:#222;font-size:15px;margin-bottom:5px}
 .sheetViewport{background:#fff;border:1px solid #cfd3d8;border-radius:12px;overflow:auto;box-shadow:0 7px 24px #0000000a;max-width:100%;-webkit-overflow-scrolling:touch}
@@ -143,7 +143,7 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
       <div id="days" class="days"></div>
       <div class="planningActions"><span id="saveState" class="saveState">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
     </div>
-    <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><span id="sourceBadge" class="sourceBadge hidden"></span></div>
+    <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><div class="sourceActions"><span id="sourceBadge" class="sourceBadge hidden"></span><button id="downloadSourceBtn" class="sourceDownloadBtn hidden" type="button" onclick="downloadPlanningSource()">⇩ Télécharger Excel</button></div></div>
 
     <section id="planningInsights" class="planningInsights">
       <article id="coverageWidget" class="planningInsightCard coverageCard compactInsightCard">
@@ -558,10 +558,10 @@ function renderReader(){
  const dt=addDays(currentWeekStart,currentDay),day=modelDay();
  document.getElementById('dateTitle').textContent=DAYS[currentDay][1]+' '+frDate(dt);
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
- if(!model||!day){meta.textContent='Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
+ if(!model||!day){meta.textContent='Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=false;empty.classList.add('hidden');viewport.classList.remove('hidden');
  meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime);
- badge.textContent=model.sourceFile||'Excel';badge.classList.toggle('hidden',!model.sourceFile);
+ badge.textContent=model.sourceFile||'Excel';badge.classList.toggle('hidden',!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){const admin=role==='admin';downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean));
  let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Employé</th>';
  ss.forEach((t,i)=>{const major=i%2===0,label=major?(Number.isInteger(t)?String(Math.floor(t)):fmtTime(t)):'',cls=(i%4===0?'hourStart ':'')+(i%2===0?'halfStart':'blankQuarter');h+='<th class="timeHead '+cls+'" title="'+fmtTime(t)+'–'+fmtTime(t+.25)+'">'+label+'</th>'});
@@ -573,15 +573,15 @@ function renderAll(){renderWeekHeader();renderReader();renderPlanningInsights()}
 
 async function loadWeek(start=currentWeekStart){
  currentWeekStart=startOfWeek(start);const key=isoDate(currentWeekStart);setSaveState('Chargement…');
- const {data,error}=await db.from('planning_weeks').select('data,week_label,source_file,imported,updated_at').eq('week_start',key).maybeSingle();
- if(error){console.warn(error);model=null}else{model=data?.data?.version===3?data.data:null;if(model){model.weekLabel=data.week_label||model.weekLabel||'';model.sourceFile=data.source_file||model.sourceFile||''}}
+ const {data,error}=await db.from('planning_weeks').select('data,week_label,source_file,source_path,imported,updated_at').eq('week_start',key).maybeSingle();
+ if(error){console.warn(error);model=null}else{model=data?.data?.version===3?data.data:null;if(model){model.weekLabel=data.week_label||model.weekLabel||'';model.sourceFile=data.source_file||model.sourceFile||'';model.sourcePath=data.source_path||model.sourcePath||null}}
  await loadPlanningAbsences();
  setSaveState('Lecture seule');renderAll()
 }
 async function saveWeek(){
- if(!canEdit||!model)return;setSaveState('Enregistrement…');model.updatedAt=new Date().toISOString();
- const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:new Date().toISOString(),updated_by:currentUser?.id||null};
- const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'✓ Enregistré');if(error)console.warn(error);else setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850)
+ if(!canEdit||!model)return false;setSaveState('Enregistrement…');model.updatedAt=new Date().toISOString();
+ const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,source_path:model.sourcePath||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:new Date().toISOString(),updated_by:currentUser?.id||null};
+ const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'✓ Enregistré');if(error){console.warn(error);return false}setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
 }
 
 function excelDrag(e,on){e.preventDefault();if(!canEdit)return;document.querySelector('.excelDrop')?.classList.toggle('drag',!!on)}
@@ -620,11 +620,36 @@ async function readPlanningFile(file){
  const colorCounts={g:0,b:0,r:0,y:0,o:0};Object.values(days).forEach(d=>d.cells.forEach(row=>row.forEach(v=>{if(v&&colorCounts[v]!==undefined)colorCounts[v]++})));
  return{version:3,reader:'netto-xls-direct',weekStart:isoDate(mondayDate),weekLabel,sourceFile:file.name,importedAt:new Date().toISOString(),startTime:6,endTime:20.5,slotMinutes:15,slotCount:58,employees,days,colorCounts}
 }
+function planningFileExtension(name){const m=String(name||'').toLowerCase().match(/\.(xlsm|xlsx|xls)$/);return m?.[1]||'xlsx'}
+async function archivePlanningSource(file,weekStart){
+ const ext=planningFileExtension(file.name),path=weekStart+'/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
+ const contentType=file.type||({'xls':'application/vnd.ms-excel','xlsx':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','xlsm':'application/vnd.ms-excel.sheet.macroenabled.12'}[ext]||'application/octet-stream');
+ const {error}=await db.storage.from('planning-files').upload(path,file,{upsert:false,contentType});
+ if(error)throw error;return path
+}
+async function downloadPlanningSource(){
+ if(role!=='admin'||!model?.sourcePath)return;
+ const btn=document.getElementById('downloadSourceBtn');if(btn)btn.disabled=true;
+ try{
+  const {data,error}=await db.storage.from('planning-files').download(model.sourcePath);if(error)throw error;
+  const url=URL.createObjectURL(data),a=document.createElement('a');a.href=url;a.download=model.sourceFile||('planning-'+isoDate(currentWeekStart)+'.'+planningFileExtension(model.sourcePath));document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);showToast('Téléchargement du fichier Excel lancé')
+ }catch(e){console.error(e);alert('Téléchargement impossible : '+e.message)}
+ finally{if(btn)btn.disabled=false}
+}
 async function processPlanningFile(file,state){
- const next=await readPlanningFile(file),target=parseISO(next.weekStart),key=next.weekStart,{data:existing,error:checkErr}=await db.from('planning_weeks').select('week_start').eq('week_start',key).maybeSingle();if(checkErr)throw checkErr;
+ const next=await readPlanningFile(file),target=parseISO(next.weekStart),key=next.weekStart,{data:existing,error:checkErr}=await db.from('planning_weeks').select('week_start,source_path').eq('week_start',key).maybeSingle();if(checkErr)throw checkErr;
  const replacing=!!existing;
  if(replacing&&!confirm('Remplacer le planning actuel de la semaine du '+frDate(target)+' avec « '+file.name+' » ?\n\nLe fichier Excel remplacera entièrement cette semaine.'))return{status:'cancelled',file};
- currentWeekStart=target;currentDay=0;model=next;await saveWeek();
+ let archivedPath=null;
+ try{
+  archivedPath=await archivePlanningSource(file,key);next.sourcePath=archivedPath;
+  currentWeekStart=target;currentDay=0;model=next;
+  const saved=await saveWeek();if(!saved)throw new Error('Le planning n’a pas pu être enregistré.');
+  if(existing?.source_path&&existing.source_path!==archivedPath){try{await db.storage.from('planning-files').remove([existing.source_path])}catch(_){}}
+ }catch(e){
+  if(archivedPath){try{await db.storage.from('planning-files').remove([archivedPath])}catch(_){}}
+  throw e
+ }
  await addPlanningLog('import',logDetails({kind:replacing?'import_replace':'import_new',week_start:key,source:file.name}));
  await notifyWholePlanning(replacing?'import_replace':'import_new',next);
  return{status:'ok',file,replacing,next}
@@ -742,7 +767,7 @@ async function applyPlanningWidgetPermissions(userRole){
  }
  document.getElementById('planningInsights')?.classList.toggle('hidden',visible===0)
 }
-async function init(){applyPlanningDeepLink();const qs=new URLSearchParams(location.search),savedView=qs.get('view')||localStorage.getItem('nettoPlanningView')||'week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);document.getElementById('importPanel').classList.toggle('hidden',!canEdit);const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
+async function init(){applyPlanningDeepLink();const qs=new URLSearchParams(location.search),savedView=qs.get('view')||localStorage.getItem('nettoPlanningView')||'week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
 init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'});
 
 function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
