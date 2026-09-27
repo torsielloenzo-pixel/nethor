@@ -1,10 +1,10 @@
 {
-  "version": 120,
-  "label": "v1.20",
+  "version": 121,
+  "label": "v1.21",
   "important": false,
   "mode": "manual",
-  "title": "Chat mobile : comportement type Messenger",
-  "message": "L’en-tête Chat et la barre du contact restent ancrés en haut. À l’ouverture du clavier, seule la zone des messages se réduit et le champ d’écriture vient se placer juste au-dessus du clavier.",
-  "published_at": "2026-09-27T22:05:00+02:00",
+  "title": "Chat mobile : saisie plus compacte",
+  "message": "Les boutons +, microphone et envoyer sont désormais plus petits et mieux espacés pour éviter tout chevauchement sur mobile.",
+  "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
