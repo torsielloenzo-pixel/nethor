@@ -1082,6 +1082,18 @@ async function latestVersionFromLogs(){
  for(const row of data||[])latest=Math.max(latest,parseVersionFromLog(row));
  return latest
 }
+function waitForUpdateWorker(reg,timeout=6000){
+ return new Promise(resolve=>{
+  if(reg?.waiting)return resolve(reg.waiting);
+  let done=false;
+  const finish=()=>{if(done)return;if(reg?.waiting){done=true;clearTimeout(timer);resolve(reg.waiting)}};
+  const bind=worker=>{if(worker)worker.addEventListener('statechange',finish)};
+  const timer=setTimeout(()=>{if(!done){done=true;resolve(reg?.waiting||null)}},timeout);
+  bind(reg?.installing);
+  reg?.addEventListener('updatefound',()=>{bind(reg?.installing);finish()},{once:true});
+  finish()
+ })
+}
 async function manualCheckForUpdates(){
  const btn=document.getElementById('nettoUpdateCheckBtn');
  if(btn?.classList.contains('checking'))return;
@@ -1090,35 +1102,30 @@ async function manualCheckForUpdates(){
  btn?.classList.add('checking');btn?.setAttribute('aria-busy','true');sounds.play('tap');
  try{
   if(!('serviceWorker' in navigator)){mobilePreviewNotice('Mises à jour non prises en charge');return}
-  mobilePreviewNotice('Consultation du journal des MAJ…');
-  const [info,logVersion]=await Promise.all([releaseInfo(),latestVersionFromLogs()]);
+  mobilePreviewNotice('Vérification de la version publiée…');
+  const info=await releaseInfo();
   const manifestVersion=Number(info.version)||APP_RELEASE;
-  const latest=Math.max(logVersion||0,manifestVersion);
-  const reg=await navigator.serviceWorker.register('./sw.js');updateRegistration=reg;
+  const reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});updateRegistration=reg;
   await reg.update().catch(()=>{});
-  if(!reg.waiting){
-   await new Promise(resolve=>{
-    let done=false,t=setTimeout(()=>{if(!done){done=true;resolve()}},2200);
-    const finish=()=>{if(done)return;if(reg.waiting){done=true;clearTimeout(t);resolve()}};
-    reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w)w.addEventListener('statechange',finish);finish()},{once:true});
-    finish()
-   })
-  }
-  const active=await workerVersion(navigator.serviceWorker.controller);
+  if(!reg.waiting)await waitForUpdateWorker(reg,6000);
+  const active=await workerVersion(navigator.serviceWorker.controller||reg.active);
   const stored=Number(localStorage.getItem('nettoAppVersion')||0)||0;
-  const current=Math.max(active||0,stored||0);
-  if(current>=latest){
+  const current=active||stored||APP_RELEASE;
+  const waitingVersion=await workerVersion(reg.waiting);
+  const latest=Math.max(manifestVersion,waitingVersion||0);
+  if(reg.waiting&&latest>current){
+   sessionStorage.removeItem('nettoUpdateLater');
+   await showUpdateAvailable(reg,latest);
+   mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest));
+   return
+  }
+  if(current>=manifestVersion){
+   try{localStorage.setItem('nettoAppVersion',String(current))}catch(_){}
    mobilePreviewNotice('Nethor est à jour - '+displayVersion(current));
    sounds.play('success');
    return
   }
-  if(reg.waiting){
-   sessionStorage.removeItem('nettoUpdateLater');
-   await showUpdateAvailable(reg);
-   mobilePreviewNotice('MAJ disponible : v'+latest);
-   return
-  }
-  mobilePreviewNotice(displayVersion(latest)+' détectée dans les logs, téléchargement en attente');
+  mobilePreviewNotice(displayVersion(manifestVersion)+' détectée · préparation en cours, réessaie dans quelques instants');
  }catch(e){
   console.warn('Recherche de mise à jour:',e);
   mobilePreviewNotice('Impossible de vérifier les mises à jour');
@@ -1531,7 +1538,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=115;
+const APP_RELEASE=120;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -1571,8 +1578,9 @@ function publicUpdateCopy(){
   message:'Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.'
  }
 }
+function updateInstallMode(info){return String(info?.mode||'manual').toLowerCase()==='auto'?'auto':'manual'}
 async function releaseInfo(){
- try{const r=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return await r.json()}catch(_){const copy=publicUpdateCopy();return{version:APP_RELEASE,label:displayVersion(APP_RELEASE),important:true,title:copy.title,message:copy.message,icon:APP_ICON}}
+ try{const r=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));const info=await r.json();return{...info,mode:updateInstallMode(info)}}catch(_){const copy=publicUpdateCopy();return{version:APP_RELEASE,label:displayVersion(APP_RELEASE),important:true,mode:'manual',title:copy.title,message:copy.message,icon:APP_ICON}}
 }
 async function notifyUpdateSystem(reg,info){
  if(!reg||typeof Notification==='undefined'||Notification.permission!=='granted')return;
@@ -1583,19 +1591,23 @@ function hideUpdateToast(){
  const el=document.getElementById('nettoUpdateToast');if(!el)return;el.classList.remove('show');setTimeout(()=>el.remove(),220)
 }
 async function activateWaitingUpdate(info){
- const reg=updateRegistration||await navigator.serviceWorker.getRegistration();const worker=reg&&reg.waiting;if(!worker)return location.reload();
+ const reg=updateRegistration||await navigator.serviceWorker.getRegistration();const worker=reg&&reg.waiting;
+ if(!worker){mobilePreviewNotice('La mise à jour n’est pas encore prête');return false}
  const btn=document.getElementById('nettoUpdateNow');if(btn){btn.disabled=true;btn.textContent='Mise à jour…'}
- try{localStorage.setItem('nettoAppVersion',String(info.version||APP_RELEASE));localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())}catch(_){}
+ const workerV=await workerVersion(worker),targetVersion=Math.max(Number(info?.version)||0,workerV||0,APP_RELEASE);
  let changed=false;
- const reload=()=>{if(changed)return;changed=true;syncAppIconLinks();location.reload()};
+ const reload=()=>{if(changed)return;changed=true;try{localStorage.setItem('nettoAppVersion',String(targetVersion));localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())}catch(_){};syncAppIconLinks();location.reload()};
  navigator.serviceWorker.addEventListener('controllerchange',reload,{once:true});
  worker.postMessage({type:'SKIP_WAITING'});
- setTimeout(reload,4500)
+ setTimeout(reload,4500);
+ return true
 }
-async function showUpdateAvailable(reg){
+async function showUpdateAvailable(reg,forcedVersion=0){
  updateRegistration=reg||updateRegistration;
- const info=await releaseInfo(),version=Number(info.version)||APP_RELEASE;
- if(info.important===false){activateWaitingUpdate(info);return}
+ const info=await releaseInfo(),waitingVersion=await workerVersion(updateRegistration?.waiting);
+ const version=Math.max(Number(info.version)||APP_RELEASE,Number(forcedVersion)||0,waitingVersion||0);
+ info.version=version;
+ if(updateInstallMode(info)==='auto'){await activateWaitingUpdate(info);return}
  if(sessionStorage.getItem('nettoUpdateLater')===String(version))return;
  if(document.getElementById('nettoUpdateToast'))return;
  ensureUpdateStyles();
@@ -1610,9 +1622,10 @@ async function setupAppUpdates(){
  if(!('serviceWorker' in navigator))return;
  try{
   ensureUpdateStyles();
-  const reg=await navigator.serviceWorker.register('./sw.js');updateRegistration=reg;
-  const activeVersion=await workerVersion(navigator.serviceWorker.controller);
-  if(activeVersion===APP_RELEASE){try{localStorage.setItem('nettoAppVersion',String(APP_RELEASE))}catch(_){};syncAppIconLinks()}
+  const reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});updateRegistration=reg;
+  const activeVersion=await workerVersion(navigator.serviceWorker.controller||reg.active);
+  if(activeVersion){try{localStorage.setItem('nettoAppVersion',String(activeVersion))}catch(_){}}
+  if(activeVersion===APP_RELEASE)syncAppIconLinks();
   if(reg.waiting&&navigator.serviceWorker.controller)showUpdateAvailable(reg);
   reg.addEventListener('updatefound',()=>{
    const worker=reg.installing;if(!worker)return;
