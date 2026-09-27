@@ -7,7 +7,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[]
+ signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -32,6 +32,7 @@ function conversationTitle(c){if(!c)return'Discussion';if(c.conversation_type===
 function conversationMember(c){if(!c||c.conversation_type!=='direct')return null;const other=(c.member_ids||[]).find(id=>id!==state.session?.user?.id);return member(other)}
 function conversationAvatar(c,active=false){const cls=active?'activeAvatar':'convAvatar';if(c?.conversation_type==='general')return '<div class="'+cls+' general"><img src="assets/logo-equipe.svg" alt=""></div>';if(c?.conversation_type==='direct')return avatarHtml(conversationMember(c),cls);const title=conversationTitle(c);return '<div class="'+cls+'" style="background:linear-gradient(135deg,#ff3422,#ff8524)">'+esc(initials(title))+'</div>'}
 function activeConversation(){return state.conversations.find(c=>c.conversation_id===state.activeId)||null}
+function conversationById(id){return state.conversations.find(c=>c.conversation_id===id)||state.archives.find(c=>c.conversation_id===id)||null}
 function lastSeenLabel(userId){
  const row=state.presenceHistory.get(userId);if(!row?.last_seen_at)return'Hors ligne';
  const d=new Date(row.last_seen_at),now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
@@ -65,16 +66,72 @@ function renderConversations(){
  const box=$('conversationList');if(!box)return;
  const q=(state.search||'').trim().toLowerCase();
  const list=state.conversations.filter(c=>{if(state.onlyUnread&&Number(c.unread_count)<=0)return false;if(!q)return true;return(conversationTitle(c)+' '+(c.last_message||'')).toLowerCase().includes(q)});
- if(!list.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucune discussion trouvée.':'Aucune discussion pour le moment.')+'</div>';return}
+ if(!list.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucune discussion trouvée.':state.onlyUnread?'Aucune discussion non lue.':'Aucune discussion pour le moment.')+'</div>';return}
  box.innerHTML=list.map(c=>{
   const title=conversationTitle(c),active=c.conversation_id===state.activeId,preview=(c.last_sender===state.session?.user?.id?'Vous : ':'')+(c.last_message||'Nouvelle discussion'),direct=conversationMember(c),online=direct&&state.onlineIds.has(direct.id);
   const ownerGroup=c.conversation_type==='group'&&c.created_by===state.session?.user?.id;
-  return '<button class="convRow '+(active?'active ':'')+(ownerGroup?'ownerGroup':'')+'" onclick="openConversation(\''+c.conversation_id+'\',{showMobile:true})">'+conversationAvatar(c)+
+  return '<button class="convRow '+(active?'active ':'')+(ownerGroup?'ownerGroup':'')+'" data-conversation-id="'+c.conversation_id+'" onclick="conversationRowClick(event,\''+c.conversation_id+'\')" onpointerdown="startConversationLongPress(event,\''+c.conversation_id+'\')" onpointerup="cancelConversationLongPress()" onpointercancel="cancelConversationLongPress()" onpointerleave="cancelConversationLongPress()" oncontextmenu="conversationContextMenu(event,\''+c.conversation_id+'\')">'+conversationAvatar(c)+
    '<span class="convCopy"><span class="convTitleLine"><strong>'+esc(title)+'</strong>'+(online?'<i class="onlineMini"></i>':'')+'</span><span class="convPreview">'+esc(preview)+'</span></span>'+
    '<span class="convMeta"><span class="convTime">'+esc(timeShort(c.last_message_at||c.updated_at))+'</span>'+(Number(c.unread_count)>0?'<b class="unreadBadge">'+Math.min(99,Number(c.unread_count))+'</b>':'')+'</span></button>'
  }).join('')
 }
 function searchConversations(v){state.search=v;renderConversations()}
+function conversationRowClick(e,id){
+ if(state.longPressTriggered){e.preventDefault();state.longPressTriggered=false;return}
+ openConversation(id,{showMobile:true})
+}
+function startConversationLongPress(e,id){
+ if(window.innerWidth>780||e.pointerType==='mouse')return;
+ cancelConversationLongPress();state.longPressTriggered=false;
+ state.longPressTimer=setTimeout(()=>{state.longPressTriggered=true;navigator.vibrate?.(18);openConversationActions(id)},520)
+}
+function cancelConversationLongPress(){if(state.longPressTimer){clearTimeout(state.longPressTimer);state.longPressTimer=null}}
+function conversationContextMenu(e,id){if(window.innerWidth>780)return;e.preventDefault();cancelConversationLongPress();state.longPressTriggered=true;openConversationActions(id)}
+function openConversationActions(id){
+ const conv=conversationById(id);if(!conv)return;state.actionConversationId=id;
+ const head=$('conversationActionHeader');if(head)head.innerHTML=conversationAvatar(conv)+'<div><strong>'+esc(conversationTitle(conv))+'</strong><small>'+esc(conv.conversation_type==='direct'?'Contact Nethor':conv.conversation_type==='general'?'Canal général':(conv.member_ids||[]).length+' membre(s)')+'</small></div>';
+ $('conversationActionSheet')?.classList.remove('hidden')
+}
+function closeConversationActions(){$('conversationActionSheet')?.classList.add('hidden');state.actionConversationId=null}
+function contactPresence(userId){return state.onlineIds.has(userId)?'En ligne':lastSeenLabel(userId)}
+function openContactCard(userId){
+ const m=member(userId);if(!m)return showToast('Profil indisponible');
+ closeConversationActions();closeChatMenu();
+ const box=$('contactCardContent'),modal=$('contactModal');if(!box||!modal)return;
+ const status=(m.status_text||'').trim();
+ box.innerHTML='<div class="contactHero">'+avatarHtml(m,'contactAvatar')+'<h3>'+esc(m.display_name||'Utilisateur')+'</h3><span class="contactRole">'+esc(roleLabel(m.role))+'</span><span class="contactPresence">'+esc(contactPresence(m.id))+'</span></div>'+
+  '<div class="contactGrid"><div class="contactField"><small>Rôle</small><strong>'+esc(roleLabel(m.role))+'</strong></div><div class="contactField"><small>Présence</small><strong>'+esc(contactPresence(m.id))+'</strong></div>'+
+  (status?'<div class="contactField full"><small>Statut</small><strong>'+esc(status)+'</strong></div>':'')+
+  '<div class="contactField full"><small>Profil</small><strong>Membre de l’équipe Nethor</strong></div></div>'+
+  (m.id!==state.session?.user?.id?'<button class="contactAction" type="button" onclick="openDirectFromContact(\''+m.id+'\')">Envoyer un message</button>':'');
+ modal.classList.remove('hidden')
+}
+function closeContactCard(){$('contactModal')?.classList.add('hidden')}
+async function openDirectFromContact(userId){closeContactCard();await openDirect(userId)}
+function openConversationDetails(id){
+ const conv=conversationById(id);if(!conv)return;
+ if(conv.conversation_type==='direct'){const m=conversationMember(conv);if(m)openContactCard(m.id);return}
+ closeConversationActions();closeChatMenu();
+ const box=$('contactCardContent'),modal=$('contactModal');if(!box||!modal)return;
+ const ids=(conv.member_ids||[]).filter(Boolean),members=ids.map(member).filter(Boolean);
+ box.innerHTML='<div class="contactHero">'+conversationAvatar(conv,true)+'<h3>'+esc(conversationTitle(conv))+'</h3><span class="contactRole">'+esc(conv.conversation_type==='general'?'Canal général':'Groupe')+'</span><span class="contactPresence">'+esc(conversationPresence(conv))+'</span></div>'+
+  '<div class="infoSection"><div class="infoSectionTitle">Contacts</div><div class="infoMembers">'+members.map(m=>'<button class="infoRow contactInfoRow" type="button" onclick="openContactCard(\''+m.id+'\')">'+avatarHtml(m,'pickAvatar')+'<div><strong>'+esc(m.display_name||'Utilisateur')+'</strong><small>'+esc(roleLabel(m.role))+' · '+esc(contactPresence(m.id))+'</small></div><span>›</span></button>').join('')+'</div></div>';
+ modal.classList.remove('hidden')
+}
+function actionSheetInfo(){const id=state.actionConversationId;closeConversationActions();if(id)openConversationDetails(id)}
+async function setPersonalConversationState(id,action){
+ const {error}=await db.rpc('chat_set_user_conversation_state',{p_conversation:id,p_action:action});if(error){console.error(error);showToast('Action impossible');return false}return true
+}
+async function actionSheetArchive(){const id=state.actionConversationId;if(!id)return;closeConversationActions();if(!await setPersonalConversationState(id,'archive'))return;await afterPersonalConversationRemoval(id);showToast('Conversation archivée')}
+async function actionSheetHide(){
+ const id=state.actionConversationId;if(!id)return;closeConversationActions();
+ if(!confirm('Supprimer cette conversation de tes discussions ?\n\nElle sera masquée uniquement pour ton compte.'))return;
+ if(!await setPersonalConversationState(id,'hide'))return;await afterPersonalConversationRemoval(id);showToast('Conversation supprimée de ta liste')
+}
+async function afterPersonalConversationRemoval(id){
+ if(state.activeId===id){state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');renderConversationHeader();renderMessages()}
+ await loadConversations()
+}
 async function openConversation(id,opts={}){
  if(!id)return;state.activeId=id;state.replyTo=null;state.editingId=null;state.messageSearch='';$('messageSearchInput').value='';$('messageSearchBar').classList.remove('show');renderComposeBanner();clearAttachment();
  const c=activeConversation();renderConversations();renderConversationHeader();
@@ -204,8 +261,20 @@ function toggleMessageSearch(){const b=$('messageSearchBar');b.classList.toggle(
 function searchMessages(v){state.messageSearch=v;renderMessages()}
 function openImage(url){$('lightboxImage').src=url;$('imageLightbox').classList.remove('hidden')}
 function closeImage(e){if(e&&e.target!==$('imageLightbox')&&!e.target.closest('.lightboxClose'))return;$('imageLightbox').classList.add('hidden');$('lightboxImage').src=''}
-function toggleChatMenu(e){e?.stopPropagation?.();$('chatMenu')?.classList.toggle('hidden')}
-function closeChatMenu(){$('chatMenu')?.classList.add('hidden')}
+function toggleChatMenu(e){
+ e?.stopPropagation?.();const menu=$('chatMenu'),btn=e?.currentTarget;if(!menu||!btn)return;
+ if(!menu.classList.contains('hidden')){closeChatMenu();return}
+ const hasActive=!!activeConversation();$('chatMenuInfoItem')?.classList.toggle('hidden',!hasActive);$('chatMenuConversationDivider')?.classList.toggle('hidden',!hasActive);
+ menu.classList.remove('hidden');menu.style.visibility='hidden';
+ requestAnimationFrame(()=>{
+  const r=btn.getBoundingClientRect(),w=menu.offsetWidth,h=menu.offsetHeight;
+  let left=Math.min(window.innerWidth-w-8,Math.max(8,r.right-w)),top=r.bottom+9;
+  if(top+h>window.innerHeight-8)top=Math.max(8,r.top-h-9);
+  menu.style.left=left+'px';menu.style.top=top+'px';menu.style.visibility='visible'
+ })
+}
+function closeChatMenu(){const m=$('chatMenu');if(!m)return;m.classList.add('hidden');m.style.visibility=''}
+function openConversationInfoFromMenu(){closeChatMenu();const c=activeConversation();if(!c)return;if(c.conversation_type==='direct'){const m=conversationMember(c);if(m)return openContactCard(m.id)}openConversationInfo()}
 async function markAllRead(){
  closeChatMenu();
  const {error}=await db.rpc('chat_mark_all_read');
@@ -221,21 +290,37 @@ function toggleUnreadOnly(){
 }
 async function refreshChat(){closeChatMenu();await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await Promise.all([loadParticipants(),loadMessages()]);showToast('Discussions actualisées')}
 async function openChatArchives(){
- closeChatMenu();if(state.profile?.role!=='admin')return;
- $('archivesModal')?.classList.remove('hidden');const box=$('archivesList');if(box)box.innerHTML='<div class="listEmpty">Chargement…</div>';
- const {data,error}=await db.rpc('list_chat_archives');
+ closeChatMenu();$('archivesModal')?.classList.remove('hidden');
+ const box=$('archivesList');if(box)box.innerHTML='<div class="listEmpty">Chargement…</div>';
+ const {data,error}=await db.rpc('list_my_archived_chat_conversations');
  if(error){console.error(error);if(box)box.innerHTML='<div class="listEmpty">Archives indisponibles.</div>';return}
- state.archives=data||[];renderChatArchives()
+ state.archives=data||[];
+ if(state.profile?.role==='admin'){
+  $('adminArchiveSection')?.classList.remove('hidden');
+  const {data:adminData,error:adminError}=await db.rpc('list_chat_archives');
+  state.adminArchives=adminError?[]:(adminData||[])
+ }else{$('adminArchiveSection')?.classList.add('hidden');state.adminArchives=[]}
+ renderChatArchives()
 }
 function closeChatArchives(){$('archivesModal')?.classList.add('hidden')}
-function renderChatArchives(){
- const box=$('archivesList');if(!box)return;
- if(!state.archives.length){box.innerHTML='<div class="listEmpty">Aucune conversation archivée.</div>';return}
- box.innerHTML=state.archives.map(a=>'<div class="archiveRow"><div><strong>'+esc(a.conversation_name||a.conversation_type||'Conversation')+'</strong><small>'+Number(a.member_count||0)+' membre(s) · '+Number(a.message_count||0)+' message(s) · archivée le '+new Date(a.archived_at).toLocaleString('fr-FR')+'</small></div><div class="archiveActions"><button class="archiveRestore" type="button" onclick="restoreArchivedConversation(\''+a.conversation_id+'\')">Restaurer</button></div></div>').join('')
+function archiveAvatar(a){
+ if(a.conversation_type==='direct'){const other=(a.member_ids||[]).find(id=>id!==state.session?.user?.id);return avatarHtml(member(other),'archiveRowAvatar')}
+ if(a.conversation_type==='general')return '<div class="archiveRowAvatar"><img src="assets/logo-equipe.svg" alt=""></div>';
+ return '<div class="archiveRowAvatar">'+esc(initials(conversationTitle(a)))+'</div>'
 }
-async function restoreArchivedConversation(id){
- if(state.profile?.role!=='admin')return;
- const {error}=await db.rpc('chat_restore_conversation',{p_conversation:id});
+function renderChatArchives(){
+ const box=$('archivesList');if(box){
+  box.innerHTML=state.archives.length?state.archives.map(a=>'<div class="archiveRow">'+archiveAvatar(a)+'<div><strong>'+esc(conversationTitle(a))+'</strong><small>'+esc(a.last_message||'Conversation archivée')+' · '+esc(timeShort(a.last_message_at||a.archived_at))+'</small></div><div class="archiveActions"><button class="archiveRestore" type="button" onclick="restorePersonalArchivedConversation(\''+a.conversation_id+'\')">Restaurer</button></div></div>').join(''):'<div class="listEmpty">Aucune conversation archivée.</div>'
+ }
+ const adminBox=$('adminArchivesList');if(adminBox&&state.profile?.role==='admin'){
+  adminBox.innerHTML=state.adminArchives.length?state.adminArchives.map(a=>'<div class="archiveRow"><div class="archiveRowAvatar">'+esc(initials(a.conversation_name||'Groupe'))+'</div><div><strong>'+esc(a.conversation_name||a.conversation_type||'Conversation')+'</strong><small>'+Number(a.member_count||0)+' membre(s) · '+Number(a.message_count||0)+' message(s) · '+new Date(a.archived_at).toLocaleString('fr-FR')+'</small></div><div class="archiveActions"><button class="archiveRestore" type="button" onclick="restoreAdminArchivedConversation(\''+a.conversation_id+'\')">Restaurer</button></div></div>').join(''):'<div class="listEmpty">Aucune archive administrateur.</div>'
+ }
+}
+async function restorePersonalArchivedConversation(id){
+ if(!await setPersonalConversationState(id,'restore'))return;showToast('Conversation restaurée');await Promise.all([openChatArchives(),loadConversations()])
+}
+async function restoreAdminArchivedConversation(id){
+ if(state.profile?.role!=='admin')return;const {error}=await db.rpc('chat_restore_conversation',{p_conversation:id});
  if(error){console.error(error);return showToast('Restauration impossible')}
  showToast('Conversation restaurée');await Promise.all([openChatArchives(),loadConversations()])
 }
@@ -249,9 +334,9 @@ function renderNewChatMembers(){
  box.innerHTML=list.map(m=>{const selected=state.groupMembers.has(m.id);return '<button class="pickMember '+(selected?'selected':'')+'" onclick="'+(state.newMode==='direct'?'openDirect(\''+m.id+'\')':'toggleGroupMember(\''+m.id+'\')')+'">'+avatarHtml(m,'pickAvatar')+'<span><strong>'+esc(m.display_name||'Utilisateur')+'</strong><small>'+esc(roleLabel(m.role))+(state.onlineIds.has(m.id)?' · En ligne':'')+'</small></span>'+(state.newMode==='group'?'<i class="pickCheck">✓</i>':'<span>›</span>')+'</button>'}).join('')
 }
 function toggleGroupMember(id){state.groupMembers.has(id)?state.groupMembers.delete(id):state.groupMembers.add(id);renderNewChatMembers()}
-async function openDirect(id){const {data,error}=await db.rpc('create_chat_conversation',{p_type:'direct',p_name:null,p_member_ids:[id]});if(error){console.error(error);return showToast('Création impossible')}closeNewChat();await loadConversations();await openConversation(data,{showMobile:true})}
+async function openDirect(id){const {data,error}=await db.rpc('create_chat_conversation',{p_type:'direct',p_name:null,p_member_ids:[id]});if(error){console.error(error);return showToast('Création impossible')}await db.rpc('chat_set_user_conversation_state',{p_conversation:data,p_action:'restore'});closeNewChat();await loadConversations();await openConversation(data,{showMobile:true})}
 async function createGroup(){const name=$('groupName').value.trim();if(!name)return showToast('Donne un nom au groupe');if(!state.groupMembers.size)return showToast('Ajoute au moins un membre');const btn=$('createGroupBtn');btn.disabled=true;const {data,error}=await db.rpc('create_chat_conversation',{p_type:'group',p_name:name,p_member_ids:[...state.groupMembers]});btn.disabled=false;if(error){console.error(error);return showToast('Création impossible')}closeNewChat();await loadConversations();await openConversation(data,{showMobile:true})}
-function infoMemberRow(p){const m=member(p.user_id)||{id:p.user_id,display_name:'Utilisateur'};return '<div class="infoRow">'+avatarHtml(m,'pickAvatar')+'<div><strong>'+esc(m.display_name||'Utilisateur')+(p.user_id===state.session.user.id?' · Vous':'')+'</strong><small>'+esc(roleLabel(m.role))+(state.onlineIds.has(m.id)?' · En ligne':'')+'</small></div>'+(p.role==='owner'?'<span style="font-size:8px;color:#e34b27;font-weight:900">CRÉATEUR</span>':'')+'</div>'}
+function infoMemberRow(p){const m=member(p.user_id)||{id:p.user_id,display_name:'Utilisateur'};return '<button type="button" class="infoRow contactInfoRow" onclick="openContactCard(\''+m.id+'\')">'+avatarHtml(m,'pickAvatar')+'<div><strong>'+esc(m.display_name||'Utilisateur')+(p.user_id===state.session.user.id?' · Vous':'')+'</strong><small>'+esc(roleLabel(m.role))+' · '+esc(contactPresence(m.id))+'</small></div>'+(p.role==='owner'?'<span style="font-size:8px;color:#e34b27;font-weight:900">CRÉATEUR</span>':'<span>›</span>')+'</button>'
 function openConversationInfo(){const c=activeConversation();if(!c)return;$('infoModal').classList.remove('hidden');renderConversationInfo()}
 function closeConversationInfo(){$('infoModal').classList.add('hidden')}
 function renderConversationInfo(){
@@ -292,13 +377,13 @@ function startRealtime(){
   .subscribe()
 }
 function startMemberRealtime(){if(state.memberChannel)return;state.memberChannel=db.channel('nethor-chat-members').on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>loadMembers()).subscribe()}
-document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#chatMenu')&&!e.target.closest('#chatMenuBtn'))closeChatMenu()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeChatMenu();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
+document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#chatMenu')&&!e.target.closest('#infoBtn')&&!e.target.closest('#chatMenuListBtn'))closeChatMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeChatMenu();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('contactModal')?.classList.add('hidden');$('conversationActionSheet')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
 window.addEventListener('resize',()=>{if(window.innerWidth>780&&state.activeId)document.body.classList.add('mobileConversationOpen')},{passive:true});
 async function boot(){
  const {data:{session}}=await db.auth.getSession();state.session=session;if(!session){location.replace('index.html');return}
  const {data:p,error}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame').eq('id',session.user.id).maybeSingle();if(error||!p){location.replace('index.html');return}
- state.profile=p;window.currentRole=p.role;$('chatArchivesBtn')?.classList.toggle('hidden',p.role!=='admin');await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none';if(permission==='none'){location.replace('home.html');return}state.canManage=permission==='manage';
+ state.profile=p;window.currentRole=p.role;await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none';if(permission==='none'){location.replace('home.html');return}state.canManage=permission==='manage';
  await loadMembers();startPresence();await loadConversations();startRealtime();startMemberRealtime();
  const requested=new URLSearchParams(location.search).get('c'),general=state.conversations.find(c=>c.conversation_type==='general')?.conversation_id,initial=(requested&&state.conversations.some(c=>c.conversation_id===requested))?requested:general;
  if(initial)await openConversation(initial,{showMobile:!!requested||window.innerWidth>780});else{renderConversationHeader();renderMessages()}
