@@ -675,3 +675,40 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   }
   .imageLightbox .lightboxDownload svg{width:16px;height:16px}
 }
+
+
+/* Conversation surface v24 — prolonger le fond du fil jusqu'au composeur */
+.conversationPane{
+  background:#f4f5f6;
+}
+.conversationPane .messages,
+.conversationPane .typingLine,
+.conversationPane .composer{
+  background:#f4f5f6!important;
+}
+.conversationPane .composer{
+  border-top-color:#dfe3e7!important;
+}
+:root[data-theme="dark"] .conversationPane,
+:root[data-theme="dark"] .conversationPane .messages,
+:root[data-theme="dark"] .conversationPane .typingLine,
+:root[data-theme="dark"] .conversationPane .composer{
+  background:#171a1f!important;
+}
+:root[data-theme="dark"] .conversationPane .composer{
+  border-top-color:#30343b!important;
+}
+@media(max-width:780px){
+  body.mobileConversationOpen .conversationPane,
+  body.mobileConversationOpen .messages,
+  body.mobileConversationOpen .typingLine,
+  body.mobileConversationOpen .composer{
+    background:#f0f2f5!important;
+  }
+  :root[data-theme="dark"] body.mobileConversationOpen .conversationPane,
+  :root[data-theme="dark"] body.mobileConversationOpen .messages,
+  :root[data-theme="dark"] body.mobileConversationOpen .typingLine,
+  :root[data-theme="dark"] body.mobileConversationOpen .composer{
+    background:#141619!important;
+  }
+}
