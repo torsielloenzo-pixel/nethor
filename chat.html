@@ -19,8 +19,8 @@
 <link rel="stylesheet" href="design-v2.css?v=3">
 <link rel="stylesheet" href="design-v3.css?v=3">
 <link rel="stylesheet" href="design-v4.css?v=8">
-<link rel="stylesheet" href="chat-v2.css?v=10">
-<script src="chat-v2.js?v=10" defer></script>
+<link rel="stylesheet" href="chat-v2.css?v=11">
+<script src="chat-v2.js?v=11" defer></script>
 </head>
 <body>
 <header>
@@ -42,6 +42,11 @@
    </div>
   </div>
   <div class="convSearchWrap"><input id="conversationSearch" class="convSearch" type="search" placeholder="Rechercher une discussion…" oninput="searchConversations(this.value)" autocomplete="off"></div>
+  <div class="conversationFilters" aria-label="Filtres des discussions">
+   <button id="conversationFilterAll" class="conversationFilter active" type="button" onclick="setConversationListFilter('all')">Toutes</button>
+   <button id="conversationFilterUnread" class="conversationFilter" type="button" onclick="setConversationListFilter('unread')">Non lues</button>
+   <button class="conversationFilter" type="button" onclick="openChatArchives()">Archivées</button>
+  </div>
   <div id="conversationList" class="conversationList"><div class="listEmpty">Chargement des discussions…</div></div>
  </aside>
 
@@ -70,6 +75,16 @@
    </div>
   </div>
  </section>
+
+ <aside id="chatDetailsPane" class="chatDetailsPane" aria-label="Informations sur la discussion">
+  <div id="chatDetailsContent" class="chatDetailsContent">
+   <div class="detailsEmpty">
+    <img src="assets/logo-chat.svg" alt="">
+    <strong>Informations</strong>
+    <span>Sélectionne une discussion pour afficher ses détails.</span>
+   </div>
+  </div>
+ </aside>
 </main>
 
 <div id="discussionMenu" class="chatMenu hidden" role="menu" aria-label="Gérer les discussions">
