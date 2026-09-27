@@ -1631,10 +1631,9 @@ function notificationPreferenceEnabled(ruleKey){
 function notificationKindEnabled(kind){return notificationPreferenceEnabled(notificationRuleKey(kind))}
 async function loadNotifications(){
  if(!api.client||!api.session)return;
- if(!api.notificationPreferences)await loadNotificationPreferences();
  const {data,error}=await api.client.from('planning_notifications').select('id,kind,title,message,planning_date,week_start,target_url,read_at,created_at').eq('user_id',api.session.user.id).order('created_at',{ascending:false}).limit(80);
  if(error){console.warn('Notifications:',error);return}
- api.notifications=(data||[]).filter(n=>notificationKindEnabled(n.kind));
+ api.notifications=data||[];
  renderNotifications();
  window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:api.notifications,unread:api.notifications.filter(n=>!n.read_at).length}}))
 }
@@ -1642,7 +1641,7 @@ async function markRead(id){const n=api.notifications.find(x=>x.id===id);if(!n||
 async function markAllRead(){if(!api.notifications.some(n=>!n.read_at))return;const {error}=await api.client.from('planning_notifications').update({read_at:new Date().toISOString()}).eq('user_id',api.session.user.id).is('read_at',null);if(!error)loadNotifications()}
 async function deleteNotification(id){const {error}=await api.client.from('planning_notifications').delete().eq('id',id).eq('user_id',api.session.user.id);if(!error){sounds.play('delete');api.notifications=api.notifications.filter(n=>n.id!==id);renderNotifications();window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:api.notifications,unread:api.notifications.filter(n=>!n.read_at).length}}))}}
 async function deleteAllNotifications(){if(!api.notifications.length)return;if(!confirm('Supprimer toutes tes notifications ?'))return;const ids=api.notifications.map(n=>n.id);const {error}=await api.client.from('planning_notifications').delete().eq('user_id',api.session.user.id).in('id',ids);if(!error){sounds.play('delete');api.notifications=[];renderNotifications();window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:[],unread:0}}))}}
-function startNotificationsRealtime(){if(!api.session||api.notifChannel)return;api.notifChannel=api.client.channel('planning-notifications-'+api.session.user.id).on('postgres_changes',{event:'*',schema:'public',table:'planning_notifications',filter:'user_id=eq.'+api.session.user.id},payload=>{if(payload?.eventType==='INSERT'&&notificationKindEnabled(payload?.new?.kind))sounds.play('notification');loadNotifications()}).subscribe()}
+function startNotificationsRealtime(){if(!api.session||api.notifChannel)return;api.notifChannel=api.client.channel('planning-notifications-'+api.session.user.id).on('postgres_changes',{event:'*',schema:'public',table:'planning_notifications',filter:'user_id=eq.'+api.session.user.id},payload=>{if(payload?.eventType==='INSERT')sounds.play('notification');loadNotifications()}).subscribe()}
 function syncPresence(){if(!api.channel)return;const state=api.channel.presenceState(),ids=new Set();Object.values(state).flat().forEach(x=>{if(x?.user_id)ids.add(x.user_id)});api.onlineIds=ids;window.dispatchEvent(new CustomEvent('netto:presence',{detail:{ids:[...ids],count:ids.size}}))}
 function startPresence(){if(!api.session||api.channel)return;api.channel=api.client.channel('team-presence',{config:{presence:{key:api.session.user.id}}}).on('presence',{event:'sync'},syncPresence).on('presence',{event:'join'},syncPresence).on('presence',{event:'leave'},syncPresence).subscribe(async status=>{if(status==='SUBSCRIBED'){const p=api.profile||{};await api.channel.track({user_id:api.session.user.id,display_name:p.display_name||'Utilisateur',page:location.pathname,online_at:new Date().toISOString()});syncPresence()}})}
 async function recordChatPresence(event='heartbeat'){
@@ -1854,7 +1853,6 @@ async function activateWaitingUpdate(info){
 }
 async function showUpdateAvailable(reg,forcedVersion=0,force=false){
  updateRegistration=reg||updateRegistration;
- if(!force&&api.session&&!notificationPreferenceEnabled('app_update'))return;
  const info=await releaseInfo(),waitingVersion=await workerVersion(updateRegistration?.waiting);
  const version=Math.max(Number(info.version)||APP_RELEASE,Number(forcedVersion)||0,waitingVersion||0);
  info.version=version;
