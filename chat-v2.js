@@ -90,6 +90,9 @@ function conversationContextMenu(e,id){if(window.innerWidth>780)return;e.prevent
 function openConversationActions(id,opts={}){
  const conv=conversationById(id),backdrop=$('conversationActionSheet'),sheet=backdrop?.querySelector('.conversationActionSheet');if(!conv||!backdrop||!sheet)return;state.actionConversationId=id;
  const head=$('conversationActionHeader');if(head)head.innerHTML=conversationAvatar(conv)+'<div><strong>'+esc(conversationTitle(conv))+'</strong><small>'+esc(conv.conversation_type==='direct'?'Contact Nethor':conv.conversation_type==='general'?'Canal général':(conv.member_ids||[]).length+' membre(s)')+'</small></div>';
+ const protectedGeneral=conv.conversation_type==='general'&&state.profile?.role!=='admin';
+ $('conversationActionArchive')?.classList.toggle('hidden',protectedGeneral);
+ $('conversationActionHide')?.classList.toggle('hidden',protectedGeneral);
  backdrop.classList.toggle('desktopContext',!!opts.desktop&&window.innerWidth>780);backdrop.classList.remove('hidden');
  sheet.style.left='';sheet.style.top='';
  if(opts.desktop&&window.innerWidth>780&&opts.anchor){
@@ -132,9 +135,9 @@ function actionSheetInfo(){const id=state.actionConversationId;closeConversation
 async function setPersonalConversationState(id,action){
  const {error}=await db.rpc('chat_set_user_conversation_state',{p_conversation:id,p_action:action});if(error){console.error(error);showToast('Action impossible');return false}return true
 }
-async function actionSheetArchive(){const id=state.actionConversationId;if(!id)return;closeConversationActions();if(!await setPersonalConversationState(id,'archive'))return;await afterPersonalConversationRemoval(id);showToast('Conversation archivée')}
+async function actionSheetArchive(){const id=state.actionConversationId;if(!id)return;const conv=conversationById(id);if(conv?.conversation_type==='general'&&state.profile?.role!=='admin'){closeConversationActions();return showToast('Le canal Général ne peut pas être archivé')}closeConversationActions();if(!await setPersonalConversationState(id,'archive'))return;await afterPersonalConversationRemoval(id);showToast('Conversation archivée')}
 async function actionSheetHide(){
- const id=state.actionConversationId;if(!id)return;closeConversationActions();
+ const id=state.actionConversationId;if(!id)return;const conv=conversationById(id);if(conv?.conversation_type==='general'&&state.profile?.role!=='admin'){closeConversationActions();return showToast('Le canal Général ne peut pas être supprimé de tes discussions')}closeConversationActions();
  if(!confirm('Supprimer cette conversation de tes discussions ?\n\nElle sera masquée uniquement pour ton compte.'))return;
  if(!await setPersonalConversationState(id,'hide'))return;await afterPersonalConversationRemoval(id);showToast('Conversation supprimée de ta liste')
 }
@@ -295,15 +298,18 @@ function closeConversationMenu(){const m=$('conversationMenu');if(!m)return;m.cl
 function closeAllChatMenus(){closeDiscussionMenu();closeConversationMenu()}
 function configureConversationMenu(c){
  const isGeneral=c.conversation_type==='general',isGroup=c.conversation_type==='group',isDirect=c.conversation_type==='direct';
- const creator=c.created_by===state.session?.user?.id,admin=state.profile?.role==='admin',canManageGroup=isGroup&&(creator||admin);
+ const creator=c.created_by===state.session?.user?.id,admin=state.profile?.role==='admin',canManageGroup=isGroup&&(creator||admin),canDeleteConversation=canManageGroup||(isGeneral&&admin);
  const myParticipant=state.participants.find(p=>p.user_id===state.session?.user?.id);
  const subtitle=$('conversationMenuSubtitle');if(subtitle)subtitle.textContent=isGeneral?'Canal de toute l’équipe':isDirect?'Discussion privée':((c.member_ids||[]).length+' membre(s)');
  $('conversationAddMembersItem')?.classList.toggle('hidden',isGeneral||(isGroup&&!canManageGroup));
  const hint=$('conversationAddMembersHint');if(hint)hint.textContent=isDirect?'Créer un groupe avec ce contact':'Ajouter au groupe';
  $('conversationSettingsItem')?.classList.toggle('hidden',!canManageGroup);
- $('conversationDeleteItem')?.classList.toggle('hidden',!canManageGroup);
+ $('conversationDeleteItem')?.classList.toggle('hidden',!canDeleteConversation);
+ const deleteLabel=$('conversationDeleteLabel'),deleteHint=$('conversationDeleteHint');
+ if(deleteLabel)deleteLabel.textContent=isGeneral?'Supprimer le canal':'Supprimer le groupe';
+ if(deleteHint)deleteHint.textContent=isGeneral?'Administrateur uniquement':'Réservé au créateur ou administrateur';
  $('conversationLeaveItem')?.classList.toggle('hidden',!isGroup||canManageGroup||myParticipant?.role==='owner');
- $('conversationDangerDivider')?.classList.toggle('hidden',!(canManageGroup||(isGroup&&!canManageGroup&&myParticipant?.role!=='owner')))
+ $('conversationDangerDivider')?.classList.toggle('hidden',!(canDeleteConversation||(isGroup&&!canManageGroup&&myParticipant?.role!=='owner')))
 }
 function openConversationParticipants(){
  closeConversationMenu();const c=activeConversation();if(!c)return;
@@ -432,15 +438,17 @@ function renderConversationInfo(){
 async function setMuted(v){const {error}=await db.rpc('chat_set_muted',{p_conversation:state.activeId,p_muted:!!v});if(error)showToast('Impossible de modifier ce réglage');else{const p=state.participants.find(x=>x.user_id===state.session.user.id);if(p)p.muted=!!v;showToast(v?'Notifications en sourdine':'Notifications réactivées')}}
 async function saveGroupInfo(){const name=$('infoGroupName')?.value.trim();if(!name)return showToast('Nom du groupe requis');const ids=[...document.querySelectorAll('[data-info-member].selected')].map(x=>x.dataset.infoMember);const {error}=await db.rpc('chat_update_group',{p_conversation:state.activeId,p_name:name,p_member_ids:ids});if(error){console.error(error);return showToast('Modification impossible')}showToast('Groupe mis à jour');await Promise.all([loadConversations(),loadParticipants()]);renderConversationHeader();renderConversationInfo()}
 async function deleteConversation(){
- const conv=activeConversation();if(!conv||conv.conversation_type==='general')return;
- const creator=conv.created_by===state.session?.user?.id,admin=state.profile?.role==='admin';
- if(!creator&&!admin)return showToast('Seul le créateur du groupe peut le supprimer');
- if(!confirm('Supprimer visuellement ce groupe ?\n\nIl sera retiré des discussions. L’administrateur en conservera une trace dans les archives.'))return;
+ const conv=activeConversation();if(!conv)return;
+ const creator=conv.created_by===state.session?.user?.id,admin=state.profile?.role==='admin',isGeneral=conv.conversation_type==='general';
+ if(isGeneral&&!admin)return showToast('Seul un administrateur peut supprimer le canal Général');
+ if(!isGeneral&&!creator&&!admin)return showToast('Seul le créateur du groupe peut le supprimer');
+ const label=isGeneral?'canal Général':'groupe';
+ if(!confirm('Supprimer visuellement ce '+label+' ?\n\nIl sera retiré des discussions. L’administrateur en conservera une trace dans les archives.'))return;
  const conversationId=state.activeId;
  const {error}=await db.rpc('chat_archive_conversation',{p_conversation:conversationId});
- if(error){console.error('Archivage groupe:',error);return showToast('Suppression impossible')}
+ if(error){console.error('Archivage conversation:',error);return showToast('Suppression impossible')}
  closeConversationInfo();state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');
- await loadConversations();renderConversationHeader();renderMessages();showToast('Groupe supprimé des discussions')
+ await loadConversations();renderConversationHeader();renderMessages();showToast(isGeneral?'Canal Général supprimé des discussions':'Groupe supprimé des discussions')
 }
 async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');await loadConversations();renderConversationHeader();renderMessages()}
 function startRealtime(){
