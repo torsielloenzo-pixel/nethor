@@ -1,9 +1,9 @@
 {
-  "version": 115,
-  "label": "v1.15",
-  "important": true,
-  "title": "Nouvelle version de Nethor",
-  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
-  "published_at": "2026-09-27T20:52:00+02:00",
+  "version": 116,
+  "label": "v1.16",
+  "important": false,
+  "title": "Chat web restructuré",
+  "message": "La version web du Chat adopte une présentation plus claire en trois colonnes : discussions, conversation et informations. Les filtres, participants, recherche, archives et pièces jointes réutilisent les fonctions déjà présentes.",
+  "published_at": "2026-09-27T21:06:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
