@@ -1772,7 +1772,7 @@ function applyPlanningAccessDataset(config,userRole,permission,absenceOverride){
  root.dataset.planningAccess='ready'
 }
 async function applyPlanningWidgetPermissions(userRole,configOverride=null,permissionOverride=planningPermissionLevel){
- let config=configOverride&&typeof configOverride==='object'?configOverride:null;
+ let config=configOverride&&typeof configOverride==='object'&&Object.keys(configOverride).length?configOverride:null;
  if(!config){
   const uiConfig=window.NettoProfileUI?.siteConfig;
   if(uiConfig&&typeof uiConfig==='object'&&Object.keys(uiConfig).length)config=uiConfig
@@ -1853,7 +1853,10 @@ async function init(){
  const api=window.NettoProfileUI;
  planningPermissionLevel=api?.profile&&api.profile.role===role?(api.permissionLevel?.('planning',api.profile)||'none'):String(window.__planningFastContext?.accessSnapshot?.permissions?.planning||'none');
  if(planningPermissionLevel==='none'&&api?.refresh){
-  const fresh=await api.refresh();if(fresh){p=fresh;role=fresh.role||role;planningPermissionLevel=api.permissionLevel?.('planning',fresh)||'none'}
+  const waitStart=Date.now();
+  while(api?.session?.user?.id!==session.user.id&&Date.now()-waitStart<2500)await new Promise(r=>setTimeout(r,35));
+  const fresh=await api.refresh();
+  if(fresh){p=fresh;role=fresh.role||role;planningPermissionLevel=api.permissionLevel?.('planning',fresh)||'none'}
  }
  if(planningPermissionLevel==='none'){location.replace('home.html');return}
  canEdit=planningPermissionLevel==='manage';
@@ -1869,9 +1872,9 @@ async function init(){
   shouldLogs?loadPlanningLogs():Promise.resolve()
  ]);
  startPlanningProfileRealtime();
+ document.body.classList.add('planningReady');
  renderAll();
  setPlanningView(savedView,{sound:false});
- document.body.classList.add('planningReady');
  if(api?.refresh)syncFreshPlanningAccess()
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'}),{once:true});
