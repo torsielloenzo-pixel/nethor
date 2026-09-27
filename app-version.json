@@ -1,10 +1,10 @@
 {
-  "version": 135,
-  "label": "v1.35",
+  "version": 136,
+  "label": "v1.36",
   "important": false,
   "mode": "manual",
-  "title": "Menu utilisateur mobile plus stable",
-  "message": "Sur mobile, toucher de nouveau le bouton Menu lorsqu’il est déjà ouvert ne ferme ni ne recharge l’interface. Les liens du menu vers la page courante ne provoquent plus d’action inutile.",
+  "title": "Entête du chat mobile verrouillé",
+  "message": "Dans une conversation mobile, la barre du contact reste désormais strictement fixe lors de l’ouverture et de la fermeture du clavier. Seule la zone utile du fil et du composeur s’adapte.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
