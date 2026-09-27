@@ -1,10 +1,10 @@
 {
-  "version": 130,
-  "label": "v1.30",
+  "version": 131,
+  "label": "v1.31",
   "important": false,
   "mode": "manual",
-  "title": "Préférences Push simplifiées",
-  "message": "Les choix utilisateur concernent désormais uniquement les notifications Push, avec trois catégories activées par défaut et une interface mobile harmonisée.",
+  "title": "Contrôle des canaux de notification",
+  "message": "Chaque type de notification peut désormais être reçu dans le portail, en Push, sur les deux canaux ou être désactivé. Les mises à jour Nethor restent sans Push système.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
