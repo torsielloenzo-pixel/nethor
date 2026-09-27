@@ -1,9 +1,9 @@
 {
-  "version": 91,
-  "label": "v0.91",
+  "version": 92,
+  "label": "v0.92",
   "important": false,
-  "title": "Chat desktop plus lisible",
-  "message": "Les titres, noms et messages du chat sont maintenant plus grands et plus lisibles sur ordinateur, sans modifier la version mobile.",
-  "published_at": "2026-09-27T16:00:00+02:00",
+  "title": "Liste Discussions ajustée",
+  "message": "Les noms de discussions sont plus lisibles sur ordinateur et restent strictement dans leur zone, sans dépasser sur l’heure ou l’aperçu du message.",
+  "published_at": "2026-09-27T16:03:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
