@@ -799,6 +799,18 @@ function addStyle(){
       margin:0!important;padding:0!important;
     }
   }
+  
+  /* Notifications • icônes agrandies dans les bulles */
+  .nettoNotifIcon{
+    display:grid!important;place-items:center!important;
+    padding:0!important;overflow:hidden!important;
+    font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif!important;
+    font-size:40px!important;line-height:1!important;
+  }
+  @media(max-width:700px){
+    .nettoNotifIcon{font-size:42px!important}
+  }
+
 
 `;document.head.appendChild(s)
 }
