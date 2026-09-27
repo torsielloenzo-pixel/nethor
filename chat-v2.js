@@ -147,7 +147,7 @@ async function loadParticipants(){
 }
 function renderConversationHeader(){
  const c=activeConversation(),av=$('activeAvatarMount'),title=$('activeTitle'),sub=$('activeSubtitle'),info=$('infoBtn'),search=$('messageSearchBtn'),composer=$('composer');
- if(!c){if(av)av.innerHTML='';if(title)title.textContent='Sélectionne une discussion';if(sub)sub.textContent='';if(info)info.disabled=true;if(search)search.disabled=true;if(composer)composer.classList.add('hidden');return}
+ if(!c){if(av)av.innerHTML='';if(title)title.textContent='Sélectionne une discussion';if(sub)sub.textContent='';if(info)info.disabled=false;if(search)search.disabled=true;if(composer)composer.classList.add('hidden');return}
  av.innerHTML=conversationAvatar(c,true);title.textContent=conversationTitle(c);sub.textContent=conversationPresence(c);info.disabled=false;search.disabled=false;composer.classList.remove('hidden')
 }
 async function loadMessages(){
@@ -283,7 +283,7 @@ async function markAllRead(){
  renderConversations();showToast('Toutes les discussions sont marquées comme lues')
 }
 function toggleUnreadOnly(){
- state.onlyUnread=!state.onlyUnread;
+ closeChatMenu();state.onlyUnread=!state.onlyUnread;
  $('unreadOnlyBtn')?.classList.toggle('active',state.onlyUnread);
  renderConversations();
  showToast(state.onlyUnread?'Discussions non lues uniquement':'Toutes les discussions affichées')
@@ -336,7 +336,7 @@ function renderNewChatMembers(){
 function toggleGroupMember(id){state.groupMembers.has(id)?state.groupMembers.delete(id):state.groupMembers.add(id);renderNewChatMembers()}
 async function openDirect(id){const {data,error}=await db.rpc('create_chat_conversation',{p_type:'direct',p_name:null,p_member_ids:[id]});if(error){console.error(error);return showToast('Création impossible')}await db.rpc('chat_set_user_conversation_state',{p_conversation:data,p_action:'restore'});closeNewChat();await loadConversations();await openConversation(data,{showMobile:true})}
 async function createGroup(){const name=$('groupName').value.trim();if(!name)return showToast('Donne un nom au groupe');if(!state.groupMembers.size)return showToast('Ajoute au moins un membre');const btn=$('createGroupBtn');btn.disabled=true;const {data,error}=await db.rpc('create_chat_conversation',{p_type:'group',p_name:name,p_member_ids:[...state.groupMembers]});btn.disabled=false;if(error){console.error(error);return showToast('Création impossible')}closeNewChat();await loadConversations();await openConversation(data,{showMobile:true})}
-function infoMemberRow(p){const m=member(p.user_id)||{id:p.user_id,display_name:'Utilisateur'};return '<button type="button" class="infoRow contactInfoRow" onclick="openContactCard(\''+m.id+'\')">'+avatarHtml(m,'pickAvatar')+'<div><strong>'+esc(m.display_name||'Utilisateur')+(p.user_id===state.session.user.id?' · Vous':'')+'</strong><small>'+esc(roleLabel(m.role))+' · '+esc(contactPresence(m.id))+'</small></div>'+(p.role==='owner'?'<span style="font-size:8px;color:#e34b27;font-weight:900">CRÉATEUR</span>':'<span>›</span>')+'</button>'
+function infoMemberRow(p){const m=member(p.user_id)||{id:p.user_id,display_name:'Utilisateur'};return '<button type="button" class="infoRow contactInfoRow" onclick="openContactCard(\''+m.id+'\')">'+avatarHtml(m,'pickAvatar')+'<div><strong>'+esc(m.display_name||'Utilisateur')+(p.user_id===state.session.user.id?' · Vous':'')+'</strong><small>'+esc(roleLabel(m.role))+' · '+esc(contactPresence(m.id))+'</small></div>'+(p.role==='owner'?'<span style="font-size:8px;color:#e34b27;font-weight:900">CRÉATEUR</span>':'<span>›</span>')+'</button>'}
 function openConversationInfo(){const c=activeConversation();if(!c)return;$('infoModal').classList.remove('hidden');renderConversationInfo()}
 function closeConversationInfo(){$('infoModal').classList.add('hidden')}
 function renderConversationInfo(){
