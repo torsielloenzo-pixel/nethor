@@ -1,9 +1,9 @@
 {
-  "version": 73,
-  "label": "v0.73",
+  "version": 74,
+  "label": "v0.74",
   "important": true,
-  "title": "Statistiques de fréquentation",
-  "message": "Le Journal complet devient un widget compact avec graphique des visites du site par jour, semaine et mois. Les visites des administrateurs sont exclues des statistiques.",
-  "published_at": "2026-09-27T12:05:00+02:00",
+  "title": "Actions du planning sur mobile",
+  "message": "Sur mobile, Importer Excel et Modifier le planning sont désormais placés côte à côte à droite, juste au-dessus du tableau.",
+  "published_at": "2026-09-27T12:14:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
