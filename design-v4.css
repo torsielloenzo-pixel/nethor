@@ -482,3 +482,371 @@ textarea{line-height:1.5!important}
     padding-right:max(8px,env(safe-area-inset-right))!important;
   }
 }
+
+
+/* =========================================================
+   Nethor — Lisibilité globale renforcée v6
+   Objectif : lecture immédiate, hiérarchie claire, zéro débordement
+   ========================================================= */
+:root{
+  --nethor-body-size:15px;
+  --nethor-copy-size:13px;
+  --nethor-small-size:11px;
+  --nethor-label-size:11.5px;
+  --nethor-title-1:36px;
+  --nethor-title-2:22px;
+  --nethor-title-3:16px;
+}
+
+/* Base */
+body{
+  font-size:var(--nethor-body-size)!important;
+  line-height:1.52!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+p,span,small,strong,label,button,a,input,select,textarea{
+  overflow-wrap:anywhere;
+}
+main,.panel,.card,.pageCard,.section,.workspace,.side,.sheet,.modal,.modalCard,.planningInsightCard{
+  min-width:0;
+}
+h1,h2,h3,.title,.brand strong{
+  text-wrap:balance;
+}
+p,.panelIntro,.hero p,.intro p,.hint,.fieldHelp,.description,.desc{
+  text-wrap:pretty;
+}
+
+/* En-tête global */
+.title,.brand .title,.brand strong{
+  font-size:20px!important;
+  line-height:1.15!important;
+  font-weight:900!important;
+}
+.sub,.subtitle{
+  font-size:11.5px!important;
+  line-height:1.35!important;
+  font-weight:650!important;
+}
+.mark,.brandMark{
+  width:45px!important;
+  height:45px!important;
+  flex:none!important;
+}
+
+/* Titres de pages */
+.hero h1,.pageTitle,h1{
+  font-size:var(--nethor-title-1)!important;
+  line-height:1.08!important;
+  letter-spacing:-.8px!important;
+}
+.panel h2,.toolbar h2,.section h2,.card h2,.modal h2,.modalCard h2{
+  font-size:var(--nethor-title-2)!important;
+  line-height:1.18!important;
+  font-weight:900!important;
+}
+.panel h3,.card h3,.section h3{
+  font-size:var(--nethor-title-3)!important;
+  line-height:1.25!important;
+  font-weight:850!important;
+}
+.panelIntro,.hero p,.intro p,.hint,.fieldHelp,.description,.desc{
+  font-size:12.5px!important;
+  line-height:1.52!important;
+  color:var(--ui-muted)!important;
+}
+
+/* Cartes et contenu */
+.pageCard h2{
+  font-size:23px!important;
+  line-height:1.15!important;
+}
+.pageCard p,.card p,.panel p,.section p{
+  font-size:13px!important;
+  line-height:1.55!important;
+}
+.cardKicker,.eyebrow{
+  font-size:10.5px!important;
+  line-height:1.2!important;
+}
+.cardFoot{
+  font-size:11.5px!important;
+  line-height:1.35!important;
+}
+.notice,.loading,.empty,.state,.saveState{
+  font-size:12px!important;
+  line-height:1.45!important;
+}
+
+/* Boutons / actions */
+.btn,.primary,.secondary,.light,.dark,.manage,.send,.loginSubmit,.secondaryBtn,.danger{
+  min-height:45px!important;
+  padding:10px 15px!important;
+  font-size:12.5px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+}
+.mini{
+  min-height:36px!important;
+  padding:8px 11px!important;
+  font-size:11px!important;
+}
+button{
+  max-width:100%;
+}
+button strong{
+  font-size:inherit;
+}
+
+/* Formulaires */
+.field{
+  min-width:0;
+}
+.field label,label{
+  font-size:12px!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+}
+input,select,textarea,.search,.searchBox input{
+  font-size:14px!important;
+  line-height:1.4!important;
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+select{
+  min-height:44px;
+}
+textarea{
+  min-height:90px;
+  line-height:1.55!important;
+}
+::placeholder{
+  opacity:.78!important;
+}
+
+/* Navigation / onglets / filtres */
+.tabs button,.viewTab,.stockModeBtn,.day,.filter,.logFilter,.modeTabs button{
+  font-size:12px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+}
+.side strong,.moduleHeadInfo strong,.customHeadInfo strong{
+  font-size:13px!important;
+  line-height:1.25!important;
+}
+.side small,.moduleHeadInfo span,.customHeadInfo span{
+  font-size:10.5px!important;
+  line-height:1.35!important;
+}
+.side button,.moduleHead,.customHead{
+  min-width:0;
+}
+.side button>*,.moduleHeadInfo,.customHeadInfo{
+  min-width:0;
+}
+
+/* Outils globaux : profil / notifications */
+.nettoUserText strong{
+  font-size:12.5px!important;
+}
+.nettoUserText small{
+  font-size:10.5px!important;
+}
+.nettoUserHead strong,.nettoNotifHead strong{
+  font-size:14px!important;
+}
+.nettoUserHead small{
+  font-size:11px!important;
+}
+.nettoNavBtn{
+  min-height:52px!important;
+  padding:10px 11px!important;
+}
+.nettoNavBtn strong{
+  font-size:12.5px!important;
+}
+.nettoNavBtn small{
+  font-size:10.5px!important;
+  line-height:1.38!important;
+}
+.nettoMenuSection{
+  font-size:9px!important;
+}
+.nettoNotifItem{
+  min-width:0;
+}
+.nettoNotifItem strong{
+  font-size:12.5px!important;
+  line-height:1.25!important;
+}
+.nettoNotifItem span,.nettoNotifItem small{
+  font-size:10.5px!important;
+  line-height:1.42!important;
+}
+
+/* Administration / comptes / listes */
+.item,.notifUser,.recipient,.logItem,.roleRow,.userRow{
+  min-width:0;
+}
+.item strong,.notifUserName strong,.recipient strong,.logItem strong{
+  font-size:12.5px!important;
+  line-height:1.3!important;
+}
+.item small,.notifUserName span,.recipient small,.logItem small{
+  font-size:10.5px!important;
+  line-height:1.42!important;
+}
+
+/* Badges */
+.roleBadge,.badge,.status,.pill,.chip,.deviceBadge,.sourceBadge{
+  font-size:10px!important;
+  line-height:1.15!important;
+  font-weight:850!important;
+}
+
+/* Tableaux : agrandir les libellés, préserver la densité des cellules horaires */
+table:not(.xlsTable){
+  font-size:12.5px!important;
+}
+table:not(.xlsTable) th{
+  font-size:11px!important;
+  font-weight:900!important;
+}
+table:not(.xlsTable) td{
+  line-height:1.42!important;
+}
+
+/* Planning : titres/insights, sans toucher à la grille Excel elle-même */
+.planningInsightCard .insightHead strong{
+  font-size:13.5px!important;
+}
+.planningInsightCard .insightHead small{
+  font-size:10px!important;
+  line-height:1.4!important;
+}
+.insightMetric{
+  font-size:10.5px!important;
+}
+.planningLogsHead strong{
+  font-size:14px!important;
+}
+.planningLogsHead small{
+  font-size:10.5px!important;
+}
+.xlsTable,.xlsTable *,.sheetViewport .cell,.sheetViewport .time,.sheetViewport .total,.sheetViewport .slot{
+  text-size-adjust:none;
+}
+
+/* Accueil */
+.hello h1{
+  font-size:40px!important;
+}
+.hello p{
+  font-size:14px!important;
+  line-height:1.6!important;
+  max-width:720px!important;
+}
+.hello .eyebrow{
+  font-size:10.5px!important;
+}
+
+/* Sécurité anti-débordement générique */
+.title,.sub,.subtitle,
+.moduleHeadInfo strong,.moduleHeadInfo span,
+.customHeadInfo strong,.customHeadInfo span,
+.item strong,.item small,
+.notifUserName strong,.notifUserName span{
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.flex,.row,.toolbar,.hero,.panelHead,.insightHead,.profileTop,.rewardHead,.soundHead{
+  min-width:0;
+}
+.flex>*,.row>*,.toolbar>*,.hero>*,.panelHead>*,.insightHead>*{
+  min-width:0;
+}
+
+/* Desktop : plus ample et immédiatement lisible */
+@media(min-width:901px){
+  main{
+    line-height:1.52!important;
+  }
+  .panel,.notificationsCard,.planningLogs{
+    padding-top:max(18px,var(--panel-pad,18px));
+  }
+  .top{
+    min-height:68px;
+  }
+}
+
+/* Mobile : lisible sans prendre toute la largeur ni provoquer de débordement */
+@media(max-width:900px){
+  :root{
+    --nethor-body-size:14.5px;
+    --nethor-title-1:29px;
+    --nethor-title-2:18px;
+    --nethor-title-3:15px;
+  }
+  body{
+    font-size:14.5px!important;
+    line-height:1.5!important;
+  }
+  .title,.brand .title,.brand strong{
+    font-size:17px!important;
+  }
+  .sub,.subtitle{
+    font-size:10px!important;
+  }
+  .mark,.brandMark{
+    width:40px!important;
+    height:40px!important;
+  }
+  .hero h1,h1{
+    font-size:29px!important;
+  }
+  .panel h2,.toolbar h2,.section h2,.card h2,.modal h2,.modalCard h2{
+    font-size:18px!important;
+  }
+  .panel h3,.card h3,.section h3{
+    font-size:15px!important;
+  }
+  .panelIntro,.hero p,.intro p,.hint,.fieldHelp,.description,.desc{
+    font-size:11.5px!important;
+  }
+  .pageCard h2{
+    font-size:21px!important;
+  }
+  .pageCard p,.card p,.panel p,.section p{
+    font-size:12px!important;
+  }
+  .btn,.primary,.secondary,.light,.dark,.manage,.send,.loginSubmit,.secondaryBtn,.danger{
+    min-height:44px!important;
+    font-size:12px!important;
+  }
+  input,select,textarea,.search,.searchBox input{
+    font-size:16px!important;
+  }
+  .side strong,.moduleHeadInfo strong,.customHeadInfo strong{
+    font-size:12.5px!important;
+  }
+  .side small,.moduleHeadInfo span,.customHeadInfo span{
+    font-size:10px!important;
+  }
+  .hello h1{
+    font-size:29px!important;
+  }
+  .hello p{
+    font-size:12.5px!important;
+  }
+}
+
+/* Très petits écrans : on réduit uniquement les gros titres */
+@media(max-width:430px){
+  .hero h1,h1,.hello h1{
+    font-size:27px!important;
+  }
+  .panel h2,.toolbar h2,.section h2,.card h2{
+    font-size:17px!important;
+  }
+}
