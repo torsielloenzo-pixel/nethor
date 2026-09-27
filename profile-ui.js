@@ -26,8 +26,8 @@ function lockMobileAppViewport(){
 
 lockMobileAppViewport();
 
-/* Mobile keyboard: keep the bottom navigation behind the virtual keyboard. */
-let mobileKeyboardViewportBaseline=0;
+/* Mobile keyboard: keep navigation out of the way without moving the app header. */
+let mobileKeyboardBaseline=0;
 function isMobileTextEntry(el){
  if(!el||el.nodeType!==1||el.disabled||el.readOnly)return false;
  if(el.isContentEditable)return true;
@@ -37,36 +37,36 @@ function isMobileTextEntry(el){
  const type=String(el.type||'text').toLowerCase();
  return !['button','checkbox','radio','range','file','submit','reset','color','hidden','image'].includes(type)
 }
-function syncMobileKeyboardViewport(){
+function syncMobileKeyboard(){
  const root=document.documentElement,body=document.body;
  if(!isMobileViewport()){
   root.classList.remove('nettoKeyboardOpen');body?.classList.remove('nettoKeyboardOpen');
-  root.style.removeProperty('--netto-visual-viewport-h');
-  root.style.removeProperty('--netto-visual-viewport-top');
   root.style.removeProperty('--netto-keyboard-inset');
-  mobileKeyboardViewportBaseline=0;return
+  mobileKeyboardBaseline=0;return
  }
- const vv=window.visualViewport;
- const h=Math.max(1,Math.round(vv?.height||window.innerHeight||0));
- const viewportTop=Math.max(0,Math.round(vv?.offsetTop||0));
- root.style.setProperty('--netto-visual-viewport-h',h+'px');
- root.style.setProperty('--netto-visual-viewport-top',viewportTop+'px');
  const editing=isMobileTextEntry(document.activeElement);
- if(!editing||!mobileKeyboardViewportBaseline)mobileKeyboardViewportBaseline=h;
- if(!editing)mobileKeyboardViewportBaseline=h;
- const drop=Math.max(0,mobileKeyboardViewportBaseline-h);
- const occluded=vv?Math.max(0,Math.round((window.innerHeight||h)-vv.height-(vv.offsetTop||0))):0;
- const keyboardInset=Math.max(drop,occluded);
- root.style.setProperty('--netto-keyboard-inset',keyboardInset+'px');
- const keyboardOpen=editing&&keyboardInset>120;
- root.classList.toggle('nettoKeyboardOpen',keyboardOpen);
- body?.classList.toggle('nettoKeyboardOpen',keyboardOpen)
+ const vv=window.visualViewport;
+ const visualH=Math.max(1,Math.round(vv?.height||window.innerHeight||0));
+ const visualTop=Math.max(0,Math.round(vv?.offsetTop||0));
+ const layoutH=Math.max(1,Math.round(window.innerHeight||document.documentElement.clientHeight||visualH));
+ if(!editing){
+  mobileKeyboardBaseline=Math.max(layoutH,visualH);
+  root.style.setProperty('--netto-keyboard-inset','0px')
+ }else{
+  if(!mobileKeyboardBaseline)mobileKeyboardBaseline=Math.max(layoutH,visualH);
+  const visualDrop=Math.max(0,mobileKeyboardBaseline-(visualH+visualTop));
+  const layoutDrop=Math.max(0,mobileKeyboardBaseline-layoutH);
+  const inset=Math.max(0,visualDrop-layoutDrop);
+  root.style.setProperty('--netto-keyboard-inset',Math.round(inset)+'px')
+ }
+ root.classList.toggle('nettoKeyboardOpen',editing);
+ body?.classList.toggle('nettoKeyboardOpen',editing)
 }
-function bindMobileKeyboardViewport(){
+function bindMobileKeyboard(){
  let raf=0;
- const sync=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(syncMobileKeyboardViewport)};
+ const sync=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(syncMobileKeyboard)};
  document.addEventListener('focusin',sync,true);
- document.addEventListener('focusout',()=>setTimeout(sync,90),true);
+ document.addEventListener('focusout',()=>setTimeout(sync,100),true);
  window.addEventListener('resize',sync,{passive:true});
  if(window.visualViewport){
   window.visualViewport.addEventListener('resize',sync,{passive:true});
@@ -74,8 +74,8 @@ function bindMobileKeyboardViewport(){
  }
  sync()
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboardViewport,{once:true});
-else bindMobileKeyboardViewport();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboard,{once:true});
+else bindMobileKeyboard();
 
 const FAST_ACCESS_TTL=120000;
 const FAST_ACCESS_ROUTES=Object.freeze({
@@ -839,7 +839,7 @@ function addStyle(){
    :root[data-theme="dark"] .nettoMobileQuickItem{color:#9ca2aa}
    :root[data-theme="dark"] .nettoMobileQuickItem.active{color:#ff936d}
    :root[data-theme="dark"] .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:#3b2923}
-   body.nettoHasMobileBar:not(.mobileConversationOpen) .chatApp{height:calc(100dvh - 56px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom))!important}body.mobileConversationOpen.nettoHasMobileBar{padding-bottom:0!important}body.mobileConversationOpen .nettoMobileQuickBar{display:none!important}
+   body.nettoHasMobileBar .chatApp{height:calc(100dvh - 56px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom))!important}
    body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 12px)!important}
  }
 
@@ -1674,7 +1674,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=122;
+const APP_RELEASE=123;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
