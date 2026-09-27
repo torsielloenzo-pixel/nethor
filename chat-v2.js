@@ -43,7 +43,7 @@ async function signedAvatar(path){if(!path)return null;const cached=state.avatar
 function avatarHtml(m,cls='convAvatar'){const name=m?.display_name||'Utilisateur',frame=m?.avatar_frame?' data-avatar-frame="'+esc(m.avatar_frame)+'"':'',style=' style="background:'+(esc(m?.profile_color||'#ff5a2a'))+'"';return '<div class="'+cls+'"'+frame+style+'>'+(m?.avatar_url?'<img src="'+esc(m.avatar_url)+'" alt="">':esc(initials(name)))+'</div>'}
 function conversationTitle(c){if(!c)return'Discussion';if(c.conversation_type==='general')return'Général';if(c.conversation_type==='group')return c.conversation_name||'Groupe';const other=(c.member_ids||[]).find(id=>id!==state.session?.user?.id);return member(other)?.display_name||'Discussion privée'}
 function conversationMember(c){if(!c||c.conversation_type!=='direct')return null;const other=(c.member_ids||[]).find(id=>id!==state.session?.user?.id);return member(other)}
-function conversationAvatar(c,active=false){const cls=active?'activeAvatar':'convAvatar';if(c?.conversation_type==='general')return '<div class="'+cls+' general"><img src="assets/logo-equipe.svg" alt=""></div>';if(c?.conversation_type==='direct')return avatarHtml(conversationMember(c),cls);const title=conversationTitle(c);return '<div class="'+cls+'" style="background:linear-gradient(135deg,#ff3422,#ff8524)">'+esc(initials(title))+'</div>'}
+function conversationAvatar(c,active=false){const cls=active?'activeAvatar':'convAvatar';if(c?.conversation_type==='general')return '<div class="'+cls+' general"><img src="assets/logo-chat.svg" alt=""></div>';if(c?.conversation_type==='direct')return avatarHtml(conversationMember(c),cls);const title=conversationTitle(c);return '<div class="'+cls+'" style="background:linear-gradient(135deg,#ff3422,#ff8524)">'+esc(initials(title))+'</div>'}
 function activeConversation(){return state.conversations.find(c=>c.conversation_id===state.activeId)||null}
 function conversationById(id){return state.conversations.find(c=>c.conversation_id===id)||state.archives.find(c=>c.conversation_id===id)||null}
 function lastSeenLabel(userId){
@@ -90,7 +90,15 @@ function renderConversations(){
   return '<button class="convRow '+(active?'active ':'')+(ownerGroup?'ownerGroup':'')+'" data-conversation-id="'+c.conversation_id+'" onclick="conversationRowClick(event,\''+c.conversation_id+'\')" onpointerdown="startConversationLongPress(event,\''+c.conversation_id+'\')" onpointerup="cancelConversationLongPress()" onpointercancel="cancelConversationLongPress()" onpointerleave="cancelConversationLongPress()" oncontextmenu="conversationContextMenu(event,\''+c.conversation_id+'\')">'+conversationAvatar(c)+
    '<span class="convCopy"><span class="convTitleLine"><strong>'+esc(title)+'</strong>'+(online?'<i class="onlineMini"></i>':'')+'</span><span class="convPreview">'+esc(preview)+'</span></span>'+
    '<span class="convMeta"><span class="convTime">'+esc(timeShort(c.last_message_at||c.updated_at))+'</span>'+(Number(c.unread_count)>0?'<b class="unreadBadge">'+Math.min(99,Number(c.unread_count))+'</b>':'')+'</span></button>'
- }).join('')
+ }).join('');
+ syncConversationFilterButtons()
+}
+function syncConversationFilterButtons(){
+ $('conversationFilterAll')?.classList.toggle('active',!state.onlyUnread);
+ $('conversationFilterUnread')?.classList.toggle('active',state.onlyUnread)
+}
+function setConversationListFilter(mode){
+ state.onlyUnread=mode==='unread';state.lastConversationRenderKey='';syncConversationFilterButtons();renderConversations()
 }
 function searchConversations(v){state.search=v;renderConversations()}
 function conversationRowClick(e,id){
@@ -171,14 +179,15 @@ async function openConversation(id,opts={}){
 }
 function closeMobileConversation(){document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html')}
 async function loadParticipants(){
- if(!state.activeId){state.participants=[];return}
+ if(!state.activeId){state.participants=[];renderDesktopDetails();return}
  const {data,error}=await db.from('chat_participants').select('conversation_id,user_id,role,joined_at,last_read_at,muted').eq('conversation_id',state.activeId);
- if(!error)state.participants=data||[]
+ if(!error)state.participants=data||[];
+ renderDesktopDetails()
 }
 function renderConversationHeader(){
  const c=activeConversation(),av=$('activeAvatarMount'),avatarBtn=$('activeAvatarButton'),title=$('activeTitle'),sub=$('activeSubtitle'),info=$('conversationMenuBtn'),search=$('messageSearchBtn'),composer=$('composer');
- if(!c){if(av)av.innerHTML='';if(avatarBtn)avatarBtn.disabled=true;if(title)title.textContent='Sélectionne une discussion';if(sub)sub.textContent='';if(info)info.disabled=false;if(search)search.disabled=true;if(composer)composer.classList.add('hidden');return}
- av.innerHTML=conversationAvatar(c,true);if(avatarBtn)avatarBtn.disabled=false;title.textContent=conversationTitle(c);sub.textContent=conversationPresence(c);info.disabled=false;search.disabled=false;composer.classList.remove('hidden')
+ if(!c){if(av)av.innerHTML='';if(avatarBtn)avatarBtn.disabled=true;if(title)title.textContent='Sélectionne une discussion';if(sub)sub.textContent='';if(info)info.disabled=false;if(search)search.disabled=true;if(composer)composer.classList.add('hidden');renderDesktopDetails();return}
+ av.innerHTML=conversationAvatar(c,true);if(avatarBtn)avatarBtn.disabled=false;title.textContent=conversationTitle(c);sub.textContent=conversationPresence(c);info.disabled=false;search.disabled=false;composer.classList.remove('hidden');renderDesktopDetails()
 }
 async function loadMessages(){
  if(!state.activeId){state.messages=[];state.reactions=[];state.lastMessageRenderKey='';renderMessages();return}
@@ -188,7 +197,7 @@ async function loadMessages(){
  if(error){console.error(error);$('messages').innerHTML='<div class="listEmpty">Impossible de charger les messages.</div>';return}
  state.messages=data||[];await loadReactions();
  if(seq!==state.messageLoadSeq||state.activeId!==conversationId)return;
- await renderMessages()
+ await renderMessages();renderDesktopDetails()
 }
 async function loadReactions(){
  const ids=state.messages.map(m=>m.id);if(!ids.length){state.reactions=[];return}
@@ -220,7 +229,7 @@ function readTicks(m){
 }
 async function renderMessages(){
  const box=$('messages'),conversationId=state.activeId,renderSeq=++state.messageRenderSeq;
- if(!conversationId){state.lastMessageRenderKey='';box.innerHTML='<div class="noConversation"><div><div class="logo"><img src="assets/logo-equipe.svg" alt=""></div><strong>Messagerie Nethor</strong><span>Choisis une discussion ou crée une conversation privée ou un groupe.</span></div></div>';return}
+ if(!conversationId){state.lastMessageRenderKey='';box.innerHTML='<div class="noConversation"><div><div class="logo"><img src="assets/logo-chat.svg" alt=""></div><strong>Messagerie Nethor</strong><span>Choisis une discussion ou crée une conversation privée ou un groupe.</span></div></div>';return}
  const q=state.messageSearch.trim().toLowerCase();const visible=state.messages.filter(m=>!q||(m.body||'').toLowerCase().includes(q)||(m.attachment_name||'').toLowerCase().includes(q));
  if(!visible.length){state.lastMessageRenderKey='empty:'+conversationId+':'+q;box.innerHTML='<div class="listEmpty">'+(q?'Aucun message trouvé.':'Aucun message pour le moment.<br>Écris le premier message.')+'</div>';return}
  const general=activeConversation()?.conversation_type==='general';
@@ -323,6 +332,60 @@ async function toggleRecording(){
   recorder.start();showToast('Enregistrement vocal…')
  }catch(e){showToast('Microphone inaccessible')}
 }
+
+async function renderDesktopDetails(){
+ const box=$('chatDetailsContent');if(!box)return;
+ const conv=activeConversation();
+ if(!conv){box.innerHTML='<div class="detailsEmpty"><img src="assets/logo-chat.svg" alt=""><strong>Informations</strong><span>Sélectionne une discussion pour afficher ses détails.</span></div>';return}
+ const currentId=conv.conversation_id,direct=conversationMember(conv),isDirect=conv.conversation_type==='direct',isGeneral=conv.conversation_type==='general',isGroup=conv.conversation_type==='group';
+ const title=conversationTitle(conv),presence=conversationPresence(conv),ids=(conv.member_ids||[]).filter(Boolean),people=ids.map(member).filter(Boolean);
+ const hero=isDirect&&direct?avatarHtml(direct,'activeAvatar'):conversationAvatar(conv,true);
+ const role=isDirect&&direct?roleLabel(direct.role):(isGeneral?'Canal général':'Groupe');
+ const canAdd=!isGeneral&&(isDirect||(isGroup&&(conv.created_by===state.session?.user?.id||state.profile?.role==='admin')));
+ const canArchive=!(isGeneral&&state.profile?.role!=='admin');
+ const media=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&/^(image|video)\//.test(m.attachment_type||''));
+ const files=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&!/^(image|video)\//.test(m.attachment_type||''));
+ const previews=people.slice(0,5).map(m=>avatarHtml(m,'detailsParticipantAvatar')).join('');
+ box.innerHTML='<div class="detailsHero">'+hero+'<h2>'+esc(title)+'</h2><span class="detailsRole">'+esc(role)+'</span><p>'+esc(presence)+'</p></div>'+
+  '<div class="detailsActions">'+
+   (isDirect?'<button class="detailsAction" type="button" onclick="openContactCard(\''+direct.id+'\')"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19c1.2-3.3 3.6-5 6.5-5s5.3 1.7 6.5 5"/></svg></span><span>Profil</span></button>':'<button class="detailsAction" type="button" onclick="openConversationParticipants()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3.5 19c.8-3.4 2.7-5 5.5-5s4.7 1.6 5.5 5"/><path d="M14.5 15c2.6 0 4.3 1.3 5 4"/></svg></span><span>Participants</span></button>')+
+   '<button class="detailsAction" type="button" onclick="toggleMessageSearch()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4 4"/></svg></span><span>Rechercher</span></button>'+
+   (canAdd?'<button class="detailsAction" type="button" onclick="openAddMembersFromConversation()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><path d="M3.5 19c.8-3.4 2.7-5 5.5-5"/><path d="M18 7v7M14.5 10.5h7"/></svg></span><span>Ajouter</span></button>':(canArchive?'<button class="detailsAction" type="button" onclick="desktopArchiveActive()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M3 4h18v4H3z"/><path d="M9 12h6"/></svg></span><span>Archiver</span></button>':'<button class="detailsAction" type="button" onclick="openConversationInfo()"><span class="detailsActionIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg></span><span>Infos</span></button>'))+
+  '</div>'+
+  '<details class="detailsSection" open><summary>Informations sur la discussion</summary><div class="detailsSectionBody">'+
+   '<button class="detailsRow" type="button" onclick="'+(isDirect&&direct?'openContactCard(\''+direct.id+'\')':'openConversationParticipants()')+'"><span class="detailsRowIcon">👥</span><span class="detailsRowCopy"><strong>'+(isDirect?'Profil du contact':'Participants')+'</strong><small>'+esc(isDirect?presence:(people.length+' membre'+(people.length>1?'s':'')))+'</small></span><span>›</span></button>'+
+   '<button class="detailsRow" type="button" onclick="openConversationInfo()"><span class="detailsRowIcon">⚙</span><span class="detailsRowCopy"><strong>Paramètres de la discussion</strong><small>Notifications'+(isGroup?' et gestion du groupe':'')+'</small></span><span>›</span></button>'+
+   (!isDirect?'<div class="detailsRow"><span class="detailsRowIcon">●</span><span class="detailsRowCopy"><strong>Membres</strong><small><span class="detailsParticipants">'+previews+(people.length>5?'<span class="detailsParticipantsMore">+'+(people.length-5)+'</span>':'')+'</span></small></span><span></span></div>':'')+
+  '</div></details>'+
+  '<details class="detailsSection" open><summary>Fichiers et contenus multimédias</summary><div class="detailsSectionBody">'+
+   '<button class="detailsRow" type="button" onclick="openAttachmentBrowser(\'media\')"><span class="detailsRowIcon">▧</span><span class="detailsRowCopy"><strong>Photos et vidéos</strong><small>'+media.length+' élément'+(media.length>1?'s':'')+'</small></span><span>›</span></button>'+
+   '<button class="detailsRow" type="button" onclick="openAttachmentBrowser(\'files\')"><span class="detailsRowIcon">▤</span><span class="detailsRowCopy"><strong>Fichiers et audios</strong><small>'+files.length+' élément'+(files.length>1?'s':'')+'</small></span><span>›</span></button>'+
+   '<div id="detailsMediaPreview" class="detailsMediaGrid"></div>'+
+  '</div></details>'+
+  (canArchive?'<details class="detailsSection"><summary>Actions</summary><div class="detailsSectionBody"><button class="detailsRow" type="button" onclick="desktopArchiveActive()"><span class="detailsRowIcon">▣</span><span class="detailsRowCopy"><strong>Archiver la conversation</strong><small>La conserver hors de la liste principale</small></span><span>›</span></button></div></details>':'');
+ if(state.activeId!==currentId)return;
+ const previewBox=$('detailsMediaPreview');if(!previewBox||!media.length)return;
+ const latest=media.slice(-6).reverse(),thumbs=await Promise.all(latest.map(async m=>{
+  const url=await signed(m.attachment_path);if(!url)return'';
+  if((m.attachment_type||'').startsWith('image/'))return'<button class="detailsMediaThumb" type="button" onclick="openImage(\''+esc(url)+'\')"><img src="'+esc(url)+'" alt=""></button>';
+  return'<button class="detailsMediaThumb" type="button" onclick="openAttachmentBrowser(\'media\')">▶</button>'
+ }));
+ if(state.activeId===currentId&&previewBox)previewBox.innerHTML=thumbs.join('')
+}
+async function openAttachmentBrowser(kind){
+ const modal=$('infoModal'),box=$('infoContent'),title=$('infoTitle');if(!modal||!box)return;
+ const media=kind==='media';
+ const list=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&(media?/^(image|video)\//.test(m.attachment_type||''):! /^(image|video)\//.test(m.attachment_type||'')));
+ if(title)title.textContent=media?'Photos et vidéos':'Fichiers et audios';
+ modal.classList.remove('hidden');
+ if(!list.length){box.innerHTML='<div class="listEmpty">Aucun élément dans cette conversation.</div>';return}
+ box.innerHTML='<div class="infoSection"><div class="infoMembers">'+(await Promise.all(list.slice().reverse().map(async m=>{
+  const url=await signed(m.attachment_path),name=esc(m.attachment_name||'Pièce jointe');if(!url)return'';
+  if((m.attachment_type||'').startsWith('image/'))return'<button class="infoRow contactInfoRow" type="button" onclick="openImage(\''+esc(url)+'\')"><span class="pickAvatar" style="background:#eef0f2;overflow:hidden"><img src="'+esc(url)+'" alt="" style="width:100%;height:100%;object-fit:cover"></span><div><strong>'+name+'</strong><small>'+esc(sizeLabel(m.attachment_size))+'</small></div><span>›</span></button>';
+  return'<a class="infoRow contactInfoRow" href="'+esc(url)+'" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="pickAvatar">📎</span><div><strong>'+name+'</strong><small>'+esc(sizeLabel(m.attachment_size))+'</small></div><span>›</span></a>'
+ }))).join('')+'</div></div>'
+}
+function desktopArchiveActive(){if(!state.activeId)return;state.actionConversationId=state.activeId;actionSheetArchive()}
 function toggleMessageSearch(){const b=$('messageSearchBar');b.classList.toggle('show');if(b.classList.contains('show'))setTimeout(()=>$('messageSearchInput').focus(),30);else{state.messageSearch='';$('messageSearchInput').value='';renderMessages()}}
 function searchMessages(v){state.messageSearch=v;renderMessages()}
 function openImage(url){$('lightboxImage').src=url;$('imageLightbox').classList.remove('hidden')}
@@ -445,7 +508,7 @@ async function openChatArchives(){
 function closeChatArchives(){$('archivesModal')?.classList.add('hidden')}
 function archiveAvatar(a){
  if(a.conversation_type==='direct'){const other=(a.member_ids||[]).find(id=>id!==state.session?.user?.id);return avatarHtml(member(other),'archiveRowAvatar')}
- if(a.conversation_type==='general')return '<div class="archiveRowAvatar"><img src="assets/logo-equipe.svg" alt=""></div>';
+ if(a.conversation_type==='general')return '<div class="archiveRowAvatar"><img src="assets/logo-chat.svg" alt=""></div>';
  return '<div class="archiveRowAvatar">'+esc(initials(conversationTitle(a)))+'</div>'
 }
 function renderChatArchives(){
