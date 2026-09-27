@@ -230,6 +230,359 @@ function addStyle(){
  .nettoUpdateCheckBtn{width:auto!important;min-width:78px!important;padding:0 11px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;background:linear-gradient(135deg,#fff3ee,#fff9f4)!important;border-color:#ffc6b5!important;color:#d94726!important;box-shadow:0 6px 18px #ff5a2a16!important}.nettoUpdateCheckBtn:hover{background:linear-gradient(135deg,#ffe9e1,#fff3e8)!important;border-color:#ff9d82!important}.nettoUpdateCheckBtn svg{width:18px;height:18px;fill:currentColor}.nettoUpdateCheckBtn .nettoUpdateLabel{font-size:9px;font-weight:950;letter-spacing:.45px}.nettoUpdateCheckBtn.checking svg{animation:nettoUpdateSpin .8s linear infinite}@keyframes nettoUpdateSpin{to{transform:rotate(360deg)}}:root[data-theme="dark"] .nettoUpdateCheckBtn{background:linear-gradient(135deg,#38231f,#33271f)!important;border-color:#704234!important;color:#ff9877!important}@media(max-width:650px){.nettoUpdateCheckBtn{min-width:42px!important;width:42px!important;padding:0!important}.nettoUpdateCheckBtn .nettoUpdateLabel{display:none}}
  .nettoMobilePreviewOverlay{position:fixed;inset:0;background:#101214cc;backdrop-filter:blur(10px);z-index:10000;display:grid;place-items:center;padding:28px}.nettoMobilePreviewOverlay.hidden{display:none!important}.nettoMobilePreviewDevice{width:min(410px,calc(100vw - 28px));height:min(860px,calc(100vh - 56px));background:#0d0f11;border:7px solid #292d31;border-radius:38px;box-shadow:0 30px 100px #000b;position:relative;padding:11px;display:flex;flex-direction:column}.nettoMobilePreviewTop{height:32px;display:flex;align-items:center;justify-content:center;position:relative;flex:none}.nettoMobilePreviewState{position:absolute;left:2px;top:5px;color:#dfe3e7;font-size:8px;font-weight:850;letter-spacing:.2px}.nettoMobilePreviewNotch{width:92px;height:19px;border-radius:999px;background:#060708}.nettoMobilePreviewClose{position:absolute;right:0;top:-3px;width:28px;height:28px;border:0;border-radius:9px;background:#34393e;color:#fff;cursor:pointer;font-size:18px;line-height:1}.nettoMobilePreviewFrame{width:100%;height:100%;border:0;border-radius:25px;background:#fff;overflow:hidden}.nettoMobilePreviewBtn{touch-action:manipulation}.nettoMobilePreviewBtn .nettoMobileIconActive{display:none}.nettoMobilePreviewBtn.active{background:#fff2ee;border-color:#ff7754;box-shadow:0 0 0 2px #ff5a2a20,0 7px 20px #ff51251d}.nettoMobilePreviewBtn.active .nettoMobileIconNormal{display:none}.nettoMobilePreviewBtn.active .nettoMobileIconActive{display:block}:root[data-theme="dark"] .nettoMobilePreviewBtn.active{background:#3d2923;border-color:#8c4d38}:root[data-theme="dark"] .nettoMobilePreviewFrame{background:#1b1d20}
  .nettoMobilePreviewNotice{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);z-index:10050;display:flex;align-items:center;gap:8px;max-width:min(92vw,360px);padding:10px 14px;border:1px solid #e3e5e8;border-radius:999px;background:#ffffffef;color:#25282c;box-shadow:0 12px 36px #0002;backdrop-filter:blur(12px);font-size:11px;font-weight:850;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}.nettoMobilePreviewNotice.show{opacity:1;transform:translate(-50%,0)}.nettoMobilePreviewNotice i{width:8px;height:8px;border-radius:50%;background:#ff5a2a;box-shadow:0 0 0 4px #ff5a2a18}:root[data-theme="dark"] .nettoMobilePreviewNotice{background:#23262aee;border-color:#3a3d42;color:#f5f1ed;box-shadow:0 14px 40px #0008}
+
+ /* Nethor desktop — échelle visuelle type navigateur 125 % */
+ @media(min-width:901px){
+   :root{
+     --nethor-desktop-ui-scale:1.25;
+   }
+
+   body{
+     font-size:18px!important;
+     line-height:1.55!important;
+   }
+
+   header{
+     min-height:82px!important;
+   }
+   header .top,.top{
+     min-height:82px!important;
+     gap:14px!important;
+   }
+   .mark,.brandMark{
+     width:56px!important;
+     height:56px!important;
+     border-radius:15px!important;
+   }
+   .brand{
+     gap:13px!important;
+   }
+   .title,.brand .title,.brand strong{
+     font-size:25px!important;
+     line-height:1.08!important;
+   }
+   .sub,.subtitle,.brand small{
+     font-size:14px!important;
+     line-height:1.3!important;
+   }
+
+   main{
+     line-height:1.55!important;
+   }
+   .hero h1,.pageTitle,h1{
+     font-size:44px!important;
+     line-height:1.05!important;
+   }
+   .panel h2,.toolbar h2,.section h2,.card h2,.modal h2,.modalCard h2{
+     font-size:27px!important;
+     line-height:1.15!important;
+   }
+   .panel h3,.card h3,.section h3{
+     font-size:20px!important;
+   }
+   .panelIntro,.hero p,.intro p,.hint,.fieldHelp,.description,.desc{
+     font-size:15px!important;
+     line-height:1.55!important;
+   }
+
+   .pageCard h2{
+     font-size:29px!important;
+   }
+   .pageCard p,.card p,.panel p,.section p{
+     font-size:16px!important;
+     line-height:1.58!important;
+   }
+   .cardKicker,.eyebrow{
+     font-size:13px!important;
+   }
+   .cardFoot{
+     font-size:14px!important;
+   }
+
+   .btn,.primary,.secondary,.light,.dark,.manage,.send,.loginSubmit,.secondaryBtn,.danger{
+     min-height:54px!important;
+     padding:12px 18px!important;
+     font-size:15px!important;
+     border-radius:14px!important;
+   }
+   .mini{
+     min-height:43px!important;
+     padding:9px 13px!important;
+     font-size:13px!important;
+   }
+
+   .field label,label{
+     font-size:14px!important;
+   }
+   input,select,textarea,.search,.searchBox input{
+     font-size:16px!important;
+     line-height:1.45!important;
+   }
+   input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),select{
+     min-height:52px!important;
+   }
+   textarea{
+     min-height:112px!important;
+   }
+
+   .tabs button,.viewTab,.stockModeBtn,.day,.filter,.logFilter,.modeTabs button{
+     font-size:14px!important;
+     min-height:50px!important;
+   }
+
+   .panel,.card,.pageCard,.notificationsCard,.planningLogs{
+     border-radius:20px!important;
+   }
+   .panel{
+     padding:22px!important;
+   }
+
+   .nettoGlobalTools{
+     gap:10px!important;
+   }
+   .nettoBackBtn,.nettoBellBtn{
+     min-width:52px!important;
+     height:52px!important;
+     border-radius:15px!important;
+   }
+   .nettoBackBtn{
+     padding:0 15px!important;
+     font-size:12px!important;
+   }
+   .nettoBackBtn .nettoBackArrow{
+     font-size:22px!important;
+   }
+   .nettoBellBtn svg{
+     width:25px!important;
+     height:25px!important;
+   }
+   .nettoNotifBadge{
+     min-width:23px!important;
+     height:23px!important;
+     font-size:11px!important;
+   }
+
+   .nettoUserBtn{
+     height:52px!important;
+     min-width:176px!important;
+     max-width:275px!important;
+     grid-template-columns:38px minmax(0,1fr) 16px!important;
+     gap:9px!important;
+     padding:6px 10px!important;
+     border-radius:15px!important;
+   }
+   .nettoTopAvatar{
+     width:38px!important;
+     height:38px!important;
+     border-radius:11px!important;
+     font-size:12px!important;
+   }
+   .nettoUserText strong{
+     font-size:14px!important;
+   }
+   .nettoUserText small{
+     font-size:11px!important;
+   }
+   .nettoChevron{
+     font-size:15px!important;
+   }
+
+   .nettoDrop{
+     top:59px!important;
+     width:360px!important;
+     padding:10px!important;
+     border-radius:20px!important;
+   }
+   .nettoUserHead{
+     grid-template-columns:50px minmax(0,1fr)!important;
+     gap:11px!important;
+     padding:11px 12px 13px!important;
+   }
+   .nettoUserHead .nettoTopAvatar{
+     width:50px!important;
+     height:50px!important;
+     border-radius:14px!important;
+   }
+   .nettoUserHead strong{
+     font-size:15px!important;
+   }
+   .nettoUserHead small{
+     font-size:12px!important;
+   }
+   .nettoNavBtn{
+     grid-template-columns:42px minmax(0,1fr)!important;
+     gap:11px!important;
+     padding:10px 11px!important;
+     min-height:62px!important;
+     border-radius:14px!important;
+   }
+   .nettoNavBtn>span:first-child{
+     width:40px!important;
+     height:40px!important;
+     border-radius:11px!important;
+   }
+   .nettoNavBtn strong{
+     font-size:14px!important;
+   }
+   .nettoNavBtn small{
+     font-size:11px!important;
+   }
+   .nettoMenuSection{
+     font-size:10px!important;
+     padding:10px 12px 5px!important;
+   }
+
+   .nettoNotifDrop{
+     width:min(550px,calc(100vw - 24px))!important;
+   }
+   .nettoNotifHead{
+     padding:21px 21px 15px!important;
+   }
+   .nettoNotifTitleIcon{
+     width:44px!important;
+     height:44px!important;
+     border-radius:14px!important;
+     font-size:20px!important;
+   }
+   .nettoNotifTitle strong{
+     font-size:17px!important;
+   }
+   .nettoNotifTitle small{
+     font-size:10px!important;
+   }
+   .nettoNotifHead button{
+     padding:9px 11px!important;
+     font-size:10px!important;
+   }
+   .nettoNotifTab{
+     grid-template-columns:42px minmax(0,1fr) auto!important;
+     min-height:66px!important;
+     padding:12px!important;
+   }
+   .nettoNotifTabIcon{
+     width:42px!important;
+     height:42px!important;
+     border-radius:13px!important;
+   }
+   .nettoNotifTab strong{
+     font-size:12px!important;
+   }
+   .nettoNotifTab small{
+     font-size:9px!important;
+   }
+   .nettoNotifItem{
+     grid-template-columns:50px minmax(0,1fr) 44px!important;
+     gap:12px!important;
+     min-height:86px!important;
+     padding:13px!important;
+   }
+   .nettoNotifIcon{
+     width:48px!important;
+     height:48px!important;
+     border-radius:14px!important;
+     font-size:19px!important;
+   }
+   .nettoNotifBody strong{
+     font-size:13px!important;
+   }
+   .nettoNotifBody>span{
+     font-size:11px!important;
+   }
+   .nettoNotifBody small{
+     font-size:9.5px!important;
+   }
+   .nettoNotifDelete{
+     width:44px!important;
+     height:44px!important;
+   }
+
+   .hello h1{
+     font-size:50px!important;
+   }
+   .hello p{
+     font-size:17px!important;
+     max-width:900px!important;
+   }
+
+   .side strong,.moduleHeadInfo strong,.customHeadInfo strong{
+     font-size:16px!important;
+   }
+   .side small,.moduleHeadInfo span,.customHeadInfo span{
+     font-size:13px!important;
+   }
+
+   .item strong,.notifUserName strong,.recipient strong,.logItem strong{
+     font-size:15px!important;
+   }
+   .item small,.notifUserName span,.recipient small,.logItem small{
+     font-size:13px!important;
+   }
+
+   .roleBadge,.badge,.status,.pill,.chip,.deviceBadge,.sourceBadge{
+     font-size:12px!important;
+   }
+
+   table:not(.xlsTable){
+     font-size:15px!important;
+   }
+   table:not(.xlsTable) th{
+     font-size:13px!important;
+   }
+
+   /* Chat desktop */
+   .listHead h1{
+     font-size:25px!important;
+   }
+   .convTitleLine strong{
+     font-size:18px!important;
+   }
+   .convPreview{
+     font-size:14px!important;
+   }
+   .activeIdentity strong{
+     font-size:21px!important;
+   }
+   .activeIdentity small{
+     font-size:13px!important;
+   }
+   .messageBody{
+     font-size:17px!important;
+     line-height:1.55!important;
+   }
+   .messageSender,.generalSender .senderName{
+     font-size:13px!important;
+   }
+   .messageMeta{
+     font-size:10px!important;
+   }
+   .bubble{
+     padding:13px 15px 11px!important;
+   }
+
+   /* Planning desktop hors grille horaire */
+   .dateTitle{
+     font-size:24px!important;
+   }
+   .readerMeta{
+     font-size:13px!important;
+   }
+   .planningInsightCard .insightHead strong{
+     font-size:17px!important;
+   }
+   .planningInsightCard .insightHead small{
+     font-size:12.5px!important;
+   }
+   .planningLogsHead strong{
+     font-size:17px!important;
+   }
+   .planningLogsHead small{
+     font-size:13px!important;
+   }
+   .xlsTable,.xlsTable *{
+     font-size:initial;
+   }
+ }
+
  @media(max-width:650px){.nettoMobilePreviewWrap{display:none!important}}
  .nettoBellBtn{width:42px;height:42px;border:1px solid #e0e2e6;border-radius:13px;background:#fff;display:grid;place-items:center;cursor:pointer;position:relative;box-shadow:0 5px 15px #0000000b}
  .nettoBellBtn svg{width:21px;height:21px;fill:#3d3f44}.nettoNotifBadge{position:absolute;right:-4px;top:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#ff2438;color:#fff;border:2px solid #fff;display:grid;place-items:center;font-size:9px;font-weight:950;line-height:1}
