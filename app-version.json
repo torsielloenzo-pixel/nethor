@@ -1,10 +1,10 @@
 {
-  "version": 133,
-  "label": "v1.33",
+  "version": 134,
+  "label": "v1.34",
   "important": false,
   "mode": "manual",
-  "title": "Correctifs d’affichage Fruits & Légumes",
-  "message": "Le résumé Stock express ne s’écrase plus sur mobile et le bouton Mettre à 0 a été compacté pour laisser davantage de place aux commandes moins et plus.",
+  "title": "Contrôle Push et Portail",
+  "message": "Les canaux Portail et Push peuvent désormais être contrôlés séparément par type de notification, au niveau administrateur et utilisateur. Les mises à jour Nethor restent sans Push système.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
