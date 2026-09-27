@@ -717,6 +717,95 @@ input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
 :root[data-theme="dark"] .profileLoaderText span{color:#aeb5bd}
 :root[data-theme="dark"] .profileLoaderLine{background:#3b4148}
 @media(prefers-reduced-motion:reduce){.profileLoader,.profileLoaderCard{transition:none}.profileLoaderLine i{animation:none;width:100%}}
+/* Fruits & Légumes mobile — navigation et lisibilité */
+.flMobileTop{display:none}
+@media(max-width:700px){
+  #site>main{
+    padding:calc(env(safe-area-inset-top) + 10px) 10px calc(84px + env(safe-area-inset-bottom))!important;
+    max-width:100%!important;overflow-x:hidden!important
+  }
+  .flMobileTop{
+    display:flex;align-items:center;gap:11px;margin:0 2px 14px;
+    min-width:0
+  }
+  .flMobileBack{
+    width:42px;height:42px;min-width:42px;border:1px solid #e4e7eb;border-radius:14px;
+    background:#fff;color:#1c2025;display:grid;place-items:center;font-size:24px;font-weight:700;
+    box-shadow:0 3px 12px #00000008
+  }
+  .flMobileTitle{min-width:0}
+  .flMobileTitle h1{
+    margin:0;font-size:26px;line-height:1.05;letter-spacing:-.7px;font-weight:900;color:#1c2025
+  }
+  .flMobileTitle p{margin:4px 0 0;color:#7b828b;font-size:9.5px;font-weight:650}
+  .stockWorkspace{gap:11px!important;margin-bottom:13px!important;min-width:0}
+  .stockModeNav{
+    position:sticky!important;top:max(6px,env(safe-area-inset-top))!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;padding:5px!important;border-radius:15px!important;
+    z-index:80!important
+  }
+  .stockModeBtn{
+    min-width:0!important;min-height:44px!important;padding:7px 4px!important;
+    font-size:9px!important;gap:4px!important;border-radius:11px!important
+  }
+  .stockModeBtn>span{font-size:15px!important}
+  .stockModeIntro{align-items:flex-start!important;gap:8px!important;padding:1px 2px!important}
+  .stockModeIntro>div:first-child{min-width:0}
+  .stockModeIntro strong{font-size:15px!important;line-height:1.22!important}
+  .stockModeIntro small{font-size:9px!important;line-height:1.35!important}
+  .stockModeIntroActions{gap:6px!important;flex:none}
+  .stockModeStat{font-size:8.5px!important;padding:6px 8px!important}
+  .resetStockOpen{font-size:0!important;width:36px;height:36px;padding:0!important;display:grid;place-items:center}
+  .resetStockOpen:before{content:"↺";font-size:18px}
+  .stockSearchTools{gap:9px!important;min-width:0}
+  .stockSearchTools .searchBox input{height:48px!important;font-size:14px!important;border-radius:15px!important}
+  .quickCatBar{gap:7px!important;padding-bottom:5px!important}
+  .quickCat{padding:8px 11px!important;font-size:10px!important}
+
+  /* Articles stock : plus grands et plus faciles à lire / toucher */
+  .quickRows{grid-template-columns:1fr!important;gap:8px!important}
+  .quickStockRow{
+    grid-template-columns:56px minmax(0,1fr) auto!important;
+    min-height:78px!important;padding:10px!important;gap:10px!important;
+    border-radius:15px!important
+  }
+  .quickPic{
+    width:56px!important;height:56px!important;border-radius:12px!important;font-size:23px!important
+  }
+  .quickInfo{min-width:0!important}
+  .quickInfo strong{
+    font-size:13px!important;line-height:1.22!important;white-space:normal!important;
+    display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important
+  }
+  .quickInfo small{font-size:9px!important;line-height:1.3!important;margin-top:4px!important}
+  .quickInfoBtn{width:27px!important;height:27px!important;font-size:12px!important}
+  .quickControls{grid-template-columns:38px 52px 38px!important;gap:4px!important}
+  .quickControls button{height:42px!important;border-radius:10px!important;font-size:22px!important}
+  .quickQty{font-size:20px!important;min-width:0!important}
+  .quickZero{height:20px!important;font-size:8px!important}
+
+  /* Catalogue : cartes plus lisibles sans dépasser l'écran */
+  .consultGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .consultCard{padding:9px!important;border-radius:14px!important;min-width:0!important}
+  .consultVisual{border-radius:11px!important;min-height:92px!important}
+  .consultName{font-size:12px!important;line-height:1.25!important;margin-top:8px!important}
+  .consultMeta{font-size:8.5px!important;line-height:1.35!important}
+  .consultStock{font-size:10px!important}
+  #app,.quickSection,.category,.grid,.card{min-width:0!important;max-width:100%!important}
+}
+@media(max-width:380px){
+  .flMobileTitle h1{font-size:23px}
+  .stockModeBtn{font-size:8px!important}
+  .quickStockRow{grid-template-columns:50px minmax(0,1fr) auto!important;padding:8px!important;gap:8px!important}
+  .quickPic{width:50px!important;height:50px!important}
+  .quickControls{grid-template-columns:34px 44px 34px!important}
+  .quickControls button{height:39px!important}
+  .quickQty{font-size:18px!important}
+}
+:root[data-theme="dark"] .flMobileBack{background:#22252a;color:#f1eeea;border-color:#343940}
+:root[data-theme="dark"] .flMobileTitle h1{color:#f1eeea}
+:root[data-theme="dark"] .flMobileTitle p{color:#aaa59f}
 </style>
 <style id="flDesktopZoom">
 @media (min-width:781px){
@@ -822,6 +911,10 @@ input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
 <div id="login" class="loginWrap hidden"><div class="loginShell"><div class="loginVisual"><div class="loginBrand"><div class="loginMark">N</div><div><div class="loginNetto">Nethor</div><div class="loginSub">Portail opérationnel interne</div></div></div><div class="loginArt"><span>▦</span><span>✓</span><span>☷</span><span>🛒</span><span>⌁</span><span>⚙</span></div><div class="loginIntro"><strong>Les opérations du magasin, dans un seul espace.</strong><span>Stock, planning, communication d’équipe et référentiels internes accessibles depuis une interface sécurisée.</span></div></div><form class="loginCard" onsubmit="login(event)"><div class="loginHello">Accès interne</div><h1>Bienvenue</h1><p class="loginHint">Connectez-vous pour accéder aux outils opérationnels du magasin.</p><div class="field"><label>Identifiant</label><input id="email" type="text" autocomplete="username" placeholder="Votre identifiant" required></div><div class="field"><label>Mot de passe</label><div class="passwordWrap"><input id="password" type="password" autocomplete="current-password" placeholder="Votre mot de passe" required><button type="button" class="eyeBtn" onclick="togglePassword()" aria-label="Afficher le mot de passe">◉</button></div></div><div class="loginHelp"><button type="button" class="forgotBtn" onclick="openForgotPassword()">Mot de passe oublié ?</button></div><button class="primary loginSubmit">Se connecter <span>→</span></button><div id="loginError" class="error"></div><div class="loginFoot">Accès réservé aux utilisateurs autorisés</div></form></div></div>
 <dialog id="forgotDialog" class="forgotModal" onclose="window.NettoSounds?.play?.('menuClose')"><div class="forgotModalCard"><div class="forgotModalHead"><div><h2>Mot de passe oublié</h2><p>Indique ton identifiant. Une demande sera envoyée à l’administrateur pour réinitialiser ton mot de passe.</p></div><button type="button" class="forgotClose" onclick="$('forgotDialog').close()" aria-label="Fermer">×</button></div><div class="field"><label>Identifiant</label><input id="forgotIdentifier" type="text" autocomplete="username" placeholder="Ton identifiant"></div><button id="forgotSubmit" type="button" class="primary loginSubmit forgotSubmit" onclick="sendForgotRequest()">Envoyer la demande</button><div id="forgotCooldown" class="forgotCooldown hidden" aria-live="polite"><span>Nouvelle demande possible dans</span><strong id="forgotCooldownTime">30 s</strong></div><div id="forgotState" class="forgotState"></div><div class="forgotHint">Pour des raisons de sécurité, le message de confirmation reste identique même si l’identifiant saisi n’existe pas.</div></div></dialog>
 <div id="profileLoader" class="profileLoader" aria-live="polite" aria-busy="true"><div class="profileLoaderCard"><div class="profileLoaderMark">N</div><div class="profileLoaderText"><strong>Préparation de ton espace</strong><span id="profileLoaderText">Application de tes préférences…</span></div><div class="profileLoaderLine"><i></i></div></div></div><div id="welcomeToast" class="welcomeToast"><div class="welcomeMark">N</div><div id="welcomeText" class="welcomeText"></div><div class="welcomeSub">Nethor · Espace outils</div></div><div id="site" class="hidden"><div class="flAtmosphere" aria-hidden="true"></div><header><div class="top"><div><div class="brand"><div class="brandMenuWrap"><button id="brandMenuBtn" class="brandMark brandMenuBtn" onclick="location.href='home.html'" aria-label="Ouvrir le menu administrateur" aria-expanded="false">N</button><div id="brandMenu" class="brandMenu hidden"><div class="brandMenuTitle">Navigation</div><button onclick="goBrand('home.html')"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="goBrand('profile.html')"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="goBrand('index.html')"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="goBrand('planning.html')"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="goBrand('chat.html')"><span class="navToolLogo equipe"></span><div><strong>Chat</strong><small>Messagerie interne</small></div></button><button onclick="goBrand('articles.html')"><span>▤</span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="adminOnlyMenu hidden" onclick="openUsersFromBrand()"><span>♙</span><div><strong>Comptes</strong><small>Utilisateurs et rôles</small></div></button><button class="adminOnlyMenu hidden" onclick="goBrand('settings.html')"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="brandLogout" onclick="logoutFromBrand()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><div class="title">Stock F&amp;L</div><div class="subtitle">Pilotage opérationnel</div></div></div><div id="who" class="small">Chargement…</div></div><div><button id="suggestBtn" class="suggestTop" onclick="openSuggestions()"><span class="suggestTopIcon">✦</span><span>Suggérer</span></button><button id="cartBtn" class="suggestTop cartTop" onclick="openOrderCart()"><span class="suggestTopIcon">🛒</span><span>Panier</span><b id="cartCount" class="cartCount hidden">0</b></button><button id="manageBtn" class="manage" onclick="openManage()">⚙︎ Gérer</button><button class="logout" onclick="location.href='home.html'" title="Retour">←</button></div></div></header><main>
+<div class="flMobileTop">
+  <button class="flMobileBack" type="button" onclick="location.href='home.html'" aria-label="Retour">‹</button>
+  <div class="flMobileTitle"><h1>Fruits &amp; Légumes</h1><p>Stock, consultation et commandes</p></div>
+</div>
 <div class="stockWorkspace">
   <nav class="stockModeNav" aria-label="Espaces Stock F&L">
     <button class="stockModeBtn stock active" data-mode="stock" onclick="setStockMode('stock')"><span>▦</span>Stock</button>
