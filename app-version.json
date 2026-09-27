@@ -1,9 +1,9 @@
 {
-  "version": 117,
-  "label": "v1.17",
+  "version": 118,
+  "label": "v1.18",
   "important": false,
-  "title": "Vocaux du Chat améliorés",
-  "message": "Les messages vocaux disposent maintenant d’une forme d’onde calculée depuis le son, d’une progression visuelle, d’un bouton lecture/pause, de la durée et d’un réglage de vitesse.",
-  "published_at": "2026-09-27T21:16:00+02:00",
+  "title": "Chat : vocaux plus fluides",
+  "message": "La progression des messages vocaux est désormais animée de façon continue. Le panneau d’informations de discussion sur web est agrandi, plus lisible et débarrassé des actions en doublon.",
+  "published_at": "2026-09-27T21:23:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
