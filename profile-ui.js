@@ -898,6 +898,69 @@ function addStyle(){
  }
  :root[data-theme="dark"] #nettoUserDrop:before,:root[data-theme="dark"] #nettoLoginDrop:before{background:#565c63}
 
+ /* Nethor mobile — menu utilisateur plein écran, inspiré d'une page native */
+ .nettoMobileUserMenu{display:none}
+ @media (max-width:900px),(pointer:coarse){
+   html.nettoMobileUserMenuOpen body>#nettoDropBackdrop.nettoMobilePortaledBackdrop{display:none!important}
+   html.nettoMobileUserMenuOpen,html.nettoMobileUserMenuOpen body{overflow:hidden!important}
+   html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"]{color:#ef5a2f}
+   html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"] .nettoMobileQuickIcon{background:#fff2ec;transform:translateY(-1px)}
+   html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"]:before{
+     content:"";position:absolute;top:-4px;left:50%;width:34px;height:3px;border-radius:0 0 6px 6px;
+     transform:translateX(-50%);background:linear-gradient(90deg,#f23b27,#f47c20)
+   }
+   body>#nettoUserDrop.nettoMobilePortaledDrop{
+     display:block!important;position:fixed!important;
+     inset:0 0 calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom)) 0!important;
+     width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;
+     margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+     background:#f2f4f7!important;box-shadow:none!important;overflow-y:auto!important;overflow-x:hidden!important;
+     z-index:2147481400!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important
+   }
+   #nettoUserDrop:before{display:none!important}
+   #nettoUserDrop .nettoUserDesktopMenu{display:none!important}
+   #nettoUserDrop .nettoMobileUserMenu{display:block!important;min-height:100%;padding:calc(env(safe-area-inset-top) + 22px) 14px 28px}
+   .nettoMobileMenuHeader{display:flex;align-items:center;min-height:58px;margin:0 4px 12px}
+   .nettoMobileMenuHeader h2{margin:0!important;font-size:34px!important;line-height:1!important;letter-spacing:-1px!important;font-weight:950!important;color:#171a1f!important}
+   .nettoMobileMenuCard{overflow:hidden;margin:0 0 14px;border:1px solid #e4e7eb;border-radius:22px;background:#fff;box-shadow:0 8px 26px rgba(15,23,42,.045)}
+   .nettoMobileMenuCard button{font:inherit}
+   .nettoMobileProfileMain,.nettoMobileMenuRow{
+     width:100%;min-height:66px;border:0;background:transparent;color:#1d2127;padding:9px 14px;
+     display:grid;grid-template-columns:48px minmax(0,1fr) 20px;align-items:center;gap:12px;text-align:left;cursor:pointer;
+     -webkit-tap-highlight-color:transparent;touch-action:manipulation
+   }
+   .nettoMobileProfileMain{min-height:88px;grid-template-columns:58px minmax(0,1fr) 20px}
+   .nettoMobileMenuRow+.nettoMobileMenuRow,.nettoMobileProfileMain+.nettoMobileMenuRow{border-top:1px solid #eceef1}
+   .nettoMobileProfileAvatar{width:58px!important;height:58px!important;border-radius:18px!important;font-size:16px!important}
+   .nettoMobileProfileCopy,.nettoMobileMenuCopy{display:block;min-width:0}
+   .nettoMobileProfileCopy strong{display:block;font-size:17px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+   .nettoMobileProfileCopy small{display:block;margin-top:5px;color:#7b818a;font-size:11px;font-weight:750;line-height:1.25}
+   .nettoMobileMenuCopy strong{display:block;font-size:14px;font-weight:850;line-height:1.2}
+   .nettoMobileMenuCopy small{display:block;margin-top:3px;color:#8a9098;font-size:9px;font-weight:700;line-height:1.25}
+   .nettoMobileMenuIcon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#fff2ec;color:#ef5a2f}
+   .nettoMobileMenuIcon svg{width:23px;height:23px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+   .nettoMobileMenuChevron{color:#838991;font-size:31px;font-weight:400;line-height:1;transform:translateY(-1px)}
+   .nettoMobileMenuRow:active,.nettoMobileProfileMain:active{background:#f7f8fa}
+   .nettoMobileMenuDanger .nettoMobileMenuIcon{background:#fff0ee;color:#d93f32}
+   .nettoMobileMenuDanger .nettoMobileMenuCopy strong{color:#c9362d}
+   :root[data-theme="dark"] body>#nettoUserDrop.nettoMobilePortaledDrop{background:#171a1e!important}
+   :root[data-theme="dark"] .nettoMobileMenuHeader h2{color:#f4f1ed!important}
+   :root[data-theme="dark"] .nettoMobileMenuCard{background:#22262b;border-color:#343940;box-shadow:0 12px 34px rgba(0,0,0,.16)}
+   :root[data-theme="dark"] .nettoMobileProfileMain,:root[data-theme="dark"] .nettoMobileMenuRow{color:#f0ece7}
+   :root[data-theme="dark"] .nettoMobileMenuRow+.nettoMobileMenuRow,:root[data-theme="dark"] .nettoMobileProfileMain+.nettoMobileMenuRow{border-color:#343940}
+   :root[data-theme="dark"] .nettoMobileProfileCopy small,:root[data-theme="dark"] .nettoMobileMenuCopy small{color:#aaa49e}
+   :root[data-theme="dark"] .nettoMobileMenuIcon{background:#382821;color:#ff8f68}
+   :root[data-theme="dark"] .nettoMobileMenuChevron{color:#777e86}
+   :root[data-theme="dark"] .nettoMobileMenuRow:active,:root[data-theme="dark"] .nettoMobileProfileMain:active{background:#292e34}
+   :root[data-theme="dark"] html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"] .nettoMobileQuickIcon{background:#3b2923}
+ }
+ @media(max-width:380px){
+   #nettoUserDrop .nettoMobileUserMenu{padding-left:10px;padding-right:10px}
+   .nettoMobileMenuHeader h2{font-size:31px!important}
+   .nettoMobileProfileMain,.nettoMobileMenuRow{padding-left:11px;padding-right:11px;gap:10px}
+   .nettoMobileMenuCopy strong{font-size:13px}
+ }
+
    /* Notifications web • liste sociale */
   .nettoNotifMoreWrap{position:relative;display:none}
   .nettoNotifMoreBtn{width:36px!important;height:36px!important;padding:0!important;border:0!important;border-radius:50%!important;background:#f2f3f5!important;display:grid!important;place-items:center!important;font-size:18px!important;font-weight:900!important;letter-spacing:1px!important;color:#5d6269!important}
@@ -991,6 +1054,10 @@ function addStyle(){
 }
 function paint(el,url,name,color,frame){if(!el)return;el.style.setProperty('--profile-accent',color||'#ff5a2a');setAvatarFrame(el,frame);if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else{el.classList.remove('hasPhoto');el.style.backgroundImage='';el.textContent=initials(name)}}
 function makeButton(icon,title,sub,url,cls=''){return '<button class="nettoNavBtn '+cls+'" data-url="'+esc(url||'')+'"><span>'+icon+'</span><span><strong>'+esc(title)+'</strong><small>'+esc(sub||'')+'</small></span></button>'}
+function mobileMenuRow(id,title,sub,url,extra=''){
+ const icon=mobileNavIcon(id);
+ return '<button class="nettoMobileMenuRow nettoMobileMenuLink '+extra+'" type="button" data-url="'+esc(url||'')+'"><span class="nettoMobileMenuIcon" aria-hidden="true">'+icon+'</span><span class="nettoMobileMenuCopy"><strong>'+esc(title)+'</strong>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'
+}
 function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
 function validTheme(value){return value==='dark'||value==='light'?value:null}
 function localTheme(theme){
@@ -1140,17 +1207,49 @@ function buildGlobalHeader(){
  const top=findHeaderTop();if(!top||!api.profile)return;
  const existing=top.querySelector('.userMenuWrap');if(existing)existing.style.display='none';
  const p=api.profile,name=p.display_name||'Utilisateur',role=roleLabel(p.role);
- const shortcuts=visibleModules('user_menu',p,api.siteConfig).map(m=>makeButton(moduleIcon(m),m.label,m.subtitle,m.url)).join('');
+ const visibleUserModules=visibleModules('user_menu',p,api.siteConfig);
+ const shortcuts=visibleUserModules.map(m=>makeButton(moduleIcon(m),m.label,m.subtitle,m.url)).join('');
+ const mobileModules=visibleUserModules.filter(m=>!['profile','settings'].includes(m.id));
+ const mobilePrimaryIds=new Set(['home','stock','planning','chat','articles']);
+ const mobileAdminIds=new Set(['accounts','portal_admin']);
+ const mobilePrimary=mobileModules.filter(m=>mobilePrimaryIds.has(m.id));
+ const mobileAdmin=mobileModules.filter(m=>mobileAdminIds.has(m.id));
+ const mobileExtra=mobileModules.filter(m=>!mobilePrimaryIds.has(m.id)&&!mobileAdminIds.has(m.id));
+ const mobileRows=list=>list.map(m=>mobileMenuRow(m.id,m.label,m.subtitle,m.url)).join('');
+ const mobileProfileIcon=mobileNavIcon('settings');
+ const mobileThemeIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z"/></svg>';
+ const mobileLogoutIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><path d="M14 8l4 4-4 4M18 12H9"/></svg>';
+ const mobileUserMenuHtml=
+  '<div class="nettoMobileUserMenu" aria-label="Menu utilisateur">'+
+   '<div class="nettoMobileMenuHeader"><h2>Menu</h2></div>'+
+   '<section class="nettoMobileMenuCard nettoMobileProfileCard">'+
+    '<button class="nettoMobileProfileMain nettoMobileMenuLink" type="button" data-url="profile.html"><span id="nettoMobileMenuAvatar" class="nettoTopAvatar nettoMobileProfileAvatar">U</span><span class="nettoMobileProfileCopy"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
+    '<button class="nettoMobileMenuRow nettoMobileMenuLink" type="button" data-url="settings.html"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileProfileIcon+'</span><span class="nettoMobileMenuCopy"><strong>Personnalisation</strong><small>Accueil, raccourcis et apparence</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
+   '</section>'+
+   (mobilePrimary.length?'<section class="nettoMobileMenuCard">'+mobileRows(mobilePrimary)+'</section>':'')+
+   '<section class="nettoMobileMenuCard">'+
+    mobileMenuRow('notifications','Notifications','Centre d’activité','notifications.html')+
+    (mobileAdmin.length?mobileRows(mobileAdmin):'')+
+   '</section>'+
+   (mobileExtra.length?'<section class="nettoMobileMenuCard">'+mobileRows(mobileExtra)+'</section>':'')+
+   '<section class="nettoMobileMenuCard nettoMobileMenuUtilityCard">'+
+    '<button id="nettoMobileThemeBtn" class="nettoMobileMenuRow" type="button"><span class="nettoMobileMenuIcon nettoThemeIconSvg" aria-hidden="true">'+mobileThemeIcon+'</span><span class="nettoMobileMenuCopy"><strong class="nettoThemeLabel">Mode sombre</strong><small>Changer l’apparence</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
+    '<button id="nettoMobileLogoutBtn" class="nettoMobileMenuRow nettoMobileMenuDanger" type="button"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileLogoutIcon+'</span><span class="nettoMobileMenuCopy"><strong>Déconnexion</strong><small>Quitter la session</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
+   '</section>'+
+  '</div>';
  const wrap=document.createElement('div');wrap.id='nettoGlobalTools';wrap.className='nettoGlobalTools';
  const adminLoginTool=p.role==='admin'?'<div class="nettoLoginWrap"><button id="nettoLoginBtn" class="nettoBellBtn nettoLoginBtn" aria-label="Historique des connexions" aria-expanded="false" title="Connexions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.41 3.3 1.9-1 1.73L11 13.59V7h2Z"/></svg></button><div id="nettoLoginDrop" class="nettoDrop nettoLoginDrop hidden"><div class="nettoNotifHead"><div class="nettoLoginHeadTitle"><strong>Connexions</strong><small>Qui s’est connecté et à quelle heure</small></div><div class="nettoNotifHeadActions"><button id="nettoLoginDeleteAll">Tout supprimer</button></div></div><div id="nettoLoginList" class="nettoLoginList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div>':'';
  const inMobilePreview=new URLSearchParams(location.search).get('mobile_preview')==='1';
  const adminMobileTool=p.role==='admin'&&!inMobilePreview?'<div class="nettoMobilePreviewWrap"><button type="button" id="nettoMobilePreviewBtn" class="nettoBellBtn nettoMobilePreviewBtn" aria-label="Vision mobile" aria-pressed="false" title="Vision mobile"><svg class="nettoMobileIconNormal" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg><svg class="nettoMobileIconActive" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="nettoMobileIconGradient" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#ff2f1f"/><stop offset="1" stop-color="#ff8500"/></linearGradient></defs><path fill="url(#nettoMobileIconGradient)" d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg></button></div>':'';
- wrap.innerHTML='<button id="nettoDropBackdrop" class="nettoDropBackdrop" type="button" aria-label="Fermer le menu"></button>'+adminLoginTool+adminMobileTool+'<div class="nettoUpdateWrap"><button id="nettoUpdateCheckBtn" class="nettoBellBtn nettoUpdateCheckBtn" aria-label="Rechercher une mise à jour" title="Mise à jour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3a1 1 0 1 1 2 0v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V3Zm-6 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/></svg><span class="nettoUpdateLabel">MAJ</span></button></div><div class="nettoBellWrap"><button id="nettoBellBtn" class="nettoBellBtn" aria-label="Notifications" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.55 2.55 0 0 0 2.45-1.85h-4.9A2.55 2.55 0 0 0 12 22Zm7-5.1-1.75-2.05V9.5A5.26 5.26 0 0 0 13 4.34V3a1 1 0 1 0-2 0v1.34A5.26 5.26 0 0 0 6.75 9.5v5.35L5 16.9V18h14v-1.1Z"/></svg><b id="nettoNotifBadge" class="nettoNotifBadge hidden">0</b></button><div id="nettoNotifDrop" class="nettoDrop nettoNotifDrop hidden"><span class="nettoNotifSheetHandle"></span><div class="nettoNotifHead"><div class="nettoNotifTitle"><span class="nettoNotifTitleIcon">🔔</span><span><strong>Notifications</strong><small>Centre d’activité Nethor</small></span></div><div class="nettoNotifHeadActions"><button id="nettoMarkRead">✓ Tout lire</button><button id="nettoDeleteAll" class="danger">⌫ Effacer</button></div><div class="nettoNotifMoreWrap"><button id="nettoNotifMoreBtn" class="nettoNotifMoreBtn" type="button" aria-label="Actions des notifications" title="Actions">•••</button><div id="nettoNotifMoreMenu" class="nettoNotifMoreMenu hidden"><button id="nettoNotifMoreRead" type="button">✓ Tout marquer comme lu</button><button id="nettoNotifMoreDelete" class="danger" type="button">Supprimer toutes les notifications</button></div></div></div><div class="nettoNotifTabs"><button id="nettoNotifTabAll" class="nettoNotifTab common active" type="button" data-notif-tab="all"><span class="nettoNotifTabIcon">●</span><span><strong>Tout</strong><small>Toutes les notifications</small></span><b id="nettoNotifAllCount">0</b></button><button id="nettoNotifTabUnread" class="nettoNotifTab important" type="button" data-notif-tab="unread"><span class="nettoNotifTabIcon">●</span><span><strong>Non lu</strong><small>À consulter</small></span><b id="nettoNotifUnreadCount">0</b></button></div><div id="nettoNotifList" class="nettoNotifList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div><div class="nettoUserWrap"><button id="nettoUserBtn" class="nettoUserBtn" aria-expanded="false"><span id="nettoTopAvatar" class="nettoTopAvatar">U</span><span class="nettoUserText"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoChevron">⌄</span></button><div id="nettoUserDrop" class="nettoDrop hidden"><div class="nettoUserHead"><span id="nettoMenuAvatar" class="nettoTopAvatar">U</span><span><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span></div>'+makeButton('⚙','Personnalisation','Mon accueil et mes raccourcis','settings.html')+(shortcuts?'<div class="nettoMenuSection">Raccourcis</div>'+shortcuts:'')+'<button id="nettoThemeBtn" class="nettoNavBtn"><span class="nettoThemeIcon">☾</span><span><strong class="nettoThemeLabel">Mode sombre</strong><small>Changer l’apparence</small></span></button><button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>↪</span><span><strong>Déconnexion</strong><small>Quitter la session</small></span></button></div></div>';
+ wrap.innerHTML='<button id="nettoDropBackdrop" class="nettoDropBackdrop" type="button" aria-label="Fermer le menu"></button>'+adminLoginTool+adminMobileTool+'<div class="nettoUpdateWrap"><button id="nettoUpdateCheckBtn" class="nettoBellBtn nettoUpdateCheckBtn" aria-label="Rechercher une mise à jour" title="Mise à jour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3a1 1 0 1 1 2 0v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V3Zm-6 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/></svg><span class="nettoUpdateLabel">MAJ</span></button></div><div class="nettoBellWrap"><button id="nettoBellBtn" class="nettoBellBtn" aria-label="Notifications" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.55 2.55 0 0 0 2.45-1.85h-4.9A2.55 2.55 0 0 0 12 22Zm7-5.1-1.75-2.05V9.5A5.26 5.26 0 0 0 13 4.34V3a1 1 0 1 0-2 0v1.34A5.26 5.26 0 0 0 6.75 9.5v5.35L5 16.9V18h14v-1.1Z"/></svg><b id="nettoNotifBadge" class="nettoNotifBadge hidden">0</b></button><div id="nettoNotifDrop" class="nettoDrop nettoNotifDrop hidden"><span class="nettoNotifSheetHandle"></span><div class="nettoNotifHead"><div class="nettoNotifTitle"><span class="nettoNotifTitleIcon">🔔</span><span><strong>Notifications</strong><small>Centre d’activité Nethor</small></span></div><div class="nettoNotifHeadActions"><button id="nettoMarkRead">✓ Tout lire</button><button id="nettoDeleteAll" class="danger">⌫ Effacer</button></div><div class="nettoNotifMoreWrap"><button id="nettoNotifMoreBtn" class="nettoNotifMoreBtn" type="button" aria-label="Actions des notifications" title="Actions">•••</button><div id="nettoNotifMoreMenu" class="nettoNotifMoreMenu hidden"><button id="nettoNotifMoreRead" type="button">✓ Tout marquer comme lu</button><button id="nettoNotifMoreDelete" class="danger" type="button">Supprimer toutes les notifications</button></div></div></div><div class="nettoNotifTabs"><button id="nettoNotifTabAll" class="nettoNotifTab common active" type="button" data-notif-tab="all"><span class="nettoNotifTabIcon">●</span><span><strong>Tout</strong><small>Toutes les notifications</small></span><b id="nettoNotifAllCount">0</b></button><button id="nettoNotifTabUnread" class="nettoNotifTab important" type="button" data-notif-tab="unread"><span class="nettoNotifTabIcon">●</span><span><strong>Non lu</strong><small>À consulter</small></span><b id="nettoNotifUnreadCount">0</b></button></div><div id="nettoNotifList" class="nettoNotifList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div><div class="nettoUserWrap"><button id="nettoUserBtn" class="nettoUserBtn" aria-expanded="false"><span id="nettoTopAvatar" class="nettoTopAvatar">U</span><span class="nettoUserText"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoChevron">⌄</span></button><div id="nettoUserDrop" class="nettoDrop hidden"><div class="nettoUserDesktopMenu"><div class="nettoUserHead"><span id="nettoMenuAvatar" class="nettoTopAvatar">U</span><span><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span></div>'+makeButton('⚙','Personnalisation','Mon accueil et mes raccourcis','settings.html')+(shortcuts?'<div class="nettoMenuSection">Raccourcis</div>'+shortcuts:'')+'<button id="nettoThemeBtn" class="nettoNavBtn"><span class="nettoThemeIcon">☾</span><span><strong class="nettoThemeLabel">Mode sombre</strong><small>Changer l’apparence</small></span></button><button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>↪</span><span><strong>Déconnexion</strong><small>Quitter la session</small></span></button></div>'+mobileUserMenuHtml+'</div></div>';
  top.appendChild(wrap);
- paint(document.getElementById('nettoTopAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);updateThemeText();
- wrap.querySelectorAll('.nettoNavBtn[data-url]').forEach(b=>b.onclick=()=>{sounds.play('navigate');const url=b.dataset.url;setTimeout(()=>location.href=url,55)});
+ paint(document.getElementById('nettoTopAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMobileMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);updateThemeText();
+ wrap.querySelectorAll('.nettoNavBtn[data-url],.nettoMobileMenuLink[data-url]').forEach(b=>b.onclick=()=>{sounds.play('navigate');const url=b.dataset.url;setTimeout(()=>location.href=url,55)});
  document.getElementById('nettoThemeBtn').onclick=e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()};
- document.getElementById('nettoLogoutBtn').onclick=async()=>{sounds.play('logout');await new Promise(r=>setTimeout(r,390));await recordChatPresence('end');await detachPushBeforeLogout();await api.client.auth.signOut({scope:'local'});location.href='index.html'};
+ document.getElementById('nettoMobileThemeBtn')?.addEventListener('click',e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()});
+ const logoutAction=async()=>{sounds.play('logout');await new Promise(r=>setTimeout(r,390));await recordChatPresence('end');await detachPushBeforeLogout();await api.client.auth.signOut({scope:'local'});location.href='index.html'};
+ document.getElementById('nettoLogoutBtn').onclick=logoutAction;
+ const mobileLogoutBtn=document.getElementById('nettoMobileLogoutBtn');if(mobileLogoutBtn)mobileLogoutBtn.onclick=logoutAction;
  document.getElementById('nettoUserBtn').onclick=e=>{e.stopPropagation();toggleDrop('user')};document.querySelectorAll('[data-notif-tab]').forEach(b=>b.onclick=e=>{e.stopPropagation();setNotificationTab(b.dataset.notifTab)});
  const loginBtn=document.getElementById('nettoLoginBtn');if(loginBtn)loginBtn.onclick=e=>{e.stopPropagation();toggleDrop('logins')};
  const mobilePreviewBtn=document.getElementById('nettoMobilePreviewBtn');if(mobilePreviewBtn)mobilePreviewBtn.dataset.mobilePreviewReady='1'
@@ -1309,6 +1408,7 @@ function toggleDrop(which){
  if(open&&mobileDropMode())mountMobileDropLayer(target);
  Object.entries(drops).forEach(([key,el])=>{if(el)el.classList.toggle('hidden',key===which?!open:true)});
  Object.entries(buttons).forEach(([key,el])=>{if(el)el.setAttribute('aria-expanded',String(key===which&&open))});
+ document.documentElement.classList.toggle('nettoMobileUserMenuOpen',!!(open&&which==='user'&&mobileDropMode()));
  syncMobileDropState(open);
  if(open&&which==='notifications')loadNotifications();
  if(open&&which==='logins')loadLoginHistory();
@@ -1316,6 +1416,7 @@ function toggleDrop(which){
 function closeDrops(){
  ['nettoNotifDrop','nettoUserDrop','nettoLoginDrop','nettoNotifMoreMenu'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
  ['nettoBellBtn','nettoUserBtn','nettoLoginBtn'].forEach(id=>document.getElementById(id)?.setAttribute('aria-expanded','false'));
+ document.documentElement.classList.remove('nettoMobileUserMenuOpen');
  syncMobileDropState(false)
 }
 function loginDate(v){const d=new Date(v);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
