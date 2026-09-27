@@ -157,3 +157,31 @@ header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bac
 
 .listHeadActions .chatMenuBtn{border:1px solid var(--chat-line)}
 .listHeadActions .chatMenuBtn:focus-visible,.headIconBtn:focus-visible{outline:3px solid #ff5a2a24;outline-offset:2px}
+
+/* Correctif mobile global — v87 */
+@media(max-width:780px){
+ html,body{width:100%;max-width:100%;overflow-x:hidden}
+ .chatApp,.conversationListPane,.conversationPane,.listHead,.convSearchWrap,.conversationList,.chatHead,.messageSearchBar,.messages,.composer,.composeRow{min-width:0;max-width:100%;box-sizing:border-box}
+ .chatApp{height:calc(100dvh - 64px - env(safe-area-inset-bottom));overflow:hidden}
+ .conversationListPane,.conversationPane{width:100%;max-width:100%}
+ .conversationList{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ .messages{-webkit-overflow-scrolling:touch;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+ .newChatBtn,.chatMenuBtn,.mobileBack,.headIconBtn,.composeIcon,.sendBtn,.modalClose{min-width:44px;min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+ .composeRow{grid-template-columns:44px 44px minmax(0,1fr) 44px;gap:5px}
+ .composeIcon,.sendBtn{width:44px;height:44px}
+ .composer{padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ .composer textarea{width:100%;min-width:0;max-width:100%;font-size:16px!important}
+ .chatMenu{left:max(8px,env(safe-area-inset-left))!important;right:max(8px,env(safe-area-inset-right))!important;top:auto!important;bottom:max(8px,env(safe-area-inset-bottom))!important;width:auto!important;max-width:none!important;max-height:70dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:20px}
+ .chatMenu:before{display:none}
+ .chatMenuItem{min-height:52px;touch-action:manipulation}
+ .modalBackdrop{padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ .modalCard{width:100%;max-width:100%;max-height:calc(100dvh - max(16px,env(safe-area-inset-top) + env(safe-area-inset-bottom)));box-sizing:border-box}
+ .pickMember{min-height:52px;touch-action:manipulation}
+}
+@media(max-width:430px){
+ .listHead{padding-left:10px;padding-right:10px}
+ .convSearchWrap{padding-left:9px;padding-right:9px}
+ .conversationList{padding-left:4px;padding-right:4px}
+ .convRow{padding:8px 7px;grid-template-columns:44px minmax(0,1fr) auto}
+ .messageBlock{max-width:88%}
+}
