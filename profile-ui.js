@@ -1205,7 +1205,7 @@ async function manualCheckForUpdates(){
    const latest=Math.max(manifestVersion,waitingVersion||0);
    if(latest>current){
     sessionStorage.removeItem('nettoUpdateLater');
-    await showUpdateAvailable(reg,latest);
+    await showUpdateAvailable(reg,latest,true);
     mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest));
     return
    }
