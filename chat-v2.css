@@ -410,3 +410,21 @@ header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bac
   :root[data-theme="dark"] .bubble{background:#25292d!important}
   :root[data-theme="dark"] .mine .bubble{background:linear-gradient(135deg,#cf5033,#dd743e)!important}
 }
+
+
+/* Nethor v100 — mobile conversation list: never let preview text escape */
+@media(max-width:780px){
+  .conversationListPane,.conversationList{min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  .conversationList{padding-left:8px!important;padding-right:8px!important;box-sizing:border-box!important}
+  .convRow{
+    width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
+    grid-template-columns:52px minmax(0,1fr) 44px!important;gap:9px!important;overflow:hidden!important
+  }
+  .convCopy,.convTitleLine,.convPreview{min-width:0!important;max-width:100%!important;overflow:hidden!important}
+  .convTitleLine strong,.convPreview{
+    display:block!important;width:100%!important;max-width:100%!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+  }
+  .convMeta{width:44px!important;min-width:44px!important;max-width:44px!important;overflow:hidden!important}
+  .convTime{max-width:44px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+}
