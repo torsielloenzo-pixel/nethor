@@ -1,9 +1,9 @@
 {
-  "version": 73,
-  "label": "v0.73",
+  "version": 72,
+  "label": "v0.72",
   "important": true,
-  "title": "Vision mobile verrouillée",
-  "message": "La version mobile se comporte désormais davantage comme une application : cadrage automatique, zoom et pinch bloqués, largeur écran verrouillée et débordements horizontaux corrigés.",
-  "published_at": "2026-09-27T11:00:00+02:00",
+  "title": "Téléchargement du planning Excel",
+  "message": "L’administrateur peut désormais télécharger le fichier Excel source associé à chaque semaine. Les nouveaux imports sont archivés automatiquement dans un stockage privé.",
+  "published_at": "2026-09-27T11:50:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
