@@ -165,7 +165,7 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 }
 
 /* Planning intelligence : couverture, anomalies, indisponibilités */
-.planningInsights{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 12px}.absencesWideRow,.coverageWideRow,.anomalyWideRow{margin:10px 0 0}.absencesWideRow #absencesWidget,.coverageWideRow #coverageWidget,.anomalyWideRow #anomalyWidget{width:100%}
+.planningInsights{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 12px}.absencesWideRow,.coverageWideRow,.anomalyHistoryRow{margin:10px 0 0}.absencesWideRow #absencesWidget,.coverageWideRow #coverageWidget,.anomalyHistoryRow #anomalyWidget{width:100%}
 .planningInsightCard{min-width:0;background:#fff;border:1px solid #e1e4e8;border-radius:16px;padding:13px;box-shadow:0 6px 18px #18223509}.compactInsightCard{padding:0;overflow:hidden}.compactInsightCard>.insightHead{margin:0;padding:11px 12px;cursor:pointer;align-items:center;background:#fafbfc;user-select:none}.compactInsightCard>.insightHead:hover{background:#f5f6f8}.compactInsightHeadRight{display:flex;align-items:center;gap:7px}.compactInsightChevron{width:26px;height:26px;border-radius:8px;background:#eceef1;display:grid;place-items:center;font-size:14px;font-weight:900;color:#777;transition:transform .18s ease}.compactInsightCard.open .compactInsightChevron{transform:rotate(180deg)}.compactInsightBody{padding:11px 12px 12px;border-top:1px solid #e8eaed}.compactInsightBody.collapsed{display:none}:root[data-theme="dark"] .compactInsightCard>.insightHead{background:#222429}:root[data-theme="dark"] .compactInsightCard>.insightHead:hover{background:#272a2f}:root[data-theme="dark"] .compactInsightChevron{background:#303238;color:#c9cdd2}:root[data-theme="dark"] .compactInsightBody{border-color:#34363b}
 .insightHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}.insightHead strong{display:block;font-size:12px}.insightHead small{display:block;margin-top:3px;color:#858991;font-size:8.5px;line-height:1.35}.insightMetric{font-size:9px;font-weight:850;background:#f2f3f5;border-radius:999px;padding:6px 8px;white-space:nowrap}
 .coverageSummary{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}.coveragePill{font-size:9px;font-weight:800;background:#f4f5f7;border:1px solid #e4e6e9;border-radius:9px;padding:6px 8px}.coveragePill b{font-size:11px}
@@ -654,7 +654,7 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   .legend{padding:7px 2px 2px!important;margin:0 0 2px!important;gap:10px!important}
   .legend span{font-size:10px!important}
 
-  .planningInsights,.absencesWideRow,.coverageWideRow,.anomalyWideRow{margin:8px 0 0!important}
+  .planningInsights,.absencesWideRow,.coverageWideRow,.anomalyHistoryRow{margin:8px 0 0!important}
   .planningInsightCard{border-radius:16px!important}
   .insightHead{gap:8px!important}
   .insightHead strong{font-size:12.5px!important}
