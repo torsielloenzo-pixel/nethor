@@ -95,14 +95,14 @@ end $$;
 
 create or replace function public.chat_delete_conversation(p_conversation uuid)
 returns void language plpgsql security definer set search_path=''
-as $$
+as $
 declare uid uuid:=auth.uid();
 begin
  if uid is null or not private.chat_can_manage(p_conversation,uid) then raise exception 'not allowed'; end if;
  if exists(select 1 from public.chat_conversations where id=p_conversation and type='general') then raise exception 'general cannot be deleted'; end if;
- delete from storage.objects where bucket_id='chat-files' and name in(select attachment_path from public.chat_messages where conversation_id=p_conversation and attachment_path is not null);
+ -- Les pièces jointes sont supprimées via l'Edge Function chat-actions / Storage API.
  delete from public.chat_conversations where id=p_conversation;
-end $$;
+end $;
 
 create or replace function public.list_chat_conversations()
 returns table(conversation_id uuid,conversation_type text,conversation_name text,created_by uuid,updated_at timestamptz,my_role text,last_read_at timestamptz,member_ids uuid[],member_names text[],last_message text,last_message_at timestamptz,last_sender uuid,unread_count bigint)
