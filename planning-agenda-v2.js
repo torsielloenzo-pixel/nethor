@@ -138,9 +138,18 @@ function renderAgenda(){
 function hookRender(){
  try{if(typeof renderAll==='function'&&!renderAll.__agendaHooked){const base=renderAll;const wrapped=function(){const r=base.apply(this,arguments);if(layout==='agenda')renderAgenda();return r};wrapped.__agendaHooked=true;renderAll=wrapped}}catch(e){console.warn('Agenda render hook',e)}
 }
-function handleViewport(){document.body.classList.toggle('mobileAgendaForced',isMobile());setLayout(isMobile()?'agenda':profileLayout,false)}
+function arrangeMobilePlanningWidgets(){
+ const bar=document.querySelector('.planningViewBar'),week=document.getElementById('weekView'),agenda=document.getElementById('agendaView'),main=document.getElementById('planningApp');
+ if(!bar||!week||!agenda||!main)return;
+ if(isMobile()){
+  if(bar.parentElement!==week||bar.nextElementSibling!==agenda)week.insertBefore(bar,agenda)
+ }else if(bar.parentElement!==main){
+  main.insertBefore(bar,week)
+ }
+}
+function handleViewport(){arrangeMobilePlanningWidgets();document.body.classList.toggle('mobileAgendaForced',isMobile());setLayout(isMobile()?'agenda':profileLayout,false)}
 function boot(){
- if(booted)return;inject();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
+ if(booted)return;inject();arrangeMobilePlanningWidgets();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
  const wait=()=>{if(typeof db!=='undefined'&&db){loadPreference()}else setTimeout(wait,120)};wait();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
