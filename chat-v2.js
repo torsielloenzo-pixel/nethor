@@ -207,7 +207,7 @@ async function loadReactions(){
 async function attachmentHtml(m){
  if(!m.attachment_path||m.deleted_at)return'';const url=await signed(m.attachment_path);if(!url)return'';
  const type=m.attachment_type||'',name=esc(m.attachment_name||'Pièce jointe'),size=esc(sizeLabel(m.attachment_size));
- if(type.startsWith('image/'))return '<div class="attachment attachmentImage"><img src="'+esc(url)+'" alt="'+name+'" decoding="async" onclick="openImage(this.src)"><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
+ if(type.startsWith('image/'))return '<div class="attachment attachmentImage"><img src="'+esc(url)+'" alt="'+name+'" data-download-name="'+name+'" decoding="async" onclick="openImage(this.src,this.dataset.downloadName)" onpointerdown="startImageLongPress(event,this)" onpointerup="endImageLongPress(event,this)" onpointercancel="cancelImageLongPress()" onpointermove="moveImageLongPress(event)"><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
  if(type.startsWith('video/'))return '<div class="attachment"><video controls preload="metadata" src="'+esc(url)+'"></video><div class="fileRow"><div class="fileInfo"><strong>'+name+'</strong><small>'+size+'</small></div><a class="downloadFile" href="'+esc(url)+'" target="_blank" rel="noopener">Ouvrir</a></div></div>';
  if(type.startsWith('audio/')){
   const voiceId='voice-'+String(m.id).replace(/[^a-zA-Z0-9_-]/g,'');
@@ -489,8 +489,63 @@ async function openAttachmentBrowser(kind){
 function desktopArchiveActive(){if(!state.activeId)return;state.actionConversationId=state.activeId;actionSheetArchive()}
 function toggleMessageSearch(){const b=$('messageSearchBar');b.classList.toggle('show');if(b.classList.contains('show'))setTimeout(()=>$('messageSearchInput').focus(),30);else{state.messageSearch='';$('messageSearchInput').value='';renderMessages()}}
 function searchMessages(v){state.messageSearch=v;renderMessages()}
-function openImage(url){$('lightboxImage').src=url;$('imageLightbox').classList.remove('hidden')}
-function closeImage(e){if(e&&e.target!==$('imageLightbox')&&!e.target.closest('.lightboxClose'))return;$('imageLightbox').classList.add('hidden');$('lightboxImage').src=''}
+let imageLongPressTimer=null,imageLongPressStart=null,imageLongPressTriggered=false,currentLightboxImage={url:'',name:'image'};
+function safeDownloadName(name){
+ const clean=String(name||'image').replace(/[\\/:*?"<>|]+/g,'-').trim();
+ return clean||'image'
+}
+function openImage(url,name='image'){
+ if(imageLongPressTriggered){imageLongPressTriggered=false;return}
+ currentLightboxImage={url:String(url||''),name:safeDownloadName(name)};
+ const img=$('lightboxImage');if(img)img.src=currentLightboxImage.url;
+ $('imageLightbox')?.classList.remove('hidden')
+}
+function closeImage(e){
+ if(e&&e.target!==$('imageLightbox')&&!e.target.closest('.lightboxClose'))return;
+ $('imageLightbox')?.classList.add('hidden');
+ const img=$('lightboxImage');if(img)img.src='';
+ currentLightboxImage={url:'',name:'image'}
+}
+async function downloadImageUrl(url,name='image'){
+ if(!url)return;
+ const filename=safeDownloadName(name);
+ try{
+  const response=await fetch(url,{credentials:'omit'});
+  if(!response.ok)throw new Error('download');
+  const blob=await response.blob(),blobUrl=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=blobUrl;a.download=filename;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(blobUrl),1500)
+ }catch(_){
+  const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.download=filename;document.body.appendChild(a);a.click();a.remove()
+ }
+}
+function downloadCurrentImage(e){
+ e?.preventDefault?.();e?.stopPropagation?.();
+ return downloadImageUrl(currentLightboxImage.url,currentLightboxImage.name)
+}
+function cancelImageLongPress(){
+ clearTimeout(imageLongPressTimer);imageLongPressTimer=null;imageLongPressStart=null
+}
+function startImageLongPress(e,img){
+ if(window.innerWidth>780||e.pointerType==='mouse')return;
+ cancelImageLongPress();imageLongPressTriggered=false;
+ imageLongPressStart={x:e.clientX,y:e.clientY};
+ imageLongPressTimer=setTimeout(()=>{
+  imageLongPressTimer=null;imageLongPressTriggered=true;
+  if(navigator.vibrate)try{navigator.vibrate(18)}catch(_){}
+  const name=img?.dataset?.downloadName||img?.alt||'image';
+  if(confirm('Télécharger cette image ?'))downloadImageUrl(img.currentSrc||img.src,name);
+  setTimeout(()=>{imageLongPressTriggered=false},350)
+ },600)
+}
+function moveImageLongPress(e){
+ if(!imageLongPressTimer||!imageLongPressStart)return;
+ if(Math.hypot(e.clientX-imageLongPressStart.x,e.clientY-imageLongPressStart.y)>12)cancelImageLongPress()
+}
+function endImageLongPress(e){
+ if(imageLongPressTimer)cancelImageLongPress();
+ if(imageLongPressTriggered){e?.preventDefault?.();e?.stopPropagation?.()}
+}
 function positionFloatingMenu(menu,btn){
  menu.classList.remove('hidden');menu.style.visibility='hidden';
  requestAnimationFrame(()=>{
