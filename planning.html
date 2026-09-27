@@ -862,6 +862,6 @@ function applyTheme(t){t=t==='dark'?'dark':'light';document.documentElement.data
 function toggleTheme(e){e?.stopPropagation();applyTheme(currentTheme()==='dark'?'light':'dark')}
 document.addEventListener('DOMContentLoaded',()=>applyTheme(currentTheme()));
 </script><script>
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+
 </script>
 </body></html>
