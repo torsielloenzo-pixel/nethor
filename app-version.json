@@ -1,10 +1,10 @@
 {
-  "version": 125,
-  "label": "v1.25",
+  "version": 126,
+  "label": "v1.26",
   "important": false,
   "mode": "manual",
-  "title": "Navigation mobile sans en-têtes",
-  "message": "Sur mobile, les en-têtes globaux de toutes les pages sont supprimés. La navigation se fait désormais uniquement depuis la barre mobile, et le chat utilise tout l’espace disponible sans conserver la hauteur de l’ancien en-tête.",
+  "title": "Personnalisation mobile allégée",
+  "message": "Le widget Barre utilisateur n’est plus affiché sur mobile dans la page Personnalisation.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
