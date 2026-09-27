@@ -173,7 +173,7 @@ function renderAgenda(){
   if(!model){host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return}
   const a=currentWeekStart;renderDayPicker(a);
   document.getElementById('mobileAgendaModeBar')?.classList.toggle('hidden',!isMobile());
-  document.getElementById('agendaStats')?.classList.add('hidden');
+  document.getElementById('agendaStats')?.classList.toggle('hidden',isMobile());
   if(isMobile())host.innerHTML=mobileMode==='day'?renderDayAgenda(a):renderWeekAgenda(a);
   else{document.getElementById('agendaTitle').textContent='Agenda de la semaine';document.getElementById('agendaSubtitle').textContent='Du '+frDate(a)+' au '+frDate(addDays(a,6))+' • mêmes données et calculs que la vue classique';host.innerHTML=renderWeekAgenda(a)}
  }catch(e){console.error('Agenda render',e);host.innerHTML='<div class="agendaDayEmpty"><strong>Agenda indisponible</strong><span>Recharge la page pour réessayer.</span></div>'}
