@@ -283,9 +283,9 @@ header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;bac
 /* Nethor chat mobile app v98 */
 @media(max-width:780px){
   html,body{background:#f0f2f5!important}
-  header{height:56px!important;min-height:56px!important;border-bottom:1px solid #e1e5e9!important;box-shadow:none!important}
+  header{height:calc(56px + env(safe-area-inset-top))!important;min-height:calc(56px + env(safe-area-inset-top))!important;padding-top:env(safe-area-inset-top)!important;border-bottom:1px solid #e1e5e9!important;box-shadow:none!important}
   header:after{display:none!important}
-  .chatApp{height:calc(100dvh - 56px)!important;background:#f0f2f5!important}
+  .chatApp{height:calc(100dvh - 56px - env(safe-area-inset-top))!important;background:#f0f2f5!important}
   .conversationListPane,.conversationPane{
     background:#fff!important;border:0!important;border-radius:0!important;box-shadow:none!important
   }
