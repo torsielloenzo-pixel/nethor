@@ -1,9 +1,9 @@
 {
-  "version": 89,
-  "label": "v0.89",
+  "version": 90,
+  "label": "v0.90",
   "important": true,
-  "title": "Version mobile fiabilisée",
-  "message": "Correctif global de la version mobile : notifications entièrement tactiles, menus sans conflits de positionnement, zones de clic agrandies, débordements horizontaux bloqués et chat adapté aux petits écrans.",
-  "published_at": "2026-09-27T15:48:00+02:00",
+  "title": "Notifications mobile corrigées",
+  "message": "Le bouton parasite à côté de MAJ a été supprimé et le panneau de notifications est de nouveau correctement positionné et cliquable sur mobile.",
+  "published_at": "2026-09-27T15:56:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
