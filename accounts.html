@@ -307,7 +307,7 @@ function switchTab(tab,opts={}){tab=['accounts','roles','logs'].includes(tab)?ta
 async function loadAll(){try{await Promise.all([loadAppRoles(),loadSubroles()]);await Promise.all([loadResetRequests(),loadUsers(),loadLogs(false),loadRolePermissions()]);if(!selectedId&&users.length)selectUser(users[0].id,false);if(selectedId)selectUser(selectedId,false);renderUsers();renderLogs();await loadVisitStats()}catch(e){console.error(e);window.NettoSounds?.play?.('error');$('userList').innerHTML='<div class="empty">Chargement impossible : '+esc(e.message)+'</div>'}}
 async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||p?.role!=='admin')return location.replace('home.html');currentProfile=p;window.currentRole='admin';const qs=new URLSearchParams(location.search),uid=qs.get('user'),rid=qs.get('request');requestedUserId=/^[0-9a-f-]{36}$/i.test(uid||'')?uid:null;requestedResetId=/^[0-9a-f-]{36}$/i.test(rid||'')?rid:null;if(requestedUserId)selectedId=requestedUserId;await loadAll();if(requestedUserId&&users.some(u=>u.id===requestedUserId))selectUser(requestedUserId,false);const requestedTab=(requestedUserId||requestedResetId)?'accounts':(qs.get('tab')||localStorage.getItem('nettoAccountsTab')||'accounts');switchTab(requestedTab,{sound:false})}
 boot();
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
 </script>
 </body>
 </html>
