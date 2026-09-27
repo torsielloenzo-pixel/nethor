@@ -544,6 +544,63 @@ body.planningYearOpen{overflow:hidden!important}
 /* Planning startup safety: calendar never owns the initial render */
 html:not(.planningCalendarReady) #yearView{display:none!important}
 body:not(.planningYearOpen) #yearView{display:none!important}
+
+/* Correctif hauteur réelle du Calendrier mobile (Safari iOS / Chrome Android) */
+@media(max-width:900px){
+  body.planningYearOpen{
+    position:fixed!important;
+    left:0!important;right:0!important;top:0!important;
+    width:100%!important;
+    height:var(--planning-calendar-h,100dvh)!important;
+    max-height:var(--planning-calendar-h,100dvh)!important;
+    overflow:hidden!important;
+  }
+  .yearView{
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    top:var(--planning-calendar-top,0px)!important;
+    bottom:auto!important;
+    width:100vw!important;
+    height:var(--planning-calendar-h,100dvh)!important;
+    min-height:0!important;
+    max-height:var(--planning-calendar-h,100dvh)!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+  }
+  .yearInterface{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+  }
+  .yearInterfaceHeader{
+    flex:none!important;
+    max-height:none!important;
+    box-sizing:border-box!important;
+  }
+  .yearInterfaceBody{
+    min-height:0!important;
+    max-height:100%!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-y:contain!important;
+    touch-action:pan-y!important;
+  }
+  .yearCloseBtn{
+    position:fixed!important;
+    top:calc(var(--planning-calendar-top,0px) + max(10px,env(safe-area-inset-top)))!important;
+    right:max(10px,env(safe-area-inset-right))!important;
+    z-index:2147483000!important;
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -808,6 +865,19 @@ function showToast(msg){let t=document.getElementById('planningToast');if(!t){t=
 function setSaveState(v){const e=document.getElementById('saveState');if(e)e.textContent=v}
 function playUISound(){window.NettoSounds?.play?.('tap')}
 
+function syncPlanningCalendarViewport(){
+ const vv=window.visualViewport;
+ const height=Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0);
+ const offsetTop=Math.round(vv?.offsetTop||0);
+ if(height>0)document.documentElement.style.setProperty('--planning-calendar-h',height+'px');
+ document.documentElement.style.setProperty('--planning-calendar-top',offsetTop+'px');
+}
+function bindPlanningCalendarViewport(){
+ syncPlanningCalendarViewport();
+ window.addEventListener('resize',syncPlanningCalendarViewport,{passive:true});
+ window.visualViewport?.addEventListener('resize',syncPlanningCalendarViewport,{passive:true});
+ window.visualViewport?.addEventListener('scroll',syncPlanningCalendarViewport,{passive:true})
+}
 function detectPlanningDevice(){
  const ua=String(navigator.userAgent||'');
  const platform=String(navigator.userAgentData?.platform||navigator.platform||'');
@@ -1347,6 +1417,7 @@ function setPlanningView(v,opts={}){
  document.getElementById('yearViewBtn')?.classList.toggle('active',planningView==='year');
  document.querySelector('.weekNav')?.classList.toggle('hidden',planningView!=='week');
  if(planningView==='year'){
+  syncPlanningCalendarViewport();
   renderYear();
   setTimeout(()=>document.querySelector('.yearCloseBtn')?.focus(),40)
  }else{
@@ -1412,7 +1483,7 @@ async function applyPlanningWidgetPermissions(userRole){
  }
  const personalVisible=planningWidgetVisible(config,'personal_stats',userRole);document.getElementById('planningInsights')?.classList.toggle('hidden',!personalVisible)
 }
-async function init(){applyPlanningDeviceUI();applyPlanningDeepLink();try{localStorage.removeItem('nettoPlanningView')}catch(_){}const savedView='week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);placePlanningActions();/*mobile-actions*/document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
+async function init(){bindPlanningCalendarViewport();applyPlanningDeviceUI();applyPlanningDeepLink();try{localStorage.removeItem('nettoPlanningView')}catch(_){}const savedView='week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);placePlanningActions();/*mobile-actions*/document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
 init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'});
 
 function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
