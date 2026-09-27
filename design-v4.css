@@ -965,3 +965,44 @@ table:not(.xlsTable) td{
     background:#24282c!important;border-color:#3c4248!important;
   }
 }
+
+
+/* Nethor mobile layer order v99 */
+@media(max-width:900px){
+  /* Ordre d'empilement type application :
+     contenu < header < barre basse < menus < modales < aperçus */
+  main,.workspace,.section{position:relative;z-index:1!important}
+  header{z-index:100!important}
+  .nettoMobileQuickBar{z-index:4000!important}
+
+  .nettoDropBackdrop.open,.mobileNavBackdrop{
+    z-index:4700!important
+  }
+  .nettoDrop,.nettoNotifDrop,.userMenu,#nMenu,.brandMenu{
+    z-index:5000!important
+  }
+
+  .modalBackdrop,.planningModal,.conversationActionBackdrop,
+  dialog[open],.pageViewsDialog[open]{
+    z-index:6000!important
+  }
+  .modalBackdrop>.modalCard,.planningModal>.planningModalCard,
+  .conversationActionBackdrop>.conversationActionSheet{
+    position:relative!important;z-index:6001!important
+  }
+
+  .imageLightbox{z-index:7000!important}
+
+  /* Un menu ouvert ne doit jamais faire passer tout le header
+     au-dessus des fenêtres et feuilles de l'application. */
+  html.nettoMobileDropOpen header{z-index:4300!important}
+  html.nettoMobileDropOpen .nettoGlobalTools{z-index:5100!important}
+
+  body.mobileNavOpen header{z-index:4300!important}
+  body.mobileNavOpen .mobileNavBackdrop{z-index:4700!important}
+  body.mobileNavOpen #nMenu{z-index:5000!important}
+
+  /* Le menu utilisateur de l'accueil reste un menu, pas une couche système. */
+  .userMenuWrap{z-index:auto!important}
+  .userMenu{z-index:5000!important}
+}
