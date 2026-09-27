@@ -297,10 +297,10 @@ input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
 }
 
 /* Correctif empilement menu utilisateur desktop */
-header{position:relative;z-index:1000!important;overflow:visible!important}
-.top{position:relative;z-index:1001!important;overflow:visible!important}
-.userMenuWrap{position:relative;z-index:1100!important}
-.userMenu{z-index:1200!important}
+header{position:relative;z-index:100!important;overflow:visible!important}
+.top{position:relative;z-index:101!important;overflow:visible!important}
+.userMenuWrap{position:relative;z-index:auto!important}
+.userMenu{z-index:5000!important}
 main{position:relative;z-index:1}
 .hello,.pages,.pageCard{z-index:auto}
 
@@ -372,7 +372,7 @@ main{position:relative;z-index:1}
 </style>
 <style id="home-mobile-layer-fix">
 @media(max-width:700px){
-  header{position:sticky!important;top:0!important;z-index:900!important;overflow:visible!important}
+  header{position:sticky!important;top:0!important;z-index:100!important;overflow:visible!important}
   .top,.userMenuWrap{overflow:visible!important}
   .userMenu{z-index:1200!important}
 }
