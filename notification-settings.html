@@ -149,26 +149,30 @@ async function disablePushNotifications(){
  finally{btn.disabled=false}
 }
 function ruleMode(r){
- const portal=r.user_portal_enabled!==false;
- const push=r.push_allowed!==false&&r.user_push_enabled!==false;
+ const portal=r.global_portal_enabled!==false&&r.user_portal_enabled!==false;
+ const push=r.push_allowed!==false&&r.global_push_enabled!==false&&r.user_push_enabled!==false;
  if(portal&&push)return'both';
  if(portal)return'portal';
  if(push)return'push';
  return'off'
 }
 function channelOptions(r){
- const current=ruleMode(r),disabled=!r.global_enabled;
- const options=r.push_allowed!==false
-  ?[['off','Désactivé'],['portal','Portail'],['push','Push'],['both','Les deux']]
-  :[['off','Désactivé'],['portal','Portail']];
+ const portalAvailable=r.global_portal_enabled!==false;
+ const pushAvailable=r.push_allowed!==false&&r.global_push_enabled!==false;
+ const current=ruleMode(r),disabled=!r.global_enabled||(!portalAvailable&&!pushAvailable);
+ const options=[['off','Désactivé']];
+ if(portalAvailable)options.push(['portal','Portail']);
+ if(pushAvailable)options.push(['push','Push']);
+ if(portalAvailable&&pushAvailable)options.push(['both','Les deux']);
  return '<div class="channelControl '+(options.length===2?'two':'')+'" role="group" aria-label="Canal de notification">'+options.map(([mode,label])=>'<button type="button" class="channelOption '+(current===mode?'active':'')+'" data-mode="'+mode+'" aria-pressed="'+(current===mode?'true':'false')+'" '+(disabled?'disabled':'')+' onclick="setPreference(\''+esc(r.rule_key)+'\',\''+mode+'\',this)">'+label+'</button>').join('')+'</div>'
 }
 function renderRules(){
  const host=$('ruleList');
  if(!rules.length){host.innerHTML='<div class="nsInfo">Aucun type de notification disponible.</div>';return}
  host.innerHTML=rules.map(r=>{
-  const badge=r.push_allowed!==false?'<span class="ruleBadge">Push + portail</span>':'<span class="ruleBadge appOnly">Portail uniquement</span>';
-  const globalBadge=!r.global_enabled?'<span class="ruleBadge off">Désactivé globalement</span>':'';
+  const globalPortal=r.global_portal_enabled!==false,globalPush=r.push_allowed!==false&&r.global_push_enabled!==false;
+  const badge=globalPortal&&globalPush?'<span class="ruleBadge">Push + portail</span>':globalPortal?'<span class="ruleBadge appOnly">Portail uniquement</span>':globalPush?'<span class="ruleBadge">Push uniquement</span>':'';
+  const globalBadge=!r.global_enabled||(!globalPortal&&!globalPush)?'<span class="ruleBadge off">Désactivé globalement</span>':'';
   return '<div class="ruleRow"><span class="ruleIcon">'+(icons[r.rule_key]||icons.direct_message)+'</span><div class="ruleCopy"><strong>'+esc(r.label)+badge+globalBadge+'</strong><p>'+esc(r.description||'')+'</p><small>'+esc(r.trigger_text||'')+'</small></div>'+channelOptions(r)+'</div>'
  }).join('')
 }
@@ -180,8 +184,8 @@ async function loadRules(){
 }
 async function setPreference(key,mode,button){
  const row=rules.find(x=>x.rule_key===key);if(!row||!row.global_enabled)return;
- const push=row.push_allowed!==false&&(mode==='push'||mode==='both');
- const portal=mode==='portal'||mode==='both';
+ const push=row.push_allowed!==false&&row.global_push_enabled!==false&&(mode==='push'||mode==='both');
+ const portal=row.global_portal_enabled!==false&&(mode==='portal'||mode==='both');
  document.querySelectorAll('[data-mode][onclick*="'+CSS.escape(key)+'"]').forEach(x=>x.disabled=true);
  try{
   const {data,error}=await db.rpc('set_my_notification_channels',{p_rule_key:key,p_push_enabled:push,p_portal_enabled:portal});
