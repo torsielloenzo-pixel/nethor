@@ -7,7 +7,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false
+ signedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set()
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -96,7 +96,7 @@ function closeConversationActions(){$('conversationActionSheet')?.classList.add(
 function contactPresence(userId){return state.onlineIds.has(userId)?'En ligne':lastSeenLabel(userId)}
 function openContactCard(userId){
  const m=member(userId);if(!m)return showToast('Profil indisponible');
- closeConversationActions();closeChatMenu();
+ closeConversationActions();closeDiscussionMenu();
  const box=$('contactCardContent'),modal=$('contactModal');if(!box||!modal)return;
  const status=(m.status_text||'').trim();
  box.innerHTML='<div class="contactHero">'+avatarHtml(m,'contactAvatar')+'<h3>'+esc(m.display_name||'Utilisateur')+'</h3><span class="contactRole">'+esc(roleLabel(m.role))+'</span><span class="contactPresence">'+esc(contactPresence(m.id))+'</span></div>'+
@@ -111,7 +111,7 @@ async function openDirectFromContact(userId){closeContactCard();await openDirect
 function openConversationDetails(id){
  const conv=conversationById(id);if(!conv)return;
  if(conv.conversation_type==='direct'){const m=conversationMember(conv);if(m)openContactCard(m.id);return}
- closeConversationActions();closeChatMenu();
+ closeConversationActions();closeDiscussionMenu();
  const box=$('contactCardContent'),modal=$('contactModal');if(!box||!modal)return;
  const ids=(conv.member_ids||[]).filter(Boolean),members=ids.map(member).filter(Boolean);
  box.innerHTML='<div class="contactHero">'+conversationAvatar(conv,true)+'<h3>'+esc(conversationTitle(conv))+'</h3><span class="contactRole">'+esc(conv.conversation_type==='general'?'Canal général':'Groupe')+'</span><span class="contactPresence">'+esc(conversationPresence(conv))+'</span></div>'+
@@ -146,7 +146,7 @@ async function loadParticipants(){
  if(!error)state.participants=data||[]
 }
 function renderConversationHeader(){
- const c=activeConversation(),av=$('activeAvatarMount'),title=$('activeTitle'),sub=$('activeSubtitle'),info=$('infoBtn'),search=$('messageSearchBtn'),composer=$('composer');
+ const c=activeConversation(),av=$('activeAvatarMount'),title=$('activeTitle'),sub=$('activeSubtitle'),info=$('conversationMenuBtn'),search=$('messageSearchBtn'),composer=$('composer');
  if(!c){if(av)av.innerHTML='';if(title)title.textContent='Sélectionne une discussion';if(sub)sub.textContent='';if(info)info.disabled=false;if(search)search.disabled=true;if(composer)composer.classList.add('hidden');return}
  av.innerHTML=conversationAvatar(c,true);title.textContent=conversationTitle(c);sub.textContent=conversationPresence(c);info.disabled=false;search.disabled=false;composer.classList.remove('hidden')
 }
@@ -261,10 +261,7 @@ function toggleMessageSearch(){const b=$('messageSearchBar');b.classList.toggle(
 function searchMessages(v){state.messageSearch=v;renderMessages()}
 function openImage(url){$('lightboxImage').src=url;$('imageLightbox').classList.remove('hidden')}
 function closeImage(e){if(e&&e.target!==$('imageLightbox')&&!e.target.closest('.lightboxClose'))return;$('imageLightbox').classList.add('hidden');$('lightboxImage').src=''}
-function toggleChatMenu(e){
- e?.stopPropagation?.();const menu=$('chatMenu'),btn=e?.currentTarget;if(!menu||!btn)return;
- if(!menu.classList.contains('hidden')){closeChatMenu();return}
- const hasActive=!!activeConversation();$('chatMenuInfoItem')?.classList.toggle('hidden',!hasActive);$('chatMenuConversationDivider')?.classList.toggle('hidden',!hasActive);
+function positionFloatingMenu(menu,btn){
  menu.classList.remove('hidden');menu.style.visibility='hidden';
  requestAnimationFrame(()=>{
   const r=btn.getBoundingClientRect(),w=menu.offsetWidth,h=menu.offsetHeight;
@@ -273,24 +270,98 @@ function toggleChatMenu(e){
   menu.style.left=left+'px';menu.style.top=top+'px';menu.style.visibility='visible'
  })
 }
-function closeChatMenu(){const m=$('chatMenu');if(!m)return;m.classList.add('hidden');m.style.visibility=''}
-function openConversationInfoFromMenu(){closeChatMenu();const c=activeConversation();if(!c)return;if(c.conversation_type==='direct'){const m=conversationMember(c);if(m)return openContactCard(m.id)}openConversationInfo()}
+function toggleDiscussionMenu(e){
+ e?.stopPropagation?.();closeConversationMenu();const menu=$('discussionMenu'),btn=e?.currentTarget;if(!menu||!btn)return;
+ if(!menu.classList.contains('hidden')){closeDiscussionMenu();return}
+ positionFloatingMenu(menu,btn)
+}
+function closeDiscussionMenu(){const m=$('discussionMenu');if(!m)return;m.classList.add('hidden');m.style.visibility=''}
+function toggleConversationMenu(e){
+ e?.stopPropagation?.();closeDiscussionMenu();const menu=$('conversationMenu'),btn=e?.currentTarget,c=activeConversation();if(!menu||!btn||!c)return;
+ if(!menu.classList.contains('hidden')){closeConversationMenu();return}
+ configureConversationMenu(c);positionFloatingMenu(menu,btn)
+}
+function closeConversationMenu(){const m=$('conversationMenu');if(!m)return;m.classList.add('hidden');m.style.visibility=''}
+function closeAllChatMenus(){closeDiscussionMenu();closeConversationMenu()}
+function configureConversationMenu(c){
+ const isGeneral=c.conversation_type==='general',isGroup=c.conversation_type==='group',isDirect=c.conversation_type==='direct';
+ const creator=c.created_by===state.session?.user?.id,admin=state.profile?.role==='admin',canManageGroup=isGroup&&(creator||admin);
+ const myParticipant=state.participants.find(p=>p.user_id===state.session?.user?.id);
+ const subtitle=$('conversationMenuSubtitle');if(subtitle)subtitle.textContent=isGeneral?'Canal de toute l’équipe':isDirect?'Discussion privée':((c.member_ids||[]).length+' membre(s)');
+ $('conversationAddMembersItem')?.classList.toggle('hidden',isGeneral||(isGroup&&!canManageGroup));
+ const hint=$('conversationAddMembersHint');if(hint)hint.textContent=isDirect?'Créer un groupe avec ce contact':'Ajouter au groupe';
+ $('conversationSettingsItem')?.classList.toggle('hidden',!canManageGroup);
+ $('conversationDeleteItem')?.classList.toggle('hidden',!canManageGroup);
+ $('conversationLeaveItem')?.classList.toggle('hidden',!isGroup||canManageGroup||myParticipant?.role==='owner');
+ $('conversationDangerDivider')?.classList.toggle('hidden',!(canManageGroup||(isGroup&&!canManageGroup&&myParticipant?.role!=='owner')))
+}
+function openConversationParticipants(){
+ closeConversationMenu();const c=activeConversation();if(!c)return;
+ const box=$('contactCardContent'),modal=$('contactModal');if(!box||!modal)return;
+ const ids=(c.member_ids||[]).filter(Boolean),members=ids.map(member).filter(Boolean);
+ box.innerHTML='<div class="contactHero">'+conversationAvatar(c,true)+'<h3>'+esc(conversationTitle(c))+'</h3><span class="contactRole">'+esc(c.conversation_type==='general'?'Canal général':c.conversation_type==='group'?'Groupe':'Discussion privée')+'</span><span class="contactPresence">'+esc(conversationPresence(c))+'</span></div>'+
+ '<div class="infoSection"><div class="infoSectionTitle">Participants · '+members.length+'</div><div class="infoMembers">'+members.map(m=>'<button class="infoRow contactInfoRow" type="button" onclick="openContactCard(\''+m.id+'\')">'+avatarHtml(m,'pickAvatar')+'<div><strong>'+esc(m.display_name||'Utilisateur')+(m.id===state.session?.user?.id?' · Vous':'')+'</strong><small>'+esc(roleLabel(m.role))+' · '+esc(contactPresence(m.id))+'</small></div><span>›</span></button>').join('')+'</div></div>';
+ modal.classList.remove('hidden')
+}
+function openConversationInfoFromManageMenu(){closeConversationMenu();openConversationInfo()}
+function leaveGroupFromMenu(){closeConversationMenu();leaveGroup()}
+function deleteConversationFromMenu(){closeConversationMenu();deleteConversation()}
+function openAddMembersFromConversation(){
+ closeConversationMenu();const c=activeConversation();if(!c||c.conversation_type==='general')return;
+ state.addMemberSelection.clear();
+ $('addMembersSearch').value='';
+ $('addMembersSubtitle').textContent=c.conversation_type==='direct'?'Les membres ajoutés formeront un nouveau groupe.':'Sélectionne une ou plusieurs personnes à ajouter au groupe.';
+ $('addMembersSubmit').textContent=c.conversation_type==='direct'?'Créer le groupe':'Ajouter au groupe';
+ renderAddMembersList();$('addMembersModal').classList.remove('hidden')
+}
+function closeAddMembersModal(){$('addMembersModal')?.classList.add('hidden');state.addMemberSelection.clear()}
+function renderAddMembersList(){
+ const box=$('addMembersList'),c=activeConversation();if(!box||!c)return;
+ const q=($('addMembersSearch')?.value||'').trim().toLowerCase();
+ const existing=new Set(c.member_ids||[]);
+ const list=state.members.filter(m=>m.id!==state.session?.user?.id&&!existing.has(m.id)&&(!q||(m.display_name||'').toLowerCase().includes(q)||roleLabel(m.role).toLowerCase().includes(q)));
+ if(!list.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucun membre trouvé.':'Tous les membres disponibles sont déjà présents.')+'</div>';return}
+ box.innerHTML=list.map(m=>{const selected=state.addMemberSelection.has(m.id);return '<button class="pickMember '+(selected?'selected':'')+'" type="button" onclick="toggleAddMemberSelection(\''+m.id+'\')">'+avatarHtml(m,'pickAvatar')+'<span><strong>'+esc(m.display_name||'Utilisateur')+'</strong><small>'+esc(roleLabel(m.role))+(state.onlineIds.has(m.id)?' · En ligne':'')+'</small></span><i class="pickCheck">✓</i></button>'}).join('')
+}
+function toggleAddMemberSelection(id){state.addMemberSelection.has(id)?state.addMemberSelection.delete(id):state.addMemberSelection.add(id);renderAddMembersList()}
+async function saveAddedMembers(){
+ const c=activeConversation();if(!c||!state.addMemberSelection.size)return showToast('Sélectionne au moins un membre');
+ const btn=$('addMembersSubmit');btn.disabled=true;
+ try{
+  if(c.conversation_type==='direct'){
+   const other=(c.member_ids||[]).find(id=>id!==state.session.user.id);
+   const ids=[other,...state.addMemberSelection].filter(Boolean);
+   const names=ids.map(id=>member(id)?.display_name).filter(Boolean);
+   const groupName=names.slice(0,3).join(', ')+(names.length>3?'…':'');
+   const {data,error}=await db.rpc('create_chat_conversation',{p_type:'group',p_name:groupName||'Nouveau groupe',p_member_ids:ids});
+   if(error)throw error;
+   closeAddMembersModal();await loadConversations();await openConversation(data,{showMobile:true});showToast('Groupe créé')
+  }else if(c.conversation_type==='group'){
+   const creator=c.created_by===state.session.user.id,admin=state.profile?.role==='admin';if(!creator&&!admin)throw new Error('not allowed');
+   const ids=[...new Set([...(c.member_ids||[]),...state.addMemberSelection])];
+   const {error}=await db.rpc('chat_update_group',{p_conversation:c.conversation_id,p_name:c.conversation_name||'Groupe',p_member_ids:ids});
+   if(error)throw error;
+   closeAddMembersModal();await Promise.all([loadConversations(),loadParticipants()]);renderConversationHeader();showToast('Membres ajoutés')
+  }
+ }catch(err){console.error('Ajout membres:',err);showToast('Ajout impossible')}
+ finally{btn.disabled=false}
+}
 async function markAllRead(){
- closeChatMenu();
+ closeDiscussionMenu();
  const {error}=await db.rpc('chat_mark_all_read');
  if(error){console.error(error);return showToast('Impossible de marquer les discussions comme lues')}
  state.conversations.forEach(x=>{x.unread_count=0;x.last_read_at=new Date().toISOString()});
  renderConversations();showToast('Toutes les discussions sont marquées comme lues')
 }
 function toggleUnreadOnly(){
- closeChatMenu();state.onlyUnread=!state.onlyUnread;
+ closeDiscussionMenu();state.onlyUnread=!state.onlyUnread;
  $('unreadOnlyBtn')?.classList.toggle('active',state.onlyUnread);
  renderConversations();
  showToast(state.onlyUnread?'Discussions non lues uniquement':'Toutes les discussions affichées')
 }
-async function refreshChat(){closeChatMenu();await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await Promise.all([loadParticipants(),loadMessages()]);showToast('Discussions actualisées')}
+async function refreshChat(){closeDiscussionMenu();await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await Promise.all([loadParticipants(),loadMessages()]);showToast('Discussions actualisées')}
 async function openChatArchives(){
- closeChatMenu();$('archivesModal')?.classList.remove('hidden');
+ closeDiscussionMenu();$('archivesModal')?.classList.remove('hidden');
  const box=$('archivesList');if(box)box.innerHTML='<div class="listEmpty">Chargement…</div>';
  const {data,error}=await db.rpc('list_my_archived_chat_conversations');
  if(error){console.error(error);if(box)box.innerHTML='<div class="listEmpty">Archives indisponibles.</div>';return}
@@ -377,8 +448,8 @@ function startRealtime(){
   .subscribe()
 }
 function startMemberRealtime(){if(state.memberChannel)return;state.memberChannel=db.channel('nethor-chat-members').on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>loadMembers()).subscribe()}
-document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#chatMenu')&&!e.target.closest('#infoBtn')&&!e.target.closest('#chatMenuListBtn'))closeChatMenu()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeChatMenu();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('contactModal')?.classList.add('hidden');$('conversationActionSheet')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
+document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#discussionMenu')&&!e.target.closest('#chatMenuListBtn'))closeDiscussionMenu();if(!e.target.closest('#conversationMenu')&&!e.target.closest('#conversationMenuBtn'))closeConversationMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeAllChatMenus();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('contactModal')?.classList.add('hidden');$('addMembersModal')?.classList.add('hidden');$('conversationActionSheet')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
 window.addEventListener('resize',()=>{if(window.innerWidth>780&&state.activeId)document.body.classList.add('mobileConversationOpen')},{passive:true});
 async function boot(){
  const {data:{session}}=await db.auth.getSession();state.session=session;if(!session){location.replace('index.html');return}
