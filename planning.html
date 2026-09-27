@@ -156,7 +156,7 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 }
 
 /* Planning intelligence : couverture, anomalies, indisponibilités */
-.planningInsights{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(220px,.82fr) minmax(250px,.9fr) minmax(280px,1fr);gap:10px;margin:0 0 12px}
+.planningInsights{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(220px,.78fr) minmax(280px,1fr);gap:10px;margin:0 0 12px}.anomalyWideRow{margin:10px 0 0}.anomalyWideRow #anomalyWidget{width:100%}
 .planningInsightCard{min-width:0;background:#fff;border:1px solid #e1e4e8;border-radius:16px;padding:13px;box-shadow:0 6px 18px #18223509}.compactInsightCard{padding:0;overflow:hidden}.compactInsightCard>.insightHead{margin:0;padding:11px 12px;cursor:pointer;align-items:center;background:#fafbfc;user-select:none}.compactInsightCard>.insightHead:hover{background:#f5f6f8}.compactInsightHeadRight{display:flex;align-items:center;gap:7px}.compactInsightChevron{width:26px;height:26px;border-radius:8px;background:#eceef1;display:grid;place-items:center;font-size:14px;font-weight:900;color:#777;transition:transform .18s ease}.compactInsightCard.open .compactInsightChevron{transform:rotate(180deg)}.compactInsightBody{padding:11px 12px 12px;border-top:1px solid #e8eaed}.compactInsightBody.collapsed{display:none}:root[data-theme="dark"] .compactInsightCard>.insightHead{background:#222429}:root[data-theme="dark"] .compactInsightCard>.insightHead:hover{background:#272a2f}:root[data-theme="dark"] .compactInsightChevron{background:#303238;color:#c9cdd2}:root[data-theme="dark"] .compactInsightBody{border-color:#34363b}
 .insightHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}.insightHead strong{display:block;font-size:12px}.insightHead small{display:block;margin-top:3px;color:#858991;font-size:8.5px;line-height:1.35}.insightMetric{font-size:9px;font-weight:850;background:#f2f3f5;border-radius:999px;padding:6px 8px;white-space:nowrap}
 .coverageSummary{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}.coveragePill{font-size:9px;font-weight:800;background:#f4f5f7;border:1px solid #e4e6e9;border-radius:9px;padding:6px 8px}.coveragePill b{font-size:11px}
@@ -204,12 +204,6 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
           <div id="personalStatsFoot" class="personalStatsFoot"></div>
         </div>
       </article>
-      <article id="anomalyWidget" class="planningInsightCard compactInsightCard">
-        <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePlanningInsight('anomalies')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePlanningInsight('anomalies')}"><div><strong>Détection d’anomalies</strong><small>Contrôles automatiques d’organisation. Ils ne remplacent pas un contrôle RH ou réglementaire.</small></div><div class="compactInsightHeadRight"><span id="anomalyMetric" class="insightMetric">0</span><span class="compactInsightChevron" aria-hidden="true">⌄</span></div></div>
-        <div id="anomalyInsightBody" class="compactInsightBody collapsed">
-          <div id="anomalyList" class="anomalyList"></div>
-        </div>
-      </article>
       <article id="absencesWidget" class="planningInsightCard">
         <div class="insightHead"><div><strong>Indisponibilités / Congés</strong><small id="absenceSubtitle">Demandes et suivi liés à cette semaine.</small></div><div class="absenceHeaderActions"><button id="absenceRequestBtn" class="btn absenceSubmit hidden" type="button" onclick="openAbsenceRequest()">＋ Faire une demande</button><div id="absenceAdminTools" class="absenceAdminTools hidden"><button class="btn light" type="button" onclick="clearAbsenceLogs()">Effacer les logs</button><button class="btn danger" type="button" onclick="clearAbsenceRequests()">Effacer les demandes</button></div></div></div>
         <div id="absenceManagementSummary" class="absenceManagementSummary hidden"></div>
@@ -232,6 +226,14 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
     <div id="emptyState" class="emptyState hidden"><strong>Aucun planning importé pour cette semaine</strong><span>Un administrateur ou responsable peut glisser le fichier Excel correspondant.</span></div>
     <div id="sheetViewport" class="sheetViewport hidden"><div id="sheetMount"></div></div><div id="mobileSchedule" class="mobileSchedule hidden"></div>
     <div class="legend"><span><i class="sw" style="background:#1FB714"></i>Matin</span><span><i class="sw" style="background:#00ABEA"></i>Après-midi</span></div><div id="editSaveBar" class="editSaveBar hidden"><div class="editSaveBarText"><strong>Modifications du planning</strong><small>Quand tout est correct, enregistre et quitte le mode modification.</small></div><button class="btn saveFinishBtn" onclick="saveAndFinishEdit()">✓ Enregistrer et terminer</button></div>
+    <div class="anomalyWideRow">
+      <article id="anomalyWidget" class="planningInsightCard compactInsightCard">
+        <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePlanningInsight('anomalies')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePlanningInsight('anomalies')}"><div><strong>Détection d’anomalies</strong><small>Contrôles automatiques d’organisation. Ils ne remplacent pas un contrôle RH ou réglementaire.</small></div><div class="compactInsightHeadRight"><span id="anomalyMetric" class="insightMetric">0</span><span class="compactInsightChevron" aria-hidden="true">⌄</span></div></div>
+        <div id="anomalyInsightBody" class="compactInsightBody collapsed">
+          <div id="anomalyList" class="anomalyList"></div>
+        </div>
+      </article>
+    </div>
     <section id="planningLogs" class="planningLogs"><div class="planningLogsHead"><div><strong>Historique du planning</strong><small>Imports et modifications du tableau</small></div><button id="clearPlanningLogs" class="btn light hidden" onclick="clearPlanningLogs()">Effacer les logs</button></div><div id="planningLogsList" class="planningLogsList"><span class="logsEmpty">Aucune activité enregistrée.</span></div></section>
   </section>
 
