@@ -1,10 +1,10 @@
 {
-  "version": 131,
-  "label": "v1.31",
+  "version": 132,
+  "label": "v1.32",
   "important": false,
   "mode": "manual",
-  "title": "Annulation des modifications du planning",
-  "message": "Sur ordinateur, le mode modification du planning dispose désormais d’un petit bouton Annuler à droite d’Enregistrer pour abandonner les changements non enregistrés.",
+  "title": "Fruits & Légumes mobile amélioré",
+  "message": "La page Fruits & Légumes mobile dispose maintenant d’un bouton retour cohérent avec les réglages de notifications, d’un affichage réorganisé et d’articles plus grands et plus lisibles.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
