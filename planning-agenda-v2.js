@@ -6,7 +6,7 @@ const escLocal=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','
 function isMobile(){return mq.matches}
 function normalize(v){return v==='agenda'?'agenda':'classic'}
 function agendaRanges(row){return rowRanges(row).filter(r=>!['r','y','o'].includes(r.c))}
-function colorLabel(c){return({g:'Matin',b:'Après-midi',w:'Indisponibilité'})[c]||'Service'}
+function colorLabel(c){return({g:'Matin',b:'Après-midi',w:'Indisponibilité'})[c]||'Poste'}
 function shiftHours(ranges){return ranges.reduce((sum,r)=>sum+(r.b-r.a),0)}
 function hoursLabel(n){return String(Math.round(n*100)/100).replace('.',',')+' h'}
 function dayShort(d){return d.toLocaleDateString('fr-FR',{weekday:'short'}).replace('.','')}
