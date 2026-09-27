@@ -1,9 +1,9 @@
 {
-  "version": 72,
-  "label": "v0.72",
+  "version": 73,
+  "label": "v0.73",
   "important": true,
-  "title": "Téléchargement du planning Excel",
-  "message": "L’administrateur peut désormais télécharger le fichier Excel source associé à chaque semaine. Les nouveaux imports sont archivés automatiquement dans un stockage privé.",
-  "published_at": "2026-09-27T11:50:00+02:00",
+  "title": "Statistiques de fréquentation",
+  "message": "Le Journal complet devient un widget compact avec graphique des visites du site par jour, semaine et mois. Les visites des administrateurs sont exclues des statistiques.",
+  "published_at": "2026-09-27T12:05:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
