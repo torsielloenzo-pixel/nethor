@@ -1,9 +1,9 @@
 {
-  "version": 103,
-  "label": "v1.03",
+  "version": 104,
+  "label": "v1.04",
   "important": false,
-  "title": "Nouvelle interface annuelle du planning",
-  "message": "Le bouton Année ouvre maintenant une interface dédiée plein écran avec navigation annuelle, calendrier des 12 mois et accès direct aux semaines publiées.",
-  "published_at": "2026-09-27T17:08:00+02:00",
+  "title": "Détection d’anomalies repositionnée",
+  "message": "Le widget Détection d’anomalies se trouve maintenant juste au-dessus de l’historique du planning.",
+  "published_at": "2026-09-27T17:12:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
