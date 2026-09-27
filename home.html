@@ -807,11 +807,11 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
  const today=new Date(),todayKey=homeIsoDate(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),21));
  const [subRes,weeksRes,absenceRes,notifRes,profilesRes]=await Promise.all([
-  db.rpc('my_subrole_keys').catch?.(()=>({data:[]}))||Promise.resolve({data:[]}),
+  Promise.resolve(db.rpc('my_subrole_keys')).catch(()=>({data:[]})),
   db.from('planning_weeks').select('week_start,data').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
   db.from('planning_absences').select('type,start_date,end_date,status').eq('user_id',homeSession.user.id).gte('end_date',todayKey).order('start_date').limit(6),
   db.from('planning_notifications').select('id,kind,title,message,target_url,created_at,read_at').eq('user_id',homeSession.user.id).order('created_at',{ascending:false}).limit(6),
-  db.from('profiles').select('id,display_name,avatar_path,profile_color,avatar_frame').limit(120)
+  db.from('profiles').select('id,display_name,role,avatar_path,profile_color,avatar_frame').limit(120)
  ]);
  const subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean),weeks=(weeksRes.data||[]).map(x=>x.data).filter(Boolean);
  const widget=id=>homeWidgetVisible(cfg,id,profile,subroleKeys);
@@ -863,11 +863,6 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  if(widget('team_today')){
   const shown=todayTeam.slice(0,3),extra=Math.max(0,todayTeam.length-shown.length);
   sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('team_today')+'</span><strong>Équipe aujourd’hui</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'chat.html\'">Voir l’équipe ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((x,i)=>'<div class="mhdPerson"><span id="mhdAvatar'+i+'" class="mhdAvatar">'+homeEsc((x.name||'U').slice(0,1).toUpperCase())+'</span>'+(x.profile&&window.NettoProfileUI?.onlineIds?.has?.(x.profile.id)?'<i class="mhdOnline"></i>':'')+'<strong>'+homeEsc(x.name)+'</strong><small>'+homeEsc(x.profile?.role||'Équipe')+'</small></div>').join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>');
-  for(let i=0;i<shown.length;i++){
-   const p=shown[i].profile;if(!p)continue;
-   let url=null;if(p.avatar_path){try{const {data}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);url=data?.signedUrl||null}catch(_){}}
-   window.NettoProfileUI?.paintAvatar?.(document.getElementById('mhdAvatar'+i),url,p.display_name,p.profile_color,p.avatar_frame)
-  }
  }
  if(widget('quick_access')){
   const modules=homeAllowedModules(profile,cfg).slice(0,4);
