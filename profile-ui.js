@@ -275,9 +275,8 @@ function renderMobileQuickBar(){
   a.addEventListener('click',e=>{
    activate();
    if(a.dataset.mobileId==='profile'&&mobileDropMode()){
-    e.preventDefault();e.stopPropagation();toggleDrop('user');return
+    e.preventDefault();e.stopPropagation();toggleDrop('user',true);return
    }
-   sounds.play('navigate')
   })
  });
  updateMobileNotificationBadge();
@@ -1428,10 +1427,10 @@ function syncMobileDropState(open){
  document.documentElement.classList.toggle('nettoMobileDropOpen',!!open&&mobile);
  if(!open||!mobile)restoreMobileDropLayers()
 }
-function toggleDrop(which){
+function toggleDrop(which,silent=false){
  const n=document.getElementById('nettoNotifDrop'),u=document.getElementById('nettoUserDrop'),l=document.getElementById('nettoLoginDrop'),nb=document.getElementById('nettoBellBtn'),ub=document.getElementById('nettoUserBtn'),lb=document.getElementById('nettoLoginBtn');
  const drops={notifications:n,user:u,logins:l},buttons={notifications:nb,user:ub,logins:lb},target=drops[which];if(!target)return;
- const open=target.classList.contains('hidden');sounds.play(open?'menuOpen':'menuClose');
+ const open=target.classList.contains('hidden');if(!silent)sounds.play(open?'menuOpen':'menuClose');
  if(open&&mobileDropMode())mountMobileDropLayer(target);
  Object.entries(drops).forEach(([key,el])=>{if(el)el.classList.toggle('hidden',key===which?!open:true)});
  Object.entries(buttons).forEach(([key,el])=>{if(el)el.setAttribute('aria-expanded',String(key===which&&open))});
