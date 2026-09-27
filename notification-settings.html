@@ -31,13 +31,13 @@ main{width:min(100%,760px);margin:0 auto;padding:calc(env(safe-area-inset-top) +
 .pushPanel{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin:2px 14px 14px;padding:13px;border:1px solid var(--ns-line);border-radius:15px;background:#f8f9fa}
 .pushStatus{display:flex;align-items:flex-start;gap:10px}.pushDot{width:10px;height:10px;border-radius:50%;background:#a4a7ad;box-shadow:0 0 0 4px #a4a7ad18;margin-top:3px;flex:none}.pushStatus.active .pushDot{background:#1b9a50;box-shadow:0 0 0 4px #1b9a5018}.pushStatus.blocked .pushDot{background:#d23b2d;box-shadow:0 0 0 4px #d23b2d18}.pushStatus.warning .pushDot{background:#d88400;box-shadow:0 0 0 4px #d8840018}.pushStatus strong{display:block;font-size:11px}.pushStatus span{display:block;color:#81858c;font-size:9px;line-height:1.4;margin-top:3px}
 .pushActions{display:flex;gap:7px}.btn{border:0;border-radius:11px;min-height:40px;padding:0 12px;font-weight:850;cursor:pointer}.primary{background:linear-gradient(135deg,#ff3f26,#ff8426);color:#fff;box-shadow:0 7px 18px #ff5a2a22}.danger{background:#fff0ed;color:#ba382b}.hidden{display:none!important}.pushState{padding:0 16px 13px;font-size:9px;color:var(--ns-muted);min-height:13px}.pushInstallHelp{display:none;margin:0 14px 14px;padding:10px 12px;border-radius:12px;background:#fff7ec;border:1px solid #f7d9a9;font-size:9px;line-height:1.45;color:#7a5220}.pushInstallHelp.show{display:block}
-.ruleList{display:grid}.ruleRow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--ns-line)}.ruleRow:first-child{border-top:0}.ruleIcon{width:42px;height:42px;border-radius:14px;background:var(--ns-soft);color:var(--ns-accent);display:grid;place-items:center;font-size:19px}.ruleCopy{min-width:0}.ruleCopy strong{display:flex;align-items:center;gap:7px;font-size:13px;line-height:1.2}.ruleCopy p{margin:4px 0 0;color:var(--ns-muted);font-size:9.5px;line-height:1.4}.ruleCopy small{display:block;margin-top:5px;color:#9a7a68;font-size:8.5px;font-weight:700;line-height:1.35}.ruleBadge{display:inline-flex;align-items:center;min-height:19px;padding:0 6px;border-radius:999px;background:#f2f3f5;color:#777;font-size:7.5px;font-weight:900}.ruleBadge.appOnly{background:#fff0e8;color:#cf5d2d}.ruleBadge.off{background:#ffeceb;color:#bd3b31}
+.ruleList{display:grid}.ruleRow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--ns-line)}.ruleRow:first-child{border-top:0}.ruleIcon{width:42px;height:42px;border-radius:14px;background:#fff2ec;color:#ef5a2f;display:grid;place-items:center}.ruleIcon svg{width:23px;height:23px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}.ruleCopy{min-width:0}.ruleCopy strong{display:flex;align-items:center;gap:7px;font-size:13px;line-height:1.2}.ruleCopy p{margin:4px 0 0;color:var(--ns-muted);font-size:9.5px;line-height:1.4}.ruleCopy small{display:block;margin-top:5px;color:#9a7a68;font-size:8.5px;font-weight:700;line-height:1.35}.ruleBadge{display:inline-flex;align-items:center;min-height:19px;padding:0 6px;border-radius:999px;background:#f2f3f5;color:#777;font-size:7.5px;font-weight:900}.ruleBadge.appOnly{background:#fff0e8;color:#cf5d2d}.ruleBadge.off{background:#ffeceb;color:#bd3b31}
 .switch{position:relative;width:46px;height:28px;display:block;flex:none}.switch input{position:absolute;opacity:0;pointer-events:none}.switch span{position:absolute;inset:0;border-radius:999px;background:#d9dde2;transition:.18s}.switch span:after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 2px 5px #0002;transition:.18s}.switch input:checked+span{background:linear-gradient(135deg,#ff4a29,#ff8426)}.switch input:checked+span:after{transform:translateX(18px)}.switch input:disabled+span{opacity:.45}
 .nsInfo{margin:0 14px 14px;padding:10px 12px;border-radius:12px;background:#f7f8fa;border:1px solid var(--ns-line);font-size:9px;color:var(--ns-muted);line-height:1.5}
 :root[data-theme="dark"]{--ns-bg:#17191d;--ns-card:#22252a;--ns-text:#f1eeea;--ns-muted:#aaa59f;--ns-line:#343940;--ns-soft:#392821}
 :root[data-theme="dark"] .pushPanel,:root[data-theme="dark"] .nsInfo{background:#1e2125}
 :root[data-theme="dark"] .pushInstallHelp{background:#302719;border-color:#554122;color:#e8c995}
-:root[data-theme="dark"] .ruleBadge{background:#30343a;color:#bbb}:root[data-theme="dark"] .ruleBadge.appOnly{background:#3a2b23;color:#ffad83}:root[data-theme="dark"] .ruleBadge.off{background:#412725;color:#ffaaa2}
+:root[data-theme="dark"] .ruleIcon{background:#382821;color:#ff8f68}:root[data-theme="dark"] .ruleBadge{background:#30343a;color:#bbb}:root[data-theme="dark"] .ruleBadge.appOnly{background:#3a2b23;color:#ffad83}:root[data-theme="dark"] .ruleBadge.off{background:#412725;color:#ffaaa2}
 @media(max-width:560px){main{padding-left:10px;padding-right:10px}.nsTop{margin-bottom:13px}.nsTitle h1{font-size:26px}.pushPanel{grid-template-columns:1fr}.pushActions .btn{flex:1}.ruleRow{grid-template-columns:42px minmax(0,1fr) auto;padding:12px}.ruleIcon{width:40px;height:40px}.ruleCopy strong{font-size:12.5px}}
 </style>
 </head>
@@ -46,7 +46,7 @@ main{width:min(100%,760px);margin:0 auto;padding:calc(env(safe-area-inset-top) +
 <main>
  <div class="nsTop">
   <button class="nsBack" type="button" onclick="backToUserMenu()" aria-label="Retour au menu utilisateur">‹</button>
-  <div class="nsTitle"><h1>Notifications</h1><p>Choisis les alertes que tu souhaites recevoir.</p></div>
+  <div class="nsTitle"><h1>Notifications</h1><p>Choisis uniquement les notifications Push que tu souhaites recevoir.</p></div>
  </div>
 
  <section class="nsCard">
@@ -60,11 +60,11 @@ main{width:min(100%,760px);margin:0 auto;padding:calc(env(safe-area-inset-top) +
  </section>
 
  <section class="nsCard">
-  <div class="nsCardHead"><h2>Types de notifications</h2><p>Ces réglages s’appliquent aux notifications du portail et, lorsque disponible, aux notifications Push.</p></div>
+  <div class="nsCardHead"><h2>Types de notifications Push</h2><p>Ces interrupteurs modifient uniquement les notifications Push. Les notifications visibles dans Nethor restent inchangées.</p></div>
   <div id="ruleList" class="ruleList"><div class="nsInfo">Chargement des préférences…</div></div>
  </section>
 
- <div class="nsInfo">Les réglages globaux définis par l’administrateur restent prioritaires. Les notifications de mise à jour Nethor restent <strong>dans l’application uniquement</strong> et ne déclenchent jamais de Push système.</div>
+ <div class="nsInfo">Les réglages globaux définis par l’administrateur restent prioritaires. Désactiver un type ici coupe uniquement son <strong>Push</strong> : la notification reste disponible dans Nethor. Les mises à jour Nethor ne déclenchent jamais de Push système.</div>
 </main>
 
 <script>
@@ -73,7 +73,13 @@ const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:t
 let session=null,rules=[];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const icons={planning_changes:'🗓️',direct_message:'💬',group_message:'👥',absence:'🏖️',admin_message:'📣',app_update:'⬆️',maintenance:'🛠️',security:'🔐'};
+const icons={
+ planning_changes:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="3"/><path d="M8 4v3M16 4v3M4 9.5h16"/><path d="M8 13h3M13 13h3M8 16h3"/></svg>',
+ direct_message:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 16.5H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4.5l-3 2v-2Z"/><path d="M7.5 10.5h5M7.5 13h3.5"/></svg>',
+ group_message:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="9" r="2.5"/><circle cx="16.5" cy="10" r="2"/><path d="M4.5 18c1.1-2.3 3-3.5 4.5-3.5s3.4 1.2 4.5 3.5"/><path d="M14 18c.7-1.5 2-2.4 3.2-2.4 1.1 0 2.4.9 3.1 2.4"/></svg>',
+ app_update:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 18.5h14"/></svg>',
+ security:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10" width="13" height="10" rx="2.5"/><path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"/><path d="M12 14v2.5"/></svg>'
+};
 
 function backToUserMenu(){location.href='home.html?open_user_menu=1'}
 function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1}
@@ -141,8 +147,15 @@ async function disablePushNotifications(){
 }
 function renderRules(){
  const host=$('ruleList');
- if(!rules.length){host.innerHTML='<div class="nsInfo">Aucun type de notification disponible.</div>';return}
- host.innerHTML=rules.map(r=>'<div class="ruleRow"><span class="ruleIcon">'+esc(icons[r.rule_key]||'🔔')+'</span><div class="ruleCopy"><strong>'+esc(r.label)+(r.push_allowed?'<span class="ruleBadge">Push + portail</span>':'<span class="ruleBadge appOnly">Portail uniquement</span>')+(!r.global_enabled?'<span class="ruleBadge off">Désactivé globalement</span>':'')+'</strong><p>'+esc(r.description||'')+'</p><small>'+esc(r.trigger_text||'')+'</small></div><label class="switch" title="'+(r.global_enabled?'Activer ou désactiver':'Désactivé globalement par l’administrateur')+'"><input type="checkbox" data-rule="'+esc(r.rule_key)+'" '+(r.user_enabled?'checked':'')+' '+(!r.global_enabled?'disabled':'')+' onchange="setPreference(\''+esc(r.rule_key)+'\',this.checked,this)"><span></span></label></div>').join('')
+ if(!rules.length){host.innerHTML='<div class="nsInfo">Aucun type de notification Push disponible.</div>';return}
+ host.innerHTML=rules.map(r=>{
+  const unavailable=!r.push_allowed;
+  const disabled=!r.global_enabled||unavailable;
+  const badge=unavailable?'<span class="ruleBadge appOnly">Pas de Push</span>':'<span class="ruleBadge">Push</span>';
+  const globalBadge=!r.global_enabled?'<span class="ruleBadge off">Désactivé globalement</span>':'';
+  const title=unavailable?'Ce type reste dans Nethor et ne peut pas envoyer de Push':(!r.global_enabled?'Désactivé globalement par l’administrateur':'Activer ou désactiver le Push');
+  return '<div class="ruleRow"><span class="ruleIcon">'+(icons[r.rule_key]||icons.direct_message)+'</span><div class="ruleCopy"><strong>'+esc(r.label)+badge+globalBadge+'</strong><p>'+esc(r.description||'')+'</p><small>'+esc(r.trigger_text||'')+'</small></div><label class="switch" title="'+esc(title)+'"><input type="checkbox" data-rule="'+esc(r.rule_key)+'" '+(r.user_enabled&&!unavailable?'checked':'')+' '+(disabled?'disabled':'')+' onchange="setPreference(\''+esc(r.rule_key)+'\',this.checked,this)"><span></span></label></div>'
+ }).join('')
 }
 async function loadRules(){
  const host=$('ruleList');host.innerHTML='<div class="nsInfo">Chargement des préférences…</div>';
@@ -159,7 +172,7 @@ async function setPreference(key,enabled,input){
   window.NettoSounds?.play?.('switch');
   await window.NettoProfileUI?.loadNotificationPreferences?.()
  }catch(e){console.error(e);input.checked=!enabled;window.NettoSounds?.play?.('error')}
- finally{input.disabled=!rules.find(x=>x.rule_key===key)?.global_enabled}
+ finally{const row=rules.find(x=>x.rule_key===key);input.disabled=!row?.global_enabled||!row?.push_allowed}
 }
 async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
