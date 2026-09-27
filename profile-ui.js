@@ -26,8 +26,7 @@ function lockMobileAppViewport(){
 
 lockMobileAppViewport();
 
-/* Mobile keyboard: keep navigation out of the way without moving the app header. */
-let mobileKeyboardBaseline=0;
+/* Mobile keyboard: global state only. Chat owns its own visual viewport sizing. */
 function isMobileTextEntry(el){
  if(!el||el.nodeType!==1||el.disabled||el.readOnly)return false;
  if(el.isContentEditable)return true;
@@ -37,45 +36,20 @@ function isMobileTextEntry(el){
  const type=String(el.type||'text').toLowerCase();
  return !['button','checkbox','radio','range','file','submit','reset','color','hidden','image'].includes(type)
 }
-function syncMobileKeyboard(){
+function syncMobileKeyboardState(){
  const root=document.documentElement,body=document.body;
- if(!isMobileViewport()){
-  root.classList.remove('nettoKeyboardOpen');body?.classList.remove('nettoKeyboardOpen');
-  root.style.removeProperty('--netto-keyboard-inset');
-  mobileKeyboardBaseline=0;return
- }
- const editing=isMobileTextEntry(document.activeElement);
- const vv=window.visualViewport;
- const visualH=Math.max(1,Math.round(vv?.height||window.innerHeight||0));
- const visualTop=Math.max(0,Math.round(vv?.offsetTop||0));
- const layoutH=Math.max(1,Math.round(window.innerHeight||document.documentElement.clientHeight||visualH));
- if(!editing){
-  mobileKeyboardBaseline=Math.max(layoutH,visualH);
-  root.style.setProperty('--netto-keyboard-inset','0px')
- }else{
-  if(!mobileKeyboardBaseline)mobileKeyboardBaseline=Math.max(layoutH,visualH);
-  const visualDrop=Math.max(0,mobileKeyboardBaseline-(visualH+visualTop));
-  const layoutDrop=Math.max(0,mobileKeyboardBaseline-layoutH);
-  const inset=Math.max(0,visualDrop-layoutDrop);
-  root.style.setProperty('--netto-keyboard-inset',Math.round(inset)+'px')
- }
- root.classList.toggle('nettoKeyboardOpen',editing);
- body?.classList.toggle('nettoKeyboardOpen',editing)
+ const active=isMobileViewport()&&isMobileTextEntry(document.activeElement);
+ root.classList.toggle('nettoKeyboardOpen',active);
+ body?.classList.toggle('nettoKeyboardOpen',active)
 }
-function bindMobileKeyboard(){
- let raf=0;
- const sync=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(syncMobileKeyboard)};
- document.addEventListener('focusin',sync,true);
- document.addEventListener('focusout',()=>setTimeout(sync,100),true);
- window.addEventListener('resize',sync,{passive:true});
- if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',sync,{passive:true});
-  window.visualViewport.addEventListener('scroll',sync,{passive:true})
- }
- sync()
+function bindMobileKeyboardState(){
+ document.addEventListener('focusin',syncMobileKeyboardState,true);
+ document.addEventListener('focusout',()=>setTimeout(syncMobileKeyboardState,100),true);
+ window.addEventListener('resize',syncMobileKeyboardState,{passive:true});
+ syncMobileKeyboardState()
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboard,{once:true});
-else bindMobileKeyboard();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboardState,{once:true});
+else bindMobileKeyboardState();
 
 const FAST_ACCESS_TTL=120000;
 const FAST_ACCESS_ROUTES=Object.freeze({
@@ -775,8 +749,6 @@ function addStyle(){
  @media (max-width:900px),(pointer:coarse){
    /* Navigation mobile unique : les en-têtes de page ne sont plus affichés. */
    body>header,body>#site>header{display:none!important}
-   /* Le chat occupait encore la hauteur réservée à son ancien en-tête global. */
-   body.nettoHasMobileBar .chatApp{top:env(safe-area-inset-top)!important}
    html.nettoKeyboardOpen body.nettoHasMobileBar{padding-bottom:0!important}
    html.nettoKeyboardOpen .nettoMobileQuickBar{display:none!important}
    :root{--netto-mobile-bar-h:64px}
