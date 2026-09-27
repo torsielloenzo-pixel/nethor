@@ -1,5 +1,30 @@
 (function(){
 'use strict';
+function isMobileViewport(){
+ try{return window.matchMedia('(max-width:900px)').matches||window.matchMedia('(pointer:coarse)').matches}catch(_){return window.innerWidth<=900}
+}
+function ensureMobileMeta(name,content){
+ let el=document.head?.querySelector('meta[name="'+name+'"]');
+ if(!el&&document.head){el=document.createElement('meta');el.name=name;document.head.appendChild(el)}
+ if(el)el.content=content
+}
+function lockMobileAppViewport(){
+ if(!isMobileViewport())return;
+ const root=document.documentElement;root.classList.add('nettoMobileAppLocked');
+ let viewport=document.head?.querySelector('meta[name="viewport"]');
+ if(!viewport&&document.head){viewport=document.createElement('meta');viewport.name='viewport';document.head.appendChild(viewport)}
+ if(viewport)viewport.content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';
+ ensureMobileMeta('mobile-web-app-capable','yes');
+ ensureMobileMeta('apple-mobile-web-app-capable','yes');
+ ensureMobileMeta('apple-mobile-web-app-status-bar-style','default');
+ if(root.dataset.mobileGesturesLocked==='1')return;root.dataset.mobileGesturesLocked='1';
+ const stopGesture=e=>e.preventDefault();
+ ['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,stopGesture,{passive:false}));
+ document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+ document.addEventListener('dblclick',stopGesture,{passive:false})
+}
+lockMobileAppViewport();
+
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const ROLE={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'};
@@ -596,7 +621,7 @@ function hydrateGlobalCache(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=72;
+const APP_RELEASE=73;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
