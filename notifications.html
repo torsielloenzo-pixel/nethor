@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Nethor — Notifications</title>
+<script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="profile-ui.js?v=113" defer></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+<link rel="stylesheet" href="design-v2.css?v=3">
+<link rel="stylesheet" href="design-v3.css?v=3">
+<link rel="stylesheet" href="design-v4.css?v=8">
+<style>
+:root{
+  --np-bg:#f3f4f6;--np-surface:#fff;--np-text:#17191c;--np-muted:#777f88;--np-line:#e5e8ec;
+  --np-accent:#f15a2b;--np-accent-soft:#fff1eb;--np-unread:#fff3ee
+}
+*{box-sizing:border-box}
+body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min-width:0;overflow-x:hidden}
+#notificationsPage header{position:sticky;top:0;z-index:1200}
+#notificationsPage header .top{min-width:0}
+#notificationsPage .notifHeaderTitle{min-width:0;display:flex;align-items:center;gap:10px}
+#notificationsPage .notifHeaderTitleText{min-width:0}
+#notificationsPage .notifHeaderTitleText strong{display:block;font-size:20px;line-height:1.05;font-weight:950;letter-spacing:-.45px}
+#notificationsPage .notifHeaderTitleText small{display:block;margin-top:3px;font-size:9px;color:var(--np-muted)}
+#notificationsPage .notifHeaderActions{display:flex;align-items:center;gap:7px;margin-left:auto;position:relative}
+.npCircleBtn{width:42px;height:42px;border:0;border-radius:50%;display:grid;place-items:center;background:#eef0f3;color:#2c3035;cursor:pointer}
+.npCircleBtn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.npCircleBtn.more{font-size:20px;font-weight:950;letter-spacing:1px}
+.npTopMenu{position:absolute;right:0;top:49px;width:min(270px,calc(100vw - 22px));padding:7px;border:1px solid var(--np-line);border-radius:15px;background:var(--np-surface);box-shadow:0 18px 50px #1118272b;z-index:50}
+.npTopMenu.hidden{display:none}
+.npTopMenu button{width:100%;min-height:44px;border:0;background:transparent;border-radius:10px;padding:9px 10px;text-align:left;font-size:11px;font-weight:800;color:inherit}
+.npTopMenu button:hover{background:#f3f4f6}
+.npTopMenu button.danger{color:#b62e25}
+.notificationsPageMain{width:min(100%,820px);margin:0 auto;padding:12px 12px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))}
+.npSearchWrap{display:none;margin:0 0 10px}
+.npSearchWrap.open{display:block}
+.npSearch{width:100%;height:46px;border:1px solid var(--np-line);border-radius:15px;background:var(--np-surface);padding:0 14px;font-size:16px;outline:none}
+.npSearch:focus{border-color:#ff9b7c;box-shadow:0 0 0 3px #f15a2b15}
+.npFilterLine{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 8px}
+.npFilterLine strong{font-size:13px}
+.npFilterState{border:0;border-radius:999px;background:#e9ecf0;padding:6px 9px;font-size:9px;font-weight:900;color:#59616b}
+.npFilterState.active{background:var(--np-accent-soft);color:#c74722}
+.npList{display:grid;gap:0;background:var(--np-surface);border:1px solid var(--np-line);border-radius:18px;overflow:visible}
+.npGroup{padding:14px 14px 7px;font-size:12px;font-weight:950;color:#25292e}
+.npRow{position:relative;display:grid;grid-template-columns:54px minmax(0,1fr) 38px;gap:11px;align-items:center;min-width:0;padding:11px 10px 11px 12px;border:0;border-top:1px solid #edf0f2;background:var(--np-surface);cursor:pointer;text-align:left}
+.npGroup+.npRow{border-top:0}
+.npRow.unread{background:var(--np-unread)}
+.npRow:active{filter:brightness(.985)}
+.npIcon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;position:relative;background:linear-gradient(145deg,#2c3137,#171a1e);box-shadow:0 5px 14px #11182714}
+.npIcon span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ff4327,#ff861f);font-size:17px;box-shadow:0 4px 10px #ff5a2a35}
+.npRowText{min-width:0;overflow:hidden}
+.npRowText .npSentence{font-size:12.5px;line-height:1.42;color:#353a40;overflow-wrap:anywhere}
+.npRowText .npSentence b{font-size:13px;font-weight:950;color:#16191d}
+.npRowText .npMeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;min-width:0}
+.npCategory{font-size:8.5px;font-weight:850;color:#8a9098}
+.npAge{font-size:9px;font-weight:850;color:#9a9fa6}
+.npRow.unread .npAge{color:#dd552c}
+.npUnreadDot{width:7px;height:7px;border-radius:50%;background:var(--np-accent);display:inline-block}
+.npRowMore{width:38px;height:38px;border:0;border-radius:50%;background:transparent;display:grid;place-items:center;font-size:18px;font-weight:950;letter-spacing:1px;color:#555d66;cursor:pointer}
+.npRowMore:hover{background:#eceff2}
+.npRowMenu{position:absolute;right:10px;top:48px;z-index:25;width:205px;padding:6px;border:1px solid var(--np-line);border-radius:13px;background:var(--np-surface);box-shadow:0 14px 38px #1118272b}
+.npRowMenu.hidden{display:none}
+.npRowMenu button{width:100%;min-height:42px;border:0;border-radius:9px;background:transparent;padding:8px 9px;text-align:left;font-size:10px;font-weight:800;color:inherit}
+.npRowMenu button:hover{background:#f3f4f6}
+.npRowMenu button.danger{color:#bc3528}
+.npEmpty{min-height:360px;display:grid;place-items:center;text-align:center;padding:34px 22px;color:#858c95}
+.npEmptyIcon{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#eef0f3;font-size:29px;margin:0 auto 12px}
+.npEmpty strong{display:block;font-size:16px;color:#363b41}
+.npEmpty span{display:block;margin-top:5px;font-size:11px;line-height:1.45}
+:root[data-theme="dark"]{
+  --np-bg:#181b1f;--np-surface:#22262b;--np-text:#f1eee9;--np-muted:#a9a49f;--np-line:#373d44;--np-unread:#362720;--np-accent-soft:#3a2923
+}
+:root[data-theme="dark"] .npCircleBtn,:root[data-theme="dark"] .npFilterState,:root[data-theme="dark"] .npEmptyIcon{background:#30353b;color:#eeeae5}
+:root[data-theme="dark"] .npRow{border-color:#30353b}
+:root[data-theme="dark"] .npRowText .npSentence{color:#c8c3bd}
+:root[data-theme="dark"] .npRowText .npSentence b,:root[data-theme="dark"] .npGroup,:root[data-theme="dark"] .npEmpty strong{color:#f0ece7}
+:root[data-theme="dark"] .npRowMore:hover,:root[data-theme="dark"] .npTopMenu button:hover,:root[data-theme="dark"] .npRowMenu button:hover{background:#30353b}
+
+@media(max-width:900px),(pointer:coarse){
+  #notificationsPage header{
+    min-height:calc(62px + env(safe-area-inset-top))!important;height:calc(62px + env(safe-area-inset-top))!important;
+    padding-top:env(safe-area-inset-top)!important;background:rgba(255,255,255,.98)!important
+  }
+  :root[data-theme="dark"] #notificationsPage header{background:rgba(29,32,36,.98)!important}
+  #notificationsPage header .top{min-height:62px!important;padding:0 12px!important;gap:8px!important}
+  #notificationsPage header .mark,#notificationsPage #nettoGlobalBack,#notificationsPage #nettoGlobalTools{display:none!important}
+  #notificationsPage .notifHeaderTitleText strong{font-size:27px}
+  #notificationsPage .notifHeaderTitleText small{display:none}
+  #notificationsPage .notifHeaderActions{gap:6px}
+  .npCircleBtn{width:44px;height:44px}
+  .notificationsPageMain{padding:8px 0 calc(18px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));width:100%;max-width:100%}
+  .npSearchWrap{padding:0 10px;margin-bottom:8px}
+  .npFilterLine{padding:0 12px;margin:4px 0 7px}
+  .npList{border-left:0;border-right:0;border-radius:0}
+  .npGroup{padding:14px 13px 8px;font-size:13px}
+  .npRow{grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;padding:11px 8px 11px 12px;min-height:78px}
+  .npIcon{width:56px;height:56px}
+  .npRowText .npSentence{font-size:13.5px;line-height:1.38}
+  .npRowText .npSentence b{font-size:14px}
+  .npCategory{font-size:9px}.npAge{font-size:10px}
+  .npRowMore{width:42px;height:42px}
+}
+@media(max-width:380px){
+  #notificationsPage header .top{padding-left:9px!important;padding-right:9px!important}
+  #notificationsPage .notifHeaderTitleText strong{font-size:24px}
+  .npCircleBtn{width:40px;height:40px}
+  .npRow{grid-template-columns:50px minmax(0,1fr) 38px;gap:8px;padding-left:9px;padding-right:6px}
+  .npIcon{width:50px;height:50px}.npIcon span{width:31px;height:31px;font-size:15px}
+  .npRowText .npSentence{font-size:12.5px}.npRowText .npSentence b{font-size:13px}
+}
+</style>
+</head>
+<body id="notificationsPage">
+<header>
+  <div class="top">
+    <div class="notifHeaderTitle">
+      <button class="mark" type="button" onclick="location.href='home.html'" aria-label="Accueil Nethor">N</button>
+      <div class="notifHeaderTitleText"><strong>Notifications</strong><small>Centre d’activité Nethor</small></div>
+    </div>
+    <div class="notifHeaderActions">
+      <button id="npSearchBtn" class="npCircleBtn" type="button" aria-label="Rechercher dans les notifications" title="Rechercher">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.3 4.3"/></svg>
+      </button>
+      <button id="npMoreBtn" class="npCircleBtn more" type="button" aria-label="Options des notifications" aria-expanded="false" title="Options">•••</button>
+      <div id="npTopMenu" class="npTopMenu hidden">
+        <button id="npUnreadOnly" type="button">Afficher uniquement les non lues</button>
+        <button id="npMarkAll" type="button">✓ Tout marquer comme lu</button>
+        <button id="npDeleteAll" class="danger" type="button">Supprimer toutes les notifications</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="notificationsPageMain">
+  <div id="npSearchWrap" class="npSearchWrap"><input id="npSearch" class="npSearch" type="search" placeholder="Rechercher une notification…" autocomplete="off"></div>
+  <div class="npFilterLine"><strong id="npSectionTitle">Nouveau</strong><button id="npFilterState" class="npFilterState" type="button">Toutes</button></div>
+  <section id="npList" class="npList" aria-live="polite"><div class="npEmpty"><div><div class="npEmptyIcon">🔔</div><strong>Chargement…</strong><span>Récupération de tes notifications.</span></div></div></section>
+</main>
+
+<script>
+(function(){
+'use strict';
+let items=[],search='',unreadOnly=false,ready=false;
+
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const api=()=>window.NettoProfileUI||null;
+const icon=n=>api()?.notificationIcon?.(n.kind)||'🔔';
+const category=n=>api()?.notificationCategory?.(n.kind)||'Notification';
+const age=n=>api()?.notificationDate?.(n.created_at)||'';
+const dayGroup=n=>api()?.notificationDayGroup?.(n.created_at)||'Plus anciennes';
+
+function closeMenus(){
+ document.querySelectorAll('.npRowMenu').forEach(x=>x.classList.add('hidden'));
+ document.getElementById('npTopMenu')?.classList.add('hidden');
+ document.getElementById('npMoreBtn')?.setAttribute('aria-expanded','false');
+}
+function filtered(){
+ const q=search.trim().toLowerCase();
+ return items.filter(n=>(!unreadOnly||!n.read_at)&&(!q||String(n.title||'').toLowerCase().includes(q)||String(n.message||'').toLowerCase().includes(q)||category(n).toLowerCase().includes(q)))
+   .sort((a,b)=>{const au=!a.read_at?1:0,bu=!b.read_at?1:0;if(au!==bu)return bu-au;return new Date(b.created_at)-new Date(a.created_at)})
+}
+function render(){
+ const list=document.getElementById('npList');if(!list)return;
+ const rows=filtered(),unread=items.filter(n=>!n.read_at).length;
+ document.getElementById('npFilterState').textContent=unreadOnly?'Non lues ('+unread+')':'Toutes ('+items.length+')';
+ document.getElementById('npFilterState').classList.toggle('active',unreadOnly);
+ document.getElementById('npUnreadOnly').textContent=unreadOnly?'Afficher toutes les notifications':'Afficher uniquement les non lues';
+ document.getElementById('npSectionTitle').textContent=unreadOnly?'Non lues':(unread?'Nouveau':'Notifications');
+ if(!ready){
+   list.innerHTML='<div class="npEmpty"><div><div class="npEmptyIcon">🔔</div><strong>Chargement…</strong><span>Récupération de tes notifications.</span></div></div>';return
+ }
+ if(!rows.length){
+   list.innerHTML='<div class="npEmpty"><div><div class="npEmptyIcon">'+(search?'⌕':'✓')+'</div><strong>'+(search?'Aucun résultat':'Aucune notification')+'</strong><span>'+(search?'Essaie avec un autre terme.':'Tu as tout consulté pour le moment.')+'</span></div></div>';return
+ }
+ let previous='',html='';
+ for(const n of rows){
+   const group=!n.read_at?'Nouveau':dayGroup(n);
+   if(group!==previous){html+='<div class="npGroup">'+esc(group)+'</div>';previous=group}
+   html+='<article class="npRow '+(!n.read_at?'unread':'')+'" data-id="'+Number(n.id)+'" data-url="'+esc(n.target_url||'')+'" tabindex="0" role="button">'+
+     '<div class="npIcon" aria-hidden="true"><span>'+icon(n)+'</span></div>'+
+     '<div class="npRowText"><div class="npSentence"><b>'+esc(n.title||'Notification')+'</b> '+esc(n.message||'')+'</div>'+
+     '<div class="npMeta">'+(!n.read_at?'<i class="npUnreadDot" aria-hidden="true"></i>':'')+'<span class="npCategory">'+esc(category(n))+'</span><span class="npAge">'+esc(age(n))+'</span></div></div>'+
+     '<button class="npRowMore" type="button" aria-label="Options de cette notification" aria-expanded="false">•••</button>'+
+     '<div class="npRowMenu hidden">'+(!n.read_at?'<button data-action="read" type="button">Marquer comme lu</button>':'')+'<button data-action="open" type="button">Ouvrir</button><button data-action="delete" class="danger" type="button">Supprimer</button></div>'+
+   '</article>'
+ }
+ list.innerHTML=html;
+ bindRows()
+}
+async function markRead(id){
+ const a=api();if(!a?.markNotificationRead)return;
+ await a.markNotificationRead(id);items=[...(a.notifications||items)];render()
+}
+function safeNavigate(raw){
+ if(!raw)return;
+ try{const u=new URL(raw,location.href);if(u.origin===location.origin){if(u.pathname.includes('/stock-fl/'))u.pathname=u.pathname.replace('/stock-fl/','/nethor/');location.assign(u.href)}}catch(_){}
+}
+async function openRow(row){
+ const id=Number(row.dataset.id);if(id)await markRead(id);
+ const raw=row.dataset.url||'';if(raw)safeNavigate(raw)
+}
+function bindRows(){
+ document.querySelectorAll('.npRow').forEach(row=>{
+   row.onclick=e=>{if(e.target.closest('.npRowMore,.npRowMenu'))return;openRow(row)};
+   row.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('.npRowMore,.npRowMenu')){e.preventDefault();openRow(row)}};
+   const more=row.querySelector('.npRowMore'),menu=row.querySelector('.npRowMenu');
+   more.onclick=e=>{e.preventDefault();e.stopPropagation();const open=menu.classList.contains('hidden');closeMenus();menu.classList.toggle('hidden',!open);more.setAttribute('aria-expanded',String(open))};
+   menu.querySelectorAll('button').forEach(btn=>btn.onclick=async e=>{
+     e.preventDefault();e.stopPropagation();const id=Number(row.dataset.id),action=btn.dataset.action;closeMenus();
+     if(action==='read')await markRead(id);
+     if(action==='open')await openRow(row);
+     if(action==='delete'){const a=api();if(a?.deleteNotification){await a.deleteNotification(id);items=[...(a.notifications||items)];render()}}
+   })
+ })
+}
+function syncFromApi(){
+ const a=api();if(!a)return;
+ items=[...(a.notifications||[])];ready=!!a.session;render()
+}
+window.addEventListener('netto:notifications',e=>{items=[...(e.detail?.notifications||[])];ready=true;render()});
+window.addEventListener('netto:profile',()=>{ready=true;syncFromApi()});
+document.addEventListener('click',e=>{if(!e.target.closest('.npTopMenu,#npMoreBtn,.npRowMenu,.npRowMore'))closeMenus()});
+document.getElementById('npSearchBtn').onclick=()=>{const w=document.getElementById('npSearchWrap');w.classList.toggle('open');if(w.classList.contains('open'))setTimeout(()=>document.getElementById('npSearch').focus(),30)};
+document.getElementById('npSearch').oninput=e=>{search=e.target.value||'';render()};
+document.getElementById('npMoreBtn').onclick=e=>{e.stopPropagation();const m=document.getElementById('npTopMenu'),open=m.classList.contains('hidden');closeMenus();m.classList.toggle('hidden',!open);e.currentTarget.setAttribute('aria-expanded',String(open))};
+document.getElementById('npUnreadOnly').onclick=()=>{unreadOnly=!unreadOnly;closeMenus();render()};
+document.getElementById('npFilterState').onclick=()=>{unreadOnly=!unreadOnly;render()};
+document.getElementById('npMarkAll').onclick=async()=>{closeMenus();const a=api();if(a?.markAllNotificationsRead){await a.markAllNotificationsRead();items=[...(a.notifications||items)];render()}};
+document.getElementById('npDeleteAll').onclick=async()=>{closeMenus();const a=api();if(a?.deleteAllNotifications){await a.deleteAllNotifications();items=[...(a.notifications||items)];render()}};
+
+let tries=0;
+const timer=setInterval(()=>{tries++;const a=api();if(a?.session){ready=true;syncFromApi();a.loadNotifications?.();clearInterval(timer)}else if(tries>80)clearInterval(timer)},100);
+})();
+</script>
+</body>
+</html>
