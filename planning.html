@@ -182,7 +182,7 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 /* Nethor v101 — mobile shape safeguards: small phones, large phones and landscape */
 @media(max-width:760px){
   .planningViewBar,.viewTabs,.weekNav,#planningToolbar,.days,.readerHead,.mobileSchedule,.planningInsights,
-  .absencesWideRow,.coverageWideRow,.anomalyWideRow,#planningLogs{box-sizing:border-box!important;min-width:0!important;max-width:100%!important}
+  .absencesWideRow,.coverageWideRow,.anomalyHistoryRow,#planningLogs{box-sizing:border-box!important;min-width:0!important;max-width:100%!important}
   .viewTabs,.weekNav{overflow:visible!important}
   .viewTab,.weekNav .btn{min-width:0!important;max-width:100%!important}
 }
@@ -540,6 +540,10 @@ body.planningYearOpen{overflow:hidden!important}
 }
 :root[data-planning-device="ios"] .yearMenuBtn{--device-accent:#ff633a}
 :root[data-planning-device="android"] .yearMenuBtn{--device-accent:#ff7a1f}
+
+/* Planning startup safety: calendar never owns the initial render */
+html:not(.planningCalendarReady) #yearView{display:none!important}
+body:not(.planningYearOpen) #yearView{display:none!important}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -594,7 +598,7 @@ body.planningYearOpen{overflow:hidden!important}
   #weekView>#planningInsights{order:8}
   #weekView>.absencesWideRow{order:9}
   #weekView>.coverageWideRow{order:10}
-  #weekView>.anomalyWideRow{order:11}
+  #weekView>.anomalyHistoryRow{order:11}
   #weekView>#planningLogs{order:12}
 
   #planningToolbar{
@@ -742,9 +746,6 @@ body.planningYearOpen{overflow:hidden!important}
               </div>
             </article>
     </div>
-    <div class="anomalyWideRow">
-      
-    </div>
   </section>
 
   <div id="absenceRequestModal" class="planningModal hidden" onclick="if(event.target===this)closeAbsenceRequest()">
@@ -816,6 +817,7 @@ function detectPlanningDevice(){
  return{key:'mobile',label:'Mobile'}
 }
 function applyPlanningDeviceUI(){
+ document.documentElement.classList.add('planningCalendarReady');
  const device=detectPlanningDevice();
  document.documentElement.dataset.planningDevice=device.key;
  const label=document.getElementById('planningDeviceLabel');
@@ -1334,16 +1336,22 @@ async function goCurrentWeek(){const now=new Date();currentWeekStart=startOfWeek
 function setPlanningView(v,opts={}){
  planningView=v==='year'?'year':'week';
  const yearView=document.getElementById('yearView');
- document.getElementById('weekView').classList.toggle('hidden',false);
- yearView.classList.toggle('hidden',planningView!=='year');
- yearView.setAttribute('aria-hidden',planningView==='year'?'false':'true');
+ const weekView=document.getElementById('weekView');
+ if(weekView)weekView.classList.remove('hidden');
+ if(yearView){
+  yearView.classList.toggle('hidden',planningView!=='year');
+  yearView.setAttribute('aria-hidden',planningView==='year'?'false':'true')
+ }
  document.body.classList.toggle('planningYearOpen',planningView==='year');
- document.getElementById('weekViewBtn').classList.toggle('active',planningView==='week');
- document.getElementById('yearViewBtn').classList.toggle('active',planningView==='year');
- document.querySelector('.weekNav').classList.toggle('hidden',planningView!=='week');
- try{localStorage.setItem('nettoPlanningView',planningView)}catch(_){}
- const u=new URL(location.href);u.searchParams.set('view',planningView);history.replaceState({},'',u);
- if(planningView==='year'){renderYear();setTimeout(()=>document.querySelector('.yearBackBtn')?.focus(),40)}else renderAll();
+ document.getElementById('weekViewBtn')?.classList.toggle('active',planningView==='week');
+ document.getElementById('yearViewBtn')?.classList.toggle('active',planningView==='year');
+ document.querySelector('.weekNav')?.classList.toggle('hidden',planningView!=='week');
+ if(planningView==='year'){
+  renderYear();
+  setTimeout(()=>document.querySelector('.yearCloseBtn')?.focus(),40)
+ }else{
+  renderAll()
+ }
  if(opts.sound!==false)window.NettoSounds?.play?.('switch')
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&planningView==='year')setPlanningView('week')});
@@ -1402,9 +1410,9 @@ async function applyPlanningWidgetPermissions(userRole){
   el.classList.toggle('hidden',!allowed);
   if(allowed)visible++
  }
- document.getElementById('planningInsights')?.classList.toggle('hidden',visible===0)
+ const personalVisible=planningWidgetVisible(config,'personal_stats',userRole);document.getElementById('planningInsights')?.classList.toggle('hidden',!personalVisible)
 }
-async function init(){applyPlanningDeviceUI();applyPlanningDeepLink();const qs=new URLSearchParams(location.search),savedView=qs.get('view')||localStorage.getItem('nettoPlanningView')||'week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);placePlanningActions();/*mobile-actions*/document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden'||(absenceAccess==='manage'&&role!=='admin'));document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
+async function init(){applyPlanningDeviceUI();applyPlanningDeepLink();try{localStorage.removeItem('nettoPlanningView')}catch(_){}const savedView='week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);placePlanningActions();/*mobile-actions*/document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
 init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'});
 
 function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
