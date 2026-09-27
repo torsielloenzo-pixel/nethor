@@ -1,9 +1,9 @@
 {
-  "version": 76,
-  "label": "v0.76",
+  "version": 77,
+  "label": "v0.77",
   "important": true,
-  "title": "Permissions Indisponibilités / Congés",
-  "message": "Le bouton Faire une demande est désormais masqué pour les utilisateurs disposant du niveau Gestion, sauf pour l’administrateur.",
-  "published_at": "2026-09-27T12:20:00+02:00",
+  "title": "Réorganisation des widgets du planning",
+  "message": "Couverture magasin est désormais placé sous Historique du planning et juste au-dessus de Détection d’anomalies.",
+  "published_at": "2026-09-27T12:23:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
