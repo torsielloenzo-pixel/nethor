@@ -45,6 +45,7 @@ function storedSupabaseUserId(){
 }
 function fastAccessSelector(file){
  const q=String(file||'').replace(/"/g,'');
+ if(q==='index.html')return 'a[href*="index.html"]:not(.logout):not(.logoutItem):not(.userLogout):not(.brandLogout),button[onclick*="index.html"]:not(.logout):not(.logoutItem):not(.userLogout):not(.brandLogout)';
  return 'a[href*="'+q+'"],button[onclick*="'+q+'"]'
 }
 function readFastAccessSnapshot(){
