@@ -1149,7 +1149,7 @@ async function latestVersionFromLogs(){
  for(const row of data||[])latest=Math.max(latest,parseVersionFromLog(row));
  return latest
 }
-function waitForUpdateWorker(reg,timeout=6000){
+function waitForUpdateWorker(reg,timeout=2500){
  return new Promise(resolve=>{
   if(reg?.waiting)return resolve(reg.waiting);
   let done=false;
@@ -1170,29 +1170,64 @@ async function manualCheckForUpdates(){
  try{
   if(!('serviceWorker' in navigator)){mobilePreviewNotice('Mises à jour non prises en charge');return}
   mobilePreviewNotice('Vérification de la version publiée…');
-  const info=await releaseInfo();
+
+  const regPromise=navigator.serviceWorker.getRegistration().then(reg=>reg||navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}));
+  const [info,reg]=await Promise.all([releaseInfo(),regPromise]);
+  updateRegistration=reg;
+
   const manifestVersion=Number(info.version)||APP_RELEASE;
-  const reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});updateRegistration=reg;
-  await reg.update().catch(()=>{});
-  if(!reg.waiting)await waitForUpdateWorker(reg,6000);
-  const active=await workerVersion(navigator.serviceWorker.controller||reg.active);
   const stored=Number(localStorage.getItem('nettoAppVersion')||0)||0;
-  const current=active||stored||APP_RELEASE;
-  const waitingVersion=await workerVersion(reg.waiting);
-  const latest=Math.max(manifestVersion,waitingVersion||0);
-  if(reg.waiting&&latest>current){
+
+  // Cas le plus fréquent : la version publiée est déjà celle installée.
+  // On répond immédiatement, puis on laisse le navigateur vérifier le SW en arrière-plan.
+  if(!reg.waiting&&stored>=manifestVersion){
+   mobilePreviewNotice('Nethor est à jour - '+displayVersion(stored));
+   sounds.play('success');
+   reg.update().catch(()=>{});
+   return
+  }
+
+  // Une mise à jour déjà prête doit s'afficher immédiatement.
+  if(reg.waiting){
+   const waitingVersion=await workerVersion(reg.waiting);
+   const current=Math.max(stored,Number(await workerVersion(navigator.serviceWorker.controller||reg.active))||0,APP_RELEASE);
+   const latest=Math.max(manifestVersion,waitingVersion||0);
+   if(latest>current){
+    sessionStorage.removeItem('nettoUpdateLater');
+    await showUpdateAvailable(reg,latest);
+    mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest));
+    return
+   }
+  }
+
+  // Si le stockage local est absent ou ancien, on vérifie rapidement la version active.
+  const active=await workerVersion(navigator.serviceWorker.controller||reg.active);
+  const current=Math.max(stored,active||0,APP_RELEASE);
+  if(current>=manifestVersion){
+   try{localStorage.setItem('nettoAppVersion',String(current))}catch(_){}
+   mobilePreviewNotice('Nethor est à jour - '+displayVersion(current));
+   sounds.play('success');
+   reg.update().catch(()=>{});
+   return
+  }
+
+  // On sait déjà qu'une nouvelle version existe : on l'annonce tout de suite.
+  mobilePreviewNotice('Nouvelle version détectée : '+displayVersion(manifestVersion));
+
+  // La préparation du Service Worker ne bloque désormais que quelques secondes au maximum.
+  await reg.update().catch(()=>{});
+  if(!reg.waiting)await waitForUpdateWorker(reg,2500);
+
+  if(reg.waiting){
+   const waitingVersion=await workerVersion(reg.waiting);
+   const latest=Math.max(manifestVersion,waitingVersion||0);
    sessionStorage.removeItem('nettoUpdateLater');
    await showUpdateAvailable(reg,latest);
    mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest));
    return
   }
-  if(current>=manifestVersion){
-   try{localStorage.setItem('nettoAppVersion',String(current))}catch(_){}
-   mobilePreviewNotice('Nethor est à jour - '+displayVersion(current));
-   sounds.play('success');
-   return
-  }
-  mobilePreviewNotice(displayVersion(manifestVersion)+' détectée · préparation en cours, réessaie dans quelques instants');
+
+  mobilePreviewNotice(displayVersion(manifestVersion)+' détectée · préparation en arrière-plan');
  }catch(e){
   console.warn('Recherche de mise à jour:',e);
   mobilePreviewNotice('Impossible de vérifier les mises à jour');
