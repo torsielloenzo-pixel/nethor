@@ -178,6 +178,28 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 @media(max-width:1350px){.planningInsights{grid-template-columns:1fr}}
 @media(max-width:720px){.planningInsights{grid-template-columns:1fr}.planningInsightCard{padding:11px;border-radius:14px}.absenceDates{grid-template-columns:1fr}.anomalyList,.absenceList{max-height:260px}.coverageBars{min-width:680px}.planningModal{place-items:center;padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}.planningModalCard{width:100%;max-width:100%;border-radius:20px;padding:14px 12px}.absenceForm{gap:11px}.absenceForm input,.absenceForm select,.absenceForm textarea{border-radius:12px}.absenceFormHelp{font-size:8.5px}.absenceSubmit{min-height:46px}.planningModalHead strong{font-size:15px}.planningModalHead small{font-size:9.5px}}@media(max-width:360px){.planningModal{padding-left:6px;padding-right:6px}.planningModalCard{padding:12px 10px;border-radius:17px}.absenceForm input,.absenceForm select,.absenceForm textarea{padding-left:9px;padding-right:9px}.planningModalClose{width:28px;height:28px;min-width:28px;flex-basis:28px}}
 
+
+/* Nethor v101 — mobile shape safeguards: small phones, large phones and landscape */
+@media(max-width:760px){
+  .planningViewBar,.viewTabs,.weekNav,#planningToolbar,.days,.readerHead,.mobileSchedule,.planningInsights,
+  .absencesWideRow,.coverageWideRow,.anomalyWideRow,#planningLogs{box-sizing:border-box!important;min-width:0!important;max-width:100%!important}
+  .viewTabs,.weekNav{overflow:visible!important}
+  .viewTab,.weekNav .btn{min-width:0!important;max-width:100%!important}
+}
+@media(max-width:380px){
+  #planningApp{padding-left:8px!important;padding-right:8px!important}
+  .planningViewBar{padding:7px!important;border-radius:14px!important}
+  .viewTab{min-height:40px!important;padding-left:8px!important;padding-right:8px!important;font-size:10.5px!important}
+  .weekNav{grid-template-columns:40px minmax(0,1fr) 40px!important;gap:5px!important}
+  .weekNav .miniNav{width:40px!important;min-width:40px!important;height:40px!important}
+  .weekNav>button:nth-of-type(2){min-height:40px!important;padding-left:6px!important;padding-right:6px!important;font-size:10px!important}
+  .weekNav .weekLabel{font-size:9.5px!important}
+  .days .day,.days .weekTotalChip{flex-basis:68px!important;min-width:68px!important;max-width:68px!important;min-height:55px!important}
+}
+@media(max-width:760px) and (orientation:landscape){
+  .planningViewBar{grid-template-columns:minmax(160px,.7fr) minmax(280px,1.3fr)!important;align-items:center!important}
+  .weekNav .weekLabel{grid-column:1/-1!important}
+}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -194,14 +216,16 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
     overflow-x:hidden!important
   }
   .planningViewBar{
-    position:sticky!important;
-    top:calc(56px + env(safe-area-inset-top) + 4px)!important;
-    z-index:80!important;
-    display:grid!important;grid-template-columns:1fr!important;gap:7px!important;
-    margin:0 0 10px!important;padding:8px!important;
-    background:rgba(255,255,255,.94)!important;border:1px solid #e1e5e9!important;
-    border-radius:16px!important;box-shadow:0 8px 24px rgba(20,28,38,.08)!important;
-    backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important
+    position:relative!important;
+    top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;
+    z-index:2!important;
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:7px!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    margin:0 0 12px!important;padding:8px!important;box-sizing:border-box!important;
+    background:rgba(255,255,255,.96)!important;border:1px solid #e1e5e9!important;
+    border-radius:16px!important;box-shadow:0 5px 16px rgba(20,28,38,.06)!important;
+    backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;
+    isolation:isolate!important
   }
   .viewTabs{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;width:100%!important}
   .viewTab{width:100%!important;min-height:42px!important;border-radius:12px!important}
@@ -233,16 +257,24 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
   #weekView>.anomalyWideRow{order:11}
   #weekView>#planningLogs{order:12}
 
-  #planningToolbar{padding:0!important;margin:0 0 8px!important;background:transparent!important;border:0!important;box-shadow:none!important}
+  #planningToolbar{
+    position:relative!important;z-index:1!important;clear:both!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    padding:0!important;margin:0 0 8px!important;background:transparent!important;border:0!important;box-shadow:none!important
+  }
   .days{
-    display:flex!important;flex-wrap:nowrap!important;gap:7px!important;width:100%!important;
-    overflow-x:auto!important;overflow-y:hidden!important;padding:2px 1px 7px!important;
-    scroll-snap-type:x proximity!important;overscroll-behavior-x:contain!important;
-    -webkit-overflow-scrolling:touch!important;scrollbar-width:none!important
+    position:relative!important;z-index:1!important;
+    display:flex!important;flex-wrap:nowrap!important;gap:7px!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    overflow-x:auto!important;overflow-y:hidden!important;
+    margin:0!important;padding:3px 1px 8px!important;box-sizing:border-box!important;
+    scroll-snap-type:x proximity!important;scroll-padding-inline:1px!important;
+    overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important
   }
   .days::-webkit-scrollbar{display:none!important}
   .days .day,.days .weekTotalChip{
-    flex:0 0 78px!important;min-width:78px!important;max-width:78px!important;
+    flex:0 0 clamp(70px,22vw,82px)!important;
+    min-width:clamp(70px,22vw,82px)!important;max-width:82px!important;
     min-height:58px!important;scroll-snap-align:start!important;border-radius:14px!important
   }
   .days .day{font-size:11px!important}
@@ -290,7 +322,6 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
   #planningLogs{margin:9px 0 0!important;max-height:310px!important;overflow:auto!important;-webkit-overflow-scrolling:touch!important}
   .planningLogsHead{position:sticky!important;top:0!important;background:inherit!important;z-index:2!important;padding-bottom:6px!important}
 
-  body.planningEditing .planningViewBar{position:static!important}
   body.planningEditing #editTools{margin:0 0 8px!important}
   body.planningEditing #sheetViewport{border-radius:14px!important;overflow:auto!important}
 }
