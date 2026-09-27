@@ -50,7 +50,8 @@ function setLayout(v,persist){
  if(persist){persistPreference(layout);try{window.NettoSounds?.play?.('switch')}catch(_){}}
 }
 function dayLabel(d){return d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'}).replace('.','')}
-function colorLabel(c){return({g:'Matin',b:'Après-midi',r:'Service',y:'Service',o:'Service',w:'Indisponibilité'})[c]||'Service'}
+function colorLabel(c){return({g:'Matin',b:'Après-midi',w:'Indisponibilité'})[c]||'Service'}
+function agendaRanges(row){return rowRanges(row).filter(r=>!['r','y','o'].includes(r.c))}
 function renderAgenda(){
  const host=document.getElementById('agendaMount');if(!host)return;
  try{
@@ -61,11 +62,11 @@ function renderAgenda(){
   for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),parts=dayLabel(dt).split(' ');html+='<div class="agendaDayHead '+(key===todayKey?'today':'')+'"><strong>'+escLocal(parts[0])+'</strong><span>'+escLocal(parts.slice(1).join(' '))+'</span></div>'}
   employees.forEach((emp,ri)=>{
    let weekTotal=0;
-   for(let di=0;di<7;di++){const day=model.days?.[isoDate(addDays(a,di))],row=day?.cells?.[ri]||[];weekTotal+=totalForRow(row)}
+   for(let di=0;di<7;di++){const day=model.days?.[isoDate(addDays(a,di))],row=day?.cells?.[ri]||[];weekTotal+=agendaRanges(row).reduce((sum,r)=>sum+(r.b-r.a),0)}
    const prof=typeof planningProfileFor==='function'?planningProfileFor(emp.name):null,label=prof?.display_name||emp.name;
    const avatar=typeof identityAvatarHtml==='function'?identityAvatarHtml(prof,label):'<span class="planningIdentityAvatar">'+escLocal((label||'?')[0])+'</span>';
    html+='<div class="agendaEmployee">'+avatar+'<div class="planningIdentityText"><strong>'+escLocal(label)+'</strong><span class="agendaEmployeeTotal">'+String(Math.round(weekTotal*100)/100).replace('.',',')+' h semaine</span></div></div>';
-   for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],row=day?.cells?.[ri]||[],ranges=rowRanges(row);html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(ranges.length?'':'empty')+'">';
+   for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],row=day?.cells?.[ri]||[],ranges=agendaRanges(row);html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(ranges.length?'':'empty')+'">';
     ranges.forEach(r=>{html+='<div class="agendaShift" data-color="'+escLocal(r.c)+'"><strong>'+fmtTime(r.a)+' – '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+String(Math.round((r.b-r.a)*100)/100).replace('.',',')+' h</small></div>'});
     html+='</div>';
    }
