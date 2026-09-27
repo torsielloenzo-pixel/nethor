@@ -67,3 +67,30 @@ html[data-theme="dark"] .agendaLoading strong{color:#f2f4f6}
  .agendaDayShift>span{display:none}
  .agendaLoading{min-height:132px;border-radius:13px}
 }
+
+
+/* Planning Agenda v4 — priorité à mon horaire et aux collègues croisés */
+@media(max-width:760px){
+  .agendaStats{display:none!important}
+  .agendaDayList.hasCurrentUser .agendaDayCardMe{
+    position:relative;
+    margin:0 0 10px!important;
+    border-bottom:0!important;
+    border:1px solid rgba(255,104,55,.34)!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    box-shadow:0 5px 16px rgba(255,91,42,.08)!important;
+  }
+  .agendaDayList.hasCurrentUser .agendaDayCardMe + .agendaDayCard{
+    border-top:1px solid #e8ebee!important;
+  }
+  .agendaDayCardCoworker{
+    background:#fff!important;
+  }
+  html[data-theme="dark"] .agendaDayList.hasCurrentUser .agendaDayCardMe{
+    background:#202328!important;
+    border-color:rgba(255,119,72,.36)!important;
+    box-shadow:0 6px 18px rgba(0,0,0,.16)!important;
+  }
+  html[data-theme="dark"] .agendaDayCardCoworker{background:#1b1d20!important}
+}
