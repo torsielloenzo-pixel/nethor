@@ -1,9 +1,9 @@
 {
-  "version": 85,
-  "label": "v0.85",
+  "version": 86,
+  "label": "v0.86",
   "important": true,
-  "title": "Formulaire mobile corrigé",
-  "message": "Le formulaire de demande d’indisponibilité ou de congés s’adapte désormais à toutes les largeurs mobiles sans dépassement horizontal.",
-  "published_at": "2026-09-27T14:14:00+02:00",
+  "title": "Nouvelle version de Nethor",
+  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
+  "published_at": "2026-09-27T14:33:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
