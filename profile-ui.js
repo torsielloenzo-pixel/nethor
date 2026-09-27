@@ -129,11 +129,13 @@ function moduleVisible(area,module,profile,config=api?.siteConfig){if(!moduleAll
 function visibleModules(area,profile,config=api?.siteConfig){return NAV_MODULES.filter(m=>moduleVisible(area,m,profile,config))}
 function moduleIcon(module){return module?.asset?'<img src="'+esc(module.asset)+'" alt="">':esc(module?.icon||'•')}
 const DEFAULT_MOBILE_BAR_IDS=Object.freeze(['home','stock','planning','chat','profile']);
+const MOBILE_NOTIFICATION_MODULE=Object.freeze({id:'notifications',label:'Notifications',subtitle:'Centre d’activité',url:'notifications.html'});
 const MOBILE_NAV_ICONS=Object.freeze({
  home:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5"/><path d="M6.5 9.5V20h11V9.5"/></svg>',
  stock:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 8.5h15l-1.4 10H5.9l-1.4-10Z"/><path d="M7 8.5 9 5.5h6l2 3"/><path d="M8 12h8"/></svg>',
  planning:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="3"/><path d="M8 4v3M16 4v3M4 9.5h16"/><path d="M8 13h3M13 13h3M8 16h3"/></svg>',
  chat:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.5 16.5H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-3l-2.5 2v-2Z"/><path d="M15.5 15.5H19a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-1.5"/></svg>',
+ notifications:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21a2.4 2.4 0 0 0 2.3-1.7H9.7A2.4 2.4 0 0 0 12 21Z"/><path d="M18.2 16.5H5.8l1.5-2V9.7a4.7 4.7 0 0 1 9.4 0v4.8l1.5 2Z"/><path d="M12 3.3V2"/></svg>',
  profile:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.25"/><path d="M5.5 18.5c1.4-3 4-4.5 6.5-4.5s5.1 1.5 6.5 4.5"/></svg>',
  articles:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 5.5h8l2 2V18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2Z"/><path d="M15 5.5v2h2"/><path d="M8 11h8M8 14h8M8 17h5"/></svg>',
  rewards:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5.5 14 9.5l4.5.6-3.3 3 1 4.4L12 15.5l-4.2 2 1-4.4-3.3-3L10 9.5l2-4Z"/></svg>',
@@ -144,6 +146,7 @@ const MOBILE_NAV_ICONS=Object.freeze({
  default:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="5" width="5" height="5" rx="1.2"/><rect x="14" y="5" width="5" height="5" rx="1.2"/><rect x="5" y="14" width="5" height="5" rx="1.2"/><rect x="14" y="14" width="5" height="5" rx="1.2"/></svg>'
 });
 function mobileNavIcon(id){return MOBILE_NAV_ICONS[id]||MOBILE_NAV_ICONS.default}
+function mobileModuleForId(id){return id==='notifications'?MOBILE_NOTIFICATION_MODULE:NAV_MODULES.find(m=>m.id===id)}
 
 function mobileBarItems(config=api?.siteConfig){
  const raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[];
@@ -151,14 +154,19 @@ function mobileBarItems(config=api?.siteConfig){
  const seen=new Set(),out=[];
  for(const item of source){
   const id=String(item?.id||'').trim();
-  if(!id||seen.has(id))continue;
+  if(!id||id==='notifications'||seen.has(id))continue;
   const module=NAV_MODULES.find(m=>m.id===id);
   if(!module)continue;
   seen.add(id);
   out.push({id,enabled:item?.enabled!==false,label:String(item?.label||'').trim().slice(0,18)});
   if(out.length>=5)break;
  }
- return out
+ const notifications={id:'notifications',enabled:true,label:'Notifications'};
+ const chatIndex=out.findIndex(x=>x.id==='chat'),profileIndex=out.findIndex(x=>x.id==='profile');
+ if(chatIndex>=0)out.splice(chatIndex+1,0,notifications);
+ else if(profileIndex>=0)out.splice(profileIndex,0,notifications);
+ else out.push(notifications);
+ return out.slice(0,6)
 }
 function mobileBarActive(module){
  try{
@@ -168,6 +176,10 @@ function mobileBarActive(module){
   return current===target
  }catch(_){return false}
 }
+function updateMobileNotificationBadge(forced){
+ const count=Number.isFinite(Number(forced))?Number(forced):api.notifications.filter(n=>!n.read_at).length;
+ document.querySelectorAll('.nettoMobileNotifBadge').forEach(b=>{b.textContent=count>99?'99+':String(count);b.classList.toggle('hidden',count<1)})
+}
 function renderMobileQuickBar(){
  const old=document.getElementById('nettoMobileQuickBar');
  if(!api.profile||api.siteConfig?.mobile_bar?.enabled===false){
@@ -175,17 +187,18 @@ function renderMobileQuickBar(){
  }
  const items=mobileBarItems(api.siteConfig)
   .filter(x=>x.enabled!==false)
-  .map(x=>({item:x,module:NAV_MODULES.find(m=>m.id===x.id)}))
-  .filter(x=>x.module&&moduleAllowed(x.module,api.profile,api.siteConfig));
+  .map(x=>({item:x,module:mobileModuleForId(x.id)}))
+  .filter(x=>x.module&&(x.module.id==='notifications'||moduleAllowed(x.module,api.profile,api.siteConfig)));
  if(!items.length){old?.remove();document.body?.classList.remove('nettoHasMobileBar');return}
  let nav=old;
  if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
  nav.style.setProperty('--netto-mobile-count',String(items.length));
- nav.innerHTML=items.map(({item,module})=>{const label=item.label||module.label||'Menu';return '<a class="nettoMobileQuickItem '+(mobileBarActive(module)?'active':'')+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span></a>'}).join('');
+ nav.innerHTML=items.map(({item,module})=>{const label=item.label||module.label||'Menu',badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';return '<a class="nettoMobileQuickItem '+(mobileBarActive(module)?'active':'')+'" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
  nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>sounds.play('navigate')));
+ updateMobileNotificationBadge();
  document.body.classList.add('nettoHasMobileBar')
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileNavIcon,refresh,loadNotifications,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess()};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess()};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -687,6 +700,20 @@ function addStyle(){
    body.nettoHasMobileBar .chatApp{height:calc(100dvh - 56px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom))!important}
    body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 12px)!important}
  }
+
+   /* Nethor v113 — notifications in mobile bottom bar */
+   @media (max-width:900px),(pointer:coarse){
+     .nettoBellWrap{display:none!important}
+     .nettoMobileNotifBadge{
+       position:absolute;top:5px;left:calc(50% + 9px);min-width:18px;height:18px;padding:0 5px;
+       border-radius:999px;background:#f02836;color:#fff;border:2px solid rgba(255,255,255,.98);
+       display:grid;place-items:center;font-size:8px;font-weight:950;line-height:1;box-sizing:border-box;
+       box-shadow:0 2px 7px rgba(240,40,54,.28);pointer-events:none
+     }
+     .nettoMobileNotifBadge.hidden{display:none!important}
+     :root[data-theme="dark"] .nettoMobileNotifBadge{border-color:#1b1d20}
+   }
+
  
 
  /* Nethor v100 — reliable mobile sheets for notifications/profile */
@@ -1199,6 +1226,7 @@ function renderNotifications(){
  const list=document.getElementById('nettoNotifList'),badge=document.getElementById('nettoNotifBadge');if(!list||!badge)return;
  if(!api.notificationTab||!['all','unread'].includes(api.notificationTab))api.notificationTab='all';
  const unread=api.notifications.filter(n=>!n.read_at).length;
+ updateMobileNotificationBadge(unread);
  badge.textContent=unread>99?'99+':String(unread);badge.classList.toggle('hidden',unread===0);
  const allCount=document.getElementById('nettoNotifAllCount'),unreadCount=document.getElementById('nettoNotifUnreadCount');
  if(allCount)allCount.textContent=String(api.notifications.length);
@@ -1292,7 +1320,7 @@ function hydrateGlobalCache(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=112;
+const APP_RELEASE=113;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
