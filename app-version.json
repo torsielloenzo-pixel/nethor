@@ -1,10 +1,10 @@
 {
-  "version": 121,
-  "label": "v1.21",
+  "version": 122,
+  "label": "v1.22",
   "important": false,
   "mode": "manual",
-  "title": "Chat mobile : saisie plus compacte",
-  "message": "Les boutons +, microphone et envoyer sont désormais plus petits et mieux espacés pour éviter tout chevauchement sur mobile.",
+  "title": "Notifications mobile : actions alignées",
+  "message": "Le bouton d’options des notifications reste désormais parfaitement aligné à droite et ne peut plus passer à la ligne.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
