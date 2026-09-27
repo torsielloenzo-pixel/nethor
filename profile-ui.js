@@ -301,9 +301,17 @@ function renderMobileQuickBar(){
   sounds.play('navigate')
  }));
  updateMobileNotificationBadge();
- document.body.classList.add('nettoHasMobileBar')
+ document.body.classList.add('nettoHasMobileBar');
+ if(!window.__nettoOpenUserMenuHandled&&new URLSearchParams(location.search).get('open_user_menu')==='1'&&mobileDropMode()){
+  window.__nettoOpenUserMenuHandled=true;
+  setTimeout(()=>{
+   const drop=document.getElementById('nettoUserDrop');
+   if(drop?.classList.contains('hidden'))toggleDrop('user');
+   try{const u=new URL(location.href);u.searchParams.delete('open_user_menu');history.replaceState({},'',u)}catch(_){}
+  },0)
+ }
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess()};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,loadNotificationPreferences,notificationPreferenceEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess()};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -1225,7 +1233,7 @@ async function manualCheckForUpdates(){
    const waitingVersion=await workerVersion(reg.waiting);
    const latest=Math.max(manifestVersion,waitingVersion||0);
    sessionStorage.removeItem('nettoUpdateLater');
-   await showUpdateAvailable(reg,latest);
+   await showUpdateAvailable(reg,latest,true);
    mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest));
    return
   }
@@ -1267,7 +1275,7 @@ function buildGlobalHeader(){
    '</section>'+
    (mobilePrimary.length?'<section class="nettoMobileMenuCard">'+mobileRows(mobilePrimary)+'</section>':'')+
    '<section class="nettoMobileMenuCard">'+
-    mobileMenuRow('notifications','Notifications','Centre d’activité','notifications.html')+
+    mobileMenuRow('notifications','Notifications','Préférences et alertes','notification-settings.html')+
     (mobileAdmin.length?mobileRows(mobileAdmin):'')+
    '</section>'+
    (mobileExtra.length?'<section class="nettoMobileMenuCard">'+mobileRows(mobileExtra)+'</section>':'')+
@@ -1504,7 +1512,12 @@ function notificationGroup(n){return IMPORTANT_NOTIFICATION_KINDS.has(n?.kind)?'
 function notificationIcon(k){
  return ({
   chat_message:'💬',
+  chat_direct:'💬',
+  chat_group:'👥',
+  chat_general:'👥',
   admin_message:'📣',
+  app_update:'⬆️',
+  maintenance:'🛠️',
   manual_edit:'🗓️',
   import_new:'📥',
   import_replace:'🔄',
@@ -1518,7 +1531,12 @@ function notificationIcon(k){
 function notificationCategory(k){
  return ({
   chat_message:'Message équipe',
+  chat_direct:'Message',
+  chat_group:'Message groupe',
+  chat_general:'Message groupe',
   admin_message:'Information',
+  app_update:'Mise à jour',
+  maintenance:'Maintenance',
   manual_edit:'Planning modifié',
   import_new:'Nouveau planning',
   import_replace:'Planning remplacé',
@@ -1577,12 +1595,48 @@ function renderNotifications(){
  list.querySelectorAll('.nettoNotifItem').forEach(el=>{el.onclick=e=>{if(e.target.closest('.nettoNotifDelete'))return;activate(el)};el.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('.nettoNotifDelete')){e.preventDefault();activate(el)}}});
  list.querySelectorAll('.nettoNotifDelete').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();deleteNotification(Number(b.closest('.nettoNotifItem').dataset.id))})
 }
-async function loadNotifications(){if(!api.client||!api.session)return;const {data,error}=await api.client.from('planning_notifications').select('id,kind,title,message,planning_date,week_start,target_url,read_at,created_at').eq('user_id',api.session.user.id).order('created_at',{ascending:false}).limit(80);if(error){console.warn('Notifications:',error);return}api.notifications=data||[];renderNotifications();window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:api.notifications,unread:api.notifications.filter(n=>!n.read_at).length}}))}
+function notificationRuleKey(kind){
+ if(['manual_edit','import_new','import_replace','reset_day','reset_week'].includes(kind))return'planning_changes';
+ if(kind==='chat_direct')return'direct_message';
+ if(['chat_group','chat_general','chat_message'].includes(kind))return'group_message';
+ if(['absence_request','absence_decision'].includes(kind))return'absence';
+ if(kind==='admin_message')return'admin_message';
+ if(kind==='app_update')return'app_update';
+ if(kind==='maintenance')return'maintenance';
+ if(kind==='password_reset_request')return'security';
+ return''
+}
+async function loadNotificationPreferences(){
+ if(!api.client||!api.session)return null;
+ try{
+  const {data,error}=await api.client.rpc('my_notification_preferences');
+  if(error)throw error;
+  api.notificationPreferences={};
+  for(const row of data||[])api.notificationPreferences[row.rule_key]=row;
+  window.dispatchEvent(new CustomEvent('netto:notification-preferences',{detail:{preferences:api.notificationPreferences}}));
+  return api.notificationPreferences
+ }catch(e){console.warn('Préférences notifications:',e);api.notificationPreferences=api.notificationPreferences||{};return api.notificationPreferences}
+}
+function notificationPreferenceEnabled(ruleKey){
+ if(!ruleKey)return true;
+ const row=api.notificationPreferences?.[ruleKey];
+ return row?row.effective_enabled!==false:true
+}
+function notificationKindEnabled(kind){return notificationPreferenceEnabled(notificationRuleKey(kind))}
+async function loadNotifications(){
+ if(!api.client||!api.session)return;
+ if(!api.notificationPreferences)await loadNotificationPreferences();
+ const {data,error}=await api.client.from('planning_notifications').select('id,kind,title,message,planning_date,week_start,target_url,read_at,created_at').eq('user_id',api.session.user.id).order('created_at',{ascending:false}).limit(80);
+ if(error){console.warn('Notifications:',error);return}
+ api.notifications=(data||[]).filter(n=>notificationKindEnabled(n.kind));
+ renderNotifications();
+ window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:api.notifications,unread:api.notifications.filter(n=>!n.read_at).length}}))
+}
 async function markRead(id){const n=api.notifications.find(x=>x.id===id);if(!n||n.read_at)return;const now=new Date().toISOString(),{error}=await api.client.from('planning_notifications').update({read_at:now}).eq('id',id).eq('user_id',api.session.user.id);if(!error){n.read_at=now;renderNotifications()}}
 async function markAllRead(){if(!api.notifications.some(n=>!n.read_at))return;const {error}=await api.client.from('planning_notifications').update({read_at:new Date().toISOString()}).eq('user_id',api.session.user.id).is('read_at',null);if(!error)loadNotifications()}
 async function deleteNotification(id){const {error}=await api.client.from('planning_notifications').delete().eq('id',id).eq('user_id',api.session.user.id);if(!error){sounds.play('delete');api.notifications=api.notifications.filter(n=>n.id!==id);renderNotifications();window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:api.notifications,unread:api.notifications.filter(n=>!n.read_at).length}}))}}
 async function deleteAllNotifications(){if(!api.notifications.length)return;if(!confirm('Supprimer toutes tes notifications ?'))return;const ids=api.notifications.map(n=>n.id);const {error}=await api.client.from('planning_notifications').delete().eq('user_id',api.session.user.id).in('id',ids);if(!error){sounds.play('delete');api.notifications=[];renderNotifications();window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:[],unread:0}}))}}
-function startNotificationsRealtime(){if(!api.session||api.notifChannel)return;api.notifChannel=api.client.channel('planning-notifications-'+api.session.user.id).on('postgres_changes',{event:'*',schema:'public',table:'planning_notifications',filter:'user_id=eq.'+api.session.user.id},()=>{sounds.play('notification');loadNotifications()}).subscribe()}
+function startNotificationsRealtime(){if(!api.session||api.notifChannel)return;api.notifChannel=api.client.channel('planning-notifications-'+api.session.user.id).on('postgres_changes',{event:'*',schema:'public',table:'planning_notifications',filter:'user_id=eq.'+api.session.user.id},payload=>{if(payload?.eventType==='INSERT'&&notificationKindEnabled(payload?.new?.kind))sounds.play('notification');loadNotifications()}).subscribe()}
 function syncPresence(){if(!api.channel)return;const state=api.channel.presenceState(),ids=new Set();Object.values(state).flat().forEach(x=>{if(x?.user_id)ids.add(x.user_id)});api.onlineIds=ids;window.dispatchEvent(new CustomEvent('netto:presence',{detail:{ids:[...ids],count:ids.size}}))}
 function startPresence(){if(!api.session||api.channel)return;api.channel=api.client.channel('team-presence',{config:{presence:{key:api.session.user.id}}}).on('presence',{event:'sync'},syncPresence).on('presence',{event:'join'},syncPresence).on('presence',{event:'leave'},syncPresence).subscribe(async status=>{if(status==='SUBSCRIBED'){const p=api.profile||{};await api.channel.track({user_id:api.session.user.id,display_name:p.display_name||'Utilisateur',page:location.pathname,online_at:new Date().toISOString()});syncPresence()}})}
 async function recordChatPresence(event='heartbeat'){
@@ -1663,7 +1717,7 @@ async function rememberSiteBase(){
   await api.client.from('app_settings').upsert({key:'site_base_url',value:{url:base},updated_at:new Date().toISOString(),updated_by:api.session.user.id},{onConflict:'key'});
  }catch(e){console.warn('Enregistrement URL portail:',e)}
 }
-function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes'};return map[p]||document.title||'Portail'}
+function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','notification-settings.html':'Réglages des notifications'};return map[p]||document.title||'Portail'}
 async function logPageView(){if(!api.client||!api.session)return;try{await api.client.rpc('audit_page_view',{p_area:pageArea(),p_path:(location.pathname||'')+(location.search||''),p_title:document.title||pageArea()})}catch(e){console.warn('Journal consultation:',e)}}
 function globalCacheKey(){return api.session?.user?.id?'nettoGlobalUI:'+api.session.user.id:null}
 function hydrateGlobalCache(){
@@ -1792,8 +1846,9 @@ async function activateWaitingUpdate(info){
  worker.postMessage({type:'SKIP_WAITING'});
  return true
 }
-async function showUpdateAvailable(reg,forcedVersion=0){
+async function showUpdateAvailable(reg,forcedVersion=0,force=false){
  updateRegistration=reg||updateRegistration;
+ if(!force&&api.session&&!notificationPreferenceEnabled('app_update'))return;
  const info=await releaseInfo(),waitingVersion=await workerVersion(updateRegistration?.waiting);
  const version=Math.max(Number(info.version)||APP_RELEASE,Number(forcedVersion)||0,waitingVersion||0);
  info.version=version;
@@ -1860,7 +1915,7 @@ function startAccessibleNameObserver(){
  observer.observe(document.body,{childList:true,subtree:true});
  window.__nettoA11yObserver=observer;
 }
-async function init(){addStyle();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();setupAppUpdates();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session)return;api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cached=hydrateGlobalCache(),fresh=refresh();if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotifications()};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
+async function init(){addStyle();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cached=hydrateGlobalCache(),fresh=refresh();if(!cached)await fresh;else fresh.catch(()=>{});await loadNotificationPreferences();setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
 const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
