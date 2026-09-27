@@ -1,9 +1,9 @@
 {
-  "version": 77,
-  "label": "v0.77",
+  "version": 78,
+  "label": "v0.78",
   "important": true,
   "title": "Réorganisation des widgets du planning",
-  "message": "Couverture magasin est désormais placé sous Historique du planning et juste au-dessus de Détection d’anomalies.",
-  "published_at": "2026-09-27T12:23:00+02:00",
+  "message": "Indisponibilités / Congés est désormais placé sous Historique du planning, avant Couverture magasin et Détection d’anomalies.",
+  "published_at": "2026-09-27T12:26:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
