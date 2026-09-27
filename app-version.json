@@ -3,8 +3,8 @@
   "label": "v1.22",
   "important": false,
   "mode": "manual",
-  "title": "Notifications mobile : actions alignées",
-  "message": "Le bouton d’options des notifications reste désormais parfaitement aligné à droite et ne peut plus passer à la ligne.",
+  "title": "Chat mobile : stabilité du clavier",
+  "message": "Les anciens styles mobiles conflictuels du chat ont été supprimés. L’en-tête Chat et la barre du contact restent fixes pendant toute l’animation du clavier, tandis que seule la zone des messages se redimensionne.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
