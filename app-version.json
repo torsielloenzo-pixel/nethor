@@ -1,9 +1,9 @@
 {
-  "version": 74,
-  "label": "v0.74",
+  "version": 75,
+  "label": "v0.75",
   "important": true,
-  "title": "Planning réorganisé",
-  "message": "Détection d’anomalies passe en bandeau horizontal sous la légende du planning, et Couverture magasin gagne en largeur.",
-  "published_at": "2026-09-27T12:22:00+02:00",
+  "title": "Actions du planning repositionnées",
+  "message": "Importer Excel et Modifier le planning sont maintenant placés côte à côte juste au-dessus du tableau sur mobile et sur la version web.",
+  "published_at": "2026-09-27T12:16:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
