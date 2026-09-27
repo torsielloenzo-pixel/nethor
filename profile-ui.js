@@ -310,6 +310,7 @@ const SOUND_DEFS={
  switch:[[390,0,.08,.12,'triangle',650]],
  confirm:[[523.25,0,.13,.14,'sine'],[659.25,.075,.19,.13,'sine']],
  success:[[392,0,.20,.12,'sine'],[493.88,.085,.25,.14,'sine'],[659.25,.19,.34,.13,'sine']],
+ update:[[392,0,.20,.12,'sine'],[493.88,.085,.25,.14,'sine'],[659.25,.19,.34,.13,'sine']],
  loginSuccess:[[329.63,0,.29,.11,'sine'],[415.3,.085,.33,.13,'sine'],[493.88,.18,.39,.14,'sine'],[659.25,.30,.50,.11,'sine']],
  error:[[245,0,.11,.105,'square',218],[196,.115,.18,.095,'square',174]],
  warning:[[392,0,.10,.11,'triangle'],[392,.15,.12,.10,'triangle']],
@@ -322,7 +323,7 @@ let soundCtx=null;
 function soundEnabled(){try{return localStorage.getItem('nettoSoundEnabled')!=='0'}catch(_){return true}}
 function soundVolume(){try{const raw=localStorage.getItem('nettoSoundVolume');if(raw===null)return .72;const v=Number(raw);return Number.isFinite(v)&&v>=0&&v<=1?v:.72}catch(_){return .72}}
 function unlockSound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;soundCtx=soundCtx||new A();if(soundCtx.state==='suspended')soundCtx.resume().catch(()=>{});return soundCtx}catch(_){return null}}
-function playSound(name='tap'){if(!soundEnabled())return;const def=SOUND_DEFS[name]||SOUND_DEFS.tap,a=unlockSound();if(!a)return;const run=()=>{try{const now=a.currentTime,master=a.createGain(),filter=a.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(name==='error'?1350:name==='logout'?1750:2400,now);master.gain.setValueAtTime(Math.max(.0001,soundVolume()*.46),now);master.gain.exponentialRampToValueAtTime(.0001,now+Math.max(...def.map(t=>(t[1]||0)+(t[2]||.1)))+.08);filter.connect(master);master.connect(a.destination);def.forEach(t=>{const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,o=a.createOscillator(),g=a.createGain(),st=now+delay;o.type=type;o.frequency.setValueAtTime(freq,st);if(endFreq&&endFreq>0)o.frequency.exponentialRampToValueAtTime(endFreq,st+dur);g.gain.setValueAtTime(.0001,st);g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),st+Math.min(.035,dur*.3));g.gain.exponentialRampToValueAtTime(.0001,st+dur);o.connect(g);g.connect(filter);o.start(st);o.stop(st+dur+.025)})}catch(_){}};if(a.state==='suspended')a.resume().then(run).catch(()=>{});else run()}
+function playSound(name='tap'){if(!soundEnabled())return;if(!['loginSuccess','logout','update'].includes(name))return;const def=SOUND_DEFS[name],a=unlockSound();if(!a)return;const run=()=>{try{const now=a.currentTime,master=a.createGain(),filter=a.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(name==='error'?1350:name==='logout'?1750:2400,now);master.gain.setValueAtTime(Math.max(.0001,soundVolume()*.46),now);master.gain.exponentialRampToValueAtTime(.0001,now+Math.max(...def.map(t=>(t[1]||0)+(t[2]||.1)))+.08);filter.connect(master);master.connect(a.destination);def.forEach(t=>{const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,o=a.createOscillator(),g=a.createGain(),st=now+delay;o.type=type;o.frequency.setValueAtTime(freq,st);if(endFreq&&endFreq>0)o.frequency.exponentialRampToValueAtTime(endFreq,st+dur);g.gain.setValueAtTime(.0001,st);g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),st+Math.min(.035,dur*.3));g.gain.exponentialRampToValueAtTime(.0001,st+dur);o.connect(g);g.connect(filter);o.start(st);o.stop(st+dur+.025)})}catch(_){}};if(a.state==='suspended')a.resume().then(run).catch(()=>{});else run()}
 const sounds={play:playSound,unlock:unlockSound,names:Object.freeze(Object.keys(SOUND_DEFS)),isEnabled:soundEnabled,getVolume:soundVolume,setEnabled(v){try{localStorage.setItem('nettoSoundEnabled',v?'1':'0')}catch(_){};window.dispatchEvent(new Event('netto:sound-settings'))},setVolume(v){const n=Math.max(0,Math.min(1,Number(v)||0));try{localStorage.setItem('nettoSoundVolume',String(n))}catch(_){};window.dispatchEvent(new Event('netto:sound-settings'))}};
 window.NettoSounds=sounds;
 document.addEventListener('pointerdown',()=>sounds.unlock(),{once:true,capture:true});
@@ -1179,7 +1180,7 @@ async function manualCheckForUpdates(){
   // On répond immédiatement, puis on laisse le navigateur vérifier le SW en arrière-plan.
   if(!reg.waiting&&stored>=manifestVersion){
    mobilePreviewNotice('Nethor est à jour - '+displayVersion(stored));
-   sounds.play('success');
+   sounds.play('update');
    reg.update().catch(()=>{});
    return
   }
@@ -1203,7 +1204,7 @@ async function manualCheckForUpdates(){
   if(current>=manifestVersion){
    try{localStorage.setItem('nettoAppVersion',String(current))}catch(_){}
    mobilePreviewNotice('Nethor est à jour - '+displayVersion(current));
-   sounds.play('success');
+   sounds.play('update');
    reg.update().catch(()=>{});
    return
   }
@@ -1722,7 +1723,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=134;
+const APP_RELEASE=131;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -1786,7 +1787,7 @@ function showUpdateSuccess(message='Nethor a bien été mis à jour'){
  setUpdateProgress(100,'Mise à jour terminée');
  toast?.classList.remove('updating');toast?.classList.add('updated');
  if(done){done.textContent=message;done.classList.remove('hidden')}
- sounds.play('success')
+ sounds.play('update')
 }
 function startUpdateProgress(){
  let i=0,stopped=false;
