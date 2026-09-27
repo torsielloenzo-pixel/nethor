@@ -839,7 +839,6 @@ function addStyle(){
    :root[data-theme="dark"] .nettoMobileQuickItem{color:#9ca2aa}
    :root[data-theme="dark"] .nettoMobileQuickItem.active{color:#ff936d}
    :root[data-theme="dark"] .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:#3b2923}
-   body.nettoHasMobileBar .chatApp{height:calc(100dvh - 56px - var(--netto-mobile-bar-h) - env(safe-area-inset-bottom))!important}
    body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 12px)!important}
  }
 
