@@ -1,9 +1,9 @@
 {
-  "version": 112,
-  "label": "v1.12",
+  "version": 113,
+  "label": "v1.13",
   "important": true,
-  "title": "Nouvelle version de Nethor",
-  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
-  "published_at": "2026-09-27T20:22:00+02:00",
+  "title": "Notifications intégrées à la navigation mobile",
+  "message": "Sur mobile, l’icône Notifications quitte la barre haute et rejoint la barre de navigation entre Chat et Mon profil. Une nouvelle page Notifications inspirée des applications sociales affiche les nouveautés, la recherche et les actions de lecture ou suppression.",
+  "published_at": "2026-09-27T20:27:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
