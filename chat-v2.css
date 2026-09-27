@@ -313,7 +313,7 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
   .conversationListPane,.conversationPane{
     background:#fff!important;border:0!important;border-radius:0!important;box-shadow:none!important
   }
-  .conversationListPane{grid-template-rows:auto auto minmax(0,1fr)!important}
+  .conversationListPane{grid-template-rows:auto auto auto minmax(0,1fr)!important}
   .listHead{padding:12px 12px 8px!important}
   .listHead h1{font-size:24px!important;letter-spacing:-.7px!important}
   .listHead small{font-size:9px!important}
@@ -328,6 +328,16 @@ html[data-theme="dark"] .voiceMessage{background:#25292e;border-color:#3a4047}ht
   .convSearch{
     height:40px!important;border:0!important;border-radius:999px!important;
     background:#f0f2f5!important;padding:0 15px!important;font-size:16px!important;box-shadow:none!important
+  }
+  .conversationFilters{
+    display:flex!important;align-items:center!important;align-self:start!important;
+    min-height:0!important;height:auto!important;max-height:42px!important;
+    padding:0 12px 8px!important;gap:6px!important;overflow-x:auto!important;overflow-y:hidden!important
+  }
+  .conversationFilter{
+    flex:0 0 auto!important;width:auto!important;height:30px!important;min-height:30px!important;max-height:30px!important;
+    padding:0 11px!important;border-radius:999px!important;display:inline-flex!important;
+    align-items:center!important;justify-content:center!important;line-height:1!important
   }
   .conversationList{padding:2px 6px 10px!important;background:#fff!important}
   .convRow{
