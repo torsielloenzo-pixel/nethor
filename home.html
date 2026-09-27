@@ -574,10 +574,128 @@ main{position:relative;z-index:1}
   :root[data-theme="dark"] #homePages .adminViewStat{background:#292d31e8!important;border-color:#3b4147!important}
 }
 </style>
+
+<style id="mobile-home-dashboard-v137">
+.mobileHomeDashboard{display:none}
+@media(max-width:700px){
+  body{background:#eef1f4!important}
+  main{
+    width:100%!important;max-width:100%!important;
+    padding:calc(env(safe-area-inset-top) + 8px) 9px calc(82px + env(safe-area-inset-bottom))!important;
+  }
+  main>.hello,main>#homePages,main>#status{display:none!important}
+  .mobileHomeDashboard{display:block;width:100%;max-width:100%;min-width:0}
+  .mhdStack{display:grid;gap:10px}
+  .mhdHero{
+    position:relative;overflow:hidden;border-radius:21px;padding:17px 16px 18px;
+    color:#fff;background:
+      radial-gradient(circle at 94% 86%,#ff5a2a66 0 17%,transparent 18%),
+      radial-gradient(circle at 82% 110%,#ff321f88 0 26%,transparent 27%),
+      linear-gradient(135deg,#1c2025 0%,#252a30 62%,#4c3127 100%);
+    box-shadow:0 9px 25px #11182718
+  }
+  .mhdHeroTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+  .mhdPill{
+    display:inline-flex;align-items:center;gap:6px;min-height:27px;padding:0 10px;border-radius:999px;
+    border:1px solid #ffffff18;background:#ffffff0d;color:#f7ddd4;font-size:8px;font-weight:900;letter-spacing:.45px
+  }
+  .mhdPill i{width:8px;height:8px;border-radius:50%;background:#ff5b2a;box-shadow:0 0 0 4px #ff5b2a1f}
+  .mhdDatePill{color:#f2f4f7;letter-spacing:0;font-size:8px}
+  .mhdHero h1{margin:0;font-size:25px;line-height:1.04;letter-spacing:-.75px;color:#fff!important}
+  .mhdHero p{margin:7px 0 0;color:#c6cad0;font-size:11px;line-height:1.4}
+  .mhdCard{
+    background:#fff;border:1px solid #dde2e7;border-radius:18px;
+    box-shadow:0 7px 22px #1822300a;overflow:hidden;color:#1d252e
+  }
+  .mhdNext{padding:13px 14px}
+  .mhdNextHead,.mhdSectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .mhdTitleWithIcon{display:flex;align-items:center;gap:10px;min-width:0}
+  .mhdIcon{
+    width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;
+    color:#ff4e28;background:linear-gradient(135deg,#fff0e9,#fff7ef)
+  }
+  .mhdIcon svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .mhdNextHead strong,.mhdSectionHead strong{font-size:13px;line-height:1.2}
+  .mhdWhen{
+    flex:none;padding:6px 10px;border-radius:999px;background:#fff0e7;color:#ef4b27;
+    font-size:8px;font-weight:900
+  }
+  .mhdShiftLine{margin:10px 0 0 46px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mhdShiftLine b{font-size:20px;letter-spacing:-.45px}
+  .mhdChevron{color:#8a929c;font-size:22px;line-height:1}
+  .mhdShiftMeta{margin:8px 0 0 46px;display:flex;gap:7px;flex-wrap:wrap}
+  .mhdTag{display:inline-flex;align-items:center;min-height:25px;padding:0 9px;border-radius:999px;font-size:8px;font-weight:850}
+  .mhdTag.green{background:#eaf8ef;color:#21884c}.mhdTag.amber{background:#fff3dc;color:#a46812}.mhdTag.orange{background:#fff0e8;color:#d94c28}
+  .mhdStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px}
+  .mhdStat{
+    min-width:0;padding:12px;border:1px solid #dde2e7;border-radius:17px;background:#fff;
+    box-shadow:0 6px 18px #18223008
+  }
+  .mhdStatHead{display:flex;align-items:center;gap:7px;color:#47515d;font-size:9px;font-weight:800}
+  .mhdStatHead .mhdMiniIcon{width:26px;height:26px;border-radius:9px;background:#fff2e9;color:#f15b2e;display:grid;place-items:center;font-size:13px;flex:none}
+  .mhdStat strong{display:block;margin-top:8px;font-size:17px;line-height:1.05;letter-spacing:-.25px}
+  .mhdStat small{display:block;margin-top:3px;color:#8a919a;font-size:7.8px;line-height:1.25}
+  .mhdProgress{height:6px;margin-top:8px;border-radius:999px;background:#e8ebef;overflow:hidden}.mhdProgress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff3f24,#ff7f23)}
+  .mhdSection{padding:12px 13px}
+  .mhdSectionHead{margin-bottom:8px}
+  .mhdSectionLink{border:0;background:transparent;color:#f04c25;font-size:8px;font-weight:900;padding:4px 0}
+  .mhdRows{display:grid}
+  .mhdRow{
+    width:100%;min-width:0;border:0;border-top:1px solid #edf0f2;background:transparent;
+    display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:9px 2px;text-align:left;color:inherit
+  }
+  .mhdRow:first-child{border-top:0}
+  .mhdRowIcon{width:31px;height:31px;border-radius:10px;background:#fff0e9;color:#f3522b;display:grid;place-items:center;font-size:14px}
+  .mhdRowCopy{min-width:0}.mhdRowCopy strong{display:block;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdRowCopy small{display:block;margin-top:2px;color:#8b9198;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdRow time{font-size:7.5px;color:#8c939b;white-space:nowrap}
+  .mhdTaskRow{grid-template-columns:auto minmax(0,1fr) auto}
+  .mhdTaskCheck{
+    width:23px;height:23px;border:1.5px solid #aeb7c0;border-radius:7px;background:#fff;display:grid;place-items:center;color:#fff;font-size:13px
+  }
+  .mhdTaskRow.done .mhdTaskCheck{background:#ff5a2b;border-color:#ff5a2b}.mhdTaskRow.done .mhdTaskCheck:after{content:"✓"}.mhdTaskRow.done .mhdRowCopy strong{text-decoration:line-through;color:#8c939b}
+  .mhdTaskBadge{padding:5px 8px;border-radius:999px;background:#fff3d9;color:#9a6916;font-size:7px;font-weight:900}
+  .mhdInfoRow{margin-top:7px;padding:10px;border:1px solid #ffd8ce;border-radius:13px;background:linear-gradient(90deg,#fff3f1,#fff9f4);display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center}
+  .mhdInfoRow.orange{border-color:#ffe2c9;background:linear-gradient(90deg,#fff6ec,#fffaf5)}
+  .mhdInfoIcon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff3024,#ff7c24);color:#fff;display:grid;place-items:center;font-size:15px}
+  .mhdInfoCopy{min-width:0}.mhdInfoCopy strong{display:block;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdInfoCopy small{display:block;margin-top:2px;color:#777f88;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdTeam{display:flex;align-items:flex-start;gap:13px;overflow:hidden;padding-top:2px}
+  .mhdPerson{width:67px;text-align:center;flex:none;position:relative}
+  .mhdAvatar{width:42px;height:42px;border-radius:50%;margin:0 auto 5px;background:linear-gradient(135deg,#ff4c28,#ff8323);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900;background-size:cover;background-position:center}
+  .mhdOnline{position:absolute;width:10px;height:10px;border-radius:50%;background:#23b45a;border:2px solid #fff;left:43px;top:32px}
+  .mhdPerson strong{display:block;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdPerson small{display:block;font-size:7px;color:#858c94;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdMorePeople{width:42px;height:42px;border-radius:50%;background:#eef3f8;color:#536274;display:grid;place-items:center;font-size:10px;font-weight:900;flex:none}
+  .mhdQuickGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+  .mhdQuick{
+    min-width:0;min-height:94px;border:1px solid #e0e4e8;border-radius:14px;background:#fff;padding:9px 7px;
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;text-align:left;color:inherit
+  }
+  .mhdQuickIcon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff3c24,#ff8323);color:#fff;display:grid;place-items:center}
+  .mhdQuickIcon svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .mhdQuick strong{font-size:8.5px;line-height:1.15;overflow-wrap:anywhere}
+  .mhdEmpty{padding:10px 2px;color:#8a9199;font-size:9px;line-height:1.4}
+}
+@media(max-width:380px){
+  .mhdHero h1{font-size:22px}.mhdHero{padding:15px 13px}.mhdPill{padding:0 8px}
+  .mhdStats{gap:6px}.mhdStat{padding:10px}.mhdStat strong{font-size:15px}
+  .mhdQuickGrid{gap:5px}.mhdQuick{min-height:88px;padding:7px 6px}.mhdQuick strong{font-size:8px}
+}
+@media(max-width:700px){
+  :root[data-theme="dark"] body{background:#141619!important}
+  :root[data-theme="dark"] .mhdCard,:root[data-theme="dark"] .mhdStat,:root[data-theme="dark"] .mhdQuick{background:#1d2024!important;border-color:#343940!important;color:#f1eeea!important}
+  :root[data-theme="dark"] .mhdRow{border-color:#30353b!important}
+  :root[data-theme="dark"] .mhdRowCopy small,:root[data-theme="dark"] .mhdStat small,:root[data-theme="dark"] .mhdPerson small{color:#aaa49e!important}
+  :root[data-theme="dark"] .mhdTaskCheck{background:#24282d;border-color:#636a73}
+  :root[data-theme="dark"] .mhdInfoRow{background:#2a211f;border-color:#50322c}
+  :root[data-theme="dark"] .mhdInfoRow.orange{background:#2c251e;border-color:#51402f}
+  :root[data-theme="dark"] .mhdQuick{background:#202328!important}
+  :root[data-theme="dark"] .mhdOnline{border-color:#1d2024}
+}
+</style>
 </head>
 <body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
 <header><div class="top"><div class="brand"><div class="nMenuWrap"><button class="mark nMenuBtn" onclick="location.href='home.html'" aria-label="Menu">N</button><div id="nMenu" class="nMenu hidden"><div class="nMenuTitle">Navigation</div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="location.href='index.html'"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="location.href='planning.html'"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="location.href='chat.html'"><span class="navToolLogo equipe"></span><div><strong>Chat</strong><small>Messagerie interne</small></div></button><button onclick="location.href='articles.html'"><span class="navToolLogo article"></span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='bakery.html'"><span class="navToolLogo bakery"></span><div><strong>Boulangerie</strong><small>Stock • Consulter • Gestion</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='accounts.html'"><span>♙</span><div><strong>Comptes</strong><small>Utilisateurs et rôles</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="logoutItem" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><strong>Nethor</strong><small>Portail opérationnel</small></div></div><div class="userMenuWrap"><button id="userMenuBtn" class="userPill" onclick="toggleUserMenu(event)" aria-expanded="false"><span id="userAvatar" class="userAvatar">U</span><span class="userText"><strong id="userName">Utilisateur</strong><small id="userRole">Compte</small></span><span class="userChevron">⌄</span></button><div id="userMenu" class="userMenu hidden"><div class="userMenuHead"><span id="userMenuAvatar" class="userAvatar">U</span><div><strong id="userMenuName">Utilisateur</strong><small id="userMenuRole">Compte</small></div></div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Retour au portail</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="userThemeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="userLogout" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div></div></header>
 <main>
+ <section id="mobileHomeDashboard" class="mobileHomeDashboard" aria-live="polite"></section>
  <div class="hello"><div class="eyebrow">PORTAIL OPÉRATIONNEL INTERNE</div><h1 id="helloTitle">Bonjour 👋</h1><p id="homeTodayMessage" class="homeTodayMessage">Chargement de ton planning d’aujourd’hui…</p><div class="helloMeta"><span>Accès authentifié</span><span>Outils magasin</span><span>Mobile &amp; bureau</span></div></div>
  <div id="homePages" class="pages"></div>
  <div id="status" class="status">Vérification de la session…</div>
@@ -626,7 +744,147 @@ async function loadHomeTodayPlanning(profile,name){
  const schedule=ranges.map(x=>homeFriendlyHour(x.a)+' à '+homeFriendlyHour(x.b)).join(' • ');
  el.innerHTML='Ton planning d’aujourd’hui : <strong>'+schedule+'</strong>. Bonne journée !'
 }
-async function boot(){const {data:{session}}=await db.auth.getSession();if(!session){location.replace('index.html');return}homeSession=session;const {data:p}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',session.user.id).maybeSingle();window.currentRole=p?.role;document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',window.currentRole!=='admin'));const name=p?.display_name||p?.email?.split('@')[0]||'';const roleNames={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'},role=window.NettoProfileUI?.roleLabel?.(p?.role)||roleNames[p?.role]||p?.role||'Compte';document.getElementById('helloTitle').textContent=name?'Bonjour '+name+' 👋':'Bonjour 👋';let avatarUrl=null;if(p?.avatar_path){const {data:av}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);avatarUrl=av?.signedUrl||null}['userAvatar','userMenuAvatar'].forEach(id=>{const e=document.getElementById(id);if(!e)return;if(window.NettoProfileUI?.paintAvatar)window.NettoProfileUI.paintAvatar(e,avatarUrl,name,p?.profile_color,p?.avatar_frame);else{e.style.background=p?.profile_color||'#ff5a2a';e.textContent=(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('');if(avatarUrl){e.classList.add('hasPhoto');e.style.backgroundImage='url("'+avatarUrl.replace(/"/g,'%22')+'")';e.textContent=''}}});['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name||'Utilisateur'});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});const sharedConfig=await loadSharedSiteConfig();window.NettoProfileUI?.rebuildModules?.(sharedConfig||{});renderHomeCards(p,sharedConfig);if(p?.role==='admin')await loadAdminPageViews();await loadHomeTodayPlanning(p,name);document.getElementById('status').textContent='Session active'}
+
+function mobileHomeMode(){try{return window.matchMedia('(max-width:700px)').matches}catch(_){return window.innerWidth<=700}}
+function homeAddDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function homeParseDate(s){const [y,m,d]=String(s||'').split('-').map(Number);return new Date(y||2000,(m||1)-1,d||1)}
+function homeDateLabel(dateKey,todayKey){
+ if(dateKey===todayKey)return'Aujourd’hui';
+ const tomorrow=homeIsoDate(homeAddDays(homeParseDate(todayKey),1));if(dateKey===tomorrow)return'Demain';
+ return homeParseDate(dateKey).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')
+}
+function homeClock(v){const h=Math.floor(v),m=Math.round((v-h)*60);return String(h).padStart(2,'0')+'h'+(m?String(m).padStart(2,'0'):'00')}
+function homeEmployeeIndex(model,name){
+ const target=homeNorm(name),employees=model?.employees||[];
+ return employees.findIndex(e=>{const n=homeNorm(e?.name),base=n.replace(/\s+[a-z]$/,'');return n===target||base===target})
+}
+function homeDayHours(model,dateKey,name){
+ const idx=homeEmployeeIndex(model,name);if(idx<0)return{hours:0,ranges:[],idx:-1};
+ const row=model?.days?.[dateKey]?.cells?.[idx]||[],ranges=homeWorkRanges(row,model||{});
+ return{hours:row.reduce((n,v)=>n+(v==='g'||v==='b'?0.25:0),0),ranges,idx}
+}
+function homeWidgetVisible(cfg,id,profile,subroleKeys=[]){
+ const node=cfg?.home_widgets?.[id]||{},role=profile?.role||'';
+ const roleValue=node?.roles?.[role];
+ const base=typeof roleValue==='boolean'?roleValue:true;
+ if(base)return true;
+ return subroleKeys.some(k=>node?.subroles?.[k]===true)
+}
+function homeDashboardIcon(id){
+ const nav=window.NettoProfileUI?.mobileNavIcon;
+ const map={next_shift:'planning',hours:'planning',absences:'planning',next_rest:'planning',tasks:'articles',important_info:'notifications',team_today:'accounts',quick_access:'home'};
+ return typeof nav==='function'?nav(map[id]||id):''
+}
+function homeTaskStoreKey(uid,dateKey){return'nettoHomeTasks:'+uid+':'+dateKey}
+function homeTaskState(uid,dateKey){try{return new Set(JSON.parse(localStorage.getItem(homeTaskStoreKey(uid,dateKey))||'[]'))}catch(_){return new Set()}}
+function toggleMobileHomeTask(id,row){
+ const dateKey=homeIsoDate(new Date()),uid=homeSession?.user?.id;if(!uid)return;
+ const set=homeTaskState(uid,dateKey);if(set.has(id))set.delete(id);else set.add(id);
+ try{localStorage.setItem(homeTaskStoreKey(uid,dateKey),JSON.stringify([...set]))}catch(_){}
+ row?.classList.toggle('done',set.has(id))
+}
+function homeNotifIcon(kind){return kind==='manual_edit'||kind==='import_new'||kind==='import_replace'?'▦':kind==='admin_message'?'!':kind==='maintenance'?'⚒':kind==='app_update'?'↑':'•'}
+function homeSince(d){
+ if(!d)return'';const ms=Date.now()-new Date(d).getTime(),m=Math.max(0,Math.floor(ms/60000));
+ if(m<1)return'à l’instant';if(m<60)return'il y a '+m+' min';const h=Math.floor(m/60);if(h<24)return'il y a '+h+' h';return'il y a '+Math.floor(h/24)+' j'
+}
+function homeAllowedModules(profile,cfg){
+ const nav=window.NettoProfileUI,mods=(nav?.modules||[]).filter(m=>!['home','profile','settings','accounts','portal_admin'].includes(m.id));
+ return mods.filter(m=>nav?.canAccess?nav.canAccess(m,profile,cfg):true)
+   .sort((a,b)=>Number(cfg?.pages?.[a.id]?.order||a.order||99)-Number(cfg?.pages?.[b.id]?.order||b.order||99))
+}
+function homeSuggestedTasks(profile,cfg){
+ const allowed=new Set(homeAllowedModules(profile,cfg).map(m=>m.id)),out=[];
+ if(allowed.has('planning'))out.push({id:'planning',title:'Consulter mon planning',tag:'Planning'});
+ if(allowed.has('stock'))out.push({id:'stock',title:'Vérifier le stock Fruits & Légumes',tag:'Stock'});
+ if(allowed.has('chat'))out.push({id:'chat',title:'Consulter les messages d’équipe',tag:'Équipe'});
+ if(allowed.has('articles'))out.push({id:'articles',title:'Consulter les fiches articles utiles',tag:'Journée'});
+ if(!out.length)out.push({id:'notifications',title:'Vérifier mes informations Nethor',tag:'Journée'});
+ return out.slice(0,4)
+}
+async function renderMobileHomeDashboard(profile,name,cfg){
+ const host=$('mobileHomeDashboard');if(!host||!mobileHomeMode())return;
+ host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
+ const today=new Date(),todayKey=homeIsoDate(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),21));
+ const [subRes,weeksRes,absenceRes,notifRes,profilesRes]=await Promise.all([
+  db.rpc('my_subrole_keys').catch?.(()=>({data:[]}))||Promise.resolve({data:[]}),
+  db.from('planning_weeks').select('week_start,data').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
+  db.from('planning_absences').select('type,start_date,end_date,status').eq('user_id',homeSession.user.id).gte('end_date',todayKey).order('start_date').limit(6),
+  db.from('planning_notifications').select('id,kind,title,message,target_url,created_at,read_at').eq('user_id',homeSession.user.id).order('created_at',{ascending:false}).limit(6),
+  db.from('profiles').select('id,display_name,avatar_path,profile_color,avatar_frame').limit(120)
+ ]);
+ const subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean),weeks=(weeksRes.data||[]).map(x=>x.data).filter(Boolean);
+ const widget=id=>homeWidgetVisible(cfg,id,profile,subroleKeys);
+ const currentWeek=weeks.find(w=>String(w.weekStart||w.week_start||'')===weekStart)||weeks[0]||null;
+ const allDays=[];
+ for(const model of weeks)for(const dateKey of Object.keys(model?.days||{}))if(dateKey>=todayKey)allDays.push({dateKey,model});
+ allDays.sort((a,b)=>a.dateKey.localeCompare(b.dateKey));
+ let nextShift=null;
+ for(const x of allDays){const d=homeDayHours(x.model,x.dateKey,name);if(d.hours>0){nextShift={...x,...d};break}}
+ const currentHours=currentWeek?Object.keys(currentWeek.days||{}).reduce((sum,dateKey)=>sum+homeDayHours(currentWeek,dateKey,name).hours,0):0;
+ let nextRest=null;
+ for(const x of allDays.filter(x=>x.dateKey>todayKey)){if(homeEmployeeIndex(x.model,name)>=0&&homeDayHours(x.model,x.dateKey,name).hours===0){nextRest=x.dateKey;break}}
+ const absences=absenceRes.error?[]:(absenceRes.data||[]),nextAbs=absences.find(a=>a.status==='approved')||absences.find(a=>a.status==='pending')||null;
+ const notifications=notifRes.error?[]:(notifRes.data||[]);
+ const profileRows=profilesRes.error?[]:(profilesRes.data||[]);
+ const todayModel=weeks.find(w=>w?.days?.[todayKey])||currentWeek;
+ const todayTeam=[];
+ const workingNames=[];
+ if(todayModel?.days?.[todayKey]){
+  (todayModel.employees||[]).forEach((e,i)=>{const row=todayModel.days[todayKey].cells?.[i]||[];if(row.some(v=>v==='g'||v==='b'))workingNames.push(e.name)})
+ }
+ for(const n of workingNames){
+  const p=profileRows.find(x=>homeNorm(x.display_name)===homeNorm(n));todayTeam.push({name:n,profile:p||null})
+ }
+ const roleLabel=window.NettoProfileUI?.roleLabel?.(profile.role)||profile.role||'Compte';
+ const dateLabel=today.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace('.','');
+ const sections=[];
+ if(widget('welcome'))sections.push('<section class="mhdHero"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+homeEsc(dateLabel)+'</span></div><h1>Bonjour '+homeEsc(name||roleLabel)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
+ if(widget('next_shift')){
+  const range=nextShift?.ranges?.[0],shiftText=range?homeClock(range.a)+' - '+homeClock(range.b):'Aucun service à venir',when=nextShift?homeDateLabel(nextShift.dateKey,todayKey):'—',target=nextShift?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextShift.dateKey))))+'&day='+encodeURIComponent(nextShift.dateKey):'planning.html';
+  sections.push('<button class="mhdCard mhdNext" type="button" onclick="location.href=\''+homeEsc(target)+'\'"><div class="mhdNextHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('next_shift')+'</span><strong>Prochain service</strong></div><span class="mhdWhen">'+homeEsc(when)+'</span></div><div class="mhdShiftLine"><b>'+homeEsc(shiftText)+'</b><span class="mhdChevron">›</span></div><div class="mhdShiftMeta"><span class="mhdTag green">Planning personnel</span>'+(nextShift?.hours?'<span class="mhdTag amber">'+homeEsc(String(nextShift.hours).replace('.',','))+' h</span>':'')+'</div></button>')
+ }
+ const stats=[];
+ if(widget('hours'))stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">◷</span>Mes heures</div><strong>'+homeEsc(String(currentHours).replace('.',','))+' h</strong><small>planifiées cette semaine</small><div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div></button>');
+ if(widget('absences')){
+  const absenceValue=nextAbs?(nextAbs.status==='pending'?'En attente':homeParseDate(nextAbs.start_date).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})):'Aucun',absenceSub=nextAbs?(nextAbs.status==='pending'?'demande en cours':'prochaine absence'):'congé à venir';
+  stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">☂</span>Congés</div><strong>'+homeEsc(absenceValue)+'</strong><small>'+homeEsc(absenceSub)+'</small></button>')
+ }
+ if(widget('next_rest'))stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">▣</span>Prochain repos</div><strong>'+(nextRest?homeEsc(homeParseDate(nextRest).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')):'—')+'</strong><small>'+(nextRest?'sans service planifié':'non déterminé')+'</small></button>');
+ if(stats.length)sections.push('<section class="mhdStats">'+stats.join('')+'</section>');
+ if(widget('tasks')){
+  const taskState=homeTaskState(homeSession.user.id,todayKey),tasks=homeSuggestedTasks(profile,cfg);
+  sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><strong>Tâches du jour</strong></div><span class="mhdSectionLink">'+tasks.length+' action'+(tasks.length>1?'s':'')+'</span></div><div class="mhdRows">'+tasks.map(t=>'<button type="button" class="mhdRow mhdTaskRow '+(taskState.has(t.id)?'done':'')+'" onclick="toggleMobileHomeTask(\''+homeEsc(t.id)+'\',this)"><span class="mhdTaskCheck"></span><span class="mhdRowCopy"><strong>'+homeEsc(t.title)+'</strong></span><span class="mhdTaskBadge">'+homeEsc(t.tag)+'</span></button>').join('')+'</div></section>')
+ }
+ if(widget('important_info')){
+  const infos=notifications.filter(n=>['manual_edit','import_new','import_replace','admin_message','maintenance','app_update','absence_decision'].includes(n.kind)).slice(0,2);
+  sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('important_info')+'</span><strong>Informations importantes</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'notifications.html\'">Voir toutes ›</button></div>'+(infos.length?infos.map((n,i)=>'<button type="button" class="mhdInfoRow '+(i?'orange':'')+'" onclick="location.href=\''+homeEsc(n.target_url||'notifications.html')+'\'"><span class="mhdInfoIcon">'+homeEsc(homeNotifIcon(n.kind))+'</span><span class="mhdInfoCopy"><strong>'+homeEsc(n.title||'Information Nethor')+'</strong><small>'+homeEsc(n.message||'')+'</small></span><time>'+homeEsc(homeSince(n.created_at))+'</time></button>').join(''):'<div class="mhdEmpty">Aucune information importante pour le moment.</div>')+'</section>')
+ }
+ if(widget('team_today')){
+  const shown=todayTeam.slice(0,3),extra=Math.max(0,todayTeam.length-shown.length);
+  sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('team_today')+'</span><strong>Équipe aujourd’hui</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'chat.html\'">Voir l’équipe ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((x,i)=>'<div class="mhdPerson"><span id="mhdAvatar'+i+'" class="mhdAvatar">'+homeEsc((x.name||'U').slice(0,1).toUpperCase())+'</span>'+(x.profile&&window.NettoProfileUI?.onlineIds?.has?.(x.profile.id)?'<i class="mhdOnline"></i>':'')+'<strong>'+homeEsc(x.name)+'</strong><small>'+homeEsc(x.profile?.role||'Équipe')+'</small></div>').join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>');
+  for(let i=0;i<shown.length;i++){
+   const p=shown[i].profile;if(!p)continue;
+   let url=null;if(p.avatar_path){try{const {data}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);url=data?.signedUrl||null}catch(_){}}
+   window.NettoProfileUI?.paintAvatar?.(document.getElementById('mhdAvatar'+i),url,p.display_name,p.profile_color,p.avatar_frame)
+  }
+ }
+ if(widget('quick_access')){
+  const modules=homeAllowedModules(profile,cfg).slice(0,4);
+  if(modules.length)sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('quick_access')+'</span><strong>Accès rapides</strong></div></div><div class="mhdQuickGrid">'+modules.map(m=>'<button class="mhdQuick" type="button" onclick="location.href=\''+homeEsc(m.url||m.baseUrl||'home.html')+'\'"><span class="mhdQuickIcon">'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'')+'</span><strong>'+homeEsc(m.homeLabel||m.label||m.id)+'</strong></button>').join('')+'</div></section>')
+ }
+ host.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
+ // Paint team avatars after the final DOM exists.
+ if(widget('team_today')){
+  const shown=todayTeam.slice(0,3);
+  for(let i=0;i<shown.length;i++){
+   const p=shown[i].profile;if(!p)continue;let url=null;
+   if(p.avatar_path){try{const {data}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);url=data?.signedUrl||null}catch(_){}}
+   window.NettoProfileUI?.paintAvatar?.(document.getElementById('mhdAvatar'+i),url,p.display_name,p.profile_color,p.avatar_frame)
+  }
+ }
+}
+async function boot(){const {data:{session}}=await db.auth.getSession();if(!session){location.replace('index.html');return}homeSession=session;const {data:p}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',session.user.id).maybeSingle();window.currentRole=p?.role;document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',window.currentRole!=='admin'));const name=p?.display_name||p?.email?.split('@')[0]||'';const roleNames={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'},role=window.NettoProfileUI?.roleLabel?.(p?.role)||roleNames[p?.role]||p?.role||'Compte';document.getElementById('helloTitle').textContent=name?'Bonjour '+name+' 👋':'Bonjour 👋';let avatarUrl=null;if(p?.avatar_path){const {data:av}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);avatarUrl=av?.signedUrl||null}['userAvatar','userMenuAvatar'].forEach(id=>{const e=document.getElementById(id);if(!e)return;if(window.NettoProfileUI?.paintAvatar)window.NettoProfileUI.paintAvatar(e,avatarUrl,name,p?.profile_color,p?.avatar_frame);else{e.style.background=p?.profile_color||'#ff5a2a';e.textContent=(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('');if(avatarUrl){e.classList.add('hasPhoto');e.style.backgroundImage='url("'+avatarUrl.replace(/"/g,'%22')+'")';e.textContent=''}}});['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name||'Utilisateur'});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});await window.NettoProfileUI?.refresh?.();const sharedConfig=await loadSharedSiteConfig();window.NettoProfileUI?.rebuildModules?.(sharedConfig||{});renderHomeCards(p,sharedConfig);if(p?.role==='admin')await loadAdminPageViews();await loadHomeTodayPlanning(p,name);await renderMobileHomeDashboard(p,name,sharedConfig||{});document.getElementById('status').textContent='Session active'}
 function homeEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function renderHomeCards(profile,cfg){
  const host=document.getElementById('homePages'),nav=window.NettoProfileUI;if(!host)return;
