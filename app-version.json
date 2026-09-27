@@ -1,9 +1,9 @@
 {
-  "version": 78,
-  "label": "v0.78",
+  "version": 79,
+  "label": "v0.79",
   "important": true,
-  "title": "Réorganisation des widgets du planning",
-  "message": "Indisponibilités / Congés est désormais placé sous Historique du planning, avant Couverture magasin et Détection d’anomalies.",
-  "published_at": "2026-09-27T12:26:00+02:00",
+  "title": "Nouvelle version de Nethor",
+  "message": "Cette mise à jour apporte plusieurs améliorations, correctifs et optimisations générales.",
+  "published_at": "2026-09-27T12:55:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
