@@ -111,6 +111,50 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 @media(max-width:900px){main{padding:14px 10px 50px}.top{width:100%}.yearGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.xlsTable col.nameCol{width:135px}.xlsTable .nameCell,.xlsTable .nameHead{max-width:135px}.excelDrop{grid-template-columns:38px minmax(0,1fr)}.excelDrop>b{display:none}}
 @media(max-width:620px){.sub{display:none}.title{font-size:18px}.planningViewBar{align-items:flex-start}.weekNav{width:100%}.days{width:100%}.planningActions{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}.saveState{width:100%;text-align:right}.compactImport{flex:1;min-width:0}.compactImport .excelDrop{min-height:42px;padding:6px 9px;justify-content:flex-start}.compactImport .excelIcon{width:29px;height:29px}.compactImport .excelDrop strong{font-size:9.5px}.compactImport .excelDrop small{display:none}.importState{left:0;right:auto;top:47px;max-width:min(82vw,320px)}.dateTitle{font-size:21px}.yearHero{display:grid;grid-template-columns:1fr;padding:13px;margin-bottom:10px}.yearIntro strong{font-size:13px}.yearHead{width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) 42px}.yearNavBtn{width:42px;height:42px}.yearCurrent{width:100%;height:42px}.yearTodayBtn{grid-column:1/-1;width:100%;height:38px}.yearLegend{gap:10px;margin:0 2px 10px}.yearGrid{grid-template-columns:1fr;gap:10px}.monthCard{padding:12px 13px;border-radius:15px}.monthCard:hover{transform:none}.monthCard h3{font-size:14px}.monthStatus{font-size:8px}.monthWeekdays,.monthDays{gap:5px}.monthWeekdays span{font-size:8px}.yearDay,.yearEmptySlot{min-height:38px}.yearDay{font-size:10.5px;border-radius:9px}.yearDay i{width:5px;height:5px;bottom:4px}.paintChoices{width:100%}.planningLogsHead{align-items:flex-start}.mobileSchedule{display:grid;gap:8px}.sheetViewport{display:none!important}body.planningEditing .mobileSchedule{display:none!important}body.planningEditing .sheetViewport{display:block!important}.xlsTable col.nameCol{width:145px}.xlsTable col.slotCol{width:27px}.xlsTable .slot{width:27px;min-width:27px}.readerHead{align-items:flex-start}.sourceBadge{max-width:48vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.legend{margin-top:8px}.editSaveBar{position:sticky;bottom:8px;z-index:60;box-shadow:0 10px 30px #0003}.editSaveBarText small{display:none}.saveFinishBtn{padding:10px 11px;font-size:10px}.planningLogs{padding:10px;margin-top:12px}.planningLogsList{max-height:none}.planningLog{grid-template-columns:32px minmax(0,1fr) auto;padding:9px}.logIcon{width:30px;height:30px}.logDelete{width:32px;height:32px;font-size:20px}.planningLog strong{font-size:10px}.planningLog span{font-size:9px}}
 
+
+.mobilePlanningActionsDock{display:none}
+@media(max-width:620px){
+  .mobilePlanningActionsDock{display:block;width:100%;margin:7px 0 8px}
+  .mobilePlanningActionsDock:empty{display:none}
+  .mobilePlanningActionsDock .planningActions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:7px!important;
+    width:100%!important;
+    align-items:stretch!important;
+  }
+  .mobilePlanningActionsDock .saveState{display:none!important}
+  .mobilePlanningActionsDock .compactImport{min-width:0!important;width:100%!important}
+  .mobilePlanningActionsDock .excelDrop{
+    width:100%!important;
+    height:46px!important;
+    min-height:46px!important;
+    padding:6px 9px!important;
+    justify-content:center!important;
+    border-radius:11px!important;
+  }
+  .mobilePlanningActionsDock .excelIcon{width:28px!important;height:28px!important;font-size:14px!important}
+  .mobilePlanningActionsDock .excelDrop strong{font-size:10px!important}
+  .mobilePlanningActionsDock .excelDrop small{display:none!important}
+  .mobilePlanningActionsDock #editPlanningBtn{
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    height:46px!important;
+    padding:7px 9px!important;
+    border-radius:11px!important;
+    font-size:10px!important;
+    white-space:normal!important;
+    line-height:1.15!important;
+  }
+  .mobilePlanningActionsDock .importState{
+    left:0!important;
+    right:auto!important;
+    top:50px!important;
+    max-width:min(86vw,320px)!important;
+  }
+}
+
 /* Planning intelligence : couverture, anomalies, indisponibilités */
 .planningInsights{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(220px,.82fr) minmax(250px,.9fr) minmax(280px,1fr);gap:10px;margin:0 0 12px}
 .planningInsightCard{min-width:0;background:#fff;border:1px solid #e1e4e8;border-radius:16px;padding:13px;box-shadow:0 6px 18px #18223509}.compactInsightCard{padding:0;overflow:hidden}.compactInsightCard>.insightHead{margin:0;padding:11px 12px;cursor:pointer;align-items:center;background:#fafbfc;user-select:none}.compactInsightCard>.insightHead:hover{background:#f5f6f8}.compactInsightHeadRight{display:flex;align-items:center;gap:7px}.compactInsightChevron{width:26px;height:26px;border-radius:8px;background:#eceef1;display:grid;place-items:center;font-size:14px;font-weight:900;color:#777;transition:transform .18s ease}.compactInsightCard.open .compactInsightChevron{transform:rotate(180deg)}.compactInsightBody{padding:11px 12px 12px;border-top:1px solid #e8eaed}.compactInsightBody.collapsed{display:none}:root[data-theme="dark"] .compactInsightCard>.insightHead{background:#222429}:root[data-theme="dark"] .compactInsightCard>.insightHead:hover{background:#272a2f}:root[data-theme="dark"] .compactInsightChevron{background:#303238;color:#c9cdd2}:root[data-theme="dark"] .compactInsightBody{border-color:#34363b}
@@ -139,9 +183,9 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
     <div class="weekNav"><button class="btn light miniNav" onclick="changeWeek(-1)">←</button><button class="btn light" onclick="goCurrentWeek()">Cette semaine</button><button class="btn light miniNav" onclick="changeWeek(1)">→</button><span id="weekLabel" class="weekLabel"></span></div>
   </div>
   <section id="weekView">
-    <div class="toolbar">
+    <div id="planningToolbar" class="toolbar">
       <div id="days" class="days"></div>
-      <div class="planningActions"><span id="saveState" class="saveState">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
+      <div id="planningActions" class="planningActions"><span id="saveState" class="saveState">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
     </div>
     <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><div class="sourceActions"><span id="sourceBadge" class="sourceBadge hidden"></span><button id="downloadSourceBtn" class="sourceDownloadBtn hidden" type="button" onclick="downloadPlanningSource()">⇩ Télécharger Excel</button></div></div>
 
@@ -184,6 +228,7 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
       </div>
       <button class="btn light" onclick="resetDay()">Réinitialiser le jour</button><button class="btn danger" onclick="resetWeek()">Réinitialiser la semaine</button>
     </div>
+    <div id="mobilePlanningActionsDock" class="mobilePlanningActionsDock"></div>
     <div id="emptyState" class="emptyState hidden"><strong>Aucun planning importé pour cette semaine</strong><span>Un administrateur ou responsable peut glisser le fichier Excel correspondant.</span></div>
     <div id="sheetViewport" class="sheetViewport hidden"><div id="sheetMount"></div></div><div id="mobileSchedule" class="mobileSchedule hidden"></div>
     <div class="legend"><span><i class="sw" style="background:#1FB714"></i>Matin</span><span><i class="sw" style="background:#00ABEA"></i>Après-midi</span></div><div id="editSaveBar" class="editSaveBar hidden"><div class="editSaveBarText"><strong>Modifications du planning</strong><small>Quand tout est correct, enregistre et quitte le mode modification.</small></div><button class="btn saveFinishBtn" onclick="saveAndFinishEdit()">✓ Enregistrer et terminer</button></div>
@@ -584,6 +629,20 @@ async function saveWeek(){
  const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'✓ Enregistré');if(error){console.warn(error);return false}setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
 }
 
+
+function placePlanningActions(){
+ const actions=document.getElementById('planningActions'),toolbar=document.getElementById('planningToolbar'),dock=document.getElementById('mobilePlanningActionsDock');
+ if(!actions||!toolbar||!dock)return;
+ const mobile=window.matchMedia('(max-width:620px)').matches;
+ if(mobile){
+   if(actions.parentElement!==dock)dock.appendChild(actions);
+ }else if(actions.parentElement!==toolbar){
+   toolbar.appendChild(actions);
+ }
+}
+let planningActionsResizeTimer=null;
+window.addEventListener('resize',()=>{clearTimeout(planningActionsResizeTimer);planningActionsResizeTimer=setTimeout(placePlanningActions,80)},{passive:true});
+
 function excelDrag(e,on){e.preventDefault();if(!canEdit)return;document.querySelector('.excelDrop')?.classList.toggle('drag',!!on)}
 function excelDropFile(e){e.preventDefault();excelDrag(e,false);const files=e.dataTransfer?.files;if(files?.length)importPlanningFiles(files)}
 function cellDate(v){if(v instanceof Date&&!isNaN(v))return new Date(v.getFullYear(),v.getMonth(),v.getDate());if(typeof v==='number'&&window.XLSX){const x=XLSX.SSF.parse_date_code(v);if(x)return new Date(x.y,x.m-1,x.d)}const m=String(v||'').match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1])}return null}
@@ -767,7 +826,7 @@ async function applyPlanningWidgetPermissions(userRole){
  }
  document.getElementById('planningInsights')?.classList.toggle('hidden',visible===0)
 }
-async function init(){applyPlanningDeepLink();const qs=new URLSearchParams(location.search),savedView=qs.get('view')||localStorage.getItem('nettoPlanningView')||'week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
+async function init(){applyPlanningDeepLink();const qs=new URLSearchParams(location.search),savedView=qs.get('view')||localStorage.getItem('nettoPlanningView')||'week';await waitForSupabase();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await db.auth.getSession();if(!session){location.href='index.html';return}const {data:p}=await db.from('profiles').select('role,display_name').eq('id',session.user.id).maybeSingle();role=p?.role||'lecture';await window.NettoProfileUI?.refresh?.();const planningPermission=window.NettoProfileUI?.permissionLevel?.('planning',p)||'none';if(planningPermission==='none'){location.replace('home.html');return}canEdit=planningPermission==='manage';currentUser={id:session.user.id,name:p?.display_name||'Utilisateur'};await applyPlanningWidgetPermissions(role);restorePersonalStatsState();restorePlanningInsightStates();document.getElementById('editPlanningBtn').classList.toggle('hidden',!canEdit);placePlanningActions();/*mobile-actions*/document.getElementById('importPanel').classList.toggle('hidden',!canEdit);document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin');const canManageAbsences=absenceAccess==='manage';document.getElementById('planningLogs').classList.toggle('hidden',!(canEdit||canManageAbsences));document.getElementById('clearPlanningLogs').classList.toggle('hidden',role!=='admin');document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');await loadTeamProfiles();startPlanningProfileRealtime();await Promise.all([loadWeek(currentWeekStart),loadPlanningLogs()]);setPlanningView(savedView,{sound:false})}
 init().catch(e=>{console.error(e);document.getElementById('readerMeta').textContent='Erreur de chargement du planning.'});
 
 function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
