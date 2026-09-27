@@ -1,10 +1,10 @@
 {
-  "version": 130,
-  "label": "v1.30",
+  "version": 131,
+  "label": "v1.31",
   "important": false,
   "mode": "manual",
-  "title": "Préférences Push simplifiées",
-  "message": "Les choix utilisateur concernent désormais uniquement les notifications Push, avec trois catégories activées par défaut et une interface mobile harmonisée.",
+  "title": "Annulation des modifications du planning",
+  "message": "Sur ordinateur, le mode modification du planning dispose désormais d’un petit bouton Annuler à droite d’Enregistrer pour abandonner les changements non enregistrés.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
