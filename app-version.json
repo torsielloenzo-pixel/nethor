@@ -1,10 +1,10 @@
 {
-  "version": 138,
-  "label": "v1.38",
+  "version": 139,
+  "label": "v1.39",
   "important": true,
   "mode": "manual",
-  "title": "Terminologie des horaires mise à jour",
-  "message": "Les libellés liés aux horaires ont été harmonisés autour de la prise de poste et des jours de repos. Cette mise à jour force aussi le rafraîchissement des fichiers pour garantir l’affichage des nouveaux intitulés sur mobile.",
+  "title": "Nouvelle version de Nethor",
+  "message": "Améliorations générales, correctifs et optimisations du portail.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
