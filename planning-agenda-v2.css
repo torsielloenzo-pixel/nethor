@@ -275,3 +275,74 @@ html[data-theme="dark"] .agendaCell.activeDay{
   box-shadow:inset 2px 0 0 rgba(255,138,97,.46),inset -2px 0 0 rgba(255,138,97,.46)
 }
 html[data-theme="dark"] .agendaCell.activeDay.today{background:#30251f}
+
+
+/* Planning Agenda v9 — focus prochain repos natif */
+.agendaRestState{
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:8px 10px;
+  border:1px solid #ffd0be;
+  border-radius:11px;
+  background:#fff3ed;
+  color:#b8421f
+}
+.agendaRestMark{
+  width:26px;
+  height:26px;
+  flex:0 0 26px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:#ffe0d2;
+  font-size:17px;
+  font-weight:900
+}
+.agendaRestState strong{
+  display:block;
+  font-size:13px;
+  line-height:1.1
+}
+.agendaRestState small{
+  display:block;
+  margin-top:3px;
+  font-size:9px;
+  color:#956552;
+  font-weight:700
+}
+@media(max-width:760px){
+  .agendaPersonalBlock.agendaRestFocusBlock{
+    border-color:#ff9a72!important;
+    box-shadow:0 0 0 2px rgba(255,101,47,.12),0 7px 20px rgba(255,91,42,.10)!important
+  }
+  .agendaDayCardRest{
+    background:#fffaf7!important
+  }
+  .agendaDayCardRest .agendaDayPerson strong{
+    color:#b8421f
+  }
+  .agendaRestState{
+    min-height:48px;
+    border-radius:10px
+  }
+}
+html[data-theme="dark"] .agendaRestState{
+  background:#34241f;
+  border-color:#5d392c;
+  color:#ff9c77
+}
+html[data-theme="dark"] .agendaRestMark{
+  background:#4a2e25
+}
+html[data-theme="dark"] .agendaRestState small{
+  color:#c9a08f
+}
+html[data-theme="dark"] .agendaPersonalBlock.agendaRestFocusBlock{
+  border-color:#714432!important;
+  box-shadow:0 0 0 2px rgba(255,119,72,.10),0 7px 20px rgba(0,0,0,.16)!important
+}
+html[data-theme="dark"] .agendaDayCardRest{
+  background:#25201e!important
+}
