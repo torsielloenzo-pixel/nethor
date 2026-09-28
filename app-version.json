@@ -1,10 +1,10 @@
 {
-  "version": 182,
-  "label": "v1.82",
+  "version": 183,
+  "label": "v1.83",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Gestion des fiches articles : tris rapides par colonne.",
-  "published_at": "2026-09-28T23:38:30.432457Z",
+  "message": "Défis & Boutique : ajout de Rush Rayon (bêta), mini-jeu réservé à l’administrateur.",
+  "published_at": "2026-09-29T00:00:00Z",
   "icon": "assets/app-icon-v63.svg"
 }

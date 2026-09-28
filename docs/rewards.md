@@ -15,3 +15,11 @@ Les missions expirées restent visibles mais ne sont plus réservables. Les rés
 La boutique conserve les prix pour préparer une éventuelle ouverture future à d’autres rôles, mais ces prix sont informatifs pour l’administrateur. Un objet retiré de la vente reste utilisable s’il était déjà possédé. Un objet de chaque catégorie peut être équipé.
 
 Les décorations sont rendues par `reward-profile.js` dans les zones de profil compatibles.
+
+## Rush Rayon (bêta)
+
+- Le mini-jeu **Rush Rayon** est disponible comme onglet de `rewards.html` et hérite donc du verrouillage **administrateur uniquement** de cette page.
+- Commande unique : toucher/clic/Espace/↑ pour sauter. `P` ou `Échap` met le jeu en pause.
+- Obstacles : cartons, chariots, flaques, palettes et bananes ; bonus : café, promo et article.
+- La difficulté augmente progressivement et le décor passe par Ouverture, Matinée, Rush et Rush du soir.
+- Le meilleur score est stocké uniquement dans le `localStorage` du navigateur (`nethor:rush-rayon-best-v1`) pendant la bêta. Aucune table Supabase ni donnée métier supplémentaire n’est créée.
