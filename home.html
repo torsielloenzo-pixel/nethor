@@ -1254,6 +1254,72 @@ main{position:relative;z-index:1}
  .mhdTasks .mhdTaskComposerTitle{display:grid;grid-template-columns:1fr}.mhdTasks #mhdTaskSelectedSummary{justify-self:start}.mhdTasks .mhdTaskComposerActions{display:grid;grid-template-columns:1fr}.mhdTasks .mhdTaskComposerActions span{max-width:none}.mhdTasks .mhdTaskPublishBtn{width:100%}
 }
 </style>
+<style id="home-text-scale-v1">
+/* Accueil : lisibilité légèrement renforcée sans modifier la structure */
+@media(min-width:701px){
+  .mobileHomeDashboard .mhdNextHead strong,
+  .mobileHomeDashboard .mhdSectionHead strong{font-size:14.5px}
+  .mobileHomeDashboard .mhdWhen{font-size:10px}
+  .mobileHomeDashboard .mhdTag{font-size:9px}
+  .mobileHomeDashboard .mhdStatHead{font-size:11px}
+  .mobileHomeDashboard .mhdStat strong{font-size:20.5px}
+  .mobileHomeDashboard .mhdStat small{font-size:9.5px;line-height:1.4}
+  .mobileHomeDashboard .mhdSectionLink{font-size:10px}
+  .mobileHomeDashboard .mhdRowCopy strong{font-size:11.5px}
+  .mobileHomeDashboard .mhdRowCopy small{font-size:9px}
+  .mobileHomeDashboard .mhdTaskBadge{font-size:8.5px}
+  .mobileHomeDashboard .mhdInfoCopy strong{font-size:11.5px}
+  .mobileHomeDashboard .mhdInfoCopy small{font-size:9px}
+  .mobileHomeDashboard .mhdInfoRow time{font-size:9px}
+  .mobileHomeDashboard .mhdPerson strong{font-size:10px}
+  .mobileHomeDashboard .mhdPerson small{font-size:8px}
+  .mobileHomeDashboard .mhdEmpty{font-size:10px}
+
+  .mhdTasks .mhdTaskRoleHint{font-size:12px}
+  .mhdTasks .mhdTaskAddBtn,
+  .mhdTasks .mhdTaskResetBtn{font-size:11.5px}
+  .mhdTasks .mhdTaskHandoffRoute span{font-size:8.5px}
+  .mhdTasks .mhdTaskHandoffTeam strong{font-size:12px}
+  .mhdTasks .mhdTaskHandoffTeam small{font-size:10px}
+  .mhdTasks .mhdTaskOverview span{font-size:10px}
+  .mhdTasks .mhdTaskComposerTitle strong{font-size:14px}
+  .mhdTasks .mhdTaskComposerTitle small,
+  .mhdTasks .mhdCustomTask small{font-size:10px}
+  .mhdTasks #mhdTaskSelectedSummary{font-size:9.5px}
+  .mhdTasks .mhdTaskGroupLead strong{font-size:11.5px}
+  .mhdTasks .mhdTaskGroupLead small{font-size:9px}
+  .mhdTasks .mhdTaskChipCopy strong{font-size:11px}
+  .mhdTasks .mhdTaskChipCopy small{font-size:8.5px}
+  .mhdTasks .mhdTaskFieldLabel{font-size:9.5px}
+  .mhdTasks .mhdTaskInput{font-size:11.5px}
+  .mhdTasks .mhdTaskAudienceHead strong{font-size:12px}
+  .mhdTasks .mhdTaskAudienceHead small{font-size:9.5px}
+  .mhdTasks .mhdTaskAssigneeChip{font-size:9.5px}
+  .mhdTasks .mhdTaskComposerActions span{font-size:10px}
+  .mhdTasks .mhdTaskPublishBtn{font-size:10.5px}
+  .mhdTasks .mhdTaskGroupTitle{font-size:9.5px}
+  .mhdTasks .mhdTaskPublishedCopy strong{font-size:11.5px}
+  .mhdTasks .mhdTaskPublishedCopy small{font-size:9.5px}
+  .mhdTasks .mhdTaskPublishedCopy em{font-size:9px}
+  .mhdTasks .mhdTaskValidation{font-size:9.5px}
+  .mhdTasks .mhdTaskEmptyState strong{font-size:13px}
+  .mhdTasks .mhdTaskEmptyState span{font-size:10px}
+
+  #homePages .pageCard p{font-size:13px}
+  #homePages .cardFoot{font-size:11px}
+  .userText strong{font-size:12px}
+  .userText small{font-size:10px}
+}
+@media(max-width:700px){
+  .mobileHomeDashboard .mhdNextHead strong,
+  .mobileHomeDashboard .mhdSectionHead strong{font-size:13.5px}
+  .mobileHomeDashboard .mhdStatHead{font-size:9.5px}
+  .mobileHomeDashboard .mhdStat small{font-size:8.4px}
+  .mobileHomeDashboard .mhdInfoCopy strong{font-size:11px}
+  .mobileHomeDashboard .mhdInfoCopy small{font-size:8.5px}
+  .mobileHomeDashboard .mhdEmpty{font-size:9.5px}
+}
+</style>
 </head>
 <body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
 <header><div class="top"><div class="brand"><div class="nMenuWrap"><button class="mark nMenuBtn" onclick="location.href='home.html'" aria-label="Menu">N</button><div id="nMenu" class="nMenu hidden"><div class="nMenuTitle">Navigation</div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="location.href='index.html'"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="location.href='planning.html'"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="location.href='chat.html'"><span class="navToolLogo equipe"></span><div><strong>Chat</strong><small>Messagerie interne</small></div></button><button onclick="location.href='articles.html'"><span class="navToolLogo article"></span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='bakery.html'"><span class="navToolLogo bakery"></span><div><strong>Boulangerie</strong><small>Stock • Consulter • Gestion</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='accounts.html'"><span>♙</span><div><strong>Comptes</strong><small>Utilisateurs et rôles</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="logoutItem" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><strong>Nethor</strong><small>Portail opérationnel</small></div></div><div class="userMenuWrap"><button id="userMenuBtn" class="userPill" onclick="toggleUserMenu(event)" aria-expanded="false"><span id="userAvatar" class="userAvatar">U</span><span class="userText"><strong id="userName">Utilisateur</strong><small id="userRole">Compte</small></span><span class="userChevron">⌄</span></button><div id="userMenu" class="userMenu hidden"><div class="userMenuHead"><span id="userMenuAvatar" class="userAvatar">U</span><div><strong id="userMenuName">Utilisateur</strong><small id="userMenuRole">Compte</small></div></div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Retour au portail</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="userThemeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="userLogout" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div></div></header>
