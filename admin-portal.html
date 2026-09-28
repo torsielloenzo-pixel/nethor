@@ -354,32 +354,189 @@ function normalize(raw){
  return c
 }
 function waitProfileUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI?.profile||n++>50){clearInterval(t);resolve()}},50)})}
-function builtinModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom&&m.id!=='home'&&m.id!=='accounts')}
+function builtinModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom)}
 function maxRoles(m){return window.NettoProfileUI?.maxRoles?.(m)||ROLES}
-function defaultPage(m,index){return{enabled:true,label:m.homeLabel||m.label,nav_label:m.label,subtitle:m.subtitle||'',description:m.description||'',url:m.url||'',order:index+1,roles:m.id==='settings'?[...ROLES]:[...maxRoles(m)],home:!!m.home,user_menu:!!m.userMenu,default_home:m.defaultHome!==false,default_user:m.defaultUser!==false,kicker:m.kicker||'OUTIL',action:m.action||'Ouvrir',icon:m.icon||'',image_url:m.asset||'',image_path:'',color:m.menuColor||config.theme.primary,accent:m.menuAccent||config.theme.secondary}}
+function defaultPage(m,index){return{
+ enabled:m.enabled!==false,
+ label:m.homeLabel||m.label,
+ nav_label:m.label,
+ subtitle:m.subtitle||'',
+ description:m.description||'',
+ url:m.url||'',
+ order:index+1,
+ roles:[...maxRoles(m)],
+ home:!!m.home,
+ user_menu:!!m.userMenu,
+ default_home:m.defaultHome!==false,
+ default_user:m.defaultUser!==false,
+ kicker:m.kicker||'OUTIL',
+ action:m.action||'Ouvrir',
+ icon:m.icon||'',
+ image_url:m.asset||'',
+ image_path:'',
+ color:m.menuColor||config.theme.primary,
+ accent:m.menuAccent||config.theme.secondary
+}}
 function ensurePages(){
- builtinModules().forEach((m,i)=>{const d=defaultPage(m,i),p=config.pages[m.id]&&typeof config.pages[m.id]==='object'?config.pages[m.id]:{};config.pages[m.id]={...d,...p};if(m.id==='settings')config.pages[m.id].roles=[...ROLES];if(m.id==='portal_admin')config.pages[m.id].roles=['admin']})
+ builtinModules().forEach((m,i)=>{
+  const d=defaultPage(m,i),p=config.pages[m.id]&&typeof config.pages[m.id]==='object'?config.pages[m.id]:{};
+  config.pages[m.id]={...d,...p};
+  if(m.rolesLocked)config.pages[m.id].roles=[...maxRoles(m)];
+  else config.pages[m.id].roles=Array.isArray(config.pages[m.id].roles)?config.pages[m.id].roles.filter(r=>maxRoles(m).includes(r)):[...maxRoles(m)];
+  if(m.enabledLocked)config.pages[m.id].enabled=true;
+  if(m.placementLocked){
+   config.pages[m.id].home=false;config.pages[m.id].user_menu=false;
+   config.pages[m.id].default_home=false;config.pages[m.id].default_user=false
+  }
+ })
 }
 function field(label,value,key,id,cls=''){return '<div class="field '+cls+'"><label>'+esc(label)+'</label><input value="'+attr(value)+'" data-page="'+attr(id)+'" data-key="'+attr(key)+'"></div>'}
 function rolePicker(m,p){
- const max=maxRoles(m),fixed=m.id==='settings'||m.id==='portal_admin';
- return '<div class="roles">'+ROLES.map(r=>{const allowed=max.includes(r),checked=(p.roles||[]).includes(r);return '<label class="role '+(!allowed?'disabled':'')+'"><input type="checkbox" data-role-page="'+attr(m.id)+'" data-role="'+r+'" '+(checked?'checked':'')+' '+((!allowed||fixed)?'disabled':'')+'> '+roleName(r)+'</label>'}).join('')+'</div>'
+ const max=maxRoles(m),fixed=m.rolesLocked===true;
+ return '<div class="roles">'+ROLES.map(r=>{
+  const allowed=max.includes(r),checked=(p.roles||[]).includes(r);
+  return '<label class="role '+(!allowed?'disabled':'')+'"><input type="checkbox" data-role-page="'+attr(m.id)+'" data-role="'+attr(r)+'" '+(checked?'checked':'')+' '+((!allowed||fixed)?'disabled':'')+'> '+esc(roleName(r))+'</label>'
+ }).join('')+'</div>'
 }
 function visualHtml(url,icon){return url?'<img src="'+attr(url)+'" alt="">':esc(icon||'•')}
+const PAGE_GROUP_LABELS={principal:'Pages principales',terrain:'Outils terrain',communication:'Communication',administration:'Administration',systeme:'Système'};
+const PAGE_GROUP_ORDER=['principal','terrain','communication','administration','systeme'];
+function pageGroup(m){return PAGE_GROUP_LABELS[m?.group]?m.group:'principal'}
+function pagePlatformLabel(m){return m?.platform==='mobile'?'Mobile':m?.platform==='desktop'?'Desktop':m?.platform==='system'?'Système':'Tous appareils'}
+function moduleBadgesHtml(m,p){
+ const badges=[
+  '<span class="moduleBadge '+(p.enabled!==false?'on':'off')+'">'+(p.enabled!==false?'Actif':'Inactif')+'</span>',
+  p.home?'<span class="moduleBadge">Accueil</span>':'',
+  p.user_menu?'<span class="moduleBadge">Menu utilisateur</span>':'',
+  m.platform==='mobile'?'<span class="moduleBadge mobile">Mobile</span>':'',
+  m.platform==='system'?'<span class="moduleBadge system">Système</span>':'',
+  (m.rolesLocked||m.enabledLocked||m.placementLocked)?'<span class="moduleBadge protected">Protégée</span>':''
+ ];
+ return badges.filter(Boolean).join('')
+}
+function pageProtectionText(m){
+ const rows=[];
+ if(m.enabledLocked)rows.push('activation protégée');
+ if(m.rolesLocked)rows.push('rôles protégés');
+ if(m.placementLocked)rows.push('emplacements de navigation protégés');
+ return rows.length?'Cette page possède des garde-fous techniques : '+rows.join(', ')+'. Les autres éléments restent modifiables.':''
+}
+function systemFilterMatch(m,p,filter){
+ if(filter==='active')return p.enabled!==false;
+ if(filter==='home')return p.home===true;
+ if(filter==='user_menu')return p.user_menu===true;
+ if(PAGE_GROUP_LABELS[filter])return pageGroup(m)===filter;
+ return true
+}
+function refreshSystemStats(mods=builtinModules()){
+ const pages=mods.map(m=>config.pages[m.id]||{});
+ if($('systemPageTotal'))$('systemPageTotal').textContent=String(mods.length);
+ if($('systemPageActive'))$('systemPageActive').textContent=String(pages.filter(p=>p.enabled!==false).length);
+ if($('systemPageHome'))$('systemPageHome').textContent=String(pages.filter(p=>p.home===true).length);
+ if($('systemPageUserMenu'))$('systemPageUserMenu').textContent=String(pages.filter(p=>p.user_menu===true).length)
+}
+function systemModuleCard(m,index){
+ const p=config.pages[m.id],protection=pageProtectionText(m);
+ const enabledDisabled=m.enabledLocked?'disabled':'',placementDisabled=m.placementLocked?'disabled':'';
+ return '<article class="moduleCard" id="moduleCard_'+attr(m.id)+'">'+
+  '<div class="moduleHead" onclick="toggleModuleBody(\''+attr(m.id)+'\',event)">'+
+   '<div class="moduleVisual">'+visualHtml(p.image_url||m.asset,p.icon||m.icon)+'</div>'+
+   '<div class="moduleHeadInfo"><strong class="moduleDisplayName">'+esc(p.label||m.label)+'</strong><span class="moduleHeadMeta">'+esc(m.id)+' · '+esc(p.url||m.url||'')+' · '+esc((p.roles||[]).map(r=>roleName(r)).join(', ')||'Aucun rôle')+'</span><div class="moduleHeadBadges">'+moduleBadgesHtml(m,p)+'</div></div>'+
+   '<div class="moduleHeadActions"><button type="button" class="moduleHeadAction" onclick="openSystemPage(\''+attr(m.id)+'\',event)">Ouvrir</button><button type="button" class="moduleHeadAction" onclick="resetSystemPage(\''+attr(m.id)+'\',event)">Réinitialiser</button></div>'+
+   '<span class="moduleChevron">⌄</span>'+
+  '</div>'+
+  '<div class="moduleBody collapsed" id="moduleBody_'+attr(m.id)+'">'+
+   '<div class="moduleTech"><div><small>Identifiant technique · '+esc(pagePlatformLabel(m))+'</small><code>'+esc(m.id)+' · '+esc(m.url||'')+'</code></div><a href="'+attr(p.url||m.url||'#')+'" target="_blank" rel="noopener">Tester la page ↗</a></div>'+
+   '<div class="moduleGrid">'+
+    field('Nom sur l’accueil',p.label,'label',m.id)+
+    field('Nom dans la navigation',p.nav_label,'nav_label',m.id)+
+    field('Sous-titre',p.subtitle,'subtitle',m.id,'span2')+
+    field('Description',p.description,'description',m.id,'span2')+
+    field('Destination',p.url,'url',m.id,'span2')+
+    field('Petit titre',p.kicker,'kicker',m.id)+
+    field('Texte du bouton',p.action,'action',m.id)+
+    field('Icône / emoji',p.icon,'icon',m.id)+
+    field('Ordre',p.order,'order',m.id)+
+    '<div class="field span2"><label>Image du menu</label><div class="assetLine"><div class="assetPreview">'+visualHtml(p.image_url,p.icon)+'</div><input type="text" value="'+attr(p.image_url||'')+'" data-page="'+attr(m.id)+'" data-key="image_url" placeholder="URL ou chemin image"><button class="btn secondaryBtn mini" type="button" onclick="choosePageImage(\''+attr(m.id)+'\')">Importer</button>'+(p.image_url?'<a class="btn secondaryBtn mini" href="'+attr(p.image_url)+'" download>Télécharger</a>':'')+'<input id="pageFile_'+attr(m.id)+'" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="uploadPageImage(\''+attr(m.id)+'\',this)"></div></div>'+
+    '<div class="field"><label>Couleur</label><input type="color" value="'+attr(validColor(p.color,config.theme.primary))+'" data-page="'+attr(m.id)+'" data-key="color"></div>'+
+    '<div class="field"><label>Accent</label><input type="color" value="'+attr(validColor(p.accent,config.theme.secondary))+'" data-page="'+attr(m.id)+'" data-key="accent"></div>'+
+   '</div>'+
+   '<div class="toggleRow">'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="enabled" '+(p.enabled!==false?'checked':'')+' '+enabledDisabled+'> Page active</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="home" '+(p.home?'checked':'')+' '+placementDisabled+'> Afficher sur l’accueil</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="user_menu" '+(p.user_menu?'checked':'')+' '+placementDisabled+'> Menu utilisateur</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_home" '+(p.default_home?'checked':'')+' '+placementDisabled+'> Accueil par défaut</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_user" '+(p.default_user?'checked':'')+' '+placementDisabled+'> Menu par défaut</label>'+
+   '</div>'+
+   '<div class="moduleRoleTitle">Rôles autorisés</div>'+rolePicker(m,p)+
+   (protection?'<div class="moduleProtection">'+esc(protection)+'</div>':'')+
+  '</div>'+
+ '</article>'
+}
 function renderSystem(){
  ensurePages();
  const host=$('systemModules'),mods=builtinModules();
- host.innerHTML=mods.map((m,index)=>{const p=config.pages[m.id];return '<article class="moduleCard" id="moduleCard_'+attr(m.id)+'"><div class="moduleHead" onclick="toggleModuleBody(\''+attr(m.id)+'\',event)"><div class="moduleVisual">'+visualHtml(p.image_url||m.asset,p.icon||m.icon)+'</div><div class="moduleHeadInfo"><strong>'+esc(p.label||m.label)+'</strong><span>'+esc(m.id)+' · '+esc((p.roles||[]).map(r=>roleName(r)).join(', '))+'</span></div><span class="moduleChevron">⌄</span></div><div class="moduleBody collapsed" id="moduleBody_'+attr(m.id)+'"><div class="moduleGrid">'+field('Nom sur l’accueil',p.label,'label',m.id)+field('Nom dans la navigation',p.nav_label,'nav_label',m.id)+field('Sous-titre',p.subtitle,'subtitle',m.id,'span2')+field('Description',p.description,'description',m.id,'span2')+field('Destination',p.url,'url',m.id,'span2')+field('Petit titre',p.kicker,'kicker',m.id)+field('Texte du bouton',p.action,'action',m.id)+field('Icône / emoji',p.icon,'icon',m.id)+field('Ordre',p.order,'order',m.id)+'<div class="field span2"><label>Image du menu</label><div class="assetLine"><div class="assetPreview">'+visualHtml(p.image_url,p.icon)+'</div><input type="text" value="'+attr(p.image_url||'')+'" data-page="'+attr(m.id)+'" data-key="image_url" placeholder="URL ou chemin image"><button class="btn secondaryBtn mini" onclick="choosePageImage(\''+attr(m.id)+'\')">Importer</button>'+(p.image_url?'<a class="btn secondaryBtn mini" href="'+attr(p.image_url)+'" download>Télécharger</a>':'')+'<input id="pageFile_'+attr(m.id)+'" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="uploadPageImage(\''+attr(m.id)+'\',this)"></div></div><div class="field"><label>Couleur</label><input type="color" value="'+attr(validColor(p.color,config.theme.primary))+'" data-page="'+attr(m.id)+'" data-key="color"></div><div class="field"><label>Accent</label><input type="color" value="'+attr(validColor(p.accent,config.theme.secondary))+'" data-page="'+attr(m.id)+'" data-key="accent"></div></div><div class="toggleRow"><label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="enabled" '+(p.enabled!==false?'checked':'')+'> Module actif</label><label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="home" '+(p.home!==false?'checked':'')+'> Disponible accueil</label><label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="user_menu" '+(p.user_menu?'checked':'')+'> Barre utilisateur</label><label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_home" '+(p.default_home?'checked':'')+'> Visible par défaut accueil</label><label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_user" '+(p.default_user?'checked':'')+'> Visible par défaut barre</label></div>'+rolePicker(m,p)+'</div></article>'}).join('');
+ if(!host)return;
+ refreshSystemStats(mods);
+ const q=String($('systemPageSearch')?.value||'').trim().toLocaleLowerCase('fr');
+ const filter=String($('systemPageFilter')?.value||'all');
+ const indexed=mods.map((m,index)=>({m,index,p:config.pages[m.id]})).filter(({m,p})=>{
+  if(!systemFilterMatch(m,p,filter))return false;
+  if(!q)return true;
+  return [m.id,m.label,m.homeLabel,m.subtitle,m.url,PAGE_GROUP_LABELS[pageGroup(m)],p.label,p.nav_label,p.subtitle,p.description,p.url].some(v=>String(v||'').toLocaleLowerCase('fr').includes(q))
+ });
+ if(!indexed.length){host.innerHTML='<div class="moduleEmpty">Aucune page ne correspond à cette recherche.</div>';return}
+ host.innerHTML=PAGE_GROUP_ORDER.map(group=>{
+  const rows=indexed.filter(x=>pageGroup(x.m)===group).sort((a,b)=>(Number(a.p.order)||999)-(Number(b.p.order)||999)||a.index-b.index);
+  if(!rows.length)return'';
+  return '<section class="moduleGroup"><div class="moduleGroupHead"><strong>'+esc(PAGE_GROUP_LABELS[group])+'</strong><span>'+rows.length+' page'+(rows.length>1?'s':'')+'</span></div>'+rows.map(x=>systemModuleCard(x.m,x.index)).join('')+'</section>'
+ }).join('');
  bindPageInputs()
 }
+function refreshModuleCardSummary(id){
+ const m=builtinModules().find(x=>x.id===id),p=config.pages[id],card=$('moduleCard_'+id);if(!m||!p||!card)return;
+ const name=card.querySelector('.moduleDisplayName'),meta=card.querySelector('.moduleHeadMeta'),badges=card.querySelector('.moduleHeadBadges');
+ if(name)name.textContent=p.label||m.label;
+ if(meta)meta.textContent=m.id+' · '+(p.url||m.url||'')+' · '+((p.roles||[]).map(r=>roleName(r)).join(', ')||'Aucun rôle');
+ if(badges)badges.innerHTML=moduleBadgesHtml(m,p);
+ refreshSystemStats()
+}
 function bindPageInputs(){
- document.querySelectorAll('[data-page][data-key]').forEach(el=>{el.oninput=el.onchange=()=>{const p=config.pages[el.dataset.page];if(!p)return;let v=el.type==='checkbox'?el.checked:el.value;if(el.dataset.key==='order')v=Math.max(1,Number(v)||1);p[el.dataset.key]=v;markDirty()}});
- document.querySelectorAll('[data-role-page]:not(:disabled)').forEach(el=>el.onchange=()=>{const p=config.pages[el.dataset.rolePage];p.roles=[...document.querySelectorAll('[data-role-page="'+CSS.escape(el.dataset.rolePage)+'"]:checked')].map(x=>x.dataset.role);markDirty()})
+ document.querySelectorAll('[data-page][data-key]').forEach(el=>{
+  el.oninput=el.onchange=()=>{
+   const p=config.pages[el.dataset.page];if(!p)return;
+   let v=el.type==='checkbox'?el.checked:el.value;
+   if(el.dataset.key==='order')v=Math.max(1,Number(v)||1);
+   p[el.dataset.key]=v;markDirty();refreshModuleCardSummary(el.dataset.page)
+  }
+ });
+ document.querySelectorAll('[data-role-page]:not(:disabled)').forEach(el=>el.onchange=()=>{
+  const p=config.pages[el.dataset.rolePage];
+  p.roles=[...document.querySelectorAll('[data-role-page="'+CSS.escape(el.dataset.rolePage)+'"]:checked')].map(x=>x.dataset.role);
+  markDirty();refreshModuleCardSummary(el.dataset.rolePage)
+ })
+}
+function openSystemPage(id,event){
+ event?.preventDefault?.();event?.stopPropagation?.();
+ const m=builtinModules().find(x=>x.id===id),p=config.pages[id];const url=String(p?.url||m?.url||'').trim();
+ if(!url||!validUrl(url))return alert('La destination de cette page est invalide.');
+ window.open(new URL(url,location.href).href,'_blank','noopener')
+}
+function resetSystemPage(id,event){
+ event?.preventDefault?.();event?.stopPropagation?.();
+ const mods=builtinModules(),index=mods.findIndex(x=>x.id===id),m=mods[index];if(!m)return;
+ if(!confirm('Réinitialiser les réglages de « '+(config.pages[id]?.label||m.label)+' » ?'))return;
+ config.pages[id]=defaultPage(m,Math.max(0,index));ensurePages();markDirty();renderSystem();window.NettoSounds?.play?.('confirm')
+}
+function collapseAllSystemPages(){
+ document.querySelectorAll('#systemModules .moduleBody').forEach(x=>x.classList.add('collapsed'));
+ document.querySelectorAll('#systemModules .moduleCard').forEach(x=>x.classList.remove('open'));
+ window.NettoSounds?.play?.('menuClose')
 }
 
 const MOBILE_DEFAULTS=['home','stock','planning','chat','profile'];
-const MOBILE_SHORT={home:'Accueil',stock:'Stock',planning:'Planning',chat:'Équipe',profile:'Profil',articles:'Articles',rewards:'Défis',bakery:'Boulangerie',accounts:'Comptes',portal_admin:'Éditeur',settings:'Réglages'};
-function mobileModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom)}
+const MOBILE_SHORT={home:'Accueil',stock:'Stock',planning:'Planning',chat:'Équipe',profile:'Profil',scanner:'Scanner',articles:'Articles',notification_settings:'Alertes',problem_report:'Problème',fl_assistant:'Assistant',rewards:'Défis',bakery:'Boulangerie',accounts:'Comptes',portal_admin:'Gestion',settings:'Réglages'};
+function mobileModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom&&m.navigation!==false&&m.mobileBar!==false&&m.mobileBarLocked!==true)}
 function ensureMobileBar(){
  const mods=mobileModules(),allowed=new Set(mods.map(m=>m.id)),raw=Array.isArray(config.mobile_bar?.items)?config.mobile_bar.items:[];
  const source=raw.length?raw:MOBILE_DEFAULTS.map(id=>({id,enabled:true,label:MOBILE_SHORT[id]||''}));
