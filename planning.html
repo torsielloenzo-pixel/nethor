@@ -1316,6 +1316,59 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   border:0!important;
 }
 </style>
+<style id="planning-reader-actions-row-v1">
+@media(min-width:761px){
+  .readerHead{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    flex-wrap:nowrap!important;
+    gap:18px!important;
+  }
+  .readerHead>div:first-child{
+    flex:1 1 auto!important;
+    min-width:0!important;
+  }
+  .readerHead .sourceActions{
+    flex:0 0 auto!important;
+    max-width:none!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    flex-wrap:nowrap!important;
+    gap:8px!important;
+    min-width:0!important;
+  }
+  .readerHead .sourceBadge,
+  .readerHead .sourceDownloadBtn,
+  .readerHead #editPlanningBtn,
+  .readerHead .compactImport{
+    flex:none!important;
+    white-space:nowrap!important;
+  }
+  .readerHead .compactImport{width:auto!important;min-width:0!important}
+  .readerHead .excelDrop{
+    min-height:42px!important;
+    height:42px!important;
+    padding:6px 11px!important;
+  }
+  .readerHead .excelIcon{
+    width:27px!important;
+    height:27px!important;
+    font-size:13px!important;
+  }
+  .readerHead .excelDrop small{display:none!important}
+  .readerHead #editPlanningBtn{
+    min-height:42px!important;
+    height:42px!important;
+    padding:0 14px!important;
+  }
+  .readerHead .importState{
+    top:46px!important;
+    right:0!important;
+  }
+}
+</style>
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
   <div class="planningViewBar">
     <div class="desktopPlanningViewGroup"><span class="desktopPlanningMenuLabel">Vue</span><div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div></div>
@@ -1835,7 +1888,7 @@ function renderReader(){
  if(!model||!day){meta.textContent='Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=false;empty.classList.add('hidden');viewport.classList.remove('hidden');
  meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime);
- badge.textContent=model.sourceFile||'Excel';badge.classList.toggle('hidden',!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){const admin=role==='admin';downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
+ const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
  let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Employé</th>';
  ss.forEach((t,i)=>{const major=i%2===0,label=major?(Number.isInteger(t)?String(Math.floor(t)):fmtTime(t)):'',cls=(i%4===0?'hourStart ':'')+(i%2===0?'halfStart':'blankQuarter');h+='<th class="timeHead '+cls+'" title="'+fmtTime(t)+'–'+fmtTime(t+.25)+'">'+label+'</th>'});
@@ -1860,13 +1913,15 @@ async function saveWeek(){
 
 
 function placePlanningActions(){
- const actions=document.getElementById('planningActions'),toolbar=document.getElementById('planningToolbar'),dock=document.getElementById('mobilePlanningActionsDock');
+ const actions=document.getElementById('planningActions'),toolbar=document.getElementById('planningToolbar'),dock=document.getElementById('mobilePlanningActionsDock'),sourceActions=document.querySelector('.readerHead .sourceActions');
  const status=document.getElementById('saveState'),importPanel=document.getElementById('importPanel'),editBtn=document.getElementById('editPlanningBtn');
- if(!actions||!toolbar||!dock||!status||!importPanel||!editBtn)return;
+ if(!actions||!toolbar||!dock||!sourceActions||!status||!importPanel||!editBtn)return;
  if(actions.parentElement!==toolbar)toolbar.appendChild(actions);
  if(status.parentElement!==actions)actions.appendChild(status);
- if(importPanel.parentElement!==dock)dock.appendChild(importPanel);
- if(editBtn.parentElement!==dock)dock.appendChild(editBtn);
+ const mobile=window.matchMedia('(max-width:760px)').matches||document.documentElement.classList.contains('nethorPhoneDevice');
+ const target=mobile?dock:sourceActions;
+ if(importPanel.parentElement!==target)target.appendChild(importPanel);
+ if(editBtn.parentElement!==target)target.appendChild(editBtn);
 }
 let planningActionsResizeTimer=null;
 window.addEventListener('resize',()=>{clearTimeout(planningActionsResizeTimer);planningActionsResizeTimer=setTimeout(placePlanningActions,80)},{passive:true});
