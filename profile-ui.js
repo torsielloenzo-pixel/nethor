@@ -234,8 +234,8 @@ const BASE_MODULES=Object.freeze([
  {id:'articles',label:'Fiches articles',homeLabel:'Fiches articles',subtitle:'Référentiel articles',url:'articles.html',asset:'assets/logo-article.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'RÉFÉRENTIEL',description:'Retrouver rapidement les références, codes et informations produit utilisées dans les procédures du rayon.',action:'Ouvrir le référentiel',cardClass:'articlesCard'},
  {id:'rewards',label:'Défis & Boutique',homeLabel:'Défis & Boutique',subtitle:'Missions et récompenses',url:'rewards.html',icon:'✦',asset:'assets/logo-rewards.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Créer les défis, gérer les récompenses et utiliser librement le catalogue administrateur.',action:'Ouvrir Défis & Boutique',cardClass:'rewardsCard'},
  {id:'bakery',label:'Boulangerie',homeLabel:'Boulangerie',subtitle:'Stock • Consulter • Gestion',url:'bakery.html',asset:'assets/logo-boulangerie.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Gérer le stock, consulter les articles et administrer les catégories propres à la famille Boulangerie.',action:'Ouvrir la Boulangerie',cardClass:'bakeryCard'},
- {id:'accounts',label:'Gestion des comptes',homeLabel:'Gestion des comptes',subtitle:'Utilisateurs, accès et journal',url:'accounts.html',icon:'♙',asset:'assets/logo-accounts.svg',roles:['admin'],home:true,userMenu:true,defaultHome:false,defaultUser:false,kicker:'ADMINISTRATION',description:'Gérer les utilisateurs, leurs rôles, les demandes de mot de passe et le journal d’activité.',action:'Gérer les comptes',cardClass:'accountsCard'},
- {id:'portal_admin',label:'Éditeur du portail',homeLabel:'Éditeur du portail',subtitle:'Menus, couleurs et contenu',url:'admin-portal.html',icon:'✦',asset:'assets/logo-admin-portal.svg',roles:['admin'],home:true,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ADMINISTRATION',description:'Créer les menus, personnaliser leur apparence, leurs accès et leur contenu depuis une interface unique.',action:'Configurer le portail',cardClass:'portalAdminCard'},
+ {id:'accounts',label:'Gestion des comptes',homeLabel:'Gestion des comptes',subtitle:'Utilisateurs, accès et journal',url:'accounts.html',icon:'♙',asset:'assets/logo-accounts.svg',roles:['admin'],home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'ADMINISTRATION',description:'Module interne de gestion des utilisateurs et des rôles.',action:'Gérer les comptes',cardClass:'accountsCard'},
+ {id:'portal_admin',label:'Gestion',homeLabel:'Gestion',subtitle:'Portail, comptes et permissions',url:'admin-portal.html',icon:'✦',asset:'assets/logo-admin-portal.svg',roles:['admin'],home:true,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ADMINISTRATION',description:'Administrer le portail, les comptes, les rôles, les permissions, les notifications et les journaux depuis un espace unique.',action:'Ouvrir la gestion',cardClass:'portalAdminCard'},
  {id:'settings',label:'Personnalisation',homeLabel:'Personnalisation',subtitle:'Mon accueil et mes raccourcis',url:'settings.html',icon:'⚙',asset:'assets/logo-settings.svg',roles:null,home:true,userMenu:false,defaultHome:false,kicker:'PRÉFÉRENCES',description:'Choisir les outils visibles sur ton accueil et dans ta barre utilisateur selon tes droits.',action:'Personnaliser mon portail',cardClass:'settingsCard'}
 ]);
 let NAV_MODULES=[...BASE_MODULES];
@@ -248,7 +248,7 @@ function rebuildModules(config={}){
  const base=BASE_MODULES.map(m=>{
   const p=pages[m.id]&&typeof pages[m.id]==='object'?pages[m.id]:{};
   const overrideImage=String(p.image_url||'').trim();
-  return {...m,
+  const out={...m,
    baseUrl:m.url,
    label:String(p.nav_label||p.label||m.label),
    homeLabel:String(p.label||m.homeLabel||m.label),
@@ -266,7 +266,10 @@ function rebuildModules(config={}){
    menuColor:cleanColor(p.color,''),
    menuAccent:cleanColor(p.accent,''),
    configuredRoles:Array.isArray(p.roles)?p.roles.filter(r=>roleKeys(config).includes(r)):null
-  }
+  };
+  if(m.id==='accounts'){out.home=false;out.userMenu=false;out.defaultHome=false;out.defaultUser=false}
+  if(m.id==='portal_admin'){out.label='Gestion';out.homeLabel='Gestion';out.subtitle='Portail, comptes et permissions';out.url='admin-portal.html';out.action='Ouvrir la gestion'}
+  return out
  });
  NAV_MODULES=[...base];
  if(typeof api!=='undefined'){api.modules=NAV_MODULES;api.allRoles=roleKeys(config)}
@@ -475,6 +478,14 @@ document.addEventListener('pointerdown',()=>sounds.unlock(),{once:true,capture:t
 function initials(n){return String(n||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function roleLabel(r){return roleDefinition(r)?.label||ROLE[r]||r||'Compte'}
+function addDesktopNethorMarkStyle(){
+ if(document.getElementById('nethorDesktopMarkStyle'))return;
+ const s=document.createElement('style');s.id='nethorDesktopMarkStyle';
+ s.textContent='@media(min-width:901px){.mark{background-color:transparent!important;background-image:url("assets/nethor-mark.svg")!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;color:transparent!important;font-size:0!important;box-shadow:none!important}.brand>.mark,.nMenuWrap>.mark{border-radius:0!important}}';
+ document.head?.appendChild(s)
+}
+addDesktopNethorMarkStyle();
+
 function addStyle(){
  if(document.getElementById('nettoGlobalUIStyle'))return;
  const s=document.createElement('style');s.id='nettoGlobalUIStyle';s.textContent=`
@@ -1882,7 +1893,7 @@ async function rememberSiteBase(){
   await api.client.from('app_settings').upsert({key:'site_base_url',value:{url:base},updated_at:new Date().toISOString(),updated_by:api.session.user.id},{onConflict:'key'});
  }catch(e){console.warn('Enregistrement URL portail:',e)}
 }
-function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','notification-settings.html':'Réglages des notifications'};return map[p]||document.title||'Portail'}
+function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Gestion','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','notification-settings.html':'Réglages des notifications'};return map[p]||document.title||'Portail'}
 async function logPageView(){if(!api.client||!api.session)return;try{await api.client.rpc('audit_page_view',{p_area:pageArea(),p_path:(location.pathname||'')+(location.search||''),p_title:document.title||pageArea()})}catch(e){console.warn('Journal consultation:',e)}}
 function globalCacheKey(){return api.session?.user?.id?'nettoGlobalUI:'+api.session.user.id:null}
 function globalCacheAge(){
@@ -1906,7 +1917,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=165;
+const APP_RELEASE=166;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
