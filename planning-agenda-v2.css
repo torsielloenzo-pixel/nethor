@@ -249,3 +249,7 @@ html[data-theme="dark"] .agendaLoading strong{color:#f2f4f6}
   }
 }
 
+
+/* Vue Agenda : lecture uniquement, actions d'import/modification masquées */
+body.agendaLayout #importPanel,
+body.agendaLayout #editPlanningBtn{display:none!important}
