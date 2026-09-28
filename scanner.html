@@ -171,6 +171,14 @@ function hideCameraFallback(){$('cameraFallback').classList.remove('show')}
 function normalizeEan(value){return String(value||'').replace(/\D/g,'').slice(0,14)}
 function validEanLength(v){return v.length===8||v.length===12||v.length===13}
 function eanCandidates(v){v=normalizeEan(v);const out=[v];if(v.length===12)out.push('0'+v);return [...new Set(out.filter(Boolean))]}
+function manualEanCandidates(v){
+ v=normalizeEan(v);
+ if(!v)return[];
+ const out=[v];
+ if(v.length<14)out.push('0'+v);
+ if(v.length<13)out.push(v.padStart(13,'0'));
+ return [...new Set(out.filter(Boolean))]
+}
 function safeStop(){
   if(!scanner||!scannerRunning)return Promise.resolve();
   scannerRunning=false;
@@ -242,18 +250,22 @@ async function onScanSuccess(decodedText){
 async function findProduct(raw,fromCamera=false){
   const code=normalizeEan(raw);
   $('eanInput').value=code;
-  if(!validEanLength(code)){
+  if(fromCamera&&!validEanLength(code)){
     renderNotFound(code,'Le code doit contenir 8 ou 13 chiffres.');
+    return
+  }
+  if(!fromCamera&&!code){
+    renderNotFound(code,'Saisis au moins un chiffre.');
     return
   }
   searchBusy=true;
   setCameraState('Recherche de la fiche…');
-  const candidates=eanCandidates(code);
+  const candidates=fromCamera?eanCandidates(code):manualEanCandidates(code);
   const {data,error}=await db.from('products')
     .select('id,name,ean,article_code,photo_url,on_sale,active,packaging_count,shelf_capacity,product_families(name,slug),product_categories(name),product_packagings(name)')
     .eq('active',true)
     .in('ean',candidates)
-    .limit(2);
+    .limit(Math.max(2,candidates.length));
   searchBusy=false;
   if(error){
     console.error(error);
@@ -261,7 +273,8 @@ async function findProduct(raw,fromCamera=false){
     if(fromCamera)setTimeout(()=>startCamera(),1200);
     return
   }
-  const product=(data||[])[0]||null;
+  const rows=data||[];
+  const product=candidates.map(candidate=>rows.find(p=>String(p.ean||'')===candidate)).find(Boolean)||rows[0]||null;
   if(!product){
     await safeStop();
     renderNotFound(code,'Aucune fiche article ne correspond à cet EAN.');
