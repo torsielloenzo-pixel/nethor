@@ -46,7 +46,7 @@ main{width:min(94vw,1120px);margin:auto;padding:28px 0 60px}.hero{display:flex;j
 <script>
 const URL='https://gioxrpaiwogqqtakjpnv.supabase.co',KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let session=null,profile=null,files=[];
+let session=null,profile=null,siteConfig={},files=[];
 const REQUIRED=[
  {id:'ventes',icon:'📈',label:'Ventes',desc:'Idéalement 7 à 28 jours, article par article.',required:true},
  {id:'stock',icon:'▦',label:'Stock actuel',desc:'Quantités disponibles au moment du calcul.',required:true,internal:true},
@@ -72,7 +72,32 @@ async function renderAssistant(){const stats=await internalStats(),cats=new Set(
  document.getElementById('metrics').innerHTML='<div class="metric"><b>'+files.length+'</b><small>fichiers transmis</small></div><div class="metric"><b>'+files.reduce((n,f)=>n+(Number(f.row_count)||0),0)+'</b><small>lignes détectées</small></div><div class="metric"><b>'+stats.active+'</b><small>articles F&L actifs</small></div><div class="metric"><b>'+stats.zero+'</b><small>stocks à zéro</small></div>';
  const msgs=[];if(!available.ventes)msgs.push('Commence par me donner un export de ventes. Une période de 7 jours permet un premier calcul, 28 jours améliore fortement la tendance.');if(available.ventes&&!available.casse_dons)msgs.push('Les ventes sont disponibles. Ajoute la casse et les dons pour que je puisse repérer les articles où la demande apparente est trompeuse.');if(available.casse_dons&&!available.commandes)msgs.push('Avec les commandes précédentes, je pourrai comparer commandé, vendu et perdu afin de corriger les surcommandes récurrentes.');if(pct===100)msgs.push('La base minimale est prête. Prochaine étape : mapper précisément les colonnes produit/EAN13/quantité/date de tes exports Mercalys afin de générer une vraie proposition de précommande par article.');document.getElementById('assistantFeed').innerHTML=msgs.map(x=>'<div class="assistantMsg">'+esc(x)+'</div>').join('')||'<div class="assistantMsg">Je n’ai rien d’autre à demander pour le moment.</div>'}
 async function refreshAll(){await loadFiles();renderFiles();await renderAssistant()}
-async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');const {data:p}=await db.from('profiles').select('role,display_name').eq('id',s.user.id).maybeSingle();profile=p;if(!p||!['admin','responsable'].includes(p.role))return location.replace('home.html');await refreshAll()}
+function assistantAllowed(role){
+ const page=siteConfig?.pages?.fl_assistant||{};
+ if(page.enabled===false)return false;
+ const explicit=siteConfig?.role_permissions?.fl_assistant?.[role];
+ if(['none','view','operate','manage'].includes(explicit))return explicit!=='none';
+ if(Array.isArray(page.roles))return page.roles.includes(role);
+ return ['admin','responsable'].includes(role)
+}
+function applyAssistantPageConfig(){
+ const page=siteConfig?.pages?.fl_assistant;if(!page||typeof page!=='object')return;
+ const label=String(page.nav_label||page.label||'Assistant Précommande').trim()||'Assistant Précommande';
+ const subtitle=String(page.subtitle||'Analyse dédiée • Fruits & Légumes').trim();
+ const head=document.querySelector('.brand strong'),headSub=document.querySelector('.brand small'),hero=document.querySelector('.hero h1');
+ if(head)head.textContent=label;if(headSub&&subtitle)headSub.textContent=subtitle;if(hero)hero.textContent=page.label||label;
+ document.title=label+' · Nethor'
+}
+async function boot(){
+ const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
+ const [{data:p},{data:setting}]=await Promise.all([
+  db.from('profiles').select('role,display_name').eq('id',s.user.id).maybeSingle(),
+  db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
+ ]);
+ profile=p;siteConfig=setting?.value&&typeof setting.value==='object'?setting.value:{};
+ if(!p||!assistantAllowed(p.role))return location.replace('home.html');
+ applyAssistantPageConfig();await refreshAll()
+}
 const input=document.getElementById('fileInput'),drop=document.getElementById('drop');input.addEventListener('change',()=>{handleFiles(input.files);input.value=''});['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>handleFiles(e.dataTransfer.files));boot().catch(e=>{console.error(e);document.getElementById('readinessTitle').textContent='Erreur de chargement';document.getElementById('readinessText').textContent=e.message});
 </script>
 </body></html>
