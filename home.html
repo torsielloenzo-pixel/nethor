@@ -634,6 +634,7 @@ main{position:relative;z-index:1}
   .mhdStatHead{display:flex;align-items:center;gap:7px;color:#47515d;font-size:9px;font-weight:800}
   .mhdStatHead .mhdMiniIcon{width:26px;height:26px;border-radius:9px;background:#fff2e9;color:#f15b2e;display:grid;place-items:center;font-size:13px;flex:none}
   .mhdStat strong{display:block;margin-top:8px;font-size:17px;line-height:1.05;letter-spacing:-.25px}
+  .mhdStat .mhdValueBlue{color:#1677ff;font-weight:900}
   .mhdStat small{display:block;margin-top:3px;color:#8a919a;font-size:7.8px;line-height:1.25}
   .mhdProgress{height:6px;margin-top:8px;border-radius:999px;background:#e8ebef;overflow:hidden}.mhdProgress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff3f24,#ff7f23)}
   .mhdSection{padding:12px 13px}
@@ -746,6 +747,11 @@ async function loadHomeTodayPlanning(profile,name){
 function mobileHomeMode(){try{return document.documentElement.classList.contains('nethorPhoneDevice')||window.matchMedia('(max-width:700px)').matches}catch(_){return Math.min(window.innerWidth,window.innerHeight)<=700}}
 function homeAddDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
 function homeParseDate(s){const [y,m,d]=String(s||'').split('-').map(Number);return new Date(y||2000,(m||1)-1,d||1)}
+function homeDateDiffDays(fromKey,toKey){
+ const [fy,fm,fd]=String(fromKey||'').split('-').map(Number),[ty,tm,td]=String(toKey||'').split('-').map(Number);
+ if(!fy||!fm||!fd||!ty||!tm||!td)return 0;
+ return Math.round((Date.UTC(ty,tm-1,td)-Date.UTC(fy,fm-1,fd))/86400000)
+}
 function homeDateLabel(dateKey,todayKey){
  if(dateKey===todayKey)return'Aujourd’hui';
  const tomorrow=homeIsoDate(homeAddDays(homeParseDate(todayKey),1));if(dateKey===tomorrow)return'Demain';
@@ -863,10 +869,17 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  const stats=[];
  if(widget('hours'))stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">◷</span>Mes heures</div><strong>'+homeEsc(String(currentHours).replace('.',','))+' h</strong><small>planifiées cette semaine</small><div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div></button>');
  if(widget('absences')){
-  const leaveStart=nextLeave?.start||'',leaveEnd=nextLeave?.end||'',leaveTarget=leaveStart?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(leaveStart))))+'&day='+encodeURIComponent(leaveStart)+'&focus=leave':'planning.html';
-  const short=k=>homeParseDate(k).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
-  const leaveValue=!leaveStart?'Aucun':leaveStart===leaveEnd?short(leaveStart):short(leaveStart)+' → '+short(leaveEnd),leaveSub=leaveStart?'cases jaunes du planning':'aucun congé planifié';
-  stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(leaveTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">☂</span>Congés</div><strong>'+homeEsc(leaveValue)+'</strong><small>'+homeEsc(leaveSub)+'</small></button>')
+  const leaveStart=nextLeave?.start||'',leaveEnd=nextLeave?.end||'',leaveOngoing=!!leaveStart&&leaveStart<=todayKey&&todayKey<=leaveEnd,leaveFocusDate=leaveOngoing?todayKey:leaveStart,leaveTarget=leaveFocusDate?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(leaveFocusDate))))+'&day='+encodeURIComponent(leaveFocusDate)+'&focus=leave':'planning.html';
+  const short=k=>homeParseDate(k).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}),daysUntil=leaveStart?Math.max(0,homeDateDiffDays(todayKey,leaveStart)):0;
+  let leaveMain='Aucun',leaveSub='aucun congé planifié';
+  if(leaveOngoing){
+   leaveMain='<span class="mhdValueBlue">Congé</span>'+(nextShift?.dateKey?' jusqu’au '+homeEsc(short(nextShift.dateKey)):'');
+   leaveSub=nextShift?.dateKey?'prochaine prise de poste':'En cours'
+  }else if(leaveStart){
+   leaveMain='<span class="mhdValueBlue">Dans '+daysUntil+' jour'+(daysUntil>1?'s':'')+'</span>';
+   leaveSub=leaveStart===leaveEnd?'Congé le '+short(leaveStart):'Congé du '+short(leaveStart)+' au '+short(leaveEnd)
+  }
+  stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(leaveTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">☂</span>Congés</div><strong>'+leaveMain+'</strong><small>'+homeEsc(leaveSub)+'</small></button>')
  }
  if(widget('next_rest')){const restTarget=nextRest?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextRest))))+'&day='+encodeURIComponent(nextRest)+'&focus=rest':'planning.html';stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(restTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">▣</span>Prochain repos</div><strong>'+(nextRest?homeEsc(homeParseDate(nextRest).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')):'—')+'</strong><small>'+(nextRest?'Jour de repos':'non déterminé')+'</small></button>')}
  if(stats.length)sections.push('<section class="mhdStats">'+stats.join('')+'</section>');
