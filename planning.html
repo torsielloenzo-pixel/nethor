@@ -1237,6 +1237,71 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   #planningActions{grid-row:3!important}
 }
 </style>
+<style id="planning-desktop-full-day-v1">
+/* Desktop : afficher la journée complète 06:00 → 20:30 sans défilement horizontal. */
+@media(min-width:1280px){
+  #planningApp{
+    width:calc(100vw - 24px)!important;
+    max-width:none!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  #sheetViewport{
+    width:100%!important;
+    max-width:none!important;
+    overflow-x:hidden!important;
+  }
+  .xlsTable{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    table-layout:fixed!important;
+  }
+  .xlsTable col.nameCol{width:160px!important}
+  .xlsTable col.totalCol{width:60px!important}
+  .xlsTable col.slotCol{
+    width:calc((100% - 220px) / 58)!important;
+  }
+  .xlsTable .slot{
+    width:auto!important;
+    min-width:0!important;
+  }
+  .xlsTable .nameCell,
+  .xlsTable .nameHead{
+    width:160px!important;
+    max-width:160px!important;
+  }
+  .xlsTable .totalCell,
+  .xlsTable .totalHead{
+    width:60px!important;
+    max-width:60px!important;
+  }
+  .xlsTable .timeHead{
+    min-width:0!important;
+    overflow:hidden!important;
+    font-size:8px!important;
+    letter-spacing:-.15px!important;
+  }
+  .xlsTable .planningIdentityText strong{
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  /* "Lecture seule" est un état passif : on garde les états utiles (chargement, enregistrement, erreur). */
+  #saveState.passive{display:none!important}
+}
+
+/* Sur les desktops plus étroits, on gagne déjà de l'espace sans rendre les créneaux illisibles. */
+@media(min-width:761px) and (max-width:1279px){
+  .xlsTable col.nameCol{width:148px!important}
+  .xlsTable col.slotCol{width:24px!important}
+  .xlsTable col.totalCol{width:58px!important}
+  .xlsTable .slot{width:24px!important;min-width:24px!important}
+  .xlsTable .nameCell,.xlsTable .nameHead{max-width:148px!important}
+  #saveState.passive{display:none!important}
+}
+</style>
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
   <div class="planningViewBar">
     <div class="desktopPlanningViewGroup"><span class="desktopPlanningMenuLabel">Vue</span><div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div></div>
@@ -1245,7 +1310,7 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   <section id="weekView">
     <div id="planningToolbar" class="toolbar">
       <div class="desktopPlanningDayGroup"><span class="desktopPlanningMenuLabel">Jour</span><div id="days" class="days"></div></div>
-      <div id="planningActions" class="planningActions"><span id="saveState" class="saveState">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
+      <div id="planningActions" class="planningActions"><span id="saveState" class="saveState passive">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
     </div>
     <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><div class="sourceActions"><span id="sourceBadge" class="sourceBadge hidden"></span><button id="downloadSourceBtn" class="sourceDownloadBtn hidden" type="button" onclick="downloadPlanningSource()">⇩ Télécharger Excel</button></div></div>
 
@@ -1361,7 +1426,7 @@ function fmtTime(t){const h=Math.floor(t),m=Math.round((t-h)*60);return h+(m?':'
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function norm(v){return String(v??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function showToast(msg){let t=document.getElementById('planningToast');if(!t){t=document.createElement('div');t.id='planningToast';t.className='planningToast';document.body.appendChild(t)}t.textContent=msg;t.classList.add('show');clearTimeout(window._pt);window._pt=setTimeout(()=>t.classList.remove('show'),2400)}
-function setSaveState(v){const e=document.getElementById('saveState');if(e)e.textContent=v}
+function setSaveState(v){const e=document.getElementById('saveState');if(!e)return;e.textContent=v;e.classList.toggle('passive',String(v||'').trim()==='Lecture seule')}
 function playUISound(){window.NettoSounds?.play?.('tap')}
 
 function syncPlanningCalendarViewport(){
