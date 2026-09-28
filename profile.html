@@ -71,10 +71,227 @@ main{width:min(92vw,760px);margin:auto;padding:50px 0 70px}.hero{text-align:cent
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="design-v2.css?v=3"><link rel="stylesheet" href="design-v3.css?v=3">
 <link rel="stylesheet" href="design-v4.css?v=8">
+<style id="profile-mobile-layout-v141">
+.profileMobileTop{display:none}
+@media(max-width:700px){
+  body>header{display:none!important}
+  main{
+    width:min(100%,760px)!important;
+    margin:0 auto!important;
+    padding:calc(env(safe-area-inset-top) + 14px) 10px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important
+  }
+  main>.hero{display:none!important}
+  .profileMobileTop{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin:2px 2px 13px
+  }
+  .profileMobileBack{
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
+    border:1px solid #e4e7eb;
+    border-radius:14px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    color:inherit;
+    font-size:24px;
+    line-height:1;
+    font-weight:700;
+    padding:0;
+    box-shadow:none
+  }
+  .profileMobileTitle{min-width:0}
+  .profileMobileTitle h1{
+    margin:0!important;
+    font-size:26px!important;
+    line-height:1.05!important;
+    letter-spacing:-.8px!important
+  }
+  .profileMobileTitle p{
+    margin:5px 0 0!important;
+    color:#7b828b!important;
+    font-size:10px!important;
+    line-height:1.35!important
+  }
+
+  .profileMainCard{
+    padding:15px!important;
+    border-radius:20px!important;
+    overflow:hidden
+  }
+  .profileTop{
+    grid-template-columns:88px minmax(0,1fr)!important;
+    gap:14px!important;
+    align-items:center!important;
+    text-align:left!important
+  }
+  .avatarWrap,.avatar{
+    width:88px!important;
+    height:88px!important
+  }
+  .avatar{
+    border-radius:24px!important;
+    font-size:30px!important
+  }
+  .rewardFrameLayer{border-radius:19px!important}
+  .rewardAccessoryLayer{transform:scale(.82) rotate(8deg);transform-origin:top right}
+  .avatarBadge{
+    right:-3px!important;
+    bottom:0!important;
+    width:34px!important;
+    height:34px!important;
+    border-width:3px!important
+  }
+  .name{
+    font-size:20px!important;
+    line-height:1.15!important;
+    overflow-wrap:anywhere
+  }
+  .role{
+    margin-top:4px!important;
+    font-size:9.5px!important;
+    line-height:1.35!important
+  }
+  .divider{margin:16px 0!important}
+
+  .profileFields,.securityFields{
+    grid-template-columns:1fr!important;
+    gap:14px!important;
+    margin-bottom:0!important
+  }
+  .profileFields>.field,.securityFields>.field{
+    min-width:0!important
+  }
+  .readonlyProfileName,
+  .profileFields select,
+  .securityFields input{
+    width:100%!important;
+    min-width:0!important
+  }
+  .profileColorPicker{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:8px!important;
+    width:100%!important
+  }
+  .profileColorChoice{
+    width:100%!important;
+    height:42px!important;
+    min-width:0!important
+  }
+  .profileFields>.buttons.field.full{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    width:100%!important
+  }
+  .profileFields>.buttons.field.full .btn,
+  .profileFields>.buttons.field.full .state{
+    width:100%!important;
+    max-width:none!important
+  }
+
+  .rewardHead,.soundHead,.notificationsHead{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important
+  }
+  .rewardHead .btn,.soundHead .btn,.securityCard .buttons .btn,.notificationsHead .btn{
+    width:100%!important;
+    max-width:none!important
+  }
+  .rewardGrid,.soundSettings{
+    grid-template-columns:1fr!important
+  }
+  .soundPreviewGrid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important
+  }
+  .soundPreviewGrid button{
+    width:100%!important;
+    min-width:0!important
+  }
+  .securityCard .buttons{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    width:100%!important
+  }
+  .notificationsCard{
+    padding:14px!important;
+    border-radius:17px!important;
+    overflow:hidden!important
+  }
+  .notificationItem{
+    grid-template-columns:32px minmax(0,1fr) 30px!important;
+    gap:8px!important;
+    align-items:start!important;
+    padding:9px!important
+  }
+  .notificationIcon{
+    width:30px!important;
+    height:30px!important
+  }
+  .notificationBody{
+    min-width:0!important;
+    overflow:hidden!important
+  }
+  .notificationBody strong,
+  .notificationBody span,
+  .notificationBody small{
+    overflow-wrap:anywhere!important
+  }
+  .notificationDelete{
+    grid-column:3!important;
+    grid-row:1!important;
+    justify-self:end!important;
+    align-self:start!important
+  }
+
+  .avatarEditorModal{
+    padding:10px!important;
+    align-items:end!important
+  }
+  .avatarEditorCard{
+    width:100%!important;
+    max-width:none!important;
+    max-height:86dvh!important;
+    border-radius:24px 24px 18px 18px!important;
+    padding:15px!important
+  }
+  .avatarPhotoActions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    width:100%!important
+  }
+  .avatarPhotoActions .btn{
+    width:100%!important;
+    max-width:none!important
+  }
+
+  :root[data-theme="dark"] .profileMobileBack{
+    background:#22252a!important;
+    border-color:#343940!important;
+    color:#f1eeea!important
+  }
+  :root[data-theme="dark"] .profileMobileTitle p{
+    color:#aaa59f!important
+  }
+}
+@media(max-width:380px){
+  .profileTop{grid-template-columns:80px minmax(0,1fr)!important;gap:12px!important}
+  .avatarWrap,.avatar{width:80px!important;height:80px!important}
+  .name{font-size:18px!important}
+}
+</style>
 </head>
 <body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
 <header><div class="top"><div class="brand"><div class="nMenuWrap"><button class="mark" onclick="location.href='home.html'">N</button><div id="nMenu" class="nMenu hidden"><div class="nMenuTitle">Navigation</div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="location.href='index.html'"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="location.href='planning.html'"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="location.href='chat.html'"><span class="navToolLogo equipe"></span><div><strong>Chat</strong><small>Messagerie interne</small></div></button><button onclick="location.href='articles.html'"><span class="navToolLogo article"></span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="logoutItem" onclick="logout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><div class="title">Mon profil</div><div class="sub">Identité & notifications</div></div></div></div></header>
-<main><div class="hero"><h1>Mon profil</h1><p>Personnalise l’identité affichée dans les menus, le chat et les outils du site.</p></div><section class="card"><div class="profileTop"><div class="avatarWrap"><div id="avatar" class="avatar">U</div><button type="button" class="avatarBadge" onclick="openAvatarEditor()" title="Modifier la photo" aria-label="Modifier la photo de profil">✎</button></div><div><div id="displayName" class="name">Utilisateur</div><div id="role" class="role"></div></div></div><div class="divider"></div><div class="profileFields"><div class="field"><label>Nom affiché</label><div class="readonlyProfileName" id="readonlyProfileName">Utilisateur</div><span class="fieldHelp">Le nom affiché est géré par un administrateur.</span></div><div class="field"><label>Couleur du profil</label><div class="colorField profileColorPicker" id="profileColorPicker"><input id="colorInput" type="hidden" value="#FF3B30"><button type="button" class="profileColorChoice" style="--profile-color:#FF3B30" data-color="#FF3B30" title="Rouge Nethor" aria-label="Rouge Nethor" onclick="selectProfileColor('#FF3B30')"></button><button type="button" class="profileColorChoice" style="--profile-color:#FF8A00" data-color="#FF8A00" title="Orange Nethor" aria-label="Orange Nethor" onclick="selectProfileColor('#FF8A00')"></button><button type="button" class="profileColorChoice" style="--profile-color:#1F2937" data-color="#1F2937" title="Anthracite" aria-label="Anthracite" onclick="selectProfileColor('#1F2937')"></button><button type="button" class="profileColorChoice" style="--profile-color:#6B7280" data-color="#6B7280" title="Ardoise" aria-label="Ardoise" onclick="selectProfileColor('#6B7280')"></button></div><span class="fieldHelp">Palette Nethor uniquement · utilisée quand aucune photo n’est définie.</span></div><div class="field"><label for="themeSelect">Apparence du site</label><select id="themeSelect" onchange="applyTheme(this.value)"><option value="light">Mode clair</option><option value="dark">Mode sombre</option></select></div><div class="buttons field full"><button class="btn primary" onclick="saveProfile()">Enregistrer le profil</button><div id="profileState" class="state"></div></div></div><div id="avatarEditorModal" class="avatarEditorModal hidden" onclick="if(event.target===this)closeAvatarEditor()"><div class="avatarEditorCard" role="dialog" aria-modal="true" aria-labelledby="avatarEditorTitle"><div class="avatarEditorHead"><div><strong id="avatarEditorTitle">Photo de profil</strong><p>Choisis puis recadre l’image avant de la valider.</p></div><button type="button" class="avatarEditorClose" onclick="closeAvatarEditor()" aria-label="Fermer">×</button></div><input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="previewFile(this)"><div id="avatarCropStage" class="avatarCropStage hidden"><img id="avatarCropImage" alt="Image à recadrer"><div class="avatarCropGuide"></div></div><div id="avatarCropTools" class="avatarCropTools hidden"><button type="button" class="cropZoomBtn" onclick="stepCropZoom(-0.1)" aria-label="Réduire">−</button><input id="avatarZoom" type="range" min="1" max="3" step="0.01" value="1" oninput="setCropZoom(this.value)" aria-label="Zoom de la photo"><button type="button" class="cropZoomBtn" onclick="stepCropZoom(0.1)" aria-label="Agrandir">+</button></div><div class="buttons avatarPhotoActions"><button id="chooseAvatarBtn" class="btn primary" onclick="avatarInput.click()">Choisir une image</button><button id="removeBtn" class="btn danger hidden" onclick="stageRemoveAvatar()">Supprimer la photo</button><button id="validateAvatarBtn" class="btn secondary avatarValidateBtn" onclick="validateAvatarChange()" disabled>Valider</button></div><div id="state" class="state"></div></div></div></section><section id="rewardCustomizer" class="card rewardCard hidden"><div class="rewardHead"><div><h2>Personnalisation avancée</h2><p>Centralise ici l’apparence de ton compte. La photo de profil et son recadrage se gèrent avec le stylo ; ici, l’administrateur peut choisir un avatar de poste, puis appliquer cadres, accessoires, titres et thèmes. La photo personnalisée reste prioritaire.</p></div><a href="rewards.html" class="btn secondary" style="display:inline-block;text-decoration:none">Ouvrir Défis & Boutique</a></div><div class="rewardGrid"><div class="rewardChoice"><label for="rewardAvatar">Avatar de poste</label><select id="rewardAvatar" onchange="equipReward('avatar',this.value)"></select></div><div class="rewardChoice"><label for="rewardFrame">Cadre</label><select id="rewardFrame" onchange="equipReward('frame',this.value)"></select></div><div class="rewardChoice"><label for="rewardAccessory">Accessoire</label><select id="rewardAccessory" onchange="equipReward('accessory',this.value)"></select></div><div class="rewardChoice"><label for="rewardTitleSelect">Titre</label><select id="rewardTitleSelect" onchange="equipReward('title',this.value)"></select></div><div class="rewardChoice"><label for="rewardTheme">Thème d’accent</label><select id="rewardTheme" onchange="equipReward('theme',this.value)"></select></div></div><div id="rewardState" class="rewardState"></div></section><section class="card soundCard"><div class="soundHead"><div><h2>Sons d’interface</h2><p>Régle les retours sonores du portail sur cet appareil. Les sons importants restent courts et distincts pour éviter de rendre l’interface fatigante.</p></div><button class="btn secondary" onclick="previewSound('confirm')">Tester</button></div><div class="soundSettings"><label class="soundToggle"><input id="soundEnabled" type="checkbox" onchange="setSoundEnabled(this.checked)"><span>Activer les sons d’interface</span></label><label class="soundVolume"><span>Volume <b id="soundVolumeValue">72%</b></span><input id="soundVolume" type="range" min="0" max="100" step="1" value="72" oninput="setSoundVolume(this.value,true)" onchange="setSoundVolume(this.value,false)"></label></div><div class="soundPreviewGrid"><button data-sound-preview onclick="previewSound('loginSuccess')">Connexion</button><button data-sound-preview onclick="previewSound('error')">Erreur</button><button data-sound-preview onclick="previewSound('notification')">Notification</button><button data-sound-preview onclick="previewSound('success')">Validation</button><button data-sound-preview onclick="previewSound('logout')">Déconnexion</button></div></section><section class="card securityCard"><div class="securityHead"><h2>Sécurité du compte</h2><p>Change ton mot de passe directement depuis ton profil. Le mot de passe actuel est demandé avant validation.</p></div><div class="profileFields securityFields"><div class="field"><label for="currentPassword">Mot de passe actuel</label><input id="currentPassword" type="password" autocomplete="current-password" placeholder="Mot de passe actuel"></div><div class="field"><label for="newPassword">Nouveau mot de passe</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" placeholder="8 caractères minimum"></div><div class="field"><label for="confirmPassword">Confirmer le nouveau mot de passe</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Retape le mot de passe"></div></div><div class="buttons"><button id="passwordSaveBtn" class="btn primary" onclick="changePassword()">Changer le mot de passe</button></div><div id="passwordState" class="state securityState" aria-live="polite"></div></section><section class="notificationsCard"><div class="notificationsHead"><div><h2>Notifications</h2><p>Modifications importantes concernant ton planning.</p></div><button id="markAllReadBtn" class="btn secondary hidden" onclick="markAllNotificationsRead()">Tout marquer comme lu</button></div><div id="notificationsList" class="notificationsList"><div class="notificationsEmpty">Aucune notification pour le moment.</div></div></section></main>
+<main><div class="profileMobileTop"><button class="profileMobileBack" type="button" onclick="location.href='home.html?open_user_menu=1'" aria-label="Retour au menu utilisateur">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div><div class="hero"><h1>Mon profil</h1><p>Personnalise l’identité affichée dans les menus, le chat et les outils du site.</p></div><section class="card profileMainCard"><div class="profileTop"><div class="avatarWrap"><div id="avatar" class="avatar">U</div><button type="button" class="avatarBadge" onclick="openAvatarEditor()" title="Modifier la photo" aria-label="Modifier la photo de profil">✎</button></div><div><div id="displayName" class="name">Utilisateur</div><div id="role" class="role"></div></div></div><div class="divider"></div><div class="profileFields"><div class="field"><label>Nom affiché</label><div class="readonlyProfileName" id="readonlyProfileName">Utilisateur</div><span class="fieldHelp">Le nom affiché est géré par un administrateur.</span></div><div class="field"><label>Couleur du profil</label><div class="colorField profileColorPicker" id="profileColorPicker"><input id="colorInput" type="hidden" value="#FF3B30"><button type="button" class="profileColorChoice" style="--profile-color:#FF3B30" data-color="#FF3B30" title="Rouge Nethor" aria-label="Rouge Nethor" onclick="selectProfileColor('#FF3B30')"></button><button type="button" class="profileColorChoice" style="--profile-color:#FF8A00" data-color="#FF8A00" title="Orange Nethor" aria-label="Orange Nethor" onclick="selectProfileColor('#FF8A00')"></button><button type="button" class="profileColorChoice" style="--profile-color:#1F2937" data-color="#1F2937" title="Anthracite" aria-label="Anthracite" onclick="selectProfileColor('#1F2937')"></button><button type="button" class="profileColorChoice" style="--profile-color:#6B7280" data-color="#6B7280" title="Ardoise" aria-label="Ardoise" onclick="selectProfileColor('#6B7280')"></button></div><span class="fieldHelp">Palette Nethor uniquement · utilisée quand aucune photo n’est définie.</span></div><div class="field"><label for="themeSelect">Apparence du site</label><select id="themeSelect" onchange="applyTheme(this.value)"><option value="light">Mode clair</option><option value="dark">Mode sombre</option></select></div><div class="buttons field full"><button class="btn primary" onclick="saveProfile()">Enregistrer le profil</button><div id="profileState" class="state"></div></div></div><div id="avatarEditorModal" class="avatarEditorModal hidden" onclick="if(event.target===this)closeAvatarEditor()"><div class="avatarEditorCard" role="dialog" aria-modal="true" aria-labelledby="avatarEditorTitle"><div class="avatarEditorHead"><div><strong id="avatarEditorTitle">Photo de profil</strong><p>Choisis puis recadre l’image avant de la valider.</p></div><button type="button" class="avatarEditorClose" onclick="closeAvatarEditor()" aria-label="Fermer">×</button></div><input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="previewFile(this)"><div id="avatarCropStage" class="avatarCropStage hidden"><img id="avatarCropImage" alt="Image à recadrer"><div class="avatarCropGuide"></div></div><div id="avatarCropTools" class="avatarCropTools hidden"><button type="button" class="cropZoomBtn" onclick="stepCropZoom(-0.1)" aria-label="Réduire">−</button><input id="avatarZoom" type="range" min="1" max="3" step="0.01" value="1" oninput="setCropZoom(this.value)" aria-label="Zoom de la photo"><button type="button" class="cropZoomBtn" onclick="stepCropZoom(0.1)" aria-label="Agrandir">+</button></div><div class="buttons avatarPhotoActions"><button id="chooseAvatarBtn" class="btn primary" onclick="avatarInput.click()">Choisir une image</button><button id="removeBtn" class="btn danger hidden" onclick="stageRemoveAvatar()">Supprimer la photo</button><button id="validateAvatarBtn" class="btn secondary avatarValidateBtn" onclick="validateAvatarChange()" disabled>Valider</button></div><div id="state" class="state"></div></div></div></section><section id="rewardCustomizer" class="card rewardCard hidden"><div class="rewardHead"><div><h2>Personnalisation avancée</h2><p>Centralise ici l’apparence de ton compte. La photo de profil et son recadrage se gèrent avec le stylo ; ici, l’administrateur peut choisir un avatar de poste, puis appliquer cadres, accessoires, titres et thèmes. La photo personnalisée reste prioritaire.</p></div><a href="rewards.html" class="btn secondary" style="display:inline-block;text-decoration:none">Ouvrir Défis & Boutique</a></div><div class="rewardGrid"><div class="rewardChoice"><label for="rewardAvatar">Avatar de poste</label><select id="rewardAvatar" onchange="equipReward('avatar',this.value)"></select></div><div class="rewardChoice"><label for="rewardFrame">Cadre</label><select id="rewardFrame" onchange="equipReward('frame',this.value)"></select></div><div class="rewardChoice"><label for="rewardAccessory">Accessoire</label><select id="rewardAccessory" onchange="equipReward('accessory',this.value)"></select></div><div class="rewardChoice"><label for="rewardTitleSelect">Titre</label><select id="rewardTitleSelect" onchange="equipReward('title',this.value)"></select></div><div class="rewardChoice"><label for="rewardTheme">Thème d’accent</label><select id="rewardTheme" onchange="equipReward('theme',this.value)"></select></div></div><div id="rewardState" class="rewardState"></div></section><section class="card soundCard"><div class="soundHead"><div><h2>Sons d’interface</h2><p>Régle les retours sonores du portail sur cet appareil. Les sons importants restent courts et distincts pour éviter de rendre l’interface fatigante.</p></div><button class="btn secondary" onclick="previewSound('confirm')">Tester</button></div><div class="soundSettings"><label class="soundToggle"><input id="soundEnabled" type="checkbox" onchange="setSoundEnabled(this.checked)"><span>Activer les sons d’interface</span></label><label class="soundVolume"><span>Volume <b id="soundVolumeValue">72%</b></span><input id="soundVolume" type="range" min="0" max="100" step="1" value="72" oninput="setSoundVolume(this.value,true)" onchange="setSoundVolume(this.value,false)"></label></div><div class="soundPreviewGrid"><button data-sound-preview onclick="previewSound('loginSuccess')">Connexion</button><button data-sound-preview onclick="previewSound('error')">Erreur</button><button data-sound-preview onclick="previewSound('notification')">Notification</button><button data-sound-preview onclick="previewSound('success')">Validation</button><button data-sound-preview onclick="previewSound('logout')">Déconnexion</button></div></section><section class="card securityCard"><div class="securityHead"><h2>Sécurité du compte</h2><p>Change ton mot de passe directement depuis ton profil. Le mot de passe actuel est demandé avant validation.</p></div><div class="profileFields securityFields"><div class="field"><label for="currentPassword">Mot de passe actuel</label><input id="currentPassword" type="password" autocomplete="current-password" placeholder="Mot de passe actuel"></div><div class="field"><label for="newPassword">Nouveau mot de passe</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" placeholder="8 caractères minimum"></div><div class="field"><label for="confirmPassword">Confirmer le nouveau mot de passe</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Retape le mot de passe"></div></div><div class="buttons"><button id="passwordSaveBtn" class="btn primary" onclick="changePassword()">Changer le mot de passe</button></div><div id="passwordState" class="state securityState" aria-live="polite"></div></section><section class="notificationsCard"><div class="notificationsHead"><div><h2>Notifications</h2><p>Modifications importantes concernant ton planning.</p></div><button id="markAllReadBtn" class="btn secondary hidden" onclick="markAllNotificationsRead()">Tout marquer comme lu</button></div><div id="notificationsList" class="notificationsList"><div class="notificationsEmpty">Aucune notification pour le moment.</div></div></section></main>
 <script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC',db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const PROFILE_COLORS=['#FF3B30','#FF8A00','#1F2937','#6B7280'];
