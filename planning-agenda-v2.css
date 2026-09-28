@@ -253,3 +253,25 @@ html[data-theme="dark"] .agendaLoading strong{color:#f2f4f6}
 /* Vue Agenda : lecture uniquement, actions d'import/modification masquées */
 body.agendaLayout #importPanel,
 body.agendaLayout #editPlanningBtn{display:none!important}
+
+/* Agenda : conserver le jour actif sur toute la colonne */
+.agendaDayHead.activeDay{
+  background:#fff1e9;
+  box-shadow:inset 2px 0 0 #ff7447,inset -2px 0 0 #ff7447
+}
+.agendaDayHead.activeDay strong{color:#d94e22}
+.agendaCell.activeDay{
+  background:#fffaf6;
+  box-shadow:inset 2px 0 0 rgba(255,116,71,.42),inset -2px 0 0 rgba(255,116,71,.42)
+}
+.agendaCell.activeDay.today{background:#fff7ef}
+html[data-theme="dark"] .agendaDayHead.activeDay{
+  background:#36261f;
+  box-shadow:inset 2px 0 0 #ff8a61,inset -2px 0 0 #ff8a61
+}
+html[data-theme="dark"] .agendaDayHead.activeDay strong{color:#ff9b78}
+html[data-theme="dark"] .agendaCell.activeDay{
+  background:#27211e;
+  box-shadow:inset 2px 0 0 rgba(255,138,97,.46),inset -2px 0 0 rgba(255,138,97,.46)
+}
+html[data-theme="dark"] .agendaCell.activeDay.today{background:#30251f}
