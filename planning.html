@@ -1024,14 +1024,222 @@ body:not(.planningYearOpen) #yearView{display:none!important}
 }
 </style>
 <link rel="stylesheet" href="planning-agenda-v2.css?v=13"><link rel="preload" href="planning-agenda-v2.js?v=14" as="script"><script src="planning-agenda-v2.js?v=14" defer></script>
+<style id="planning-desktop-menu-v1">
+/* Desktop uniquement — réorganisation des menus supérieurs du planning. */
+.desktopPlanningMenuLabel{display:none}
+
+@media(min-width:761px){
+  .planningViewBar{
+    display:grid!important;
+    grid-template-columns:auto minmax(420px,1fr)!important;
+    align-items:center!important;
+    gap:18px!important;
+    margin:0 0 12px!important;
+    padding:12px 14px!important;
+    border:1px solid #e1e5e9!important;
+    border-radius:16px!important;
+    background:#fff!important;
+    box-shadow:0 5px 18px rgba(18,24,32,.045)!important;
+  }
+  .desktopPlanningViewGroup{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .desktopPlanningMenuLabel{
+    display:inline-flex;
+    align-items:center;
+    min-height:34px;
+    color:#7b8189;
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:.55px;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .viewTabs{
+    display:inline-flex!important;
+    gap:4px!important;
+    padding:4px!important;
+    border-radius:12px!important;
+    background:#eef1f4!important;
+  }
+  .viewTab{
+    min-height:38px!important;
+    padding:0 16px!important;
+    border-radius:9px!important;
+    font-size:12px!important;
+  }
+  .weekNav{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(220px,1fr) 38px auto 38px!important;
+    align-items:center!important;
+    justify-content:end!important;
+    gap:7px!important;
+  }
+  .weekNav .weekLabel{
+    grid-column:1!important;
+    grid-row:1!important;
+    min-width:0!important;
+    margin:0 8px 0 0!important;
+    text-align:right!important;
+    font-size:11px!important;
+    line-height:1.25!important;
+    white-space:normal!important;
+  }
+  .weekNav>button:nth-of-type(1){grid-column:2!important;grid-row:1!important}
+  .weekNav>button:nth-of-type(2){grid-column:3!important;grid-row:1!important}
+  .weekNav>button:nth-of-type(3){grid-column:4!important;grid-row:1!important}
+  .weekNav .miniNav{
+    width:38px!important;
+    min-width:38px!important;
+    height:38px!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  .weekNav>button:nth-of-type(2){
+    min-height:38px!important;
+    padding:0 13px!important;
+    white-space:nowrap!important;
+    font-size:11px!important;
+  }
+
+  #planningToolbar{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:start!important;
+    gap:10px 12px!important;
+    margin:0 0 10px!important;
+    padding:12px 14px!important;
+    border:1px solid #e1e5e9!important;
+    border-radius:16px!important;
+    background:#fff!important;
+    box-shadow:0 5px 18px rgba(18,24,32,.04)!important;
+  }
+  .desktopPlanningDayGroup{
+    grid-column:1!important;
+    grid-row:1!important;
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:12px!important;
+    min-width:0!important;
+  }
+  .days{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:5px!important;
+    margin:0!important;
+    padding:0!important;
+    overflow-x:auto!important;
+    scrollbar-width:thin!important;
+  }
+  .day{
+    min-height:42px!important;
+    padding:7px 12px!important;
+    border:1px solid transparent!important;
+    border-radius:11px!important;
+    background:#f0f2f4!important;
+    font-size:11px!important;
+    line-height:1.05!important;
+  }
+  .day small{
+    margin-top:4px!important;
+    font-size:8px!important;
+  }
+  .day:hover{background:#e8ebee!important}
+  .day.active{
+    background:#20242a!important;
+    border-color:#20242a!important;
+    color:#fff!important;
+  }
+  .weekTotalChip{
+    flex:none!important;
+    min-width:54px!important;
+    height:42px!important;
+    border-radius:11px!important;
+  }
+
+  #planningLayoutBar{
+    grid-column:2!important;
+    grid-row:1!important;
+    width:auto!important;
+    min-width:0!important;
+    min-height:42px!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    gap:9px!important;
+  }
+  #planningLayoutBar .planningLayoutIntro{display:none!important}
+  #planningLayoutBar .planningLayoutSwitch{
+    min-height:42px!important;
+    padding:4px!important;
+    border-radius:12px!important;
+  }
+  #planningLayoutBar .planningLayoutBtn{
+    min-height:34px!important;
+    padding:0 11px!important;
+    font-size:11px!important;
+  }
+
+  #planningActions{
+    grid-column:1/-1!important;
+    grid-row:2!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:8px!important;
+    padding-top:10px!important;
+    border-top:1px solid #edf0f2!important;
+  }
+  .readerHead{margin-top:2px!important}
+
+  body.agendaLayout .desktopPlanningDayGroup{display:none!important}
+  body.agendaLayout #planningToolbar{grid-template-columns:1fr auto!important}
+  body.agendaLayout #planningLayoutBar{grid-column:2!important}
+
+  :root[data-theme="dark"] .planningViewBar,
+  :root[data-theme="dark"] #planningToolbar{
+    background:#23272d!important;
+    border-color:#3d444d!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.12)!important;
+  }
+  :root[data-theme="dark"] .desktopPlanningMenuLabel{color:#aeb5be!important}
+  :root[data-theme="dark"] .viewTabs{background:#191c20!important}
+  :root[data-theme="dark"] .day{background:#2b3037!important;border-color:#2b3037!important;color:#e4e7eb!important}
+  :root[data-theme="dark"] .day:hover{background:#353b43!important}
+  :root[data-theme="dark"] .day.active{background:linear-gradient(135deg,#ff3a24,#ff8124)!important;border-color:transparent!important;color:#fff!important}
+  :root[data-theme="dark"] #planningActions{border-color:#363d45!important}
+}
+
+@media(min-width:761px) and (max-width:1050px){
+  .planningViewBar{grid-template-columns:1fr!important;gap:10px!important}
+  .weekNav{grid-template-columns:minmax(180px,1fr) 38px auto 38px!important}
+  #planningToolbar{grid-template-columns:1fr!important}
+  .desktopPlanningDayGroup,#planningLayoutBar,#planningActions{grid-column:1!important}
+  #planningLayoutBar{grid-row:2!important;justify-self:end!important}
+  #planningActions{grid-row:3!important}
+}
+</style>
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
   <div class="planningViewBar">
-    <div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div>
+    <div class="desktopPlanningViewGroup"><span class="desktopPlanningMenuLabel">Vue</span><div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div></div>
     <div class="weekNav"><button class="btn light miniNav" onclick="changeWeek(-1)">←</button><button class="btn light" onclick="goCurrentWeek()">Cette semaine</button><button class="btn light miniNav" onclick="changeWeek(1)">→</button><span id="weekLabel" class="weekLabel"></span></div>
   </div>
   <section id="weekView">
     <div id="planningToolbar" class="toolbar">
-      <div id="days" class="days"></div>
+      <div class="desktopPlanningDayGroup"><span class="desktopPlanningMenuLabel">Jour</span><div id="days" class="days"></div></div>
       <div id="planningActions" class="planningActions"><span id="saveState" class="saveState">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
     </div>
     <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><div class="sourceActions"><span id="sourceBadge" class="sourceBadge hidden"></span><button id="downloadSourceBtn" class="sourceDownloadBtn hidden" type="button" onclick="downloadPlanningSource()">⇩ Télécharger Excel</button></div></div>
