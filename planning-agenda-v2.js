@@ -97,7 +97,7 @@ function renderDayPicker(a){
  document.getElementById('mobileAgendaCalendarBtn')?.classList.remove('active');
  host.innerHTML='<button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="-1" aria-label="'+(isDay?'Jour précédent':'Semaine précédente')+'">‹</button><button class="mobilePlanningSelectBtn" type="button" id="mobilePlanningSelectBtn"><span class="mobilePlanningSelectIcon" aria-hidden="true">▣</span><span>'+(isDay?'Sélection date':'Sélection semaine')+'</span></button><button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="1" aria-label="'+(isDay?'Jour suivant':'Semaine suivante')+'">›</button><input id="mobilePlanningDateInput" class="mobilePlanningDateInput" type="date" value="'+isoDate(isDay?selected:a)+'" aria-label="'+(isDay?'Choisir une date':'Choisir une semaine à partir d’une date')+'">';
  const input=document.getElementById('mobilePlanningDateInput');
- document.getElementById('mobilePlanningSelectBtn').onclick=()=>{try{input?.showPicker?.()}catch(_){input?.click?.()}};
+ document.getElementById('mobilePlanningSelectBtn').onclick=()=>{try{if(typeof input?.showPicker==='function')input.showPicker();else input?.click?.()}catch(_){input?.click?.()}};
  if(input)input.onchange=async()=>{
   const value=input.value;if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return;
   clearRestFocus();
