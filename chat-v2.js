@@ -135,17 +135,11 @@ function closeConversationActions(){const backdrop=$('conversationActionSheet'),
 function contactPresence(userId){return state.onlineIds.has(userId)?'En ligne':lastSeenLabel(userId)}
 function openContactCard(userId){
  const m=member(userId);if(!m)return showToast('Profil indisponible');
- closeConversationActions();closeDiscussionMenu();
- const box=$('contactCardContent'),modal=$('contactModal');if(!box||!modal)return;
- const status=(m.status_text||'').trim();
- box.innerHTML='<div class="contactHero">'+avatarHtml(m,'contactAvatar')+'<h3>'+esc(m.display_name||'Utilisateur')+'</h3><span class="contactRole">'+esc(roleLabel(m.role))+'</span><span class="contactPresence">'+esc(contactPresence(m.id))+'</span></div>'+
-  '<div class="contactGrid"><div class="contactField"><small>Rôle</small><strong>'+esc(roleLabel(m.role))+'</strong></div><div class="contactField"><small>Présence</small><strong>'+esc(contactPresence(m.id))+'</strong></div>'+
-  (status?'<div class="contactField full"><small>Statut</small><strong>'+esc(status)+'</strong></div>':'')+
-  '<div class="contactField full"><small>Profil</small><strong>Membre de l’équipe Nethor</strong></div></div>'+
-  (m.id!==state.session?.user?.id?'<button class="contactAction" type="button" onclick="openDirectFromContact(\''+m.id+'\')">Envoyer un message</button>':'');
- modal.classList.remove('hidden')
+ closeConversationActions();closeDiscussionMenu();$('contactModal')?.classList.add('hidden');
+ const shared=window.NettoProfileUI?.openUserCard;if(!shared)return showToast('Fiche utilisateur indisponible');
+ shared(m,{presenceLabel:()=>contactPresence(m.id),onMessage:()=>openDirect(m.id)})
 }
-function closeContactCard(){$('contactModal')?.classList.add('hidden')}
+function closeContactCard(){window.NettoProfileUI?.closeUserCard?.();$('contactModal')?.classList.add('hidden')}
 async function openDirectFromContact(userId){closeContactCard();await openDirect(userId)}
 function openConversationDetails(id){
  const conv=conversationById(id);if(!conv)return;
