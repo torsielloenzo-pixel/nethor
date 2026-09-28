@@ -45,6 +45,8 @@ create table if not exists public.daily_task_completions (
 
 create index if not exists daily_tasks_catalog_key_idx on public.daily_tasks(catalog_key);
 create index if not exists daily_tasks_created_by_idx on public.daily_tasks(created_by);
+create index if not exists daily_task_assignees_user_idx on public.daily_task_assignees(user_id,task_id);
+create index if not exists daily_task_completions_user_idx on public.daily_task_completions(user_id,task_id);
 
 alter table public.daily_task_catalog enable row level security;
 alter table public.daily_tasks enable row level security;
