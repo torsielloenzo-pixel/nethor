@@ -384,8 +384,10 @@ RushGame.prototype.drawBackground=function(ctx){
   ctx.fillRect(0,sy+80,W,10);
   for(var x=-80-scroll;x<W+100;x+=58){
    var idx=Math.abs(Math.floor((x+row*91)/58))%productColors.length;
+   var top=8+((idx*7+row*3)%10);
+   var productH=52+((idx*5+row*7)%14);
    ctx.fillStyle=productColors[idx];
-   rounded(ctx,x,sy+rnd(8,18),42,66-rnd(0,14),5);ctx.fill();
+   rounded(ctx,x,sy+top,42,productH,5);ctx.fill();
    ctx.fillStyle="#ffffff99";
    ctx.fillRect(x+7,sy+27,28,5);
   }
