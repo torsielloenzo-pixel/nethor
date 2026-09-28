@@ -1612,7 +1612,7 @@ function renderHomeCards(profile,cfg){
  host.querySelectorAll('.adminViewStat[data-view-key]').forEach(el=>el.onclick=e=>openPageViews(el.dataset.viewKey,el.dataset.viewLabel||'Page',e));
 }
 async function logout(){logoutSound();await new Promise(r=>setTimeout(r,380));await db.auth.signOut({scope:'local'});location.replace('index.html')} async function menuLogout(){await logout()}
-boot();
+boot().catch(e=>{console.error('Accueil : erreur de démarrage',e);const status=document.getElementById('status');if(status)status.textContent='Impossible de charger complètement l’accueil. Réessaie dans quelques instants.'});
 
 async function loadSharedSiteConfig(){
  try{
