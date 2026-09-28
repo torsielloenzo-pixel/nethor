@@ -86,6 +86,12 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  .managementAccountsFrame{width:100%;height:calc(100dvh - 170px);min-height:650px;border:1px solid #e1e5ea;border-radius:14px;background:#fff}
  .managementEmbeddedHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.managementEmbeddedHead h2{margin:0;font-size:16px}.managementEmbeddedHead p{margin:2px 0 0;font-size:8px;color:#8b929b}
 }
+
+.journalSubnav{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;margin:0 0 12px;border:1px solid #e1e4e8;border-radius:14px;background:#f0f2f4}.journalSubnav button{min-height:42px;border:0;border-radius:10px;background:transparent;color:#686d74;font-size:10px;font-weight:900;cursor:pointer}.journalSubnav button.active{background:#fff;color:#23272d;box-shadow:0 2px 8px #11182714}.journalSubnav b{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:6px;padding:0 5px;border-radius:999px;background:#ffebe5;color:#d94726;font-size:8px}.journalView.hidden{display:none!important}
+.problemStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 13px}.problemStat{padding:10px 11px;border:1px solid #e4e7ea;border-radius:12px;background:#fafbfc}.problemStat span{display:block;font-size:7.5px;color:#8b9097;text-transform:uppercase;letter-spacing:.5px;font-weight:850}.problemStat strong{display:block;margin-top:3px;font-size:17px}.problemFilters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}.problemFilter{border:1px solid #e1e4e8;background:#f6f7f9;color:#62666d;border-radius:10px;padding:8px 10px;font-size:9px;font-weight:850;cursor:pointer}.problemFilter.active{background:#1d2025;color:#fff;border-color:#1d2025}.problemList{display:grid;gap:10px}.problemCard{border:1px solid #e3e6ea;border-radius:15px;background:#fff;padding:13px;box-shadow:0 5px 16px #18223508}.problemHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.problemIdentity{min-width:0}.problemIdentity strong{display:block;font-size:12px}.problemIdentity small{display:block;margin-top:3px;color:#858a91;font-size:8.5px}.problemStatusSelect{min-height:34px;border:1px solid #dfe3e7;border-radius:10px;background:#f7f8fa;color:#33383e;padding:0 9px;font-size:9px;font-weight:850}.problemDescription{margin:11px 0 9px;padding:11px 12px;border:1px solid #e9ebee;border-radius:12px;background:#fafbfc;font-size:10.5px;line-height:1.5;color:#4f555d;white-space:pre-wrap;overflow-wrap:anywhere}.problemMeta{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.problemMeta span{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border-radius:999px;background:#f2f4f6;color:#747a82;font-size:8px;font-weight:800}.problemStatusDot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}.problemStatusDot.new{background:#e85b31}.problemStatusDot.in_progress{background:#d89816}.problemStatusDot.resolved{background:#249358}.problemEmpty{padding:24px;text-align:center;color:#8a8f96;font-size:10px;border:1px dashed #d9dde2;border-radius:14px}
+:root[data-theme="dark"] .journalSubnav,:root[data-theme="dark"] .problemStat,:root[data-theme="dark"] .problemStatusSelect{background:#202328;border-color:#393e45;color:#e7e9ec}:root[data-theme="dark"] .journalSubnav button{color:#adb3bb}:root[data-theme="dark"] .journalSubnav button.active{background:#30343a;color:#fff}:root[data-theme="dark"] .problemCard{background:#202328;border-color:#383d43}:root[data-theme="dark"] .problemDescription{background:#1b1e22;border-color:#343940;color:#d9dde2}:root[data-theme="dark"] .problemMeta span{background:#2b2f34;color:#b5bbc3}
+@media(max-width:620px){.problemStats{grid-template-columns:repeat(2,minmax(0,1fr))}.problemHead{display:grid;grid-template-columns:1fr}.problemStatusSelect{width:100%}}
+
 </style>
 </head>
 <body>
@@ -206,7 +212,12 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  <iframe id="managementAccountsFrame" class="managementAccountsFrame" title="Gestion des comptes" src="accounts.html?embedded=1&tab=accounts"></iframe>
 </section>
 <section id="tab-logs" class="section">
- <div class="panel">
+ <div class="journalSubnav" role="tablist" aria-label="Journal">
+  <button id="journalChangesBtn" class="active" type="button" onclick="showJournalView('changes',this)" aria-selected="true">Modifications</button>
+  <button id="journalProblemsBtn" type="button" onclick="showJournalView('problems',this)" aria-selected="false">Problèmes rapportés <b id="problemReportBadge" class="hidden">0</b></button>
+ </div>
+ <div id="journalChangesView" class="journalView">
+<div class="panel">
   <div class="toolbar"><div><h2>Journal des modifications</h2><p>Historique des évolutions du portail, qu’elles soient appliquées automatiquement ou manuellement.</p></div><div class="logHeaderTools"><button class="btn secondaryBtn mini" onclick="loadPortalLogs()">↻ Actualiser</button></div></div>
   <div class="notifNotice"><b>AUTO</b> correspond aux évolutions techniques appliquées au projet. <b>MANUEL</b> correspond aux modifications réalisées depuis l’interface administrateur. Les descriptions détaillées des versions sont réservées à ce journal administrateur ; l’annonce « Nouvelle version de Nethor » reste volontairement générale pour les utilisateurs.</div>
   <div class="logStats"><div class="logStat"><span>Total</span><strong id="logTotalCount">0</strong></div><div class="logStat"><span>Auto</span><strong id="logAutoCount">0</strong></div><div class="logStat"><span>Manuel</span><strong id="logManualCount">0</strong></div></div>
@@ -220,6 +231,20 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
   </div>
   <div id="portalLogs" class="logList"><div class="logEmpty">Chargement du journal…</div></div>
  </div>
+ </div>
+ <div id="journalProblemsView" class="journalView hidden">
+  <div class="panel">
+   <div class="toolbar"><div><h2>Problèmes rapportés</h2><p>Signalements envoyés par les utilisateurs depuis le menu mobile.</p></div><div class="logHeaderTools"><button class="btn secondaryBtn mini" onclick="loadReportedProblems()">↻ Actualiser</button></div></div>
+   <div class="problemStats"><div class="problemStat"><span>Total</span><strong id="problemTotalCount">0</strong></div><div class="problemStat"><span>Nouveaux</span><strong id="problemNewCount">0</strong></div><div class="problemStat"><span>En cours</span><strong id="problemProgressCount">0</strong></div><div class="problemStat"><span>Résolus</span><strong id="problemResolvedCount">0</strong></div></div>
+   <div class="problemFilters">
+    <button class="problemFilter active" data-problem-status="all" onclick="setProblemFilter('all',this)">Tous</button>
+    <button class="problemFilter" data-problem-status="new" onclick="setProblemFilter('new',this)">Nouveaux</button>
+    <button class="problemFilter" data-problem-status="in_progress" onclick="setProblemFilter('in_progress',this)">En cours</button>
+    <button class="problemFilter" data-problem-status="resolved" onclick="setProblemFilter('resolved',this)">Résolus</button>
+   </div>
+   <div id="reportedProblems" class="problemList"><div class="problemEmpty">Chargement des signalements…</div></div>
+  </div>
+ </div>
 </section>
 </div></div>
 </main>
@@ -229,7 +254,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_p
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let ROLES=['admin','responsable','employe','lecture'];const ROLE_LABEL={admin:'Administrateur',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'};
 function roleName(r){return config?.role_definitions?.[r]?.label||ROLE_LABEL[r]||r||'Compte'}
-let session=null,profile=null,config={},dirty=false,notificationUsers=[],notificationRules=[],portalLogs=[],logSourceFilter='all',logTypeFilter='all';
+let session=null,profile=null,config={},dirty=false,notificationUsers=[],notificationRules=[],portalLogs=[],reportedProblems=[],logSourceFilter='all',logTypeFilter='all',problemStatusFilter='all',journalView='changes';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const attr=esc;
@@ -481,6 +506,63 @@ async function writeManualLog(type,title,description,area,details={}){
  try{
   await db.from('portal_change_logs').insert({source:'manual',release_type:type,title,description,area,actor_id:session.user.id,actor_name:profile?.display_name||'Administrateur',details})
  }catch(e){console.warn('Écriture log manuel:',e)}
+}
+
+function showJournalView(view,btn){
+ journalView=view==='problems'?'problems':'changes';
+ $('journalChangesView')?.classList.toggle('hidden',journalView!=='changes');
+ $('journalProblemsView')?.classList.toggle('hidden',journalView!=='problems');
+ document.querySelectorAll('.journalSubnav button').forEach(x=>{const active=x===btn||(journalView==='changes'&&x.id==='journalChangesBtn')||(journalView==='problems'&&x.id==='journalProblemsBtn');x.classList.toggle('active',active);x.setAttribute('aria-selected',active?'true':'false')});
+ try{localStorage.setItem('nethorJournalView',journalView)}catch(_){}
+ if(journalView==='problems')loadReportedProblems()
+}
+function problemStatusLabel(status){return status==='resolved'?'Résolu':status==='in_progress'?'En cours':'Nouveau'}
+function problemDeviceLabel(ua){
+ const s=String(ua||'');
+ if(/iPhone|iPod/i.test(s))return'iPhone';
+ if(/iPad/i.test(s))return'iPad';
+ if(/Android/i.test(s))return'Android';
+ if(/Windows/i.test(s))return'Windows';
+ if(/Macintosh|Mac OS X/i.test(s))return'Mac';
+ return'Appareil'
+}
+function renderReportedProblems(){
+ const host=$('reportedProblems');if(!host)return;
+ $('problemTotalCount').textContent=String(reportedProblems.length);
+ $('problemNewCount').textContent=String(reportedProblems.filter(x=>x.status==='new').length);
+ $('problemProgressCount').textContent=String(reportedProblems.filter(x=>x.status==='in_progress').length);
+ $('problemResolvedCount').textContent=String(reportedProblems.filter(x=>x.status==='resolved').length);
+ const openCount=reportedProblems.filter(x=>x.status!=='resolved').length,badge=$('problemReportBadge');
+ if(badge){badge.textContent=String(openCount);badge.classList.toggle('hidden',openCount<1)}
+ const rows=reportedProblems.filter(x=>problemStatusFilter==='all'||x.status===problemStatusFilter);
+ if(!rows.length){host.innerHTML='<div class="problemEmpty">Aucun problème ne correspond à ce filtre.</div>';return}
+ host.innerHTML=rows.map(x=>{
+  const status=x.status||'new',source=x.source_title||x.source_path||'Nethor',role=roleName(x.reporter_role),device=problemDeviceLabel(x.user_agent);
+  return '<article class="problemCard"><div class="problemHead"><div class="problemIdentity"><strong>'+esc(x.reporter_name||'Utilisateur')+'</strong><small>'+esc(role)+' · '+esc(logDate(x.created_at))+'</small></div><select class="problemStatusSelect" aria-label="État du signalement" onchange="updateReportedProblemStatus('+Number(x.id)+',this.value,this)"><option value="new" '+(status==='new'?'selected':'')+'>Nouveau</option><option value="in_progress" '+(status==='in_progress'?'selected':'')+'>En cours</option><option value="resolved" '+(status==='resolved'?'selected':'')+'>Résolu</option></select></div><div class="problemDescription">'+esc(x.description||'')+'</div><div class="problemMeta"><span><i class="problemStatusDot '+esc(status)+'"></i>'+esc(problemStatusLabel(status))+'</span><span>Page : '+esc(source)+'</span><span>'+esc(device)+'</span></div></article>'
+ }).join('')
+}
+async function loadReportedProblems(){
+ const host=$('reportedProblems');if(!host)return;
+ host.innerHTML='<div class="problemEmpty">Chargement des signalements…</div>';
+ try{
+  const {data,error}=await db.from('reported_problems').select('id,reporter_id,reporter_name,reporter_role,description,source_path,source_title,user_agent,status,created_at,updated_at,resolved_at').order('created_at',{ascending:false}).limit(250);
+  if(error)throw error;reportedProblems=data||[];renderReportedProblems()
+ }catch(e){console.error('Problèmes rapportés:',e);host.innerHTML='<div class="problemEmpty">Impossible de charger les problèmes rapportés.</div>'}
+}
+function setProblemFilter(value,btn){
+ problemStatusFilter=['new','in_progress','resolved'].includes(value)?value:'all';
+ document.querySelectorAll('[data-problem-status]').forEach(x=>x.classList.toggle('active',x===btn));
+ renderReportedProblems()
+}
+async function updateReportedProblemStatus(id,status,input){
+ if(!['new','in_progress','resolved'].includes(status))return;
+ const row=reportedProblems.find(x=>Number(x.id)===Number(id));if(!row)return;
+ const previous=row.status;if(input)input.disabled=true;
+ try{
+  const now=new Date().toISOString(),patch={status,updated_at:now,resolved_at:status==='resolved'?now:null,resolved_by:status==='resolved'?session.user.id:null};
+  const {error}=await db.from('reported_problems').update(patch).eq('id',id);if(error)throw error;
+  row.status=status;row.updated_at=now;row.resolved_at=patch.resolved_at;renderReportedProblems();window.NettoSounds?.play?.('switch')
+ }catch(e){console.error('Mise à jour signalement:',e);row.status=previous;renderReportedProblems();alert('Impossible de modifier l’état de ce signalement.')}
 }
 
 function notificationRole(role){return roleName(role)}
