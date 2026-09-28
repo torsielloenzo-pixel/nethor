@@ -172,7 +172,9 @@ const FAST_ACCESS_TTL=1800000;
 const GLOBAL_UI_CACHE_TTL=1800000;
 const GLOBAL_UI_REFRESH_TTL=120000;
 const FAST_ACCESS_ROUTES=Object.freeze({
- stock:'index.html',planning:'planning.html',chat:'chat.html',articles:'articles.html',
+ profile:'profile.html',stock:'index.html',planning:'planning.html',chat:'chat.html',articles:'articles.html',
+ scanner:'scanner.html',notifications:'notifications.html',notification_settings:'notification-settings.html',
+ problem_report:'report-problem.html',fl_assistant:'fl-assistant.html',
  rewards:'rewards.html',bakery:'bakery.html',accounts:'accounts.html',
  portal_admin:'admin-portal.html',settings:'settings.html'
 });
@@ -232,17 +234,23 @@ function validAvatarFrame(v){v=String(v||'').trim();return Object.prototype.hasO
 function avatarFrameAsset(v){v=validAvatarFrame(v);return v?AVATAR_FRAMES[v]:''}
 function setAvatarFrame(el,frame){if(!el)return;const v=validAvatarFrame(frame);if(v)el.dataset.avatarFrame=v;else delete el.dataset.avatarFrame}
 const BASE_MODULES=Object.freeze([
- {id:'home',label:'Accueil',subtitle:'Retour au portail',url:'home.html',icon:'⌂',asset:'assets/logo-home.svg',roles:null,home:false,userMenu:true,defaultUser:true},
- {id:'profile',label:'Mon profil',homeLabel:'Mon profil',subtitle:'Profil et notifications',url:'profile.html',icon:'☺',asset:'assets/logo-profile.svg?v=3',roles:null,home:true,userMenu:true,defaultHome:false,defaultUser:true,kicker:'MON COMPTE',description:'Gérer ta photo, ton apparence et la sécurité de ton compte.',action:'Ouvrir mon profil',cardClass:'profileCard'},
- {id:'stock',label:'Stock F&L',homeLabel:'Stock F&L',subtitle:'Gestion du stock',url:'index.html',homeUrl:'index.html?mode=stock',asset:'assets/logo-stock.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'OPÉRATIONS',description:'Contrôler les quantités, préparer les commandes et administrer le référentiel produits depuis un espace optimisé terrain.',action:'Ouvrir le stock',cardClass:'stock'},
- {id:'planning',label:'Planning',homeLabel:'Planning équipe',subtitle:'Horaires de l’équipe',url:'planning.html',asset:'assets/logo-planning.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ORGANISATION',description:'Consulter les horaires, importer les plannings Excel et suivre précisément chaque modification.',action:'Consulter le planning',cardClass:'planning'},
- {id:'chat',label:'Chat',homeLabel:'Chat',subtitle:'Messagerie interne',url:'chat.html',asset:'assets/logo-chat.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'COMMUNICATION',description:'Centraliser les échanges, la présence des membres et les informations utiles au fonctionnement quotidien.',action:'Ouvrir le chat',cardClass:'chatCard'},
- {id:'articles',label:'Fiches articles',homeLabel:'Fiches articles',subtitle:'Référentiel articles',url:'articles.html',asset:'assets/logo-article.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'RÉFÉRENTIEL',description:'Retrouver rapidement les références, codes et informations produit utilisées dans les procédures du rayon.',action:'Ouvrir le référentiel',cardClass:'articlesCard'},
- {id:'rewards',label:'Défis & Boutique',homeLabel:'Défis & Boutique',subtitle:'Missions et récompenses',url:'rewards.html',icon:'✦',asset:'assets/logo-rewards.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Créer les défis, gérer les récompenses et utiliser librement le catalogue administrateur.',action:'Ouvrir Défis & Boutique',cardClass:'rewardsCard'},
- {id:'bakery',label:'Boulangerie',homeLabel:'Boulangerie',subtitle:'Stock • Consulter • Gestion',url:'bakery.html',asset:'assets/logo-boulangerie.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Gérer le stock, consulter les articles et administrer les catégories propres à la famille Boulangerie.',action:'Ouvrir la Boulangerie',cardClass:'bakeryCard'},
- {id:'accounts',label:'Gestion des comptes',homeLabel:'Gestion des comptes',subtitle:'Utilisateurs, accès et journal',url:'accounts.html',icon:'♙',asset:'assets/logo-accounts.svg',roles:['admin'],home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'ADMINISTRATION',description:'Module interne de gestion des utilisateurs et des rôles.',action:'Gérer les comptes',cardClass:'accountsCard'},
- {id:'portal_admin',label:'Gestion',homeLabel:'Gestion',subtitle:'Portail, comptes et permissions',url:'admin-portal.html',icon:'✦',asset:'assets/logo-admin-portal.svg',roles:['admin'],home:true,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ADMINISTRATION',description:'Administrer le portail, les comptes, les rôles, les permissions, les notifications et les journaux depuis un espace unique.',action:'Ouvrir la gestion',cardClass:'portalAdminCard'},
- {id:'settings',label:'Personnalisation',homeLabel:'Personnalisation',subtitle:'Mon accueil et mes raccourcis',url:'settings.html',icon:'⚙',asset:'assets/logo-settings.svg',roles:null,home:true,userMenu:false,defaultHome:false,kicker:'PRÉFÉRENCES',description:'Choisir les outils visibles sur ton accueil et dans ta barre utilisateur selon tes droits.',action:'Personnaliser mon portail',cardClass:'settingsCard'}
+ {id:'home',label:'Accueil',homeLabel:'Accueil',subtitle:'Retour au portail',url:'home.html',icon:'⌂',asset:'assets/logo-home.svg',roles:null,rolesLocked:true,enabledLocked:true,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'PORTAIL',description:'Revenir à l’accueil principal de Nethor.',action:'Ouvrir l’accueil',cardClass:'homeCard',group:'principal',platform:'all'},
+ {id:'profile',label:'Mon profil',homeLabel:'Mon profil',subtitle:'Profil et notifications',url:'profile.html',icon:'☺',asset:'assets/logo-profile.svg?v=3',roles:null,home:true,userMenu:true,defaultHome:false,defaultUser:true,kicker:'MON COMPTE',description:'Gérer ta photo, ton apparence et la sécurité de ton compte.',action:'Ouvrir mon profil',cardClass:'profileCard',group:'principal',platform:'all'},
+ {id:'stock',label:'Stock F&L',homeLabel:'Stock F&L',subtitle:'Gestion du stock',url:'index.html',homeUrl:'index.html?mode=stock',asset:'assets/logo-stock.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'OPÉRATIONS',description:'Contrôler les quantités, préparer les commandes et administrer le référentiel produits depuis un espace optimisé terrain.',action:'Ouvrir le stock',cardClass:'stock',group:'principal',platform:'all'},
+ {id:'planning',label:'Planning',homeLabel:'Planning équipe',subtitle:'Horaires de l’équipe',url:'planning.html',asset:'assets/logo-planning.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ORGANISATION',description:'Consulter les horaires, importer les plannings Excel et suivre précisément chaque modification.',action:'Consulter le planning',cardClass:'planning',group:'principal',platform:'all'},
+ {id:'chat',label:'Chat',homeLabel:'Chat',subtitle:'Messagerie interne',url:'chat.html',asset:'assets/logo-chat.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'COMMUNICATION',description:'Centraliser les échanges, la présence des membres et les informations utiles au fonctionnement quotidien.',action:'Ouvrir le chat',cardClass:'chatCard',group:'principal',platform:'all'},
+ {id:'scanner',label:'Scanner (bêta)',homeLabel:'Scanner (bêta)',subtitle:'EAN13 vers fiche article',url:'scanner.html',icon:'⌁',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'OUTIL MOBILE',description:'Scanner un code-barres ou saisir une référence courte pour retrouver rapidement une fiche article.',action:'Ouvrir le scanner',cardClass:'scannerCard',group:'terrain',platform:'mobile',mobileBar:true},
+ {id:'articles',label:'Fiches articles',homeLabel:'Fiches articles',subtitle:'Référentiel articles',url:'articles.html',asset:'assets/logo-article.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'RÉFÉRENTIEL',description:'Retrouver rapidement les références, codes et informations produit utilisées dans les procédures du rayon.',action:'Ouvrir le référentiel',cardClass:'articlesCard',group:'principal',platform:'all'},
+ {id:'notifications',label:'Notifications',homeLabel:'Notifications',subtitle:'Centre d’activité',url:'notifications.html',icon:'◇',roles:null,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'INFORMATIONS',description:'Consulter les notifications et informations reçues dans Nethor.',action:'Ouvrir les notifications',cardClass:'notificationsCard',group:'communication',platform:'all',mobileBarLocked:true},
+ {id:'notification_settings',label:'Réglages des notifications',homeLabel:'Réglages des notifications',subtitle:'Préférences et alertes',url:'notification-settings.html',icon:'♢',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'PRÉFÉRENCES',description:'Choisir les canaux et types de notifications à recevoir.',action:'Régler les notifications',cardClass:'notificationSettingsCard',group:'communication',platform:'all'},
+ {id:'problem_report',label:'Signaler un problème',homeLabel:'Signaler un problème',subtitle:'Décrire et envoyer un bug',url:'report-problem.html',icon:'⚠',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ASSISTANCE',description:'Envoyer à l’administration un signalement détaillé depuis Nethor.',action:'Signaler un problème',cardClass:'problemReportCard',group:'communication',platform:'mobile'},
+ {id:'fl_assistant',label:'Assistant Précommande',homeLabel:'Assistant Précommande',subtitle:'Analyse Fruits & Légumes',url:'fl-assistant.html',icon:'▤',roles:['admin','responsable'],home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'F&L',description:'Analyser les données utiles à la préparation des précommandes Fruits & Légumes.',action:'Ouvrir l’assistant',cardClass:'assistantCard',group:'terrain',platform:'all'},
+ {id:'rewards',label:'Défis & Boutique',homeLabel:'Défis & Boutique',subtitle:'Missions et récompenses',url:'rewards.html',icon:'✦',asset:'assets/logo-rewards.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Créer les défis, gérer les récompenses et utiliser librement le catalogue administrateur.',action:'Ouvrir Défis & Boutique',cardClass:'rewardsCard',group:'administration',platform:'all'},
+ {id:'bakery',label:'Boulangerie',homeLabel:'Boulangerie',subtitle:'Stock • Consulter • Gestion',url:'bakery.html',asset:'assets/logo-boulangerie.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Gérer le stock, consulter les articles et administrer les catégories propres à la famille Boulangerie.',action:'Ouvrir la Boulangerie',cardClass:'bakeryCard',group:'administration',platform:'all'},
+ {id:'accounts',label:'Gestion des comptes',homeLabel:'Gestion des comptes',subtitle:'Utilisateurs, accès et journal',url:'accounts.html',icon:'♙',asset:'assets/logo-accounts.svg',roles:['admin'],rolesLocked:true,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'ADMINISTRATION',description:'Gérer les utilisateurs, leurs rôles, les demandes de mot de passe et le journal d’activité.',action:'Gérer les comptes',cardClass:'accountsCard',group:'administration',platform:'all'},
+ {id:'portal_admin',label:'Gestion',homeLabel:'Gestion',subtitle:'Portail, comptes et permissions',url:'admin-portal.html',icon:'✦',asset:'assets/logo-admin-portal.svg',roles:['admin'],rolesLocked:true,enabledLocked:true,home:true,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ADMINISTRATION',description:'Administrer le portail, les comptes, les rôles, les permissions, les notifications et les journaux depuis un espace unique.',action:'Ouvrir la gestion',cardClass:'portalAdminCard',group:'administration',platform:'all'},
+ {id:'settings',label:'Personnalisation',homeLabel:'Personnalisation',subtitle:'Mon accueil et mes raccourcis',url:'settings.html',icon:'⚙',asset:'assets/logo-settings.svg',roles:null,rolesLocked:true,enabledLocked:true,home:true,userMenu:false,defaultHome:false,defaultUser:true,kicker:'PRÉFÉRENCES',description:'Choisir les outils visibles sur ton accueil et dans ta barre utilisateur selon tes droits.',action:'Personnaliser mon portail',cardClass:'settingsCard',group:'principal',platform:'all'},
+ {id:'maintenance',label:'Maintenance',homeLabel:'Maintenance',subtitle:'Page d’indisponibilité',url:'maintenance.html',icon:'⚙',roles:null,rolesLocked:true,enabledLocked:true,placementLocked:true,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'SYSTÈME',description:'Page affichée automatiquement lorsque le mode maintenance du portail est activé.',action:'Voir la page',cardClass:'maintenanceCard',group:'systeme',platform:'system',navigation:false,mobileBar:false}
 ]);
 let NAV_MODULES=[...BASE_MODULES];
 const SYSTEM_ROLES=Object.freeze(['admin','responsable','employe','lecture']);
@@ -273,8 +281,6 @@ function rebuildModules(config={}){
    menuAccent:cleanColor(p.accent,''),
    configuredRoles:Array.isArray(p.roles)?p.roles.filter(r=>roleKeys(config).includes(r)):null
   };
-  if(m.id==='accounts'){out.home=false;out.userMenu=false;out.defaultHome=false;out.defaultUser=false}
-  if(m.id==='portal_admin'){out.label='Gestion';out.homeLabel='Gestion';out.subtitle='Portail, comptes et permissions';out.url='admin-portal.html';out.action='Ouvrir la gestion'}
   return out
  });
  NAV_MODULES=[...base];
@@ -321,11 +327,20 @@ function permissionLevel(moduleOrId,profileOrRole,config=api?.siteConfig){
 }
 function canManage(moduleOrId,profileOrRole,config=api?.siteConfig){return permissionLevel(moduleOrId,profileOrRole,config)==='manage'}
 function preferenceMap(profile){const p=profile?.ui_preferences;return p&&typeof p==='object'&&!Array.isArray(p)?p:{}}
-function moduleVisible(area,module,profile,config=api?.siteConfig){if(!moduleAllowed(module,profile,config))return false;if(area==='home'&&!module.home)return false;if(area==='user_menu'&&!module.userMenu)return false;const v=preferenceMap(profile)?.[area]?.[module.id];if(typeof v==='boolean')return v;return area==='home'?module.defaultHome!==false:module.defaultUser!==false}
+function moduleVisible(area,module,profile,config=api?.siteConfig){
+ if(!moduleAllowed(module,profile,config))return false;
+ if(module?.navigation===false)return false;
+ if(module?.platform==='mobile'&&!isMobileViewport())return false;
+ if(module?.platform==='desktop'&&isMobileViewport())return false;
+ if(area==='home'&&!module.home)return false;
+ if(area==='user_menu'&&!module.userMenu)return false;
+ const v=preferenceMap(profile)?.[area]?.[module.id];
+ if(typeof v==='boolean')return v;
+ return area==='home'?module.defaultHome!==false:module.defaultUser!==false
+}
 function visibleModules(area,profile,config=api?.siteConfig){return NAV_MODULES.filter(m=>moduleVisible(area,m,profile,config))}
 function moduleIcon(module){return module?.asset?'<img src="'+esc(module.asset)+'" alt="">':esc(module?.icon||'•')}
 const DEFAULT_MOBILE_BAR_IDS=Object.freeze(['home','stock','planning','chat','profile']);
-const MOBILE_NOTIFICATION_MODULE=Object.freeze({id:'notifications',label:'Notifications',subtitle:'Centre d’activité',url:'notifications.html'});
 const MOBILE_NAV_ICONS=Object.freeze({
  home:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5"/><path d="M6.5 9.5V20h11V9.5"/></svg>',
  stock:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 8.5h15l-1.4 10H5.9l-1.4-10Z"/><path d="M7 8.5 9 5.5h6l2 3"/><path d="M8 12h8"/></svg>',
@@ -344,7 +359,7 @@ const MOBILE_NAV_ICONS=Object.freeze({
  default:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="5" width="5" height="5" rx="1.2"/><rect x="14" y="5" width="5" height="5" rx="1.2"/><rect x="5" y="14" width="5" height="5" rx="1.2"/><rect x="14" y="14" width="5" height="5" rx="1.2"/></svg>'
 });
 function mobileNavIcon(id){return MOBILE_NAV_ICONS[id]||MOBILE_NAV_ICONS.default}
-function mobileModuleForId(id){return id==='notifications'?MOBILE_NOTIFICATION_MODULE:NAV_MODULES.find(m=>m.id===id)}
+function mobileModuleForId(id){return NAV_MODULES.find(m=>m.id===id)}
 
 function mobileBarItems(config=api?.siteConfig){
  const raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[];
@@ -359,7 +374,7 @@ function mobileBarItems(config=api?.siteConfig){
   out.push({id,enabled:item?.enabled!==false,label:String(item?.label||'').trim().slice(0,18)});
   if(out.length>=5)break;
  }
- const notifications={id:'notifications',enabled:true,label:'Notifications'};
+ const notifications={id:'notifications',enabled:true,label:''};
  const chatIndex=out.findIndex(x=>x.id==='chat'),profileIndex=out.findIndex(x=>x.id==='profile');
  if(chatIndex>=0)out.splice(chatIndex+1,0,notifications);
  else if(profileIndex>=0)out.splice(profileIndex,0,notifications);
@@ -412,7 +427,7 @@ function renderMobileQuickBar(){
  const items=mobileBarItems(api.siteConfig)
   .filter(x=>x.enabled!==false)
   .map(x=>({item:x,module:mobileModuleForId(x.id)}))
-  .filter(x=>x.module&&(x.module.id==='notifications'||moduleAllowed(x.module,api.profile,api.siteConfig)));
+  .filter(x=>x.module&&moduleAllowed(x.module,api.profile,api.siteConfig));
  if(!items.length){old?.remove();document.body?.classList.remove('nettoHasMobileBar');return}
  let nav=old;
  if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
@@ -2047,7 +2062,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=179;
+const APP_RELEASE=183;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
