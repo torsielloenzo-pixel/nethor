@@ -1431,7 +1431,7 @@ function homeSuggestedTasks(profile,cfg){
 async function renderMobileHomeDashboard(profile,name,cfg){
  const host=$('mobileHomeDashboard');if(!host)return;
  host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
- const today=new Date(),todayKey=homeIsoDate(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),84));
+ const today=new Date(),todayKey=homeParisDateKey(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),84));
  homeDashboardProfile=profile;homeDashboardName=name;homeDashboardConfig=cfg||{};
  const [subRes,weeksRes,notifRes,profilesRes,taskCatalogRes,taskRowsRes]=await Promise.all([
   Promise.resolve(db.rpc('my_subrole_keys')).catch(()=>({data:[]})),
