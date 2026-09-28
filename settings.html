@@ -247,17 +247,18 @@ main{width:min(92vw,820px);margin:auto;padding:44px 0 80px}.hero{display:flex;ju
 <div class="hero"><div><h1>Mon portail</h1><p>Choisis uniquement ce que tu veux voir. Tes choix restent personnels et ne modifient pas l’interface des autres utilisateurs.</p></div><span id="roleBadge" class="roleBadge">Compte</span></div>
 <section id="adminShortcut" class="panel adminLink hidden"><div><h2>Éditeur du portail</h2><p>La configuration générale, les couleurs et la barre de navigation mobile sont centralisées dans l’espace administrateur.</p></div><button class="open" onclick="location.href='admin-portal.html'">Ouvrir l’éditeur →</button></section>
 <section class="panel"><div class="panelHead"><div><h2>Apparence</h2><p>Le thème choisi est enregistré avec ton profil et te suit sur tes appareils.</p></div></div><div class="themeChoices"><button id="themeLight" class="themeChoice" type="button" onclick="chooseTheme('light')"><span class="themeSwatch light">☀</span><span class="themeChoiceText"><strong>Mode clair</strong><span>Interface lumineuse et contrastée.</span></span><span class="themeCheck"></span></button><button id="themeDark" class="themeChoice" type="button" onclick="chooseTheme('dark')"><span class="themeSwatch dark">☾</span><span class="themeChoiceText"><strong>Mode sombre</strong><span>Anthracite doux pour réduire la luminosité.</span></span><span class="themeCheck"></span></button></div></section>
-<section class="panel"><div class="panelHead"><div><h2>Accueil</h2><p>Choisis les espaces visibles sur ton écran d’accueil parmi ceux autorisés pour ton rôle.</p></div><div class="panelTools"><button class="mini" onclick="setArea('home',true)">Tout afficher</button><button class="mini" onclick="setArea('home',false)">Tout masquer</button></div></div><div id="homeEditor" class="grid"></div></section>
+<section class="panel"><div class="panelHead"><div><h2>Menus de l’accueil</h2><p>Choisis les pages et outils visibles dans les cartes de ton écran d’accueil.</p></div><div class="panelTools"><button class="mini" onclick="setArea('home',true)">Tout afficher</button><button class="mini" onclick="setArea('home',false)">Tout masquer</button></div></div><div id="homeEditor" class="grid"></div></section>
+<section class="panel"><div class="panelHead"><div><h2>Widgets de l’accueil</h2><p>Ces choix s’appliquent de la même façon sur mobile et sur la version bureau.</p></div><div class="panelTools"><button class="mini" onclick="setHomeWidgets(true)">Tout afficher</button><button class="mini" onclick="setHomeWidgets(false)">Tout masquer</button></div></div><div class="fixed"><b>Affichage synchronisé :</b> un widget activé ici apparaît sur mobile et sur ordinateur, s’il est autorisé pour ton rôle.</div><div id="homeWidgetsEditor" class="grid"></div></section>
 <section id="userBarSettingsPanel" class="panel"><div class="panelHead"><div><h2>Barre utilisateur</h2><p>Choisis les raccourcis disponibles lorsque tu ouvres le menu depuis ton nom ou ta photo.</p></div><div class="panelTools"><button class="mini" onclick="setArea('user_menu',true)">Tout afficher</button><button class="mini" onclick="setArea('user_menu',false)">Tout masquer</button></div></div><div class="fixed"><b>Toujours disponibles :</b> Mon profil, Personnalisation, changement de thème et Déconnexion.</div><div id="userEditor" class="grid"></div></section>
 <div class="actions"><span id="saveState" class="saveState">Chargement…</span><button class="btn danger" onclick="resetPersonal()">Réinitialiser</button><button id="saveBtn" class="btn primary" onclick="savePersonal()">Enregistrer</button></div>
 </main>
 <script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let session=null,profile=null,prefs={home:{},user_menu:{},theme:'light'};
+let session=null,profile=null,subroleKeys=[],prefs={home:{},home_widgets:{},user_menu:{},theme:'light'};
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const ROLE_LABEL={admin:'Administrateur',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'};
-function ensurePrefs(v){const p=v&&typeof v==='object'?JSON.parse(JSON.stringify(v)):{};p.home=p.home&&typeof p.home==='object'?p.home:{};p.user_menu=p.user_menu&&typeof p.user_menu==='object'?p.user_menu:{};p.theme=p.theme==='dark'||p.theme==='light'?p.theme:(document.documentElement.dataset.theme==='dark'?'dark':'light');return p}
+function ensurePrefs(v){const p=v&&typeof v==='object'?JSON.parse(JSON.stringify(v)):{};p.home=p.home&&typeof p.home==='object'?p.home:{};p.home_widgets=p.home_widgets&&typeof p.home_widgets==='object'?p.home_widgets:{};p.user_menu=p.user_menu&&typeof p.user_menu==='object'?p.user_menu:{};p.theme=p.theme==='dark'||p.theme==='light'?p.theme:(document.documentElement.dataset.theme==='dark'?'dark':'light');return p}
 function waitUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI?.profile||n++>80){clearInterval(t);resolve()}},50)})}
 function modules(){return window.NettoProfileUI?.modules||[]}
 function prefProfile(){return {...profile,ui_preferences:prefs}}
@@ -265,15 +266,42 @@ function available(area){return modules().filter(m=>window.NettoProfileUI?.canAc
 function visible(area,m){const v=prefs?.[area]?.[m.id];if(typeof v==='boolean')return v;return area==='home'?m.defaultHome!==false:m.defaultUser!==false}
 function icon(m){return m.asset?'<img src="'+esc(m.asset)+'" alt="">':esc(m.icon||'•')}
 function renderArea(area,id){const host=$(id),list=available(area);if(!list.length){host.innerHTML='<div class="empty">Aucun espace configurable pour ce rôle.</div>';return}host.innerHTML=list.map(m=>'<label class="item"><span class="icon">'+icon(m)+'</span><span class="info"><strong>'+esc(area==='home'?(m.homeLabel||m.label):m.label)+'</strong><span>'+esc(m.subtitle||m.description||'')+'</span></span><span class="toggle"><input type="checkbox" data-area="'+area+'" data-id="'+esc(m.id)+'" '+(visible(area,m)?'checked':'')+'> Visible</span></label>').join('');host.querySelectorAll('input[data-id]').forEach(x=>x.onchange=()=>{prefs[x.dataset.area][x.dataset.id]=x.checked;markDirty()})}
+const HOME_WIDGETS=[
+ {id:'next_shift',label:'Prise de poste',description:'Prochaine prise de poste calculée depuis le planning.',icon:'planning'},
+ {id:'hours',label:'Mes heures',description:'Total des heures planifiées sur la semaine.',icon:'planning'},
+ {id:'absences',label:'Congés',description:'Congés issus des cases jaunes du planning.',icon:'planning'},
+ {id:'next_rest',label:'Prochain repos',description:'Prochain repos calculé depuis les jours vides, rouges ou orange.',icon:'planning'},
+ {id:'tasks',label:'Tâches du jour',description:'Raccourcis opérationnels pour la journée.',icon:'articles'},
+ {id:'important_info',label:'Informations importantes',description:'Notifications et informations à surveiller.',icon:'notifications'},
+ {id:'team_today',label:'Équipe aujourd’hui',description:'Personnes planifiées aujourd’hui.',icon:'accounts'}
+];
+function homeWidgetAllowed(id){
+ const node=window.NettoProfileUI?.siteConfig?.home_widgets?.[id]||{},role=profile?.role||'',roleValue=node?.roles?.[role];
+ const roleAllowed=typeof roleValue==='boolean'?roleValue:true;
+ return roleAllowed||subroleKeys.some(k=>node?.subroles?.[k]===true)
+}
+function homeWidgetIcon(item){
+ const fn=window.NettoProfileUI?.mobileNavIcon;
+ return typeof fn==='function'?fn(item.icon||'home'):'•'
+}
+function homeWidgetVisiblePref(id){const v=prefs?.home_widgets?.[id];return typeof v==='boolean'?v:true}
+function renderHomeWidgets(){
+ const host=$('homeWidgetsEditor');if(!host)return;
+ const list=HOME_WIDGETS.filter(x=>homeWidgetAllowed(x.id));
+ if(!list.length){host.innerHTML='<div class="empty">Aucun widget disponible pour ce rôle.</div>';return}
+ host.innerHTML=list.map(x=>'<label class="item"><span class="icon">'+homeWidgetIcon(x)+'</span><span class="info"><strong>'+esc(x.label)+'</strong><span>'+esc(x.description)+'</span></span><span class="toggle"><input type="checkbox" data-home-widget="'+esc(x.id)+'" '+(homeWidgetVisiblePref(x.id)?'checked':'')+'> Visible</span></label>').join('');
+ host.querySelectorAll('input[data-home-widget]').forEach(x=>x.onchange=()=>{prefs.home_widgets[x.dataset.homeWidget]=x.checked;markDirty()})
+}
+function setHomeWidgets(value){HOME_WIDGETS.filter(x=>homeWidgetAllowed(x.id)).forEach(x=>prefs.home_widgets[x.id]=value);renderHomeWidgets();markDirty()}
 function applyLocalTheme(theme){theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=theme;try{localStorage.setItem('nettoTheme',theme)}catch(_){};const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==='dark'?'#17191d':'#ffffff'}
 function renderThemeChoice(){const t=prefs.theme==='dark'?'dark':'light';$('themeLight')?.classList.toggle('active',t==='light');$('themeDark')?.classList.toggle('active',t==='dark')}
 function chooseTheme(theme){prefs.theme=theme==='dark'?'dark':'light';applyLocalTheme(prefs.theme);renderThemeChoice();markDirty();window.NettoSounds?.play?.('switch')}
-function render(){renderThemeChoice();renderArea('home','homeEditor');renderArea('user_menu','userEditor')}
+function render(){renderThemeChoice();renderArea('home','homeEditor');renderHomeWidgets();renderArea('user_menu','userEditor')}
 function markDirty(){$('saveState').textContent='Modifications non enregistrées';$('saveState').className='saveState'}
 function setArea(area,value){available(area).forEach(m=>prefs[area][m.id]=value);render();markDirty()}
 async function savePersonal(){const b=$('saveBtn');b.disabled=true;$('saveState').textContent='Enregistrement…';const {error}=await db.from('profiles').update({ui_preferences:prefs}).eq('id',session.user.id);if(error){$('saveState').className='saveState err';$('saveState').textContent='Erreur : '+error.message;window.NettoSounds?.play?.('error')}else{profile.ui_preferences=JSON.parse(JSON.stringify(prefs));$('saveState').className='saveState ok';$('saveState').textContent='✓ Personnalisation enregistrée';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.()}b.disabled=false}
-async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;prefs={home:{},user_menu:{},theme:document.documentElement.dataset.theme==='dark'?'dark':'light'};render();await savePersonal()}
-async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');const {data:p,error}=await db.from('profiles').select('display_name,role,ui_preferences').eq('id',s.user.id).maybeSingle();if(error||!p)return location.replace('index.html');profile=p;prefs=ensurePrefs(p.ui_preferences);applyLocalTheme(prefs.theme);$('roleBadge').textContent=window.NettoProfileUI?.roleLabel?.(p.role)||ROLE_LABEL[p.role]||p.role;if(p.role==='admin')$('adminShortcut').classList.remove('hidden');await waitUI();render();$('saveState').textContent='À jour'}
+async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;prefs={home:{},home_widgets:{},user_menu:{},theme:document.documentElement.dataset.theme==='dark'?'dark':'light'};render();await savePersonal()}
+async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');const [{data:p,error},subRes]=await Promise.all([db.from('profiles').select('display_name,role,ui_preferences').eq('id',s.user.id).maybeSingle(),db.rpc('my_subrole_keys').catch(()=>({data:[]}))]);if(error||!p)return location.replace('index.html');profile=p;subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean);prefs=ensurePrefs(p.ui_preferences);applyLocalTheme(prefs.theme);$('roleBadge').textContent=window.NettoProfileUI?.roleLabel?.(p.role)||ROLE_LABEL[p.role]||p.role;if(p.role==='admin')$('adminShortcut').classList.remove('hidden');await waitUI();render();$('saveState').textContent='À jour'}
 boot();
 </script>
 </body></html>
