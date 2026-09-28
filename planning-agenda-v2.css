@@ -646,3 +646,48 @@ html[data-theme="dark"] .agendaDayStatusRest{
 }
 html[data-theme="dark"] .agendaDayCardLeave .agendaDayPerson strong{color:#ffe36a}
 html[data-theme="dark"] .agendaDayCardRest .agendaDayPerson strong{color:#d2d7dd}
+
+
+/* Planning mobile Semaine v13 — défilement horizontal */
+@media(max-width:760px){
+  body.agendaLayout .agendaMount.agendaMountWeekScroll{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;
+    scrollbar-width:none;
+    border:1px solid #dde1e5!important;
+    border-radius:13px!important;
+    background:#fff!important;
+    box-shadow:0 6px 18px rgba(15,23,42,.05)!important
+  }
+  body.agendaLayout .agendaMount.agendaMountWeekScroll::-webkit-scrollbar{
+    display:none
+  }
+  body.agendaLayout .agendaMount.agendaMountWeekScroll .agendaGrid{
+    width:max-content!important;
+    min-width:728px!important
+  }
+  html[data-theme="dark"] body.agendaLayout .agendaMount.agendaMountWeekScroll{
+    background:#1b1d20!important;
+    border-color:#32363b!important
+  }
+}
+
+/* Même comportement pour un téléphone en paysage, même au-dessus de 760 px. */
+html.nethorPhoneDevice body.agendaLayout .agendaMount.agendaMountWeekScroll{
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x pan-y;
+  scrollbar-width:none
+}
+html.nethorPhoneDevice body.agendaLayout .agendaMount.agendaMountWeekScroll::-webkit-scrollbar{
+  display:none
+}
