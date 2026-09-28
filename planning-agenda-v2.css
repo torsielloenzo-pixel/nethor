@@ -188,8 +188,34 @@ html[data-theme="dark"] .agendaLoading strong{color:#f2f4f6}
     box-shadow:0 5px 18px rgba(15,23,42,.045)
   }
   body.agendaLayout .agendaGrid{
-    grid-template-columns:minmax(138px,168px) repeat(7,minmax(102px,1fr));
-    min-width:930px
+    grid-template-columns:minmax(138px,168px) repeat(7,minmax(102px,1fr)) minmax(78px,92px);
+    min-width:1030px
+  }
+  body.agendaLayout .agendaWeekTotalHead{
+    min-height:0;
+    padding:5px 4px
+  }
+  body.agendaLayout .agendaWeekTotalHead strong{
+    font-size:10.5px;
+    line-height:1.05
+  }
+  body.agendaLayout .agendaWeekTotalHead span{
+    margin-top:1px;
+    font-size:8px;
+    line-height:1
+  }
+  body.agendaLayout .agendaWeekTotalCell{
+    min-height:52px;
+    padding:4px
+  }
+  body.agendaLayout .agendaWeekTotalCell strong{
+    font-size:11px;
+    line-height:1
+  }
+  body.agendaLayout .agendaWeekTotalCell span{
+    margin-top:2px;
+    font-size:7.5px;
+    line-height:1
   }
   body.agendaLayout .agendaCorner,
   body.agendaLayout .agendaDayHead{
