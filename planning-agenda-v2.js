@@ -211,6 +211,7 @@ function renderWeekAgenda(a){
 }
 function renderAgenda(){
  const host=document.getElementById('agendaMount');if(!host)return;
+ host.classList.toggle('agendaMountWeekScroll',isMobile()&&mobileMode==='week');
  try{
   if(typeof model==='undefined'||(!document.body.classList.contains('planningReady')&&model==null)){
    host.innerHTML='<div class="agendaLoading"><span class="agendaLoadingSpinner" aria-hidden="true"></span><div><strong>Chargement du planning</strong><small>Préparation de la semaine…</small></div></div>';return
