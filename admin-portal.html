@@ -713,6 +713,6 @@ async function boot(){
  if(tab==='notifications')loadNotificationAdmin();if(tab==='logs')loadPortalLogs()
 }
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
-boot();
+boot().catch(e=>{console.error('Administration : erreur de démarrage',e);const host=document.querySelector('main');if(host&&!document.getElementById('adminBootError')){const msg=document.createElement('div');msg.id='adminBootError';msg.setAttribute('role','alert');msg.textContent='Impossible de charger complètement l’administration. Vérifie la connexion puis réessaie.';host.prepend(msg)}});
 </script>
 </body></html>

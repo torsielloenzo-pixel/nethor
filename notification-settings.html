@@ -205,7 +205,7 @@ async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
  await syncExistingPushSubscription();await Promise.all([loadRules(),refreshPushStatus()])
 }
-boot();
+boot().catch(e=>{console.error('Notifications : erreur de démarrage',e);const host=document.querySelector('main');if(host&&!document.getElementById('notificationBootError')){const msg=document.createElement('div');msg.id='notificationBootError';msg.setAttribute('role','alert');msg.textContent='Impossible de charger les réglages de notifications. Vérifie la connexion puis réessaie.';host.prepend(msg)}});
 </script>
 </body>
 </html>

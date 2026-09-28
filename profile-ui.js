@@ -1953,8 +1953,8 @@ function startChatPresenceHistory(){
  if(!api.client||!api.session||api.chatPresenceTimer)return;
  recordChatPresence('start');
  api.chatPresenceTimer=setInterval(()=>{if(!document.hidden)recordChatPresence('heartbeat')},30000);
- document.addEventListener('visibilitychange',()=>{recordChatPresence(document.hidden?'heartbeat':'heartbeat')});
- window.addEventListener('pagehide',()=>{recordChatPresence('heartbeat')},{capture:true})
+ document.addEventListener('visibilitychange',()=>{recordChatPresence(document.hidden?'end':'start')});
+ window.addEventListener('pagehide',()=>{recordChatPresence('end')},{capture:true})
 }
 function startProfileRealtime(){
  if(!api.session||api.profileChannel)return;
@@ -2230,5 +2230,6 @@ function startAccessibleNameObserver(){
 }
 async function init(){addStyle();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});await loadNotificationPreferences();setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
 const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript);
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+const startProfileUI=()=>init().catch(e=>{console.error('Interface Nethor : erreur d’initialisation',e);document.documentElement.classList.remove('nettoAccessPageVerifying')});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startProfileUI,{once:true});else startProfileUI();
 })();
