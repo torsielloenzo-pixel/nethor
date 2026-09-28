@@ -444,7 +444,7 @@ async function toggleRecording(){
   const chunks=[],recorder=new MediaRecorder(stream),started=Date.now();
   state.recording={recorder,stream,started};$('micBtn').classList.add('recording');$('micBtn').textContent='■';
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
-  recorder.onerror=()=>{stopRecordingTracks(stream);state.recording=null;resetRecordingUI();showToast('Enregistrement vocal interrompu')};
+  recorder.onerror=()=>{recorder.onstop=null;recorder.ondataavailable=null;stopRecordingTracks(stream);state.recording=null;resetRecordingUI();showToast('Enregistrement vocal interrompu')};
   recorder.onstop=()=>{
    const type=recorder.mimeType||'audio/webm',blob=new Blob(chunks,{type}),ext=type.includes('ogg')?'ogg':type.includes('mp4')?'m4a':'webm';
    stopRecordingTracks(stream);state.recording=null;resetRecordingUI();
