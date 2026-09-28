@@ -539,3 +539,69 @@ html.nethorPhoneDevice[data-theme="dark"] body.agendaLayout .mobileAgendaContent
     max-width:100%!important
   }
 }
+
+
+/* Planning Agenda v11 — colonne active continue sur desktop */
+@media(min-width:761px){
+  body.agendaLayout .agendaDayHead.activeDay{
+    background:#fff1e9!important;
+    border-left:2px solid #ff7447!important;
+    border-right:2px solid #ff7447!important;
+    box-shadow:none!important
+  }
+  body.agendaLayout .agendaCell.activeDay{
+    position:relative!important;
+    background:#fffaf6!important;
+    border-left:2px solid rgba(255,116,71,.62)!important;
+    border-right:2px solid rgba(255,116,71,.62)!important;
+    border-radius:0!important;
+    outline:0!important;
+    box-shadow:none!important
+  }
+  body.agendaLayout .agendaCell.empty.activeDay,
+  body.agendaLayout .agendaCell.activeDay.empty{
+    display:grid!important;
+    place-items:center!important;
+    background:#fffaf6!important;
+    border-left:2px solid rgba(255,116,71,.62)!important;
+    border-right:2px solid rgba(255,116,71,.62)!important;
+    border-top:0!important;
+    border-radius:0!important;
+    outline:0!important;
+    box-shadow:none!important
+  }
+  body.agendaLayout .agendaCell.activeDay.today,
+  body.agendaLayout .agendaCell.empty.activeDay.today{
+    background:#fff7ef!important
+  }
+  body.agendaLayout .agendaGrid > .agendaCell.activeDay:nth-last-child(-n+7){
+    border-bottom:2px solid #ff7447!important
+  }
+  body.agendaLayout .agendaCell.activeDay .agendaWeekDash{
+    color:#d78b70!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayHead.activeDay{
+    background:#36261f!important;
+    border-left-color:#ff8a61!important;
+    border-right-color:#ff8a61!important;
+    box-shadow:none!important
+  }
+  html[data-theme="dark"] body.agendaLayout .agendaCell.activeDay,
+  html[data-theme="dark"] body.agendaLayout .agendaCell.empty.activeDay,
+  html[data-theme="dark"] body.agendaLayout .agendaCell.activeDay.empty{
+    background:#27211e!important;
+    border-left-color:rgba(255,138,97,.68)!important;
+    border-right-color:rgba(255,138,97,.68)!important;
+    border-radius:0!important;
+    outline:0!important;
+    box-shadow:none!important
+  }
+  html[data-theme="dark"] body.agendaLayout .agendaCell.activeDay.today,
+  html[data-theme="dark"] body.agendaLayout .agendaCell.empty.activeDay.today{
+    background:#30251f!important
+  }
+  html[data-theme="dark"] body.agendaLayout .agendaGrid > .agendaCell.activeDay:nth-last-child(-n+7){
+    border-bottom-color:#ff8a61!important
+  }
+}
