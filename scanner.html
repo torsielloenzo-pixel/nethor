@@ -83,22 +83,22 @@ button,input{font:inherit}button{cursor:pointer}
 <main class="page">
   <div class="top">
     <button class="back" type="button" onclick="goBack()" aria-label="Retour">‹</button>
-    <div class="title"><div class="titleRow"><h1>Scanner</h1><span class="beta">bêta</span></div><p>Scanne un code EAN pour retrouver sa fiche article.</p></div>
+    <div class="title"><div class="titleRow"><h1>Scanner</h1><span class="beta">bêta</span></div><p>Scanne un code-barres pour retrouver sa fiche article EAN13.</p></div>
   </div>
 
   <section class="cameraCard" aria-label="Scanner un code-barres">
-    <div class="cameraHead"><span class="cameraState"><i class="cameraDot"></i><span id="cameraStateText">Initialisation…</span></span><span class="cameraFormat">EAN-8 · EAN-13</span></div>
+    <div class="cameraHead"><span class="cameraState"><i class="cameraDot"></i><span id="cameraStateText">Initialisation…</span></span><span class="cameraFormat">EAN8 · EAN13</span></div>
     <div id="reader"></div>
     <div class="scanOverlay"><div class="scanFrame"><i></i><span class="scanLine"></span></div></div>
     <div id="cameraFallback" class="cameraFallback"><div><strong>Caméra indisponible</strong><p id="cameraFallbackText">Autorise l’accès à la caméra pour scanner un code-barres.</p><button type="button" onclick="startCamera()">Réessayer</button></div></div>
   </section>
 
-  <div class="hint"><span class="hintIcon">i</span><span>Place le code-barres à l’intérieur du cadre. La recherche démarre automatiquement dès que l’EAN est reconnu.</span></div>
+  <div class="hint"><span class="hintIcon">i</span><span>Place le code-barres à l’intérieur du cadre. La recherche démarre automatiquement dès que le code est reconnu.</span></div>
   <div id="cameraPreference" class="cameraPreference"><span class="cameraPreferenceIcon">✓</span><span>Autorisation caméra mémorisée dans tes préférences.</span></div>
 
   <section class="panel">
-    <div class="panelHead"><h2>Recherche manuelle</h2><small>EAN</small></div>
-    <form class="manual" onsubmit="manualSearch(event)"><input id="eanInput" inputmode="none" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="14" readonly tabindex="-1" placeholder="Ex. 3760123456789" aria-label="Code EAN" onpointerdown="activateManualInput(this,event)"><button type="submit">Rechercher</button></form>
+    <div class="panelHead"><h2>Recherche manuelle</h2><small>EAN13</small></div>
+    <form class="manual" onsubmit="manualSearch(event)"><input id="eanInput" inputmode="none" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="14" readonly tabindex="-1" placeholder="Ex. 3760123456789" aria-label="Code EAN13" onpointerdown="activateManualInput(this,event)"><button type="submit">Rechercher</button></form>
 
     <div id="result" class="result" aria-live="polite"></div>
   </section>
@@ -207,7 +207,7 @@ async function startCamera(){
   if(!isMobileView())return;
   hideCameraFallback();
   if(!window.Html5Qrcode||!window.Html5QrcodeSupportedFormats){
-    showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN manuellement.');
+    showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
     return
   }
   await safeStop();
@@ -243,7 +243,7 @@ async function onScanSuccess(decodedText){
   if(code===lastCode&&now-lastCodeAt<1800)return;
   lastCode=code;lastCodeAt=now;
   try{navigator.vibrate?.(55)}catch(_){}
-  setCameraState('EAN reconnu');
+  setCameraState('Code reconnu');
   await findProduct(code,true)
 }
 
@@ -277,7 +277,7 @@ async function findProduct(raw,fromCamera=false){
   const product=candidates.map(candidate=>rows.find(p=>String(p.ean||'')===candidate)).find(Boolean)||rows[0]||null;
   if(!product){
     await safeStop();
-    renderNotFound(code,'Aucune fiche article ne correspond à cet EAN.');
+    renderNotFound(code,'Aucune fiche article ne correspond à cet EAN13.');
     setCameraState('Article introuvable');
     return
   }
@@ -297,14 +297,14 @@ function renderProduct(p){
   result.innerHTML=
     '<button class="resultModalBackdrop" type="button" aria-label="Fermer la fiche" onclick="closeProductModal()"></button>'+
     '<article class="resultModalCard" role="dialog" aria-modal="true" aria-labelledby="scannerProductTitle">'+
-      '<div class="resultModalTop"><div class="resultModalTitle"><strong id="scannerProductTitle">Fiche article</strong><small>EAN reconnu par le scanner</small></div><button class="resultModalClose" type="button" onclick="closeProductModal()" aria-label="Fermer">×</button></div>'+
+      '<div class="resultModalTop"><div class="resultModalTitle"><strong id="scannerProductTitle">Fiche article</strong><small>EAN13 reconnu par le scanner</small></div><button class="resultModalClose" type="button" onclick="closeProductModal()" aria-label="Fermer">×</button></div>'+
       '<div class="resultStatus"><span class="resultStatusDot"></span>Fiche article trouvée</div>'+
       '<div class="product">'+
         '<div class="productPhoto">'+(p.photo_url?'<img src="'+esc(p.photo_url)+'" alt="">':'📦')+'</div>'+
         '<div class="productCopy"><h3>'+esc(p.name||'Article')+'</h3><div class="path">'+esc(family)+' · '+esc(category)+'</div><span class="statusBadge '+(p.on_sale?'on':'off')+'">'+(p.on_sale?'EN VENTE':'HORS VENTE')+'</span></div>'+
       '</div>'+
       '<div class="facts">'+
-        '<div class="fact wide"><span>EAN</span><strong>'+esc(p.ean||'—')+'</strong></div>'+
+        '<div class="fact wide"><span>EAN13</span><strong>'+esc(p.ean||'—')+'</strong></div>'+
         '<div class="fact"><span>Code article</span><strong>'+esc(p.article_code||'—')+'</strong></div>'+
         '<div class="fact"><span>Conditionnement</span><strong>'+esc(pack)+'</strong></div>'+
       '</div>'+
@@ -317,8 +317,8 @@ function renderNotFound(code,message){
   $('result').className='result show';
   $('result').innerHTML=
     '<div class="resultStatus notFound"><span class="resultStatusDot"></span>Fiche introuvable</div>'+
-    '<div class="notFoundBox"><strong>'+esc(code||'EAN non reconnu')+'</strong><p>'+esc(message||'Aucune fiche article trouvée.')+'</p></div>'+
-    '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Réessayer</button><button class="primary" type="button" onclick="focusManual()">Saisir un EAN</button></div>';
+    '<div class="notFoundBox"><strong>'+esc(code||'EAN13 non reconnu')+'</strong><p>'+esc(message||'Aucune fiche article trouvée.')+'</p></div>'+
+    '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Réessayer</button><button class="primary" type="button" onclick="focusManual()">Saisir un EAN13</button></div>';
   $('result').scrollTop=0
 }
 function closeProductModal(){
