@@ -554,10 +554,10 @@ function openUserCard(user,opts={}){
  activeUserCard={user,opts};
  box.innerHTML='<div class="nettoUserCardHero"><div id="nettoUserCardAvatar" class="nettoUserCardAvatar"></div><div><h3 id="nettoUserCardName">'+esc(name)+'</h3></div></div>'+
  '<div class="nettoUserCardFields"><div class="nettoUserCardField"><small>Rôle</small><strong>'+esc(roleLabel(user.role))+'</strong></div><div class="nettoUserCardField"><small>Présence</small><strong id="nettoUserCardPresenceValue"><i id="nettoUserCardPresenceDot" class="nettoUserPresenceDot"></i><span>Chargement…</span></strong></div></div>'+
- (!self?'<button id="nettoUserCardMessage" class="nettoUserCardMessage" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3l4-3h9a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>Envoyer un message</button>':'');
+ '<button id="nettoUserCardMessage" class="nettoUserCardMessage" type="button" '+(self?'disabled aria-disabled="true" title="Votre propre profil"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3l4-3h9a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>Envoyer un message</button>';
  const avatar=document.getElementById('nettoUserCardAvatar');paint(avatar,user.avatar_url||user.avatarUrl||null,name,user.profile_color,user.avatar_frame);
  const message=document.getElementById('nettoUserCardMessage');
- if(message)message.onclick=()=>{closeUserCard();if(typeof opts.onMessage==='function')opts.onMessage(user);else location.href=opts.messageUrl||('chat.html?user='+encodeURIComponent(user.id))};
+ if(message&&!self)message.onclick=()=>{closeUserCard();if(typeof opts.onMessage==='function')opts.onMessage(user);else location.href=opts.messageUrl||('chat.html?user='+encodeURIComponent(user.id))};
  bg.classList.remove('hidden');refreshActiveUserCardPresence()
 }
 window.addEventListener('netto:presence',()=>{if(activeUserCard.user)refreshActiveUserCardPresence()});
