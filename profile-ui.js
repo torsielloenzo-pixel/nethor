@@ -1501,7 +1501,7 @@ function buildGlobalHeader(){
  const mobileAdmin=mobileModules.filter(m=>mobileAdminIds.has(m.id));
  const mobileExtra=mobileModules.filter(m=>!mobilePrimaryIds.has(m.id)&&!mobileAdminIds.has(m.id));
  const mobileRows=list=>list.map(m=>mobileMenuRow(m.id,m.label,m.subtitle,m.url)).join('');
- const mobilePrimaryRows=mobilePrimary.map(m=>mobileMenuRow(m.id,m.label,m.subtitle,m.url)+(m.id==='chat'?mobileMenuRow('scanner','Scanner (bêta)','EAN vers fiche article','scanner.html'):'')).join('');
+ const mobilePrimaryRows=mobilePrimary.map(m=>mobileMenuRow(m.id,m.label,m.subtitle,m.url)+(m.id==='chat'?mobileMenuRow('scanner','Scanner (bêta)','EAN13 vers fiche article','scanner.html'):'')).join('');
  const mobileProblemSource=(location.pathname.split('/').pop()||'home.html')+(location.search||'');
  const mobileProblemUrl='report-problem.html?from='+encodeURIComponent(mobileProblemSource);
  const mobileProfileIcon=mobileNavIcon('settings');
