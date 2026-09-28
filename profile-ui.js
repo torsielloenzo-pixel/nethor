@@ -1815,7 +1815,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=143;
+const APP_RELEASE=146;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -1976,44 +1976,6 @@ function enforceMaintenanceAccess(){
 }
 
 
-function isNethorMobilePhone(){
- const ua=String(navigator.userAgent||'');
- if(typeof navigator.userAgentData?.mobile==='boolean')return navigator.userAgentData.mobile;
- return /Android.+Mobile|iPhone|iPod|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua)
-}
-function requestNethorPortraitLock(){
- if(!isNethorMobilePhone())return;
- const lock=screen.orientation?.lock;
- if(typeof lock!=='function')return;
- try{Promise.resolve(lock.call(screen.orientation,'portrait')).catch(()=>{})}catch(_){}
-}
-function setupMobilePortraitOnly(){
- if(window.__nethorPortraitOnly)return;
- window.__nethorPortraitOnly=true;
- const lock=()=>requestNethorPortraitLock();
-
- // Aucun écran intermédiaire : on laisse le navigateur/OS appliquer le verrouillage natif.
- lock();
- window.addEventListener('pageshow',lock,{passive:true});
- window.addEventListener('orientationchange',lock,{passive:true});
- try{screen.orientation?.addEventListener?.('change',lock)}catch(_){}
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)lock()});
-
- // Certains navigateurs n'acceptent le verrouillage qu'après une interaction utilisateur.
- const retryOnce=()=>{
-  lock();
-  document.removeEventListener('pointerdown',retryOnce,true);
-  document.removeEventListener('touchstart',retryOnce,true);
-  document.removeEventListener('keydown',retryOnce,true)
- };
- document.addEventListener('pointerdown',retryOnce,{capture:true,passive:true});
- document.addEventListener('touchstart',retryOnce,{capture:true,passive:true});
- document.addEventListener('keydown',retryOnce,true);
-
- // Dernière tentative une fois l'application complètement chargée.
- window.addEventListener('load',lock,{once:true,passive:true})
-}
-
 function ensureAccessibleNames(root=document){
  root.querySelectorAll('input,select,textarea').forEach(el=>{
   if(el.type==='hidden'||el.hasAttribute('aria-label')||el.hasAttribute('aria-labelledby')||el.labels?.length)return;
@@ -2034,7 +1996,7 @@ function startAccessibleNameObserver(){
  observer.observe(document.body,{childList:true,subtree:true});
  window.__nettoA11yObserver=observer;
 }
-async function init(){addStyle();setupMobilePortraitOnly();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});await loadNotificationPreferences();setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
+async function init(){addStyle();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});await loadNotificationPreferences();setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
 const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
