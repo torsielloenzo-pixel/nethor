@@ -69,6 +69,23 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  .section#tab-overview,.section#tab-accounts{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
 }
 @media(max-width:1100px) and (min-width:901px){.managementStats{grid-template-columns:1fr 1fr}.managementOverviewGrid{grid-template-columns:1fr}}
+
+/* management-mobile-v166 */
+@media(max-width:900px){
+ .managementSearch{display:none!important}
+ .managementStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+ .managementStat{border:1px solid #e2e6eb;border-radius:14px;background:#fff;padding:10px;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;text-align:left;color:inherit}
+ .managementStatIcon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#fff1ea;color:#ef4e26}
+ .managementStat small{display:block;font-size:8px;color:#8b929b}.managementStat strong{display:block;font-size:17px}.managementStat em{display:none}.managementStat>b{font-size:18px;color:#8b929b}
+ .managementOverviewGrid{display:grid;gap:9px}
+ .managementOverviewCard{background:#fff;border:1px solid #e2e6eb;border-radius:15px;padding:12px}
+ .managementCardHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.managementCardHead>div{display:flex;align-items:center;gap:8px}.managementCardIcon{width:32px;height:32px;border-radius:10px;background:#fff1ea;color:#ef4e26;display:grid;place-items:center}.managementCardHead strong{display:block;font-size:11px}.managementCardHead small{display:block;font-size:8px;color:#8b929b}.managementCardHead>button{border:1px solid #dfe3e8;background:#fff;border-radius:8px;padding:6px 8px;font-size:8px}
+ .managementActionGrid{display:grid;gap:7px}.managementActionGrid>button{border:1px solid #e6e9ed;background:#fafbfc;border-radius:11px;padding:9px;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:7px;align-items:center;text-align:left;color:inherit}.managementActionGrid>button>span{width:30px;height:30px;border-radius:9px;background:#fff1ea;color:#ef4e26;display:grid;place-items:center}.managementActionGrid strong{display:block;font-size:9px}.managementActionGrid small{display:block;font-size:7px;color:#8d949d}.managementActionGrid b{font-size:7px}
+ .managementPreviewRow{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #edf0f2}.managementPreviewRow:first-child{border-top:0}.managementPreviewAvatar{width:30px;height:30px;border-radius:50%;background:#ff5a2a;color:#fff;display:grid;place-items:center;font-size:8px;font-weight:900}.managementPreviewRow strong{display:block;font-size:9px}.managementPreviewRow small,.managementPreviewRow time{font-size:7px;color:#8d949d}
+ .managementRoleSummary>div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid #edf0f2}.managementRoleSummary>div:first-child{border-top:0}.managementRoleSummary strong{font-size:9px}.managementRoleSummary span{font-size:8px;color:#8d949d}
+ .managementAccountsFrame{width:100%;height:calc(100dvh - 170px);min-height:650px;border:1px solid #e1e5ea;border-radius:14px;background:#fff}
+ .managementEmbeddedHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.managementEmbeddedHead h2{margin:0;font-size:16px}.managementEmbeddedHead p{margin:2px 0 0;font-size:8px;color:#8b929b}
+}
 </style>
 </head>
 <body>
