@@ -1324,6 +1324,130 @@ main{position:relative;z-index:1}
   .mobileHomeDashboard .mhdEmpty{font-size:9.5px}
 }
 </style>
+<style id="desktop-team-column-v1">
+/* Desktop large : passation + équipe du jour en colonne latérale */
+.mhdTeamHeadingDesktop{display:none}
+.mhdTeamHeadingMobile{display:inline}
+
+@media(min-width:1101px){
+  /* Le bandeau noir reste aligné sur la largeur de la passation, pas sur la colonne équipe. */
+  main>.hello{
+    width:calc(83.333333% - 2.333px);
+    max-width:none;
+    margin-left:0;
+    margin-right:0;
+  }
+
+  .mobileHomeDashboard .mhdTasks.editor{
+    grid-column:span 10;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion{
+    grid-column:span 2;
+    min-width:0;
+    padding:15px 13px;
+  }
+
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdSectionHead{
+    display:block;
+    margin-bottom:10px;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdTitleWithIcon{
+    align-items:center;
+    gap:9px;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdIcon{
+    width:36px;
+    height:36px;
+    border-radius:11px;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdTeamHeading{
+    min-width:0;
+    font-size:14px;
+    line-height:1.08;
+    white-space:normal;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdTeamHeadingDesktop{display:inline}
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdTeamHeadingMobile{display:none}
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdSectionLink{
+    display:inline-block;
+    margin-top:9px;
+    padding:3px 0;
+    font-size:10px;
+    white-space:normal;
+    text-align:left;
+  }
+
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdTeam{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    overflow:visible;
+    padding-top:0;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdPerson{
+    width:100%;
+    min-width:0;
+    display:grid;
+    grid-template-columns:40px minmax(0,1fr);
+    grid-template-rows:auto auto;
+    column-gap:9px;
+    row-gap:2px;
+    align-items:center;
+    padding:10px 0;
+    border-top:1px solid #edf0f2;
+    text-align:left;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdPerson:first-child{
+    border-top:0;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdAvatar{
+    grid-column:1;
+    grid-row:1 / 3;
+    width:40px;
+    height:40px;
+    margin:0;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdPerson strong{
+    grid-column:2;
+    grid-row:1;
+    min-width:0;
+    font-size:10.5px;
+    line-height:1.2;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    overflow-wrap:anywhere;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdPerson small{
+    grid-column:2;
+    grid-row:2;
+    min-width:0;
+    margin-top:0;
+    font-size:8.5px;
+    line-height:1.25;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    overflow-wrap:anywhere;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdOnline{
+    left:31px;
+    top:37px;
+  }
+  .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdMorePeople{
+    width:100%;
+    height:auto;
+    min-height:34px;
+    margin-top:8px;
+    border-radius:11px;
+  }
+
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdTeamSection.editorCompanion .mhdPerson{
+    border-color:#30353b;
+  }
+}
+</style>
 </head>
 <body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
 <header><div class="top"><div class="brand"><div class="nMenuWrap"><button class="mark nMenuBtn" onclick="location.href='home.html'" aria-label="Menu">N</button><div id="nMenu" class="nMenu hidden"><div class="nMenuTitle">Navigation</div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="location.href='index.html'"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="location.href='planning.html'"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="location.href='chat.html'"><span class="navToolLogo equipe"></span><div><strong>Chat</strong><small>Messagerie interne</small></div></button><button onclick="location.href='articles.html'"><span class="navToolLogo article"></span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='bakery.html'"><span class="navToolLogo bakery"></span><div><strong>Boulangerie</strong><small>Stock • Consulter • Gestion</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='accounts.html'"><span>♙</span><div><strong>Comptes</strong><small>Utilisateurs et rôles</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="logoutItem" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><strong>Nethor</strong><small>Portail opérationnel</small></div></div><div class="userMenuWrap"><button id="userMenuBtn" class="userPill" onclick="toggleUserMenu(event)" aria-expanded="false"><span id="userAvatar" class="userAvatar">U</span><span class="userText"><strong id="userName">Utilisateur</strong><small id="userRole">Compte</small></span><span class="userChevron">⌄</span></button><div id="userMenu" class="userMenu hidden"><div class="userMenuHead"><span id="userMenuAvatar" class="userAvatar">U</span><div><strong id="userMenuName">Utilisateur</strong><small id="userMenuRole">Compte</small></div></div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Retour au portail</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="userThemeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="userLogout" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div></div></header>
@@ -1362,7 +1486,7 @@ function homeFriendlyHour(t){const h=Math.floor(t),min=Math.round((t-h)*60);retu
 function homeWorkRanges(row,m){const out=[];let start=null;for(let i=0;i<=row.length;i++){const working=i<row.length&&(row[i]==='g'||row[i]==='b');if(working&&start===null)start=i;if(!working&&start!==null){out.push({a:(m.startTime??6)+start*.25,b:(m.startTime??6)+i*.25});start=null}}return out}
 async function loadHomeTodayPlanning(profile,name){
  const el=document.getElementById('homeTodayMessage');if(!el)return;
- if(profile?.role==='admin'){el.classList.add('hidden');el.textContent='';return}
+ if(homeTaskMode(profile?.role)==='editor'){el.classList.add('hidden');el.textContent='';return}
  el.classList.remove('hidden');
  const today=new Date(),week=homeIsoDate(homeStartOfWeek(today)),todayKey=homeIsoDate(today);
  const {data,error}=await db.from('planning_weeks').select('data').eq('week_start',week).maybeSingle();
@@ -1737,7 +1861,7 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  }
  if(widget('team_today')){
   const shown=todayTeam.slice(0,3),extra=Math.max(0,todayTeam.length-shown.length);
-  sections.push('<section class="mhdCard mhdSection mhdTeamSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('team_today')+'</span><strong>Équipe aujourd’hui</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'chat.html\'">Voir l’équipe ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((x,i)=>'<div class="mhdPerson"><span id="mhdAvatar'+i+'" class="mhdAvatar">'+homeEsc((x.name||'U').slice(0,1).toUpperCase())+'</span>'+(x.profile&&window.NettoProfileUI?.onlineIds?.has?.(x.profile.id)?'<i class="mhdOnline"></i>':'')+'<strong>'+homeEsc(x.name)+'</strong><small>'+homeEsc(x.profile?window.NettoProfileUI?.roleLabel?.(x.profile.role)||x.profile.role:'Équipe')+'</small></div>').join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>');
+  sections.push('<section class="mhdCard mhdSection mhdTeamSection'+(homeTaskMode(profile?.role)==='editor'?' editorCompanion':'')+'"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('team_today')+'</span><strong class="mhdTeamHeading"><span class="mhdTeamHeadingDesktop">Équipe<br>du jour</span><span class="mhdTeamHeadingMobile">Équipe aujourd’hui</span></strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'chat.html\'">Voir l’équipe ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((x,i)=>'<div class="mhdPerson"><span id="mhdAvatar'+i+'" class="mhdAvatar">'+homeEsc((x.name||'U').slice(0,1).toUpperCase())+'</span>'+(x.profile&&window.NettoProfileUI?.onlineIds?.has?.(x.profile.id)?'<i class="mhdOnline"></i>':'')+'<strong>'+homeEsc(x.name)+'</strong><small>'+homeEsc(x.profile?window.NettoProfileUI?.roleLabel?.(x.profile.role)||x.profile.role:'Équipe')+'</small></div>').join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>');
  }
  if(widget('quick_access')){
   const modules=homeAllowedModules(profile,cfg).slice(0,4);
