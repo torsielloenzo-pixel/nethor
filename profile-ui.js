@@ -26,6 +26,83 @@ function lockMobileAppViewport(){
 
 lockMobileAppViewport();
 
+function isNethorPhoneDevice(){
+ try{
+  if(typeof navigator.userAgentData?.mobile==='boolean')return navigator.userAgentData.mobile;
+  const ua=String(navigator.userAgent||'');
+  if(/iPhone|iPod|Android.+Mobile|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua))return true;
+  const coarse=window.matchMedia?.('(hover:none) and (pointer:coarse)')?.matches===true;
+  const sw=Number(screen.width)||window.innerWidth,sh=Number(screen.height)||window.innerHeight;
+  return coarse&&Math.min(sw,sh)<=600
+ }catch(_){return false}
+}
+function isNethorPhysicalLandscape(){
+ try{
+  const type=screen.orientation?.type;
+  if(type)return String(type).startsWith('landscape');
+  const legacy=Number(window.orientation);
+  if(Number.isFinite(legacy))return Math.abs(legacy)===90
+ }catch(_){}
+ return window.innerWidth>window.innerHeight
+}
+function markNethorPhoneDevice(){
+ document.documentElement.classList.toggle('nethorPhoneDevice',isNethorPhoneDevice())
+}
+function setupMobileLandscapeParity(){
+ if(window.__nethorLandscapeParity)return;
+ window.__nethorLandscapeParity=true;
+ markNethorPhoneDevice();
+
+ const style=document.createElement('style');
+ style.id='nethorLandscapeParityStyle';
+ document.head?.appendChild(style);
+
+ const rebuild=()=>{
+  markNethorPhoneDevice();
+  if(!isNethorPhoneDevice()||!isNethorPhysicalLandscape()){
+   style.textContent='';
+   return
+  }
+  const sw=Number(screen.width)||window.innerWidth,sh=Number(screen.height)||window.innerHeight;
+  const shortSide=Math.min(sw,sh);
+  const chunks=[];
+  const visit=rules=>{
+   if(!rules)return;
+   for(const rule of rules){
+    if(rule===style.sheet)continue;
+    if(rule.type===4&&rule.media){
+     const mediaText=String(rule.media.mediaText||'');
+     if(/min-width\s*:/i.test(mediaText)||/orientation\s*:/i.test(mediaText))continue;
+     const m=mediaText.match(/max-width\s*:\s*([\d.]+)px/i);
+     if(!m)continue;
+     const max=Number(m[1]);
+     if(!Number.isFinite(max)||max>900||shortSide>max)continue;
+     try{if(window.matchMedia(mediaText).matches)continue}catch(_){}
+     try{
+      for(const child of rule.cssRules||[])chunks.push(child.cssText)
+     }catch(_){}
+    }
+   }
+  };
+  for(const sheet of Array.from(document.styleSheets)){
+   if(sheet.ownerNode===style)continue;
+   try{visit(sheet.cssRules)}catch(_){}
+  }
+  style.textContent=chunks.join('\n')
+ };
+
+ const refresh=()=>requestAnimationFrame(rebuild);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rebuild,{once:true});
+ else rebuild();
+ window.addEventListener('load',rebuild,{once:true});
+ window.addEventListener('orientationchange',refresh,{passive:true});
+ window.addEventListener('resize',refresh,{passive:true});
+ try{screen.orientation?.addEventListener?.('change',refresh)}catch(_){}
+}
+
+setupMobileLandscapeParity();
+
+
 function enableStableMobileNavigation(){
  if(!isMobileViewport()||document.getElementById('nettoMobileStableNavigationStyle'))return;
  const style=document.createElement('style');
