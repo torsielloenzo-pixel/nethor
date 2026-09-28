@@ -1467,7 +1467,7 @@ async function saveInfo(e){
  e.preventDefault();if(!canManageFL)return;const id=$('infoId').value,btn=$('saveInfoBtn');btn.disabled=true;btn.textContent='Enregistrement…';
  try{
   const current=products.find(x=>x.id===id);let photoUrl=current?.photo_url||null;const file=$('infoPhoto').files[0];
-  if(file){if(file.size>8*1024*1024)throw new Error('Photo trop lourde : 8 Mo maximum.');const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const path=crypto.randomUUID()+'.'+ext;const {error:upErr}=await db.storage.from('product-images').upload(path,file,{cacheControl:'3600',upsert:false});if(upErr)throw upErr;const {data:urlData}=db.storage.from('product-images').getPublicUrl(path);photoUrl=urlData.publicUrl}
+  if(file){if(file.size>8*1024*1024)throw new Error('Photo trop lourde : 8 Mo maximum.');const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');if(!['jpg','jpeg','png','webp','heic','heif'].includes(ext))throw new Error('Format photo non autorisé.');const path=crypto.randomUUID()+'.'+ext;const {error:upErr}=await db.storage.from('product-images').upload(path,file,{cacheControl:'3600',upsert:false});if(upErr)throw upErr;const {data:urlData}=db.storage.from('product-images').getPublicUrl(path);photoUrl=urlData.publicUrl}
   const pc=Number($('infoPackagingCount').value),scRaw=$('infoShelfCapacity').value.trim(),sc=scRaw===''?null:Number(scRaw),ean=$('infoEan').value.replace(/\s+/g,'').trim();
   if(ean&&!/^(?:\d{8}|\d{12}|\d{13}|\d{14})$/.test(ean))throw new Error('Le code EAN doit contenir 8, 12, 13 ou 14 chiffres.');
   const family_id=$('infoFamily').value?Number($('infoFamily').value):null,category_id=$('infoCat').value?Number($('infoCat').value):null,packaging_id=$('infoPackaging').value?Number($('infoPackaging').value):null;const changes={name:$('infoName').value.trim(),family_id,category_id,packaging_id,packaging_count:Number.isInteger(pc)&&pc>=1?pc:null,shelf_capacity:Number.isInteger(sc)&&sc>=0?sc:null,photo_url:photoUrl,article_code:$('infoCode').value.trim()||null,ean:ean||null,on_sale:$('infoOnSale').value==='true'};
@@ -1485,7 +1485,9 @@ const btn=e.submitter;if(btn){btn.disabled=true;btn.textContent='Ajout…'}
 try{
  let photoUrl=null,file=$('pPhoto').files[0];
  if(file){
+   if(file.size>8*1024*1024)throw new Error('Photo trop lourde : 8 Mo maximum.');
    const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+   if(!['jpg','jpeg','png','webp','heic','heif'].includes(ext))throw new Error('Format photo non autorisé.');
    const path=crypto.randomUUID()+'.'+ext;
    const {error:upErr}=await db.storage.from('product-images').upload(path,file,{cacheControl:'3600',upsert:false});
    if(upErr)throw upErr;
