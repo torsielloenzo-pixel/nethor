@@ -37,6 +37,7 @@ function inject(){
 function setLayout(v,sound){
 
  if(isMobile())v='agenda';layout=normalize(v);
+ if(layout==='agenda'&&typeof window.setCoverageMode==='function')window.setCoverageMode(false);
  document.body.classList.toggle('agendaLayout',layout==='agenda');
  document.body.classList.toggle('mobileAgendaForced',isMobile());
  document.getElementById('agendaView')?.classList.toggle('hidden',layout!=='agenda');
