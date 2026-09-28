@@ -2,7 +2,7 @@
   "version": 161,
   "label": "v1.61",
   "important": true,
-  "mode": "manual",
+  "mode": "auto",
   "title": "Nouvelle version de Nethor",
   "message": "Améliorations générales, correctifs et optimisations du portail.",
   "published_at": null,
