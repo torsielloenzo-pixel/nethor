@@ -7,6 +7,230 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="profile-ui.js?v=140"></script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <link rel="stylesheet" href="design-v2.css?v=3"><link rel="stylesheet" href="design-v3.css?v=3"><link rel="stylesheet" href="design-v4.css?v=8">
+<style id="settings-mobile-layout-v142">
+.settingsMobileTop{display:none}
+@media(max-width:700px){
+  body>header{display:none!important}
+  main{
+    width:min(100%,760px)!important;
+    margin:0 auto!important;
+    padding:calc(env(safe-area-inset-top) + 14px) 10px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important
+  }
+  .settingsMobileTop{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin:2px 2px 13px
+  }
+  .settingsMobileBack{
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
+    border:1px solid #e4e7eb;
+    border-radius:14px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    color:inherit;
+    font-size:24px;
+    line-height:1;
+    font-weight:700;
+    padding:0;
+    box-shadow:none
+  }
+  .settingsMobileTitle{min-width:0}
+  .settingsMobileTitle h1{
+    margin:0!important;
+    font-size:26px!important;
+    line-height:1.05!important;
+    letter-spacing:-.8px!important
+  }
+  .settingsMobileTitle p{
+    margin:5px 0 0!important;
+    color:#7b828b!important;
+    font-size:10px!important;
+    line-height:1.35!important
+  }
+
+  .hero{
+    margin:0 2px 12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important
+  }
+  .hero>div{display:none!important}
+  .roleBadge{
+    padding:6px 9px!important;
+    font-size:9px!important;
+    line-height:1!important
+  }
+
+  .panel{
+    padding:15px!important;
+    margin-bottom:12px!important;
+    border-radius:20px!important;
+    overflow:hidden!important
+  }
+  .panelHead{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important
+  }
+  .panelHead>div{min-width:0!important}
+  .panel h2{
+    margin:0!important;
+    font-size:17px!important;
+    line-height:1.2!important
+  }
+  .panel p{
+    margin:5px 0 0!important;
+    font-size:10px!important;
+    line-height:1.45!important;
+    overflow-wrap:anywhere
+  }
+  .panelTools{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    width:100%!important
+  }
+  .panelTools .mini{
+    width:100%!important;
+    min-width:0!important;
+    min-height:38px!important;
+    padding:8px 9px!important
+  }
+
+  .themeChoices{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    margin-top:12px!important
+  }
+  .themeChoice{
+    width:100%!important;
+    min-width:0!important;
+    min-height:66px!important;
+    grid-template-columns:42px minmax(0,1fr) 20px!important;
+    gap:10px!important;
+    padding:11px 12px!important
+  }
+  .themeChoiceText{min-width:0!important}
+  .themeChoiceText strong,
+  .themeChoiceText span{
+    overflow-wrap:anywhere!important
+  }
+
+  .grid{
+    gap:8px!important;
+    margin-top:12px!important
+  }
+  .item{
+    min-width:0!important;
+    grid-template-columns:38px minmax(0,1fr) auto!important;
+    gap:9px!important;
+    padding:10px!important;
+    align-items:center!important
+  }
+  .icon{
+    width:38px!important;
+    height:38px!important;
+    border-radius:11px!important
+  }
+  .info{
+    min-width:0!important;
+    overflow:hidden!important
+  }
+  .info strong{
+    font-size:11.5px!important;
+    line-height:1.25!important;
+    overflow-wrap:anywhere!important
+  }
+  .info span{
+    max-width:none!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    font-size:9.5px!important;
+    line-height:1.35!important;
+    overflow-wrap:anywhere!important
+  }
+  .toggle{
+    min-width:0!important;
+    white-space:nowrap!important;
+    font-size:9px!important;
+    gap:5px!important
+  }
+  .toggle input{
+    width:18px!important;
+    height:18px!important;
+    flex:none!important
+  }
+
+  .adminLink{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important
+  }
+  .adminLink .open{
+    width:100%!important;
+    min-height:42px!important;
+    white-space:normal!important;
+    text-align:center!important
+  }
+
+  .actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:9px!important;
+    border-radius:16px!important;
+    width:100%!important
+  }
+  .saveState{
+    grid-column:1/-1!important;
+    width:100%!important;
+    margin:0!important;
+    text-align:center!important;
+    min-width:0!important;
+    overflow-wrap:anywhere!important
+  }
+  .actions .btn{
+    width:100%!important;
+    min-width:0!important
+  }
+
+  :root[data-theme="dark"] .settingsMobileBack{
+    background:#22252a!important;
+    border-color:#343940!important;
+    color:#f1eeea!important
+  }
+  :root[data-theme="dark"] .settingsMobileTitle p{
+    color:#aaa59f!important
+  }
+}
+@media(max-width:430px){
+  .item{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    align-items:start!important
+  }
+  .icon{
+    grid-row:1 / span 2!important
+  }
+  .toggle{
+    grid-column:2!important;
+    justify-self:start!important;
+    margin-top:3px!important
+  }
+  .themeChoice{
+    grid-template-columns:38px minmax(0,1fr) 18px!important;
+    padding:10px!important
+  }
+  .themeSwatch{
+    width:38px!important;
+    height:38px!important
+  }
+}
+</style>
 <style>
 :root{--red:#ff2f1f;--orange:#ff8500;--grad:linear-gradient(135deg,#ff2f1f,#ff8500);--ink:#182235}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;min-height:100dvh;background:radial-gradient(circle at 0 16%,#ff2f1f0a,transparent 26%),linear-gradient(135deg,#f7f8fa,#fff 50%,#f3f5f7);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}button{font:inherit;cursor:pointer}.hidden{display:none!important}
@@ -19,6 +243,7 @@ main{width:min(92vw,820px);margin:auto;padding:44px 0 80px}.hero{display:flex;ju
 <body>
 <header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'">N</button><div><div class="title">Personnalisation</div><div class="sub">Mon affichage et mes raccourcis</div></div></div></div></header>
 <main>
+<div class="settingsMobileTop"><button class="settingsMobileBack" type="button" onclick="location.href='home.html?open_user_menu=1'" aria-label="Retour au menu utilisateur">‹</button><div class="settingsMobileTitle"><h1>Personnalisation</h1><p>Affichage, thème et raccourcis de ton portail.</p></div></div>
 <div class="hero"><div><h1>Mon portail</h1><p>Choisis uniquement ce que tu veux voir. Tes choix restent personnels et ne modifient pas l’interface des autres utilisateurs.</p></div><span id="roleBadge" class="roleBadge">Compte</span></div>
 <section id="adminShortcut" class="panel adminLink hidden"><div><h2>Éditeur du portail</h2><p>La configuration générale, les couleurs et la barre de navigation mobile sont centralisées dans l’espace administrateur.</p></div><button class="open" onclick="location.href='admin-portal.html'">Ouvrir l’éditeur →</button></section>
 <section class="panel"><div class="panelHead"><div><h2>Apparence</h2><p>Le thème choisi est enregistré avec ton profil et te suit sur tes appareils.</p></div></div><div class="themeChoices"><button id="themeLight" class="themeChoice" type="button" onclick="chooseTheme('light')"><span class="themeSwatch light">☀</span><span class="themeChoiceText"><strong>Mode clair</strong><span>Interface lumineuse et contrastée.</span></span><span class="themeCheck"></span></button><button id="themeDark" class="themeChoice" type="button" onclick="chooseTheme('dark')"><span class="themeSwatch dark">☾</span><span class="themeChoiceText"><strong>Mode sombre</strong><span>Anthracite doux pour réduire la luminosité.</span></span><span class="themeCheck"></span></button></div></section>
