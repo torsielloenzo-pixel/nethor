@@ -1747,8 +1747,35 @@ function renderCoverageOverlay(){
  coverageSelectSlot(coverageSelectedSlot)
 }
 function renderCoverage(){const btn=document.getElementById('coverageModeBtn');if(btn)btn.disabled=!coverageModeAvailable();renderCoverageOverlay()}
+function planningWeekHoursForEmployee(ri){
+ let total=0;
+ for(let di=0;di<7;di++){
+  const row=model?.days?.[isoDate(addDays(currentWeekStart,di))]?.cells?.[ri]||[];
+  total+=totalForRow(row)
+ }
+ return Math.round(total*100)/100
+}
+function planningContractDifferenceAnomalies(){
+ if(!model)return[];
+ const out=[],employees=model.employees||[];
+ employees.forEach((emp,ri)=>{
+  const profile=planningProfileFor(emp.name),contractRaw=profile?.contract_hours;
+  if(contractRaw===null||contractRaw===undefined||contractRaw==='')return;
+  const contract=Number(contractRaw);if(!Number.isFinite(contract)||contract<0)return;
+  const planned=planningWeekHoursForEmployee(ri),diff=Math.round((planned-contract)*100)/100;
+  if(Math.abs(diff)<0.25)return;
+  const label=profile?.display_name||emp.name,fmt=n=>String(Math.round(Number(n)*100)/100).replace('.',',');
+  out.push({
+   level:'warn',
+   icon:'≠',
+   title:'DIFFÉRENCE HEURES CONTRAT · '+label,
+   detail:fmt(planned)+' h planifiées • '+fmt(contract)+' h au contrat • écart '+(diff>0?'+':'')+fmt(diff)+' h.'
+  })
+ });
+ return out
+}
 function planningAnomalies(){
- const out=[],day=modelDay(),date=dayKey();if(!model||!day)return out;
+ const out=planningContractDifferenceAnomalies(),day=modelDay(),date=dayKey();if(!model||!day)return out;
  const rows=day.cells||[],employees=model.employees||[];
  employees.forEach((emp,ri)=>{
   const row=rows[ri]||[],total=totalForRow(row),ranges=workRangesFor(row,model),label=planningProfileFor(emp.name)?.display_name||emp.name;
@@ -1775,12 +1802,12 @@ function planningAnomalies(){
    out.push({level:'warn',icon:'1',title:'Couverture réduite',detail:'Une seule personne planifiée '+rangesText+' ('+low.length+' créneau'+(low.length>1?'x':'')+' de 15 min).'})
   }
  }
- return out.slice(0,12)
+ return out.slice(0,24)
 }
 function renderAnomalies(){
  const list=document.getElementById('anomalyList'),metric=document.getElementById('anomalyMetric');if(!list||!metric)return;const items=planningAnomalies();metric.textContent=String(items.length);
  if(!model){list.innerHTML='<div class="absenceEmpty">Aucun planning à analyser pour cette semaine.</div>';return}
- if(!items.length){list.innerHTML='<div class="anomalyGood">✓ Aucune anomalie technique détectée sur cette journée.</div>';return}
+ if(!items.length){list.innerHTML='<div class="anomalyGood">✓ Aucune anomalie technique détectée sur cette journée ou cette semaine.</div>';return}
  list.innerHTML=items.map(x=>'<div class="anomalyItem '+x.level+'"><span class="ai">'+esc(x.icon)+'</span><div><strong>'+esc(x.title)+'</strong><span>'+esc(x.detail)+'</span></div></div>').join('')
 }
 function renderAbsencePanel(){
