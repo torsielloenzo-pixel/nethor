@@ -1027,6 +1027,11 @@ body:not(.planningYearOpen) #yearView{display:none!important}
 <style id="planning-desktop-menu-v1">
 /* Desktop uniquement — réorganisation des menus supérieurs du planning. */
 .desktopPlanningMenuLabel{display:none}
+.desktopPlanningViewGroup,.desktopPlanningDayGroup{min-width:0}
+@media(max-width:760px){
+  .desktopPlanningViewGroup,.desktopPlanningDayGroup{width:100%;max-width:100%;min-width:0}
+  .desktopPlanningDayGroup{display:block}
+}
 
 @media(min-width:761px){
   .planningViewBar{
