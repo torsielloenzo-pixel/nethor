@@ -1,10 +1,10 @@
 {
-  "version": 181,
-  "label": "v1.81",
+  "version": 182,
+  "label": "v1.82",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Référentiel EAN13 normalisé et gestion des fiches articles améliorée.",
-  "published_at": "2026-09-28T22:55:00Z",
+  "message": "Gestion des fiches articles : tris rapides par colonne.",
+  "published_at": "2026-09-28T23:38:30.432457Z",
   "icon": "assets/app-icon-v63.svg"
 }
