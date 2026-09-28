@@ -748,7 +748,7 @@ async function boot(){
  if(initial)await openConversation(initial,{showMobile:!!requested||chatDesktopMode()});else{renderConversationHeader();renderMessages()}
  window.addEventListener('focus',async()=>{await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()})
 }
-boot();
+boot().catch(e=>{console.error('Chat : erreur de démarrage',e);const app=document.querySelector('.chatApp');if(app&&!document.getElementById('chatBootError')){const msg=document.createElement('div');msg.id='chatBootError';msg.setAttribute('role','alert');msg.textContent='Impossible de charger le chat. Vérifie la connexion puis réessaie.';app.prepend(msg)}});
 
 /* Mobile chat viewport v22:
    le haut du chat reste fixé. Seule la hauteur utile se réduit avec le clavier. */
