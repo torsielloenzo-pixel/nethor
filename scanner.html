@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#f7f8fa">
 <script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
 <title>Scanner (bêta) · Nethor</title>
@@ -17,9 +17,21 @@
 :root{--red:#ff3824;--orange:#ff8128;--ink:#1f2732;--muted:#7d8692;--line:#e3e7eb;--card:#fff;--bg:#f3f5f7;--grad:linear-gradient(135deg,#ff3824,#ff8128)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{min-height:100dvh;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(22px + env(safe-area-inset-bottom))}
+body{min-height:100dvh;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(12px + env(safe-area-inset-bottom))}
 button,input{font:inherit}button{cursor:pointer}
 .page{width:min(100%,560px);margin:0 auto}
+@media(max-width:900px){
+ html,body{width:100%;height:100%;min-height:0;overflow:hidden!important;overscroll-behavior:none!important}
+ body{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;touch-action:manipulation}
+ .page{height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);min-height:0;display:flex;flex-direction:column;overflow:hidden!important}
+ .top{flex:0 0 auto}
+ .cameraCard{flex:0 1 350px;min-height:220px!important;height:min(350px,43dvh)!important}
+ #reader,#reader video{height:100%!important}
+ #reader__scan_region{min-height:100%!important;height:100%!important}
+ .hint,.cameraPreference{flex:0 0 auto}
+ .panel{flex:0 1 auto;max-height:min(35dvh,330px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ .desktopOnly{display:none!important}
+}
 .top{display:flex;align-items:center;gap:11px;margin:0 2px 13px}
 .back{width:42px;height:42px;flex:none;border:1px solid #e1e5e9;border-radius:14px;background:#fff;color:#2b3036;display:grid;place-items:center;font-size:24px;font-weight:750;box-shadow:0 3px 10px #00000008}
 .title{min-width:0;flex:1}.titleRow{display:flex;align-items:center;gap:8px;min-width:0}.title h1{margin:0;font-size:25px;line-height:1.05;letter-spacing:-.65px;white-space:nowrap}.beta{padding:5px 8px;border-radius:999px;background:#fff0e9;color:#db4c22;border:1px solid #ffd3c3;font-size:8px;font-weight:950;letter-spacing:.5px;text-transform:uppercase}.title p{margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.35}
@@ -44,7 +56,7 @@ button,input{font:inherit}button{cursor:pointer}
 .hint{display:flex;align-items:flex-start;gap:9px;margin:10px 2px 0;padding:0 3px;color:#77808b;font-size:9.5px;line-height:1.45}.hintIcon{width:21px;height:21px;flex:none;border-radius:7px;background:#fff0e8;color:#ed532a;display:grid;place-items:center;font-weight:950}.cameraPreference{display:none;align-items:center;gap:7px;margin:8px 2px 0;padding:8px 10px;border:1px solid #d8eadf;border-radius:11px;background:#f3fbf6;color:#2f7e4e;font-size:8.8px;font-weight:850;line-height:1.25}.cameraPreference.show{display:flex}.cameraPreferenceIcon{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#dff4e6;color:#268348;font-size:11px;font-weight:950;flex:none}
 .panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 7px 22px #1420300a}
 .panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.panelHead h2{margin:0;font-size:15px}.panelHead small{color:#9299a2;font-size:8px}
-.manual{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.manual input{min-width:0;height:44px;border:1px solid #dfe3e7;border-radius:12px;padding:0 12px;background:#fafbfc;color:var(--ink);font-size:13px;font-weight:750;outline:none}.manual input:focus{border-color:#ff815f;box-shadow:0 0 0 3px #ff60351a}.manual button,.resultActions button{min-height:44px;border:0;border-radius:12px;padding:0 14px;font-size:10px;font-weight:900}.manual button{background:#242a31;color:#fff}
+.manual{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.manual input{min-width:0;height:44px;border:1px solid #dfe3e7;border-radius:12px;padding:0 12px;background:#fafbfc;color:var(--ink);font-size:16px;font-weight:750;outline:none}.manual input:focus{border-color:#ff815f;box-shadow:0 0 0 3px #ff60351a}.manual button,.resultActions button{min-height:44px;border:0;border-radius:12px;padding:0 14px;font-size:10px;font-weight:900}.manual button{background:#242a31;color:#fff}
 .result{display:none;margin-top:12px}.result.show{display:block}
 .resultStatus{display:flex;align-items:center;gap:7px;margin-bottom:9px;font-size:9px;font-weight:900;color:#308552}.resultStatus.notFound{color:#c64f2e}.resultStatusDot{width:7px;height:7px;border-radius:50%;background:currentColor}
 .product{display:grid;grid-template-columns:82px minmax(0,1fr);gap:12px}.productPhoto{width:82px;height:82px;border-radius:15px;background:#f0f2f4;display:grid;place-items:center;overflow:hidden;font-size:30px}.productPhoto img{width:100%;height:100%;object-fit:cover}.productCopy{min-width:0}.productCopy h3{margin:1px 0 4px;font-size:18px;line-height:1.08}.productCopy .path{color:#7e8791;font-size:9px;line-height:1.4}.statusBadge{display:inline-flex;margin-top:7px;padding:5px 8px;border-radius:999px;font-size:8px;font-weight:900}.statusBadge.on{background:#e8f8ed;color:#248644}.statusBadge.off{background:#fff0ec;color:#c94a2c}
@@ -76,7 +88,7 @@ button,input{font:inherit}button{cursor:pointer}
 
   <section class="panel">
     <div class="panelHead"><h2>Recherche manuelle</h2><small>EAN</small></div>
-    <form class="manual" onsubmit="manualSearch(event)"><input id="eanInput" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="Ex. 3760123456789" aria-label="Code EAN"><button type="submit">Rechercher</button></form>
+    <form class="manual" onsubmit="manualSearch(event)"><input id="eanInput" inputmode="none" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="14" readonly tabindex="-1" placeholder="Ex. 3760123456789" aria-label="Code EAN" onpointerdown="activateManualInput(this,event)"><button type="submit">Rechercher</button></form>
 
     <div id="result" class="result" aria-live="polite"></div>
   </section>
@@ -154,6 +166,24 @@ function safeStop(){
   scannerRunning=false;
   return scanner.stop().catch(()=>{}).then(()=>{try{scanner.clear()}catch(_){}});
 }
+function lockScannerViewport(){
+ try{window.scrollTo(0,0)}catch(_){}
+ const input=$('eanInput');if(input){input.blur();input.setAttribute('readonly','');input.setAttribute('tabindex','-1');input.setAttribute('inputmode','none')}
+}
+function activateManualInput(input,event){
+ if(!input)return;
+ event?.preventDefault?.();
+ input.removeAttribute('readonly');
+ input.setAttribute('tabindex','0');
+ input.setAttribute('inputmode','numeric');
+ input.focus({preventScroll:true});
+ try{input.setSelectionRange(input.value.length,input.value.length)}catch(_){}
+}
+function resetManualInputLock(){
+ const input=$('eanInput');if(!input)return;
+ input.blur();input.setAttribute('readonly','');input.setAttribute('tabindex','-1');input.setAttribute('inputmode','none')
+}
+
 
 async function startCamera(){
   if(!isMobileView())return;
@@ -252,7 +282,7 @@ function renderProduct(p){
       '<div class="fact"><span>Conditionnement</span><strong>'+esc(pack)+'</strong></div>'+
     '</div>'+
     '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Scanner un autre</button><button class="primary" type="button" onclick="openArticle()">Ouvrir la fiche article</button></div>';
-  requestAnimationFrame(()=>$('result').scrollIntoView({behavior:'smooth',block:'nearest'}))
+  $('result').scrollTop=0
 }
 function renderNotFound(code,message){
   currentProduct=null;
@@ -261,12 +291,12 @@ function renderNotFound(code,message){
     '<div class="resultStatus notFound"><span class="resultStatusDot"></span>Fiche introuvable</div>'+
     '<div class="notFoundBox"><strong>'+esc(code||'EAN non reconnu')+'</strong><p>'+esc(message||'Aucune fiche article trouvée.')+'</p></div>'+
     '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Réessayer</button><button class="primary" type="button" onclick="focusManual()">Saisir un EAN</button></div>';
-  requestAnimationFrame(()=>$('result').scrollIntoView({behavior:'smooth',block:'nearest'}))
+  $('result').scrollTop=0
 }
 function scanAnother(){
-  currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';startCamera()
+  currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';resetManualInputLock();startCamera()
 }
-function focusManual(){$('eanInput').focus();$('eanInput').select()}
+function focusManual(){const input=$('eanInput');if(!input)return;input.removeAttribute('readonly');input.setAttribute('tabindex','0');input.setAttribute('inputmode','numeric');input.focus({preventScroll:true});input.select()}
 function manualSearch(e){e.preventDefault();safeStop().then(()=>findProduct($('eanInput').value,false))}
 function openArticle(){
   if(!currentProduct?.ean)return;
@@ -277,12 +307,18 @@ async function boot(){
   const {data:{session}}=await db.auth.getSession();
   if(!session)return location.replace('index.html');
   sessionUserId=session.user.id;
+  lockScannerViewport();
   await loadCameraPreference();
   if(!isMobileView())return;
+  lockScannerViewport();
   setTimeout(startCamera,cameraRemembered?90:160)
 }
 window.addEventListener('pagehide',()=>{safeStop()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)safeStop();else if(isMobileView()&&!currentProduct&&!scannerRunning)setTimeout(startCamera,180)});
+document.addEventListener('gesturestart',e=>{if(isMobileView())e.preventDefault()},{passive:false});
+document.addEventListener('gesturechange',e=>{if(isMobileView())e.preventDefault()},{passive:false});
+document.addEventListener('touchmove',e=>{if(isMobileView()&&e.touches?.length>1)e.preventDefault()},{passive:false});
+window.addEventListener('resize',()=>{if(isMobileView()&&!document.activeElement?.matches?.('#eanInput'))lockScannerViewport()});
 boot();
 </script>
 </body>
