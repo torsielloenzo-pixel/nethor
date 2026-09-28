@@ -333,7 +333,7 @@ async function loadManagementOverview(){
    db.from('portal_change_logs').select('id,title,description,area,created_at').order('created_at',{ascending:false}).limit(4),
    db.from('portal_change_logs').select('id',{count:'exact',head:true}).gte('created_at',since)
   ]);
-  if($('managementPages'))$('managementPages').textContent=String(Math.max(0,builtinModules().filter(m=>m.id!=='accounts').length));
+  if($('managementPages'))$('managementPages').textContent=String(builtinModules().length);
   if($('managementAccounts'))$('managementAccounts').textContent=String(usersRes.count??usersRes.data?.length??0);
   if($('managementRoles'))$('managementRoles').textContent=String(ROLES.length);
   if($('managementUpdates'))$('managementUpdates').textContent=String(updatesRes.count??0);
@@ -391,10 +391,15 @@ function ensurePages(){
  })
 }
 function field(label,value,key,id,cls=''){return '<div class="field '+cls+'"><label>'+esc(label)+'</label><input value="'+attr(value)+'" data-page="'+attr(id)+'" data-key="'+attr(key)+'"></div>'}
+function effectivePageRole(m,p,r){
+ const explicit=config?.role_permissions?.[m.id]?.[r];
+ if(['none','view','operate','manage'].includes(explicit))return explicit!=='none';
+ return (p.roles||[]).includes(r)
+}
 function rolePicker(m,p){
  const max=maxRoles(m),fixed=m.rolesLocked===true;
  return '<div class="roles">'+ROLES.map(r=>{
-  const allowed=max.includes(r),checked=(p.roles||[]).includes(r);
+  const allowed=max.includes(r),checked=allowed&&effectivePageRole(m,p,r);
   return '<label class="role '+(!allowed?'disabled':'')+'"><input type="checkbox" data-role-page="'+attr(m.id)+'" data-role="'+attr(r)+'" '+(checked?'checked':'')+' '+((!allowed||fixed)?'disabled':'')+'> '+esc(roleName(r))+'</label>'
  }).join('')+'</div>'
 }
@@ -511,9 +516,13 @@ function bindPageInputs(){
   }
  });
  document.querySelectorAll('[data-role-page]:not(:disabled)').forEach(el=>el.onchange=()=>{
-  const p=config.pages[el.dataset.rolePage];
-  p.roles=[...document.querySelectorAll('[data-role-page="'+CSS.escape(el.dataset.rolePage)+'"]:checked')].map(x=>x.dataset.role);
-  markDirty();refreshModuleCardSummary(el.dataset.rolePage)
+  const id=el.dataset.rolePage,role=el.dataset.role,p=config.pages[id];if(!p)return;
+  p.roles=[...document.querySelectorAll('[data-role-page="'+CSS.escape(id)+'"]:checked')].map(x=>x.dataset.role);
+  config.role_permissions=config.role_permissions&&typeof config.role_permissions==='object'?config.role_permissions:{};
+  config.role_permissions[id]=config.role_permissions[id]&&typeof config.role_permissions[id]==='object'?config.role_permissions[id]:{};
+  const previous=config.role_permissions[id][role];
+  config.role_permissions[id][role]=el.checked?(previous&&previous!=='none'?previous:(role==='admin'?'manage':'view')):'none';
+  markDirty();refreshModuleCardSummary(id)
  })
 }
 function openSystemPage(id,event){
