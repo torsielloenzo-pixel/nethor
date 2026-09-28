@@ -41,7 +41,7 @@ button,input{font:inherit}button{cursor:pointer}
 .scanLine{position:absolute;left:12px;right:12px;top:50%;height:2px;background:linear-gradient(90deg,transparent,#ff7d3c,#ff3b26,#ff7d3c,transparent);box-shadow:0 0 12px #ff603d;animation:scanline 2s ease-in-out infinite}
 @keyframes scanline{0%,100%{transform:translateY(-42px);opacity:.5}50%{transform:translateY(42px);opacity:1}}
 .cameraFallback{position:absolute;z-index:7;inset:0;display:none;place-items:center;padding:28px;text-align:center;color:#fff;background:linear-gradient(145deg,#171c22,#252a31)}.cameraFallback.show{display:grid}.cameraFallback strong{display:block;font-size:18px}.cameraFallback p{margin:7px 0 14px;color:#b8c0c9;font-size:11px;line-height:1.5}.cameraFallback button{min-height:42px;border:0;border-radius:12px;padding:0 14px;background:var(--grad);color:#fff;font-size:10px;font-weight:900}
-.hint{display:flex;align-items:flex-start;gap:9px;margin:10px 2px 0;padding:0 3px;color:#77808b;font-size:9.5px;line-height:1.45}.hintIcon{width:21px;height:21px;flex:none;border-radius:7px;background:#fff0e8;color:#ed532a;display:grid;place-items:center;font-weight:950}
+.hint{display:flex;align-items:flex-start;gap:9px;margin:10px 2px 0;padding:0 3px;color:#77808b;font-size:9.5px;line-height:1.45}.hintIcon{width:21px;height:21px;flex:none;border-radius:7px;background:#fff0e8;color:#ed532a;display:grid;place-items:center;font-weight:950}.cameraPreference{display:none;align-items:center;gap:7px;margin:8px 2px 0;padding:8px 10px;border:1px solid #d8eadf;border-radius:11px;background:#f3fbf6;color:#2f7e4e;font-size:8.8px;font-weight:850;line-height:1.25}.cameraPreference.show{display:flex}.cameraPreferenceIcon{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#dff4e6;color:#268348;font-size:11px;font-weight:950;flex:none}
 .panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 7px 22px #1420300a}
 .panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.panelHead h2{margin:0;font-size:15px}.panelHead small{color:#9299a2;font-size:8px}
 .manual{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.manual input{min-width:0;height:44px;border:1px solid #dfe3e7;border-radius:12px;padding:0 12px;background:#fafbfc;color:var(--ink);font-size:13px;font-weight:750;outline:none}.manual input:focus{border-color:#ff815f;box-shadow:0 0 0 3px #ff60351a}.manual button,.resultActions button{min-height:44px;border:0;border-radius:12px;padding:0 14px;font-size:10px;font-weight:900}.manual button{background:#242a31;color:#fff}
@@ -53,7 +53,7 @@ button,input{font:inherit}button{cursor:pointer}
 .notFoundBox{padding:16px;border:1px dashed #efb8a7;border-radius:14px;background:#fff7f3}.notFoundBox strong{display:block;font-size:14px}.notFoundBox p{margin:5px 0 0;color:#8f6e63;font-size:9.5px;line-height:1.45}
 .desktopOnly{display:none}
 :root[data-theme="dark"]{color-scheme:dark;--ink:#f2f4f6;--muted:#a8afb8;--line:#30353b;--card:#1b1e22;--bg:#111317}
-:root[data-theme="dark"] .back{background:#202328;border-color:#373c42;color:#f4f5f7}:root[data-theme="dark"] .beta{background:#3a261f;border-color:#613728;color:#ff9b77}:root[data-theme="dark"] .panel{background:#1b1e22;border-color:#30353b}:root[data-theme="dark"] .manual input{background:#20242a;border-color:#383d43;color:#f4f5f7}:root[data-theme="dark"] .manual button{background:#efefef;color:#1d2126}:root[data-theme="dark"] .fact{background:#20242a;border-color:#30353b}:root[data-theme="dark"] .productPhoto{background:#24282d}:root[data-theme="dark"] .resultActions .secondary{background:#282c31;color:#eee}:root[data-theme="dark"] .notFoundBox{background:#2a211e;border-color:#654031}
+:root[data-theme="dark"] .back{background:#202328;border-color:#373c42;color:#f4f5f7}:root[data-theme="dark"] .beta{background:#3a261f;border-color:#613728;color:#ff9b77}:root[data-theme="dark"] .panel{background:#1b1e22;border-color:#30353b}:root[data-theme="dark"] .manual input{background:#20242a;border-color:#383d43;color:#f4f5f7}:root[data-theme="dark"] .manual button{background:#efefef;color:#1d2126}:root[data-theme="dark"] .fact{background:#20242a;border-color:#30353b}:root[data-theme="dark"] .productPhoto{background:#24282d}:root[data-theme="dark"] .resultActions .secondary{background:#282c31;color:#eee}:root[data-theme="dark"] .notFoundBox{background:#2a211e;border-color:#654031}:root[data-theme="dark"] .cameraPreference{background:#1b2a21;border-color:#2d4937;color:#8bd3a5}:root[data-theme="dark"] .cameraPreferenceIcon{background:#254231;color:#9ee1b5}
 @media(min-width:901px){.cameraCard,.hint,.panel{display:none}.desktopOnly{display:block;margin-top:70px;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--card);text-align:center}.desktopOnly strong{font-size:20px}.desktopOnly p{color:var(--muted);font-size:11px}}
 </style>
 </head>
@@ -72,6 +72,7 @@ button,input{font:inherit}button{cursor:pointer}
   </section>
 
   <div class="hint"><span class="hintIcon">i</span><span>Place le code-barres à l’intérieur du cadre. La recherche démarre automatiquement dès que l’EAN est reconnu.</span></div>
+  <div id="cameraPreference" class="cameraPreference"><span class="cameraPreferenceIcon">✓</span><span>Autorisation caméra mémorisée dans tes préférences.</span></div>
 
   <section class="panel">
     <div class="panelHead"><h2>Recherche manuelle</h2><small>EAN</small></div>
@@ -87,9 +88,52 @@ button,input{font:inherit}button{cursor:pointer}
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
-let scanner=null,scannerRunning=false,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null;
+let scanner=null,scannerRunning=false,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
+function cameraPreferenceKey(){return sessionUserId?'nethorScannerCamera:'+sessionUserId:'nethorScannerCamera'}
+function paintCameraPreference(){
+ const el=$('cameraPreference');if(el)el.classList.toggle('show',cameraRemembered)
+}
+function readLocalCameraPreference(){
+ try{return localStorage.getItem(cameraPreferenceKey())==='1'}catch(_){return false}
+}
+function writeLocalCameraPreference(granted){
+ try{if(granted)localStorage.setItem(cameraPreferenceKey(),'1');else localStorage.removeItem(cameraPreferenceKey())}catch(_){}
+}
+async function loadCameraPreference(){
+ cameraRemembered=readLocalCameraPreference();
+ paintCameraPreference();
+ if(!sessionUserId)return cameraRemembered;
+ try{
+  const {data,error}=await db.from('profiles').select('ui_preferences').eq('id',sessionUserId).maybeSingle();
+  if(error)throw error;
+  const prefs=data?.ui_preferences&&typeof data.ui_preferences==='object'?data.ui_preferences:{};
+  cameraRemembered=prefs.scanner_camera_authorized===true||cameraRemembered;
+  if(cameraRemembered)writeLocalCameraPreference(true);
+ }catch(e){console.warn('Préférence caméra:',e)}
+ cameraPreferenceLoaded=true;paintCameraPreference();return cameraRemembered
+}
+async function rememberCameraPermission(granted){
+ const next=granted===true;
+ cameraRemembered=next;writeLocalCameraPreference(next);paintCameraPreference();
+ if(!sessionUserId)return;
+ try{
+  const {data,error}=await db.from('profiles').select('ui_preferences').eq('id',sessionUserId).maybeSingle();
+  if(error)throw error;
+  const prefs=data?.ui_preferences&&typeof data.ui_preferences==='object'?{...data.ui_preferences}:{};
+  if(prefs.scanner_camera_authorized===next&&(!next||prefs.scanner_camera_authorized_at))return;
+  prefs.scanner_camera_authorized=next;
+  if(next)prefs.scanner_camera_authorized_at=prefs.scanner_camera_authorized_at||new Date().toISOString();
+  else delete prefs.scanner_camera_authorized_at;
+  const {error:updateError}=await db.from('profiles').update({ui_preferences:prefs}).eq('id',sessionUserId);
+  if(updateError)throw updateError
+ }catch(e){console.warn('Enregistrement préférence caméra:',e)}
+}
+function permissionDenied(error){
+ const name=String(error?.name||'').toLowerCase(),msg=String(error?.message||error||'').toLowerCase();
+ return name==='notallowederror'||name==='permissiondeniederror'||msg.includes('permission denied')||msg.includes('not allowed')
+}
 function goBack(){
   try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1)return history.back()}catch(_){}
   location.href='home.html'
@@ -128,7 +172,7 @@ async function startCamera(){
       ],
       verbose:false
     });
-    setCameraState('Demande d’accès…');
+    setCameraState(cameraRemembered?'Ouverture de la caméra…':'Demande d’accès…');
     await scanner.start(
       {facingMode:'environment'},
       {fps:12,qrbox:(w,h)=>({width:Math.min(310,Math.max(220,w*.78)),height:Math.min(130,Math.max(100,h*.34))}),aspectRatio:1.777778,disableFlip:true},
@@ -137,8 +181,10 @@ async function startCamera(){
     );
     scannerRunning=true;
     setCameraState('Prêt à scanner');
+    if(!cameraRemembered)rememberCameraPermission(true);
   }catch(e){
     console.warn('Scanner camera:',e);
+    if(permissionDenied(e)&&cameraRemembered)await rememberCameraPermission(false);
     showCameraFallback('Autorise la caméra dans les réglages du navigateur puis touche « Réessayer ».')
   }
 }
@@ -230,8 +276,10 @@ function openArticle(){
 async function boot(){
   const {data:{session}}=await db.auth.getSession();
   if(!session)return location.replace('index.html');
+  sessionUserId=session.user.id;
+  await loadCameraPreference();
   if(!isMobileView())return;
-  setTimeout(startCamera,160)
+  setTimeout(startCamera,cameraRemembered?90:160)
 }
 window.addEventListener('pagehide',()=>{safeStop()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)safeStop();else if(isMobileView()&&!currentProduct&&!scannerRunning)setTimeout(startCamera,180)});
