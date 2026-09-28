@@ -605,3 +605,46 @@ html.nethorPhoneDevice[data-theme="dark"] body.agendaLayout .mobileAgendaContent
     border-bottom-color:#ff8a61!important
   }
 }
+
+
+/* Planning mobile Jour v12 — utilisateur toujours visible */
+@media(max-width:760px){
+  .agendaDayStatus{
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    padding:10px 12px;
+    border-radius:11px;
+    border:1px solid transparent
+  }
+  .agendaDayStatus strong{
+    display:block;
+    font-size:15px;
+    line-height:1.05;
+    font-weight:900
+  }
+  .agendaDayStatusLeave{
+    background:#fff3a6;
+    border-color:#ead45e;
+    color:#6f5a00
+  }
+  .agendaDayStatusRest{
+    background:#f1f3f5;
+    border-color:#dfe3e7;
+    color:#535a63
+  }
+  .agendaDayCardLeave .agendaDayPerson strong{color:#6f5a00}
+  .agendaDayCardRest .agendaDayPerson strong{color:#535a63}
+  html[data-theme="dark"] .agendaDayStatusLeave{
+    background:#4a4018;
+    border-color:#706029;
+    color:#ffe36a
+  }
+  html[data-theme="dark"] .agendaDayStatusRest{
+    background:#272b30;
+    border-color:#3b4148;
+    color:#d2d7dd
+  }
+  html[data-theme="dark"] .agendaDayCardLeave .agendaDayPerson strong{color:#ffe36a}
+  html[data-theme="dark"] .agendaDayCardRest .agendaDayPerson strong{color:#d2d7dd}
+}
