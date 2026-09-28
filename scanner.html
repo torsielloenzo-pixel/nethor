@@ -343,7 +343,7 @@ document.addEventListener('gesturestart',e=>{if(isMobileView())e.preventDefault(
 document.addEventListener('gesturechange',e=>{if(isMobileView())e.preventDefault()},{passive:false});
 document.addEventListener('touchmove',e=>{if(isMobileView()&&e.touches?.length>1)e.preventDefault()},{passive:false});
 window.addEventListener('resize',()=>{if(isMobileView()&&!document.activeElement?.matches?.('#eanInput'))lockScannerViewport()});
-boot();
+boot().catch(e=>{console.error('Scanner : erreur de démarrage',e);const state=document.getElementById('cameraStateText');if(state)state.textContent='Scanner indisponible';const hint=document.getElementById('hint');if(hint)hint.textContent='Impossible d’initialiser le scanner. Vérifie la connexion puis réessaie.'});
 </script>
 </body>
 </html>
