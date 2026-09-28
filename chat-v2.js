@@ -748,7 +748,9 @@ async function boot(){
  const {data:p,error}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame').eq('id',session.user.id).maybeSingle();if(error||!p){location.replace('index.html');return}
  state.profile=p;window.currentRole=p.role;await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none';if(permission==='none'){location.replace('home.html');return}state.canManage=permission==='manage';
  await loadMembers();startPresence();await loadConversations();startRealtime();startMemberRealtime();
- const requested=new URLSearchParams(location.search).get('c'),general=state.conversations.find(c=>c.conversation_type==='general')?.conversation_id,initial=(requested&&state.conversations.some(c=>c.conversation_id===requested))?requested:general;
+ const params=new URLSearchParams(location.search),requestedUser=params.get('user');
+ if(requestedUser&&requestedUser!==state.session.user.id&&state.members.some(m=>m.id===requestedUser)){await openDirect(requestedUser);return}
+ const requested=params.get('c'),general=state.conversations.find(c=>c.conversation_type==='general')?.conversation_id,initial=(requested&&state.conversations.some(c=>c.conversation_id===requested))?requested:general;
  if(initial)await openConversation(initial,{showMobile:!!requested||chatDesktopMode()});else{renderConversationHeader();renderMessages()}
  window.addEventListener('focus',async()=>{await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()})
 }
