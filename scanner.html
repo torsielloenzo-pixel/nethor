@@ -110,7 +110,7 @@ button,input{font:inherit}button{cursor:pointer}
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
-let scanner=null,scannerRunning=false,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false;
+let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartTimer=0,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
 function cameraPreferenceKey(){return sessionUserId?'nethorScannerCamera:'+sessionUserId:'nethorScannerCamera'}
@@ -171,7 +171,14 @@ function hideCameraFallback(){$('cameraFallback').classList.remove('show')}
 function normalizeEan(value){return String(value||'').replace(/\D/g,'').slice(0,14)}
 function validEanLength(v){return v.length===8||v.length===12||v.length===13}
 function eanCandidates(v){v=normalizeEan(v);const out=[v];if(v.length===12)out.push('0'+v);return [...new Set(out.filter(Boolean))]}
+function cancelCameraStart(){if(cameraStartTimer){clearTimeout(cameraStartTimer);cameraStartTimer=0}}
+function scheduleCameraStart(delay=0){
+  cancelCameraStart();
+  if(document.hidden||!isMobileView()||currentProduct)return;
+  cameraStartTimer=setTimeout(()=>{cameraStartTimer=0;startCamera()},delay)
+}
 function safeStop(){
+  cancelCameraStart();
   if(!scanner||!scannerRunning)return Promise.resolve();
   scannerRunning=false;
   return scanner.stop().catch(()=>{}).then(()=>{try{scanner.clear()}catch(_){}});
@@ -196,7 +203,9 @@ function resetManualInputLock(){
 
 
 async function startCamera(){
-  if(!isMobileView())return;
+  cancelCameraStart();
+  if(document.hidden||!isMobileView()||currentProduct||scannerStarting||scannerRunning)return;
+  scannerStarting=true;
   hideCameraFallback();
   if(!window.Html5Qrcode||!window.Html5QrcodeSupportedFormats){
     showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN manuellement.');
@@ -226,6 +235,8 @@ async function startCamera(){
     console.warn('Scanner camera:',e);
     if(permissionDenied(e)&&cameraRemembered)await rememberCameraPermission(false);
     showCameraFallback('Autorise la caméra dans les réglages du navigateur puis touche « Réessayer ».')
+  }finally{
+    scannerStarting=false
   }
 }
 
@@ -258,7 +269,7 @@ async function findProduct(raw,fromCamera=false){
   if(error){
     console.error(error);
     renderNotFound(code,'Impossible de rechercher la fiche pour le moment.');
-    if(fromCamera)setTimeout(()=>startCamera(),1200);
+    if(fromCamera)scheduleCameraStart(1200);
     return
   }
   const product=(data||[])[0]||null;
@@ -314,10 +325,10 @@ function closeProductModal(){
   if(result){result.className='result';result.innerHTML=''}
   $('eanInput').value='';lastCode='';resetManualInputLock();
   setCameraState('Prêt à scanner');
-  if(isMobileView()&&!scannerRunning)setTimeout(startCamera,90)
+  if(isMobileView()&&!scannerRunning)scheduleCameraStart(90)
 }
 function scanAnother(){
-  currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';resetManualInputLock();startCamera()
+  currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';resetManualInputLock();scheduleCameraStart(0)
 }
 function focusManual(){const input=$('eanInput');if(!input)return;input.removeAttribute('readonly');input.setAttribute('tabindex','0');input.setAttribute('inputmode','numeric');input.focus({preventScroll:true});input.select()}
 function manualSearch(e){e.preventDefault();safeStop().then(()=>findProduct($('eanInput').value,false))}
@@ -334,11 +345,11 @@ async function boot(){
   await loadCameraPreference();
   if(!isMobileView())return;
   lockScannerViewport();
-  setTimeout(startCamera,cameraRemembered?90:160)
+  scheduleCameraStart(cameraRemembered?90:160)
 }
-window.addEventListener('pagehide',()=>{safeStop()});
+window.addEventListener('pagehide',()=>{cancelCameraStart();safeStop()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('result')?.classList.contains('resultModal'))closeProductModal()});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)safeStop();else if(isMobileView()&&!currentProduct&&!scannerRunning)setTimeout(startCamera,180)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelCameraStart();safeStop()}else if(isMobileView()&&!currentProduct&&!scannerRunning)scheduleCameraStart(180)});
 document.addEventListener('gesturestart',e=>{if(isMobileView())e.preventDefault()},{passive:false});
 document.addEventListener('gesturechange',e=>{if(isMobileView())e.preventDefault()},{passive:false});
 document.addEventListener('touchmove',e=>{if(isMobileView()&&e.touches?.length>1)e.preventDefault()},{passive:false});
