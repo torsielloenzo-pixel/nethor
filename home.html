@@ -695,6 +695,441 @@ main{position:relative;z-index:1}
   :root[data-theme="dark"] .mhdQuick{background:#202328!important}
   :root[data-theme="dark"] .mhdOnline{border-color:#1d2024}
 }
+
+</style>
+<style id="desktop-home-dashboard-v157">
+@media(min-width:701px){
+  .mobileHomeDashboard{
+    display:block;
+    width:100%;
+    max-width:100%;
+    margin:0 0 24px;
+  }
+  .mobileHomeDashboard .mhdStack{
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    gap:14px;
+    align-items:stretch;
+  }
+  .mobileHomeDashboard .mhdWelcome,
+  .mobileHomeDashboard .mhdQuickSection{display:none!important}
+
+  .mobileHomeDashboard .mhdCard,
+  .mobileHomeDashboard .mhdStat{
+    color:#1d252e;
+    background:#fff;
+    border:1px solid #dde2e7;
+    box-shadow:0 8px 24px rgba(24,34,48,.055);
+  }
+  .mobileHomeDashboard button{
+    font:inherit;
+    color:inherit;
+  }
+  .mobileHomeDashboard .mhdNext{
+    grid-column:span 5;
+    min-width:0;
+    padding:18px 20px;
+    border-radius:20px;
+    text-align:left;
+  }
+  .mobileHomeDashboard .mhdNextHead,
+  .mobileHomeDashboard .mhdSectionHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .mobileHomeDashboard .mhdTitleWithIcon{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    min-width:0;
+  }
+  .mobileHomeDashboard .mhdIcon{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    flex:none;
+    color:#ff4e28;
+    background:linear-gradient(135deg,#fff0e9,#fff7ef);
+  }
+  .mobileHomeDashboard .mhdIcon svg{
+    width:21px;
+    height:21px;
+    stroke:currentColor;
+    stroke-width:2;
+    fill:none;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .mobileHomeDashboard .mhdNextHead strong,
+  .mobileHomeDashboard .mhdSectionHead strong{
+    font-size:13px;
+    line-height:1.2;
+  }
+  .mobileHomeDashboard .mhdWhen{
+    flex:none;
+    padding:7px 11px;
+    border-radius:999px;
+    background:#fff0e7;
+    color:#ef4b27;
+    font-size:9px;
+    font-weight:900;
+  }
+  .mobileHomeDashboard .mhdShiftLine{
+    margin:14px 0 0 51px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .mobileHomeDashboard .mhdShiftLine b{
+    min-width:0;
+    font-size:22px;
+    line-height:1.05;
+    letter-spacing:-.5px;
+  }
+  .mobileHomeDashboard .mhdChevron{
+    color:#8a929c;
+    font-size:23px;
+    line-height:1;
+  }
+  .mobileHomeDashboard .mhdShiftMeta{
+    margin:10px 0 0 51px;
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+  .mobileHomeDashboard .mhdTag{
+    display:inline-flex;
+    align-items:center;
+    min-height:26px;
+    padding:0 10px;
+    border-radius:999px;
+    font-size:8px;
+    font-weight:850;
+  }
+  .mobileHomeDashboard .mhdTag.green{background:#eaf8ef;color:#21884c}
+  .mobileHomeDashboard .mhdTag.amber{background:#fff3dc;color:#a46812}
+  .mobileHomeDashboard .mhdTag.orange{background:#fff0e8;color:#d94c28}
+
+  .mobileHomeDashboard .mhdStats{
+    grid-column:span 7;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px;
+    align-items:stretch;
+  }
+  .mobileHomeDashboard .mhdStat{
+    min-width:0;
+    min-height:148px;
+    height:100%;
+    padding:16px;
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    text-align:left;
+  }
+  .mobileHomeDashboard .mhdStatHead{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-height:34px;
+    color:#47515d;
+    font-size:10px;
+    line-height:1.15;
+    font-weight:850;
+  }
+  .mobileHomeDashboard .mhdStatHead .mhdMiniIcon{
+    width:32px;
+    height:32px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    flex:none;
+    color:#ef542b;
+    background:linear-gradient(145deg,#fff1e9,#fff8f2);
+    box-shadow:inset 0 0 0 1px #ffdfd1;
+  }
+  .mobileHomeDashboard .mhdStatHead .mhdMiniIcon svg{
+    display:block;
+    width:18px;
+    height:18px;
+    stroke:currentColor;
+    stroke-width:1.8;
+    fill:none;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .mobileHomeDashboard .mhdStat strong{
+    display:flex;
+    align-items:flex-start;
+    min-height:40px;
+    margin-top:12px;
+    font-size:19px;
+    line-height:1.08;
+    letter-spacing:-.3px;
+    overflow-wrap:anywhere;
+  }
+  .mobileHomeDashboard .mhdStat .mhdValueBlue{
+    color:#1677ff;
+    font-weight:900;
+  }
+  .mobileHomeDashboard .mhdStat small{
+    display:block;
+    min-height:22px;
+    margin-top:5px;
+    color:#8a919a;
+    font-size:8.5px;
+    line-height:1.3;
+  }
+  .mobileHomeDashboard .mhdProgress{
+    height:7px;
+    margin-top:auto;
+    border-radius:999px;
+    overflow:hidden;
+    background:#e8ebef;
+  }
+  .mobileHomeDashboard .mhdProgress i{
+    display:block;
+    height:100%;
+    border-radius:inherit;
+    background:linear-gradient(90deg,#ff3f24,#ff7f23);
+  }
+
+  .mobileHomeDashboard .mhdSection{
+    min-width:0;
+    padding:16px 17px;
+    border-radius:20px;
+  }
+  .mobileHomeDashboard .mhdTasks{grid-column:span 4}
+  .mobileHomeDashboard .mhdImportant{grid-column:span 5}
+  .mobileHomeDashboard .mhdTeamSection{grid-column:span 3}
+  .mobileHomeDashboard .mhdSectionHead{margin-bottom:10px}
+  .mobileHomeDashboard .mhdSectionLink{
+    border:0;
+    background:transparent;
+    color:#f04c25;
+    font-size:9px;
+    font-weight:900;
+    padding:4px 0;
+    white-space:nowrap;
+  }
+  .mobileHomeDashboard .mhdRows{display:grid}
+  .mobileHomeDashboard .mhdRow{
+    width:100%;
+    min-width:0;
+    border:0;
+    border-top:1px solid #edf0f2;
+    background:transparent;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:10px;
+    padding:10px 2px;
+    text-align:left;
+    color:inherit;
+  }
+  .mobileHomeDashboard .mhdRow:first-child{border-top:0}
+  .mobileHomeDashboard .mhdRowCopy{min-width:0}
+  .mobileHomeDashboard .mhdRowCopy strong{
+    display:block;
+    font-size:10.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mobileHomeDashboard .mhdTaskCheck{
+    width:24px;
+    height:24px;
+    border:1.5px solid #aeb7c0;
+    border-radius:7px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    font-size:13px;
+  }
+  .mobileHomeDashboard .mhdTaskRow.done .mhdTaskCheck{
+    background:#ff5a2b;
+    border-color:#ff5a2b;
+  }
+  .mobileHomeDashboard .mhdTaskRow.done .mhdTaskCheck:after{content:"✓"}
+  .mobileHomeDashboard .mhdTaskRow.done .mhdRowCopy strong{
+    text-decoration:line-through;
+    color:#8c939b;
+  }
+  .mobileHomeDashboard .mhdTaskBadge{
+    padding:5px 8px;
+    border-radius:999px;
+    background:#fff3d9;
+    color:#9a6916;
+    font-size:7.5px;
+    font-weight:900;
+  }
+  .mobileHomeDashboard .mhdInfoRow{
+    width:100%;
+    margin-top:8px;
+    padding:11px;
+    border:1px solid #ffd8ce;
+    border-radius:14px;
+    background:linear-gradient(90deg,#fff3f1,#fff9f4);
+    display:grid;
+    grid-template-columns:36px minmax(0,1fr) auto;
+    gap:10px;
+    align-items:center;
+    text-align:left;
+    color:inherit;
+  }
+  .mobileHomeDashboard .mhdInfoRow.orange{
+    border-color:#ffe2c9;
+    background:linear-gradient(90deg,#fff6ec,#fffaf5);
+  }
+  .mobileHomeDashboard .mhdInfoIcon{
+    width:36px;
+    height:36px;
+    border-radius:11px;
+    background:linear-gradient(135deg,#ff3024,#ff7c24);
+    color:#fff;
+    display:grid;
+    place-items:center;
+    font-size:15px;
+  }
+  .mobileHomeDashboard .mhdInfoCopy{min-width:0}
+  .mobileHomeDashboard .mhdInfoCopy strong{
+    display:block;
+    font-size:10.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mobileHomeDashboard .mhdInfoCopy small{
+    display:block;
+    margin-top:3px;
+    color:#777f88;
+    font-size:8px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mobileHomeDashboard .mhdInfoRow time{
+    font-size:8px;
+    color:#8c939b;
+    white-space:nowrap;
+  }
+  .mobileHomeDashboard .mhdTeam{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    overflow:hidden;
+    padding-top:4px;
+  }
+  .mobileHomeDashboard .mhdPerson{
+    width:70px;
+    flex:none;
+    position:relative;
+    text-align:center;
+  }
+  .mobileHomeDashboard .mhdAvatar{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    margin:0 auto 6px;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:linear-gradient(135deg,#ff4c28,#ff8323);
+    background-size:cover;
+    background-position:center;
+    font-size:11px;
+    font-weight:900;
+  }
+  .mobileHomeDashboard .mhdOnline{
+    position:absolute;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#23b45a;
+    border:2px solid #fff;
+    left:45px;
+    top:34px;
+  }
+  .mobileHomeDashboard .mhdPerson strong{
+    display:block;
+    font-size:9px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mobileHomeDashboard .mhdPerson small{
+    display:block;
+    margin-top:2px;
+    font-size:7px;
+    color:#858c94;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mobileHomeDashboard .mhdMorePeople{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    flex:none;
+    background:#eef3f8;
+    color:#536274;
+    font-size:10px;
+    font-weight:900;
+  }
+  .mobileHomeDashboard .mhdEmpty{
+    padding:12px 2px;
+    color:#8a9199;
+    font-size:9px;
+    line-height:1.4;
+  }
+
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdCard,
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdStat{
+    background:#1d2024;
+    border-color:#343940;
+    color:#f1eeea;
+  }
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdRow{border-color:#30353b}
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdStat small,
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdPerson small,
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdInfoCopy small{color:#aaa49e}
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdStat .mhdValueBlue{color:#67a7ff}
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdStatHead .mhdMiniIcon{
+    background:linear-gradient(145deg,#352720,#2b2420);
+    color:#ff8d67;
+    box-shadow:inset 0 0 0 1px #56382d;
+  }
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdProgress{background:#343940}
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdTaskCheck{
+    background:#24282d;
+    border-color:#636a73;
+  }
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdInfoRow{
+    background:#2a211f;
+    border-color:#50322c;
+  }
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdInfoRow.orange{
+    background:#2c251e;
+    border-color:#51402f;
+  }
+  :root[data-theme="dark"] .mobileHomeDashboard .mhdOnline{border-color:#1d2024}
+}
+@media(min-width:701px) and (max-width:1100px){
+  .mobileHomeDashboard .mhdNext,
+  .mobileHomeDashboard .mhdStats{grid-column:1/-1}
+  .mobileHomeDashboard .mhdTasks,
+  .mobileHomeDashboard .mhdImportant{grid-column:span 6}
+  .mobileHomeDashboard .mhdTeamSection{grid-column:1/-1}
+}
 </style>
 </head>
 <body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
@@ -824,7 +1259,7 @@ function homeSuggestedTasks(profile,cfg){
  return out.slice(0,4)
 }
 async function renderMobileHomeDashboard(profile,name,cfg){
- const host=$('mobileHomeDashboard');if(!host||!mobileHomeMode())return;
+ const host=$('mobileHomeDashboard');if(!host)return;
  host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
  const today=new Date(),todayKey=homeIsoDate(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),84));
  const [subRes,weeksRes,notifRes,profilesRes]=await Promise.all([
@@ -874,7 +1309,7 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  const roleLabel=window.NettoProfileUI?.roleLabel?.(profile.role)||profile.role||'Compte';
  const dateLabel=today.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace('.','');
  const sections=[];
- if(widget('welcome'))sections.push('<section class="mhdHero"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+homeEsc(dateLabel)+'</span></div><h1>Bonjour '+homeEsc(name||roleLabel)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
+ if(widget('welcome'))sections.push('<section class="mhdHero mhdWelcome"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+homeEsc(dateLabel)+'</span></div><h1>Bonjour '+homeEsc(name||roleLabel)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
  if(widget('next_shift')){
   const shiftText=nextShift?.ranges?.length?nextShift.ranges.map(r=>homeClock(r.a)+' - '+homeClock(r.b)).join(' • '):'Aucune prise de poste à venir',when=nextShift?homeDateLabel(nextShift.dateKey,todayKey):'—',target=nextShift?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextShift.dateKey))))+'&day='+encodeURIComponent(nextShift.dateKey):'planning.html';
   sections.push('<button class="mhdCard mhdNext" type="button" onclick="location.href=\''+homeEsc(target)+'\'"><div class="mhdNextHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('next_shift')+'</span><strong>Prise de poste</strong></div><span class="mhdWhen">'+homeEsc(when)+'</span></div><div class="mhdShiftLine"><b>'+homeEsc(shiftText)+'</b><span class="mhdChevron">›</span></div><div class="mhdShiftMeta"><span class="mhdTag green">Planning personnel</span>'+(nextShift?.hours?'<span class="mhdTag amber">'+homeEsc(String(nextShift.hours).replace('.',','))+' h</span>':'')+'</div></button>')
@@ -898,19 +1333,19 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  if(stats.length)sections.push('<section class="mhdStats">'+stats.join('')+'</section>');
  if(widget('tasks')){
   const taskState=homeTaskState(homeSession.user.id,todayKey),tasks=homeSuggestedTasks(profile,cfg);
-  sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><strong>Tâches du jour</strong></div><span class="mhdSectionLink">'+tasks.length+' action'+(tasks.length>1?'s':'')+'</span></div><div class="mhdRows">'+tasks.map(t=>'<button type="button" class="mhdRow mhdTaskRow '+(taskState.has(t.id)?'done':'')+'" onclick="toggleMobileHomeTask(\''+homeEsc(t.id)+'\',this)"><span class="mhdTaskCheck"></span><span class="mhdRowCopy"><strong>'+homeEsc(t.title)+'</strong></span><span class="mhdTaskBadge">'+homeEsc(t.tag)+'</span></button>').join('')+'</div></section>')
+  sections.push('<section class="mhdCard mhdSection mhdTasks"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><strong>Tâches du jour</strong></div><span class="mhdSectionLink">'+tasks.length+' action'+(tasks.length>1?'s':'')+'</span></div><div class="mhdRows">'+tasks.map(t=>'<button type="button" class="mhdRow mhdTaskRow '+(taskState.has(t.id)?'done':'')+'" onclick="toggleMobileHomeTask(\''+homeEsc(t.id)+'\',this)"><span class="mhdTaskCheck"></span><span class="mhdRowCopy"><strong>'+homeEsc(t.title)+'</strong></span><span class="mhdTaskBadge">'+homeEsc(t.tag)+'</span></button>').join('')+'</div></section>')
  }
  if(widget('important_info')){
   const infos=notifications.filter(n=>['manual_edit','import_new','import_replace','admin_message','maintenance','app_update','absence_decision'].includes(n.kind)).slice(0,2);
-  sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('important_info')+'</span><strong>Informations importantes</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'notifications.html\'">Voir toutes ›</button></div>'+(infos.length?infos.map((n,i)=>'<button type="button" class="mhdInfoRow '+(i?'orange':'')+'" onclick="location.href=\''+homeEsc(n.target_url||'notifications.html')+'\'"><span class="mhdInfoIcon">'+homeEsc(homeNotifIcon(n.kind))+'</span><span class="mhdInfoCopy"><strong>'+homeEsc(n.title||'Information Nethor')+'</strong><small>'+homeEsc(n.message||'')+'</small></span><time>'+homeEsc(homeSince(n.created_at))+'</time></button>').join(''):'<div class="mhdEmpty">Aucune information importante pour le moment.</div>')+'</section>')
+  sections.push('<section class="mhdCard mhdSection mhdImportant"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('important_info')+'</span><strong>Informations importantes</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'notifications.html\'">Voir toutes ›</button></div>'+(infos.length?infos.map((n,i)=>'<button type="button" class="mhdInfoRow '+(i?'orange':'')+'" onclick="location.href=\''+homeEsc(n.target_url||'notifications.html')+'\'"><span class="mhdInfoIcon">'+homeEsc(homeNotifIcon(n.kind))+'</span><span class="mhdInfoCopy"><strong>'+homeEsc(n.title||'Information Nethor')+'</strong><small>'+homeEsc(n.message||'')+'</small></span><time>'+homeEsc(homeSince(n.created_at))+'</time></button>').join(''):'<div class="mhdEmpty">Aucune information importante pour le moment.</div>')+'</section>')
  }
  if(widget('team_today')){
   const shown=todayTeam.slice(0,3),extra=Math.max(0,todayTeam.length-shown.length);
-  sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('team_today')+'</span><strong>Équipe aujourd’hui</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'chat.html\'">Voir l’équipe ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((x,i)=>'<div class="mhdPerson"><span id="mhdAvatar'+i+'" class="mhdAvatar">'+homeEsc((x.name||'U').slice(0,1).toUpperCase())+'</span>'+(x.profile&&window.NettoProfileUI?.onlineIds?.has?.(x.profile.id)?'<i class="mhdOnline"></i>':'')+'<strong>'+homeEsc(x.name)+'</strong><small>'+homeEsc(x.profile?window.NettoProfileUI?.roleLabel?.(x.profile.role)||x.profile.role:'Équipe')+'</small></div>').join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>');
+  sections.push('<section class="mhdCard mhdSection mhdTeamSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('team_today')+'</span><strong>Équipe aujourd’hui</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'chat.html\'">Voir l’équipe ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((x,i)=>'<div class="mhdPerson"><span id="mhdAvatar'+i+'" class="mhdAvatar">'+homeEsc((x.name||'U').slice(0,1).toUpperCase())+'</span>'+(x.profile&&window.NettoProfileUI?.onlineIds?.has?.(x.profile.id)?'<i class="mhdOnline"></i>':'')+'<strong>'+homeEsc(x.name)+'</strong><small>'+homeEsc(x.profile?window.NettoProfileUI?.roleLabel?.(x.profile.role)||x.profile.role:'Équipe')+'</small></div>').join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>');
  }
  if(widget('quick_access')){
   const modules=homeAllowedModules(profile,cfg).slice(0,4);
-  if(modules.length)sections.push('<section class="mhdCard mhdSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('quick_access')+'</span><strong>Accès rapides</strong></div></div><div class="mhdQuickGrid">'+modules.map(m=>'<button class="mhdQuick" type="button" onclick="location.href=\''+homeEsc(m.url||m.baseUrl||'home.html')+'\'"><span class="mhdQuickIcon">'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'')+'</span><strong>'+homeEsc(m.homeLabel||m.label||m.id)+'</strong></button>').join('')+'</div></section>')
+  if(modules.length)sections.push('<section class="mhdCard mhdSection mhdQuickSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('quick_access')+'</span><strong>Accès rapides</strong></div></div><div class="mhdQuickGrid">'+modules.map(m=>'<button class="mhdQuick" type="button" onclick="location.href=\''+homeEsc(m.url||m.baseUrl||'home.html')+'\'"><span class="mhdQuickIcon">'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'')+'</span><strong>'+homeEsc(m.homeLabel||m.label||m.id)+'</strong></button>').join('')+'</div></section>')
  }
  host.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
  // Paint team avatars after the final DOM exists.
