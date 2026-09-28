@@ -1369,6 +1369,44 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   }
 }
 </style>
+<style id="planning-coverage-overlay-v1">
+.coverageModeDock{display:none}
+html[data-pw-coverage="1"] .coverageModeDock{display:flex;align-items:center;justify-content:flex-start}
+body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body.planningEditing .coverageModeDock{display:none!important}
+@media(min-width:761px){
+  .coverageModeDock{position:relative;left:50%;transform:translateX(-50%);width:100%;margin:0 0 7px}
+  .coverageModeBtn{min-height:40px;display:inline-flex;align-items:center;gap:9px;padding:6px 11px 6px 8px;border:1px solid #dde1e5;border-radius:12px;background:#fff;color:#34383e;box-shadow:0 5px 16px rgba(22,28,36,.05);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
+  .coverageModeBtn:hover{transform:translateY(-1px);border-color:#ffc6b2;box-shadow:0 8px 20px rgba(255,83,40,.10)}
+  .coverageModeBtn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .coverageModeBtnIcon{width:29px;height:29px;border-radius:9px;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding:7px 6px;background:#fff0e8;color:#f0522d;flex:none}
+  .coverageModeBtnIcon i{display:block;width:3px;border-radius:3px;background:currentColor}.coverageModeBtnIcon i:nth-child(1){height:7px}.coverageModeBtnIcon i:nth-child(2){height:13px}.coverageModeBtnIcon i:nth-child(3){height:10px}
+  .coverageModeBtnCopy{text-align:left;line-height:1.05}.coverageModeBtnCopy strong{display:block;font-size:10.5px;font-weight:900}.coverageModeBtnCopy small{display:block;margin-top:2px;font-size:8px;font-weight:750;color:#8a9098}
+  body.coverageMode .coverageModeBtn{border-color:#ff6d45;background:linear-gradient(135deg,#ff3925,#ff8124);color:#fff;box-shadow:0 8px 20px rgba(255,76,35,.20)}
+  body.coverageMode .coverageModeBtnIcon{background:#ffffff25;color:#fff}body.coverageMode .coverageModeBtnCopy small{color:#fffbdc}
+  #sheetViewport{position:relative!important}
+  #sheetMount{transition:filter .22s ease,opacity .22s ease,transform .22s ease}
+  body.coverageMode #sheetMount{filter:blur(2.6px) saturate(.55);opacity:.20;transform:scale(.998);pointer-events:none;user-select:none}
+  .coverageOverlay{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:10px 12px;background:rgba(247,248,250,.48);backdrop-filter:blur(2px);opacity:1;transition:opacity .2s ease}
+  .coverageOverlay.hidden{display:none!important}
+  .coverageOverlayPanel{width:min(97%,1500px);max-height:calc(100% - 4px);display:grid;grid-template-rows:auto auto minmax(82px,1fr) auto;gap:8px;padding:12px 13px;border:1px solid rgba(220,224,229,.96);border-radius:16px;background:rgba(255,255,255,.94);box-shadow:0 18px 50px rgba(21,27,35,.16);overflow:hidden}
+  .coverageOverlayHead{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;align-items:center;gap:12px}
+  .coverageOverlayKicker{display:block;font-size:7.5px;font-weight:950;letter-spacing:.09em;color:#f15a31}.coverageOverlayTitle strong{display:block;margin-top:2px;font-size:14px;line-height:1.1}.coverageOverlayTitle small{display:block;margin-top:3px;font-size:8.5px;color:#858c95}
+  .coverageOverlaySummary{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}.coverageOverlayMetric{min-width:62px;padding:6px 8px;border:1px solid #e5e8eb;border-radius:10px;background:#f8f9fa;text-align:center}.coverageOverlayMetric b{display:block;font-size:12px;line-height:1}.coverageOverlayMetric span{display:block;margin-top:3px;font-size:7px;font-weight:800;color:#8b929a;text-transform:uppercase;letter-spacing:.03em}
+  .coverageOverlayClose{width:30px;height:30px;border:0;border-radius:9px;background:#f0f2f4;color:#6f767f;font-size:18px;line-height:1;cursor:pointer}.coverageOverlayClose:hover{background:#e8ebee;color:#2c3137}
+  .coverageOverlayLegend{display:flex;align-items:center;gap:11px;font-size:7.5px;font-weight:800;color:#7e858e}.coverageOverlayLegend span{display:inline-flex;align-items:center;gap:4px}.coverageOverlayLegend i{width:8px;height:8px;border-radius:3px;background:#e7eaed}.coverageOverlayLegend i.one{background:#ff6750}.coverageOverlayLegend i.two{background:#f4ad42}.coverageOverlayLegend i.three{background:#35b86b}
+  .coverageOverlaySlots{min-height:82px;display:grid;grid-template-columns:repeat(58,minmax(0,1fr));align-items:end;gap:2px;padding:7px 4px 19px;border:1px solid #e6e9ec;border-radius:12px;background:linear-gradient(180deg,#fbfcfd,#f6f8f9);overflow:hidden}
+  .coverageOverlaySlot{position:relative;height:100%;min-width:0;border:0;padding:0;background:transparent;cursor:pointer;border-radius:5px;outline:none}.coverageOverlaySlot:focus-visible{box-shadow:0 0 0 2px #ff6840}
+  .coverageOverlaySlot::before{content:"";position:absolute;left:1px;right:1px;bottom:0;height:var(--coverage-height,6%);min-height:4px;border-radius:5px 5px 2px 2px;background:var(--coverage-color,#e7eaed);transition:height .18s ease,filter .14s ease,transform .14s ease}
+  .coverageOverlaySlot:hover::before,.coverageOverlaySlot.selected::before{filter:brightness(.96);transform:translateY(-2px)}.coverageOverlaySlot.selected{background:#fff2ec}
+  .coverageOverlaySlot b{position:absolute;left:50%;bottom:calc(var(--coverage-height,6%) + 4px);transform:translateX(-50%);font-size:7px;line-height:1;color:#636b74;opacity:0;transition:opacity .12s}.coverageOverlaySlot:hover b,.coverageOverlaySlot.selected b{opacity:1}
+  .coverageOverlaySlot small{position:absolute;left:50%;top:calc(100% + 5px);transform:translateX(-50%);font-size:6px;line-height:1;color:#8f969e;white-space:nowrap}
+  .coverageOverlayDetail{min-height:40px;display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid #e7eaed;border-radius:11px;background:#fafbfc;overflow:hidden}.coverageOverlayDetailTime{flex:none;min-width:74px}.coverageOverlayDetailTime strong{display:block;font-size:10.5px}.coverageOverlayDetailTime small{display:block;margin-top:2px;font-size:7.5px;color:#8a9199}
+  .coverageOverlayPeople{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden}.coveragePersonChip{display:inline-flex;align-items:center;gap:5px;min-width:0;padding:4px 7px 4px 4px;border:1px solid #e3e6e9;border-radius:999px;background:#fff;font-size:8px;font-weight:850;white-space:nowrap}.coveragePersonDot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:6.5px;font-weight:900;flex:none}.coverageNoPeople{font-size:8.5px;color:#8b929a}.coverageMorePeople{font-size:8px;font-weight:850;color:#7d858e;white-space:nowrap}
+}
+@media(min-width:1280px){.coverageModeDock{width:130%;max-width:none}}
+@media(max-width:760px){.coverageModeDock,.coverageOverlay{display:none!important}}
+:root[data-theme="dark"] .coverageModeBtn{background:#23272c;border-color:#3c4249;color:#f2f3f4}:root[data-theme="dark"] .coverageModeBtnCopy small{color:#a9b0b8}:root[data-theme="dark"] .coverageOverlay{background:rgba(18,20,23,.56)}:root[data-theme="dark"] .coverageOverlayPanel{background:rgba(30,33,37,.95);border-color:#41464d;box-shadow:0 18px 50px rgba(0,0,0,.34)}:root[data-theme="dark"] .coverageOverlayMetric,:root[data-theme="dark"] .coverageOverlayDetail{background:#25292e;border-color:#3b4148}:root[data-theme="dark"] .coverageOverlaySlots{background:linear-gradient(180deg,#202328,#1b1e22);border-color:#373d44}:root[data-theme="dark"] .coverageOverlaySlot.selected{background:#38251f}:root[data-theme="dark"] .coverageOverlaySlot b,:root[data-theme="dark"] .coverageOverlayDetailTime strong{color:#eef1f4}:root[data-theme="dark"] .coveragePersonChip{background:#24282d;border-color:#3b4148;color:#eef1f4}
+</style>
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
   <div class="planningViewBar">
     <div class="desktopPlanningViewGroup"><span class="desktopPlanningMenuLabel">Vue</span><div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div></div>
@@ -1406,7 +1444,27 @@ body:not(.planningYearOpen) #yearView{display:none!important}
     </div>
     <div id="mobilePlanningActionsDock" class="mobilePlanningActionsDock"></div>
     <div id="emptyState" class="emptyState hidden"><strong>Aucun planning importé pour cette semaine</strong><span>Un administrateur ou responsable peut glisser le fichier Excel correspondant.</span></div>
-    <div id="sheetViewport" class="sheetViewport hidden"><div id="sheetMount"></div></div><div id="mobileSchedule" class="mobileSchedule hidden"></div>
+    <div id="coverageModeDock" class="coverageModeDock">
+      <button id="coverageModeBtn" class="coverageModeBtn" type="button" aria-pressed="false" onclick="toggleCoverageMode()">
+        <span class="coverageModeBtnIcon" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="coverageModeBtnCopy"><strong>Couverture</strong><small>magasin</small></span>
+      </button>
+    </div>
+    <div id="sheetViewport" class="sheetViewport hidden">
+      <div id="sheetMount"></div>
+      <div id="coverageOverlay" class="coverageOverlay hidden" aria-live="polite">
+        <div class="coverageOverlayPanel">
+          <div class="coverageOverlayHead">
+            <div class="coverageOverlayTitle"><span class="coverageOverlayKicker">COUVERTURE MAGASIN</span><strong id="coverageOverlayDate">—</strong><small>Présence planifiée par tranche de 15 minutes.</small></div>
+            <div id="coverageOverlaySummary" class="coverageOverlaySummary"></div>
+            <button class="coverageOverlayClose" type="button" onclick="setCoverageMode(false)" aria-label="Fermer la couverture">×</button>
+          </div>
+          <div class="coverageOverlayLegend"><span><i class="none"></i>0</span><span><i class="one"></i>1 personne</span><span><i class="two"></i>2 personnes</span><span><i class="three"></i>3 et +</span></div>
+          <div id="coverageOverlaySlots" class="coverageOverlaySlots"></div>
+          <div id="coverageOverlayDetail" class="coverageOverlayDetail"></div>
+        </div>
+      </div>
+    </div><div id="mobileSchedule" class="mobileSchedule hidden"></div>
     <div class="anomalyHistoryRow">
       <article id="anomalyWidget" class="planningInsightCard compactInsightCard">
         <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePlanningInsight('anomalies')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePlanningInsight('anomalies')}"><div><strong>Détection d’anomalies</strong><small>Contrôles automatiques d’organisation. Ils ne remplacent pas un contrôle RH ou réglementaire.</small></div><div class="compactInsightHeadRight"><span id="anomalyMetric" class="insightMetric">0</span><span class="compactInsightChevron" aria-hidden="true">⌄</span></div></div>
@@ -1424,15 +1482,6 @@ body:not(.planningYearOpen) #yearView{display:none!important}
               <div class="insightHead"><div><strong>Indisponibilités / Congés</strong><small id="absenceSubtitle">Demandes et suivi liés à cette semaine.</small></div><div class="absenceHeaderActions"><button id="absenceRequestBtn" class="btn absenceSubmit hidden" type="button" onclick="openAbsenceRequest()">＋ Faire une demande</button><div id="absenceAdminTools" class="absenceAdminTools hidden"><button class="btn light" type="button" onclick="clearAbsenceLogs()">Effacer les logs</button><button class="btn danger" type="button" onclick="clearAbsenceRequests()">Effacer les demandes</button></div></div></div>
               <div id="absenceManagementSummary" class="absenceManagementSummary hidden"></div>
               <div id="absenceList" class="absenceList"></div>
-            </article>
-    </div>
-    <div class="coverageWideRow">
-      <article id="coverageWidget" class="planningInsightCard coverageCard compactInsightCard">
-              <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePlanningInsight('coverage')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePlanningInsight('coverage')}"><div><strong>Couverture magasin</strong><small>Présence planifiée par tranche de 15 minutes pour la journée sélectionnée.</small></div><div class="compactInsightHeadRight"><span id="coverageMetric" class="insightMetric">—</span><span class="compactInsightChevron" aria-hidden="true">⌄</span></div></div>
-              <div id="coverageInsightBody" class="compactInsightBody collapsed">
-                <div id="coverageSummary" class="coverageSummary"></div>
-                <div id="coverageScroller" class="coverageScroller"><div id="coverageBars" class="coverageBars"></div></div>
-              </div>
             </article>
     </div>
   </section>
@@ -1653,15 +1702,50 @@ function coverageForDay(day){
  const ss=slots(),rows=day?.cells||[];
  return ss.map((t,si)=>({time:t,count:rows.reduce((n,row)=>n+(((row?.[si]==='g'||row?.[si]==='b')?1:0)),0)}))
 }
-function renderCoverage(){
- const bars=document.getElementById('coverageBars'),summary=document.getElementById('coverageSummary'),metric=document.getElementById('coverageMetric');if(!bars||!summary||!metric)return;
- const day=modelDay(),data=coverageForDay(day),active=data.filter(x=>x.count>0);
- if(!model||!day||!active.length){metric.textContent='0 présent';summary.innerHTML='<span class="coveragePill">Aucun horaire</span>';bars.innerHTML='<div class="coverageEmpty">La couverture apparaîtra dès qu’un planning est renseigné pour cette journée.</div>';return}
- const max=Math.max(...active.map(x=>x.count)),min=Math.min(...active.map(x=>x.count)),avg=active.reduce((s,x)=>s+x.count,0)/active.length;
- metric.textContent=max+' max';
- summary.innerHTML='<span class="coveragePill"><b>'+min+'</b> minimum</span><span class="coveragePill"><b>'+String(Math.round(avg*10)/10).replace('.',',')+'</b> moyenne</span><span class="coveragePill"><b>'+max+'</b> pic</span>';
- bars.innerHTML=data.map((x,i)=>{const h=x.count?Math.max(7,Math.round(x.count/max*72)):3,label=i%4===0?fmtTime(x.time):'';return '<div class="coverageBar '+(x.count===1?'isLow':'')+'" style="--h:'+h+'px" title="'+fmtTime(x.time)+' • '+x.count+' personne'+(x.count>1?'s':'')+'"><span>'+(x.count||'')+'</span>'+(label?'<small>'+label+'</small>':'')+'</div>'}).join('')
+let coverageModeActive=false,coverageSelectedSlot=0;
+function coverageModeAvailable(){
+ return window.innerWidth>760&&document.documentElement.dataset.pwCoverage==='1'&&!document.body.classList.contains('agendaLayout')&&!editMode&&!!model&&!!modelDay()
 }
+function setCoverageMode(next){
+ const btn=document.getElementById('coverageModeBtn'),overlay=document.getElementById('coverageOverlay');
+ const active=!!next&&coverageModeAvailable();
+ coverageModeActive=active;
+ document.body.classList.toggle('coverageMode',active);
+ if(btn){btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',active?'true':'false');const strong=btn.querySelector('.coverageModeBtnCopy strong');if(strong)strong.textContent=active?'Fermer':'Couverture'}
+ if(overlay)overlay.classList.toggle('hidden',!active);
+ if(active){renderCoverageOverlay();window.NettoSounds?.play?.('menuOpen')}else if(next===false){window.NettoSounds?.play?.('menuClose')}
+}
+function toggleCoverageMode(){setCoverageMode(!coverageModeActive)}
+function coveragePeopleForSlot(day,si){
+ const rows=day?.cells||[],employees=model?.employees||[];
+ return rows.map((row,ri)=>{const v=row?.[si];if(v!=='g'&&v!=='b')return null;const emp=employees[ri],p=planningProfileFor(emp?.name||''),name=p?.display_name||emp?.name||'Employé';return{name,color:p?.profile_color||'#ff5a2a',shift:v}}).filter(Boolean)
+}
+function coverageSlotColor(count){if(count<=0)return'#dfe3e7';if(count===1)return'#ff6750';if(count===2)return'#f4ad42';return'#35b86b'}
+function coverageSelectSlot(si,focus=false){
+ const day=modelDay(),data=coverageForDay(day),slotsHost=document.getElementById('coverageOverlaySlots'),detail=document.getElementById('coverageOverlayDetail');
+ if(!data.length||!detail)return;
+ const index=Math.max(0,Math.min(data.length-1,Number(si)||0));coverageSelectedSlot=index;
+ slotsHost?.querySelectorAll('.coverageOverlaySlot').forEach((el,i)=>el.classList.toggle('selected',i===index));
+ const x=data[index],people=coveragePeopleForSlot(day,index),from=fmtTime(x.time),to=fmtTime(x.time+.25);
+ const chips=people.slice(0,7).map(p=>'<span class="coveragePersonChip"><i class="coveragePersonDot" style="background:'+esc(p.color)+'">'+esc(initials(p.name).slice(0,1))+'</i>'+esc(p.name)+'</span>').join('');
+ detail.innerHTML='<div class="coverageOverlayDetailTime"><strong>'+from+' → '+to+'</strong><small>'+x.count+' personne'+(x.count>1?'s':'')+' présente'+(x.count>1?'s':'')+'</small></div><div class="coverageOverlayPeople">'+(chips||'<span class="coverageNoPeople">Aucune présence planifiée sur ce créneau.</span>')+(people.length>7?'<span class="coverageMorePeople">+'+(people.length-7)+'</span>':'')+'</div>';
+ if(focus)slotsHost?.querySelectorAll('.coverageOverlaySlot')?.[index]?.focus()
+}
+function renderCoverageOverlay(){
+ const date=document.getElementById('coverageOverlayDate'),summary=document.getElementById('coverageOverlaySummary'),host=document.getElementById('coverageOverlaySlots'),btn=document.getElementById('coverageModeBtn');
+ if(!date||!summary||!host||!btn)return;
+ const day=modelDay(),data=coverageForDay(day),active=data.filter(x=>x.count>0);
+ btn.disabled=!model||!day||!active.length;
+ if(!model||!day||!data.length){summary.innerHTML='';host.innerHTML='';document.getElementById('coverageOverlayDetail').innerHTML='<span class="coverageNoPeople">Aucun planning à analyser.</span>';if(coverageModeActive)setCoverageMode(false);return}
+ const dt=addDays(currentWeekStart,currentDay);date.textContent=DAYS[currentDay][1]+' '+frDate(dt);
+ const max=active.length?Math.max(...active.map(x=>x.count)):0,min=active.length?Math.min(...active.map(x=>x.count)):0,avg=active.length?active.reduce((s,x)=>s+x.count,0)/active.length:0;
+ summary.innerHTML='<span class="coverageOverlayMetric"><b>'+min+'</b><span>minimum</span></span><span class="coverageOverlayMetric"><b>'+String(Math.round(avg*10)/10).replace('.',',')+'</b><span>moyenne</span></span><span class="coverageOverlayMetric"><b>'+max+'</b><span>pic</span></span>';
+ const denom=Math.max(1,max);
+ host.innerHTML=data.map((x,i)=>{const pct=x.count?Math.max(12,Math.round(x.count/denom*88)):6,label=i%4===0?fmtTime(x.time):'';return '<button type="button" class="coverageOverlaySlot'+(i===coverageSelectedSlot?' selected':'')+'" style="--coverage-height:'+pct+'%;--coverage-color:'+coverageSlotColor(x.count)+'" title="'+fmtTime(x.time)+' • '+x.count+' personne'+(x.count>1?'s':'')+'" onmouseenter="coverageSelectSlot('+i+')" onclick="coverageSelectSlot('+i+',true)"><b>'+x.count+'</b>'+(label?'<small>'+label+'</small>':'')+'</button>'}).join('');
+ if(coverageSelectedSlot>=data.length)coverageSelectedSlot=0;
+ coverageSelectSlot(coverageSelectedSlot)
+}
+function renderCoverage(){const btn=document.getElementById('coverageModeBtn');if(btn)btn.disabled=!coverageModeAvailable();renderCoverageOverlay()}
 function planningAnomalies(){
  const out=[],day=modelDay(),date=dayKey();if(!model||!day)return out;
  const rows=day.cells||[],employees=model.employees||[];
@@ -2015,7 +2099,7 @@ async function importPlanningFiles(fileList){
 
 function setPaintColor(c){paintColor=c;document.querySelectorAll('.paintChoice').forEach(b=>b.classList.toggle('active',b.dataset.color===c))}
 function clonePlanningModel(value){if(!value)return value;try{return typeof structuredClone==='function'?structuredClone(value):JSON.parse(JSON.stringify(value))}catch(_){return JSON.parse(JSON.stringify(value))}}
-function toggleEditMode(){if(!canEdit||!model)return;if(editMode){saveAndFinishEdit();return}resetEditChanges();editSnapshot=clonePlanningModel(model);editMode=true;document.getElementById('editTools').classList.remove('hidden');document.getElementById('editSaveBar').classList.remove('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✓ Enregistrer';b.classList.add('editing');setSaveState('Mode modification');renderReader()}
+function toggleEditMode(){if(!canEdit||!model)return;if(editMode){saveAndFinishEdit();return}if(coverageModeActive)setCoverageMode(false);resetEditChanges();editSnapshot=clonePlanningModel(model);editMode=true;document.getElementById('editTools').classList.remove('hidden');document.getElementById('editSaveBar').classList.remove('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✓ Enregistrer';b.classList.add('editing');setSaveState('Mode modification');renderReader()}
 function cancelPlanningEdit(){
  if(!canEdit||!editMode)return;
  const hasChanges=changedDates().length>0;
