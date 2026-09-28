@@ -1,8 +1,8 @@
 {
-  "version": 170,
-  "label": "v1.70",
+  "version": 171,
+  "label": "v1.71",
   "important": true,
-  "mode": "auto",
+  "mode": "manual",
   "title": "Nouvelle version de Nethor",
   "message": "Améliorations générales, correctifs et optimisations du portail.",
   "published_at": null,
