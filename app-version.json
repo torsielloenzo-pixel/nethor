@@ -1,10 +1,10 @@
 {
-  "version": 175,
-  "label": "v1.75",
+  "version": 176,
+  "label": "v1.176",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Améliorations générales, correctifs et optimisations du portail.",
+  "message": "Nouveau widget Tâches du jour : création, affectation, regroupement et validation des missions quotidiennes.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
