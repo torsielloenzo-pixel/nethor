@@ -1238,15 +1238,15 @@ body:not(.planningYearOpen) #yearView{display:none!important}
 }
 </style>
 <style id="planning-desktop-full-day-v1">
-/* Desktop : seul le tableau du planning s'élargit.
-   Les menus, titres, widgets et le reste de la page conservent leur largeur précédente. */
+/* Desktop : seul le tableau du planning est plus large que les widgets standards.
+   Il reste centré et plafonné : environ 65–70 % de la largeur disponible, sans plein écran. */
 @media(min-width:1280px){
   #sheetViewport{
     position:relative!important;
     left:50%!important;
     transform:translateX(-50%)!important;
-    width:calc(100vw - 24px)!important;
-    max-width:none!important;
+    width:min(68vw,1320px)!important;
+    max-width:1320px!important;
     overflow-x:hidden!important;
   }
   .xlsTable{
