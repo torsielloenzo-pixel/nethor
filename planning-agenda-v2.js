@@ -3,7 +3,7 @@
 let layout='classic',mobileMode='day',booted=false,saveTimer=null,profileLayout='classic';
 const mq=window.matchMedia('(max-width:760px)');
 const escLocal=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function isMobile(){return mq.matches}
+function isMobile(){return document.documentElement.classList.contains('nethorPhoneDevice')||mq.matches}
 function normalize(v){return v==='agenda'?'agenda':'classic'}
 function agendaRanges(row){return rowRanges(row).filter(r=>!['r','y','o'].includes(r.c))}
 function colorLabel(c){return({g:'Matin',b:'Après-midi',w:'Indisponibilité'})[c]||'Poste'}
