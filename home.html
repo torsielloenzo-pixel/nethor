@@ -1179,7 +1179,7 @@ async function loadHomeTodayPlanning(profile,name){
  const facts=homeDayFacts(m,todayKey,name);
  if(facts.hours>0&&facts.ranges.length){const schedule=facts.ranges.map(x=>homeFriendlyHour(x.a)+' à '+homeFriendlyHour(x.b)).join(' • ');el.innerHTML='Ton planning d’aujourd’hui : <strong>'+schedule+'</strong>. Bonne journée !';return}
  if(facts.isLeave){el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Congé</strong> indiqué dans ton planning.';return}
- if(facts.isBlank){el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Jour de repos</strong>. Profite bien de ta journée !';return}
+ if(facts.isRest){el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Jour de repos</strong>. Profite bien de ta journée !';return}
  el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Statut indiqué dans le planning</strong>.'
 }
 
@@ -1202,10 +1202,12 @@ function homeEmployeeIndex(model,name){
  return employees.findIndex(e=>{const n=homeNorm(e?.name),base=n.replace(/\s+[a-z]$/,'');return n===target||base===target})
 }
 function homeDayFacts(model,dateKey,name){
- const idx=homeEmployeeIndex(model,name);if(idx<0)return{hours:0,ranges:[],idx:-1,row:[],isLeave:false,isBlank:false,hasOtherStatus:false};
+ const idx=homeEmployeeIndex(model,name);if(idx<0)return{hours:0,ranges:[],idx:-1,row:[],isLeave:false,isBlank:false,isRestStatus:false,isRest:false,hasOtherStatus:false};
  const row=model?.days?.[dateKey]?.cells?.[idx]||[],ranges=homeWorkRanges(row,model||{}),hours=row.reduce((n,v)=>n+(v==='g'||v==='b'?0.25:0),0);
- const isLeave=hours===0&&row.some(v=>v==='y'),isBlank=row.every(v=>!v),hasOtherStatus=hours===0&&row.some(v=>v&&v!=='y');
- return{hours,ranges,idx,row,isLeave,isBlank,hasOtherStatus}
+ const isLeave=hours===0&&row.some(v=>v==='y'),isBlank=row.every(v=>!v);
+ const isRestStatus=hours===0&&!isLeave&&row.some(v=>v==='r'||v==='o')&&row.every(v=>!v||v==='r'||v==='o');
+ const isRest=isBlank||isRestStatus,hasOtherStatus=hours===0&&!isLeave&&!isRest&&row.some(Boolean);
+ return{hours,ranges,idx,row,isLeave,isBlank,isRestStatus,isRest,hasOtherStatus}
 }
 function homeDayHours(model,dateKey,name){
  const d=homeDayFacts(model,dateKey,name);return{hours:d.hours,ranges:d.ranges,idx:d.idx}
@@ -1284,7 +1286,7 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  }
  const currentHours=currentWeek?Object.keys(currentWeek.days||{}).reduce((sum,dateKey)=>sum+homeDayFacts(currentWeek,dateKey,name).hours,0):0;
  let nextRest=null,nextLeave=null;
- for(const x of allDays.filter(x=>x.dateKey>todayKey)){const d=homeDayFacts(x.model,x.dateKey,name);if(d.idx>=0&&d.isBlank){nextRest=x.dateKey;break}}
+ for(const x of allDays.filter(x=>x.dateKey>todayKey)){const d=homeDayFacts(x.model,x.dateKey,name);if(d.idx>=0&&d.isRest){nextRest=x.dateKey;break}}
  const firstLeaveIndex=allDays.findIndex(x=>homeDayFacts(x.model,x.dateKey,name).isLeave);
  if(firstLeaveIndex>=0){
   const first=allDays[firstLeaveIndex];let end=first.dateKey;
