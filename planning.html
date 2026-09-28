@@ -1752,30 +1752,16 @@ function renderCoverageOverlay(){
  coverageSelectSlot(coverageSelectedSlot)
 }
 function renderCoverage(){const btn=document.getElementById('coverageModeBtn');if(btn)btn.disabled=!coverageModeAvailable();renderCoverageOverlay()}
-function planningWeekHoursForEmployee(ri){
- let total=0;
- for(let di=0;di<7;di++){
-  const row=model?.days?.[isoDate(addDays(currentWeekStart,di))]?.cells?.[ri]||[];
-  total+=totalForRow(row)
- }
- return Math.round(total*100)/100
-}
 function planningContractDifferenceAnomalies(){
  if(!model)return[];
- const out=[],employees=model.employees||[];
- employees.forEach((emp,ri)=>{
-  const profile=planningProfileFor(emp.name),contractRaw=profile?.contract_hours;
-  if(contractRaw===null||contractRaw===undefined||contractRaw==='')return;
-  const contract=Number(contractRaw);if(!Number.isFinite(contract)||contract<0)return;
-  const planned=planningWeekHoursForEmployee(ri),diff=Math.round((planned-contract)*100)/100;
-  if(Math.abs(diff)<0.25)return;
-  const label=profile?.display_name||emp.name,fmt=n=>String(Math.round(Number(n)*100)/100).replace('.',',');
-  out.push({
-   level:'warn',
-   icon:'≠',
-   title:'DIFFÉRENCE HEURES CONTRAT · '+label,
-   detail:fmt(planned)+' h planifiées • '+fmt(contract)+' h au contrat • écart '+(diff>0?'+':'')+fmt(diff)+' h.'
-  })
+ const out=[],employees=model.employees||[],fmt=n=>Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+ employees.forEach(emp=>{
+  const total=Number(emp.excelWeekTotalHours),contract=Number(emp.excelContractHours),difference=Number(emp.excelContractDifference);
+  if(!Number.isFinite(difference)||Math.abs(difference)<0.005)return;
+  const profile=planningProfileFor(emp.name),label=profile?.display_name||emp.name;
+  const totalText=Number.isFinite(total)?fmt(total)+' h':'—';
+  const contractText=Number.isFinite(contract)?fmt(contract)+' h':'—';
+  out.push({level:'warn',icon:'≠',title:'DIFFÉRENCE HEURES CONTRAT · '+label,detail:'TOTAL '+totalText+' • HEURES CONTRAT '+contractText+' • DIFFÉRENCE '+(difference>0?'+':'')+fmt(difference)+' h.'})
  });
  return out
 }
@@ -2062,6 +2048,71 @@ function ensureXlsx(){
  xlsxLoader=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';s.async=true;s.onload=()=>window.XLSX?resolve(window.XLSX):reject(new Error('Lecteur Excel indisponible.'));s.onerror=()=>reject(new Error('Impossible de charger le lecteur Excel.'));document.head.appendChild(s)});
  return xlsxLoader
 }
+function planningExcelHeaderKey(value){
+ return norm(value).replace(/[^a-z0-9]+/g,' ').trim()
+}
+function planningExcelHours(cell){
+ if(!cell||cell.v===null||cell.v===undefined||cell.v==='')return null;
+ const v=cell.v;
+ if(typeof v==='number'){
+  const format=String(cell.z||cell.w||'').toLowerCase();
+  if((format.includes('[h]')||/h+:mm/.test(format))&&Math.abs(v)<=10)return Math.round(v*24*100)/100;
+  return Math.round(v*100)/100
+ }
+ const s=String(v).trim().replace(/\s/g,'').replace(',','.');
+ if(/^[-+]?\d+(?:\.\d+)?$/.test(s))return Math.round(Number(s)*100)/100;
+ const hm=s.match(/^([-+]?)(\d+):([0-5]\d)$/);
+ if(hm){const sign=hm[1]==='-'?-1:1;return Math.round(sign*(Number(hm[2])+Number(hm[3])/60)*100)/100}
+ return null
+}
+function planningExcelWeeklySummary(wb,employees,mondayName){
+ const employeeIndex=new Map(employees.map((e,i)=>[norm(e.name),i]));
+ let best=null;
+ for(const sheetName of wb.SheetNames||[]){
+  const ws=wb.Sheets[sheetName],ref=ws?.['!ref'];if(!ws||!ref)continue;
+  const range=XLSX.utils.decode_range(ref),maxRow=Math.min(range.e.r,range.s.r+120),maxCol=Math.min(range.e.c,220);
+  for(let r=range.s.r;r<=maxRow;r++){
+   let totalCol=-1,contractCol=-1,diffCol=-1;
+   for(let col=range.s.c;col<=maxCol;col++){
+    const key=planningExcelHeaderKey(ws[XLSX.utils.encode_cell({r,c:col})]?.v);
+    if(key==='total')totalCol=col;
+    else if(key==='heures contrat')contractCol=col;
+    else if(key==='difference heures contrat'||key==='difference heure contrat')diffCol=col;
+   }
+   if(contractCol<0||diffCol<0)continue;
+   const score=(totalCol>=0?4:0)+(norm(sheetName)===norm(mondayName)?2:0);
+   if(!best||score>best.score)best={sheetName,ws,range,headerRow:r,totalCol,contractCol,diffCol,score}
+  }
+ }
+ if(!best)return null;
+ const {ws,range,headerRow,totalCol,contractCol,diffCol}=best;
+ const result=employees.map(()=>({total:null,contract:null,difference:null}));
+ for(let r=headerRow+1;r<=Math.min(range.e.r,headerRow+40);r++){
+  let matchedIndex=-1;
+  for(let col=range.s.c;col<=Math.min(range.e.c,Math.max(contractCol,diffCol));col++){
+   const key=norm(ws[XLSX.utils.encode_cell({r,c:col})]?.v);
+   if(employeeIndex.has(key)){matchedIndex=employeeIndex.get(key);break}
+  }
+  if(matchedIndex<0)continue;
+  const total=totalCol>=0?planningExcelHours(ws[XLSX.utils.encode_cell({r,c:totalCol})]):null;
+  const contract=planningExcelHours(ws[XLSX.utils.encode_cell({r,c:contractCol})]);
+  let difference=planningExcelHours(ws[XLSX.utils.encode_cell({r,c:diffCol})]);
+  if(difference===null&&total!==null&&contract!==null)difference=Math.round((total-contract)*100)/100;
+  result[matchedIndex]={total,contract,difference}
+ }
+ employees.forEach((emp,i)=>{
+  if(result[i].contract!==null||result[i].difference!==null)return;
+  const candidates=[emp.rowIndex,headerRow+1+i].filter((v,idx,a)=>Number.isInteger(v)&&v>headerRow&&v<=range.e.r&&a.indexOf(v)===idx);
+  for(const r of candidates){
+   const total=totalCol>=0?planningExcelHours(ws[XLSX.utils.encode_cell({r,c:totalCol})]):null;
+   const contract=planningExcelHours(ws[XLSX.utils.encode_cell({r,c:contractCol})]);
+   let difference=planningExcelHours(ws[XLSX.utils.encode_cell({r,c:diffCol})]);
+   if(difference===null&&total!==null&&contract!==null)difference=Math.round((total-contract)*100)/100;
+   if(total!==null||contract!==null||difference!==null){result[i]={total,contract,difference};break}
+  }
+ });
+ return{sheet:best.sheetName,rows:result}
+}
 async function readPlanningFile(file){
  if(!window.XLSX)throw new Error('Le lecteur Excel n’est pas chargé.');const ab=await file.arrayBuffer(),wb=XLSX.read(ab,{type:'array',cellDates:true,cellStyles:true});
  const mondayName=findSheet(wb,'LUNDI');if(!mondayName)throw new Error('Feuille LUNDI introuvable.');const mondayWs=wb.Sheets[mondayName],mondayDate=cellDate(mondayWs.B2?.v);if(!mondayDate)throw new Error('Date du lundi introuvable en B2.');
@@ -2076,8 +2127,10 @@ async function readPlanningFile(file){
       // on ne peint pas arbitrairement : seul le style Excel décide de la couleur.
       if(!color&&occupied&&styleColor&&styleColor!=='w')color=styleColor;
       row.push(color)}matrix.push(row)}days[key]={sheet:sheetName.trim(),label,date:key,cells:matrix}}
+ const weeklySummary=planningExcelWeeklySummary(wb,employees,mondayName);
+ if(weeklySummary?.rows)employees.forEach((emp,i)=>{const s=weeklySummary.rows[i]||{};emp.excelWeekTotalHours=s.total;emp.excelContractHours=s.contract;emp.excelContractDifference=s.difference});
  const colorCounts={g:0,b:0,r:0,y:0,o:0};Object.values(days).forEach(d=>d.cells.forEach(row=>row.forEach(v=>{if(v&&colorCounts[v]!==undefined)colorCounts[v]++})));
- return{version:3,reader:'netto-xls-direct',weekStart:isoDate(mondayDate),weekLabel,sourceFile:file.name,importedAt:new Date().toISOString(),startTime:6,endTime:20.5,slotMinutes:15,slotCount:58,employees,days,colorCounts}
+ return{version:4,reader:'netto-xls-direct',weekStart:isoDate(mondayDate),weekLabel,sourceFile:file.name,importedAt:new Date().toISOString(),startTime:6,endTime:20.5,slotMinutes:15,slotCount:58,employees,days,colorCounts,weeklySummarySource:weeklySummary?.sheet||null}
 }
 function planningFileExtension(name){const m=String(name||'').toLowerCase().match(/\.(xlsm|xlsx|xls)$/);return m?.[1]||'xlsx'}
 async function archivePlanningSource(file,weekStart){
