@@ -24,6 +24,9 @@ create index if not exists reported_problems_reporter_idx
 create index if not exists reported_problems_status_created_idx
   on public.reported_problems(status, created_at desc);
 
+create index if not exists reported_problems_resolved_by_idx
+  on public.reported_problems(resolved_by);
+
 alter table public.reported_problems enable row level security;
 
 grant select, insert, update, delete on public.reported_problems to authenticated;
