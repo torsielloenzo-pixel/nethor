@@ -1,10 +1,10 @@
 {
-  "version": 177,
-  "label": "v1.77",
+  "version": 178,
+  "label": "v1.78",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Tâches du jour modernisées : catégories ouvrables, multi-sélection et réinitialisation quotidienne.",
+  "message": "Améliorations générales, correctifs et optimisations du portail.",
   "published_at": null,
   "icon": "assets/app-icon-v63.svg"
 }
