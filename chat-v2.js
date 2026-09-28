@@ -424,17 +424,43 @@ function setupTypingChannel(){
  }).subscribe()
 }
 function renderTyping(){const el=$('typingLine');if(!el)return;const names=[...state.typing.values()].map(x=>x.name);el.textContent=names.length?(names.slice(0,2).join(', ')+(names.length>2?' et '+(names.length-2)+' autre(s)':'')+' écrit'+(names.length>1?'vent':'')+'…'):''}
+function resetRecordingUI(){
+ const btn=$('micBtn');if(btn){btn.classList.remove('recording');btn.textContent='🎙'}
+}
+function stopRecordingTracks(stream){try{stream?.getTracks?.().forEach(track=>track.stop())}catch(_){}}
+function discardActiveRecording(){
+ const active=state.recording;if(!active)return;
+ state.recording=null;
+ try{active.recorder.ondataavailable=null;active.recorder.onstop=null;active.recorder.onerror=null;if(active.recorder.state!=='inactive')active.recorder.stop()}catch(_){}
+ stopRecordingTracks(active.stream);
+ resetRecordingUI()
+}
 async function toggleRecording(){
  if(state.recording){state.recording.recorder.stop();return}
  if(!navigator.mediaDevices?.getUserMedia||typeof MediaRecorder==='undefined'){showToast('Enregistrement vocal non compatible');return}
+ let stream=null;
  try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true}),chunks=[],recorder=new MediaRecorder(stream);
-  const started=Date.now();state.recording={recorder,stream,started};$('micBtn').classList.add('recording');$('micBtn').textContent='■';
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  const chunks=[],recorder=new MediaRecorder(stream),started=Date.now();
+  state.recording={recorder,stream,started};$('micBtn').classList.add('recording');$('micBtn').textContent='■';
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
-  recorder.onstop=()=>{const type=recorder.mimeType||'audio/webm',blob=new Blob(chunks,{type}),ext=type.includes('ogg')?'ogg':type.includes('mp4')?'m4a':'webm';state.selectedFile=new File([blob],'Vocal-'+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}).replace(':','h')+'.'+ext,{type});stream.getTracks().forEach(t=>t.stop());state.recording=null;$('micBtn').classList.remove('recording');$('micBtn').textContent='🎙';renderAttachmentPreview();window.NettoSounds?.play?.('confirm')};
+  recorder.onerror=()=>{stopRecordingTracks(stream);state.recording=null;resetRecordingUI();showToast('Enregistrement vocal interrompu')};
+  recorder.onstop=()=>{
+   const type=recorder.mimeType||'audio/webm',blob=new Blob(chunks,{type}),ext=type.includes('ogg')?'ogg':type.includes('mp4')?'m4a':'webm';
+   stopRecordingTracks(stream);state.recording=null;resetRecordingUI();
+   if(blob.size>25*1024*1024){showToast('Vocal trop long : 25 Mo maximum');return}
+   state.selectedFile=new File([blob],'Vocal-'+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}).replace(':','h')+'.'+ext,{type});
+   renderAttachmentPreview();window.NettoSounds?.play?.('confirm')
+  };
   recorder.start();showToast('Enregistrement vocal…')
- }catch(e){showToast('Microphone inaccessible')}
+ }catch(e){
+  stopRecordingTracks(stream);state.recording=null;resetRecordingUI();showToast('Microphone inaccessible')
+ }
 }
+window.addEventListener('pagehide',e=>{
+ if(state.recording)discardActiveRecording();
+ if(!e.persisted&&state.attachmentPreviewUrl){try{URL.revokeObjectURL(state.attachmentPreviewUrl)}catch(_){}state.attachmentPreviewUrl=null}
+},{capture:true});
 
 async function renderDesktopDetails(){
  const box=$('chatDetailsContent');if(!box)return;
