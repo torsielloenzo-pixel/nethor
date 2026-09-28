@@ -1255,60 +1255,64 @@ main{position:relative;z-index:1}
 }
 </style>
 <style id="home-text-scale-v1">
-/* Accueil : lisibilité légèrement renforcée sans modifier la structure */
+/* Accueil : lisibilité renforcée, surtout sur desktop */
 @media(min-width:701px){
   .mobileHomeDashboard .mhdNextHead strong,
-  .mobileHomeDashboard .mhdSectionHead strong{font-size:14.5px}
-  .mobileHomeDashboard .mhdWhen{font-size:10px}
-  .mobileHomeDashboard .mhdTag{font-size:9px}
-  .mobileHomeDashboard .mhdStatHead{font-size:11px}
-  .mobileHomeDashboard .mhdStat strong{font-size:20.5px}
-  .mobileHomeDashboard .mhdStat small{font-size:9.5px;line-height:1.4}
-  .mobileHomeDashboard .mhdSectionLink{font-size:10px}
-  .mobileHomeDashboard .mhdRowCopy strong{font-size:11.5px}
-  .mobileHomeDashboard .mhdRowCopy small{font-size:9px}
-  .mobileHomeDashboard .mhdTaskBadge{font-size:8.5px}
-  .mobileHomeDashboard .mhdInfoCopy strong{font-size:11.5px}
-  .mobileHomeDashboard .mhdInfoCopy small{font-size:9px}
-  .mobileHomeDashboard .mhdInfoRow time{font-size:9px}
-  .mobileHomeDashboard .mhdPerson strong{font-size:10px}
-  .mobileHomeDashboard .mhdPerson small{font-size:8px}
-  .mobileHomeDashboard .mhdEmpty{font-size:10px}
+  .mobileHomeDashboard .mhdSectionHead strong{font-size:16px}
+  .mobileHomeDashboard .mhdWhen{font-size:11px}
+  .mobileHomeDashboard .mhdShiftLine b{font-size:24px}
+  .mobileHomeDashboard .mhdTag{font-size:10px}
+  .mobileHomeDashboard .mhdStatHead{font-size:12px}
+  .mobileHomeDashboard .mhdStat strong{font-size:22px}
+  .mobileHomeDashboard .mhdStat small{font-size:10.5px;line-height:1.45}
+  .mobileHomeDashboard .mhdSectionLink{font-size:11px}
+  .mobileHomeDashboard .mhdRowCopy strong{font-size:12.5px}
+  .mobileHomeDashboard .mhdRowCopy small{font-size:10px}
+  .mobileHomeDashboard .mhdTaskBadge{font-size:9.5px}
+  .mobileHomeDashboard .mhdInfoCopy strong{font-size:12.5px}
+  .mobileHomeDashboard .mhdInfoCopy small{font-size:10px}
+  .mobileHomeDashboard .mhdInfoRow time{font-size:10px}
+  .mobileHomeDashboard .mhdPerson strong{font-size:11px}
+  .mobileHomeDashboard .mhdPerson small{font-size:9px}
+  .mobileHomeDashboard .mhdEmpty{font-size:11px}
 
-  .mhdTasks .mhdTaskRoleHint{font-size:12px}
+  .mhdTasks .mhdTaskRoleHint{font-size:13px}
   .mhdTasks .mhdTaskAddBtn,
-  .mhdTasks .mhdTaskResetBtn{font-size:11.5px}
-  .mhdTasks .mhdTaskHandoffRoute span{font-size:8.5px}
-  .mhdTasks .mhdTaskHandoffTeam strong{font-size:12px}
-  .mhdTasks .mhdTaskHandoffTeam small{font-size:10px}
-  .mhdTasks .mhdTaskOverview span{font-size:10px}
-  .mhdTasks .mhdTaskComposerTitle strong{font-size:14px}
+  .mhdTasks .mhdTaskResetBtn{font-size:12.5px}
+  .mhdTasks .mhdTaskHandoffRoute span{font-size:9.5px}
+  .mhdTasks .mhdTaskHandoffTeam strong{font-size:13px}
+  .mhdTasks .mhdTaskHandoffTeam small{font-size:11px}
+  .mhdTasks .mhdTaskOverview strong{font-size:17px}
+  .mhdTasks .mhdTaskOverview span{font-size:11px}
+  .mhdTasks .mhdTaskComposerTitle strong{font-size:15px}
   .mhdTasks .mhdTaskComposerTitle small,
-  .mhdTasks .mhdCustomTask small{font-size:10px}
-  .mhdTasks #mhdTaskSelectedSummary{font-size:9.5px}
-  .mhdTasks .mhdTaskGroupLead strong{font-size:11.5px}
-  .mhdTasks .mhdTaskGroupLead small{font-size:9px}
-  .mhdTasks .mhdTaskChipCopy strong{font-size:11px}
-  .mhdTasks .mhdTaskChipCopy small{font-size:8.5px}
-  .mhdTasks .mhdTaskFieldLabel{font-size:9.5px}
-  .mhdTasks .mhdTaskInput{font-size:11.5px}
-  .mhdTasks .mhdTaskAudienceHead strong{font-size:12px}
-  .mhdTasks .mhdTaskAudienceHead small{font-size:9.5px}
-  .mhdTasks .mhdTaskAssigneeChip{font-size:9.5px}
-  .mhdTasks .mhdTaskComposerActions span{font-size:10px}
-  .mhdTasks .mhdTaskPublishBtn{font-size:10.5px}
-  .mhdTasks .mhdTaskGroupTitle{font-size:9.5px}
-  .mhdTasks .mhdTaskPublishedCopy strong{font-size:11.5px}
-  .mhdTasks .mhdTaskPublishedCopy small{font-size:9.5px}
-  .mhdTasks .mhdTaskPublishedCopy em{font-size:9px}
-  .mhdTasks .mhdTaskValidation{font-size:9.5px}
-  .mhdTasks .mhdTaskEmptyState strong{font-size:13px}
-  .mhdTasks .mhdTaskEmptyState span{font-size:10px}
+  .mhdTasks .mhdCustomTask small{font-size:11px}
+  .mhdTasks #mhdTaskSelectedSummary{font-size:10.5px}
+  .mhdTasks .mhdTaskGroupLead strong{font-size:12.5px}
+  .mhdTasks .mhdTaskGroupLead small{font-size:10px}
+  .mhdTasks .mhdTaskChip{font-size:11px}
+  .mhdTasks .mhdTaskChipCopy strong{font-size:12px}
+  .mhdTasks .mhdTaskChipCopy small{font-size:9.5px}
+  .mhdTasks .mhdTaskFieldLabel{font-size:10.5px}
+  .mhdTasks .mhdTaskInput{font-size:12.5px}
+  .mhdTasks .mhdTaskAudienceHead strong{font-size:13px}
+  .mhdTasks .mhdTaskAudienceHead small{font-size:10.5px}
+  .mhdTasks .mhdTaskAssigneeChip{font-size:10.5px}
+  .mhdTasks .mhdTaskComposerActions span{font-size:11px}
+  .mhdTasks .mhdTaskPublishBtn{font-size:11.5px}
+  .mhdTasks .mhdTaskGroupTitle{font-size:10.5px}
+  .mhdTasks .mhdTaskPublishedCopy strong{font-size:12.5px}
+  .mhdTasks .mhdTaskPublishedCopy small{font-size:10.5px}
+  .mhdTasks .mhdTaskPublishedCopy em{font-size:10px}
+  .mhdTasks .mhdTaskValidation{font-size:10.5px}
+  .mhdTasks .mhdTaskEmptyState strong{font-size:14px}
+  .mhdTasks .mhdTaskEmptyState span{font-size:11px}
 
-  #homePages .pageCard p{font-size:13px}
-  #homePages .cardFoot{font-size:11px}
-  .userText strong{font-size:12px}
-  .userText small{font-size:10px}
+  #homePages .pageCard h2{font-size:22px!important}
+  #homePages .pageCard p{font-size:14px}
+  #homePages .cardFoot{font-size:12px}
+  .userText strong{font-size:13px}
+  .userText small{font-size:11px}
 }
 @media(max-width:700px){
   .mobileHomeDashboard .mhdNextHead strong,
