@@ -77,7 +77,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
-let session=null,profile=null,sending=false;
+let session=null,profile=null,siteConfig={},sending=false;
 
 function safeSource(){
  const raw=new URLSearchParams(location.search).get('from')||'home.html';
@@ -93,9 +93,36 @@ const pageNames={
  'home.html':'Accueil','index.html':'Stock Fruits & Légumes','planning.html':'Planning','chat.html':'Chat',
  'profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation',
  'notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','scanner.html':'Scanner (bêta)',
+ 'report-problem.html':'Signaler un problème','fl-assistant.html':'Assistant Précommande','maintenance.html':'Maintenance',
  'rewards.html':'Défis & Boutique','accounts.html':'Comptes','admin-portal.html':'Gestion'
 };
-function sourceTitle(){return pageNames[sourcePath.split('?')[0]]||sourcePath.split('?')[0]||'Nethor'}
+const pageIdByFile={
+ 'home.html':'home','index.html':'stock','planning.html':'planning','chat.html':'chat','profile.html':'profile',
+ 'articles.html':'articles','bakery.html':'bakery','settings.html':'settings','notifications.html':'notifications',
+ 'notification-settings.html':'notification_settings','scanner.html':'scanner','report-problem.html':'problem_report',
+ 'fl-assistant.html':'fl_assistant','maintenance.html':'maintenance','rewards.html':'rewards','accounts.html':'accounts',
+ 'admin-portal.html':'portal_admin'
+};
+function sourceTitle(){
+ const file=sourcePath.split('?')[0],id=pageIdByFile[file],p=id?siteConfig?.pages?.[id]:null;
+ return String(p?.nav_label||p?.label||pageNames[file]||file||'Nethor')
+}
+function problemPageAllowed(role){
+ const p=siteConfig?.pages?.problem_report||{};
+ if(p.enabled===false)return false;
+ const explicit=siteConfig?.role_permissions?.problem_report?.[role];
+ if(['none','view','operate','manage'].includes(explicit))return explicit!=='none';
+ if(Array.isArray(p.roles))return p.roles.includes(role);
+ return true
+}
+function applyProblemPageConfig(){
+ const p=siteConfig?.pages?.problem_report;if(!p||typeof p!=='object')return;
+ const label=String(p.nav_label||p.label||'Signaler un problème').trim()||'Signaler un problème';
+ const subtitle=String(p.subtitle||'Rapport à l’administration').trim();
+ const title=document.querySelector('.rpTopTitle strong'),sub=document.querySelector('.rpTopTitle small');
+ if(title)title.textContent=label;if(sub&&subtitle)sub.textContent=subtitle;
+ document.title='Nethor — '+label
+}
 function returnToMenu(){
  const u=new URL(sourcePath,location.href);u.searchParams.set('open_user_menu','1');location.replace(u.pathname.split('/').pop()+u.search)
 }
@@ -129,7 +156,6 @@ async function sendReport(){
  }
 }
 async function init(){
- $('sourceLabel').textContent=sourceTitle();
  $('cancelBtn').addEventListener('click',returnToMenu);
  $('returnBtn').addEventListener('click',returnToMenu);
  $('problemText').addEventListener('input',updateCount);
@@ -138,8 +164,14 @@ async function init(){
  const {data:{session:s}}=await db.auth.getSession();
  if(!s){location.replace('home.html');return}
  session=s;
- const {data}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();
- profile=data||null
+ const [{data},{data:setting}]=await Promise.all([
+  db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle(),
+  db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
+ ]);
+ profile=data||null;siteConfig=setting?.value&&typeof setting.value==='object'?setting.value:{};
+ if(!profile||!problemPageAllowed(profile.role)){location.replace('home.html');return}
+ applyProblemPageConfig();
+ $('sourceLabel').textContent=sourceTitle()
 }
 init().catch(e=>{console.error(e);state('Impossible de préparer le formulaire.','err')});
 </script>
