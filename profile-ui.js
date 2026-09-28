@@ -214,7 +214,7 @@ applyFastAccessBoot();
 
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
-const ROLE={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'};
+const ROLE={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé','role_point-de-vente':'Point de vente'};
 const AVATAR_FRAMES=Object.freeze({
  admin:'assets/avatar-frame-admin.svg',
  responsable:'assets/avatar-frame-responsable.svg',
@@ -446,7 +446,7 @@ function renderMobileQuickBar(){
   },0)
  }
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess()};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -478,6 +478,91 @@ document.addEventListener('pointerdown',()=>sounds.unlock(),{once:true,capture:t
 function initials(n){return String(n||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function roleLabel(r){return roleDefinition(r)?.label||ROLE[r]||r||'Compte'}
+let activeUserCard={user:null,opts:null};
+function ensureUserCardStyle(){
+ if(document.getElementById('nettoUserCardStyle'))return;
+ const s=document.createElement('style');s.id='nettoUserCardStyle';
+ s.textContent=`
+ .nettoUserCardBackdrop{position:fixed;inset:0;z-index:2147482750;background:rgba(12,16,21,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}
+ .nettoUserCardBackdrop.hidden{display:none!important}
+ .nettoUserCard{width:min(92vw,390px);border:1px solid #e0e4e9;border-radius:22px;background:#fff;color:#1f2730;box-shadow:0 28px 90px rgba(0,0,0,.28);padding:18px;position:relative}
+ .nettoUserCardClose{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:10px;background:#f1f3f5;color:#5d6670;font-size:20px;line-height:1;display:grid;place-items:center;cursor:pointer}
+ .nettoUserCardKicker{font-size:8px;font-weight:950;letter-spacing:.75px;color:#ef542b;text-transform:uppercase;margin:0 42px 11px 0}
+ .nettoUserCardHero{display:grid;grid-template-columns:58px minmax(0,1fr);gap:13px;align-items:center;padding-right:38px}
+ .nettoUserCardAvatar{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:#ff5a2a;color:#fff;font-size:16px;font-weight:950;background-size:cover!important;background-position:center!important}
+ .nettoUserCardHero h3{margin:0;font-size:18px;line-height:1.15;overflow-wrap:anywhere}
+ .nettoUserCardFields{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+ .nettoUserCardField{min-width:0;border:1px solid #e9edf1;border-radius:13px;background:#fafbfc;padding:11px 12px}
+ .nettoUserCardField small{display:block;color:#9098a2;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.45px}
+ .nettoUserCardField strong{display:flex;align-items:center;gap:7px;margin-top:5px;font-size:11px;line-height:1.3;overflow-wrap:anywhere}
+ .nettoUserPresenceDot{width:8px;height:8px;border-radius:50%;background:#a9b0b8;flex:none;box-shadow:0 0 0 3px rgba(169,176,184,.13)}
+ .nettoUserPresenceDot.online{background:#20b15a;box-shadow:0 0 0 3px rgba(32,177,90,.14)}
+ .nettoUserCardMessage{width:100%;min-height:46px;margin-top:13px;border:0;border-radius:13px;background:linear-gradient(135deg,#ff3f25,#ff8125);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 9px 22px rgba(255,91,37,.2)}
+ .nettoUserCardMessage svg{width:18px;height:18px;fill:currentColor}
+ .nettoUserCardMessage:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+ :root[data-theme="dark"] .nettoUserCard{background:#202328;color:#f2f4f6;border-color:#383e45}
+ :root[data-theme="dark"] .nettoUserCardClose{background:#2c3137;color:#d6d9dd}
+ :root[data-theme="dark"] .nettoUserCardField{background:#25292e;border-color:#383e45}
+ :root[data-theme="dark"] .nettoUserCardField small{color:#a8afb8}
+ @media(max-width:520px){.nettoUserCard{width:min(94vw,390px);border-radius:19px;padding:16px}.nettoUserCardFields{grid-template-columns:1fr}}
+ `;
+ document.head?.appendChild(s)
+}
+function userPresenceHistoryLabel(value){
+ if(!value)return'Hors ligne';
+ const d=new Date(value);if(Number.isNaN(d.getTime()))return'Hors ligne';
+ const now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
+ const time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+ if(d.toDateString()===now.toDateString())return'En ligne aujourd’hui à '+time;
+ if(d.toDateString()===y.toDateString())return'En ligne hier à '+time;
+ return'En ligne le '+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' à '+time
+}
+async function userPresenceLabel(userId){
+ if(!userId)return'Hors ligne';
+ if(api.onlineIds?.has?.(userId))return'En ligne';
+ try{
+  const {data,error}=await api.client.from('chat_presence_history').select('last_seen_at').eq('user_id',userId).maybeSingle();
+  if(!error&&data?.last_seen_at)return userPresenceHistoryLabel(data.last_seen_at)
+ }catch(_){}
+ return'Hors ligne'
+}
+function closeUserCard(){
+ const bg=document.getElementById('nettoUserCardBackdrop');bg?.classList.add('hidden');
+ activeUserCard={user:null,opts:null}
+}
+async function refreshActiveUserCardPresence(){
+ const user=activeUserCard.user,opts=activeUserCard.opts;if(!user)return;
+ const value=typeof opts?.presenceLabel==='function'?opts.presenceLabel(user):opts?.presenceLabel;
+ const label=value||await userPresenceLabel(user.id);
+ if(activeUserCard.user?.id!==user.id)return;
+ const strong=document.getElementById('nettoUserCardPresenceValue'),dot=document.getElementById('nettoUserCardPresenceDot');
+ if(strong)strong.lastChild.textContent=label;
+ if(dot)dot.classList.toggle('online',api.onlineIds?.has?.(user.id)||/^En ligne$/.test(label))
+}
+function openUserCard(user,opts={}){
+ if(!user?.id)return;
+ ensureUserCardStyle();
+ let bg=document.getElementById('nettoUserCardBackdrop');
+ if(!bg){
+  bg=document.createElement('div');bg.id='nettoUserCardBackdrop';bg.className='nettoUserCardBackdrop hidden';
+  bg.innerHTML='<section class="nettoUserCard" role="dialog" aria-modal="true" aria-labelledby="nettoUserCardName"><button class="nettoUserCardClose" type="button" aria-label="Fermer">×</button><div class="nettoUserCardKicker">Fiche utilisateur</div><div id="nettoUserCardContent"></div></section>';
+  document.body.appendChild(bg);
+  bg.querySelector('.nettoUserCardClose').addEventListener('click',closeUserCard);
+  bg.addEventListener('click',e=>{if(e.target===bg)closeUserCard()})
+ }
+ const name=user.display_name||user.name||'Utilisateur',self=user.id===api.session?.user?.id,box=document.getElementById('nettoUserCardContent');
+ activeUserCard={user,opts};
+ box.innerHTML='<div class="nettoUserCardHero"><div id="nettoUserCardAvatar" class="nettoUserCardAvatar"></div><div><h3 id="nettoUserCardName">'+esc(name)+'</h3></div></div>'+
+ '<div class="nettoUserCardFields"><div class="nettoUserCardField"><small>Rôle</small><strong>'+esc(roleLabel(user.role))+'</strong></div><div class="nettoUserCardField"><small>Présence</small><strong id="nettoUserCardPresenceValue"><i id="nettoUserCardPresenceDot" class="nettoUserPresenceDot"></i><span>Chargement…</span></strong></div></div>'+
+ (!self?'<button id="nettoUserCardMessage" class="nettoUserCardMessage" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3l4-3h9a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>Envoyer un message</button>':'');
+ const avatar=document.getElementById('nettoUserCardAvatar');paint(avatar,user.avatar_url||user.avatarUrl||null,name,user.profile_color,user.avatar_frame);
+ const message=document.getElementById('nettoUserCardMessage');
+ if(message)message.onclick=()=>{closeUserCard();if(typeof opts.onMessage==='function')opts.onMessage(user);else location.href=opts.messageUrl||('chat.html?user='+encodeURIComponent(user.id))};
+ bg.classList.remove('hidden');refreshActiveUserCardPresence()
+}
+window.addEventListener('netto:presence',()=>{if(activeUserCard.user)refreshActiveUserCardPresence()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeUserCard.user)closeUserCard()});
+
 function addDesktopNethorMarkStyle(){
  if(document.getElementById('nethorDesktopMarkStyle'))return;
  const s=document.createElement('style');s.id='nethorDesktopMarkStyle';
@@ -1917,7 +2002,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=166;
+const APP_RELEASE=167;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
