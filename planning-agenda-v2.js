@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-let layout='classic',mobileMode='day',booted=false,saveTimer=null,profileLayout='classic';
+let layout='classic',mobileMode='day',booted=false;
 const mq=window.matchMedia('(max-width:760px)');
 const escLocal=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function isMobile(){return document.documentElement.classList.contains('nethorPhoneDevice')||mq.matches}
@@ -32,29 +32,8 @@ function inject(){
  document.getElementById('mobileAgendaWeekBtn').onclick=()=>setMobileMode('week',true);
  document.getElementById('agendaTodayBtn').onclick=goToday;
 }
-async function loadPreference(){
- try{
-  const client=(typeof db!=='undefined'&&db)||null;if(!client)return;
-  const s=(await client.auth.getSession()).data?.session;if(!s)return;
-  const {data}=await client.from('profiles').select('ui_preferences').eq('id',s.user.id).maybeSingle();
-  profileLayout=normalize(data?.ui_preferences?.planning_view);
-  try{mobileMode=localStorage.getItem('nettoAgendaMobileMode')==='week'?'week':'day'}catch(_){}
-  setLayout(isMobile()?'agenda':profileLayout,false);
- }catch(e){console.warn('Préférence agenda',e);setLayout(isMobile()?'agenda':'classic',false)}
-}
-async function persistPreference(v){
- clearTimeout(saveTimer);saveTimer=setTimeout(async()=>{
-  try{
-   const client=(typeof db!=='undefined'&&db)||null;if(!client)return;
-   const s=(await client.auth.getSession()).data?.session;if(!s)return;
-   const {data:p}=await client.from('profiles').select('ui_preferences').eq('id',s.user.id).maybeSingle();
-   const prefs={...(p?.ui_preferences&&typeof p.ui_preferences==='object'?p.ui_preferences:{}),planning_view:v};
-   const {error}=await client.from('profiles').update({ui_preferences:prefs}).eq('id',s.user.id);if(error)throw error;
-   profileLayout=v;
-  }catch(e){console.warn('Enregistrement préférence agenda',e)}
- },180);
-}
-function setLayout(v,persist){
+function setLayout(v,sound){
+
  if(isMobile())v='agenda';layout=normalize(v);
  document.body.classList.toggle('agendaLayout',layout==='agenda');
  document.body.classList.toggle('mobileAgendaForced',isMobile());
@@ -63,7 +42,7 @@ function setLayout(v,persist){
  document.getElementById('layoutAgendaBtn')?.classList.toggle('active',layout==='agenda');
  const label=document.getElementById('planningLayoutLabel');if(label)label.textContent=layout==='agenda'?'Agenda':'Classique';
  if(layout==='agenda')renderAgenda();
- if(persist&&!isMobile()){persistPreference(layout);try{window.NettoSounds?.play?.('switch')}catch(_){}}
+ if(sound&&!isMobile())try{window.NettoSounds?.play?.('switch')}catch(_){}
 }
 function setMobileMode(v,sound){
  mobileMode=v==='week'?'week':'day';
@@ -201,7 +180,7 @@ function arrangeMobilePlanningWidgets(){
   main.insertBefore(bar,week)
  }
 }
-function handleViewport(){arrangeMobilePlanningWidgets();document.body.classList.toggle('mobileAgendaForced',isMobile());setLayout(isMobile()?'agenda':profileLayout,false)}
+function handleViewport(){arrangeMobilePlanningWidgets();document.body.classList.toggle('mobileAgendaForced',isMobile());setLayout(isMobile()?'agenda':'classic',false)}
 function boot(){
  if(booted)return;inject();arrangeMobilePlanningWidgets();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
  if(isMobile()){
@@ -209,7 +188,7 @@ function boot(){
   setLayout('agenda',false);
   return
  }
- const wait=()=>{if(typeof db!=='undefined'&&db){loadPreference()}else setTimeout(wait,120)};wait();
+ setLayout('classic',false);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 window.NethorPlanningAgenda={setLayout,setMobileMode,render:renderAgenda,get layout(){return layout},get mobileMode(){return mobileMode}};
