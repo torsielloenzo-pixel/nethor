@@ -155,16 +155,16 @@ function sortAgendaEmployeesForCurrentUser(items){
  })
 }
 function renderDayAgenda(a){
- const di=typeof currentDay==='number'?currentDay:0,dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],employees=model.employees||[],rows=day?.cells||[],focusRest=restFocusActive();
+ const di=typeof currentDay==='number'?currentDay:0,dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],employees=model.employees||[],rows=day?.cells||[],focusRest=restFocusActive(),currentIdx=typeof currentUserEmployeeIndex==='function'?currentUserEmployeeIndex(model):-1;
  const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle');
  if(title)title.textContent=dayFull(dt).replace(/^./,c=>c.toUpperCase());
  if(sub)sub.textContent=focusRest?'Jour ciblé depuis « Prochain repos »':'Vue détaillée de la journée';
  const items=[];
  employees.forEach((emp,ri)=>{
-  const ranges=agendaRanges(rows[ri]||[]),isMe=isCurrentAgendaEmployee(emp);
-  if(!ranges.length&&!(focusRest&&isMe))return;
+  const row=rows[ri]||[],ranges=rowRanges(row).filter(r=>r.c==='g'||r.c==='b'),isMe=isCurrentAgendaEmployee(emp)||ri===currentIdx,hasLeave=!ranges.length&&row.some(v=>v==='y');
+  if(!ranges.length&&!isMe)return;
   const info=avatarFor(emp);
-  items.push({emp,ri,ranges,info,label:info.label,isMe,isRest:focusRest&&isMe&&!ranges.length})
+  items.push({emp,ri,ranges,info,label:info.label,isMe,isLeave:isMe&&hasLeave,isRest:isMe&&!ranges.length&&!hasLeave})
  });
  const sorted=sortAgendaEmployeesForCurrentUser(items);
  if(!sorted.length)return '<div class="agendaDayList"><div class="agendaDayEmpty"><strong>Aucun horaire de travail</strong><span>Personne n’est planifié sur cette journée.</span></div></div>';
@@ -173,15 +173,18 @@ function renderDayAgenda(a){
  const globalItems=mine?sorted.filter(x=>!x.isMe):sorted;
  const makeCard=item=>{
   const overlapWithMe=mine&&!item.isMe?rangesOverlapHours(mine.ranges,item.ranges):0;
-  const cls='agendaDayCard'+(item.isMe?' agendaDayCardMe':'')+(item.isRest?' agendaDayCardRest':'')+(overlapWithMe>0?' agendaDayCardCoworker':'');
-  const content=item.isRest
-   ?'<div class="agendaRestState"><span class="agendaRestMark" aria-hidden="true">○</span><div><strong>Jour de repos</strong><small>Aucun horaire planifié</small></div></div>'
-   :item.ranges.map(r=>'<div class="agendaDayShift" data-color="'+escLocal(r.c)+'"><div><strong>'+fmtTime(r.a)+' → '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+hoursLabel(r.b-r.a)+'</small></div><span>›</span></div>').join('');
+  const cls='agendaDayCard'+(item.isMe?' agendaDayCardMe':'')+(item.isLeave?' agendaDayCardLeave':'')+(item.isRest?' agendaDayCardRest':'')+(overlapWithMe>0?' agendaDayCardCoworker':'');
+  const content=item.isLeave
+   ?'<div class="agendaDayStatus agendaDayStatusLeave"><strong>Congés</strong></div>'
+   :item.isRest
+    ?'<div class="agendaDayStatus agendaDayStatusRest"><strong>Repos</strong></div>'
+    :item.ranges.map(r=>'<div class="agendaDayShift" data-color="'+escLocal(r.c)+'"><div><strong>'+fmtTime(r.a)+' → '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+hoursLabel(r.b-r.a)+'</small></div><span>›</span></div>').join('');
   return '<article class="'+cls+'"><div class="agendaDayPerson">'+item.info.avatar+'<strong>'+escLocal(item.info.label)+'</strong></div><div class="agendaDayShifts">'+content+'</div></article>'
  };
 
  if(isMobile()&&mine){
-  const personal='<section class="agendaPersonalBlock '+(mine.isRest?'agendaRestFocusBlock':'')+'" aria-label="'+(mine.isRest?'Mon jour de repos':'Mon horaire')+'">'+makeCard(mine)+'</section>';
+  const stateLabel=mine.isLeave?'Mes congés':mine.isRest?'Mon jour de repos':'Mon horaire';
+  const personal='<section class="agendaPersonalBlock '+(mine.isRest&&focusRest?'agendaRestFocusBlock':'')+'" aria-label="'+stateLabel+'">'+makeCard(mine)+'</section>';
   const global=globalItems.length?'<section class="agendaGlobalBlock" aria-label="Planning de l’équipe">'+globalItems.map(makeCard).join('')+'</section>':'';
   return '<div class="agendaDayList hasCurrentUser agendaSeparated">'+personal+(global?'<div class="agendaSectionGap" aria-hidden="true"></div>'+global:'')+'</div>'
  }
