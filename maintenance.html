@@ -70,7 +70,15 @@ async function maintenanceState(){
    db.auth.getSession(),
    db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
   ]);
-  const enabled=setting?.value?.maintenance?.enabled===true;
+  const cfg=setting?.value&&typeof setting.value==='object'?setting.value:{};
+  const enabled=cfg?.maintenance?.enabled===true;
+  const page=cfg?.pages?.maintenance;
+  if(page&&typeof page==='object'){
+   const label=String(page.nav_label||page.label||'Nethor').trim()||'Nethor';
+   const subtitle=String(page.subtitle||'Maintenance').trim()||'Maintenance';
+   const h1=document.querySelector('.maintenance h1'),sub=document.querySelector('.maintenance .subtitle');
+   if(h1)h1.textContent=label;if(sub)sub.textContent=subtitle;document.title=label+' · Nethor'
+  }
   if(!session){location.replace('https://nethor.fr/index.html?logout=1&v=115');return}
   const {data:profile}=await db.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
   if(profile?.role==='admin'){location.replace('home.html');return}
