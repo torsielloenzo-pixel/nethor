@@ -57,6 +57,12 @@ async function navigationFromCache(request,fallback){
  if(fresh)return fresh;
  return (fallback?await stableCacheMatch(fallback,{ignoreSearch:true}):null)||Response.error()
 }
+async function navigationNetworkFirst(request,fallback){
+ const key=cleanNavigationRequest(request);
+ const fresh=await fetchAndStore(request,key);
+ if(fresh)return fresh;
+ return (await stableCacheMatch(key,{ignoreSearch:true}))||(fallback?await stableCacheMatch(fallback,{ignoreSearch:true}):null)||Response.error()
+}
 async function staticFromCache(request){
  const cached=await stableCacheMatch(request);
  if(cached)return cached;
@@ -66,6 +72,10 @@ self.addEventListener('fetch',e=>{
  const u=new URL(e.request.url);
  if(e.request.method!=='GET'||u.origin!==location.origin)return;
  if(e.request.mode==='navigate'){
+  if(u.pathname.endsWith('/settings.html')){
+   e.respondWith(navigationNetworkFirst(e.request,'./settings.html'));
+   return;
+  }
   e.respondWith(navigationFromCache(e.request,'./home.html'));
   return;
  }
