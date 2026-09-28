@@ -787,8 +787,13 @@ function sortManagementArticleRows(rows,familyName,categoryName){
   }else if(key==='category'){
    cmp=compareManagementText(categoryName(x.category_id)||'Non répertorié',categoryName(y.category_id)||'Non répertorié');
    if(!cmp)cmp=compareManagementText(familyName(x.family_id)||'Non répertorié',familyName(y.family_id)||'Non répertorié')
-  }else if(key==='ean')cmp=compareManagementEan(x.ean,y.ean);
-  else if(key==='status')cmp=Number(x.on_sale!==false)-Number(y.on_sale!==false);
+  }else if(key==='ean'){
+   const xe=String(x.ean||'').replace(/\D/g,''),ye=String(y.ean||'').replace(/\D/g,'');
+   if(!xe||!ye){
+    if(!xe&&!ye)cmp=0;
+    else return !xe?1:-1
+   }else cmp=compareManagementEan(xe,ye)
+  }else if(key==='status')cmp=Number(x.on_sale!==false)-Number(y.on_sale!==false);
   if(!cmp)cmp=compareManagementText(x.name,y.name);
   return cmp*dir||a.index-b.index
  }).map(x=>x.row)
