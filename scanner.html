@@ -208,6 +208,7 @@ async function startCamera(){
   scannerStarting=true;
   hideCameraFallback();
   if(!window.Html5Qrcode||!window.Html5QrcodeSupportedFormats){
+    scannerStarting=false;
     showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN manuellement.');
     return
   }
