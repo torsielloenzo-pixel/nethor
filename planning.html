@@ -1238,16 +1238,14 @@ body:not(.planningYearOpen) #yearView{display:none!important}
 }
 </style>
 <style id="planning-desktop-full-day-v1">
-/* Desktop : afficher la journée complète 06:00 → 20:30 sans défilement horizontal. */
+/* Desktop : seul le tableau du planning s'élargit.
+   Les menus, titres, widgets et le reste de la page conservent leur largeur précédente. */
 @media(min-width:1280px){
-  #planningApp{
-    width:calc(100vw - 24px)!important;
-    max-width:none!important;
-    padding-left:12px!important;
-    padding-right:12px!important;
-  }
   #sheetViewport{
-    width:100%!important;
+    position:relative!important;
+    left:50%!important;
+    transform:translateX(-50%)!important;
+    width:calc(100vw - 24px)!important;
     max-width:none!important;
     overflow-x:hidden!important;
   }
@@ -1259,13 +1257,8 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   }
   .xlsTable col.nameCol{width:160px!important}
   .xlsTable col.totalCol{width:60px!important}
-  .xlsTable col.slotCol{
-    width:calc((100% - 220px) / 58)!important;
-  }
-  .xlsTable .slot{
-    width:auto!important;
-    min-width:0!important;
-  }
+  .xlsTable col.slotCol{width:calc((100% - 220px) / 58)!important}
+  .xlsTable .slot{width:auto!important;min-width:0!important}
   .xlsTable .nameCell,
   .xlsTable .nameHead{
     width:160px!important;
@@ -1288,11 +1281,11 @@ body:not(.planningYearOpen) #yearView{display:none!important}
     text-overflow:ellipsis!important;
   }
 
-  /* "Lecture seule" est un état passif : on garde les états utiles (chargement, enregistrement, erreur). */
+  /* État passif masqué, les états utiles restent visibles. */
   #saveState.passive{display:none!important}
 }
 
-/* Sur les desktops plus étroits, on gagne déjà de l'espace sans rendre les créneaux illisibles. */
+/* Desktop plus étroit : conserver une densité lisible sans modifier la largeur générale de la page. */
 @media(min-width:761px) and (max-width:1279px){
   .xlsTable col.nameCol{width:148px!important}
   .xlsTable col.slotCol{width:24px!important}
