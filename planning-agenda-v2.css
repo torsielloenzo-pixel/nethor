@@ -5,6 +5,11 @@
 .agendaView{margin-top:8px}.agendaHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:16px 2px}.agendaEyebrow{font-size:11px;letter-spacing:.12em;font-weight:900;color:#ef6c00}.agendaHeader h2{margin:4px 0 3px;font-size:22px}.agendaHeader p{margin:0;color:var(--muted);font-size:13px}.agendaTodayBtn{white-space:nowrap}
 .agendaMount{overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 12px 34px rgba(15,23,42,.07)}
 .agendaGrid{display:grid;grid-template-columns:minmax(180px,220px) repeat(7,minmax(150px,1fr));min-width:1240px}
+.agendaGridDesktop{grid-template-columns:minmax(180px,220px) repeat(7,minmax(135px,1fr)) minmax(105px,125px);width:100%;min-width:0}
+.agendaWeekTotalHead{position:sticky;top:0;z-index:4;display:grid;place-items:center;align-content:center;background:#f1f3f5;border-bottom:1px solid var(--line);border-left:1px solid var(--line);padding:13px 9px;text-align:center}
+.agendaWeekTotalHead strong{display:block;font-size:13px}.agendaWeekTotalHead span{display:block;margin-top:2px;font-size:10px;color:var(--muted);font-weight:700}
+.agendaWeekTotalCell{display:grid;place-items:center;align-content:center;min-height:88px;padding:8px;border-left:1px solid #dde1e5;border-bottom:1px solid #e7e9ec;background:#f8f9fa;text-align:center}
+.agendaWeekTotalCell strong{display:block;font-size:15px;font-weight:950;color:#202328}.agendaWeekTotalCell span{display:block;margin-top:3px;font-size:9px;color:var(--muted);font-weight:700}
 .agendaCorner,.agendaDayHead{position:sticky;top:0;z-index:4;background:#f7f8fa;border-bottom:1px solid var(--line);padding:13px 12px}.agendaCorner{left:0;z-index:6;border-right:1px solid var(--line);font-size:12px;color:var(--muted);font-weight:800}.agendaDayHead{border-right:1px solid var(--line);text-align:center}.agendaDayHead strong{display:block;font-size:13px;text-transform:capitalize}.agendaDayHead span{display:block;margin-top:2px;font-size:11px;color:var(--muted)}.agendaDayHead.today{background:#fff4e8}.agendaDayHead.today strong{color:#d85c00}
 .agendaEmployee{position:sticky;left:0;z-index:3;display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-right:1px solid var(--line);border-bottom:1px solid #e7e9ec;min-height:88px}.agendaEmployeeTotal{display:block;margin-top:3px;font-size:11px;color:var(--muted);font-weight:700}
 .agendaCell{position:relative;min-height:88px;padding:8px;border-right:1px solid #eceef0;border-bottom:1px solid #eceef0;background:#fff}.agendaCell.today{background:#fffaf4}.agendaCell.empty{display:grid;place-items:center}.agendaWeekDash{color:#b1b5bb;font-weight:800}
@@ -12,7 +17,7 @@
 body.agendaLayout #days,body.agendaLayout .readerHead,body.agendaLayout #sheetViewport,body.agendaLayout #mobileSchedule,body.agendaLayout .legend,body.agendaLayout #emptyState{display:none!important}
 .mobileAgendaModeBar,.mobileAgendaDays,.agendaStats{display:none}
 .agendaDayList{display:grid;gap:8px}.agendaDayCard{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #eceef0;background:#fff}.agendaDayCard:last-child{border-bottom:0}.agendaDayPerson{display:flex;align-items:center;gap:10px;min-width:160px}.agendaDayPerson .planningIdentityAvatar{width:38px;height:38px;border-radius:50%;font-size:11px}.agendaDayPerson>strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.agendaDayShifts{margin-left:auto;display:grid;gap:6px;min-width:240px}.agendaDayShift{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px}.agendaDayShift[data-color="g"]{background:#c9f3d8}.agendaDayShift[data-color="b"]{background:#cfe2ff}.agendaDayShift[data-color="w"]{background:#eeeeef}.agendaDayShift strong{display:block;font-size:16px;line-height:1.05}.agendaDayShift small{display:block;margin-top:4px;font-size:11px;font-weight:700;color:#5d6570}.agendaDayShift>span{font-size:24px;color:#59616d}.agendaDayEmpty{padding:34px 18px;text-align:center;color:#7b8189}.agendaDayEmpty strong{display:block;color:#202328;font-size:15px}.agendaDayEmpty span{display:block;margin-top:5px;font-size:12px}
-html[data-theme="dark"] .planningLayoutBar,html[data-theme="dark"] .agendaMount,html[data-theme="dark"] .agendaEmployee,html[data-theme="dark"] .agendaCell,html[data-theme="dark"] .agendaDayCard{background:#1b1d20;border-color:#32363b}html[data-theme="dark"] .planningLayoutSwitch{background:#101214}html[data-theme="dark"] .planningLayoutBtn.active{background:#30343a;color:#fff}html[data-theme="dark"] .agendaCorner,html[data-theme="dark"] .agendaDayHead{background:#23262a;border-color:#34383d}html[data-theme="dark"] .agendaDayHead.today,html[data-theme="dark"] .agendaCell.today{background:#2b231b}
+html[data-theme="dark"] .planningLayoutBar,html[data-theme="dark"] .agendaMount,html[data-theme="dark"] .agendaEmployee,html[data-theme="dark"] .agendaCell,html[data-theme="dark"] .agendaDayCard{background:#1b1d20;border-color:#32363b}html[data-theme="dark"] .planningLayoutSwitch{background:#101214}html[data-theme="dark"] .planningLayoutBtn.active{background:#30343a;color:#fff}html[data-theme="dark"] .agendaCorner,html[data-theme="dark"] .agendaDayHead{background:#23262a;border-color:#34383d}html[data-theme="dark"] .agendaDayHead.today,html[data-theme="dark"] .agendaCell.today{background:#2b231b}html[data-theme="dark"] .agendaWeekTotalHead,html[data-theme="dark"] .agendaWeekTotalCell{background:#24282d;border-color:#3a4047}html[data-theme="dark"] .agendaWeekTotalCell strong{color:#f3f4f6}
 @media(max-width:760px){
  body.mobileAgendaForced #planningLayoutBar{display:none!important}
  body.mobileAgendaForced #weekView>.planningViewBar{margin-bottom:10px}
@@ -690,4 +695,26 @@ html.nethorPhoneDevice body.agendaLayout .agendaMount.agendaMountWeekScroll{
 }
 html.nethorPhoneDevice body.agendaLayout .agendaMount.agendaMountWeekScroll::-webkit-scrollbar{
   display:none
+}
+
+/* Desktop agenda width parity v1
+   L'Agenda reprend exactement la largeur 130 % de la vue Classique.
+   La largeur supplémentaire sert notamment à la colonne Total semaine. */
+@media(min-width:1280px){
+  body.agendaLayout #agendaView{
+    position:relative;
+    left:50%;
+    transform:translateX(-50%);
+    width:130%;
+    max-width:none;
+  }
+  body.agendaLayout #agendaMount{
+    width:100%;
+    max-width:none;
+    overflow-x:hidden;
+  }
+  body.agendaLayout .agendaGridDesktop{
+    width:100%;
+    min-width:0;
+  }
 }
