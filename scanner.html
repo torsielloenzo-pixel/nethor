@@ -170,7 +170,7 @@ function showCameraFallback(message){
 function hideCameraFallback(){$('cameraFallback').classList.remove('show')}
 function normalizeEan(value){return String(value||'').replace(/\D/g,'').slice(0,14)}
 function validEanLength(v){return v.length===8||v.length===12||v.length===13}
-function eanCandidates(v){v=normalizeEan(v);const out=[v];if(v.length===12)out.push('0'+v);return [...new Set(out.filter(Boolean))]}
+function eanCandidates(v){v=normalizeEan(v);const out=[v];if(v.length<13)out.push(v.padStart(13,'0'));return [...new Set(out.filter(Boolean))]}
 function manualEanCandidates(v){
  v=normalizeEan(v);
  if(!v)return[];
@@ -251,7 +251,7 @@ async function findProduct(raw,fromCamera=false){
   const code=normalizeEan(raw);
   $('eanInput').value=code;
   if(fromCamera&&!validEanLength(code)){
-    renderNotFound(code,'Le code doit contenir 8 ou 13 chiffres.');
+    renderNotFound(code,'Le code-barres doit contenir 8, 12 ou 13 chiffres.');
     return
   }
   if(!fromCamera&&!code){
