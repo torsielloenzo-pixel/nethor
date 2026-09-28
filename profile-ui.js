@@ -1953,8 +1953,8 @@ function startChatPresenceHistory(){
  if(!api.client||!api.session||api.chatPresenceTimer)return;
  recordChatPresence('start');
  api.chatPresenceTimer=setInterval(()=>{if(!document.hidden)recordChatPresence('heartbeat')},30000);
- document.addEventListener('visibilitychange',()=>{recordChatPresence(document.hidden?'heartbeat':'heartbeat')});
- window.addEventListener('pagehide',()=>{recordChatPresence('heartbeat')},{capture:true})
+ document.addEventListener('visibilitychange',()=>{recordChatPresence(document.hidden?'end':'start')});
+ window.addEventListener('pagehide',()=>{recordChatPresence('end')},{capture:true})
 }
 function startProfileRealtime(){
  if(!api.session||api.profileChannel)return;
