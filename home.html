@@ -1214,10 +1214,10 @@ function homeDayHours(model,dateKey,name){
 }
 function homeWidgetVisible(cfg,id,profile,subroleKeys=[]){
  const node=cfg?.home_widgets?.[id]||{},role=profile?.role||'';
- const roleValue=node?.roles?.[role];
- const base=typeof roleValue==='boolean'?roleValue:true;
- if(base)return true;
- return subroleKeys.some(k=>node?.subroles?.[k]===true)
+ const roleValue=node?.roles?.[role],allowed=(typeof roleValue==='boolean'?roleValue:true)||subroleKeys.some(k=>node?.subroles?.[k]===true);
+ if(!allowed)return false;
+ const personal=profile?.ui_preferences?.home_widgets?.[id];
+ return typeof personal==='boolean'?personal:true
 }
 function homeStatIcon(id){
  const common='viewBox="0 0 24 24" aria-hidden="true" focusable="false"';
