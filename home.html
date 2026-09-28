@@ -1194,6 +1194,66 @@ main{position:relative;z-index:1}
   .mobileHomeDashboard .mhdTeamSection{grid-column:1/-1}
 }
 </style>
+<style id="daily-tasks-passation-v1">
+/* Passation matin → après-midi : style partagé desktop/mobile */
+.mhdTasks{position:relative;overflow:hidden}
+.mhdTasks .mhdTaskEditorTop{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+.mhdTasks .mhdTaskHeaderActions{display:flex;align-items:center;gap:8px;flex:none}
+.mhdTasks .mhdTaskRoleHint{display:block;margin-top:3px;color:#89919b;font-size:11px;font-weight:700;line-height:1.3}
+.mhdTasks .mhdTaskAddBtn,.mhdTasks .mhdTaskResetBtn{min-height:38px;border:0;border-radius:12px;padding:0 14px;font-size:11px;font-weight:900;cursor:pointer;transition:transform .16s ease,filter .16s ease,background .16s ease}
+.mhdTasks .mhdTaskAddBtn{background:linear-gradient(135deg,#ff3421,#ff8500);color:#fff;box-shadow:0 7px 18px #ff5d2730}
+.mhdTasks .mhdTaskAddBtn:hover{filter:brightness(.98);transform:translateY(-1px)}
+.mhdTasks .mhdTaskResetBtn{background:#f2f4f6;color:#65707c}.mhdTasks .mhdTaskResetBtn:hover{background:#e9edf1}
+.mhdTasks .mhdTaskHandoff{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 14px;padding:12px 14px;border:1px solid #ffe0d4;border-radius:15px;background:linear-gradient(100deg,#fff6f2,#fffaf4)}
+.mhdTasks .mhdTaskHandoffRoute{display:flex;align-items:center;gap:8px;flex:none}.mhdTasks .mhdTaskHandoffRoute span{padding:5px 8px;border-radius:999px;background:#fff;color:#d9532d;border:1px solid #ffd9ca;font-size:8px;font-weight:950;letter-spacing:.45px}.mhdTasks .mhdTaskHandoffRoute i{font-style:normal;color:#f2643d;font-weight:900}
+.mhdTasks .mhdTaskHandoffTeam{min-width:0;text-align:right}.mhdTasks .mhdTaskHandoffTeam strong{display:block;font-size:11px}.mhdTasks .mhdTaskHandoffTeam small{display:block;margin-top:3px;color:#8b7167;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mhdTasks .mhdTaskOverview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 14px}
+.mhdTasks .mhdTaskOverview>div:not(.mhdTaskOverviewProgress){padding:10px 12px;border:1px solid #e8ebee;border-radius:13px;background:#fafbfc}.mhdTasks .mhdTaskOverview strong{display:block;font-size:15px;line-height:1}.mhdTasks .mhdTaskOverview span{display:block;margin-top:4px;color:#858d96;font-size:9px}.mhdTasks .mhdTaskOverviewProgress{grid-column:1/-1;height:5px;border-radius:999px;background:#edf0f2;overflow:hidden}.mhdTasks .mhdTaskOverviewProgress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff3a23,#ff8500)}
+.mhdTasks .mhdTaskComposer{margin:0 0 14px;padding:15px;border:1px solid #e2e6ea;border-radius:18px;background:linear-gradient(180deg,#fbfcfd,#f7f9fa);box-shadow:inset 0 1px 0 #fff}.mhdTasks .mhdTaskComposer.hidden{display:none}
+.mhdTasks .mhdTaskComposerTitle{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:12px;border-bottom:1px solid #e6eaee}.mhdTasks .mhdTaskComposerTitle strong{display:block;font-size:13px}.mhdTasks .mhdTaskComposerTitle small,.mhdTasks .mhdCustomTask small{display:block;margin-top:4px;color:#858d96;font-size:9.5px;line-height:1.4}
+.mhdTasks #mhdTaskSelectedSummary{flex:none;padding:6px 10px;border-radius:999px;background:#eceff2;color:#717a84;font-size:9px;font-weight:900}.mhdTasks #mhdTaskSelectedSummary.active{background:#fff0e8;color:#d94b26}
+.mhdTasks .mhdTaskTemplateGroups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px;align-items:start}
+.mhdTasks .mhdTaskTemplateGroup{border:1px solid #e4e8eb;border-radius:14px;background:#fff;overflow:hidden}
+.mhdTasks .mhdTaskGroupToggle{width:100%;min-height:56px;border:0;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;color:inherit;text-align:left;cursor:pointer}
+.mhdTasks .mhdTaskGroupLead{display:flex;align-items:center;gap:9px;min-width:0}.mhdTasks .mhdTaskGroupLead>i{width:34px;height:34px;border-radius:10px;background:#fff1ea;color:#ee572e;display:grid;place-items:center;font-size:13px;font-style:normal;font-weight:900;flex:none}
+.mhdTasks .mhdTaskGroupLead strong{display:block;font-size:10.5px}.mhdTasks .mhdTaskGroupLead small{display:block;margin-top:2px;color:#969da5;font-size:8.5px}
+.mhdTasks .mhdTaskGroupMeta{display:flex;align-items:center;gap:7px}.mhdTasks .mhdTaskGroupMeta b{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#f0f2f4;color:#89919a;display:grid;place-items:center;font-size:8px}.mhdTasks .mhdTaskGroupMeta b.active{background:#ffebe3;color:#df4c27}.mhdTasks .mhdTaskGroupMeta em{font-style:normal;color:#9299a1;font-size:12px;transition:transform .18s ease}.mhdTasks .mhdTaskGroupToggle[aria-expanded="true"] .mhdTaskGroupMeta em{transform:rotate(180deg)}
+.mhdTasks .mhdTaskTemplateGrid{display:grid;grid-template-columns:1fr;gap:6px;padding:0 8px 8px}.mhdTasks .mhdTaskTemplateGrid.hidden{display:none}
+.mhdTasks .mhdTaskChip{min-height:42px;border:1px solid #e2e5e8;border-radius:10px;background:#fafbfc;color:#4f5964;padding:7px 9px;display:flex;align-items:center;gap:8px;text-align:left;font-size:10px;font-weight:800;cursor:pointer}.mhdTasks .mhdTaskChipCheck{width:19px;height:19px;border:1.5px solid #c4cad0;border-radius:6px;background:#fff;color:transparent;display:grid;place-items:center;flex:none;font-size:10px}.mhdTasks .mhdTaskChipCopy{min-width:0}.mhdTasks .mhdTaskChipCopy strong{display:block;font-size:10px;white-space:normal}.mhdTasks .mhdTaskChipCopy small{display:block;margin-top:2px;color:#a16a57;font-size:8px}
+.mhdTasks .mhdTaskChip.selected{border-color:#ff8a68;background:#fff3ee;color:#c94625;box-shadow:0 0 0 1px #ff8b6620}.mhdTasks .mhdTaskChip.selected .mhdTaskChipCheck{background:#ff5a2b;border-color:#ff5a2b;color:#fff}.mhdTasks .mhdTaskChip.is-published{cursor:default;opacity:.62;background:#f4f6f7}.mhdTasks .mhdTaskChip.is-published .mhdTaskChipCheck{background:#e1e5e8;border-color:#d1d6db;color:#7b858f}
+.mhdTasks .mhdTaskComposerBottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:10px;margin-top:12px}
+.mhdTasks .mhdFacingDetail{margin-top:12px}.mhdTasks .mhdFacingDetail.hidden{display:none}.mhdTasks .mhdCustomTask,.mhdTasks .mhdTaskAudience{padding:12px;border:1px solid #e5e8eb;border-radius:14px;background:#fff}
+.mhdTasks .mhdTaskFieldLabel{display:block;margin-bottom:6px;color:#6b747e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.35px}
+.mhdTasks .mhdTaskInput{width:100%;height:42px;border:1px solid #dfe3e7;border-radius:11px;background:#fff;color:inherit;padding:0 11px;font-size:11px;outline:none}.mhdTasks .mhdTaskInput:focus{border-color:#ff754e;box-shadow:0 0 0 3px #ff754e18}
+.mhdTasks .mhdTaskAudienceHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}.mhdTasks .mhdTaskAudienceHead .mhdTaskFieldLabel{margin-bottom:3px}.mhdTasks .mhdTaskAudienceHead strong{display:block;font-size:11px}.mhdTasks .mhdTaskAudienceHead small{display:block;margin-top:3px;color:#858d96;font-size:9px;line-height:1.35}.mhdTasks .mhdTaskAudienceCount{min-width:27px;height:27px;border-radius:999px;background:#fff0e8;color:#d94b26;display:grid;place-items:center;font-size:9px;font-weight:900}.mhdTasks .mhdTaskAudienceEmpty{background:#fff8f4;border-color:#ffddcf}
+.mhdTasks .mhdTaskAudienceGrid{display:flex;gap:7px;flex-wrap:wrap}.mhdTasks .mhdTaskAssigneeChip{border:1px solid #dfe3e7;border-radius:999px;background:#fff;color:#4f5964;padding:6px 9px 6px 6px;font-size:9px;font-weight:850;display:inline-flex;align-items:center;gap:6px;cursor:pointer}.mhdTasks .mhdTaskAssigneeChip>span{width:21px;height:21px;border-radius:50%;background:#f0f2f4;display:grid;place-items:center;font-size:8px}.mhdTasks .mhdTaskAssigneeChip.selected{border-color:#ff7047;background:#fff0e9;color:#d84622;box-shadow:0 0 0 1px #ff8b6630}.mhdTasks .mhdTaskAssigneeChip.selected>span{background:#ff5a2b;color:#fff}
+.mhdTasks .mhdTaskComposerActions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid #e4e8eb}.mhdTasks .mhdTaskComposerActions span{color:#7f8790;font-size:9.5px;line-height:1.35}.mhdTasks .mhdTaskPublishBtn{min-height:40px;border:0;border-radius:12px;background:linear-gradient(135deg,#ff3421,#ff8500);color:#fff;padding:0 15px;font-size:10px;font-weight:900;white-space:nowrap;cursor:pointer;box-shadow:0 6px 15px #ff5d2730}.mhdTasks .mhdTaskPublishBtn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.mhdTasks .mhdTaskPublishedGroup,.mhdTasks .mhdTaskUserGroup{border-top:1px solid #edf0f2;padding-top:10px;margin-top:7px}.mhdTasks .mhdTaskPublishedGroup:first-of-type,.mhdTasks .mhdTaskUserGroup:first-of-type{border-top:0}
+.mhdTasks .mhdTaskGroupTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;color:#68717c;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.4px}.mhdTasks .mhdTaskGroupTitle b{min-width:22px;height:22px;border-radius:999px;background:#f0f2f4;display:grid;place-items:center;font-size:8px}
+.mhdTasks .mhdTaskPublishedRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 4px;border-top:1px solid #f0f2f4}.mhdTasks .mhdTaskPublishedRow:nth-child(2){border-top:0}.mhdTasks .mhdTaskPublishedRow.done{opacity:.82}.mhdTasks .mhdTaskStatusDot{width:9px;height:9px;border-radius:50%;background:#ffb14d;box-shadow:0 0 0 3px #fff4e2}.mhdTasks .mhdTaskStatusDot.done{background:#29ad62;box-shadow:0 0 0 3px #e9f8ef}.mhdTasks .mhdTaskPublishedCopy{min-width:0}.mhdTasks .mhdTaskPublishedCopy strong{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdTasks .mhdTaskPublishedCopy small{display:block;margin-top:2px;color:#8a919a;font-size:9px}.mhdTasks .mhdTaskPublishedCopy em{display:block;margin-top:3px;color:#f05a31;font-size:8.5px;font-style:normal;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdTasks .mhdTaskValidation{min-width:46px;padding:6px 8px;border-radius:999px;background:#f1f3f5;color:#717a83;font-size:9px;font-weight:900;text-align:center;white-space:nowrap}.mhdTasks .mhdTaskDelete{width:30px;height:30px;border:0;border-radius:9px;background:#fff0ed;color:#d74a31;font-size:16px;line-height:1;cursor:pointer}
+.mhdTasks .mhdTaskUserProgress{flex:none;padding:6px 9px;border-radius:999px;background:#fff0e8;color:#d94c28;font-size:9px;font-weight:900}.mhdTasks .mhdTaskUserProgress.done{background:#eaf8ef;color:#21884c}.mhdTasks .mhdTaskSuccess{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 9px;padding:9px 11px;border:1px solid #cfead9;border-radius:12px;background:#effaf3}.mhdTasks .mhdTaskSuccess strong{font-size:10px;color:#21884c}.mhdTasks .mhdTaskSuccess span{font-size:9px;color:#64806f}
+.mhdTasks .mhdTaskError{padding:11px;border-radius:11px;background:#fff1ee;color:#be4734;font-size:9px;line-height:1.4}.mhdTasks .mhdTaskEmptyState{padding:18px 6px;text-align:center}.mhdTasks .mhdTaskEmptyState strong{display:block;font-size:12px}.mhdTasks .mhdTaskEmptyState span{display:block;margin-top:4px;color:#8a9199;font-size:9.5px}
+.mhdTasks .mhdTaskRow{grid-template-columns:auto minmax(0,1fr) auto}.mhdTasks .mhdTaskRow .mhdRowCopy small{display:block;margin-top:3px;color:#8b9198;font-size:9px}.mhdTasks .mhdTaskRow .mhdTaskBadge{background:#fff1e8;color:#d94c28}.mhdTasks .mhdTaskRow.done .mhdTaskBadge{background:#eaf8ef;color:#21884c}
+:root[data-theme="dark"] .mhdTasks .mhdTaskHandoff{background:linear-gradient(100deg,#2e2420,#29241f);border-color:#50382e}:root[data-theme="dark"] .mhdTasks .mhdTaskHandoffRoute span{background:#24282d;border-color:#5b4035;color:#ff9a76}:root[data-theme="dark"] .mhdTasks .mhdTaskHandoffTeam small{color:#b7a29a}
+:root[data-theme="dark"] .mhdTasks .mhdTaskOverview>div:not(.mhdTaskOverviewProgress),:root[data-theme="dark"] .mhdTasks .mhdTaskComposer,:root[data-theme="dark"] .mhdTasks .mhdTaskTemplateGroup,:root[data-theme="dark"] .mhdTasks .mhdCustomTask,:root[data-theme="dark"] .mhdTasks .mhdTaskAudience{background:#202428;border-color:#363c42;color:#eee}:root[data-theme="dark"] .mhdTasks .mhdTaskOverviewProgress{background:#343a40}:root[data-theme="dark"] .mhdTasks .mhdTaskComposerTitle,:root[data-theme="dark"] .mhdTasks .mhdTaskComposerActions{border-color:#343a40}
+:root[data-theme="dark"] .mhdTasks .mhdTaskChip,:root[data-theme="dark"] .mhdTasks .mhdTaskInput,:root[data-theme="dark"] .mhdTasks .mhdTaskAssigneeChip{background:#24282d;border-color:#3d434a;color:#eee}:root[data-theme="dark"] .mhdTasks .mhdTaskChip.selected,:root[data-theme="dark"] .mhdTasks .mhdTaskAssigneeChip.selected{background:#35231d;border-color:#7a4938;color:#ff9a76}:root[data-theme="dark"] .mhdTasks .mhdTaskChip.is-published{background:#1c2024;color:#8f979f}:root[data-theme="dark"] .mhdTasks .mhdTaskGroupLead>i{background:#34251f;color:#ff8d67}:root[data-theme="dark"] .mhdTasks .mhdTaskGroupMeta b,:root[data-theme="dark"] .mhdTasks .mhdTaskGroupTitle b,:root[data-theme="dark"] .mhdTasks .mhdTaskValidation{background:#2b3035;color:#aeb4ba}:root[data-theme="dark"] .mhdTasks .mhdTaskResetBtn{background:#2a2e33;color:#c7c1bb}:root[data-theme="dark"] .mhdTasks .mhdTaskPublishedGroup,:root[data-theme="dark"] .mhdTasks .mhdTaskUserGroup,:root[data-theme="dark"] .mhdTasks .mhdTaskPublishedRow{border-color:#30353b}
+@media(max-width:900px){.mhdTasks .mhdTaskTemplateGroups{grid-template-columns:repeat(2,minmax(0,1fr))}.mhdTasks .mhdTaskComposerBottom{grid-template-columns:1fr}}
+@media(max-width:700px){
+ .mhdTasks .mhdTaskEditorTop{align-items:flex-start;gap:10px}.mhdTasks .mhdTaskHeaderActions{gap:5px}.mhdTasks .mhdTaskAddBtn,.mhdTasks .mhdTaskResetBtn{min-height:34px;padding:0 10px;font-size:9px}
+ .mhdTasks .mhdTaskRoleHint{font-size:8.5px}.mhdTasks .mhdTaskHandoff{align-items:flex-start;gap:9px;padding:10px 11px}.mhdTasks .mhdTaskHandoffRoute{gap:5px}.mhdTasks .mhdTaskHandoffRoute span{font-size:7px;padding:4px 6px}.mhdTasks .mhdTaskHandoffTeam{text-align:left}.mhdTasks .mhdTaskHandoffTeam strong{font-size:9px}.mhdTasks .mhdTaskHandoffTeam small{font-size:7.5px;white-space:normal}
+ .mhdTasks .mhdTaskOverview{gap:6px}.mhdTasks .mhdTaskOverview>div:not(.mhdTaskOverviewProgress){padding:8px}.mhdTasks .mhdTaskOverview strong{font-size:12px}.mhdTasks .mhdTaskOverview span{font-size:7.5px}
+ .mhdTasks .mhdTaskComposer{padding:11px;border-radius:15px}.mhdTasks .mhdTaskComposerTitle strong{font-size:10.5px}.mhdTasks .mhdTaskComposerTitle small{font-size:8px}.mhdTasks #mhdTaskSelectedSummary{font-size:7.5px;padding:5px 7px}
+ .mhdTasks .mhdTaskTemplateGroups{grid-template-columns:1fr;gap:7px}.mhdTasks .mhdTaskGroupToggle{min-height:50px}.mhdTasks .mhdTaskGroupLead strong{font-size:9.5px}.mhdTasks .mhdTaskGroupLead small{font-size:7.5px}.mhdTasks .mhdTaskChip{min-height:39px;font-size:9px}.mhdTasks .mhdTaskChipCopy strong{font-size:9px}
+ .mhdTasks .mhdCustomTask,.mhdTasks .mhdTaskAudience{padding:10px}.mhdTasks .mhdTaskFieldLabel{font-size:7.5px}.mhdTasks .mhdTaskInput{height:38px;font-size:9px}.mhdTasks .mhdTaskAudienceHead strong{font-size:9.5px}.mhdTasks .mhdTaskAudienceHead small{font-size:7.5px}.mhdTasks .mhdTaskAssigneeChip{font-size:8px}
+ .mhdTasks .mhdTaskComposerActions{align-items:flex-end}.mhdTasks .mhdTaskComposerActions span{max-width:55%;font-size:7.5px}.mhdTasks .mhdTaskPublishBtn{min-height:36px;padding:0 11px;font-size:8.5px}
+ .mhdTasks .mhdTaskPublishedCopy strong{font-size:9.5px}.mhdTasks .mhdTaskPublishedCopy small,.mhdTasks .mhdTaskPublishedCopy em{font-size:7.5px}.mhdTasks .mhdTaskValidation{min-width:38px;font-size:7.5px}.mhdTasks .mhdTaskDelete{width:27px;height:27px}
+ .mhdTasks .mhdTaskUserProgress{font-size:7.5px}.mhdTasks .mhdTaskEmptyState strong{font-size:10px}.mhdTasks .mhdTaskEmptyState span{font-size:8px}
+}
+@media(max-width:390px){
+ .mhdTasks .mhdTaskEditorTop{display:grid;grid-template-columns:1fr}.mhdTasks .mhdTaskHeaderActions{justify-content:flex-end}.mhdTasks .mhdTaskHandoff{display:grid}.mhdTasks .mhdTaskOverview{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .mhdTasks .mhdTaskComposerTitle{display:grid;grid-template-columns:1fr}.mhdTasks #mhdTaskSelectedSummary{justify-self:start}.mhdTasks .mhdTaskComposerActions{display:grid;grid-template-columns:1fr}.mhdTasks .mhdTaskComposerActions span{max-width:none}.mhdTasks .mhdTaskPublishBtn{width:100%}
+}
+</style>
 </head>
 <body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
 <header><div class="top"><div class="brand"><div class="nMenuWrap"><button class="mark nMenuBtn" onclick="location.href='home.html'" aria-label="Menu">N</button><div id="nMenu" class="nMenu hidden"><div class="nMenuTitle">Navigation</div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button onclick="location.href='index.html'"><span class="navToolLogo stock"></span><div><strong>Stock F&amp;L</strong><small>Gestion du stock</small></div></button><button onclick="location.href='planning.html'"><span class="navToolLogo planning"></span><div><strong>Planning</strong><small>Horaires de l'équipe</small></div></button><button onclick="location.href='chat.html'"><span class="navToolLogo equipe"></span><div><strong>Chat</strong><small>Messagerie interne</small></div></button><button onclick="location.href='articles.html'"><span class="navToolLogo article"></span><div><strong>Fiches articles</strong><small>Référentiel EAN</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='bakery.html'"><span class="navToolLogo bakery"></span><div><strong>Boulangerie</strong><small>Stock • Consulter • Gestion</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='accounts.html'"><span>♙</span><div><strong>Comptes</strong><small>Utilisateurs et rôles</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="themeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="logoutItem" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div><div><strong>Nethor</strong><small>Portail opérationnel</small></div></div><div class="userMenuWrap"><button id="userMenuBtn" class="userPill" onclick="toggleUserMenu(event)" aria-expanded="false"><span id="userAvatar" class="userAvatar">U</span><span class="userText"><strong id="userName">Utilisateur</strong><small id="userRole">Compte</small></span><span class="userChevron">⌄</span></button><div id="userMenu" class="userMenu hidden"><div class="userMenuHead"><span id="userMenuAvatar" class="userAvatar">U</span><div><strong id="userMenuName">Utilisateur</strong><small id="userMenuRole">Compte</small></div></div><button onclick="location.href='home.html'"><span>⌂</span><div><strong>Accueil</strong><small>Retour au portail</small></div></button><button onclick="location.href='profile.html'"><span>☺</span><div><strong>Mon profil</strong><small>Photo et compte</small></div></button><button class="adminOnlyMenu hidden" onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Réglages du portail</small></div></button><button class="userThemeToggle" onclick="toggleTheme(event)"><span class="themeIcon">☾</span><div><strong class="themeLabel">Mode sombre</strong><small class="themeSub">Passer au thème sombre</small></div></button><button class="userLogout" onclick="menuLogout()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button></div></div></div></header>
@@ -1208,7 +1268,7 @@ main{position:relative;z-index:1}
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let homeSession=null,homePageViewRows=[],homeCurrentViewKey='',homeCurrentViewLabel='';
-let homeDashboardProfile=null,homeDashboardName='',homeDashboardConfig={},homeTaskCatalog=[],homeTaskRows=[],homeTaskAssignees=[],homeTaskCompletions=[],homeTaskTeam=[],homeTaskBusy=false;
+let homeDashboardProfile=null,homeDashboardName='',homeDashboardConfig={},homeTaskCatalog=[],homeTaskRows=[],homeTaskAssignees=[],homeTaskCompletions=[],homeTaskTeam=[],homeTaskAfternoonUserIds=[],homeTaskBusy=false;
 const $=id=>document.getElementById(id);
 function homePageKey(value){try{const u=new URL(String(value||''),location.href);return (u.pathname.split('/').pop()||'home.html')}catch(_){const s=String(value||'').split('/').pop()||'home.html';return s.split('?')[0]}}
 async function loadAdminPageViews(){
@@ -1313,6 +1373,13 @@ function homeTaskMode(role){
 function homeTaskOperationalUsers(rows=homeTaskTeam){
  return (rows||[]).filter(x=>['responsable','employe'].includes(String(x.role||'').toLowerCase()))
 }
+function homeTaskAfternoonUsers(){
+ const ids=new Set(homeTaskAfternoonUserIds||[]);
+ return homeTaskOperationalUsers().filter(x=>ids.has(x.id))
+}
+function homeTaskAfternoonNames(){
+ return homeTaskAfternoonUsers().map(x=>x.display_name||'Utilisateur')
+}
 function homeTaskGroups(rows){
  const map=new Map();
  for(const row of rows||[]){
@@ -1323,12 +1390,12 @@ function homeTaskGroups(rows){
  return [...map.values()]
 }
 function homeTaskAssigneeLabel(task){
- if(task.all_users)return'Tous';
+ if(task.all_users)return'Tous les utilisateurs';
  const ids=homeTaskAssignees.filter(x=>x.task_id===task.id).map(x=>x.user_id);
  const names=ids.map(id=>homeTaskTeam.find(x=>x.id===id)?.display_name).filter(Boolean);
- if(!names.length)return'Aucun utilisateur';
- if(names.length<=2)return names.join(' · ');
- return names.slice(0,2).join(' · ')+' +'+(names.length-2)
+ if(!names.length)return'Aucun destinataire';
+ if(names.length<=3)return names.join(' · ');
+ return names.slice(0,3).join(' · ')+' +'+(names.length-3)
 }
 function homeTaskExpectedCount(task){
  return task.all_users?homeTaskOperationalUsers().length:homeTaskAssignees.filter(x=>x.task_id===task.id).length
@@ -1341,33 +1408,41 @@ function homeTaskGroupIcon(key){
  return icons[key]||'•'
 }
 function homeTaskTemplateGroupsHtml(){
- return homeTaskGroups(homeTaskCatalog).map((g,index)=>'<div class="mhdTaskTemplateGroup" data-task-group="'+homeEsc(g.key)+'"><button type="button" class="mhdTaskGroupToggle" aria-expanded="'+(index===0?'true':'false')+'" onclick="homeToggleTaskGroup(this)"><span class="mhdTaskGroupLead"><i>'+homeEsc(homeTaskGroupIcon(g.key))+'</i><span><strong>'+homeEsc(g.label)+'</strong><small>'+g.rows.length+' tâche'+(g.rows.length>1?'s':'')+'</small></span></span><span class="mhdTaskGroupMeta"><b data-task-group-count>0</b><em>⌄</em></span></button><div class="mhdTaskTemplateGrid '+(index===0?'':'hidden')+'">'+g.rows.map(t=>'<button type="button" class="mhdTaskChip" data-task-template="'+homeEsc(t.key)+'" onclick="homeToggleTaskTemplate(this)"><span class="mhdTaskChipCheck">✓</span><span>'+homeEsc(t.title)+'</span></button>').join('')+'</div></div>').join('')
+ const publishedKeys=new Set((homeTaskRows||[]).flatMap(t=>Array.isArray(t.source_keys)&&t.source_keys.length?t.source_keys:[t.catalog_key]).filter(Boolean));
+ const groups=homeTaskGroups(homeTaskCatalog);
+ return '<div class="mhdTaskTemplateGroups">'+groups.map((g,index)=>'<div class="mhdTaskTemplateGroup" data-task-group="'+homeEsc(g.key)+'"><button type="button" class="mhdTaskGroupToggle" aria-expanded="'+(index===0?'true':'false')+'" onclick="homeToggleTaskGroup(this)"><span class="mhdTaskGroupLead"><i>'+homeEsc(homeTaskGroupIcon(g.key))+'</i><span><strong>'+homeEsc(g.label)+'</strong><small>'+g.rows.length+' mission'+(g.rows.length>1?'s':'')+'</small></span></span><span class="mhdTaskGroupMeta"><b data-task-group-count>0</b><em>⌄</em></span></button><div class="mhdTaskTemplateGrid '+(index===0?'':'hidden')+'">'+g.rows.map(t=>{const sent=publishedKeys.has(t.key);return '<button type="button" class="mhdTaskChip'+(sent?' is-published':'')+'" data-task-template="'+homeEsc(t.key)+'" onclick="homeToggleTaskTemplate(this)" '+(sent?'disabled aria-disabled="true"':'')+'><span class="mhdTaskChipCheck">'+(sent?'✓':'✓')+'</span><span class="mhdTaskChipCopy"><strong>'+homeEsc(t.title)+'</strong>'+(sent?'<small>Déjà transmise</small>':'')+'</span></button>'}).join('')+'</div></div>').join('')+'</div>'
 }
 function homeTaskAudienceHtml(){
- const users=homeTaskOperationalUsers();
- return '<div class="mhdTaskAudience"><span class="mhdTaskFieldLabel">Affecter à</span><div class="mhdTaskAudienceGrid"><button type="button" class="mhdTaskAssigneeChip mhdTaskAudienceAll selected" onclick="homeToggleTaskAudienceAll(this)">Tous</button>'+users.map(u=>'<button type="button" class="mhdTaskAssigneeChip" data-task-user="'+homeEsc(u.id)+'" onclick="homeToggleTaskAudienceUser(this)">'+homeEsc(u.display_name||'Utilisateur')+'</button>').join('')+'</div></div>'
+ const users=homeTaskAfternoonUsers();
+ if(!users.length)return '<div class="mhdTaskAudience mhdTaskAudienceEmpty"><div class="mhdTaskAudienceHead"><div><span class="mhdTaskFieldLabel">Destinataires</span><strong>Équipe d’après-midi</strong><small>Aucune personne opérationnelle détectée après 14h dans le planning du jour.</small></div><span class="mhdTaskAudienceCount">0</span></div></div>';
+ return '<div class="mhdTaskAudience"><div class="mhdTaskAudienceHead"><div><span class="mhdTaskFieldLabel">Destinataires</span><strong>Équipe d’après-midi</strong><small>Présence détectée après 14h · décoche uniquement si nécessaire.</small></div><span class="mhdTaskAudienceCount">'+users.length+'</span></div><div class="mhdTaskAudienceGrid">'+users.map(u=>'<button type="button" class="mhdTaskAssigneeChip selected" data-task-user="'+homeEsc(u.id)+'" aria-pressed="true" onclick="homeToggleTaskAudienceUser(this)"><span>'+homeEsc((u.display_name||'U').slice(0,1).toUpperCase())+'</span>'+homeEsc(u.display_name||'Utilisateur')+'</button>').join('')+'</div></div>'
 }
 function homeRenderTaskEditor(taskError){
- const tasks=homeTaskRows||[],groups=homeTaskGroups(tasks);
+ const tasks=homeTaskRows||[],groups=homeTaskGroups(tasks),afternoon=homeTaskAfternoonUsers(),afternoonNames=homeTaskAfternoonNames();
  const totalDone=tasks.reduce((n,t)=>n+homeTaskCompletedCount(t),0),totalExpected=tasks.reduce((n,t)=>n+homeTaskExpectedCount(t),0);
+ const completedTasks=tasks.filter(t=>{const expected=homeTaskExpectedCount(t);return expected>0&&homeTaskCompletedCount(t)>=expected}).length;
+ const rate=totalExpected?Math.min(100,Math.round(totalDone/totalExpected*100)):0;
  const rows=groups.map(g=>'<div class="mhdTaskPublishedGroup"><div class="mhdTaskGroupTitle"><span>'+homeEsc(g.label)+'</span><b>'+g.rows.length+'</b></div>'+g.rows.map(t=>{
-  const done=homeTaskCompletedCount(t),expected=homeTaskExpectedCount(t),audience=homeTaskAssigneeLabel(t);
-  return '<div class="mhdTaskPublishedRow"><span class="mhdTaskStatusDot '+(expected>0&&done>=expected?'done':'')+'"></span><span class="mhdTaskPublishedCopy"><strong>'+homeEsc(t.title)+'</strong>'+(t.detail?'<small>'+homeEsc(t.detail)+'</small>':'')+'<em>'+homeEsc(audience)+'</em></span><span class="mhdTaskValidation">'+done+'/'+expected+'</span><button type="button" class="mhdTaskDelete" aria-label="Supprimer la tâche" onclick="homeDeleteDailyTask(\''+homeEsc(t.id)+'\',this)">×</button></div>'
+  const done=homeTaskCompletedCount(t),expected=homeTaskExpectedCount(t),audience=homeTaskAssigneeLabel(t),finished=expected>0&&done>=expected;
+  return '<div class="mhdTaskPublishedRow '+(finished?'done':'')+'"><span class="mhdTaskStatusDot '+(finished?'done':'')+'"></span><span class="mhdTaskPublishedCopy"><strong>'+homeEsc(t.title)+'</strong>'+(t.detail?'<small>'+homeEsc(t.detail)+'</small>':'')+'<em>'+homeEsc(audience)+'</em></span><span class="mhdTaskValidation">'+(finished?'✓ ':'')+done+'/'+expected+'</span><button type="button" class="mhdTaskDelete" aria-label="Supprimer la mission" title="Supprimer" onclick="homeDeleteDailyTask(\''+homeEsc(t.id)+'\',this)">×</button></div>'
  }).join('')+'</div>').join('');
  const openClass=tasks.length?' hidden':'';
- return '<section class="mhdCard mhdSection mhdTasks editor"><div class="mhdTaskEditorTop"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><div><strong>Tâches du jour</strong><small class="mhdTaskRoleHint">Mode éditeur · '+tasks.length+' mission'+(tasks.length>1?'s':'')+' aujourd’hui</small></div></div><div class="mhdTaskHeaderActions">'+(tasks.length?'<button class="mhdTaskResetBtn" type="button" onclick="homeResetDailyTasks(this)">Réinitialiser</button>':'')+'<button class="mhdTaskAddBtn" type="button" onclick="homeToggleTaskComposer()">+ Ajouter</button></div></div>'+
- (tasks.length?'<div class="mhdTaskOverview"><span><b>'+totalDone+'</b><small>validations</small></span><i></i><span><b>'+totalExpected+'</b><small>attendues</small></span></div>':'')+
- '<div id="mhdTaskComposer" class="mhdTaskComposer'+openClass+'"><div class="mhdTaskComposerTitle"><div><strong>Composer les tâches du jour</strong><small>Ouvre une catégorie puis coche autant de tâches que nécessaire avant de valider.</small></div><span id="mhdTaskSelectedSummary">0 sélectionnée</span></div>'+homeTaskTemplateGroupsHtml()+
- '<div id="mhdFacingDetail" class="mhdFacingDetail hidden"><label class="mhdTaskFieldLabel" for="mhdFacingSecDetail">Facing sec · précision</label><input id="mhdFacingSecDetail" class="mhdTaskInput" maxlength="90" placeholder="Tous, ou préciser un rayon"></div>'+
- '<div class="mhdCustomTask"><label class="mhdTaskFieldLabel" for="mhdCustomTaskTitle">Nouvelle tâche ponctuelle</label><input id="mhdCustomTaskTitle" class="mhdTaskInput" maxlength="160" placeholder="Ex. Ranger la réserve boissons" oninput="homeSyncTaskComposerSelection()"><small>Utilisable aujourd’hui uniquement · non ajoutée au catalogue permanent.</small></div>'+homeTaskAudienceHtml()+
- '<div class="mhdTaskComposerActions"><span id="mhdTaskComposerState">Les utilisateurs verront ces tâches uniquement dans ce widget.</span><button type="button" class="mhdTaskPublishBtn" onclick="homePublishDailyTasks(this)">Envoyer les tâches</button></div></div>'+
- (taskError?'<div class="mhdTaskError">Impossible de charger les tâches partagées pour le moment.</div>':(rows||'<div class="mhdEmpty">Aucune mission publiée aujourd’hui.</div>'))+'</section>'
+ const teamLabel=afternoon.length?(afternoonNames.slice(0,4).join(' · ')+(afternoonNames.length>4?' +'+(afternoonNames.length-4):'')):'Aucune équipe détectée';
+ return '<section class="mhdCard mhdSection mhdTasks editor"><div class="mhdTaskEditorTop"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><div><strong>Passation après-midi</strong><small class="mhdTaskRoleHint">Missions laissées par l’équipe du matin</small></div></div><div class="mhdTaskHeaderActions">'+(tasks.length?'<button class="mhdTaskResetBtn" type="button" onclick="homeResetDailyTasks(this)">Vider</button>':'')+'<button class="mhdTaskAddBtn" type="button" onclick="homeToggleTaskComposer()">'+(tasks.length?'+ Ajouter':'Préparer')+'</button></div></div>'+
+ '<div class="mhdTaskHandoff"><div class="mhdTaskHandoffRoute"><span>MATIN</span><i>→</i><span>APRÈS-MIDI</span></div><div class="mhdTaskHandoffTeam"><strong>'+afternoon.length+' personne'+(afternoon.length>1?'s':'')+' concernée'+(afternoon.length>1?'s':'')+'</strong><small>'+homeEsc(teamLabel)+' · selon le planning après 14h</small></div></div>'+
+ (tasks.length?'<div class="mhdTaskOverview"><div><strong>'+tasks.length+'</strong><span>mission'+(tasks.length>1?'s':'')+'</span></div><div><strong>'+totalDone+'/'+totalExpected+'</strong><span>validations</span></div><div><strong>'+completedTasks+'/'+tasks.length+'</strong><span>terminée'+(tasks.length>1?'s':'')+'</span></div><div class="mhdTaskOverviewProgress"><i style="width:'+rate+'%"></i></div></div>':'')+
+ '<div id="mhdTaskComposer" class="mhdTaskComposer'+openClass+'"><div class="mhdTaskComposerTitle"><div><strong>Préparer la passation</strong><small>Sélectionne plusieurs missions : elles seront envoyées en une seule fois.</small></div><span id="mhdTaskSelectedSummary">0 sélectionnée</span></div>'+homeTaskTemplateGroupsHtml()+
+ '<div id="mhdFacingDetail" class="mhdFacingDetail hidden"><label class="mhdTaskFieldLabel" for="mhdFacingSecDetail">Facing sec · précision</label><input id="mhdFacingSecDetail" class="mhdTaskInput" maxlength="90" placeholder="Tous les rayons, ou préciser un rayon"></div>'+
+ '<div class="mhdTaskComposerBottom"><div class="mhdCustomTask"><label class="mhdTaskFieldLabel" for="mhdCustomTaskTitle">Mission ponctuelle</label><input id="mhdCustomTaskTitle" class="mhdTaskInput" maxlength="160" placeholder="Ex. Ranger la réserve boissons" oninput="homeSyncTaskComposerSelection()"><small>Valable uniquement aujourd’hui.</small></div>'+homeTaskAudienceHtml()+'</div>'+
+ '<div class="mhdTaskComposerActions"><span id="mhdTaskComposerState">'+(afternoon.length?'Visible uniquement par les destinataires sélectionnés.':'Renseigne d’abord le planning de l’après-midi pour pouvoir publier.')+'</span><button type="button" class="mhdTaskPublishBtn" onclick="homePublishDailyTasks(this)" '+(afternoon.length?'':'disabled')+'>Publier la passation</button></div></div>'+
+ (taskError?'<div class="mhdTaskError">Impossible de charger la passation pour le moment.</div>':(rows||'<div class="mhdTaskEmptyState"><strong>Aucune passation envoyée</strong><span>Prépare les missions à transmettre à l’équipe d’après-midi.</span></div>'))+'</section>'
 }
 function homeRenderTaskUser(taskError){
  const uid=homeSession?.user?.id,tasks=homeTaskRows||[],doneSet=new Set(homeTaskCompletions.filter(x=>x.user_id===uid).map(x=>x.task_id)),done=tasks.filter(t=>doneSet.has(t.id)).length;
  const groups=homeTaskGroups(tasks);
- const rows=groups.map(g=>'<div class="mhdTaskUserGroup"><div class="mhdTaskGroupTitle">'+homeEsc(g.label)+'</div>'+g.rows.map(t=>'<button type="button" class="mhdRow mhdTaskRow '+(doneSet.has(t.id)?'done':'')+'" data-task-id="'+homeEsc(t.id)+'" aria-pressed="'+(doneSet.has(t.id)?'true':'false')+'" onclick="homeToggleDailyTask(\''+homeEsc(t.id)+'\',this)"><span class="mhdTaskCheck"></span><span class="mhdRowCopy"><strong>'+homeEsc(t.title)+'</strong>'+(t.detail?'<small>'+homeEsc(t.detail)+'</small>':'')+'</span><span class="mhdTaskBadge">'+homeEsc(t.section_label||'Tâche')+'</span></button>').join('')+'</div>').join('');
- return '<section class="mhdCard mhdSection mhdTasks"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><strong>Tâches du jour</strong></div><span class="mhdSectionLink">'+done+'/'+tasks.length+' validée'+(done>1?'s':'')+'</span></div>'+(taskError?'<div class="mhdTaskError">Impossible de charger tes tâches pour le moment.</div>':(rows||'<div class="mhdEmpty">Aucune tâche ne t’est affectée aujourd’hui.</div>'))+'</section>'
+ const rows=groups.map(g=>{const ordered=[...g.rows].sort((a,b)=>Number(doneSet.has(a.id))-Number(doneSet.has(b.id)));return '<div class="mhdTaskUserGroup"><div class="mhdTaskGroupTitle"><span>'+homeEsc(g.label)+'</span><b>'+ordered.length+'</b></div>'+ordered.map(t=>'<button type="button" class="mhdRow mhdTaskRow '+(doneSet.has(t.id)?'done':'')+'" data-task-id="'+homeEsc(t.id)+'" aria-pressed="'+(doneSet.has(t.id)?'true':'false')+'" onclick="homeToggleDailyTask(\''+homeEsc(t.id)+'\',this)"><span class="mhdTaskCheck"></span><span class="mhdRowCopy"><strong>'+homeEsc(t.title)+'</strong>'+(t.detail?'<small>'+homeEsc(t.detail)+'</small>':'')+'</span><span class="mhdTaskBadge">'+(doneSet.has(t.id)?'Fait':'À faire')+'</span></button>').join('')+'</div>'}).join('');
+ const finished=tasks.length>0&&done===tasks.length;
+ return '<section class="mhdCard mhdSection mhdTasks"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><div><strong>Passation · après-midi</strong><small class="mhdTaskRoleHint">Missions transmises par l’équipe du matin</small></div></div><span class="mhdTaskUserProgress '+(finished?'done':'')+'">'+(finished?'✓ Terminé':done+'/'+tasks.length)+'</span></div>'+(finished?'<div class="mhdTaskSuccess"><strong>Passation terminée</strong><span>Toutes tes missions ont été validées.</span></div>':'')+(taskError?'<div class="mhdTaskError">Impossible de charger tes missions pour le moment.</div>':(rows||'<div class="mhdTaskEmptyState"><strong>Rien à reprendre</strong><span>Aucune mission ne t’est affectée pour cet après-midi.</span></div>'))+'</section>'
 }
 function homeRenderDailyTasks(profile,taskError){
  const mode=homeTaskMode(profile?.role);
@@ -1399,15 +1474,15 @@ function homeToggleTaskTemplate(btn){
  document.getElementById('mhdFacingDetail')?.classList.toggle('hidden',!facing);
  homeSyncTaskComposerSelection()
 }
-function homeToggleTaskAudienceAll(btn){
- const box=btn?.closest('.mhdTaskComposer');if(!box)return;
- box.querySelectorAll('[data-task-user]').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected')
-}
 function homeToggleTaskAudienceUser(btn){
  const box=btn?.closest('.mhdTaskComposer');if(!box)return;
- btn.classList.toggle('selected');box.querySelector('.mhdTaskAudienceAll')?.classList.remove('selected');
- if(!box.querySelector('[data-task-user].selected'))box.querySelector('.mhdTaskAudienceAll')?.classList.add('selected')
+ btn.classList.toggle('selected');
+ btn.setAttribute('aria-pressed',String(btn.classList.contains('selected')));
+ const count=box.querySelectorAll('[data-task-user].selected').length,state=document.getElementById('mhdTaskComposerState'),publish=box.querySelector('.mhdTaskPublishBtn');
+ if(publish)publish.disabled=count===0;
+ if(state)state.textContent=count?count+' destinataire'+(count>1?'s':'')+' sélectionné'+(count>1?'s':'')+'.':'Sélectionne au moins une personne de l’équipe d’après-midi.'
 }
+
 function homeTaskPair(rows,keyA,keyB,title){
  const a=rows.find(x=>x.catalog_key===keyA),b=rows.find(x=>x.catalog_key===keyB);if(!a||!b)return rows;
  const merged={...a,id:undefined,catalog_key:null,source_keys:[keyA,keyB],title,sort_order:Math.min(Number(a.sort_order)||100,Number(b.sort_order)||100)};
@@ -1420,29 +1495,31 @@ async function homeRefreshDashboard(){
 async function homePublishDailyTasks(btn){
  if(homeTaskBusy||!homeSession)return;
  const box=document.getElementById('mhdTaskComposer'),state=document.getElementById('mhdTaskComposerState');if(!box)return;
- const keys=[...box.querySelectorAll('[data-task-template].selected')].map(x=>x.dataset.taskTemplate),custom=String(document.getElementById('mhdCustomTaskTitle')?.value||'').trim();
- if(!keys.length&&!custom){if(state)state.textContent='Choisis une tâche ou écris une tâche ponctuelle.';return}
+ const keys=[...box.querySelectorAll('[data-task-template].selected:not(:disabled)')].map(x=>x.dataset.taskTemplate),custom=String(document.getElementById('mhdCustomTaskTitle')?.value||'').trim();
+ if(!keys.length&&!custom){if(state)state.textContent='Sélectionne au moins une mission ou ajoute une mission ponctuelle.';return}
+ const selectedUsers=[...box.querySelectorAll('[data-task-user].selected')].map(x=>x.dataset.taskUser).filter(id=>homeTaskAfternoonUserIds.includes(id));
+ if(!selectedUsers.length){if(state)state.textContent='Sélectionne au moins une personne de l’équipe d’après-midi.';return}
  const byKey=new Map(homeTaskCatalog.map(x=>[x.key,x])),today=homeParisDateKey(),uid=homeSession.user.id;
- let rows=keys.map(k=>byKey.get(k)).filter(Boolean).map(t=>({task_date:today,catalog_key:t.key,source_keys:[t.key],title:t.title,section_key:t.section_key,section_label:t.section_label,detail:t.key==='facing_sec'?(String(document.getElementById('mhdFacingSecDetail')?.value||'').trim()||'Tous'):null,all_users:true,sort_order:Number(t.sort_order)||100,created_by:uid}));
+ let rows=keys.map(k=>byKey.get(k)).filter(Boolean).map(t=>({task_date:today,catalog_key:t.key,source_keys:[t.key],title:t.title,section_key:t.section_key,section_label:t.section_label,detail:t.key==='facing_sec'?(String(document.getElementById('mhdFacingSecDetail')?.value||'').trim()||'Tous'):null,all_users:false,sort_order:Number(t.sort_order)||100,created_by:uid}));
  rows=homeTaskPair(rows,'livraison_gel','stock_gel','Livraison + Stock gel');
  rows=homeTaskPair(rows,'livraison_sec','stock_sec','Livraison + Stock sec');
- if(custom)rows.push({task_date:today,catalog_key:null,source_keys:[],title:custom,section_key:'autre',section_label:'Autre',detail:null,all_users:true,sort_order:900,created_by:uid});
- const selectedUsers=[...box.querySelectorAll('[data-task-user].selected')].map(x=>x.dataset.taskUser),allUsers=box.querySelector('.mhdTaskAudienceAll')?.classList.contains('selected')||!selectedUsers.length;
- rows=rows.map(r=>({...r,all_users:allUsers})).sort((a,b)=>a.sort_order-b.sort_order);
- homeTaskBusy=true;if(btn)btn.disabled=true;if(state)state.textContent='Ajout…';
+ if(custom)rows.push({task_date:today,catalog_key:null,source_keys:[],title:custom,section_key:'autre',section_label:'Autre',detail:null,all_users:false,sort_order:900,created_by:uid});
+ rows=rows.sort((a,b)=>a.sort_order-b.sort_order);
+ homeTaskBusy=true;if(btn)btn.disabled=true;if(state)state.textContent='Publication de la passation…';
  try{
   const inserted=await db.from('daily_tasks').insert(rows).select('id');
   if(inserted.error)throw inserted.error;
   const ids=(inserted.data||[]).map(x=>x.id);
-  if(!allUsers&&ids.length){
+  if(ids.length){
    const assignments=ids.flatMap(task_id=>selectedUsers.map(user_id=>({task_id,user_id})));
    const assigned=await db.from('daily_task_assignees').insert(assignments);
    if(assigned.error){await db.from('daily_tasks').delete().in('id',ids);throw assigned.error}
   }
   window.NettoSounds?.play?.('success');await homeRefreshDashboard()
- }catch(e){console.error('Tâches du jour:',e);if(state)state.textContent='Ajout impossible : '+(e?.message||'erreur');window.NettoSounds?.play?.('error')}
+ }catch(e){console.error('Passation du jour:',e);if(state)state.textContent='Publication impossible : '+(e?.message||'erreur');window.NettoSounds?.play?.('error')}
  finally{homeTaskBusy=false;if(btn)btn.disabled=false}
 }
+
 async function homeDeleteDailyTask(id,btn){
  if(homeTaskBusy||!id)return;if(!confirm('Supprimer cette tâche de la journée ?'))return;
  homeTaskBusy=true;if(btn)btn.disabled=true;
@@ -1543,13 +1620,21 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  const profileRows=homeTaskTeam;
  const todayModel=weeks.find(w=>w?.days?.[todayKey])||currentWeek;
  const todayTeam=[];
- const workingNames=[];
+ const workingNames=[],afternoonNames=[];
  if(todayModel?.days?.[todayKey]){
-  (todayModel.employees||[]).forEach((e,i)=>{const row=todayModel.days[todayKey].cells?.[i]||[];if(row.some(v=>v==='g'||v==='b'))workingNames.push(e.name)})
+  (todayModel.employees||[]).forEach((e,i)=>{
+   const row=todayModel.days[todayKey].cells?.[i]||[],ranges=homeWorkRanges(row,todayModel||{});
+   if(row.some(v=>v==='g'||v==='b'))workingNames.push(e.name);
+   if(ranges.some(r=>r.b>14))afternoonNames.push(e.name)
+  })
  }
  for(const n of workingNames){
   const p=profileRows.find(x=>homeNorm(x.display_name)===homeNorm(n));todayTeam.push({name:n,profile:p||null})
  }
+ homeTaskAfternoonUserIds=[...new Set(afternoonNames.map(n=>{
+  const target=homeNorm(n),base=target.replace(/\s+[a-z]$/,'');
+  return profileRows.find(x=>{const p=homeNorm(x.display_name),pb=p.replace(/\s+[a-z]$/,'');return p===target||pb===target||p===base||pb===base})?.id
+ }).filter(Boolean))];
  const roleLabel=window.NettoProfileUI?.roleLabel?.(profile.role)||profile.role||'Compte';
  const dateLabel=today.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace('.','');
  const sections=[];
