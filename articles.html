@@ -97,6 +97,6 @@ function applyEanDeepLink(){
 }
 async function logout(){await db.auth.signOut({scope:'local'});location.href='index.html'}
 async function boot(){const {data:{session}}=await db.auth.getSession();if(!session)return location.replace('index.html');const {data:p,error}=await db.from('profiles').select('display_name,email,role').eq('id',session.user.id).maybeSingle();if(error||!p)return location.replace('index.html');profile=p;await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('articles',p)||'none';if(permission==='none')return location.replace('home.html');canManageArticles=permission==='manage';$('settingsLink').classList.toggle('hidden',p.role!=='admin');$('adminHub').classList.toggle('hidden',p.role!=='admin');applyTheme(currentTheme());await loadTaxonomy();await load();applyEanDeepLink()}
-boot();
+boot().catch(e=>{console.error('Fiches articles : erreur de démarrage',e);const host=document.querySelector('main');if(host&&!document.getElementById('articlesBootError')){const msg=document.createElement('div');msg.id='articlesBootError';msg.setAttribute('role','alert');msg.textContent='Impossible de charger les fiches articles. Vérifie la connexion puis réessaie.';host.prepend(msg)}});
 </script>
 </body></html>
