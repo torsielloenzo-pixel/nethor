@@ -1092,7 +1092,7 @@ async function boot(){
  const manager=canManageFL,isAdmin=profile.role==='admin';document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',!isAdmin));document.querySelectorAll('.stockModeBtn[data-mode="order"]').forEach(x=>x.classList.toggle('hidden',!canOperateFL));document.querySelectorAll('.stockModeBtn[data-mode="manage"]').forEach(x=>x.classList.toggle('hidden',!canManageFL));$('suggestBtn')?.classList.toggle('hidden',!canOperateFL);$('cartBtn')?.classList.toggle('hidden',!canOperateFL);$('manageBtn')?.classList.toggle('hidden',!canManageFL);
  const qs=new URLSearchParams(location.search),requested=qs.get('mode')||localStorage.getItem('nettoStockMode')||'stock';stockMode=(['stock','consult'].includes(requested)||(requested==='order'&&canOperateFL)||(requested==='manage'&&canManageFL))?requested:'stock';
  updateCartBadge();const hadStockCache=hydrateStockCache();if(hadStockCache){render();applyStockModeUI()}await loadSharedSiteConfig();if(hadStockCache)await Promise.all([loadOptions(),loadProducts()]);else{await loadOptions();await loadProducts()}applyStockModeUI();
- const ean=qs.get('ean');if(ean)setTimeout(()=>openInfoByEan(ean),120);if(manager&&qs.get('admin')==='accounts'){location.replace('accounts.html');return}
+ const ean=qs.get('ean');if(ean)setTimeout(()=>openInfoByEan(ean),120);if(manager&&qs.get('admin')==='accounts'){location.replace('admin-portal.html?tab=accounts');return}
 }
 function playLoginSound(){window.NettoSounds?.play?.('loginSuccess')}
 function playLogoutSound(){window.NettoSounds?.play?.('logout')}
@@ -1548,7 +1548,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
 function toggleBrandMenu(e){if(e)e.stopPropagation();if(profile?.role!=='admin')return;const m=$('brandMenu'),b=$('brandMenuBtn'),opening=m.classList.contains('hidden');m.classList.toggle('hidden',!opening);b.classList.toggle('active',opening);b.setAttribute('aria-expanded',opening?'true':'false');playUISound(opening?'open':'close')}
 function closeBrandMenu(sound=false){const m=$('brandMenu'),b=$('brandMenuBtn');if(!m||m.classList.contains('hidden'))return;m.classList.add('hidden');b.classList.remove('active');b.setAttribute('aria-expanded','false');if(sound)playUISound('close')}
 function goBrand(url){closeBrandMenu();window.NettoSounds?.play?.('navigate');setTimeout(()=>location.href=url,55)}
-function openUsersFromBrand(){closeBrandMenu();window.NettoSounds?.play?.('navigate');setTimeout(()=>location.href='accounts.html',55)}
+function openUsersFromBrand(){closeBrandMenu();window.NettoSounds?.play?.('navigate');setTimeout(()=>location.href='admin-portal.html?tab=accounts',55)}
 document.addEventListener('click',e=>{const w=e.target.closest('.brandMenuWrap');if(!w)closeBrandMenu(true)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeBrandMenu(true)});
 
