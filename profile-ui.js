@@ -280,7 +280,7 @@ function applyPortalTheme(config={}){
  root.style.setProperty('--netto-red',primary);root.style.setProperty('--netto-red-2',primary);
  root.style.setProperty('--netto-orange',secondary);root.style.setProperty('--netto-ink',ink);
  root.style.setProperty('--red',primary);root.style.setProperty('--red2',primary);root.style.setProperty('--orange',secondary);
- root.style.setProperty('--netto-gradient','linear-gradient(135deg,'+primary+' 0%,'+primary+' 44%,'+secondary+' 100%)')
+ root.style.setProperty('--netto-gradient','linear-gradient(135deg,'+primary+' 0%,'+primary+' 44%,'+secondary+' 100%)');applyHeaderLogo(config)
 }
 function moduleMaxRoles(module,config=api?.siteConfig){return Array.isArray(module?.roles)?module.roles.filter(r=>roleKeys(config).includes(r)):roleKeys(config)}
 function configuredRoles(module,config=api?.siteConfig){
@@ -564,12 +564,16 @@ window.addEventListener('netto:presence',()=>{if(activeUserCard.user)refreshActi
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeUserCard.user)closeUserCard()});
 
 function addDesktopNethorMarkStyle(){
- if(document.getElementById('nethorDesktopMarkStyle'))return;
- const s=document.createElement('style');s.id='nethorDesktopMarkStyle';
- s.textContent='@media(min-width:901px){.mark{background-color:transparent!important;background-image:url("assets/nethor-mark.svg")!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;color:transparent!important;font-size:0!important;box-shadow:none!important}.brand>.mark,.nMenuWrap>.mark{border-radius:0!important}}';
- document.head?.appendChild(s)
+ let s=document.getElementById('nethorDesktopMarkStyle');
+ if(!s){s=document.createElement('style');s.id='nethorDesktopMarkStyle';document.head?.appendChild(s)}
+ s.textContent='header .mark,header .brandMark,header .nMenuBtn,header .brandMenuBtn{background-color:transparent!important;background-image:var(--nethor-header-logo,url("assets/nethor-mark.svg"))!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;color:transparent!important;font-size:0!important;box-shadow:none!important;border-radius:0!important}'
 }
-addDesktopNethorMarkStyle();
+function applyHeaderLogo(config={}){
+ const url=String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
+ document.documentElement.style.setProperty('--nethor-header-logo','url('+JSON.stringify(url)+')');
+ addDesktopNethorMarkStyle()
+}
+applyHeaderLogo();
 
 function addStyle(){
  if(document.getElementById('nettoGlobalUIStyle'))return;
@@ -2002,7 +2006,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=167;
+const APP_RELEASE=168;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
