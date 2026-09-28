@@ -26,6 +26,40 @@ function lockMobileAppViewport(){
 
 lockMobileAppViewport();
 
+function enableStableMobileNavigation(){
+ if(!isMobileViewport()||document.getElementById('nettoMobileStableNavigationStyle'))return;
+ const style=document.createElement('style');
+ style.id='nettoMobileStableNavigationStyle';
+ style.textContent='@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation:none!important}';
+ document.head?.appendChild(style);
+ try{history.scrollRestoration='auto'}catch(_){}
+}
+enableStableMobileNavigation();
+
+const warmedMobileRoutes=new Set();
+function warmMobileRoutes(urls=[]){
+ if(!isMobileViewport()||!document.head)return;
+ const run=()=>{
+  for(const raw of urls){
+   try{
+    const u=new URL(raw||'',location.href);
+    if(u.origin!==location.origin)continue;
+    u.hash='';
+    if(u.pathname===location.pathname&&u.search===location.search)continue;
+    const key=u.pathname+u.search;
+    if(warmedMobileRoutes.has(key))continue;
+    warmedMobileRoutes.add(key);
+    const link=document.createElement('link');
+    link.rel='prefetch';link.href=u.href;
+    link.dataset.nettoWarmRoute='1';
+    document.head.appendChild(link)
+   }catch(_){}
+  }
+ };
+ if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:900});
+ else setTimeout(run,120)
+}
+
 /* Mobile keyboard: global state only. Chat owns its own visual viewport sizing. */
 function isMobileTextEntry(el){
  if(!el||el.nodeType!==1||el.disabled||el.readOnly)return false;
@@ -51,7 +85,9 @@ function bindMobileKeyboardState(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboardState,{once:true});
 else bindMobileKeyboardState();
 
-const FAST_ACCESS_TTL=120000;
+const FAST_ACCESS_TTL=1800000;
+const GLOBAL_UI_CACHE_TTL=1800000;
+const GLOBAL_UI_REFRESH_TTL=120000;
 const FAST_ACCESS_ROUTES=Object.freeze({
  stock:'index.html',planning:'planning.html',chat:'chat.html',articles:'articles.html',
  rewards:'rewards.html',bakery:'bakery.html',accounts:'accounts.html',
@@ -294,6 +330,7 @@ function renderMobileQuickBar(){
  if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
  nav.style.setProperty('--netto-mobile-count',String(items.length));
  nav.innerHTML=items.map(({item,module})=>{const label=item.label||module.label||'Menu',badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
+ warmMobileRoutes(items.map(({module})=>module?.url||'').filter(Boolean));
  syncMobileQuickBarActive();
  nav.querySelectorAll('a').forEach(a=>{
   const activate=()=>syncMobileQuickBarActive(a.dataset.mobileId||'');
@@ -1757,9 +1794,16 @@ async function rememberSiteBase(){
 function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Éditeur du portail','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','notification-settings.html':'Réglages des notifications'};return map[p]||document.title||'Portail'}
 async function logPageView(){if(!api.client||!api.session)return;try{await api.client.rpc('audit_page_view',{p_area:pageArea(),p_path:(location.pathname||'')+(location.search||''),p_title:document.title||pageArea()})}catch(e){console.warn('Journal consultation:',e)}}
 function globalCacheKey(){return api.session?.user?.id?'nettoGlobalUI:'+api.session.user.id:null}
+function globalCacheAge(){
+ try{
+  const k=globalCacheKey();if(!k)return Infinity;
+  const x=JSON.parse(localStorage.getItem(k)||'null');
+  return x?.saved_at?Math.max(0,Date.now()-Number(x.saved_at)):Infinity
+ }catch(_){return Infinity}
+}
 function hydrateGlobalCache(){
  try{
-  const k=globalCacheKey();if(!k)return false;const x=JSON.parse(localStorage.getItem(k)||'null');if(!x||Date.now()-Number(x.saved_at||0)>120000)return false;
+  const k=globalCacheKey();if(!k)return false;const x=JSON.parse(localStorage.getItem(k)||'null');if(!x||Date.now()-Number(x.saved_at||0)>GLOBAL_UI_CACHE_TTL)return false;
   if(!x.profile)return false;api.profile=x.profile;api.siteConfig=x.siteConfig||{};api.subrolePermissions=x.subrolePermissions||{};api.avatarUrl=x.avatarUrl||null;applyProfileTheme(api.profile,false);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return true;document.documentElement.style.setProperty('--profile-accent',api.profile.profile_color||'#ff5a2a');updateKnownUI();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:api.profile,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig,cached:true}}));return true
  }catch(_){return false}
 }
@@ -1771,7 +1815,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=140;
+const APP_RELEASE=142;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -2014,7 +2058,7 @@ function startAccessibleNameObserver(){
  observer.observe(document.body,{childList:true,subtree:true});
  window.__nettoA11yObserver=observer;
 }
-async function init(){addStyle();setupMobilePortraitOnly();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cached=hydrateGlobalCache(),fresh=refresh();if(!cached)await fresh;else fresh.catch(()=>{});await loadNotificationPreferences();setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
+async function init(){addStyle();setupMobilePortraitOnly();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});await loadNotificationPreferences();setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();logPageView();bindHomeMark();loadNotifications();startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
 const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
