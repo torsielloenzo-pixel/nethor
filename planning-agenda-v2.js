@@ -1,10 +1,11 @@
 (function(){
 'use strict';
-let layout='classic',mobileMode='day',booted=false;
+let layout='classic',mobileMode='day',booted=false,restFocusRevealed=false;
 const mq=window.matchMedia('(max-width:760px)');
 const escLocal=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function isMobile(){return document.documentElement.classList.contains('nethorPhoneDevice')||mq.matches}
 function normalize(v){return v==='agenda'?'agenda':'classic'}
+function restFocusActive(){try{return new URLSearchParams(location.search).get('focus')==='rest'}catch(_){return false}}
 function agendaRanges(row){return rowRanges(row).filter(r=>!['r','y','o'].includes(r.c))}
 function colorLabel(c){return({g:'Matin',b:'Après-midi',w:'Indisponibilité'})[c]||'Poste'}
 function shiftHours(ranges){return ranges.reduce((sum,r)=>sum+(r.b-r.a),0)}
@@ -106,15 +107,16 @@ function sortAgendaEmployeesForCurrentUser(items){
  })
 }
 function renderDayAgenda(a){
- const di=typeof currentDay==='number'?currentDay:0,dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],employees=model.employees||[],rows=day?.cells||[];
+ const di=typeof currentDay==='number'?currentDay:0,dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],employees=model.employees||[],rows=day?.cells||[],focusRest=restFocusActive();
  const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle');
  if(title)title.textContent=dayFull(dt).replace(/^./,c=>c.toUpperCase());
- if(sub)sub.textContent='Planning du jour • horaires de travail uniquement';
+ if(sub)sub.textContent=focusRest?'Jour ciblé depuis « Prochain repos »':'Planning du jour • horaires de travail uniquement';
  const items=[];
  employees.forEach((emp,ri)=>{
-  const ranges=agendaRanges(rows[ri]||[]);if(!ranges.length)return;
+  const ranges=agendaRanges(rows[ri]||[]),isMe=isCurrentAgendaEmployee(emp);
+  if(!ranges.length&&!(focusRest&&isMe))return;
   const info=avatarFor(emp);
-  items.push({emp,ri,ranges,info,label:info.label,isMe:isCurrentAgendaEmployee(emp)})
+  items.push({emp,ri,ranges,info,label:info.label,isMe,isRest:focusRest&&isMe&&!ranges.length})
  });
  const sorted=sortAgendaEmployeesForCurrentUser(items);
  if(!sorted.length)return '<div class="agendaDayList"><div class="agendaDayEmpty"><strong>Aucun horaire de travail</strong><span>Personne n’est planifié sur cette journée.</span></div></div>';
@@ -123,12 +125,15 @@ function renderDayAgenda(a){
  const globalItems=mine?sorted.filter(x=>!x.isMe):sorted;
  const makeCard=item=>{
   const overlapWithMe=mine&&!item.isMe?rangesOverlapHours(mine.ranges,item.ranges):0;
-  const cls='agendaDayCard'+(item.isMe?' agendaDayCardMe':'')+(overlapWithMe>0?' agendaDayCardCoworker':'');
-  return '<article class="'+cls+'"><div class="agendaDayPerson">'+item.info.avatar+'<strong>'+escLocal(item.info.label)+'</strong></div><div class="agendaDayShifts">'+item.ranges.map(r=>'<div class="agendaDayShift" data-color="'+escLocal(r.c)+'"><div><strong>'+fmtTime(r.a)+' → '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+hoursLabel(r.b-r.a)+'</small></div><span>›</span></div>').join('')+'</div></article>'
+  const cls='agendaDayCard'+(item.isMe?' agendaDayCardMe':'')+(item.isRest?' agendaDayCardRest':'')+(overlapWithMe>0?' agendaDayCardCoworker':'');
+  const content=item.isRest
+   ?'<div class="agendaRestState"><span class="agendaRestMark" aria-hidden="true">○</span><div><strong>Jour de repos</strong><small>Aucun horaire planifié</small></div></div>'
+   :item.ranges.map(r=>'<div class="agendaDayShift" data-color="'+escLocal(r.c)+'"><div><strong>'+fmtTime(r.a)+' → '+fmtTime(r.b)+'</strong><small>'+escLocal(colorLabel(r.c))+' · '+hoursLabel(r.b-r.a)+'</small></div><span>›</span></div>').join('');
+  return '<article class="'+cls+'"><div class="agendaDayPerson">'+item.info.avatar+'<strong>'+escLocal(item.info.label)+'</strong></div><div class="agendaDayShifts">'+content+'</div></article>'
  };
 
  if(isMobile()&&mine){
-  const personal='<section class="agendaPersonalBlock" aria-label="Mon horaire">'+makeCard(mine)+'</section>';
+  const personal='<section class="agendaPersonalBlock '+(mine.isRest?'agendaRestFocusBlock':'')+'" aria-label="'+(mine.isRest?'Mon jour de repos':'Mon horaire')+'">'+makeCard(mine)+'</section>';
   const global=globalItems.length?'<section class="agendaGlobalBlock" aria-label="Planning de l’équipe">'+globalItems.map(makeCard).join('')+'</section>':'';
   return '<div class="agendaDayList hasCurrentUser agendaSeparated">'+personal+(global?'<div class="agendaSectionGap" aria-hidden="true"></div>'+global:'')+'</div>'
  }
@@ -163,8 +168,14 @@ function renderAgenda(){
   const a=currentWeekStart;renderDayPicker(a);
   document.getElementById('mobileAgendaModeBar')?.classList.toggle('hidden',!isMobile());
   document.getElementById('agendaStats')?.classList.toggle('hidden',isMobile());
-  if(isMobile())host.innerHTML=mobileMode==='day'?renderDayAgenda(a):renderWeekAgenda(a);
-  else{document.getElementById('agendaTitle').textContent='Agenda de la semaine';document.getElementById('agendaSubtitle').textContent='Du '+frDate(a)+' au '+frDate(addDays(a,6))+' • mêmes données et calculs que la vue classique';host.innerHTML=renderWeekAgenda(a)}
+  if(isMobile()){
+   if(restFocusActive())mobileMode='day';
+   host.innerHTML=mobileMode==='day'?renderDayAgenda(a):renderWeekAgenda(a);
+   if(restFocusActive()&&!restFocusRevealed){
+    const target=host.querySelector('.agendaRestFocusBlock,.agendaDayCardRest');
+    if(target){restFocusRevealed=true;requestAnimationFrame(()=>target.scrollIntoView({behavior:'auto',block:'center',inline:'nearest'}))}
+   }
+  }else{document.getElementById('agendaTitle').textContent='Agenda de la semaine';document.getElementById('agendaSubtitle').textContent='Du '+frDate(a)+' au '+frDate(addDays(a,6))+' • mêmes données et calculs que la vue classique';host.innerHTML=renderWeekAgenda(a)}
  }catch(e){console.error('Agenda render',e);host.innerHTML='<div class="agendaDayEmpty"><strong>Agenda indisponible</strong><span>Recharge la page pour réessayer.</span></div>'}
 }
 function hookRender(){
@@ -185,6 +196,7 @@ function boot(){
  if(booted)return;inject();arrangeMobilePlanningWidgets();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
  if(isMobile()){
   try{mobileMode=localStorage.getItem('nettoAgendaMobileMode')==='week'?'week':'day'}catch(_){}
+  if(restFocusActive())mobileMode='day';
   setLayout('agenda',false);
   return
  }
