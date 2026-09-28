@@ -743,7 +743,7 @@ async function loadHomeTodayPlanning(profile,name){
  el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Statut indiqué dans le planning</strong>.'
 }
 
-function mobileHomeMode(){try{return window.matchMedia('(max-width:700px)').matches}catch(_){return window.innerWidth<=700}}
+function mobileHomeMode(){try{return document.documentElement.classList.contains('nethorPhoneDevice')||window.matchMedia('(max-width:700px)').matches}catch(_){return Math.min(window.innerWidth,window.innerHeight)<=700}}
 function homeAddDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
 function homeParseDate(s){const [y,m,d]=String(s||'').split('-').map(Number);return new Date(y||2000,(m||1)-1,d||1)}
 function homeDateLabel(dateKey,todayKey){
