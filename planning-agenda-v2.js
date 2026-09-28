@@ -191,19 +191,21 @@ function renderDayAgenda(a){
  return '<div class="agendaDayList'+(mine?' hasCurrentUser':'')+'">'+sorted.map(makeCard).join('')+'</div>';
 }
 function renderWeekAgenda(a){
- const b=addDays(a,6),todayKey=isoDate(new Date()),employees=model.employees||[];
+ const b=addDays(a,6),todayKey=isoDate(new Date()),employees=model.employees||[],desktop=!isMobile();
  const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle'),stats=document.getElementById('agendaStats');
  if(title)title.textContent=isMobile()?'Semaine '+isoWeekNumber(a):'Semaine du '+a.getDate()+' au '+b.getDate()+' '+b.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
- if(sub)sub.textContent=isMobile()?mobileWeekRangeLabel(a):'Vue équipe simplifiée • glisse horizontalement pour voir la semaine';
- let html='<div class="agendaGrid"><div class="agendaCorner">Équipe</div>',weekHours=0;
+ if(sub)sub.textContent=isMobile()?mobileWeekRangeLabel(a):'Vue équipe simplifiée • mêmes données et calculs que la vue classique';
+ let html='<div class="agendaGrid'+(desktop?' agendaGridDesktop':'')+'"><div class="agendaCorner">Équipe</div>',weekHours=0;
  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0);html+='<div class="agendaDayHead '+(key===todayKey?'today ':'')+(active?'activeDay':'')+'"><strong>'+escLocal(dayShort(dt))+'</strong><span>'+dt.getDate()+'</span></div>'}
+ if(desktop)html+='<div class="agendaWeekTotalHead"><strong>Total</strong><span>Semaine</span></div>';
  employees.forEach((emp,ri)=>{
   let employeeTotal=0;for(let di=0;di<7;di++){const row=model.days?.[isoDate(addDays(a,di))]?.cells?.[ri]||[];employeeTotal+=shiftHours(agendaRanges(row))}weekHours+=employeeTotal;
-  const info=avatarFor(emp);html+='<div class="agendaEmployee">'+info.avatar+'<div class="planningIdentityText"><strong>'+escLocal(info.label)+'</strong><span class="agendaEmployeeTotal">'+hoursLabel(employeeTotal)+'</span></div></div>';
+  const info=avatarFor(emp);html+='<div class="agendaEmployee">'+info.avatar+'<div class="planningIdentityText"><strong>'+escLocal(info.label)+'</strong>'+(desktop?'':'<span class="agendaEmployeeTotal">'+hoursLabel(employeeTotal)+'</span>')+'</div></div>';
   for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0),row=model.days?.[key]?.cells?.[ri]||[],ranges=agendaRanges(row);html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(active?'activeDay ':'')+(ranges.length?'':'empty')+'">';
    if(ranges.length)ranges.forEach(r=>{html+='<div class="agendaShift" data-color="'+escLocal(r.c)+'"><strong>'+fmtTime(r.a)+'–'+fmtTime(r.b)+'</strong><small>'+hoursLabel(r.b-r.a)+'</small></div>'});else html+='<span class="agendaWeekDash">–</span>';
    html+='</div>';
   }
+  if(desktop)html+='<div class="agendaWeekTotalCell"><strong>'+hoursLabel(employeeTotal)+'</strong><span>semaine</span></div>';
  });
  html+='</div>';
  if(stats)stats.innerHTML='<div class="agendaStat"><span class="agendaStatIcon">♟</span><div><strong>'+employees.length+'</strong><small>équipe</small></div></div><div class="agendaStat"><span class="agendaStatIcon">◷</span><div><strong>'+hoursLabel(weekHours)+'</strong><small>semaine</small></div></div>';
