@@ -230,6 +230,7 @@ async function startCamera(){
       ()=>{}
     );
     scannerRunning=true;
+    if(document.hidden||!isMobileView()||currentProduct){await safeStop();return}
     setCameraState('Prêt à scanner');
     if(!cameraRemembered)rememberCameraPermission(true);
   }catch(e){
@@ -252,6 +253,7 @@ async function onScanSuccess(decodedText){
 }
 
 async function findProduct(raw,fromCamera=false){
+  if(searchBusy)return;
   const code=normalizeEan(raw);
   $('eanInput').value=code;
   if(!validEanLength(code)){
@@ -260,30 +262,36 @@ async function findProduct(raw,fromCamera=false){
   }
   searchBusy=true;
   setCameraState('Recherche de la fiche…');
-  const candidates=eanCandidates(code);
-  const {data,error}=await db.from('products')
-    .select('id,name,ean,article_code,photo_url,on_sale,active,packaging_count,shelf_capacity,product_families(name,slug),product_categories(name),product_packagings(name)')
-    .eq('active',true)
-    .in('ean',candidates)
-    .limit(2);
-  searchBusy=false;
-  if(error){
-    console.error(error);
-    renderNotFound(code,'Impossible de rechercher la fiche pour le moment.');
-    if(fromCamera)scheduleCameraStart(1200);
-    return
-  }
-  const product=(data||[])[0]||null;
-  if(!product){
+  try{
+    const candidates=eanCandidates(code);
+    const {data,error}=await db.from('products')
+      .select('id,name,ean,article_code,photo_url,on_sale,active,packaging_count,shelf_capacity,product_families(name,slug),product_categories(name),product_packagings(name)')
+      .eq('active',true)
+      .in('ean',candidates)
+      .limit(2);
+    if(error){
+      console.error(error);
+      renderNotFound(code,'Impossible de rechercher la fiche pour le moment.');
+      if(fromCamera)scheduleCameraStart(1200);
+      return
+    }
+    const product=(data||[])[0]||null;
+    if(!product){
+      await safeStop();
+      renderNotFound(code,'Aucune fiche article ne correspond à cet EAN.');
+      setCameraState('Article introuvable');
+      return
+    }
+    currentProduct=product;
     await safeStop();
-    renderNotFound(code,'Aucune fiche article ne correspond à cet EAN.');
-    setCameraState('Article introuvable');
-    return
+    renderProduct(product);
+    setCameraState('Fiche trouvée')
+  }catch(error){
+    console.error('Recherche EAN:',error);
+    renderNotFound(code,'Impossible de rechercher la fiche pour le moment.');
+  }finally{
+    searchBusy=false
   }
-  currentProduct=product;
-  await safeStop();
-  renderProduct(product);
-  setCameraState('Fiche trouvée')
 }
 
 function renderProduct(p){
