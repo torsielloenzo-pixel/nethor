@@ -1,10 +1,10 @@
 {
-  "version": 180,
-  "label": "v1.80",
+  "version": 181,
+  "label": "v1.81",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Scanner mobile : recherche manuelle simplifiée des EAN courts.",
+  "message": "Référentiel EAN13 normalisé et gestion des fiches articles améliorée.",
   "published_at": "2026-09-28T22:55:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
