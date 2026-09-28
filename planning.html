@@ -1023,7 +1023,7 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   .sourceActions:empty{display:none!important}
 }
 </style>
-<link rel="stylesheet" href="planning-agenda-v2.css?v=14"><link rel="preload" href="planning-agenda-v2.js?v=15" as="script"><script src="planning-agenda-v2.js?v=15" defer></script>
+<link rel="stylesheet" href="planning-agenda-v2.css?v=14"><link rel="preload" href="planning-agenda-v2.js?v=16" as="script"><script src="planning-agenda-v2.js?v=16" defer></script>
 <style id="planning-desktop-menu-v1">
 /* Desktop uniquement — réorganisation des menus supérieurs du planning. */
 .desktopPlanningMenuLabel{display:none}
@@ -1736,7 +1736,8 @@ function renderCoverageOverlay(){
  if(!date||!summary||!host||!btn)return;
  const day=modelDay(),data=coverageForDay(day),active=data.filter(x=>x.count>0);
  btn.disabled=!model||!day||!active.length;
- if(!model||!day||!data.length){summary.innerHTML='';host.innerHTML='';document.getElementById('coverageOverlayDetail').innerHTML='<span class="coverageNoPeople">Aucun planning à analyser.</span>';if(coverageModeActive)setCoverageMode(false);return}
+ if(!model||!day||!data.length||!active.length){summary.innerHTML='';host.innerHTML='';document.getElementById('coverageOverlayDetail').innerHTML='<span class="coverageNoPeople">Aucune présence planifiée sur cette journée.</span>';if(coverageModeActive)setCoverageMode(false);return}
+ host.style.gridTemplateColumns='repeat('+data.length+',minmax(0,1fr))';
  const dt=addDays(currentWeekStart,currentDay);date.textContent=DAYS[currentDay][1]+' '+frDate(dt);
  const max=active.length?Math.max(...active.map(x=>x.count)):0,min=active.length?Math.min(...active.map(x=>x.count)):0,avg=active.length?active.reduce((s,x)=>s+x.count,0)/active.length:0;
  summary.innerHTML='<span class="coverageOverlayMetric"><b>'+min+'</b><span>minimum</span></span><span class="coverageOverlayMetric"><b>'+String(Math.round(avg*10)/10).replace('.',',')+'</b><span>moyenne</span></span><span class="coverageOverlayMetric"><b>'+max+'</b><span>pic</span></span>';
