@@ -736,13 +736,11 @@ async function loadHomeTodayPlanning(profile,name){
  const m=data.data,target=homeNorm(name),employees=m.employees||[];
  const idx=employees.findIndex(e=>{const n=homeNorm(e?.name),base=n.replace(/\s+[a-z]$/,'');return n===target||base===target});
  if(idx<0){el.textContent='Ton planning d’aujourd’hui n’est pas encore renseigné.';return}
- const row=m.days?.[todayKey]?.cells?.[idx]||[];
- const total=row.reduce((n,v)=>n+(v==='g'||v==='b'?0.25:0),0);
- if(total<=0){el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Jour de repos</strong>. Profite bien de ta journée !';return}
- const ranges=homeWorkRanges(row,m);
- if(!ranges.length){el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Jour de repos</strong>. Profite bien de ta journée !';return}
- const schedule=ranges.map(x=>homeFriendlyHour(x.a)+' à '+homeFriendlyHour(x.b)).join(' • ');
- el.innerHTML='Ton planning d’aujourd’hui : <strong>'+schedule+'</strong>. Bonne journée !'
+ const facts=homeDayFacts(m,todayKey,name);
+ if(facts.hours>0&&facts.ranges.length){const schedule=facts.ranges.map(x=>homeFriendlyHour(x.a)+' à '+homeFriendlyHour(x.b)).join(' • ');el.innerHTML='Ton planning d’aujourd’hui : <strong>'+schedule+'</strong>. Bonne journée !';return}
+ if(facts.isLeave){el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Congé</strong> indiqué dans ton planning.';return}
+ if(facts.isBlank){el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Jour de repos</strong>. Profite bien de ta journée !';return}
+ el.innerHTML='Tu ne travailles pas aujourd’hui · <strong>Statut indiqué dans le planning</strong>.'
 }
 
 function mobileHomeMode(){try{return window.matchMedia('(max-width:700px)').matches}catch(_){return window.innerWidth<=700}}
@@ -758,10 +756,14 @@ function homeEmployeeIndex(model,name){
  const target=homeNorm(name),employees=model?.employees||[];
  return employees.findIndex(e=>{const n=homeNorm(e?.name),base=n.replace(/\s+[a-z]$/,'');return n===target||base===target})
 }
+function homeDayFacts(model,dateKey,name){
+ const idx=homeEmployeeIndex(model,name);if(idx<0)return{hours:0,ranges:[],idx:-1,row:[],isLeave:false,isBlank:false,hasOtherStatus:false};
+ const row=model?.days?.[dateKey]?.cells?.[idx]||[],ranges=homeWorkRanges(row,model||{}),hours=row.reduce((n,v)=>n+(v==='g'||v==='b'?0.25:0),0);
+ const isLeave=hours===0&&row.some(v=>v==='y'),isBlank=row.every(v=>!v),hasOtherStatus=hours===0&&row.some(v=>v&&v!=='y');
+ return{hours,ranges,idx,row,isLeave,isBlank,hasOtherStatus}
+}
 function homeDayHours(model,dateKey,name){
- const idx=homeEmployeeIndex(model,name);if(idx<0)return{hours:0,ranges:[],idx:-1};
- const row=model?.days?.[dateKey]?.cells?.[idx]||[],ranges=homeWorkRanges(row,model||{});
- return{hours:row.reduce((n,v)=>n+(v==='g'||v==='b'?0.25:0),0),ranges,idx}
+ const d=homeDayFacts(model,dateKey,name);return{hours:d.hours,ranges:d.ranges,idx:d.idx}
 }
 function homeWidgetVisible(cfg,id,profile,subroleKeys=[]){
  const node=cfg?.home_widgets?.[id]||{},role=profile?.role||'';
@@ -805,11 +807,10 @@ function homeSuggestedTasks(profile,cfg){
 async function renderMobileHomeDashboard(profile,name,cfg){
  const host=$('mobileHomeDashboard');if(!host||!mobileHomeMode())return;
  host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
- const today=new Date(),todayKey=homeIsoDate(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),21));
- const [subRes,weeksRes,absenceRes,notifRes,profilesRes]=await Promise.all([
+ const today=new Date(),todayKey=homeIsoDate(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),84));
+ const [subRes,weeksRes,notifRes,profilesRes]=await Promise.all([
   Promise.resolve(db.rpc('my_subrole_keys')).catch(()=>({data:[]})),
   db.from('planning_weeks').select('week_start,data').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
-  db.from('planning_absences').select('type,start_date,end_date,status').eq('user_id',homeSession.user.id).gte('end_date',todayKey).order('start_date').limit(6),
   db.from('planning_notifications').select('id,kind,title,message,target_url,created_at,read_at').eq('user_id',homeSession.user.id).order('created_at',{ascending:false}).limit(6),
   db.from('profiles').select('id,display_name,role,avatar_path,profile_color,avatar_frame').limit(120)
  ]);
@@ -827,10 +828,19 @@ async function renderMobileHomeDashboard(profile,name,cfg){
   if(x.dateKey===todayKey&&d.ranges.length&&d.ranges.every(r=>r.b<=nowHour))continue;
   nextShift={...x,...d};break
  }
- const currentHours=currentWeek?Object.keys(currentWeek.days||{}).reduce((sum,dateKey)=>sum+homeDayHours(currentWeek,dateKey,name).hours,0):0;
- let nextRest=null;
- for(const x of allDays.filter(x=>x.dateKey>todayKey)){if(homeEmployeeIndex(x.model,name)>=0&&homeDayHours(x.model,x.dateKey,name).hours===0){nextRest=x.dateKey;break}}
- const absences=absenceRes.error?[]:(absenceRes.data||[]),nextAbs=absences.find(a=>a.status==='approved')||absences.find(a=>a.status==='pending')||null;
+ const currentHours=currentWeek?Object.keys(currentWeek.days||{}).reduce((sum,dateKey)=>sum+homeDayFacts(currentWeek,dateKey,name).hours,0):0;
+ let nextRest=null,nextLeave=null;
+ for(const x of allDays.filter(x=>x.dateKey>todayKey)){const d=homeDayFacts(x.model,x.dateKey,name);if(d.idx>=0&&d.isBlank){nextRest=x.dateKey;break}}
+ const firstLeaveIndex=allDays.findIndex(x=>homeDayFacts(x.model,x.dateKey,name).isLeave);
+ if(firstLeaveIndex>=0){
+  const first=allDays[firstLeaveIndex];let end=first.dateKey;
+  for(let i=firstLeaveIndex+1;i<allDays.length;i++){
+   const prev=homeParseDate(end),expected=homeIsoDate(homeAddDays(prev,1)),x=allDays[i];
+   if(x.dateKey!==expected||!homeDayFacts(x.model,x.dateKey,name).isLeave)break;
+   end=x.dateKey
+  }
+  nextLeave={start:first.dateKey,end}
+ }
  const notifications=notifRes.error?[]:(notifRes.data||[]);
  const profileRows=profilesRes.error?[]:(profilesRes.data||[]);
  const todayModel=weeks.find(w=>w?.days?.[todayKey])||currentWeek;
@@ -852,11 +862,11 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  }
  const stats=[];
  if(widget('hours'))stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">◷</span>Mes heures</div><strong>'+homeEsc(String(currentHours).replace('.',','))+' h</strong><small>planifiées cette semaine</small><div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div></button>');
- const absenceLevel=profile?.role==='admin'?'manage':cfg?.planning_widgets?.absences?.[profile?.role];
- const canUseAbsences=absenceLevel===true||absenceLevel==='request'||absenceLevel==='manage';
- if(widget('absences')&&canUseAbsences){
-  const absenceValue=nextAbs?(nextAbs.status==='pending'?'En attente':homeParseDate(nextAbs.start_date).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})):'Aucun',absenceSub=nextAbs?(nextAbs.status==='pending'?'demande en cours':'prochaine absence'):'congé à venir';
-  stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">☂</span>Congés</div><strong>'+homeEsc(absenceValue)+'</strong><small>'+homeEsc(absenceSub)+'</small></button>')
+ if(widget('absences')){
+  const leaveStart=nextLeave?.start||'',leaveEnd=nextLeave?.end||'',leaveTarget=leaveStart?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(leaveStart))))+'&day='+encodeURIComponent(leaveStart)+'&focus=leave':'planning.html';
+  const short=k=>homeParseDate(k).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+  const leaveValue=!leaveStart?'Aucun':leaveStart===leaveEnd?short(leaveStart):short(leaveStart)+' → '+short(leaveEnd),leaveSub=leaveStart?'cases jaunes du planning':'aucun congé planifié';
+  stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(leaveTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">☂</span>Congés</div><strong>'+homeEsc(leaveValue)+'</strong><small>'+homeEsc(leaveSub)+'</small></button>')
  }
  if(widget('next_rest')){const restTarget=nextRest?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextRest))))+'&day='+encodeURIComponent(nextRest)+'&focus=rest':'planning.html';stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(restTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">▣</span>Prochain repos</div><strong>'+(nextRest?homeEsc(homeParseDate(nextRest).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')):'—')+'</strong><small>'+(nextRest?'Jour de repos':'non déterminé')+'</small></button>')}
  if(stats.length)sections.push('<section class="mhdStats">'+stats.join('')+'</section>');
