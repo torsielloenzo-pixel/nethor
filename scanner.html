@@ -339,15 +339,9 @@ function openArticle(){
   location.href='articles.html?ean='+encodeURIComponent(currentProduct.ean)+'&source=scanner'
 }
 
-async function scannerPageAccess(session){
-  const [{data:profile},{data:setting}]=await Promise.all([
-    db.from('profiles').select('role').eq('id',session.user.id).maybeSingle(),
-    db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
-  ]);
-  const cfg=setting?.value&&typeof setting.value==='object'?setting.value:{};
+function scannerPageAccess(role,cfg){
   const page=cfg.pages?.scanner&&typeof cfg.pages.scanner==='object'?cfg.pages.scanner:{};
   if(page.enabled===false)return false;
-  const role=profile?.role||'';
   const explicit=cfg.role_permissions?.scanner?.[role];
   if(['none','view','operate','manage'].includes(explicit))return explicit!=='none';
   if(Array.isArray(page.roles))return page.roles.includes(role);
@@ -364,10 +358,13 @@ function applyScannerPageConfig(cfg){
 async function boot(){
   const {data:{session}}=await db.auth.getSession();
   if(!session)return location.replace('index.html');
-  const {data:setting}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
+  const [{data:profile},{data:setting}]=await Promise.all([
+    db.from('profiles').select('role').eq('id',session.user.id).maybeSingle(),
+    db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
+  ]);
   const cfg=setting?.value&&typeof setting.value==='object'?setting.value:{};
   applyScannerPageConfig(cfg);
-  if(!(await scannerPageAccess(session)))return location.replace('home.html');
+  if(!profile||!scannerPageAccess(profile.role,cfg))return location.replace('home.html');
   sessionUserId=session.user.id;
   lockScannerViewport();
   await loadCameraPreference();
