@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa">
+<script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
+<title>Scanner (bêta) · Nethor</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nethor">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{--red:#ff3824;--orange:#ff8128;--ink:#1f2732;--muted:#7d8692;--line:#e3e7eb;--card:#fff;--bg:#f3f5f7;--grad:linear-gradient(135deg,#ff3824,#ff8128)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100dvh;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(22px + env(safe-area-inset-bottom))}
+button,input{font:inherit}button{cursor:pointer}
+.page{width:min(100%,560px);margin:0 auto}
+.top{display:flex;align-items:center;gap:11px;margin:0 2px 13px}
+.back{width:42px;height:42px;flex:none;border:1px solid #e1e5e9;border-radius:14px;background:#fff;color:#2b3036;display:grid;place-items:center;font-size:24px;font-weight:750;box-shadow:0 3px 10px #00000008}
+.title{min-width:0;flex:1}.titleRow{display:flex;align-items:center;gap:8px;min-width:0}.title h1{margin:0;font-size:25px;line-height:1.05;letter-spacing:-.65px;white-space:nowrap}.beta{padding:5px 8px;border-radius:999px;background:#fff0e9;color:#db4c22;border:1px solid #ffd3c3;font-size:8px;font-weight:950;letter-spacing:.5px;text-transform:uppercase}.title p{margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.35}
+.cameraCard{position:relative;overflow:hidden;border-radius:22px;background:#11151a;min-height:350px;box-shadow:0 16px 38px rgba(11,18,28,.16)}
+.cameraHead{position:absolute;z-index:8;left:14px;right:14px;top:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}
+.cameraState{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#11151acc;border:1px solid #ffffff1c;color:#fff;font-size:9px;font-weight:850;backdrop-filter:blur(12px)}
+.cameraDot{width:7px;height:7px;border-radius:50%;background:#ff6a35;box-shadow:0 0 0 4px #ff6a3523}
+.cameraFormat{padding:7px 9px;border-radius:999px;background:#11151acc;border:1px solid #ffffff1c;color:#cdd2d8;font-size:8px;font-weight:850;backdrop-filter:blur(12px)}
+#reader{width:100%;height:350px;background:#11151a;overflow:hidden}
+#reader video{width:100%!important;height:350px!important;object-fit:cover!important;border-radius:0!important}
+#reader img{display:none!important}
+#reader>div{border:0!important}
+#reader__scan_region{min-height:350px!important;background:#11151a!important}
+#reader__dashboard{display:none!important}
+.scanOverlay{position:absolute;inset:0;z-index:6;pointer-events:none;display:grid;place-items:center}
+.scanFrame{width:min(78%,310px);height:126px;border-radius:18px;position:relative;box-shadow:0 0 0 999px rgba(5,8,12,.28)}
+.scanFrame:before,.scanFrame:after,.scanFrame i:before,.scanFrame i:after{content:"";position:absolute;width:30px;height:30px;border-color:#ff6a35;border-style:solid}
+.scanFrame:before{left:0;top:0;border-width:3px 0 0 3px;border-radius:13px 0 0 0}.scanFrame:after{right:0;top:0;border-width:3px 3px 0 0;border-radius:0 13px 0 0}.scanFrame i:before{left:0;bottom:0;border-width:0 0 3px 3px;border-radius:0 0 0 13px}.scanFrame i:after{right:0;bottom:0;border-width:0 3px 3px 0;border-radius:0 0 13px 0}
+.scanLine{position:absolute;left:12px;right:12px;top:50%;height:2px;background:linear-gradient(90deg,transparent,#ff7d3c,#ff3b26,#ff7d3c,transparent);box-shadow:0 0 12px #ff603d;animation:scanline 2s ease-in-out infinite}
+@keyframes scanline{0%,100%{transform:translateY(-42px);opacity:.5}50%{transform:translateY(42px);opacity:1}}
+.cameraFallback{position:absolute;z-index:7;inset:0;display:none;place-items:center;padding:28px;text-align:center;color:#fff;background:linear-gradient(145deg,#171c22,#252a31)}.cameraFallback.show{display:grid}.cameraFallback strong{display:block;font-size:18px}.cameraFallback p{margin:7px 0 14px;color:#b8c0c9;font-size:11px;line-height:1.5}.cameraFallback button{min-height:42px;border:0;border-radius:12px;padding:0 14px;background:var(--grad);color:#fff;font-size:10px;font-weight:900}
+.hint{display:flex;align-items:flex-start;gap:9px;margin:10px 2px 0;padding:0 3px;color:#77808b;font-size:9.5px;line-height:1.45}.hintIcon{width:21px;height:21px;flex:none;border-radius:7px;background:#fff0e8;color:#ed532a;display:grid;place-items:center;font-weight:950}
+.panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 7px 22px #1420300a}
+.panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.panelHead h2{margin:0;font-size:15px}.panelHead small{color:#9299a2;font-size:8px}
+.manual{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.manual input{min-width:0;height:44px;border:1px solid #dfe3e7;border-radius:12px;padding:0 12px;background:#fafbfc;color:var(--ink);font-size:13px;font-weight:750;outline:none}.manual input:focus{border-color:#ff815f;box-shadow:0 0 0 3px #ff60351a}.manual button,.resultActions button{min-height:44px;border:0;border-radius:12px;padding:0 14px;font-size:10px;font-weight:900}.manual button{background:#242a31;color:#fff}
+.result{display:none;margin-top:12px}.result.show{display:block}
+.resultStatus{display:flex;align-items:center;gap:7px;margin-bottom:9px;font-size:9px;font-weight:900;color:#308552}.resultStatus.notFound{color:#c64f2e}.resultStatusDot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.product{display:grid;grid-template-columns:82px minmax(0,1fr);gap:12px}.productPhoto{width:82px;height:82px;border-radius:15px;background:#f0f2f4;display:grid;place-items:center;overflow:hidden;font-size:30px}.productPhoto img{width:100%;height:100%;object-fit:cover}.productCopy{min-width:0}.productCopy h3{margin:1px 0 4px;font-size:18px;line-height:1.08}.productCopy .path{color:#7e8791;font-size:9px;line-height:1.4}.statusBadge{display:inline-flex;margin-top:7px;padding:5px 8px;border-radius:999px;font-size:8px;font-weight:900}.statusBadge.on{background:#e8f8ed;color:#248644}.statusBadge.off{background:#fff0ec;color:#c94a2c}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.fact{padding:9px 10px;border:1px solid #eceff2;border-radius:11px;background:#f9fafb;min-width:0}.fact.wide{grid-column:1/-1}.fact span{display:block;color:#9299a2;font-size:7.5px;font-weight:850;text-transform:uppercase;letter-spacing:.45px}.fact strong{display:block;margin-top:3px;font-size:10.5px;overflow-wrap:anywhere}
+.resultActions{display:grid;grid-template-columns:1fr 1.15fr;gap:8px;margin-top:12px}.resultActions .secondary{background:#eff1f3;color:#30363d}.resultActions .primary{background:var(--grad);color:#fff}
+.notFoundBox{padding:16px;border:1px dashed #efb8a7;border-radius:14px;background:#fff7f3}.notFoundBox strong{display:block;font-size:14px}.notFoundBox p{margin:5px 0 0;color:#8f6e63;font-size:9.5px;line-height:1.45}
+.desktopOnly{display:none}
+:root[data-theme="dark"]{color-scheme:dark;--ink:#f2f4f6;--muted:#a8afb8;--line:#30353b;--card:#1b1e22;--bg:#111317}
+:root[data-theme="dark"] .back{background:#202328;border-color:#373c42;color:#f4f5f7}:root[data-theme="dark"] .beta{background:#3a261f;border-color:#613728;color:#ff9b77}:root[data-theme="dark"] .panel{background:#1b1e22;border-color:#30353b}:root[data-theme="dark"] .manual input{background:#20242a;border-color:#383d43;color:#f4f5f7}:root[data-theme="dark"] .manual button{background:#efefef;color:#1d2126}:root[data-theme="dark"] .fact{background:#20242a;border-color:#30353b}:root[data-theme="dark"] .productPhoto{background:#24282d}:root[data-theme="dark"] .resultActions .secondary{background:#282c31;color:#eee}:root[data-theme="dark"] .notFoundBox{background:#2a211e;border-color:#654031}
+@media(min-width:901px){.cameraCard,.hint,.panel{display:none}.desktopOnly{display:block;margin-top:70px;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--card);text-align:center}.desktopOnly strong{font-size:20px}.desktopOnly p{color:var(--muted);font-size:11px}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="top">
+    <button class="back" type="button" onclick="goBack()" aria-label="Retour">‹</button>
+    <div class="title"><div class="titleRow"><h1>Scanner</h1><span class="beta">bêta</span></div><p>Scanne un code EAN pour retrouver sa fiche article.</p></div>
+  </div>
+
+  <section class="cameraCard" aria-label="Scanner un code-barres">
+    <div class="cameraHead"><span class="cameraState"><i class="cameraDot"></i><span id="cameraStateText">Initialisation…</span></span><span class="cameraFormat">EAN-8 · EAN-13</span></div>
+    <div id="reader"></div>
+    <div class="scanOverlay"><div class="scanFrame"><i></i><span class="scanLine"></span></div></div>
+    <div id="cameraFallback" class="cameraFallback"><div><strong>Caméra indisponible</strong><p id="cameraFallbackText">Autorise l’accès à la caméra pour scanner un code-barres.</p><button type="button" onclick="startCamera()">Réessayer</button></div></div>
+  </section>
+
+  <div class="hint"><span class="hintIcon">i</span><span>Place le code-barres à l’intérieur du cadre. La recherche démarre automatiquement dès que l’EAN est reconnu.</span></div>
+
+  <section class="panel">
+    <div class="panelHead"><h2>Recherche manuelle</h2><small>EAN</small></div>
+    <form class="manual" onsubmit="manualSearch(event)"><input id="eanInput" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="Ex. 3760123456789" aria-label="Code EAN"><button type="submit">Rechercher</button></form>
+
+    <div id="result" class="result" aria-live="polite"></div>
+  </section>
+
+  <section class="desktopOnly"><strong>Scanner est réservé au mobile</strong><p>Ouvre Nethor sur ton téléphone pour utiliser l’appareil photo.</p></section>
+</main>
+
+<script>
+const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);
+let scanner=null,scannerRunning=false,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null;
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+function goBack(){
+  try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1)return history.back()}catch(_){}
+  location.href='home.html'
+}
+function isMobileView(){return matchMedia('(max-width:900px)').matches||new URLSearchParams(location.search).get('mobile_preview')==='1'}
+function setCameraState(text){const el=$('cameraStateText');if(el)el.textContent=text}
+function showCameraFallback(message){
+  $('cameraFallbackText').textContent=message||'Impossible d’ouvrir la caméra.';
+  $('cameraFallback').classList.add('show');
+  setCameraState('Caméra indisponible')
+}
+function hideCameraFallback(){$('cameraFallback').classList.remove('show')}
+function normalizeEan(value){return String(value||'').replace(/\D/g,'').slice(0,14)}
+function validEanLength(v){return v.length===8||v.length===12||v.length===13}
+function eanCandidates(v){v=normalizeEan(v);const out=[v];if(v.length===12)out.push('0'+v);return [...new Set(out.filter(Boolean))]}
+function safeStop(){
+  if(!scanner||!scannerRunning)return Promise.resolve();
+  scannerRunning=false;
+  return scanner.stop().catch(()=>{}).then(()=>{try{scanner.clear()}catch(_){}});
+}
+
+async function startCamera(){
+  if(!isMobileView())return;
+  hideCameraFallback();
+  if(!window.Html5Qrcode||!window.Html5QrcodeSupportedFormats){
+    showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN manuellement.');
+    return
+  }
+  await safeStop();
+  try{
+    scanner=new Html5Qrcode('reader',{
+      formatsToSupport:[
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A
+      ],
+      verbose:false
+    });
+    setCameraState('Demande d’accès…');
+    await scanner.start(
+      {facingMode:'environment'},
+      {fps:12,qrbox:(w,h)=>({width:Math.min(310,Math.max(220,w*.78)),height:Math.min(130,Math.max(100,h*.34))}),aspectRatio:1.777778,disableFlip:true},
+      onScanSuccess,
+      ()=>{}
+    );
+    scannerRunning=true;
+    setCameraState('Prêt à scanner');
+  }catch(e){
+    console.warn('Scanner camera:',e);
+    showCameraFallback('Autorise la caméra dans les réglages du navigateur puis touche « Réessayer ».')
+  }
+}
+
+async function onScanSuccess(decodedText){
+  const code=normalizeEan(decodedText),now=Date.now();
+  if(!validEanLength(code)||searchBusy)return;
+  if(code===lastCode&&now-lastCodeAt<1800)return;
+  lastCode=code;lastCodeAt=now;
+  try{navigator.vibrate?.(55)}catch(_){}
+  setCameraState('EAN reconnu');
+  await findProduct(code,true)
+}
+
+async function findProduct(raw,fromCamera=false){
+  const code=normalizeEan(raw);
+  $('eanInput').value=code;
+  if(!validEanLength(code)){
+    renderNotFound(code,'Le code doit contenir 8 ou 13 chiffres.');
+    return
+  }
+  searchBusy=true;
+  setCameraState('Recherche de la fiche…');
+  const candidates=eanCandidates(code);
+  const {data,error}=await db.from('products')
+    .select('id,name,ean,article_code,photo_url,on_sale,active,packaging_count,shelf_capacity,product_families(name,slug),product_categories(name),product_packagings(name)')
+    .eq('active',true)
+    .in('ean',candidates)
+    .limit(2);
+  searchBusy=false;
+  if(error){
+    console.error(error);
+    renderNotFound(code,'Impossible de rechercher la fiche pour le moment.');
+    if(fromCamera)setTimeout(()=>startCamera(),1200);
+    return
+  }
+  const product=(data||[])[0]||null;
+  if(!product){
+    await safeStop();
+    renderNotFound(code,'Aucune fiche article ne correspond à cet EAN.');
+    setCameraState('Article introuvable');
+    return
+  }
+  currentProduct=product;
+  await safeStop();
+  renderProduct(product);
+  setCameraState('Fiche trouvée')
+}
+
+function renderProduct(p){
+  const family=p.product_families?.name||'Non répertorié';
+  const category=p.product_categories?.name||'Non répertorié';
+  const packaging=p.product_packagings?.name||'Non répertorié';
+  const pack=packaging+(p.packaging_count?' · '+p.packaging_count:'');
+  $('result').className='result show';
+  $('result').innerHTML=
+    '<div class="resultStatus"><span class="resultStatusDot"></span>Fiche article trouvée</div>'+
+    '<div class="product">'+
+      '<div class="productPhoto">'+(p.photo_url?'<img src="'+esc(p.photo_url)+'" alt="">':'📦')+'</div>'+
+      '<div class="productCopy"><h3>'+esc(p.name||'Article')+'</h3><div class="path">'+esc(family)+' · '+esc(category)+'</div><span class="statusBadge '+(p.on_sale?'on':'off')+'">'+(p.on_sale?'EN VENTE':'HORS VENTE')+'</span></div>'+
+    '</div>'+
+    '<div class="facts">'+
+      '<div class="fact wide"><span>EAN</span><strong>'+esc(p.ean||'—')+'</strong></div>'+
+      '<div class="fact"><span>Code article</span><strong>'+esc(p.article_code||'—')+'</strong></div>'+
+      '<div class="fact"><span>Conditionnement</span><strong>'+esc(pack)+'</strong></div>'+
+    '</div>'+
+    '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Scanner un autre</button><button class="primary" type="button" onclick="openArticle()">Ouvrir la fiche article</button></div>';
+  requestAnimationFrame(()=>$('result').scrollIntoView({behavior:'smooth',block:'nearest'}))
+}
+function renderNotFound(code,message){
+  currentProduct=null;
+  $('result').className='result show';
+  $('result').innerHTML=
+    '<div class="resultStatus notFound"><span class="resultStatusDot"></span>Fiche introuvable</div>'+
+    '<div class="notFoundBox"><strong>'+esc(code||'EAN non reconnu')+'</strong><p>'+esc(message||'Aucune fiche article trouvée.')+'</p></div>'+
+    '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Réessayer</button><button class="primary" type="button" onclick="focusManual()">Saisir un EAN</button></div>';
+  requestAnimationFrame(()=>$('result').scrollIntoView({behavior:'smooth',block:'nearest'}))
+}
+function scanAnother(){
+  currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';startCamera()
+}
+function focusManual(){$('eanInput').focus();$('eanInput').select()}
+function manualSearch(e){e.preventDefault();safeStop().then(()=>findProduct($('eanInput').value,false))}
+function openArticle(){
+  if(!currentProduct?.ean)return;
+  location.href='articles.html?ean='+encodeURIComponent(currentProduct.ean)+'&source=scanner'
+}
+
+async function boot(){
+  const {data:{session}}=await db.auth.getSession();
+  if(!session)return location.replace('index.html');
+  if(!isMobileView())return;
+  setTimeout(startCamera,160)
+}
+window.addEventListener('pagehide',()=>{safeStop()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)safeStop();else if(isMobileView()&&!currentProduct&&!scannerRunning)setTimeout(startCamera,180)});
+boot();
+</script>
+</body>
+</html>
