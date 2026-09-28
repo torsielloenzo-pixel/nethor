@@ -304,7 +304,7 @@ function initials(n){return String(n||'U').trim().split(/\s+/).slice(0,2).map(x=
 function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1}
 function isStandalone(){return window.matchMedia?.('(display-mode: standalone)')?.matches===true||navigator.standalone===true}
 const MOBILE_PROFILE_QUERY=window.matchMedia('(max-width:700px)');
-function isMobileProfileView(){return MOBILE_PROFILE_QUERY.matches}
+function isMobileProfileView(){return document.documentElement.classList.contains('nethorPhoneDevice')||MOBILE_PROFILE_QUERY.matches}
 function pushSupported(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window}
 function base64UrlToUint8Array(value){const pad='='.repeat((4-value.length%4)%4),base64=(value+pad).replace(/-/g,'+').replace(/_/g,'/'),raw=atob(base64),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
 function setPushUI(mode,title,text){
