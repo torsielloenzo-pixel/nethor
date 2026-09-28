@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nethor">
+ <defs><linearGradient id="g" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="#ff8a00"/><stop offset=".52" stop-color="#ff5a22"/><stop offset="1" stop-color="#f2381f"/></linearGradient></defs>
+ <g fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M13 49V15"/>
+  <path d="M13 15L51 49"/>
+  <path d="M51 49V15"/>
+ </g>
+ </svg>
