@@ -25,12 +25,13 @@ function inject(){
  toolbar.prepend(bar);
  const dock=document.getElementById('mobilePlanningActionsDock')||document.getElementById('emptyState');
  const view=document.createElement('section');view.id='agendaView';view.className='agendaView hidden';view.setAttribute('aria-label','Agenda de la semaine');
- view.innerHTML='<div id="mobileAgendaModeBar" class="mobileAgendaModeBar"><button id="mobileAgendaDayBtn" class="mobileAgendaModeBtn active" type="button">Jour</button><button id="mobileAgendaWeekBtn" class="mobileAgendaModeBtn" type="button">Semaine</button></div><div id="mobileAgendaDays" class="mobileAgendaDays"></div><div class="agendaHeader"><div><span class="agendaEyebrow">VUE ÉQUIPE</span><h2 id="agendaTitle">Agenda de la semaine</h2><p id="agendaSubtitle">Horaires calculés depuis le même import Excel.</p></div><button class="btn light agendaTodayBtn" type="button" id="agendaTodayBtn">Aujourd’hui</button></div><div id="agendaStats" class="agendaStats"></div><div id="agendaMount" class="agendaMount"></div>';
+ view.innerHTML='<div id="mobileAgendaModeBar" class="mobileAgendaModeBar mobilePlanningPrimaryNav"><button id="mobileAgendaDayBtn" class="mobileAgendaModeBtn active" type="button">Jour</button><button id="mobileAgendaWeekBtn" class="mobileAgendaModeBtn" type="button">Semaine</button><button id="mobileAgendaCalendarBtn" class="mobileAgendaModeBtn" type="button">Calendrier</button></div><div id="mobileAgendaDays" class="mobileAgendaDays mobilePlanningSelector"></div><div class="agendaHeader"><div><span class="agendaEyebrow">VUE ÉQUIPE</span><h2 id="agendaTitle">Agenda de la semaine</h2><p id="agendaSubtitle">Horaires calculés depuis le même import Excel.</p></div><button class="btn light agendaTodayBtn" type="button" id="agendaTodayBtn">Aujourd’hui</button></div><div id="mobileAgendaContentTitle" class="mobileAgendaContentTitle">Agenda</div><div id="agendaStats" class="agendaStats"></div><div id="agendaMount" class="agendaMount"></div>';
  if(dock&&dock.parentNode)dock.parentNode.insertBefore(view,dock.nextSibling);
  document.getElementById('layoutClassicBtn').onclick=()=>setLayout('classic',true);
  document.getElementById('layoutAgendaBtn').onclick=()=>setLayout('agenda',true);
  document.getElementById('mobileAgendaDayBtn').onclick=()=>setMobileMode('day',true);
  document.getElementById('mobileAgendaWeekBtn').onclick=()=>setMobileMode('week',true);
+ document.getElementById('mobileAgendaCalendarBtn').onclick=()=>openMobilePlanningCalendar();
  document.getElementById('agendaTodayBtn').onclick=goToday;
 }
 function setLayout(v,sound){
@@ -45,11 +46,37 @@ function setLayout(v,sound){
  if(layout==='agenda')renderAgenda();
  if(sound&&!isMobile())try{window.NettoSounds?.play?.('switch')}catch(_){}
 }
+function clearRestFocus(){
+ if(!restFocusActive())return;
+ try{const u=new URL(location.href);u.searchParams.delete('focus');history.replaceState(history.state,'',u.pathname+u.search+u.hash)}catch(_){}
+ restFocusRevealed=false
+}
+function isoWeekNumber(d){
+ const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+ const day=x.getUTCDay()||7;x.setUTCDate(x.getUTCDate()+4-day);
+ const yearStart=new Date(Date.UTC(x.getUTCFullYear(),0,1));
+ return Math.ceil((((x-yearStart)/86400000)+1)/7)
+}
+function mobileWeekRangeLabel(a){
+ const b=addDays(a,6);
+ const left=a.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}).replace('.','');
+ const right=b.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}).replace('.','');
+ return 'Du '+left+' au '+right
+}
+function openMobilePlanningCalendar(){
+ clearRestFocus();
+ document.getElementById('mobileAgendaCalendarBtn')?.classList.add('active');
+ document.getElementById('mobileAgendaDayBtn')?.classList.remove('active');
+ document.getElementById('mobileAgendaWeekBtn')?.classList.remove('active');
+ if(typeof setPlanningView==='function')setPlanningView('year')
+}
 function setMobileMode(v,sound){
+ if(sound)clearRestFocus();
  mobileMode=v==='week'?'week':'day';
  try{localStorage.setItem('nettoAgendaMobileMode',mobileMode)}catch(_){}
  document.getElementById('mobileAgendaDayBtn')?.classList.toggle('active',mobileMode==='day');
  document.getElementById('mobileAgendaWeekBtn')?.classList.toggle('active',mobileMode==='week');
+ document.getElementById('mobileAgendaCalendarBtn')?.classList.remove('active');
  if(sound)try{window.NettoSounds?.play?.('switch')}catch(_){}
  renderAgenda();
 }
@@ -62,13 +89,34 @@ function goToday(){
 }
 function renderDayPicker(a){
  const host=document.getElementById('mobileAgendaDays');if(!host)return;
- if(!isMobile()||mobileMode!=='day'){host.innerHTML='';return}
- const active=typeof currentDay==='number'?currentDay:0;
- let html='<button class="agendaDayArrow" type="button" data-move="-1" aria-label="Jour précédent">‹</button>';
- for(let di=0;di<7;di++){const dt=addDays(a,di);html+='<button class="mobileAgendaDay '+(di===active?'active':'')+'" type="button" data-day="'+di+'"><span>'+escLocal(dayShort(dt))+'</span><strong>'+dt.getDate()+'</strong></button>'}
- html+='<button class="agendaDayArrow" type="button" data-move="1" aria-label="Jour suivant">›</button>';host.innerHTML=html;
- host.querySelectorAll('[data-day]').forEach(btn=>btn.onclick=()=>{currentDay=Number(btn.dataset.day);renderAgenda()});
- host.querySelectorAll('[data-move]').forEach(btn=>btn.onclick=()=>{const step=Number(btn.dataset.move),next=(typeof currentDay==='number'?currentDay:0)+step;if(next<0){loadWeek(addDays(currentWeekStart,-7)).then(()=>{currentDay=6;renderAgenda()})}else if(next>6){loadWeek(addDays(currentWeekStart,7)).then(()=>{currentDay=0;renderAgenda()})}else{currentDay=next;renderAgenda()}});
+ if(!isMobile()){host.innerHTML='';return}
+ const active=Math.max(0,Math.min(6,typeof currentDay==='number'?currentDay:0));
+ const selected=addDays(a,active),isDay=mobileMode==='day';
+ document.getElementById('mobileAgendaDayBtn')?.classList.toggle('active',isDay);
+ document.getElementById('mobileAgendaWeekBtn')?.classList.toggle('active',!isDay);
+ document.getElementById('mobileAgendaCalendarBtn')?.classList.remove('active');
+ host.innerHTML='<button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="-1" aria-label="'+(isDay?'Jour précédent':'Semaine précédente')+'">‹</button><button class="mobilePlanningSelectBtn" type="button" id="mobilePlanningSelectBtn"><span class="mobilePlanningSelectIcon" aria-hidden="true">▣</span><span>'+(isDay?'Sélection date':'Sélection semaine')+'</span></button><button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="1" aria-label="'+(isDay?'Jour suivant':'Semaine suivante')+'">›</button><input id="mobilePlanningDateInput" class="mobilePlanningDateInput" type="date" value="'+isoDate(isDay?selected:a)+'" aria-label="'+(isDay?'Choisir une date':'Choisir une semaine à partir d’une date')+'">';
+ const input=document.getElementById('mobilePlanningDateInput');
+ document.getElementById('mobilePlanningSelectBtn').onclick=()=>{try{input?.showPicker?.()}catch(_){input?.click?.()}};
+ if(input)input.onchange=async()=>{
+  const value=input.value;if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return;
+  clearRestFocus();
+  const d=new Date(value+'T12:00:00'),ws=startOfWeek(d);
+  currentWeekStart=ws;currentDay=isDay?Math.max(0,Math.min(6,(d.getDay()+6)%7)):0;
+  await loadWeek(ws)
+ };
+ host.querySelectorAll('[data-move]').forEach(btn=>btn.onclick=async()=>{
+  clearRestFocus();
+  const step=Number(btn.dataset.move)||0;
+  if(isDay){
+   const next=active+step;
+   if(next<0){currentDay=6;await loadWeek(addDays(currentWeekStart,-7))}
+   else if(next>6){currentDay=0;await loadWeek(addDays(currentWeekStart,7))}
+   else{currentDay=next;renderAgenda()}
+  }else{
+   currentDay=0;await loadWeek(addDays(currentWeekStart,step*7))
+  }
+ })
 }
 function isCurrentAgendaEmployee(emp){
  try{
@@ -110,7 +158,7 @@ function renderDayAgenda(a){
  const di=typeof currentDay==='number'?currentDay:0,dt=addDays(a,di),key=isoDate(dt),day=model.days?.[key],employees=model.employees||[],rows=day?.cells||[],focusRest=restFocusActive();
  const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle');
  if(title)title.textContent=dayFull(dt).replace(/^./,c=>c.toUpperCase());
- if(sub)sub.textContent=focusRest?'Jour ciblé depuis « Prochain repos »':'Planning du jour • horaires de travail uniquement';
+ if(sub)sub.textContent=focusRest?'Jour ciblé depuis « Prochain repos »':'Vue détaillée de la journée';
  const items=[];
  employees.forEach((emp,ri)=>{
   const ranges=agendaRanges(rows[ri]||[]),isMe=isCurrentAgendaEmployee(emp);
@@ -142,8 +190,8 @@ function renderDayAgenda(a){
 function renderWeekAgenda(a){
  const b=addDays(a,6),todayKey=isoDate(new Date()),employees=model.employees||[];
  const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle'),stats=document.getElementById('agendaStats');
- if(title)title.textContent='Semaine du '+a.getDate()+' au '+b.getDate()+' '+b.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
- if(sub)sub.textContent='Vue équipe simplifiée • glisse horizontalement pour voir la semaine';
+ if(title)title.textContent=isMobile()?'Semaine '+isoWeekNumber(a):'Semaine du '+a.getDate()+' au '+b.getDate()+' '+b.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+ if(sub)sub.textContent=isMobile()?mobileWeekRangeLabel(a):'Vue équipe simplifiée • glisse horizontalement pour voir la semaine';
  let html='<div class="agendaGrid"><div class="agendaCorner">Équipe</div>',weekHours=0;
  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0);html+='<div class="agendaDayHead '+(key===todayKey?'today ':'')+(active?'activeDay':'')+'"><strong>'+escLocal(dayShort(dt))+'</strong><span>'+dt.getDate()+'</span></div>'}
  employees.forEach((emp,ri)=>{
@@ -169,7 +217,6 @@ function renderAgenda(){
   document.getElementById('mobileAgendaModeBar')?.classList.toggle('hidden',!isMobile());
   document.getElementById('agendaStats')?.classList.toggle('hidden',isMobile());
   if(isMobile()){
-   if(restFocusActive())mobileMode='day';
    host.innerHTML=mobileMode==='day'?renderDayAgenda(a):renderWeekAgenda(a);
    if(restFocusActive()&&!restFocusRevealed){
     const target=host.querySelector('.agendaRestFocusBlock,.agendaDayCardRest');
