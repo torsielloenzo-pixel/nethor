@@ -1815,7 +1815,7 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=142;
+const APP_RELEASE=143;
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -1981,61 +1981,37 @@ function isNethorMobilePhone(){
  if(typeof navigator.userAgentData?.mobile==='boolean')return navigator.userAgentData.mobile;
  return /Android.+Mobile|iPhone|iPod|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua)
 }
-function isNethorLandscape(){
- const type=screen.orientation?.type;
- if(type)return String(type).startsWith('landscape');
- const legacy=Number(window.orientation);
- if(Number.isFinite(legacy)&&legacy!==0)return Math.abs(legacy)===90;
- return window.innerWidth>window.innerHeight
+function requestNethorPortraitLock(){
+ if(!isNethorMobilePhone())return;
+ const lock=screen.orientation?.lock;
+ if(typeof lock!=='function')return;
+ try{Promise.resolve(lock.call(screen.orientation,'portrait')).catch(()=>{})}catch(_){}
 }
 function setupMobilePortraitOnly(){
- if(window.__nethorPortraitOnly||!document.body)return;
+ if(window.__nethorPortraitOnly)return;
  window.__nethorPortraitOnly=true;
- const style=document.createElement('style');
- style.id='nethorPortraitOnlyStyle';
- style.textContent=`
- #nethorPortraitOnlyOverlay{
-  position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;
-  padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));
-  background:linear-gradient(155deg,#171a1f 0%,#20252c 100%);color:#fff;text-align:center;
-  font-family:inherit;-webkit-font-smoothing:antialiased
- }
- #nethorPortraitOnlyOverlay[hidden]{display:none!important}
- #nethorPortraitOnlyOverlay .nethorPortraitCard{max-width:360px}
- #nethorPortraitOnlyOverlay .nethorPortraitPhone{
-  position:relative;width:52px;height:82px;margin:0 auto 18px;border:4px solid #ff6a2b;border-radius:13px;
-  box-shadow:0 0 0 7px rgba(255,106,43,.1)
- }
- #nethorPortraitOnlyOverlay .nethorPortraitPhone:after{
-  content:'';position:absolute;left:50%;bottom:6px;width:14px;height:3px;border-radius:99px;background:#ff6a2b;transform:translateX(-50%)
- }
- #nethorPortraitOnlyOverlay strong{display:block;font-size:20px;line-height:1.2;margin-bottom:8px}
- #nethorPortraitOnlyOverlay span{display:block;color:#c5cbd2;font-size:14px;line-height:1.45}
- html.nethorPhoneLandscape,html.nethorPhoneLandscape body{overflow:hidden!important;overscroll-behavior:none!important}
- `;
- document.head.appendChild(style);
- const overlay=document.createElement('div');
- overlay.id='nethorPortraitOnlyOverlay';
- overlay.hidden=true;
- overlay.setAttribute('role','alert');
- overlay.setAttribute('aria-live','polite');
- overlay.innerHTML='<div class="nethorPortraitCard"><div class="nethorPortraitPhone" aria-hidden="true"></div><strong>Mode portrait uniquement</strong><span>Tourne ton téléphone à la verticale pour continuer sur Nethor.</span></div>';
- document.body.appendChild(overlay);
- const apply=()=>{
-  const blocked=isNethorMobilePhone()&&isNethorLandscape();
-  document.documentElement.classList.toggle('nethorPhoneLandscape',blocked);
-  overlay.hidden=!blocked
+ const lock=()=>requestNethorPortraitLock();
+
+ // Aucun écran intermédiaire : on laisse le navigateur/OS appliquer le verrouillage natif.
+ lock();
+ window.addEventListener('pageshow',lock,{passive:true});
+ window.addEventListener('orientationchange',lock,{passive:true});
+ try{screen.orientation?.addEventListener?.('change',lock)}catch(_){}
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)lock()});
+
+ // Certains navigateurs n'acceptent le verrouillage qu'après une interaction utilisateur.
+ const retryOnce=()=>{
+  lock();
+  document.removeEventListener('pointerdown',retryOnce,true);
+  document.removeEventListener('touchstart',retryOnce,true);
+  document.removeEventListener('keydown',retryOnce,true)
  };
- const tryLock=()=>{
-  const standalone=window.matchMedia?.('(display-mode: standalone)')?.matches||navigator.standalone===true;
-  if(!standalone||!isNethorMobilePhone()||typeof screen.orientation?.lock!=='function')return;
-  try{Promise.resolve(screen.orientation.lock('portrait-primary')).catch(()=>{})}catch(_){}
- };
- try{screen.orientation?.addEventListener?.('change',apply)}catch(_){}
- window.addEventListener('orientationchange',apply,{passive:true});
- window.addEventListener('resize',apply,{passive:true});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){apply();tryLock()}});
- apply();tryLock()
+ document.addEventListener('pointerdown',retryOnce,{capture:true,passive:true});
+ document.addEventListener('touchstart',retryOnce,{capture:true,passive:true});
+ document.addEventListener('keydown',retryOnce,true);
+
+ // Dernière tentative une fois l'application complètement chargée.
+ window.addEventListener('load',lock,{once:true,passive:true})
 }
 
 function ensureAccessibleNames(root=document){
