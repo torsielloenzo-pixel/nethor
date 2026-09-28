@@ -833,6 +833,28 @@ body:not(.planningYearOpen) #yearView{display:none!important}
     min-width:38px!important;
   }
 }
+
+.planningAvatarButton{border:0;padding:0;margin:0;cursor:pointer;position:relative;transition:transform .15s ease,box-shadow .15s ease}
+.planningAvatarButton:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(24,34,53,.18)}
+.planningAvatarButton:active{transform:scale(.96)}
+.planningAvatarButton:focus-visible{outline:2px solid #ff6b2b;outline-offset:2px}
+.planningUserBackdrop{position:fixed;inset:0;z-index:2147482500;background:rgba(13,16,20,.5);backdrop-filter:blur(7px);display:grid;place-items:center;padding:18px}
+.planningUserBackdrop.hidden{display:none!important}
+.planningUserCard{width:min(92vw,390px);background:#fff;color:#1f252c;border:1px solid #e2e5e8;border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.28);padding:18px;position:relative}
+.planningUserClose{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:10px;background:#f1f3f5;color:#5e6670;font-size:20px;line-height:1;display:grid;place-items:center;cursor:pointer}
+.planningUserHero{display:grid;grid-template-columns:58px minmax(0,1fr);gap:13px;align-items:center;padding-right:38px}
+.planningUserHero .planningIdentityAvatar{width:58px;height:58px;border-radius:16px;font-size:16px}
+.planningUserHero strong{display:block;font-size:18px;line-height:1.15}
+.planningUserHero small{display:block;margin-top:5px;color:#7d848c;font-size:10px}
+.planningUserMeta{margin-top:16px;padding:12px 13px;border:1px solid #eceef1;border-radius:14px;background:#fafbfc}
+.planningUserMeta small{display:block;color:#92979e;font-size:8px;text-transform:uppercase;letter-spacing:.45px;font-weight:850}
+.planningUserMeta strong{display:block;margin-top:4px;font-size:11px}
+.planningUserMessage{width:100%;margin-top:14px;min-height:46px;border:0;border-radius:13px;background:linear-gradient(135deg,#ff3f25,#ff8125);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 9px 22px rgba(255,91,37,.2)}
+.planningUserMessage svg{width:18px;height:18px;fill:currentColor}
+:root[data-theme="dark"] .planningUserCard{background:#202328;color:#f1f3f5;border-color:#383d44}
+:root[data-theme="dark"] .planningUserClose{background:#2c3137;color:#d6d9dd}
+:root[data-theme="dark"] .planningUserMeta{background:#25292e;border-color:#383d44}
+:root[data-theme="dark"] .planningUserHero small{color:#a8adb4}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1180,7 +1202,21 @@ function modelDay(index=currentDay){return model?.days?.[dayKey(index)]||null}
 function totalForRow(row){if(!row)return 0;let n=0;for(const v of row)if(v==='g'||v==='b')n++;return n*.25}
 function initials(n){return String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
 function planningProfileFor(name){const n=norm(name),base=n.replace(/\s+[a-z]$/,'');return teamProfiles.find(p=>norm(p.display_name)===n)||teamProfiles.find(p=>norm(p.display_name)===base)||null}
-function identityAvatarHtml(p,name,cls='planningIdentityAvatar'){const color=p?.profile_color||'#ff5a2a',photo=p?.avatar_url,frame=p?.avatar_frame||'';return '<span class="'+cls+(photo?' hasPhoto':'')+'" '+(frame?'data-avatar-frame="'+esc(frame)+'" ':'')+'style="background:'+(photo?'url(&quot;'+esc(photo)+'&quot;) center/cover no-repeat':esc(color))+'">'+(photo?'':esc(initials(name)))+'</span>'}
+function canOpenPlanningUserCard(){return role==='admin'||role==='role_point-de-vente'}
+function identityAvatarHtml(p,name,cls='planningIdentityAvatar'){const color=p?.profile_color||'#ff5a2a',photo=p?.avatar_url,frame=p?.avatar_frame||'',clickable=canOpenPlanningUserCard()&&!!p?.id,tag=clickable?'button':'span',attrs=clickable?' type="button" class="'+cls+(photo?' hasPhoto':'')+' planningAvatarButton" data-planning-user-id="'+esc(p.id)+'" aria-label="Ouvrir la fiche de '+esc(name)+'"':' class="'+cls+(photo?' hasPhoto':'')+'"';return '<'+tag+attrs+' '+(frame?'data-avatar-frame="'+esc(frame)+'" ':'')+'style="background:'+(photo?'url(&quot;'+esc(photo)+'&quot;) center/cover no-repeat':esc(color))+'">'+(photo?'':esc(initials(name)))+'</'+tag+'>'}
+function planningRoleLabel(r){return window.NettoProfileUI?.roleLabel?.(r)||({admin:'Administrateur',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule','role_point-de-vente':'Point de vente'}[r]||r||'Compte')}
+function closePlanningUserCard(){document.getElementById('planningUserBackdrop')?.classList.add('hidden')}
+function openPlanningUserCard(userId){
+ if(!canOpenPlanningUserCard())return;
+ const p=teamProfiles.find(x=>x.id===userId);if(!p)return showToast('Fiche utilisateur indisponible');
+ let bg=document.getElementById('planningUserBackdrop');
+ if(!bg){bg=document.createElement('div');bg.id='planningUserBackdrop';bg.className='planningUserBackdrop hidden';bg.innerHTML='<section class="planningUserCard" role="dialog" aria-modal="true" aria-labelledby="planningUserName"><button class="planningUserClose" type="button" aria-label="Fermer">×</button><div id="planningUserContent"></div></section>';document.body.appendChild(bg);bg.querySelector('.planningUserClose').onclick=closePlanningUserCard;bg.onclick=e=>{if(e.target===bg)closePlanningUserCard()}}
+ const box=document.getElementById('planningUserContent'),name=p.display_name||'Utilisateur',self=p.id===currentUser?.id;
+ box.innerHTML='<div class="planningUserHero">'+identityAvatarHtml({...p,id:null},name)+'<div><strong id="planningUserName">'+esc(name)+'</strong><small>'+esc(planningRoleLabel(p.role))+'</small></div></div><div class="planningUserMeta"><small>Profil</small><strong>Membre de l’équipe Nethor</strong></div>'+(!self?'<button class="planningUserMessage" type="button" data-message-user="'+esc(p.id)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3l4-3h9a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>Envoyer un message</button>':'');
+ box.querySelector('[data-message-user]')?.addEventListener('click',()=>{location.href='chat.html?user='+encodeURIComponent(p.id)});
+ bg.classList.remove('hidden')
+}
+document.addEventListener('click',e=>{const avatar=e.target.closest('[data-planning-user-id]');if(!avatar)return;e.preventDefault();e.stopPropagation();openPlanningUserCard(avatar.dataset.planningUserId)});
 function identityHtml(name){const p=planningProfileFor(name),label=p?.display_name||name;return '<div class="planningIdentity">'+identityAvatarHtml(p,label)+'<span class="planningIdentityText"><strong>'+esc(label)+'</strong></span></div>'}
 function rowRanges(row){const out=[];let start=null,color=null;for(let i=0;i<=row.length;i++){const v=i<row.length?(row[i]||null):null;if(v!==color){if(color&&start!==null)out.push({a:(model.startTime??6)+start*.25,b:(model.startTime??6)+i*.25,c:color});start=v?i:null;color=v}}return out}
 function renderMobileSchedule(day,employees,rows){
