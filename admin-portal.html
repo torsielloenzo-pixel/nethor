@@ -30,22 +30,94 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
 .logoLibrary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.logoAsset{border:1px solid #e5e7eb;border-radius:14px;padding:10px;background:#fafbfc;display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center}.logoAsset img{width:48px;height:48px;border-radius:12px;object-fit:cover;display:block}.logoAssetInfo{min-width:0}.logoAssetInfo strong{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.logoAssetInfo a{display:inline-flex;margin-top:6px;text-decoration:none;border:1px solid #dfe2e6;border-radius:8px;padding:5px 7px;background:#fff;color:#555b63;font-size:8px;font-weight:850}.logoAssetInfo a:hover{border-color:#ff7a55;color:#d74525}:root[data-theme="dark"] .logoAsset{background:#202227;border-color:#363940}:root[data-theme="dark"] .logoAssetInfo a{background:#2a2d32;border-color:#41454c;color:#d7d9dd}@media(max-width:760px){.logoLibrary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.logoLibrary{grid-template-columns:1fr}}
 @media(max-width:900px){.builder{grid-template-columns:1fr}.side{position:sticky;top:72px;display:flex;overflow:auto;gap:7px;z-index:30;border-radius:14px}.side button{min-width:170px}.moduleGrid{grid-template-columns:1fr 1fr}.moduleGrid .span4{grid-column:1/-1}.childGrid{grid-template-columns:58px 1fr}.childGrid .wide{grid-column:1/-1}.childGrid>button{grid-column:2}}
 @media(max-width:620px){header{height:66px}.top{width:calc(100% - 20px)}.brand .sub{display:none}.headActions .secondaryBtn{display:none}main{width:calc(100% - 20px);padding-top:20px}.hero{display:block}.hero h1{font-size:28px}.saveState{text-align:left;margin-top:8px}.fields,.colorRow,.moduleGrid{grid-template-columns:1fr}.moduleGrid .span2,.moduleGrid .span4{grid-column:auto}.panel{padding:15px;border-radius:17px}.moduleHead{align-items:flex-start}.customHeadActions{flex-direction:column}.assetLine{align-items:stretch;flex-wrap:wrap}.assetLine input[type=text]{min-width:100%}.stickySave{left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));justify-content:flex-end}.stickySave .btn{flex:1}}
+
+/* management-overview-v166 */
+@media(min-width:901px){
+ header{height:72px;background:#fff!important;border-bottom:1px solid #e6eaf0!important;box-shadow:none!important}
+ header:after{display:none!important}
+ .top{width:calc(100% - 44px)!important;max-width:none!important;gap:22px!important}
+ .brand{min-width:190px}
+ .brand .title{font-size:19px!important;font-weight:900!important}
+ .brand .sub{font-size:9px!important;color:#8b929c!important}
+ .managementSearch{flex:1;max-width:500px;height:40px;border:1px solid #dfe4ea;border-radius:9px;background:#f8fafc;display:flex;align-items:center;gap:8px;padding:0 12px}
+ .managementSearch span{color:#7d8792;font-size:17px}.managementSearch input{width:100%;border:0;outline:0;background:transparent;font-size:10px;color:#303843}
+ body{background:#f6f8fb!important}
+ main{width:calc(100% - 44px)!important;max-width:none!important;padding:24px 0 64px!important}
+ .managementHero{align-items:center!important;margin-bottom:16px!important}
+ .managementHero h1{font-size:31px!important;margin:5px 0 5px!important}
+ .managementHero p{font-size:10px!important}
+ .managementBreadcrumb{font-size:9px;color:#87909b}.managementBreadcrumb span{padding:0 5px;color:#b2b8c0}
+ .builder{grid-template-columns:230px minmax(0,1fr)!important;gap:16px!important}
+ .managementSide{position:sticky!important;top:88px!important;align-self:start!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:4px!important}
+ .managementSide button{border:0!important;border-left:3px solid transparent!important;border-radius:10px!important;background:transparent!important;padding:11px 10px!important}
+ .managementSide button.active{background:#fff1eb!important;border-left-color:#ff4f25!important;color:#e7421c!important}
+ .managementSide button.active small{color:#b36d59!important}
+ .workspace{min-width:0}
+ .managementStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+ .managementStat{min-width:0;min-height:94px;border:1px solid #e0e5eb;border-radius:15px;background:#fff;padding:13px;display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;color:#27303b;box-shadow:0 5px 18px rgba(20,28,38,.035)}
+ .managementStatIcon,.managementCardIcon{display:grid;place-items:center;border-radius:12px;font-weight:950}.managementStatIcon{width:42px;height:42px;font-size:18px}.managementCardIcon{width:34px;height:34px}
+ .managementStatIcon.orange,.managementCardIcon.orange{background:#fff0e9;color:#ff4b22}.managementStatIcon.violet{background:#f0ebff;color:#7257ea}.managementStatIcon.green,.managementCardIcon.green{background:#e9f9ef;color:#19a760}.managementStatIcon.blue{background:#eaf3ff;color:#2676e8}
+ .managementStat small{display:block;font-size:8px;color:#77818e}.managementStat strong{display:block;font-size:20px;margin-top:2px}.managementStat em{display:block;font-style:normal;font-size:7.5px;color:#95a0ab;margin-top:3px}.managementStat>b{font-size:20px;color:#75808c}
+ .managementOverviewGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .managementOverviewCard{background:#fff;border:1px solid #e0e5eb;border-radius:17px;padding:14px;box-shadow:0 6px 20px rgba(20,28,38,.035);min-width:0}
+ .managementCardHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.managementCardHead>div{display:flex;align-items:center;gap:9px;min-width:0}.managementCardHead strong{display:block;font-size:12px}.managementCardHead small{display:block;font-size:8px;color:#8b949e;margin-top:2px}.managementCardHead>button{border:1px solid #dde3ea;background:#fff;border-radius:8px;padding:7px 9px;font-size:8px;font-weight:850}
+ .managementActionGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.managementActionGrid>button{border:1px solid #e6e9ee;background:#fbfcfd;border-radius:12px;padding:10px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:8px;align-items:center;text-align:left;color:#27303b}.managementActionGrid>button>span{width:32px;height:32px;border-radius:10px;background:#fff0e9;color:#ff4b22;display:grid;place-items:center}.managementActionGrid strong{display:block;font-size:9.5px}.managementActionGrid small{display:block;font-size:7.5px;color:#8f98a3;margin-top:2px}.managementActionGrid b{font-size:7.5px;border:1px solid #e2e6eb;border-radius:7px;padding:5px 7px;background:#fff}
+ .managementPreviewList{display:grid;gap:0}.managementPreviewRow{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:9px;align-items:center;padding:8px 2px;border-top:1px solid #eef1f4}.managementPreviewRow:first-child{border-top:0}.managementPreviewAvatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#ff4b22,#ff8a00);color:#fff;display:grid;place-items:center;font-size:8px;font-weight:900}.managementPreviewRow strong{display:block;font-size:9px}.managementPreviewRow small{display:block;font-size:7px;color:#939ca6;margin-top:2px}.managementPreviewRow time{font-size:7px;color:#8f98a3}.managementEmpty{padding:15px 2px;color:#929aa4;font-size:9px}
+ .managementRoleSummary{display:grid}.managementRoleSummary>div{display:grid;grid-template-columns:140px minmax(0,1fr);gap:10px;padding:9px 4px;border-top:1px solid #eef1f4}.managementRoleSummary>div:first-child{border-top:0}.managementRoleSummary strong{font-size:9px}.managementRoleSummary span{font-size:8px;color:#8c96a0}
+ .managementEmbeddedHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.managementEmbeddedHead h2{margin:0;font-size:18px}.managementEmbeddedHead p{margin:3px 0 0;color:#858e99;font-size:9px}
+ .managementAccountsFrame{display:block;width:100%;height:calc(100vh - 190px);min-height:760px;border:1px solid #e0e5eb;border-radius:17px;background:#fff}
+ .section#tab-overview,.section#tab-accounts{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+}
+@media(max-width:1100px) and (min-width:901px){.managementStats{grid-template-columns:1fr 1fr}.managementOverviewGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'">N</button><div><div class="title">Éditeur du portail</div><div class="sub">Administration • navigation, apparence et contenu</div></div></div><div class="headActions"><button class="btn secondaryBtn" onclick="location.href='settings.html'">Personnalisation</button><button class="btn primary" onclick="saveConfig()">Enregistrer</button></div></div></header>
+<header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'">N</button><div><div class="title">Nethor</div><div class="sub">Gestion</div></div></div><div class="managementSearch"><span>⌕</span><input id="managementSearchInput" placeholder="Rechercher dans la gestion…" oninput="filterManagementNav(this.value)"></div><div class="headActions"><button class="btn secondaryBtn" onclick="location.href='settings.html'">Personnalisation</button><button class="btn primary" onclick="saveConfig()">Enregistrer</button></div></div></header>
 <main>
-<div class="hero"><div><h1>Construis ton portail</h1><p>Modifie l’identité du site, les pages existantes et les accès rapides de la barre mobile sans toucher au code. Les droits fonctionnels des pages système restent protégés.</p></div><div id="saveState" class="saveState">Chargement…</div></div>
+<div class="hero managementHero"><div><div class="managementBreadcrumb">Gestion <span>›</span> Administration</div><h1>Gestion</h1><p>Administration du portail, des comptes, des rôles, des permissions et des journaux depuis un seul espace.</p></div><div id="saveState" class="saveState">Chargement…</div></div>
 <div class="builder">
-<nav class="side">
-<button class="active" data-tab="general" onclick="showTab('general',this)"><span class="sideIcon">◈</span><span><strong>Général</strong><small>Identité et couleurs</small></span></button>
-<button data-tab="system" onclick="showTab('system',this)"><span class="sideIcon">▦</span><span><strong>Pages système</strong><small>Modifier les menus existants</small></span></button>
-<button data-tab="mobile" onclick="showTab('mobile',this)"><span class="sideIcon">▣</span><span><strong>Barre mobile</strong><small>Choisir les accès rapides</small></span></button>
-<button data-tab="notifications" onclick="showTab('notifications',this);loadNotificationAdmin()"><span class="sideIcon">🔔</span><span><strong>Notifications</strong><small>Envoi et règles</small></span></button>
-<button data-tab="logs" onclick="showTab('logs',this);loadPortalLogs()"><span class="sideIcon">≡</span><span><strong>Logs</strong><small>MAJ, patchs et historique</small></span></button>
+<nav class="side managementSide">
+<button class="active" data-tab="overview" onclick="showTab('overview',this)"><span class="sideIcon">⌂</span><span><strong>Vue d’ensemble</strong><small>Synthèse de la gestion</small></span></button>
+<button data-tab="general" onclick="showTab('general',this)"><span class="sideIcon">◈</span><span><strong>Identité</strong><small>Logo, couleurs et maintenance</small></span></button>
+<button data-tab="system" onclick="showTab('system',this)"><span class="sideIcon">▦</span><span><strong>Pages & menus</strong><small>Contenu et navigation</small></span></button>
+<button data-tab="mobile" onclick="showTab('mobile',this)"><span class="sideIcon">▣</span><span><strong>Barre mobile</strong><small>Accès rapides</small></span></button>
+<button data-tab="accounts" onclick="showTab('accounts',this)"><span class="sideIcon">♙</span><span><strong>Comptes & rôles</strong><small>Utilisateurs et permissions</small></span></button>
+<button data-tab="notifications" onclick="showTab('notifications',this);loadNotificationAdmin()"><span class="sideIcon">♢</span><span><strong>Notifications</strong><small>Envoi et règles</small></span></button>
+<button data-tab="logs" onclick="showTab('logs',this);loadPortalLogs()"><span class="sideIcon">≡</span><span><strong>Journal</strong><small>MAJ, patchs et historique</small></span></button>
 </nav>
 <div class="workspace">
-<section id="tab-general" class="section active">
+<section id="tab-overview" class="section active">
+ <div class="managementStats">
+  <button class="managementStat" onclick="showTab('system')"><span class="managementStatIcon orange">▤</span><span><small>Pages</small><strong id="managementPages">—</strong><em>Configurer le portail</em></span><b>›</b></button>
+  <button class="managementStat" onclick="showTab('accounts')"><span class="managementStatIcon violet">♟</span><span><small>Comptes</small><strong id="managementAccounts">—</strong><em>Utilisateurs actifs</em></span><b>›</b></button>
+  <button class="managementStat" onclick="showTab('accounts')"><span class="managementStatIcon green">◇</span><span><small>Rôles</small><strong id="managementRoles">—</strong><em>Permissions disponibles</em></span><b>›</b></button>
+  <button class="managementStat" onclick="showTab('logs')"><span class="managementStatIcon blue">↻</span><span><small>Mises à jour</small><strong id="managementUpdates">—</strong><em>Historique récent</em></span><b>›</b></button>
+ </div>
+ <div class="managementOverviewGrid">
+  <article class="managementOverviewCard">
+   <div class="managementCardHead"><div><span class="managementCardIcon orange">▣</span><div><strong>Éditeur du portail</strong><small>Contenu, identité et navigation.</small></div></div></div>
+   <div class="managementActionGrid">
+    <button onclick="showTab('general')"><span>◈</span><div><strong>Identité</strong><small>Nom, couleurs, maintenance</small></div><b>Ouvrir</b></button>
+    <button onclick="showTab('system')"><span>▦</span><div><strong>Pages & menus</strong><small>Organisation du portail</small></div><b>Ouvrir</b></button>
+    <button onclick="showTab('mobile')"><span>▣</span><div><strong>Barre mobile</strong><small>Accès rapides téléphone</small></div><b>Ouvrir</b></button>
+    <button onclick="location.href='settings.html'"><span>⚙</span><div><strong>Personnalisation</strong><small>Préférences utilisateur</small></div><b>Ouvrir</b></button>
+   </div>
+  </article>
+  <article class="managementOverviewCard">
+   <div class="managementCardHead"><div><span class="managementCardIcon orange">♟</span><div><strong>Gestion des comptes</strong><small>Utilisateurs, rôles et permissions.</small></div></div><button onclick="showTab('accounts')">Gérer</button></div>
+   <div id="managementUsersPreview" class="managementPreviewList"><div class="managementEmpty">Chargement des comptes…</div></div>
+  </article>
+  <article class="managementOverviewCard">
+   <div class="managementCardHead"><div><span class="managementCardIcon green">◇</span><div><strong>Rôles & permissions</strong><small>Accès et niveaux fonctionnels.</small></div></div><button onclick="showTab('accounts')">Gérer</button></div>
+   <div class="managementRoleSummary"><div><strong>Administrateur</strong><span>Accès complet</span></div><div><strong>Point de vente</strong><span>Supervision magasin</span></div><div><strong>Responsable</strong><span>Gestion opérationnelle</span></div><div><strong>Employé</strong><span>Accès terrain</span></div></div>
+  </article>
+  <article class="managementOverviewCard">
+   <div class="managementCardHead"><div><span class="managementCardIcon orange">◷</span><div><strong>Journal des modifications</strong><small>Dernières évolutions du portail.</small></div></div><button onclick="showTab('logs')">Voir les logs</button></div>
+   <div id="managementLogsPreview" class="managementPreviewList"><div class="managementEmpty">Chargement du journal…</div></div>
+  </article>
+ </div>
+</section>
+<section id="tab-general" class="section">
  <div class="panel"><h2>Identité du portail</h2><p class="panelIntro">Ces informations sont partagées par tout le monde.</p>
   <div class="fields"><div class="field"><label>Nom du portail</label><input id="brandName" data-global></div><div class="field"><label>Sous-titre</label><input id="brandSubtitle" data-global></div><div class="field"><label>Petit titre de l’accueil</label><input id="homeEyebrow" data-global></div><div class="field"><label>Texte d’introduction</label><input id="homeIntro" data-global></div></div>
   <div class="preview"><div class="previewBrand"><div id="previewMark" class="previewMark">N</div><div><strong id="previewName">Nethor</strong><small id="previewSubtitle">Espace outils</small></div></div></div>
@@ -108,6 +180,10 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
   <div id="notificationUsers" class="notifUsers"><div class="empty">Chargement des utilisateurs…</div></div>
  </div>
 </section>
+<section id="tab-accounts" class="section">
+ <div class="managementEmbeddedHead"><div><h2>Comptes & rôles</h2><p>Gestion complète des utilisateurs, rôles, permissions et activité.</p></div><button class="btn secondaryBtn" onclick="reloadAccountsFrame()">↻ Actualiser</button></div>
+ <iframe id="managementAccountsFrame" class="managementAccountsFrame" title="Gestion des comptes" src="accounts.html?embedded=1&tab=accounts"></iframe>
+</section>
 <section id="tab-logs" class="section">
  <div class="panel">
   <div class="toolbar"><div><h2>Journal des modifications</h2><p>Historique des évolutions du portail, qu’elles soient appliquées automatiquement ou manuellement.</p></div><div class="logHeaderTools"><button class="btn secondaryBtn mini" onclick="loadPortalLogs()">↻ Actualiser</button></div></div>
@@ -140,7 +216,27 @@ function clone(v){return JSON.parse(JSON.stringify(v||{}))}
 function validColor(v,f='#ff2f1f'){return /^#[0-9a-f]{6}$/i.test(String(v||''))?v:f}
 function validUrl(v){const s=String(v||'').trim();return !s||(!/^\s*(javascript|data|vbscript):/i.test(s)&&(/^(https?:\/\/|\.\/|\.\.\/|[a-zA-Z0-9_./?=&%-]+$)/.test(s)))}
 function markDirty(){dirty=true;$('saveState').textContent='Modifications non enregistrées';$('saveState').className='saveState'}
-function showTab(name,btn,opts={}){const valid=['general','system','mobile','notifications','logs'];if(!valid.includes(name))name='general';btn=btn||document.querySelector('.side button[data-tab="'+CSS.escape(name)+'"]');document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));document.querySelectorAll('.side button').forEach(x=>x.classList.toggle('active',x===btn));document.querySelector('.stickySave')?.classList.toggle('hidden',name==='logs'||name==='notifications');try{localStorage.setItem('nettoAdminPortalTab',name)}catch(_){ }const u=new URL(location.href);u.searchParams.set('tab',name);history.replaceState({},'',u);enhanceCompactPortal();if(opts.sound!==false)window.NettoSounds?.play?.('menuOpen')}
+function showTab(name,btn,opts={}){const valid=['overview','general','system','mobile','accounts','notifications','logs'];if(!valid.includes(name))name='overview';btn=btn||document.querySelector('.side button[data-tab="'+CSS.escape(name)+'"]');document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));document.querySelectorAll('.side button').forEach(x=>x.classList.toggle('active',x===btn));document.querySelector('.stickySave')?.classList.toggle('hidden',['overview','accounts','logs','notifications'].includes(name));try{localStorage.setItem('nettoManagementTab',name)}catch(_){ }const u=new URL(location.href);u.searchParams.set('tab',name);history.replaceState({},'',u);if(name==='overview')loadManagementOverview().catch(()=>{});enhanceCompactPortal();if(opts.sound!==false)window.NettoSounds?.play?.('menuOpen')}
+function filterManagementNav(value){const q=String(value||'').trim().toLowerCase();document.querySelectorAll('.managementSide button').forEach(b=>{b.style.display=!q||b.textContent.toLowerCase().includes(q)?'':'none'})}
+function reloadAccountsFrame(){const f=$('managementAccountsFrame');if(f){const u=new URL(f.src,location.href);u.searchParams.set('_',Date.now());f.src=u.href}}
+function managementInitials(name){return String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
+async function loadManagementOverview(){
+ const usersBox=$('managementUsersPreview'),logsBox=$('managementLogsPreview');
+ try{
+  const since=new Date(Date.now()-7*86400000).toISOString();
+  const [usersRes,logsRes,updatesRes]=await Promise.all([
+   db.from('profiles').select('id,display_name,role',{count:'exact'}).limit(4),
+   db.from('portal_change_logs').select('id,title,description,area,created_at').order('created_at',{ascending:false}).limit(4),
+   db.from('portal_change_logs').select('id',{count:'exact',head:true}).gte('created_at',since)
+  ]);
+  if($('managementPages'))$('managementPages').textContent=String(Math.max(0,builtinModules().filter(m=>m.id!=='accounts').length));
+  if($('managementAccounts'))$('managementAccounts').textContent=String(usersRes.count??usersRes.data?.length??0);
+  if($('managementRoles'))$('managementRoles').textContent=String(ROLES.length);
+  if($('managementUpdates'))$('managementUpdates').textContent=String(updatesRes.count??0);
+  if(usersBox)usersBox.innerHTML=(usersRes.data||[]).map(u=>'<div class="managementPreviewRow"><span class="managementPreviewAvatar">'+esc(managementInitials(u.display_name))+'</span><div><strong>'+esc(u.display_name||'Utilisateur')+'</strong><small>'+esc(roleName(u.role))+'</small></div><time>›</time></div>').join('')||'<div class="managementEmpty">Aucun compte.</div>';
+  if(logsBox)logsBox.innerHTML=(logsRes.data||[]).map(x=>'<div class="managementPreviewRow"><span class="managementPreviewAvatar">A</span><div><strong>'+esc(x.title||'Modification')+'</strong><small>'+esc(x.area||x.description||'Nethor')+'</small></div><time>'+new Date(x.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</time></div>').join('')||'<div class="managementEmpty">Aucune modification récente.</div>'
+ }catch(e){console.warn('Vue Gestion:',e);if(usersBox)usersBox.innerHTML='<div class="managementEmpty">Comptes indisponibles.</div>';if(logsBox)logsBox.innerHTML='<div class="managementEmpty">Journal indisponible.</div>'}
+}
 function normalize(raw){
  const c=raw&&typeof raw==='object'?clone(raw):{};
  c.brand={name:c.brand?.name||'Nethor',subtitle:c.brand?.subtitle||'Espace outils'};
@@ -460,9 +556,10 @@ async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
  const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;
  await waitProfileUI();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];bindGlobal();await loadConfig();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();loadNotificationAdmin();enhanceCompactPortal();
- const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoAdminPortalTab')||'general';
- const tab=['general','system','mobile','notifications','logs'].includes(saved)?saved:'general';
+ const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoManagementTab')||'overview';
+ const tab=['overview','general','system','mobile','accounts','notifications','logs'].includes(saved)?saved:'overview';
  showTab(tab,document.querySelector('.side button[data-tab="'+CSS.escape(tab)+'"]'),{sound:false});
+ loadManagementOverview().catch(()=>{});
  if(tab==='notifications')loadNotificationAdmin();if(tab==='logs')loadPortalLogs()
 }
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
