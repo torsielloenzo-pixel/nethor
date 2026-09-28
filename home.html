@@ -664,6 +664,26 @@ main{position:relative;z-index:1}
   }
   .mhdTaskRow.done .mhdTaskCheck{background:#ff5a2b;border-color:#ff5a2b}.mhdTaskRow.done .mhdTaskCheck:after{content:"✓"}.mhdTaskRow.done .mhdRowCopy strong{text-decoration:line-through;color:#8c939b}
   .mhdTaskBadge{padding:5px 8px;border-radius:999px;background:#fff3d9;color:#9a6916;font-size:7px;font-weight:900}
+  .mhdTaskRoleHint{display:block;margin-top:2px;color:#8a919a;font-size:7.5px;font-weight:700}
+  .mhdTaskAddBtn{border:0;border-radius:10px;background:#fff0e8;color:#dc4a25;padding:7px 10px;font-size:8px;font-weight:900}
+  .mhdTaskComposer{margin:8px 0 10px;padding:11px;border:1px solid #e4e7eb;border-radius:14px;background:#fafbfc}.mhdTaskComposer.hidden{display:none}
+  .mhdTaskComposerTitle strong{display:block;font-size:10.5px}.mhdTaskComposerTitle small,.mhdCustomTask small{display:block;margin-top:3px;color:#8a919a;font-size:7.5px;line-height:1.35}
+  .mhdTaskTemplateGroup{margin-top:10px}.mhdTaskTemplateGroup>strong,.mhdTaskGroupTitle{display:block;margin-bottom:6px;color:#59626d;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.35px}
+  .mhdTaskTemplateGrid,.mhdTaskAudienceGrid{display:flex;gap:6px;flex-wrap:wrap}
+  .mhdTaskChip,.mhdTaskAssigneeChip{border:1px solid #dfe3e7;border-radius:999px;background:#fff;color:#4f5964;padding:7px 9px;font-size:7.5px;font-weight:850}
+  .mhdTaskChip.selected,.mhdTaskAssigneeChip.selected{border-color:#ff7047;background:#fff0e9;color:#d84622;box-shadow:0 0 0 1px #ff8b6630}
+  .mhdFacingDetail,.mhdCustomTask,.mhdTaskAudience{margin-top:11px}.mhdFacingDetail.hidden{display:none}
+  .mhdTaskFieldLabel{display:block;margin-bottom:5px;color:#5b6570;font-size:8px;font-weight:900}
+  .mhdTaskInput{width:100%;height:36px;border:1px solid #dfe3e7;border-radius:10px;background:#fff;color:inherit;padding:0 10px;font-size:9px;outline:none}.mhdTaskInput:focus{border-color:#ff754e;box-shadow:0 0 0 3px #ff754e18}
+  .mhdTaskComposerActions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.mhdTaskComposerActions span{color:#8a919a;font-size:7.5px}
+  .mhdTaskPublishBtn{border:0;border-radius:11px;background:linear-gradient(135deg,#ff3421,#ff8500);color:#fff;padding:9px 12px;font-size:8px;font-weight:900;white-space:nowrap}.mhdTaskPublishBtn:disabled{opacity:.55}
+  .mhdTaskPublishedGroup,.mhdTaskUserGroup{border-top:1px solid #edf0f2;padding-top:8px;margin-top:5px}.mhdTaskPublishedGroup:first-of-type,.mhdTaskUserGroup:first-of-type{border-top:0}
+  .mhdTaskPublishedRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:8px 1px;border-top:1px solid #f0f2f4}.mhdTaskPublishedRow:nth-child(2){border-top:0}
+  .mhdTaskStatusDot{width:9px;height:9px;border-radius:50%;background:#ffb14d;box-shadow:0 0 0 3px #fff4e2}.mhdTaskStatusDot.done{background:#29ad62;box-shadow:0 0 0 3px #e9f8ef}
+  .mhdTaskPublishedCopy{min-width:0}.mhdTaskPublishedCopy strong{display:block;font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdTaskPublishedCopy small{display:block;margin-top:2px;color:#8a919a;font-size:7.5px}.mhdTaskPublishedCopy em{display:block;margin-top:2px;color:#f05a31;font-size:7px;font-style:normal;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdTaskValidation{font-size:7.5px;color:#7e8791;white-space:nowrap}.mhdTaskDelete{width:24px;height:24px;border:0;border-radius:8px;background:#fff0ed;color:#d74a31;font-size:15px;line-height:1}
+  .mhdTaskError{padding:10px;border-radius:10px;background:#fff1ee;color:#be4734;font-size:8px;line-height:1.4}
+
   .mhdInfoRow{margin-top:7px;padding:10px;border:1px solid #ffd8ce;border-radius:13px;background:linear-gradient(90deg,#fff3f1,#fff9f4);display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center}
   .mhdInfoRow.orange{border-color:#ffe2c9;background:linear-gradient(90deg,#fff6ec,#fffaf5)}
   .mhdInfoIcon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff3024,#ff7c24);color:#fff;display:grid;place-items:center;font-size:15px}
@@ -698,6 +718,11 @@ main{position:relative;z-index:1}
   :root[data-theme="dark"] .mhdStatHead .mhdMiniIcon{background:linear-gradient(145deg,#352720,#2b2420);color:#ff8d67;box-shadow:inset 0 0 0 1px #56382d}
   :root[data-theme="dark"] .mhdProgress{background:#343940}
   :root[data-theme="dark"] .mhdTaskCheck{background:#24282d;border-color:#636a73}
+  :root[data-theme="dark"] .mhdTaskComposer{background:#181b1f;border-color:#373c43}
+  :root[data-theme="dark"] .mhdTaskChip,:root[data-theme="dark"] .mhdTaskAssigneeChip,:root[data-theme="dark"] .mhdTaskInput{background:#22262b;border-color:#3d434a;color:#eee}
+  :root[data-theme="dark"] .mhdTaskChip.selected,:root[data-theme="dark"] .mhdTaskAssigneeChip.selected{background:#35231d;border-color:#7a4938;color:#ff9a76}
+  :root[data-theme="dark"] .mhdTaskPublishedGroup,:root[data-theme="dark"] .mhdTaskUserGroup,:root[data-theme="dark"] .mhdTaskPublishedRow{border-color:#30353b}
+
   :root[data-theme="dark"] .mhdInfoRow{background:#2a211f;border-color:#50322c}
   :root[data-theme="dark"] .mhdInfoRow.orange{background:#2c251e;border-color:#51402f}
   :root[data-theme="dark"] .mhdQuick{background:#202328!important}
@@ -914,6 +939,7 @@ main{position:relative;z-index:1}
     border-radius:20px;
   }
   .mobileHomeDashboard .mhdTasks{grid-column:span 4}
+  .mobileHomeDashboard .mhdTasks.editor{grid-column:span 12}
   .mobileHomeDashboard .mhdImportant{grid-column:span 5}
   .mobileHomeDashboard .mhdTeamSection{grid-column:span 3}
   .mobileHomeDashboard .mhdSectionHead{margin-bottom:10px}
@@ -1153,6 +1179,7 @@ main{position:relative;z-index:1}
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let homeSession=null,homePageViewRows=[],homeCurrentViewKey='',homeCurrentViewLabel='';
+let homeDashboardProfile=null,homeDashboardName='',homeDashboardConfig={},homeTaskCatalog=[],homeTaskRows=[],homeTaskAssignees=[],homeTaskCompletions=[],homeTaskTeam=[],homeTaskBusy=false;
 const $=id=>document.getElementById(id);
 function homePageKey(value){try{const u=new URL(String(value||''),location.href);return (u.pathname.split('/').pop()||'home.html')}catch(_){const s=String(value||'').split('/').pop()||'home.html';return s.split('?')[0]}}
 async function loadAdminPageViews(){
@@ -1241,13 +1268,146 @@ function homeDashboardIcon(id){
  const map={next_shift:'planning',hours:'planning',absences:'planning',next_rest:'planning',tasks:'articles',important_info:'notifications',team_today:'accounts',quick_access:'home'};
  return typeof nav==='function'?nav(map[id]||id):''
 }
-function homeTaskStoreKey(uid,dateKey){return'nettoHomeTasks:'+uid+':'+dateKey}
-function homeTaskState(uid,dateKey){try{return new Set(JSON.parse(localStorage.getItem(homeTaskStoreKey(uid,dateKey))||'[]'))}catch(_){return new Set()}}
-function toggleMobileHomeTask(id,row){
- const dateKey=homeIsoDate(new Date()),uid=homeSession?.user?.id;if(!uid)return;
- const set=homeTaskState(uid,dateKey);if(set.has(id))set.delete(id);else set.add(id);
- try{localStorage.setItem(homeTaskStoreKey(uid,dateKey),JSON.stringify([...set]))}catch(_){}
- row?.classList.toggle('done',set.has(id))
+function homeParisDateKey(d=new Date()){
+ try{
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Paris',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),o={};
+  parts.forEach(p=>{if(p.type!=='literal')o[p.type]=p.value});
+  return o.year+'-'+o.month+'-'+o.day
+ }catch(_){return homeIsoDate(d)}
+}
+function homeTaskMode(role){
+ const r=String(role||'').trim().toLowerCase();
+ if(['admin','role_point-de-vente','point_vente','surface_vente'].includes(r))return'editor';
+ if(['responsable','employe'].includes(r))return'user';
+ return'hidden'
+}
+function homeTaskOperationalUsers(rows=homeTaskTeam){
+ return (rows||[]).filter(x=>['responsable','employe'].includes(String(x.role||'').toLowerCase()))
+}
+function homeTaskGroups(rows){
+ const map=new Map();
+ for(const row of rows||[]){
+  const key=row.section_key||'autre',label=row.section_label||'Autre';
+  if(!map.has(key))map.set(key,{key,label,rows:[]});
+  map.get(key).rows.push(row)
+ }
+ return [...map.values()]
+}
+function homeTaskAssigneeLabel(task){
+ if(task.all_users)return'Tous';
+ const ids=homeTaskAssignees.filter(x=>x.task_id===task.id).map(x=>x.user_id);
+ const names=ids.map(id=>homeTaskTeam.find(x=>x.id===id)?.display_name).filter(Boolean);
+ if(!names.length)return'Aucun utilisateur';
+ if(names.length<=2)return names.join(' · ');
+ return names.slice(0,2).join(' · ')+' +'+(names.length-2)
+}
+function homeTaskExpectedCount(task){
+ return task.all_users?homeTaskOperationalUsers().length:homeTaskAssignees.filter(x=>x.task_id===task.id).length
+}
+function homeTaskCompletedCount(task){
+ return homeTaskCompletions.filter(x=>x.task_id===task.id).length
+}
+function homeTaskTemplateGroupsHtml(){
+ return homeTaskGroups(homeTaskCatalog).map(g=>'<div class="mhdTaskTemplateGroup"><strong>'+homeEsc(g.label)+'</strong><div class="mhdTaskTemplateGrid">'+g.rows.map(t=>'<button type="button" class="mhdTaskChip" data-task-template="'+homeEsc(t.key)+'" onclick="homeToggleTaskTemplate(this)">'+homeEsc(t.title)+'</button>').join('')+'</div></div>').join('')
+}
+function homeTaskAudienceHtml(){
+ const users=homeTaskOperationalUsers();
+ return '<div class="mhdTaskAudience"><span class="mhdTaskFieldLabel">Affecter à</span><div class="mhdTaskAudienceGrid"><button type="button" class="mhdTaskAssigneeChip mhdTaskAudienceAll selected" onclick="homeToggleTaskAudienceAll(this)">Tous</button>'+users.map(u=>'<button type="button" class="mhdTaskAssigneeChip" data-task-user="'+homeEsc(u.id)+'" onclick="homeToggleTaskAudienceUser(this)">'+homeEsc(u.display_name||'Utilisateur')+'</button>').join('')+'</div></div>'
+}
+function homeRenderTaskEditor(taskError){
+ const tasks=homeTaskRows||[],groups=homeTaskGroups(tasks);
+ const rows=groups.map(g=>'<div class="mhdTaskPublishedGroup"><div class="mhdTaskGroupTitle">'+homeEsc(g.label)+'</div>'+g.rows.map(t=>{
+  const done=homeTaskCompletedCount(t),expected=homeTaskExpectedCount(t),audience=homeTaskAssigneeLabel(t);
+  return '<div class="mhdTaskPublishedRow"><span class="mhdTaskStatusDot '+(expected>0&&done>=expected?'done':'')+'"></span><span class="mhdTaskPublishedCopy"><strong>'+homeEsc(t.title)+'</strong>'+(t.detail?'<small>'+homeEsc(t.detail)+'</small>':'')+'<em>'+homeEsc(audience)+'</em></span><span class="mhdTaskValidation">'+done+'/'+expected+' validée'+(done>1?'s':'')+'</span><button type="button" class="mhdTaskDelete" aria-label="Supprimer la tâche" onclick="homeDeleteDailyTask(\''+homeEsc(t.id)+'\',this)">×</button></div>'
+ }).join('')+'</div>').join('');
+ const openClass=tasks.length?' hidden':'';
+ return '<section class="mhdCard mhdSection mhdTasks editor"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><div><strong>Tâches du jour</strong><small class="mhdTaskRoleHint">Mode éditeur · aujourd’hui</small></div></div><button class="mhdTaskAddBtn" type="button" onclick="homeToggleTaskComposer()">+ Ajouter</button></div>'+
+ '<div id="mhdTaskComposer" class="mhdTaskComposer'+openClass+'"><div class="mhdTaskComposerTitle"><strong>Créer / proposer des missions</strong><small>Sélectionne une ou plusieurs tâches. Les tâches compatibles sont regroupées automatiquement.</small></div>'+homeTaskTemplateGroupsHtml()+
+ '<div id="mhdFacingDetail" class="mhdFacingDetail hidden"><label class="mhdTaskFieldLabel" for="mhdFacingSecDetail">Facing sec · précision</label><input id="mhdFacingSecDetail" class="mhdTaskInput" maxlength="90" placeholder="Tous, ou préciser un rayon"></div>'+
+ '<div class="mhdCustomTask"><label class="mhdTaskFieldLabel" for="mhdCustomTaskTitle">Nouvelle tâche ponctuelle</label><input id="mhdCustomTaskTitle" class="mhdTaskInput" maxlength="160" placeholder="Ex. Ranger la réserve boissons"><small>Utilisable aujourd’hui uniquement · non ajoutée au catalogue permanent.</small></div>'+homeTaskAudienceHtml()+
+ '<div class="mhdTaskComposerActions"><span id="mhdTaskComposerState"></span><button type="button" class="mhdTaskPublishBtn" onclick="homePublishDailyTasks(this)">Ajouter à aujourd’hui</button></div></div>'+
+ (taskError?'<div class="mhdTaskError">Impossible de charger les tâches partagées pour le moment.</div>':(rows||'<div class="mhdEmpty">Aucune mission publiée aujourd’hui.</div>'))+'</section>'
+}
+function homeRenderTaskUser(taskError){
+ const uid=homeSession?.user?.id,tasks=homeTaskRows||[],doneSet=new Set(homeTaskCompletions.filter(x=>x.user_id===uid).map(x=>x.task_id)),done=tasks.filter(t=>doneSet.has(t.id)).length;
+ const groups=homeTaskGroups(tasks);
+ const rows=groups.map(g=>'<div class="mhdTaskUserGroup"><div class="mhdTaskGroupTitle">'+homeEsc(g.label)+'</div>'+g.rows.map(t=>'<button type="button" class="mhdRow mhdTaskRow '+(doneSet.has(t.id)?'done':'')+'" data-task-id="'+homeEsc(t.id)+'" aria-pressed="'+(doneSet.has(t.id)?'true':'false')+'" onclick="homeToggleDailyTask(\''+homeEsc(t.id)+'\',this)"><span class="mhdTaskCheck"></span><span class="mhdRowCopy"><strong>'+homeEsc(t.title)+'</strong>'+(t.detail?'<small>'+homeEsc(t.detail)+'</small>':'')+'</span><span class="mhdTaskBadge">'+homeEsc(t.section_label||'Tâche')+'</span></button>').join('')+'</div>').join('');
+ return '<section class="mhdCard mhdSection mhdTasks"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><strong>Tâches du jour</strong></div><span class="mhdSectionLink">'+done+'/'+tasks.length+' validée'+(done>1?'s':'')+'</span></div>'+(taskError?'<div class="mhdTaskError">Impossible de charger tes tâches pour le moment.</div>':(rows||'<div class="mhdEmpty">Aucune tâche ne t’est affectée aujourd’hui.</div>'))+'</section>'
+}
+function homeRenderDailyTasks(profile,taskError){
+ const mode=homeTaskMode(profile?.role);
+ if(mode==='editor')return homeRenderTaskEditor(taskError);
+ if(mode==='user')return homeRenderTaskUser(taskError);
+ return''
+}
+function homeToggleTaskComposer(){
+ const box=document.getElementById('mhdTaskComposer');if(!box)return;
+ box.classList.toggle('hidden');if(!box.classList.contains('hidden'))setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'nearest'}),30)
+}
+function homeToggleTaskTemplate(btn){
+ btn?.classList.toggle('selected');
+ const facing=document.querySelector('[data-task-template="facing_sec"]')?.classList.contains('selected');
+ document.getElementById('mhdFacingDetail')?.classList.toggle('hidden',!facing)
+}
+function homeToggleTaskAudienceAll(btn){
+ const box=btn?.closest('.mhdTaskComposer');if(!box)return;
+ box.querySelectorAll('[data-task-user]').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected')
+}
+function homeToggleTaskAudienceUser(btn){
+ const box=btn?.closest('.mhdTaskComposer');if(!box)return;
+ btn.classList.toggle('selected');box.querySelector('.mhdTaskAudienceAll')?.classList.remove('selected');
+ if(!box.querySelector('[data-task-user].selected'))box.querySelector('.mhdTaskAudienceAll')?.classList.add('selected')
+}
+function homeTaskPair(rows,keyA,keyB,title){
+ const a=rows.find(x=>x.catalog_key===keyA),b=rows.find(x=>x.catalog_key===keyB);if(!a||!b)return rows;
+ const merged={...a,id:undefined,catalog_key:null,source_keys:[keyA,keyB],title,sort_order:Math.min(Number(a.sort_order)||100,Number(b.sort_order)||100)};
+ return rows.filter(x=>x!==a&&x!==b).concat(merged)
+}
+async function homeRefreshDashboard(){
+ if(!homeDashboardProfile)return;
+ await renderMobileHomeDashboard(homeDashboardProfile,homeDashboardName,homeDashboardConfig)
+}
+async function homePublishDailyTasks(btn){
+ if(homeTaskBusy||!homeSession)return;
+ const box=document.getElementById('mhdTaskComposer'),state=document.getElementById('mhdTaskComposerState');if(!box)return;
+ const keys=[...box.querySelectorAll('[data-task-template].selected')].map(x=>x.dataset.taskTemplate),custom=String(document.getElementById('mhdCustomTaskTitle')?.value||'').trim();
+ if(!keys.length&&!custom){if(state)state.textContent='Choisis une tâche ou écris une tâche ponctuelle.';return}
+ const byKey=new Map(homeTaskCatalog.map(x=>[x.key,x])),today=homeParisDateKey(),uid=homeSession.user.id;
+ let rows=keys.map(k=>byKey.get(k)).filter(Boolean).map(t=>({task_date:today,catalog_key:t.key,source_keys:[t.key],title:t.title,section_key:t.section_key,section_label:t.section_label,detail:t.key==='facing_sec'?(String(document.getElementById('mhdFacingSecDetail')?.value||'').trim()||'Tous'):null,all_users:true,sort_order:Number(t.sort_order)||100,created_by:uid}));
+ rows=homeTaskPair(rows,'livraison_gel','stock_gel','Livraison + Stock gel');
+ rows=homeTaskPair(rows,'livraison_sec','stock_sec','Livraison + Stock sec');
+ if(custom)rows.push({task_date:today,catalog_key:null,source_keys:[],title:custom,section_key:'autre',section_label:'Autre',detail:null,all_users:true,sort_order:900,created_by:uid});
+ const selectedUsers=[...box.querySelectorAll('[data-task-user].selected')].map(x=>x.dataset.taskUser),allUsers=box.querySelector('.mhdTaskAudienceAll')?.classList.contains('selected')||!selectedUsers.length;
+ rows=rows.map(r=>({...r,all_users:allUsers})).sort((a,b)=>a.sort_order-b.sort_order);
+ homeTaskBusy=true;if(btn)btn.disabled=true;if(state)state.textContent='Ajout…';
+ try{
+  const inserted=await db.from('daily_tasks').insert(rows).select('id');
+  if(inserted.error)throw inserted.error;
+  const ids=(inserted.data||[]).map(x=>x.id);
+  if(!allUsers&&ids.length){
+   const assignments=ids.flatMap(task_id=>selectedUsers.map(user_id=>({task_id,user_id})));
+   const assigned=await db.from('daily_task_assignees').insert(assignments);
+   if(assigned.error){await db.from('daily_tasks').delete().in('id',ids);throw assigned.error}
+  }
+  window.NettoSounds?.play?.('success');await homeRefreshDashboard()
+ }catch(e){console.error('Tâches du jour:',e);if(state)state.textContent='Ajout impossible : '+(e?.message||'erreur');window.NettoSounds?.play?.('error')}
+ finally{homeTaskBusy=false;if(btn)btn.disabled=false}
+}
+async function homeDeleteDailyTask(id,btn){
+ if(homeTaskBusy||!id)return;if(!confirm('Supprimer cette tâche de la journée ?'))return;
+ homeTaskBusy=true;if(btn)btn.disabled=true;
+ const {error}=await db.from('daily_tasks').delete().eq('id',id);
+ homeTaskBusy=false;if(error){window.NettoSounds?.play?.('error');alert('Suppression impossible : '+error.message);if(btn)btn.disabled=false;return}
+ window.NettoSounds?.play?.('delete');await homeRefreshDashboard()
+}
+async function homeToggleDailyTask(id,btn){
+ if(homeTaskBusy||!homeSession||!id)return;
+ homeTaskBusy=true;if(btn)btn.disabled=true;
+ const uid=homeSession.user.id,done=homeTaskCompletions.some(x=>x.task_id===id&&x.user_id===uid);
+ const res=done?await db.from('daily_task_completions').delete().eq('task_id',id).eq('user_id',uid):await db.from('daily_task_completions').insert({task_id:id,user_id:uid});
+ homeTaskBusy=false;
+ if(res.error){console.error('Validation tâche:',res.error);window.NettoSounds?.play?.('error');if(btn)btn.disabled=false;return}
+ window.NettoSounds?.play?.('success');await homeRefreshDashboard()
 }
 function homeNotifIcon(kind){return kind==='manual_edit'||kind==='import_new'||kind==='import_replace'?'▦':kind==='admin_message'?'!':kind==='maintenance'?'⚒':kind==='app_update'?'↑':'•'}
 function homeSince(d){
@@ -1272,14 +1432,29 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  const host=$('mobileHomeDashboard');if(!host)return;
  host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
  const today=new Date(),todayKey=homeIsoDate(today),weekStart=homeIsoDate(homeStartOfWeek(today)),weekEnd=homeIsoDate(homeAddDays(homeStartOfWeek(today),84));
- const [subRes,weeksRes,notifRes,profilesRes]=await Promise.all([
+ homeDashboardProfile=profile;homeDashboardName=name;homeDashboardConfig=cfg||{};
+ const [subRes,weeksRes,notifRes,profilesRes,taskCatalogRes,taskRowsRes]=await Promise.all([
   Promise.resolve(db.rpc('my_subrole_keys')).catch(()=>({data:[]})),
   db.from('planning_weeks').select('week_start,data').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
   db.from('planning_notifications').select('id,kind,title,message,target_url,created_at,read_at').eq('user_id',homeSession.user.id).order('created_at',{ascending:false}).limit(6),
-  db.from('profiles').select('id,display_name,role,avatar_path,profile_color,avatar_frame').limit(120)
+  db.rpc('list_team_members'),
+  db.from('daily_task_catalog').select('key,section_key,section_label,title,sort_order').eq('active',true).order('sort_order'),
+  db.from('daily_tasks').select('id,task_date,catalog_key,source_keys,title,section_key,section_label,detail,all_users,sort_order,created_by,created_at').eq('task_date',todayKey).order('sort_order').order('created_at')
  ]);
  const subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean),weeks=(weeksRes.data||[]).map(x=>x.data).filter(Boolean);
  const widget=id=>homeWidgetVisible(cfg,id,profile,subroleKeys);
+ homeTaskCatalog=taskCatalogRes.error?[]:(taskCatalogRes.data||[]);
+ homeTaskRows=taskRowsRes.error?[]:(taskRowsRes.data||[]);
+ homeTaskTeam=profilesRes.error?[]:(profilesRes.data||[]);
+ homeTaskAssignees=[];homeTaskCompletions=[];
+ if(widget('tasks')&&homeTaskRows.length){
+  const ids=homeTaskRows.map(x=>x.id),[aRes,cRes]=await Promise.all([
+   db.from('daily_task_assignees').select('task_id,user_id').in('task_id',ids),
+   db.from('daily_task_completions').select('task_id,user_id,completed_at').in('task_id',ids)
+  ]);
+  homeTaskAssignees=aRes.error?[]:(aRes.data||[]);homeTaskCompletions=cRes.error?[]:(cRes.data||[])
+ }
+ const taskLoadError=!!(taskCatalogRes.error||taskRowsRes.error);
  const currentWeek=weeks.find(w=>String(w.weekStart||w.week_start||'')===weekStart)||weeks[0]||null;
  const allDays=[];
  for(const model of weeks)for(const dateKey of Object.keys(model?.days||{}))if(dateKey>=todayKey)allDays.push({dateKey,model});
@@ -1306,7 +1481,7 @@ async function renderMobileHomeDashboard(profile,name,cfg){
   nextLeave={start:first.dateKey,end}
  }
  const notifications=notifRes.error?[]:(notifRes.data||[]);
- const profileRows=profilesRes.error?[]:(profilesRes.data||[]);
+ const profileRows=homeTaskTeam;
  const todayModel=weeks.find(w=>w?.days?.[todayKey])||currentWeek;
  const todayTeam=[];
  const workingNames=[];
@@ -1341,10 +1516,7 @@ async function renderMobileHomeDashboard(profile,name,cfg){
  }
  if(widget('next_rest')){const restTarget=nextRest?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextRest))))+'&day='+encodeURIComponent(nextRest)+'&focus=rest':'planning.html';stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(restTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('next_rest')+'</span>Prochain repos</div><strong>'+(nextRest?homeEsc(homeParseDate(nextRest).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')):'—')+'</strong><small>'+(nextRest?'Jour de repos':'non déterminé')+'</small></button>')}
  if(stats.length)sections.push('<section class="mhdStats">'+stats.join('')+'</section>');
- if(widget('tasks')){
-  const taskState=homeTaskState(homeSession.user.id,todayKey),tasks=homeSuggestedTasks(profile,cfg);
-  sections.push('<section class="mhdCard mhdSection mhdTasks"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('tasks')+'</span><strong>Tâches du jour</strong></div><span class="mhdSectionLink">'+tasks.length+' action'+(tasks.length>1?'s':'')+'</span></div><div class="mhdRows">'+tasks.map(t=>'<button type="button" class="mhdRow mhdTaskRow '+(taskState.has(t.id)?'done':'')+'" onclick="toggleMobileHomeTask(\''+homeEsc(t.id)+'\',this)"><span class="mhdTaskCheck"></span><span class="mhdRowCopy"><strong>'+homeEsc(t.title)+'</strong></span><span class="mhdTaskBadge">'+homeEsc(t.tag)+'</span></button>').join('')+'</div></section>')
- }
+ if(widget('tasks'))sections.push(homeRenderDailyTasks(profile,taskLoadError));
  if(widget('important_info')){
   const infos=notifications.filter(n=>['manual_edit','import_new','import_replace','admin_message','maintenance','app_update','absence_decision'].includes(n.kind)).slice(0,2);
   sections.push('<section class="mhdCard mhdSection mhdImportant"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('important_info')+'</span><strong>Informations importantes</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'notifications.html\'">Voir toutes ›</button></div>'+(infos.length?infos.map((n,i)=>'<button type="button" class="mhdInfoRow '+(i?'orange':'')+'" onclick="location.href=\''+homeEsc(n.target_url||'notifications.html')+'\'"><span class="mhdInfoIcon">'+homeEsc(homeNotifIcon(n.kind))+'</span><span class="mhdInfoCopy"><strong>'+homeEsc(n.title||'Information Nethor')+'</strong><small>'+homeEsc(n.message||'')+'</small></span><time>'+homeEsc(homeSince(n.created_at))+'</time></button>').join(''):'<div class="mhdEmpty">Aucune information importante pour le moment.</div>')+'</section>')
