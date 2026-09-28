@@ -250,7 +250,7 @@ function normalize(raw){
  return c
 }
 function waitProfileUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI?.profile||n++>50){clearInterval(t);resolve()}},50)})}
-function builtinModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom&&m.id!=='home')}
+function builtinModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom&&m.id!=='home'&&m.id!=='accounts')}
 function maxRoles(m){return window.NettoProfileUI?.maxRoles?.(m)||ROLES}
 function defaultPage(m,index){return{enabled:true,label:m.homeLabel||m.label,nav_label:m.label,subtitle:m.subtitle||'',description:m.description||'',url:m.url||'',order:index+1,roles:m.id==='settings'?[...ROLES]:[...maxRoles(m)],home:!!m.home,user_menu:!!m.userMenu,default_home:m.defaultHome!==false,default_user:m.defaultUser!==false,kicker:m.kicker||'OUTIL',action:m.action||'Ouvrir',icon:m.icon||'',image_url:m.asset||'',image_path:'',color:m.menuColor||config.theme.primary,accent:m.menuAccent||config.theme.secondary}}
 function ensurePages(){
