@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f3f4f6">
+<title>Nethor — Signaler un problème</title>
+<script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+<style>
+:root{--rp-bg:#f3f4f6;--rp-card:#fff;--rp-text:#1c2025;--rp-muted:#7b828b;--rp-line:#e4e7eb;--rp-orange:#f15a2b;--rp-soft:#fff1eb;--rp-danger:#c33b2e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--rp-bg);color:var(--rp-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{position:fixed;inset:0;touch-action:pan-x pan-y}
+button,textarea{font:inherit}
+button{touch-action:manipulation}
+.rpShell{height:100dvh;max-height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;padding:calc(env(safe-area-inset-top) + 10px) 11px calc(env(safe-area-inset-bottom) + 10px)}
+.rpTop{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-height:48px;padding:0 1px 10px}
+.rpCancel{min-height:40px;border:1px solid var(--rp-line);border-radius:13px;background:var(--rp-card);color:var(--rp-text);padding:0 13px;font-size:12px;font-weight:850;cursor:pointer}
+.rpTopTitle{text-align:center;min-width:0}.rpTopTitle strong{display:block;font-size:15px;line-height:1.1}.rpTopTitle small{display:block;margin-top:3px;color:var(--rp-muted);font-size:8.5px}
+.rpTopSpacer{width:68px}
+.rpMain{min-height:0;display:flex;align-items:stretch;justify-content:center;overflow:hidden}
+.rpCard{width:min(100%,620px);height:100%;min-height:0;background:var(--rp-card);border:1px solid var(--rp-line);border-radius:22px;box-shadow:0 8px 28px rgba(15,23,42,.045);padding:15px;display:flex;flex-direction:column;overflow:hidden}
+.rpIntro{display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;align-items:center;flex:none}
+.rpIcon{width:42px;height:42px;border-radius:14px;background:var(--rp-soft);color:var(--rp-orange);display:grid;place-items:center}
+.rpIcon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rpIntro strong{display:block;font-size:17px;line-height:1.15}.rpIntro p{margin:4px 0 0;color:var(--rp-muted);font-size:10px;line-height:1.4}
+.rpContext{margin:13px 0 11px;padding:9px 11px;border:1px solid var(--rp-line);border-radius:12px;background:#f8f9fa;display:flex;align-items:center;gap:8px;min-height:38px;flex:none}
+.rpContext span{font-size:9px;color:var(--rp-muted)}.rpContext b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.rpLabel{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:10px;font-weight:900;flex:none}.rpCount{font-size:8.5px;color:var(--rp-muted);font-weight:750}
+.rpText{display:block;width:100%;min-width:0;min-height:116px;flex:1;resize:none;border:1px solid #d9dde2;border-radius:15px;background:#fff;color:var(--rp-text);padding:13px 14px;outline:none;font-size:16px;line-height:1.45;overscroll-behavior:contain}
+.rpText:focus{border-color:#ff9b79;box-shadow:0 0 0 3px #ff5a2a14}
+.rpHelp{margin:8px 2px 10px;color:var(--rp-muted);font-size:8.5px;line-height:1.4;flex:none}
+.rpSend{width:100%;min-height:48px;border:0;border-radius:14px;background:linear-gradient(135deg,#ff3f26,#ff8426);color:#fff;font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px #ff5a2a24;flex:none}
+.rpSend:disabled{opacity:.55;cursor:default;box-shadow:none}
+.rpState{min-height:18px;margin-top:7px;text-align:center;color:var(--rp-muted);font-size:9px;font-weight:750;line-height:1.3;flex:none}
+.rpState.err{color:var(--rp-danger)}.rpState.ok{color:#1c7a43}
+.rpSuccess{height:100%;display:grid;place-items:center;text-align:center;padding:24px}.rpSuccessBox{max-width:330px}.rpSuccessIcon{width:58px;height:58px;margin:0 auto 15px;border-radius:18px;background:#e7f7ed;color:#21804a;display:grid;place-items:center;font-size:28px;font-weight:950}.rpSuccess h2{margin:0;font-size:21px}.rpSuccess p{margin:8px 0 18px;color:var(--rp-muted);font-size:11px;line-height:1.5}.rpReturn{min-height:44px;border:1px solid var(--rp-line);border-radius:13px;background:var(--rp-card);color:var(--rp-text);padding:0 16px;font-weight:850;cursor:pointer}
+.hidden{display:none!important}
+:root[data-theme="dark"]{--rp-bg:#17191d;--rp-card:#22252a;--rp-text:#f2efeb;--rp-muted:#aaa59f;--rp-line:#353a41;--rp-soft:#392821}
+:root[data-theme="dark"] .rpContext{background:#1c1f23}:root[data-theme="dark"] .rpText{background:#1b1e22;border-color:#3b4047;color:#f2efeb}:root[data-theme="dark"] .rpCancel,:root[data-theme="dark"] .rpReturn{background:#25292e}
+@media(max-height:540px){.rpShell{padding-top:calc(env(safe-area-inset-top) + 5px);padding-bottom:calc(env(safe-area-inset-bottom) + 5px)}.rpTop{min-height:42px;padding-bottom:6px}.rpCard{padding:11px;border-radius:18px}.rpIntro{grid-template-columns:36px minmax(0,1fr);gap:8px}.rpIcon{width:36px;height:36px;border-radius:11px}.rpIntro strong{font-size:15px}.rpIntro p{display:none}.rpContext{margin:8px 0 7px;padding:6px 9px;min-height:30px}.rpText{min-height:72px;padding:10px 12px}.rpHelp{margin:5px 2px 6px}.rpSend{min-height:42px}}
+</style>
+</head>
+<body>
+<div class="rpShell">
+ <div class="rpTop">
+  <button id="cancelBtn" class="rpCancel" type="button">Annuler</button>
+  <div class="rpTopTitle"><strong>Signaler un problème</strong><small>Rapport à l’administration</small></div>
+  <span class="rpTopSpacer" aria-hidden="true"></span>
+ </div>
+ <main class="rpMain">
+  <section id="reportCard" class="rpCard">
+   <div class="rpIntro">
+    <span class="rpIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 21 20H3L12 4Z"/><path d="M12 9v5"/><path d="M12 17.2v.2"/></svg></span>
+    <div><strong>Que s’est-il passé ?</strong><p>Décris simplement le bug ou le comportement anormal. Le contexte technique sera joint automatiquement.</p></div>
+   </div>
+   <div class="rpContext"><span>Page concernée</span><b id="sourceLabel">Nethor</b></div>
+   <label class="rpLabel" for="problemText"><span>Description du problème</span><span id="problemCount" class="rpCount">0 / 2000</span></label>
+   <textarea id="problemText" class="rpText" maxlength="2000" minlength="8" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Ex. Le bouton Semaine ne répond pas quand je l’ouvre…"></textarea>
+   <div class="rpHelp">Évite les mots de passe ou informations confidentielles. Ton compte, la page et le type d’appareil seront ajoutés au signalement.</div>
+   <button id="sendBtn" class="rpSend" type="button">Envoyer le problème</button>
+   <div id="reportState" class="rpState" aria-live="polite"></div>
+  </section>
+  <section id="successCard" class="rpCard rpSuccess hidden">
+   <div class="rpSuccessBox"><div class="rpSuccessIcon">✓</div><h2>Problème envoyé</h2><p>Le signalement est maintenant disponible pour l’administrateur dans Gestion → Journal → Problèmes rapportés.</p><button id="returnBtn" class="rpReturn" type="button">Retour au menu</button></div>
+  </section>
+ </main>
+</div>
+<script>
+const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
+const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);
+let session=null,profile=null,sending=false;
+
+function safeSource(){
+ const raw=new URLSearchParams(location.search).get('from')||'home.html';
+ try{
+  const u=new URL(raw,location.href);
+  if(u.origin!==location.origin)return'home.html';
+  const file=(u.pathname.split('/').pop()||'home.html').replace(/[^a-zA-Z0-9._-]/g,'');
+  return file+(u.search||'')
+ }catch(_){return'home.html'}
+}
+const sourcePath=safeSource();
+const pageNames={
+ 'home.html':'Accueil','index.html':'Stock Fruits & Légumes','planning.html':'Planning','chat.html':'Chat',
+ 'profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation',
+ 'notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','scanner.html':'Scanner (bêta)',
+ 'rewards.html':'Défis & Boutique','accounts.html':'Comptes','admin-portal.html':'Gestion'
+};
+function sourceTitle(){return pageNames[sourcePath.split('?')[0]]||sourcePath.split('?')[0]||'Nethor'}
+function returnToMenu(){
+ const u=new URL(sourcePath,location.href);u.searchParams.set('open_user_menu','1');location.replace(u.pathname.split('/').pop()+u.search)
+}
+function updateCount(){const n=$('problemText').value.length;$('problemCount').textContent=n+' / 2000'}
+function state(message,type=''){$('reportState').className='rpState'+(type?' '+type:'');$('reportState').textContent=message}
+async function sendReport(){
+ if(sending)return;
+ const description=$('problemText').value.trim();
+ if(description.length<8){state('Décris un peu plus précisément le problème.','err');$('problemText').focus();return}
+ sending=true;$('sendBtn').disabled=true;state('Envoi du signalement…');
+ try{
+  if(!session)throw new Error('Session indisponible');
+  const payload={
+   reporter_id:session.user.id,
+   reporter_name:profile?.display_name||'Utilisateur',
+   reporter_role:profile?.role||null,
+   description,
+   source_path:sourcePath.slice(0,500),
+   source_title:sourceTitle().slice(0,160),
+   user_agent:String(navigator.userAgent||'').slice(0,800)
+  };
+  const {error}=await db.from('reported_problems').insert(payload);
+  if(error)throw error;
+  state('✓ Signalement envoyé.','ok');
+  $('reportCard').classList.add('hidden');$('successCard').classList.remove('hidden');
+  try{window.NettoSounds?.play?.('success')}catch(_){}
+ }catch(e){
+  console.error('Signalement problème:',e);
+  state('Impossible d’envoyer le problème pour le moment.','err');
+  $('sendBtn').disabled=false;sending=false
+ }
+}
+async function init(){
+ $('sourceLabel').textContent=sourceTitle();
+ $('cancelBtn').addEventListener('click',returnToMenu);
+ $('returnBtn').addEventListener('click',returnToMenu);
+ $('problemText').addEventListener('input',updateCount);
+ $('sendBtn').addEventListener('click',sendReport);
+ updateCount();
+ const {data:{session:s}}=await db.auth.getSession();
+ if(!s){location.replace('home.html');return}
+ session=s;
+ const {data}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();
+ profile=data||null
+}
+init().catch(e=>{console.error(e);state('Impossible de préparer le formulaire.','err')});
+</script>
+</body>
+</html>
