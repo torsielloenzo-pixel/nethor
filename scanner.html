@@ -58,6 +58,16 @@ button,input{font:inherit}button{cursor:pointer}
 .panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.panelHead h2{margin:0;font-size:15px}.panelHead small{color:#9299a2;font-size:8px}
 .manual{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.manual input{min-width:0;height:44px;border:1px solid #dfe3e7;border-radius:12px;padding:0 12px;background:#fafbfc;color:var(--ink);font-size:16px;font-weight:750;outline:none}.manual input:focus{border-color:#ff815f;box-shadow:0 0 0 3px #ff60351a}.manual button,.resultActions button{min-height:44px;border:0;border-radius:12px;padding:0 14px;font-size:10px;font-weight:900}.manual button{background:#242a31;color:#fff}
 .result{display:none;margin-top:12px}.result.show{display:block}
+.result.resultModal{position:fixed!important;inset:0!important;z-index:2147483000!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important;overflow:hidden!important}
+.resultModalBackdrop{position:absolute;inset:0;background:rgba(10,14,19,.64);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.resultModalCard{position:relative;z-index:1;width:min(calc(100vw - 28px),430px);max-height:min(78dvh,650px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:16px;border:1px solid #e4e7eb;border-radius:22px;background:#fff;box-shadow:0 28px 90px rgba(0,0,0,.34)}
+.resultModalTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.resultModalTitle{min-width:0}.resultModalTitle strong{display:block;font-size:16px;line-height:1.1}.resultModalTitle small{display:block;margin-top:4px;color:#8b929b;font-size:9px}
+.resultModalClose{width:38px;height:38px;flex:none;border:0;border-radius:12px;background:#f0f2f4;color:#343a41;display:grid;place-items:center;font-size:20px;font-weight:800}
+.resultModal .resultStatus{margin:0}
+.resultModal .product{margin-top:2px}
+.resultModal .resultActions{position:sticky;bottom:-16px;margin-left:-16px;margin-right:-16px;margin-bottom:-16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(255,255,255,.88),#fff 28%);border-top:1px solid #edf0f2}
+
 .resultStatus{display:flex;align-items:center;gap:7px;margin-bottom:9px;font-size:9px;font-weight:900;color:#308552}.resultStatus.notFound{color:#c64f2e}.resultStatusDot{width:7px;height:7px;border-radius:50%;background:currentColor}
 .product{display:grid;grid-template-columns:82px minmax(0,1fr);gap:12px}.productPhoto{width:82px;height:82px;border-radius:15px;background:#f0f2f4;display:grid;place-items:center;overflow:hidden;font-size:30px}.productPhoto img{width:100%;height:100%;object-fit:cover}.productCopy{min-width:0}.productCopy h3{margin:1px 0 4px;font-size:18px;line-height:1.08}.productCopy .path{color:#7e8791;font-size:9px;line-height:1.4}.statusBadge{display:inline-flex;margin-top:7px;padding:5px 8px;border-radius:999px;font-size:8px;font-weight:900}.statusBadge.on{background:#e8f8ed;color:#248644}.statusBadge.off{background:#fff0ec;color:#c94a2c}
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.fact{padding:9px 10px;border:1px solid #eceff2;border-radius:11px;background:#f9fafb;min-width:0}.fact.wide{grid-column:1/-1}.fact span{display:block;color:#9299a2;font-size:7.5px;font-weight:850;text-transform:uppercase;letter-spacing:.45px}.fact strong{display:block;margin-top:3px;font-size:10.5px;overflow-wrap:anywhere}
@@ -65,7 +75,7 @@ button,input{font:inherit}button{cursor:pointer}
 .notFoundBox{padding:16px;border:1px dashed #efb8a7;border-radius:14px;background:#fff7f3}.notFoundBox strong{display:block;font-size:14px}.notFoundBox p{margin:5px 0 0;color:#8f6e63;font-size:9.5px;line-height:1.45}
 .desktopOnly{display:none}
 :root[data-theme="dark"]{color-scheme:dark;--ink:#f2f4f6;--muted:#a8afb8;--line:#30353b;--card:#1b1e22;--bg:#111317}
-:root[data-theme="dark"] .back{background:#202328;border-color:#373c42;color:#f4f5f7}:root[data-theme="dark"] .beta{background:#3a261f;border-color:#613728;color:#ff9b77}:root[data-theme="dark"] .panel{background:#1b1e22;border-color:#30353b}:root[data-theme="dark"] .manual input{background:#20242a;border-color:#383d43;color:#f4f5f7}:root[data-theme="dark"] .manual button{background:#efefef;color:#1d2126}:root[data-theme="dark"] .fact{background:#20242a;border-color:#30353b}:root[data-theme="dark"] .productPhoto{background:#24282d}:root[data-theme="dark"] .resultActions .secondary{background:#282c31;color:#eee}:root[data-theme="dark"] .notFoundBox{background:#2a211e;border-color:#654031}:root[data-theme="dark"] .cameraPreference{background:#1b2a21;border-color:#2d4937;color:#8bd3a5}:root[data-theme="dark"] .cameraPreferenceIcon{background:#254231;color:#9ee1b5}
+:root[data-theme="dark"] .back{background:#202328;border-color:#373c42;color:#f4f5f7}:root[data-theme="dark"] .beta{background:#3a261f;border-color:#613728;color:#ff9b77}:root[data-theme="dark"] .panel{background:#1b1e22;border-color:#30353b}:root[data-theme="dark"] .manual input{background:#20242a;border-color:#383d43;color:#f4f5f7}:root[data-theme="dark"] .manual button{background:#efefef;color:#1d2126}:root[data-theme="dark"] .fact{background:#20242a;border-color:#30353b}:root[data-theme="dark"] .productPhoto{background:#24282d}:root[data-theme="dark"] .resultActions .secondary{background:#282c31;color:#eee}:root[data-theme="dark"] .notFoundBox{background:#2a211e;border-color:#654031}:root[data-theme="dark"] .resultModalCard{background:#1b1e22;border-color:#353a40;box-shadow:0 28px 90px rgba(0,0,0,.62)}:root[data-theme="dark"] .resultModalClose{background:#292d32;color:#f1f3f5}:root[data-theme="dark"] .resultModalTitle small{color:#aaaeb5}:root[data-theme="dark"] .resultModal .resultActions{background:linear-gradient(180deg,rgba(27,30,34,.88),#1b1e22 28%);border-color:#30353a}:root[data-theme="dark"] .cameraPreference{background:#1b2a21;border-color:#2d4937;color:#8bd3a5}:root[data-theme="dark"] .cameraPreferenceIcon{background:#254231;color:#9ee1b5}
 @media(min-width:901px){.cameraCard,.hint,.panel{display:none}.desktopOnly{display:block;margin-top:70px;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--card);text-align:center}.desktopOnly strong{font-size:20px}.desktopOnly p{color:var(--muted);font-size:11px}}
 </style>
 </head>
@@ -269,20 +279,25 @@ function renderProduct(p){
   const category=p.product_categories?.name||'Non répertorié';
   const packaging=p.product_packagings?.name||'Non répertorié';
   const pack=packaging+(p.packaging_count?' · '+p.packaging_count:'');
-  $('result').className='result show';
-  $('result').innerHTML=
-    '<div class="resultStatus"><span class="resultStatusDot"></span>Fiche article trouvée</div>'+
-    '<div class="product">'+
-      '<div class="productPhoto">'+(p.photo_url?'<img src="'+esc(p.photo_url)+'" alt="">':'📦')+'</div>'+
-      '<div class="productCopy"><h3>'+esc(p.name||'Article')+'</h3><div class="path">'+esc(family)+' · '+esc(category)+'</div><span class="statusBadge '+(p.on_sale?'on':'off')+'">'+(p.on_sale?'EN VENTE':'HORS VENTE')+'</span></div>'+
-    '</div>'+
-    '<div class="facts">'+
-      '<div class="fact wide"><span>EAN</span><strong>'+esc(p.ean||'—')+'</strong></div>'+
-      '<div class="fact"><span>Code article</span><strong>'+esc(p.article_code||'—')+'</strong></div>'+
-      '<div class="fact"><span>Conditionnement</span><strong>'+esc(pack)+'</strong></div>'+
-    '</div>'+
-    '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Scanner un autre</button><button class="primary" type="button" onclick="openArticle()">Ouvrir la fiche article</button></div>';
-  $('result').scrollTop=0
+  const result=$('result');
+  result.className='result show resultModal';
+  result.innerHTML=
+    '<button class="resultModalBackdrop" type="button" aria-label="Fermer la fiche" onclick="closeProductModal()"></button>'+
+    '<article class="resultModalCard" role="dialog" aria-modal="true" aria-labelledby="scannerProductTitle">'+
+      '<div class="resultModalTop"><div class="resultModalTitle"><strong id="scannerProductTitle">Fiche article</strong><small>EAN reconnu par le scanner</small></div><button class="resultModalClose" type="button" onclick="closeProductModal()" aria-label="Fermer">×</button></div>'+
+      '<div class="resultStatus"><span class="resultStatusDot"></span>Fiche article trouvée</div>'+
+      '<div class="product">'+
+        '<div class="productPhoto">'+(p.photo_url?'<img src="'+esc(p.photo_url)+'" alt="">':'📦')+'</div>'+
+        '<div class="productCopy"><h3>'+esc(p.name||'Article')+'</h3><div class="path">'+esc(family)+' · '+esc(category)+'</div><span class="statusBadge '+(p.on_sale?'on':'off')+'">'+(p.on_sale?'EN VENTE':'HORS VENTE')+'</span></div>'+
+      '</div>'+
+      '<div class="facts">'+
+        '<div class="fact wide"><span>EAN</span><strong>'+esc(p.ean||'—')+'</strong></div>'+
+        '<div class="fact"><span>Code article</span><strong>'+esc(p.article_code||'—')+'</strong></div>'+
+        '<div class="fact"><span>Conditionnement</span><strong>'+esc(pack)+'</strong></div>'+
+      '</div>'+
+      '<div class="resultActions"><button class="secondary" type="button" onclick="closeProductModal()">Fermer</button><button class="primary" type="button" onclick="openArticle()">Ouvrir la fiche article</button></div>'+
+    '</article>';
+  resetManualInputLock()
 }
 function renderNotFound(code,message){
   currentProduct=null;
@@ -292,6 +307,14 @@ function renderNotFound(code,message){
     '<div class="notFoundBox"><strong>'+esc(code||'EAN non reconnu')+'</strong><p>'+esc(message||'Aucune fiche article trouvée.')+'</p></div>'+
     '<div class="resultActions"><button class="secondary" type="button" onclick="scanAnother()">Réessayer</button><button class="primary" type="button" onclick="focusManual()">Saisir un EAN</button></div>';
   $('result').scrollTop=0
+}
+function closeProductModal(){
+  const result=$('result');
+  currentProduct=null;
+  if(result){result.className='result';result.innerHTML=''}
+  $('eanInput').value='';lastCode='';resetManualInputLock();
+  setCameraState('Prêt à scanner');
+  if(isMobileView()&&!scannerRunning)setTimeout(startCamera,90)
 }
 function scanAnother(){
   currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';resetManualInputLock();startCamera()
@@ -314,6 +337,7 @@ async function boot(){
   setTimeout(startCamera,cameraRemembered?90:160)
 }
 window.addEventListener('pagehide',()=>{safeStop()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('result')?.classList.contains('resultModal'))closeProductModal()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)safeStop();else if(isMobileView()&&!currentProduct&&!scannerRunning)setTimeout(startCamera,180)});
 document.addEventListener('gesturestart',e=>{if(isMobileView())e.preventDefault()},{passive:false});
 document.addEventListener('gesturechange',e=>{if(isMobileView())e.preventDefault()},{passive:false});
