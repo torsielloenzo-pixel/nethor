@@ -636,6 +636,14 @@ main{position:relative;z-index:1}
   .mhdStatHead .mhdMiniIcon svg{display:block;width:17px;height:17px;overflow:visible;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .mhdStat strong{display:flex;align-items:flex-start;min-height:36px;margin-top:9px;font-size:17px;line-height:1.08;letter-spacing:-.25px;overflow-wrap:anywhere}
   .mhdStat .mhdValueBlue{color:#1677ff;font-weight:900}
+  .mhdStatLeave>strong{
+    display:block;
+    overflow-wrap:normal;
+    word-break:normal;
+    hyphens:none;
+    white-space:normal
+  }
+  .mhdStatLeave>strong .mhdValueBlue{display:inline}
   .mhdStat small{display:block;min-height:20px;margin-top:4px;color:#8a919a;font-size:7.8px;line-height:1.25;overflow-wrap:anywhere}
   .mhdProgress{height:6px;margin-top:auto;border-radius:999px;background:#e8ebef;overflow:hidden}.mhdProgress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff3f24,#ff7f23)}
   .mhdSection{padding:12px 13px}
@@ -1329,7 +1337,7 @@ async function renderMobileHomeDashboard(profile,name,cfg){
    leaveMain='<span class="mhdValueBlue">Dans '+daysUntil+' jour'+(daysUntil>1?'s':'')+'</span>';
    leaveSub=leaveStart===leaveEnd?'Congé le '+short(leaveStart):'Congé du '+short(leaveStart)+' au '+short(leaveEnd)
   }
-  stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(leaveTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('absences')+'</span>Congés</div><strong>'+leaveMain+'</strong><small>'+homeEsc(leaveSub)+'</small></button>')
+  stats.push('<button class="mhdStat mhdStatLeave" type="button" onclick="location.href=\''+homeEsc(leaveTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('absences')+'</span>Congés</div><strong>'+leaveMain+'</strong><small>'+homeEsc(leaveSub)+'</small></button>')
  }
  if(widget('next_rest')){const restTarget=nextRest?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextRest))))+'&day='+encodeURIComponent(nextRest)+'&focus=rest':'planning.html';stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(restTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('next_rest')+'</span>Prochain repos</div><strong>'+(nextRest?homeEsc(homeParseDate(nextRest).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')):'—')+'</strong><small>'+(nextRest?'Jour de repos':'non déterminé')+'</small></button>')}
  if(stats.length)sections.push('<section class="mhdStats">'+stats.join('')+'</section>');
