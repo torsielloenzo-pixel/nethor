@@ -1226,6 +1226,14 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   :root[data-theme="dark"] .day:hover{background:#353b43!important}
   :root[data-theme="dark"] .day.active{background:linear-gradient(135deg,#ff3a24,#ff8124)!important;border-color:transparent!important;color:#fff!important}
   :root[data-theme="dark"] #planningActions{border-color:#363d45!important}
+
+  /* Aucun espace réservé quand le seul contenu est l'état passif "Lecture seule". */
+  #planningActions:has(#saveState.passive){
+    display:none!important;
+    padding:0!important;
+    margin:0!important;
+    border:0!important;
+  }
 }
 
 @media(min-width:761px) and (max-width:1050px){
@@ -1298,6 +1306,14 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   .xlsTable .slot{width:24px!important;min-width:24px!important}
   .xlsTable .nameCell,.xlsTable .nameHead{max-width:148px!important}
   #saveState.passive{display:none!important}
+}
+<style id="planning-empty-actions-fix-v1">
+#planningActions:has(#saveState.passive){
+  display:none!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
 }
 </style>
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
