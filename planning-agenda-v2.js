@@ -140,11 +140,11 @@ function renderWeekAgenda(a){
  if(title)title.textContent='Semaine du '+a.getDate()+' au '+b.getDate()+' '+b.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
  if(sub)sub.textContent='Vue équipe simplifiée • glisse horizontalement pour voir la semaine';
  let html='<div class="agendaGrid"><div class="agendaCorner">Équipe</div>',weekHours=0;
- for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt);html+='<div class="agendaDayHead '+(key===todayKey?'today':'')+'"><strong>'+escLocal(dayShort(dt))+'</strong><span>'+dt.getDate()+'</span></div>'}
+ for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0);html+='<div class="agendaDayHead '+(key===todayKey?'today ':'')+(active?'activeDay':'')+'"><strong>'+escLocal(dayShort(dt))+'</strong><span>'+dt.getDate()+'</span></div>'}
  employees.forEach((emp,ri)=>{
   let employeeTotal=0;for(let di=0;di<7;di++){const row=model.days?.[isoDate(addDays(a,di))]?.cells?.[ri]||[];employeeTotal+=shiftHours(agendaRanges(row))}weekHours+=employeeTotal;
   const info=avatarFor(emp);html+='<div class="agendaEmployee">'+info.avatar+'<div class="planningIdentityText"><strong>'+escLocal(info.label)+'</strong><span class="agendaEmployeeTotal">'+hoursLabel(employeeTotal)+'</span></div></div>';
-  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),row=model.days?.[key]?.cells?.[ri]||[],ranges=agendaRanges(row);html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(ranges.length?'':'empty')+'">';
+  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0),row=model.days?.[key]?.cells?.[ri]||[],ranges=agendaRanges(row);html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(active?'activeDay ':'')+(ranges.length?'':'empty')+'">';
    if(ranges.length)ranges.forEach(r=>{html+='<div class="agendaShift" data-color="'+escLocal(r.c)+'"><strong>'+fmtTime(r.a)+'–'+fmtTime(r.b)+'</strong><small>'+hoursLabel(r.b-r.a)+'</small></div>'});else html+='<span class="agendaWeekDash">–</span>';
    html+='</div>';
   }
