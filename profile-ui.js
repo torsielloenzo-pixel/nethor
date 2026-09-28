@@ -58,6 +58,7 @@ function setupMobileLandscapeParity(){
  document.head?.appendChild(style);
 
  const rebuild=()=>{
+  if(document.head&&style.parentNode===document.head)document.head.appendChild(style);
   markNethorPhoneDevice();
   if(!isNethorPhoneDevice()||!isNethorPhysicalLandscape()){
    style.textContent='';
@@ -71,9 +72,8 @@ function setupMobileLandscapeParity(){
    for(const rule of rules){
     if(rule===style.sheet)continue;
     if(rule.type===4&&rule.media){
-     const mediaText=String(rule.media.mediaText||'');
-     if(/min-width\s*:/i.test(mediaText)||/orientation\s*:/i.test(mediaText))continue;
-     const m=mediaText.match(/max-width\s*:\s*([\d.]+)px/i);
+     const mediaText=String(rule.media.mediaText||'').trim();
+     const m=mediaText.match(/^\(\s*max-width\s*:\s*([\d.]+)px\s*\)$/i);
      if(!m)continue;
      const max=Number(m[1]);
      if(!Number.isFinite(max)||max>900||shortSide>max)continue;
@@ -91,7 +91,7 @@ function setupMobileLandscapeParity(){
   style.textContent=chunks.join('\n')
  };
 
- const refresh=()=>requestAnimationFrame(rebuild);
+ const refresh=()=>{requestAnimationFrame(rebuild);setTimeout(rebuild,180)};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rebuild,{once:true});
  else rebuild();
  window.addEventListener('load',rebuild,{once:true});
