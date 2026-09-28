@@ -1510,15 +1510,19 @@ function buildGlobalHeader(){
  const visibleUserModules=visibleModules('user_menu',p,api.siteConfig);
  const shortcuts=visibleUserModules.map(m=>makeButton(moduleIcon(m),m.label,m.subtitle,m.url)).join('');
  const mobileModules=visibleUserModules.filter(m=>!['profile','settings'].includes(m.id));
- const mobilePrimaryIds=new Set(['home','stock','planning','chat','articles']);
+ const mobilePrimaryIds=new Set(['home','stock','planning','chat','scanner','articles']);
  const mobileAdminIds=new Set(['accounts','portal_admin']);
+ const mobileSpecialIds=new Set(['notification_settings','problem_report']);
  const mobilePrimary=mobileModules.filter(m=>mobilePrimaryIds.has(m.id));
  const mobileAdmin=mobileModules.filter(m=>mobileAdminIds.has(m.id));
- const mobileExtra=mobileModules.filter(m=>!mobilePrimaryIds.has(m.id)&&!mobileAdminIds.has(m.id));
+ const mobileExtra=mobileModules.filter(m=>!mobilePrimaryIds.has(m.id)&&!mobileAdminIds.has(m.id)&&!mobileSpecialIds.has(m.id));
  const mobileRows=list=>list.map(m=>mobileMenuRow(m.id,m.label,m.subtitle,m.url)).join('');
- const mobilePrimaryRows=mobilePrimary.map(m=>mobileMenuRow(m.id,m.label,m.subtitle,m.url)+(m.id==='chat'?mobileMenuRow('scanner','Scanner (bêta)','EAN13 vers fiche article','scanner.html'):'')).join('');
+ const mobilePrimaryRows=mobileRows(mobilePrimary);
+ const notificationSettings=mobileModules.find(m=>m.id==='notification_settings')||null;
+ const problemReport=mobileModules.find(m=>m.id==='problem_report')||null;
+ const settingsModule=NAV_MODULES.find(m=>m.id==='settings')||{label:'Personnalisation',subtitle:'Accueil, raccourcis et apparence',url:'settings.html'};
  const mobileProblemSource=(location.pathname.split('/').pop()||'home.html')+(location.search||'');
- const mobileProblemUrl='report-problem.html?from='+encodeURIComponent(mobileProblemSource);
+ const mobileProblemUrl=problemReport?(()=>{try{const u=new URL(problemReport.url||'report-problem.html',location.href);u.searchParams.set('from',mobileProblemSource);return u.pathname.split('/').pop()+u.search}catch(_){return 'report-problem.html?from='+encodeURIComponent(mobileProblemSource)}})():'';
  const mobileProfileIcon=mobileNavIcon('settings');
  const mobileThemeIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z"/></svg>';
  const mobileUpdateIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v10"/><path d="m8.5 9.5 3.5 3.5 3.5-3.5"/><path d="M5 17.5V20h14v-2.5"/></svg>';
@@ -1528,18 +1532,18 @@ function buildGlobalHeader(){
    '<div class="nettoMobileMenuHeader"><h2>Menu</h2></div>'+
    '<section class="nettoMobileMenuCard nettoMobileProfileCard">'+
     '<button class="nettoMobileProfileMain nettoMobileMenuLink" type="button" data-url="profile.html"><span id="nettoMobileMenuAvatar" class="nettoTopAvatar nettoMobileProfileAvatar">U</span><span class="nettoMobileProfileCopy"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
-    '<button class="nettoMobileMenuRow nettoMobileMenuLink" type="button" data-url="settings.html"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileProfileIcon+'</span><span class="nettoMobileMenuCopy"><strong>Personnalisation</strong><small>Accueil, raccourcis et apparence</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
+    '<button class="nettoMobileMenuRow nettoMobileMenuLink" type="button" data-url="'+esc(settingsModule.url||'settings.html')+'"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileProfileIcon+'</span><span class="nettoMobileMenuCopy"><strong>'+esc(settingsModule.label||'Personnalisation')+'</strong><small>'+esc(settingsModule.subtitle||'Accueil, raccourcis et apparence')+'</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
    '</section>'+
    (mobilePrimary.length?'<section class="nettoMobileMenuCard">'+mobilePrimaryRows+'</section>':'')+
-   '<section class="nettoMobileMenuCard">'+
-    mobileMenuRow('notifications','Notifications','Préférences et alertes','notification-settings.html')+
+   ((notificationSettings||mobileAdmin.length)?'<section class="nettoMobileMenuCard">'+
+    (notificationSettings?mobileMenuRow(notificationSettings.id,notificationSettings.label,notificationSettings.subtitle,notificationSettings.url):'')+
     (mobileAdmin.length?mobileRows(mobileAdmin):'')+
-   '</section>'+
+   '</section>':'')+
    (mobileExtra.length?'<section class="nettoMobileMenuCard">'+mobileRows(mobileExtra)+'</section>':'')+
    '<section class="nettoMobileMenuCard nettoMobileMenuUtilityCard">'+
     '<button id="nettoMobileThemeBtn" class="nettoMobileMenuRow" type="button"><span class="nettoMobileMenuIcon nettoThemeIconSvg" aria-hidden="true">'+mobileThemeIcon+'</span><span class="nettoMobileMenuCopy"><strong class="nettoThemeLabel">Mode sombre</strong><small>Changer l’apparence</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
     '<button id="nettoMobileUpdateBtn" class="nettoMobileMenuRow" type="button"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileUpdateIcon+'</span><span class="nettoMobileMenuCopy"><strong>Mise à jour</strong><small>Rechercher une nouvelle version</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
-    mobileMenuRow('problem_report','Signaler un problème','Décrire et envoyer un bug',mobileProblemUrl)+
+    (problemReport?mobileMenuRow(problemReport.id,problemReport.label,problemReport.subtitle,mobileProblemUrl):'')+
     '<button id="nettoMobileLogoutBtn" class="nettoMobileMenuRow nettoMobileMenuDanger" type="button"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileLogoutIcon+'</span><span class="nettoMobileMenuCopy"><strong>Déconnexion</strong><small>Quitter la session</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
    '</section>'+
   '</div>';
