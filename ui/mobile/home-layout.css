@@ -8,3 +8,213 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="home"] .homeMobileLa
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="home"] .homeMobileDashboard{
  display:block;width:100%;max-width:100%;min-width:0
 }
+
+/* Phase 4.4 — Dashboard Mobile extrait de home.html. */
+
+  body{background:#eef1f4!important}
+  main{
+    width:100%!important;max-width:100%!important;
+    padding:calc(env(safe-area-inset-top) + 8px) 9px calc(82px + env(safe-area-inset-bottom))!important;
+  }
+  main>.hello,main>#homePages,main>#status{display:none!important}
+  .homeMobileDashboard{display:block;width:100%;max-width:100%;min-width:0}
+  .mhdStack{display:grid;gap:10px}
+  .mhdHero{
+    position:relative;overflow:hidden;border-radius:21px;padding:17px 16px 18px;
+    color:#fff;background:
+      radial-gradient(circle at 94% 86%,#ff5a2a66 0 17%,transparent 18%),
+      radial-gradient(circle at 82% 110%,#ff321f88 0 26%,transparent 27%),
+      linear-gradient(135deg,#1c2025 0%,#252a30 62%,#4c3127 100%);
+    box-shadow:0 9px 25px #11182718
+  }
+  .mhdHeroTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+  .mhdPill{
+    display:inline-flex;align-items:center;gap:6px;min-height:27px;padding:0 10px;border-radius:999px;
+    border:1px solid #ffffff18;background:#ffffff0d;color:#f7ddd4;font-size:8px;font-weight:900;letter-spacing:.45px
+  }
+  .mhdPill i{width:8px;height:8px;border-radius:50%;background:#ff5b2a;box-shadow:0 0 0 4px #ff5b2a1f}
+  .mhdDatePill{color:#f2f4f7;letter-spacing:0;font-size:8px}
+  .mhdHero h1{margin:0;font-size:25px;line-height:1.04;letter-spacing:-.75px;color:#fff!important}
+  .mhdHero p{margin:7px 0 0;color:#c6cad0;font-size:11px;line-height:1.4}
+  .mhdCard{
+    background:#fff;border:1px solid #dde2e7;border-radius:18px;
+    box-shadow:0 7px 22px #1822300a;overflow:hidden;color:#1d252e
+  }
+  .mhdNext{padding:13px 14px}
+  .mhdNextHead,.mhdSectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .mhdTitleWithIcon{display:flex;align-items:center;gap:10px;min-width:0}
+  .mhdIcon{
+    width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;
+    color:#ff4e28;background:linear-gradient(135deg,#fff0e9,#fff7ef)
+  }
+  .mhdIcon svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .mhdNextHead strong,.mhdSectionHead strong{font-size:13px;line-height:1.2}
+  .mhdWhen{
+    flex:none;padding:6px 10px;border-radius:999px;background:#fff0e7;color:#ef4b27;
+    font-size:8px;font-weight:900
+  }
+  .mhdShiftLine{margin:10px 0 0 46px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mhdShiftLine b{font-size:20px;letter-spacing:-.45px}
+  .mhdChevron{color:#8a929c;font-size:22px;line-height:1}
+  .mhdShiftMeta{margin:8px 0 0 46px;display:flex;gap:7px;flex-wrap:wrap}
+  .mhdTag{display:inline-flex;align-items:center;min-height:25px;padding:0 9px;border-radius:999px;font-size:8px;font-weight:850}
+  .mhdTag.green{background:#eaf8ef;color:#21884c}.mhdTag.amber{background:#fff3dc;color:#a46812}.mhdTag.orange{background:#fff0e8;color:#d94c28}
+  .mhdStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch}
+  .mhdStat{
+    min-width:0;min-height:132px;height:100%;padding:12px;border:1px solid #dde2e7;border-radius:17px;background:#fff;
+    box-shadow:0 6px 18px #18223008;display:flex;flex-direction:column;align-items:stretch;text-align:left
+  }
+  .mhdStatHead{display:flex;align-items:center;gap:7px;min-height:30px;color:#47515d;font-size:9px;font-weight:800;line-height:1.15}
+  .mhdStatHead .mhdMiniIcon{width:28px;height:28px;border-radius:9px;background:linear-gradient(145deg,#fff1e9,#fff8f2);color:#ef542b;display:grid;place-items:center;flex:none;box-shadow:inset 0 0 0 1px #ffdfd1}
+  .mhdStatHead .mhdMiniIcon svg{display:block;width:17px;height:17px;overflow:visible;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .mhdStat strong{display:flex;align-items:flex-start;min-height:36px;margin-top:9px;font-size:17px;line-height:1.08;letter-spacing:-.25px;overflow-wrap:anywhere}
+  .mhdStat .mhdValueBlue{color:#1677ff;font-weight:900}
+  .mhdStatLeave>strong{
+    display:block;
+    overflow-wrap:normal;
+    word-break:normal;
+    hyphens:none;
+    white-space:normal
+  }
+  .mhdStatLeave>strong .mhdValueBlue{display:inline}
+  .mhdStat small{display:block;min-height:20px;margin-top:4px;color:#8a919a;font-size:7.8px;line-height:1.25;overflow-wrap:anywhere}
+  .mhdProgress{height:6px;margin-top:auto;border-radius:999px;background:#e8ebef;overflow:hidden}.mhdProgress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff3f24,#ff7f23)}
+  .mhdSection{padding:12px 13px}
+  .mhdSectionHead{margin-bottom:8px}
+  .mhdSectionLink{border:0;background:transparent;color:#f04c25;font-size:8px;font-weight:900;padding:4px 0}
+  .mhdRows{display:grid}
+  .mhdRow{
+    width:100%;min-width:0;border:0;border-top:1px solid #edf0f2;background:transparent;
+    display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:9px 2px;text-align:left;color:inherit
+  }
+  .mhdRow:first-child{border-top:0}
+  .mhdRowIcon{width:31px;height:31px;border-radius:10px;background:#fff0e9;color:#f3522b;display:grid;place-items:center;font-size:14px}
+  .mhdRowCopy{min-width:0}.mhdRowCopy strong{display:block;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdRowCopy small{display:block;margin-top:2px;color:#8b9198;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdRow time{font-size:7.5px;color:#8c939b;white-space:nowrap}
+  .mhdTaskRow{grid-template-columns:auto minmax(0,1fr) auto}
+  .mhdTaskCheck{
+    width:23px;height:23px;border:1.5px solid #aeb7c0;border-radius:7px;background:#fff;display:grid;place-items:center;color:#fff;font-size:13px
+  }
+  .mhdTaskRow.done .mhdTaskCheck{background:#ff5a2b;border-color:#ff5a2b}.mhdTaskRow.done .mhdTaskCheck:after{content:"✓"}.mhdTaskRow.done .mhdRowCopy strong{text-decoration:line-through;color:#8c939b}
+  .mhdTaskBadge{padding:5px 8px;border-radius:999px;background:#fff3d9;color:#9a6916;font-size:7px;font-weight:900}
+  .mhdTaskRoleHint{display:block;margin-top:3px;color:#89919b;font-size:7.5px;font-weight:750}
+  .mhdTaskEditorTop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .mhdTaskHeaderActions{display:flex;align-items:center;gap:7px;flex:none}
+  .mhdTaskAddBtn,.mhdTaskResetBtn{min-height:32px;border:0;border-radius:11px;padding:0 11px;font-size:8px;font-weight:900}
+  .mhdTaskAddBtn{background:linear-gradient(135deg,#ff3c24,#ff8323);color:#fff;box-shadow:0 5px 14px #ff5d2730}
+  .mhdTaskResetBtn{background:#f2f4f6;color:#65707c}.mhdTaskResetBtn:hover{background:#eceff2}
+  .mhdTaskOverview{display:flex;align-items:center;gap:10px;margin:-1px 0 10px 51px;color:#69737e}
+  .mhdTaskOverview span{display:flex;align-items:baseline;gap:4px}.mhdTaskOverview b{font-size:11px;color:#29323c}.mhdTaskOverview small{font-size:7px}.mhdTaskOverview i{width:3px;height:3px;border-radius:50%;background:#c7ccd2}
+  .mhdTaskComposer{margin:8px 0 12px;padding:12px;border:1px solid #e3e7eb;border-radius:17px;background:linear-gradient(180deg,#fbfcfd,#f7f9fa);box-shadow:inset 0 1px 0 #fff}.mhdTaskComposer.hidden{display:none}
+  .mhdTaskComposerTitle{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid #e8ebee}
+  .mhdTaskComposerTitle strong{display:block;font-size:11px}.mhdTaskComposerTitle small,.mhdCustomTask small{display:block;margin-top:3px;color:#8a919a;font-size:7.5px;line-height:1.35}
+  #mhdTaskSelectedSummary{flex:none;padding:6px 9px;border-radius:999px;background:#eceff2;color:#717a84;font-size:7px;font-weight:900}
+  #mhdTaskSelectedSummary.active{background:#fff0e8;color:#dc4b26}
+  .mhdTaskTemplateGroup{margin-top:8px;border:1px solid #e5e8eb;border-radius:13px;background:#fff;overflow:hidden}
+  .mhdTaskGroupToggle{width:100%;min-height:48px;border:0;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;color:inherit;text-align:left}
+  .mhdTaskGroupLead{display:flex;align-items:center;gap:9px;min-width:0}.mhdTaskGroupLead>i{width:31px;height:31px;border-radius:10px;background:#fff1ea;color:#ee572e;display:grid;place-items:center;font-size:12px;font-style:normal;font-weight:900}
+  .mhdTaskGroupLead strong{display:block;font-size:9.5px}.mhdTaskGroupLead small{display:block;margin-top:2px;color:#959ca4;font-size:7px}
+  .mhdTaskGroupMeta{display:flex;align-items:center;gap:8px}.mhdTaskGroupMeta b{min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#f0f2f4;color:#8a929b;display:grid;place-items:center;font-size:7px}.mhdTaskGroupMeta b.active{background:#ffebe3;color:#df4c27}
+  .mhdTaskGroupMeta em{font-style:normal;color:#9299a1;font-size:12px;transition:transform .18s ease}.mhdTaskGroupToggle[aria-expanded="true"] .mhdTaskGroupMeta em{transform:rotate(180deg)}
+  .mhdTaskTemplateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:0 9px 9px}.mhdTaskTemplateGrid.hidden{display:none}
+  .mhdTaskChip{min-height:38px;border:1px solid #e2e5e8;border-radius:10px;background:#fafbfc;color:#4f5964;padding:7px 8px;display:flex;align-items:center;gap:7px;text-align:left;font-size:8px;font-weight:850}
+  .mhdTaskChipCheck{width:18px;height:18px;border:1.5px solid #c4cad0;border-radius:6px;background:#fff;color:transparent;display:grid;place-items:center;flex:none;font-size:10px}
+  .mhdTaskChip.selected{border-color:#ff8a68;background:#fff3ee;color:#c94625;box-shadow:0 0 0 1px #ff8b6620}.mhdTaskChip.selected .mhdTaskChipCheck{background:#ff5a2b;border-color:#ff5a2b;color:#fff}
+  .mhdTaskAudienceGrid{display:flex;gap:6px;flex-wrap:wrap}
+  .mhdTaskAssigneeChip{border:1px solid #dfe3e7;border-radius:999px;background:#fff;color:#4f5964;padding:7px 9px;font-size:7.5px;font-weight:850}
+  .mhdTaskAssigneeChip.selected{border-color:#ff7047;background:#fff0e9;color:#d84622;box-shadow:0 0 0 1px #ff8b6630}
+  .mhdFacingDetail,.mhdCustomTask,.mhdTaskAudience{margin-top:11px}.mhdFacingDetail.hidden{display:none}
+  .mhdTaskFieldLabel{display:block;margin-bottom:5px;color:#5b6570;font-size:8px;font-weight:900}
+  .mhdTaskInput{width:100%;height:38px;border:1px solid #dfe3e7;border-radius:11px;background:#fff;color:inherit;padding:0 11px;font-size:9px;outline:none}.mhdTaskInput:focus{border-color:#ff754e;box-shadow:0 0 0 3px #ff754e18}
+  .mhdTaskComposerActions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding-top:10px;border-top:1px solid #e8ebee}.mhdTaskComposerActions span{color:#8a919a;font-size:7.3px;line-height:1.3}
+  .mhdTaskPublishBtn{min-height:36px;border:0;border-radius:11px;background:linear-gradient(135deg,#ff3421,#ff8500);color:#fff;padding:0 14px;font-size:8px;font-weight:900;white-space:nowrap;box-shadow:0 5px 14px #ff5d2730}.mhdTaskPublishBtn:disabled{opacity:.55}
+  .mhdTaskPublishedGroup,.mhdTaskUserGroup{border-top:1px solid #edf0f2;padding-top:8px;margin-top:5px}.mhdTaskPublishedGroup:first-of-type,.mhdTaskUserGroup:first-of-type{border-top:0}
+  .mhdTaskGroupTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;color:#59626d;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.35px}.mhdTaskGroupTitle b{min-width:20px;height:20px;border-radius:999px;background:#f0f2f4;display:grid;place-items:center;font-size:7px}
+  .mhdTaskPublishedRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:9px 3px;border-top:1px solid #f0f2f4}.mhdTaskPublishedRow:nth-child(2){border-top:0}
+  .mhdTaskStatusDot{width:9px;height:9px;border-radius:50%;background:#ffb14d;box-shadow:0 0 0 3px #fff4e2}.mhdTaskStatusDot.done{background:#29ad62;box-shadow:0 0 0 3px #e9f8ef}
+  .mhdTaskPublishedCopy{min-width:0}.mhdTaskPublishedCopy strong{display:block;font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdTaskPublishedCopy small{display:block;margin-top:2px;color:#8a919a;font-size:7.5px}.mhdTaskPublishedCopy em{display:block;margin-top:2px;color:#f05a31;font-size:7px;font-style:normal;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdTaskValidation{min-width:32px;padding:5px 7px;border-radius:999px;background:#f1f3f5;color:#717a83;font-size:7.5px;font-weight:900;text-align:center;white-space:nowrap}.mhdTaskDelete{width:26px;height:26px;border:0;border-radius:8px;background:#fff0ed;color:#d74a31;font-size:15px;line-height:1}
+  .mhdTaskError{padding:10px;border-radius:10px;background:#fff1ee;color:#be4734;font-size:8px;line-height:1.4}
+  @media(max-width:430px){.mhdTaskTemplateGrid{grid-template-columns:1fr}.mhdTaskEditorTop{align-items:flex-start}.mhdTaskHeaderActions{gap:5px}.mhdTaskAddBtn,.mhdTaskResetBtn{padding:0 9px}.mhdTaskOverview{margin-left:0}.mhdTaskComposerActions{align-items:flex-end}.mhdTaskComposerActions span{max-width:55%}}
+
+
+  .mhdInfoRow{margin-top:7px;padding:10px;border:1px solid #ffd8ce;border-radius:13px;background:linear-gradient(90deg,#fff3f1,#fff9f4);display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center}
+  .mhdInfoRow.orange{border-color:#ffe2c9;background:linear-gradient(90deg,#fff6ec,#fffaf5)}
+  .mhdInfoIcon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff3024,#ff7c24);color:#fff;display:grid;place-items:center;font-size:15px}
+  .mhdInfoCopy{min-width:0}.mhdInfoCopy strong{display:block;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdInfoCopy small{display:block;margin-top:2px;color:#777f88;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdTeam{display:flex;align-items:flex-start;gap:13px;overflow:hidden;padding-top:2px}
+  .mhdPerson{width:67px;text-align:center;flex:none;position:relative}
+  .mhdAvatar{width:42px;height:42px;border-radius:50%;margin:0 auto 5px;background:linear-gradient(135deg,#ff4c28,#ff8323);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900;background-size:cover;background-position:center}
+  .mhdOnline{position:absolute;width:10px;height:10px;border-radius:50%;background:#23b45a;border:2px solid #fff;left:43px;top:32px}
+  .mhdPerson strong{display:block;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdPerson small{display:block;font-size:7px;color:#858c94;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mhdMorePeople{width:42px;height:42px;border-radius:50%;background:#eef3f8;color:#536274;display:grid;place-items:center;font-size:10px;font-weight:900;flex:none}
+  .mhdQuickGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+  .mhdQuick{
+    min-width:0;min-height:94px;border:1px solid #e0e4e8;border-radius:14px;background:#fff;padding:9px 7px;
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;text-align:left;color:inherit
+  }
+  .mhdQuickIcon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff3c24,#ff8323);color:#fff;display:grid;place-items:center}
+  .mhdQuickIcon svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .mhdQuick strong{font-size:8.5px;line-height:1.15;overflow-wrap:anywhere}
+  .mhdEmpty{padding:10px 2px;color:#8a9199;font-size:9px;line-height:1.4}
+
+@media(max-width:380px){
+  .mhdHero h1{font-size:22px}.mhdHero{padding:15px 13px}.mhdPill{padding:0 8px}
+  .mhdStats{gap:6px}.mhdStat{min-height:124px;padding:10px 9px}.mhdStatHead{gap:5px;font-size:8.3px}.mhdStatHead .mhdMiniIcon{width:26px;height:26px}.mhdStatHead .mhdMiniIcon svg{width:16px;height:16px}.mhdStat strong{font-size:15px}
+  .mhdQuickGrid{gap:5px}.mhdQuick{min-height:88px;padding:7px 6px}.mhdQuick strong{font-size:8px}
+}
+
+  :root[data-theme="dark"] body{background:#141619!important}
+  :root[data-theme="dark"] .mhdCard,:root[data-theme="dark"] .mhdStat,:root[data-theme="dark"] .mhdQuick{background:#1d2024!important;border-color:#343940!important;color:#f1eeea!important}
+  :root[data-theme="dark"] .mhdRow{border-color:#30353b!important}
+  :root[data-theme="dark"] .mhdRowCopy small,:root[data-theme="dark"] .mhdStat small,:root[data-theme="dark"] .mhdPerson small{color:#aaa49e!important}
+  :root[data-theme="dark"] .mhdStat .mhdValueBlue{color:#67a7ff}
+  :root[data-theme="dark"] .mhdStatHead .mhdMiniIcon{background:linear-gradient(145deg,#352720,#2b2420);color:#ff8d67;box-shadow:inset 0 0 0 1px #56382d}
+  :root[data-theme="dark"] .mhdProgress{background:#343940}
+  :root[data-theme="dark"] .mhdTaskCheck{background:#24282d;border-color:#636a73}
+  :root[data-theme="dark"] .mhdTaskComposer{background:#181b1f;border-color:#373c43}
+  :root[data-theme="dark"] .mhdTaskTemplateGroup{background:#202328;border-color:#363b41}
+  :root[data-theme="dark"] .mhdTaskGroupLead>i{background:#34251f;color:#ff8d67}
+  :root[data-theme="dark"] .mhdTaskGroupMeta b,:root[data-theme="dark"] .mhdTaskGroupTitle b,:root[data-theme="dark"] .mhdTaskValidation{background:#2b3035;color:#aeb4ba}
+  :root[data-theme="dark"] .mhdTaskChip{background:#24282d;border-color:#3c4249;color:#e6e2de}
+  :root[data-theme="dark"] .mhdTaskChipCheck{background:#1f2327;border-color:#5f6770}
+  :root[data-theme="dark"] .mhdTaskResetBtn{background:#2a2e33;color:#c7c1bb}
+  :root[data-theme="dark"] .mhdTaskComposerTitle,:root[data-theme="dark"] .mhdTaskComposerActions{border-color:#32373d}
+ 
+  :root[data-theme="dark"] .mhdTaskChip,:root[data-theme="dark"] .mhdTaskAssigneeChip,:root[data-theme="dark"] .mhdTaskInput{background:#22262b;border-color:#3d434a;color:#eee}
+  :root[data-theme="dark"] .mhdTaskChip.selected,:root[data-theme="dark"] .mhdTaskAssigneeChip.selected{background:#35231d;border-color:#7a4938;color:#ff9a76}
+  :root[data-theme="dark"] .mhdTaskPublishedGroup,:root[data-theme="dark"] .mhdTaskUserGroup,:root[data-theme="dark"] .mhdTaskPublishedRow{border-color:#30353b}
+
+  :root[data-theme="dark"] .mhdInfoRow{background:#2a211f;border-color:#50322c}
+  :root[data-theme="dark"] .mhdInfoRow.orange{background:#2c251e;border-color:#51402f}
+  :root[data-theme="dark"] .mhdQuick{background:#202328!important}
+  :root[data-theme="dark"] .mhdOnline{border-color:#1d2024}
+
+
+/* Typographie Accueil Mobile. */
+
+  .homeMobileDashboard .mhdNextHead strong,
+  .homeMobileDashboard .mhdSectionHead strong{font-size:13.5px}
+  .homeMobileDashboard .mhdStatHead{font-size:9.5px}
+  .homeMobileDashboard .mhdStat small{font-size:8.4px}
+  .homeMobileDashboard .mhdInfoCopy strong{font-size:11px}
+  .homeMobileDashboard .mhdInfoCopy small{font-size:8.5px}
+  .homeMobileDashboard .mhdEmpty{font-size:9.5px}
+
+
+/* Passation — adaptations Mobile uniquement. */
+
+ .mhdTasks .mhdTaskEditorTop{align-items:flex-start;gap:10px}.mhdTasks .mhdTaskHeaderActions{gap:5px}.mhdTasks .mhdTaskAddBtn,.mhdTasks .mhdTaskResetBtn{min-height:34px;padding:0 10px;font-size:9px}
+ .mhdTasks .mhdTaskRoleHint{font-size:8.5px}.mhdTasks .mhdTaskHandoff{align-items:flex-start;gap:9px;padding:10px 11px}.mhdTasks .mhdTaskHandoffRoute{gap:5px}.mhdTasks .mhdTaskHandoffRoute span{font-size:7px;padding:4px 6px}.mhdTasks .mhdTaskHandoffTeam{text-align:left}.mhdTasks .mhdTaskHandoffTeam strong{font-size:9px}.mhdTasks .mhdTaskHandoffTeam small{font-size:7.5px;white-space:normal}
+ .mhdTasks .mhdTaskOverview{gap:6px}.mhdTasks .mhdTaskOverview>div:not(.mhdTaskOverviewProgress){padding:8px}.mhdTasks .mhdTaskOverview strong{font-size:12px}.mhdTasks .mhdTaskOverview span{font-size:7.5px}
+ .mhdTasks .mhdTaskComposer{padding:11px;border-radius:15px}.mhdTasks .mhdTaskComposerTitle strong{font-size:10.5px}.mhdTasks .mhdTaskComposerTitle small{font-size:8px}.mhdTasks #mhdTaskSelectedSummary{font-size:7.5px;padding:5px 7px}
+ .mhdTasks .mhdTaskTemplateGroups{grid-template-columns:1fr;gap:7px}.mhdTasks .mhdTaskGroupToggle{min-height:50px}.mhdTasks .mhdTaskGroupLead strong{font-size:9.5px}.mhdTasks .mhdTaskGroupLead small{font-size:7.5px}.mhdTasks .mhdTaskChip{min-height:39px;font-size:9px}.mhdTasks .mhdTaskChipCopy strong{font-size:9px}
+ .mhdTasks .mhdCustomTask,.mhdTasks .mhdTaskAudience{padding:10px}.mhdTasks .mhdTaskFieldLabel{font-size:7.5px}.mhdTasks .mhdTaskInput{height:38px;font-size:9px}.mhdTasks .mhdTaskAudienceHead strong{font-size:9.5px}.mhdTasks .mhdTaskAudienceHead small{font-size:7.5px}.mhdTasks .mhdTaskAssigneeChip{font-size:8px}
+ .mhdTasks .mhdTaskComposerActions{align-items:flex-end}.mhdTasks .mhdTaskComposerActions span{max-width:55%;font-size:7.5px}.mhdTasks .mhdTaskPublishBtn{min-height:36px;padding:0 11px;font-size:8.5px}
+ .mhdTasks .mhdTaskPublishedCopy strong{font-size:9.5px}.mhdTasks .mhdTaskPublishedCopy small,.mhdTasks .mhdTaskPublishedCopy em{font-size:7.5px}.mhdTasks .mhdTaskValidation{min-width:38px;font-size:7.5px}.mhdTasks .mhdTaskDelete{width:27px;height:27px}
+ .mhdTasks .mhdTaskUserProgress{font-size:7.5px}.mhdTasks .mhdTaskEmptyState strong{font-size:10px}.mhdTasks .mhdTaskEmptyState span{font-size:8px}
+
+
+ .mhdTasks .mhdTaskEditorTop{display:grid;grid-template-columns:1fr}.mhdTasks .mhdTaskHeaderActions{justify-content:flex-end}.mhdTasks .mhdTaskHandoff{display:grid}.mhdTasks .mhdTaskOverview{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .mhdTasks .mhdTaskComposerTitle{display:grid;grid-template-columns:1fr}.mhdTasks #mhdTaskSelectedSummary{justify-self:start}.mhdTasks .mhdTaskComposerActions{display:grid;grid-template-columns:1fr}.mhdTasks .mhdTaskComposerActions span{max-width:none}.mhdTasks .mhdTaskPublishBtn{width:100%}
+
