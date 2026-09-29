@@ -213,6 +213,17 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
 :root[data-theme="dark"] .managementSettingState{background:#292d32;color:#b7bdc5}:root[data-theme="dark"] .managementSettingState.active{background:#3a2821;color:#ff9a77}
 @media(max-width:900px){.managementSettingsSection{width:100%;max-width:none!important}.managementSettingRow{grid-template-columns:34px minmax(0,1fr) auto;gap:9px;padding:10px}.managementSettingControl{padding-left:4px}.managementSettingState{display:none}.managementSettingHead.compactPanelHead{min-height:58px;padding:9px 10px!important}.managementSettingBody.compactPanelBody{padding:11px!important}}
 @media(max-width:560px){.managementSettingRow{grid-template-columns:32px minmax(0,1fr) auto}.managementSettingIcon,.managementSettingHeadIcon{width:32px;height:32px}.managementSettingText>span{font-size:8px}.managementSettingStatus{font-size:7.3px}.managementSettingHeadText h2{font-size:11px!important}}
+
+/* management-capabilities-v200 */
+.pageEditorStats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.moduleBadge.devices{background:#eef6f2;color:#39745a}.moduleBadge.desktop{background:#f2efff;color:#6656b5}.moduleBadge.mobilebar{background:#fff3e9;color:#c96328}
+.mobileInventory{margin:10px 0 12px;padding:10px;border:1px solid #e3e7eb;border-radius:12px;background:#f8fafb}
+.mobileInventoryHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:8px}.mobileInventoryHead strong{font-size:9.5px}.mobileInventoryHead span{color:#8a929b;font-size:7.5px}
+.mobileInventoryChips{display:flex;flex-wrap:wrap;gap:5px}.mobileInventoryChip{display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:4px 7px;border:1px solid #e1e5e9;border-radius:9px;background:#fff;color:#66707b;font-size:7.8px;font-weight:800}.mobileInventoryChip.selected{border-color:#ffc7b4;background:#fff2ec;color:#d84a25}.mobileInventoryChip>i{display:grid;place-items:center;width:16px;height:16px;flex:none}.mobileInventoryChip>i svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.8}.mobileInventoryChip>small{padding:2px 4px;border-radius:999px;background:#eef3f8;color:#75808b;font-size:6px;text-transform:uppercase}
+:root[data-theme="dark"] .moduleBadge.devices{background:#20352b;color:#91c7a9}:root[data-theme="dark"] .moduleBadge.desktop{background:#2c2940;color:#b8adef}:root[data-theme="dark"] .moduleBadge.mobilebar{background:#3a2a20;color:#ffab7c}
+:root[data-theme="dark"] .mobileInventory{background:#202328;border-color:#383e45}:root[data-theme="dark"] .mobileInventoryChip{background:#282c31;border-color:#3a4047;color:#bcc2ca}:root[data-theme="dark"] .mobileInventoryChip.selected{background:#3b2922;border-color:#754636;color:#ffab86}
+@media(max-width:760px){.pageEditorStats{grid-template-columns:repeat(2,minmax(0,1fr))!important}.mobileInventoryHead{align-items:flex-start;flex-direction:column}.mobileInventoryChips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.mobileInventoryChip{min-width:0}}
+@media(max-width:460px){.mobileInventoryChips{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -341,6 +352,8 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
   <div class="pageEditorStats">
    <div><span>Pages répertoriées</span><strong id="systemPageTotal">0</strong></div>
    <div><span>Actives</span><strong id="systemPageActive">0</strong></div>
+   <div><span>Disponibles mobile</span><strong id="systemPageMobile">0</strong></div>
+   <div><span>Disponibles desktop</span><strong id="systemPageDesktop">0</strong></div>
    <div><span>Sur l’accueil</span><strong id="systemPageHome">0</strong></div>
    <div><span>Menu utilisateur</span><strong id="systemPageUserMenu">0</strong></div>
   </div>
@@ -351,6 +364,11 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
     <option value="active">Pages actives</option>
     <option value="home">Affichées sur l’accueil</option>
     <option value="user_menu">Menu utilisateur</option>
+    <option value="mobile_available">Disponibles sur mobile</option>
+    <option value="desktop_available">Disponibles sur desktop</option>
+    <option value="mobile_bar">Éligibles à la barre mobile</option>
+    <option value="mobile_only">Mobile uniquement</option>
+    <option value="desktop_only">Desktop uniquement</option>
     <option value="principal">Pages principales</option>
     <option value="terrain">Outils terrain</option>
     <option value="communication">Communication</option>
@@ -358,7 +376,7 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
     <option value="systeme">Système</option>
    </select>
   </div>
-  <div class="pageEditorNotice"><b>Identifiant technique :</b> il reste fixe pour éviter de casser les dépendances. Tous les libellés visibles, descriptions, destinations, images, couleurs, positions et emplacements restent configurables. Les quelques protections critiques sont signalées directement sur la page concernée.</div>
+  <div class="pageEditorNotice"><b>Registre Nethor :</b> cette liste reprend les fonctionnalités réellement déclarées dans l’application. Les badges permettent maintenant de distinguer mobile, desktop et barre mobile. L’identifiant technique reste fixe pour éviter de casser les dépendances.</div>
   <div id="systemModules" class="moduleList"></div>
   
  </div>
@@ -727,26 +745,30 @@ const PAGE_FEATURES={
  chat:['Canal Général','Conversations','Pièces jointes','Présence équipe','Rôles affichés'],
  scanner:['Lecture EAN8 / EAN13 / UPC-A','Recherche manuelle EAN13','Ouverture fiche article'],
  articles:['Création & modification','Familles','Catégories','Conditionnements','EAN13','Statut produit'],
- notifications:['Centre d’activité','Notifications portail','Suivi lu / non lu'],
+ notifications:['Centre d’activité','Notifications portail','Suivi lu / non lu','Badge non lu','Destination de barre mobile'],
  notification_settings:['Préférences de notifications','Canal portail','Push mobile','Types de notifications'],
  problem_report:['Signalement de problème','Contexte page & appareil','Envoi vers l’administration'],
  fl_assistant:['Imports XLS / XLSX / CSV','Ventes','Stock','Casse & dons','Commandes précédentes','Référentiel EAN13'],
  rewards:['Défis','Boutique','Jetons','Équipements de profil'],
  bakery:['Stock Boulangerie','Consultation','Gestion articles','Catégories','EAN13'],
  accounts:['Comptes','Rôles & permissions','Sous-rôles internes','Widgets','Journal d’activité','Réinitialisation mot de passe'],
- portal_admin:['Tableau de bord','Utilisateurs','Contenus','Éditeur du portail','Communication','Système','Pages & menus','Blocs & widgets','Navigation mobile','Problèmes signalés','Journal','Aperçu mobile'],
+ portal_admin:['Tableau de bord','Utilisateurs','Contenus','Éditeur du portail','Communication','Système','Pages & menus','Disponibilité mobile / desktop','Blocs & widgets','Navigation mobile','Catalogue des destinations mobiles','Problèmes signalés','Journal','Aperçu mobile'],
  settings:['Accueil personnalisé','Raccourcis','Apparence'],
  maintenance:['Mode maintenance','Redirection utilisateurs']
 };
 function pageGroup(m){return PAGE_GROUP_LABELS[m?.group]?m.group:'principal'}
-function pagePlatformLabel(m){return m?.platform==='mobile'?'Mobile':m?.platform==='desktop'?'Desktop':m?.platform==='system'?'Système':'Tous appareils'}
+function pagePlatformLabel(m){return m?.platform==='mobile'?'Mobile uniquement':m?.platform==='desktop'?'Desktop uniquement':m?.platform==='system'?'Système':'Mobile + desktop'}
+function moduleMobileAvailable(m){return !!m&&m.navigation!==false&&m.platform!=='desktop'&&m.platform!=='system'}
+function moduleDesktopAvailable(m){return !!m&&m.navigation!==false&&m.platform!=='mobile'&&m.platform!=='system'}
+function moduleMobileBarEligible(m){const fn=window.NettoProfileUI?.mobileBarEligible;return typeof fn==='function'?fn(m):moduleMobileAvailable(m)&&m.mobileBar!==false}
 function moduleBadgesHtml(m,p){
+ const deviceBadge=m.platform==='mobile'?'<span class="moduleBadge mobile">Mobile uniquement</span>':m.platform==='desktop'?'<span class="moduleBadge desktop">Desktop uniquement</span>':m.platform==='system'?'<span class="moduleBadge system">Système</span>':'<span class="moduleBadge devices">Mobile + desktop</span>';
  const badges=[
   '<span class="moduleBadge '+(p.enabled!==false?'on':'off')+'">'+(p.enabled!==false?'Actif':'Inactif')+'</span>',
+  deviceBadge,
+  moduleMobileBarEligible(m)?'<span class="moduleBadge mobilebar">Barre mobile</span>':'',
   p.home?'<span class="moduleBadge">Accueil</span>':'',
   p.user_menu?'<span class="moduleBadge">Menu utilisateur</span>':'',
-  m.platform==='mobile'?'<span class="moduleBadge mobile">Mobile</span>':'',
-  m.platform==='system'?'<span class="moduleBadge system">Système</span>':'',
   (m.rolesLocked||m.enabledLocked||m.placementLocked)?'<span class="moduleBadge protected">Protégée</span>':''
  ];
  return badges.filter(Boolean).join('')
@@ -762,6 +784,11 @@ function systemFilterMatch(m,p,filter){
  if(filter==='active')return p.enabled!==false;
  if(filter==='home')return p.home===true;
  if(filter==='user_menu')return p.user_menu===true;
+ if(filter==='mobile_available')return moduleMobileAvailable(m);
+ if(filter==='desktop_available')return moduleDesktopAvailable(m);
+ if(filter==='mobile_bar')return moduleMobileBarEligible(m);
+ if(filter==='mobile_only')return m?.platform==='mobile';
+ if(filter==='desktop_only')return m?.platform==='desktop';
  if(PAGE_GROUP_LABELS[filter])return pageGroup(m)===filter;
  return true
 }
@@ -769,6 +796,8 @@ function refreshSystemStats(mods=builtinModules()){
  const pages=mods.map(m=>config.pages[m.id]||{});
  if($('systemPageTotal'))$('systemPageTotal').textContent=String(mods.length);
  if($('systemPageActive'))$('systemPageActive').textContent=String(pages.filter(p=>p.enabled!==false).length);
+ if($('systemPageMobile'))$('systemPageMobile').textContent=String(mods.filter(moduleMobileAvailable).length);
+ if($('systemPageDesktop'))$('systemPageDesktop').textContent=String(mods.filter(moduleDesktopAvailable).length);
  if($('systemPageHome'))$('systemPageHome').textContent=String(pages.filter(p=>p.home===true).length);
  if($('systemPageUserMenu'))$('systemPageUserMenu').textContent=String(pages.filter(p=>p.user_menu===true).length)
 }
@@ -924,8 +953,12 @@ function collapseAllSystemPages(){
 }
 
 const MOBILE_DEFAULTS=['home','stock','planning','chat','profile'];
-const MOBILE_SHORT={home:'Accueil',stock:'Stock',planning:'Planning',chat:'Équipe',profile:'Profil',scanner:'Scanner',articles:'Articles',notification_settings:'Alertes',problem_report:'Problème',fl_assistant:'Assistant',rewards:'Défis',bakery:'Boulangerie',accounts:'Comptes',portal_admin:'Gestion',settings:'Réglages'};
-function mobileModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom&&m.navigation!==false&&m.mobileBar!==false&&m.mobileBarLocked!==true)}
+const MOBILE_SHORT={home:'Accueil',stock:'Stock',planning:'Planning',chat:'Équipe',profile:'Profil',scanner:'Scanner',articles:'Articles',notifications:'Notifications',notification_settings:'Alertes',problem_report:'Problème',fl_assistant:'Assistant',rewards:'Défis',bakery:'Boulangerie',accounts:'Comptes',portal_admin:'Gestion',settings:'Réglages'};
+function mobileModules(){
+ const mods=(window.NettoProfileUI?.modules||[]).filter(m=>!m.custom);
+ const eligible=window.NettoProfileUI?.mobileBarEligible;
+ return mods.filter(m=>typeof eligible==='function'?eligible(m):moduleMobileBarEligible(m))
+}
 function ensureMobileBar(){
  const mods=mobileModules(),allowed=new Set(mods.map(m=>m.id)),raw=Array.isArray(config.mobile_bar?.items)?config.mobile_bar.items:[];
  const source=raw.length?raw:MOBILE_DEFAULTS.map(id=>({id,enabled:true,label:MOBILE_SHORT[id]||''}));
@@ -936,24 +969,30 @@ function ensureMobileBar(){
  for(const m of mods){if(items.length>=5)break;if(!seen.has(m.id))push({id:m.id,enabled:false,label:MOBILE_SHORT[m.id]||m.label})}
  config.mobile_bar={enabled:config.mobile_bar?.enabled!==false,items}
 }
-function mobileOptionList(selected){return mobileModules().map(m=>'<option value="'+attr(m.id)+'" '+(m.id===selected?'selected':'')+'>'+esc(m.label)+'</option>').join('')}
+function mobileOptionList(selected){
+ const mods=mobileModules();
+ return PAGE_GROUP_ORDER.map(group=>{
+  const rows=mods.filter(m=>pageGroup(m)===group);
+  if(!rows.length)return'';
+  return '<optgroup label="'+attr(PAGE_GROUP_LABELS[group])+'">'+rows.map(m=>'<option value="'+attr(m.id)+'" '+(m.id===selected?'selected':'')+'>'+esc(m.label)+(m.platform==='mobile'?' · mobile':'')+'</option>').join('')+'</optgroup>'
+ }).join('')
+}
 function renderMobileBar(){
  const host=$('mobileBarEditor');if(!host)return;ensureMobileBar();
- const items=config.mobile_bar.items,active=items.filter(x=>x.enabled!==false),moduleFor=id=>mobileModules().find(m=>m.id===id);
- host.innerHTML='<div class="mobileBarTop"><div><strong>Navigation rapide</strong><span>Visible uniquement sur mobile. Les droits de chaque rôle restent prioritaires.</span></div><label class="adminSwitch"><input id="mobileBarEnabled" type="checkbox" '+(config.mobile_bar.enabled!==false?'checked':'')+'><span></span></label></div>'+
- '<div class="mobileBarPreview">'+(active.length?active.map(x=>{const m=moduleFor(x.id),icon=window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•';return '<div class="mobilePreviewItem" title="'+esc(m?.label||x.id)+'"><span class="mobilePreviewIcon">'+icon+'</span></div>'}).join(''):'<div class="empty">Aucun raccourci actif.</div>')+'</div>'+
+ const catalog=mobileModules(),items=config.mobile_bar.items,active=items.filter(x=>x.enabled!==false),activeIds=new Set(active.map(x=>x.id)),moduleFor=id=>catalog.find(m=>m.id===id);
+ host.innerHTML='<div class="mobileBarTop"><div><strong>Navigation rapide</strong><span>Choisis jusqu’à cinq raccourcis. La liste est synchronisée avec les fonctions réellement disponibles sur mobile.</span></div><label class="adminSwitch"><input id="mobileBarEnabled" type="checkbox" '+(config.mobile_bar.enabled!==false?'checked':'')+'><span></span></label></div>'+
+ '<div class="mobileBarPreview">'+(active.length?active.map(x=>{const m=moduleFor(x.id),icon=window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•';return '<div class="mobilePreviewItem" title="'+esc(m?.label||x.id)+'"><span class="mobilePreviewIcon">'+icon+'</span></div>').join(''):'<div class="empty">Aucun raccourci actif.</div>')+'</div>'+
+ '<div class="mobileInventory"><div class="mobileInventoryHead"><strong>'+catalog.length+' destinations disponibles</strong><span>Catalogue actuel de Nethor</span></div><div class="mobileInventoryChips">'+catalog.map(m=>'<span class="mobileInventoryChip '+(activeIds.has(m.id)?'selected':'')+'"><i>'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'•')+'</i><span>'+esc(m.label)+'</span>'+(m.platform==='mobile'?'<small>Mobile</small>':'')+'</span>').join('')+'</div></div>'+
  '<div class="mobileBarList">'+items.map((x,i)=>{const m=moduleFor(x.id),icon=window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•';return '<div class="mobileBarRow"><div class="mobileRowIcon">'+icon+'</div><div class="field"><label>Menu</label><select data-mobile-index="'+i+'" data-mobile-key="id">'+mobileOptionList(x.id)+'</select></div><label class="toggleChip"><input type="checkbox" data-mobile-index="'+i+'" data-mobile-key="enabled" '+(x.enabled!==false?'checked':'')+'> Visible</label><div class="mobileBarMove"><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="-1" '+(i===0?'disabled':'')+' aria-label="Monter">↑</button><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="1" '+(i===items.length-1?'disabled':'')+' aria-label="Descendre">↓</button></div></div>'}).join('')+'</div>'+
- '<div class="notifNotice"><b>Maximum : 5 raccourcis.</b> Si un utilisateur n’a pas accès à une page, elle n’apparaît pas dans sa barre même si elle est activée ici.</div>';
+ '<div class="notifNotice"><b>Maximum : 5 raccourcis visibles.</b> Toutes les destinations éligibles sont proposées, y compris Notifications. Les droits et rôles de chaque utilisateur restent prioritaires.</div>';
  $('mobileBarEnabled').onchange=e=>{config.mobile_bar.enabled=e.target.checked;markDirty();renderMobileBar();window.NettoSounds?.play?.('switch')};
  host.querySelectorAll('[data-mobile-key]').forEach(el=>el.onchange=el.oninput=()=>{
   const i=Number(el.dataset.mobileIndex),item=config.mobile_bar.items[i];if(!item)return;
   if(el.dataset.mobileKey==='id'){
    const duplicate=config.mobile_bar.items.some((x,j)=>j!==i&&x.id===el.value);
    if(duplicate){alert('Ce menu est déjà présent dans la barre mobile.');renderMobileBar();return}
-   item.id=el.value;item.label='';
-   renderMobileBar()
-  }else if(el.dataset.mobileKey==='enabled')item.enabled=el.checked;
-  markDirty()
+   item.id=el.value;item.label='';markDirty();renderMobileBar()
+  }else if(el.dataset.mobileKey==='enabled'){item.enabled=el.checked;markDirty();renderMobileBar()}
  });
  host.querySelectorAll('[data-mobile-move]').forEach(btn=>btn.onclick=()=>{const i=Number(btn.dataset.mobileMove),j=i+Number(btn.dataset.dir);if(j<0||j>=config.mobile_bar.items.length)return;[config.mobile_bar.items[i],config.mobile_bar.items[j]]=[config.mobile_bar.items[j],config.mobile_bar.items[i]];markDirty();renderMobileBar();window.NettoSounds?.play?.('navigate')})
 }
