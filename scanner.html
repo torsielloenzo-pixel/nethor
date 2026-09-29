@@ -11,6 +11,7 @@
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nethor">
+<script src="platform-resolver.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
@@ -171,7 +172,7 @@ function scannerUserMenuReturnUrl(){
 function goBack(){
   location.href=scannerUserMenuReturnUrl()
 }
-function isMobileView(){return matchMedia('(max-width:900px)').matches||new URLSearchParams(location.search).get('mobile_preview')==='1'}
+function isMobileView(){return window.NethorPlatform?.isMobile?.()??new URLSearchParams(location.search).get('mobile_preview')==='1'}
 function setCameraState(text){const el=$('cameraStateText');if(el)el.textContent=text}
 function showCameraFallback(message){
   $('cameraFallbackText').textContent=message||'Impossible d’ouvrir la caméra.';
