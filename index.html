@@ -1157,6 +1157,22 @@ function waitForWaitingWorker(reg,timeout=3500){
   finish()
  })
 }
+function loginUpdateRequiresCacheReset(info){
+ return info?.clear_cache===true||info?.cache_reset===true||info?.major===true||info?.important===true
+}
+async function purgeLoginNethorCaches(){
+ if(!('caches' in window))return;
+ try{
+  const keys=await caches.keys();
+  await Promise.all(keys.filter(k=>/^netto-tools-v\d+$/.test(String(k))).map(k=>caches.delete(k)))
+ }catch(e){console.warn('Purge cache Nethor:',e)}
+}
+function loginForcedTarget(target,version){
+ const u=new URL(target,location.href);
+ u.searchParams.delete('_nethor_update');
+ u.searchParams.set('_nethor_update',String(version||'latest')+'-'+Date.now());
+ return u.href
+}
 function loginUpdatePrompt(info){
  return new Promise(resolve=>{
   document.getElementById('loginUpdatePrompt')?.remove();
@@ -1175,22 +1191,44 @@ async function checkLatestVersionAtLogin(target){
  const latest=Number(info?.version)||0;if(!latest)return true;
  const installed=await installedAppVersion();
  if(installed>=latest){try{localStorage.setItem('nettoAppVersion',String(installed))}catch(_){};return true}
- let reg,worker;
- try{
-  reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
-  await reg.update().catch(()=>{});
-  worker=reg.waiting||await waitForWaitingWorker(reg,6000)
- }catch(_){}
- if(!worker)return true;
- const waitingVersion=await readWorkerVersion(worker),targetVersion=Math.max(latest,waitingVersion||0);
- info.version=targetVersion;
+
  const mode=String(info?.mode||'manual').toLowerCase()==='auto'?'auto':'manual';
  const choice=mode==='auto'?'update':await loginUpdatePrompt(info);
  if(choice!=='update')return true;
+
  const btn=document.getElementById('loginUpdateNow');if(btn){btn.disabled=true;btn.textContent='Mise à jour…'}
- let moved=false;const go=()=>{if(moved)return;moved=true;try{localStorage.setItem('nettoAppVersion',String(targetVersion));localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())}catch(_){};location.href=target};
- navigator.serviceWorker.addEventListener('controllerchange',go,{once:true});
- worker.postMessage({type:'SKIP_WAITING'});setTimeout(go,4200);
+
+ let reg=null,worker=null;
+ try{
+  reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+  await reg.update().catch(()=>{});
+  worker=reg.waiting||await waitForWaitingWorker(reg,8000)
+ }catch(e){console.warn('Préparation mise à jour connexion:',e)}
+
+ const waitingVersion=await readWorkerVersion(worker),targetVersion=Math.max(latest,waitingVersion||0);
+ info.version=targetVersion;
+
+ let moved=false;
+ const go=async()=>{
+  if(moved)return;moved=true;
+  if(loginUpdateRequiresCacheReset(info))await purgeLoginNethorCaches();
+  try{
+   localStorage.setItem('nettoAppVersion',String(targetVersion));
+   localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())
+  }catch(_){}
+  location.replace(loginForcedTarget(target,targetVersion))
+ };
+
+ if(!worker){
+  if(loginUpdateRequiresCacheReset(info))await purgeLoginNethorCaches();
+  try{await reg?.unregister?.()}catch(_){}
+  await go();
+  return false
+ }
+
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{void go()},{once:true});
+ worker.postMessage({type:loginUpdateRequiresCacheReset(info)?'PURGE_CACHES_AND_SKIP_WAITING':'SKIP_WAITING'});
+ setTimeout(()=>{void go()},9000);
  return false
 }
 
