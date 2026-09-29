@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=2" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=1"></script><script src="ui/mobile/mobile-shell.js?v=1"></script><script src="profile-ui.js?v=199" defer></script>
+<script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=4" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=4"></script><script src="ui/mobile/mobile-shell.js?v=4"></script><script src="ui/desktop/tool-pages-layout.js?v=1"></script><script src="ui/mobile/tool-pages-layout.js?v=1"></script><script src="profile-ui.js?v=200" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
@@ -87,71 +87,12 @@ body#notificationsPage{margin:0;background:var(--np-bg);color:var(--np-text);min
 :root[data-theme="dark"] .npRowText .npSentence b,:root[data-theme="dark"] .npGroup,:root[data-theme="dark"] .npEmpty strong{color:#f0ece7}
 :root[data-theme="dark"] .npRowMore:hover,:root[data-theme="dark"] .npTopMenu button:hover,:root[data-theme="dark"] .npRowMenu button:hover{background:#30353b}
 
-@media(max-width:900px),(pointer:coarse){
-  #notificationsPage header{display:none!important}
-  .notificationsPageMain{
-    padding:calc(8px + env(safe-area-inset-top)) 0 calc(18px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));
-    width:100%;max-width:100%
-  }
-  .npFilterLine{padding:0 12px 7px;margin:0;justify-content:flex-end}
-  .npFilterLine>strong{display:none}
-  .npFilterTools{width:100%;gap:8px}
-  .npFilterState{min-height:40px;padding:7px 12px;font-size:10px}
-  .npCircleBtn{width:40px;height:40px}
-  .npCircleBtn svg{width:20px;height:20px}
-  .npTopMenu{top:46px;right:0}
-  .npSearchWrap{padding:0 10px;margin:0 0 8px}
-  .npList{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;gap:8px!important;padding:0 10px 10px!important}
-  .npGroup{padding:14px 3px 1px;font-size:13px}
-  .npRow{grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;padding:11px 8px 11px 12px;min-height:78px;border:1px solid var(--np-line)!important;border-radius:17px!important;overflow:hidden!important;box-shadow:0 4px 14px rgba(17,24,39,.055)}.npRowMore{justify-self:center;align-self:center;min-width:42px;max-width:42px;width:42px;white-space:nowrap!important}
-  .npGroup+.npRow{border:1px solid var(--np-line)!important}
-  .npIcon{width:56px;height:56px}
-  .npRowText .npSentence{font-size:13.5px;line-height:1.38}
-  .npRowText .npSentence b{font-size:14px}
-  .npCategory{font-size:9px}.npAge{font-size:10px}
-  .npRowMore{width:42px;height:42px}
-}
-@media(max-width:380px){
-  .npFilterLine{padding-left:9px;padding-right:9px}
-  .npFilterTools{gap:6px}
-  .npFilterState{padding-left:10px;padding-right:10px}
-  .npCircleBtn{width:38px;height:38px}
-  .npRow{grid-template-columns:50px minmax(0,1fr) 38px;gap:8px;padding-left:9px;padding-right:6px}.npRowMore{min-width:38px;max-width:38px;width:38px}
-  .npIcon{width:50px;height:50px}.npIcon span{width:31px;height:31px;font-size:15px}
-  .npRowText .npSentence{font-size:12.5px}.npRowText .npSentence b{font-size:13px}
-}
+
+
 </style>
+<link rel="stylesheet" href="ui/desktop/tool-pages-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/tool-pages-layout.css?v=1" media="not all" data-nethor-shell="mobile">
 </head>
-<body id="notificationsPage">
-<header>
-  <div class="top">
-    <div class="notifHeaderTitle">
-      <button class="mark" type="button" onclick="location.href='home.html'" aria-label="Accueil Nethor">N</button>
-      <div class="notifHeaderTitleText"><strong>Notifications</strong><small>Centre d’activité Nethor</small></div>
-    </div>
-  </div>
-</header>
-
-<main class="notificationsPageMain">
-  <div class="npFilterLine">
-    <strong id="npSectionTitle">Nouveau</strong>
-    <div class="npFilterTools">
-      <button id="npFilterState" class="npFilterState" type="button">Toutes</button>
-      <button id="npSearchBtn" class="npCircleBtn" type="button" aria-label="Rechercher dans les notifications" title="Rechercher">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.3 4.3"/></svg>
-      </button>
-      <button id="npMoreBtn" class="npCircleBtn more" type="button" aria-label="Options des notifications" aria-expanded="false" title="Options">⋯</button>
-      <div id="npTopMenu" class="npTopMenu hidden">
-        <button id="npUnreadOnly" type="button">Afficher uniquement les non lues</button>
-        <button id="npMarkAll" type="button">✓ Tout marquer comme lu</button>
-        <button id="npDeleteAll" class="danger" type="button">Supprimer toutes les notifications</button>
-      </div>
-    </div>
-  </div>
-  <div id="npSearchWrap" class="npSearchWrap"><input id="npSearch" class="npSearch" type="search" placeholder="Rechercher une notification…" autocomplete="off"></div>
-  <section id="npList" class="npList" aria-live="polite"><div class="npEmpty"><div><div class="npEmptyIcon">🔔</div><strong>Chargement…</strong><span>Récupération de tes notifications.</span></div></div></section>
-</main>
-
+<body id="notificationsPage"><div data-nethor-platform-header></div><main><div data-nethor-platform-lead></div><div data-nethor-tool-page-layout></div><script src="platform-page-layout.js?v=6"></script></main>
 <script>
 (function(){
 'use strict';
