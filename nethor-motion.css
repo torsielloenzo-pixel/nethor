@@ -1,0 +1,119 @@
+/* Nethor Motion v1 — identité d'animation mobile commune */
+:root{
+  --nm-fast:160ms;
+  --nm-base:220ms;
+  --nm-slow:280ms;
+  --nm-ease:cubic-bezier(.2,.72,.24,1);
+  --nm-ease-out:cubic-bezier(.16,1,.3,1)
+}
+
+@media (max-width:900px),(pointer:coarse){
+  html.nm-motion-active .nm-page-root{will-change:transform,opacity}
+  html.nm-motion-active .nm-route-enter-forward{animation:nmRouteEnterForward 240ms var(--nm-ease-out) both}
+  html.nm-motion-active .nm-route-exit-forward{animation:nmRouteExitForward 145ms ease both}
+  html.nm-motion-active .nm-route-enter-back{animation:nmRouteEnterBack 225ms var(--nm-ease-out) both}
+  html.nm-motion-active .nm-route-exit-back{animation:nmRouteExitBack 140ms ease both}
+
+  html.nm-motion-active .nettoDropBackdrop.open{animation:nmBackdropIn 200ms ease both}
+  html.nm-motion-active .nettoDrop.nettoMobilePortaledDrop:not(.hidden),
+  html.nm-motion-active #nettoNotifDrop:not(.hidden),
+  html.nm-motion-active #nettoUserDrop:not(.hidden),
+  html.nm-motion-active #nettoLoginDrop:not(.hidden){
+    transform-origin:50% 100%;
+    animation:nmSheetIn 280ms var(--nm-ease-out) both!important
+  }
+  html.nm-motion-active .nettoNotifSheetHandle{transition:transform var(--nm-base) var(--nm-ease-out),opacity var(--nm-base) ease}
+
+  html.nm-motion-active #nettoUpdateCenterBackdrop{animation:nmBackdropIn 190ms ease both}
+  html.nm-motion-active #nettoUpdateCenterBackdrop .nettoUpdateCenter{animation:nmUpdateCenterIn 250ms var(--nm-ease-out) both}
+  html.nm-motion-active .nettoUpdateConfirmBackdrop{animation:nmBackdropIn 180ms ease both}
+  html.nm-motion-active .nettoUpdateConfirmCard{animation:nmConfirmIn 235ms var(--nm-ease-out) both}
+  html.nm-motion-active .nettoUpdateToast.show{transition:opacity 220ms ease,transform 260ms var(--nm-ease-out)!important}
+  html.nm-motion-active .nettoUpdateProgressFill{transition:width 260ms var(--nm-ease-out)!important}
+
+  html.nm-motion-active #agendaMount.nm-planning-in-forward{animation:nmPlanningForward 250ms var(--nm-ease-out) both}
+  html.nm-motion-active #agendaMount.nm-planning-in-back{animation:nmPlanningBack 240ms var(--nm-ease-out) both}
+  html.nm-motion-active #agendaMount.nm-planning-mode{animation:nmPlanningMode 220ms var(--nm-ease-out) both}
+  html.nm-motion-active .mobileAgendaModeBtn,
+  html.nm-motion-active .mobilePlanningSelectorArrow,
+  html.nm-motion-active .mobilePlanningSelectBtn{
+    transition:transform 150ms ease,background-color 200ms ease,color 200ms ease,border-color 200ms ease,box-shadow 220ms ease!important
+  }
+  html.nm-motion-active .mobileAgendaModeBtn:active,
+  html.nm-motion-active .mobilePlanningSelectorArrow:active,
+  html.nm-motion-active .mobilePlanningSelectBtn:active{transform:scale(.97)!important}
+  html.nm-motion-active .mobileAgendaModeBtn.active{animation:nmTabSelect 230ms var(--nm-ease-out)}
+
+  html.nm-motion-active .nm-content-refresh{animation:nmContentRefresh 210ms var(--nm-ease-out) both}
+  html.nm-motion-active .nm-content-bump{animation:nmContentBump 260ms var(--nm-ease-out) both}
+
+  html.nm-motion-active .nettoMobileQuickItem,
+  html.nm-motion-active .nettoNavBtn,
+  html.nm-motion-active .nettoMobileMenuLink{
+    transition:transform 145ms ease,background-color 190ms ease,color 190ms ease,opacity 190ms ease!important
+  }
+  html.nm-motion-active .nettoMobileQuickIcon,
+  html.nm-motion-active .nettoNavBtn>span:first-child,
+  html.nm-motion-active .nettoMobileMenuLink>span:first-child{
+    transition:transform 240ms var(--nm-ease-out),background-color 200ms ease,color 200ms ease!important
+  }
+  html.nm-motion-active .nettoMobileQuickItem:active,
+  html.nm-motion-active .nettoNavBtn:active,
+  html.nm-motion-active .nettoMobileMenuLink:active{transform:scale(.975)!important}
+  html.nm-motion-active .nettoMobileQuickItem:active .nettoMobileQuickIcon,
+  html.nm-motion-active .nettoNavBtn:active>span:first-child,
+  html.nm-motion-active .nettoMobileMenuLink:active>span:first-child{transform:scale(.90)!important}
+  html.nm-motion-active .nettoMobileQuickItem.active .nettoMobileQuickIcon{transform:translateY(-2px) scale(1.035)}
+
+  html.nm-motion-active button,
+  html.nm-motion-active [role="button"]{
+    transition-property:transform,box-shadow,background-color,border-color,opacity;
+    transition-duration:145ms,200ms,190ms,190ms,190ms;
+    transition-timing-function:ease,var(--nm-ease),ease,ease,ease
+  }
+  html.nm-motion-active button:active,
+  html.nm-motion-active [role="button"]:active{transform:scale(.98)}
+  html.nm-motion-active input[type="checkbox"],
+  html.nm-motion-active input[type="radio"],
+  html.nm-motion-active input[type="range"]{transition:filter 180ms ease,opacity 180ms ease}
+
+  html.nm-motion-active .planningToast.show.nm-feedback-pop,
+  html.nm-motion-active .toast.show.nm-feedback-pop,
+  html.nm-motion-active .nettoUpdateToast.show.nm-feedback-pop{animation:nmFeedbackPop 300ms var(--nm-ease-out) both}
+  .nm-toast-host{position:fixed;left:10px;right:10px;top:max(10px,env(safe-area-inset-top));z-index:2147483000;display:grid;place-items:center;pointer-events:none}
+  .nm-toast{width:min(100%,360px);display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;align-items:center;padding:11px 12px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(27,31,36,.96);color:#fff;box-shadow:0 16px 44px rgba(0,0,0,.28);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);animation:nmToastIn 280ms var(--nm-ease-out) both}
+  .nm-toast.leaving{animation:nmToastOut 220ms ease both}
+  .nm-toast-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#278257;color:#fff;font-weight:950}
+  .nm-toast strong{display:block;font-size:11px;line-height:1.25}.nm-toast small{display:block;margin-top:2px;color:rgba(255,255,255,.68);font-size:9px;line-height:1.35}
+}
+
+@keyframes nmRouteEnterForward{from{opacity:.25;transform:translate3d(18px,0,0) scale(.992)}to{opacity:1;transform:none}}
+@keyframes nmRouteExitForward{to{opacity:0;transform:translate3d(-9px,0,0) scale(.996)}}
+@keyframes nmRouteEnterBack{from{opacity:.25;transform:translate3d(-16px,0,0) scale(.994)}to{opacity:1;transform:none}}
+@keyframes nmRouteExitBack{to{opacity:0;transform:translate3d(9px,0,0) scale(.997)}}
+@keyframes nmBackdropIn{from{opacity:0}to{opacity:1}}
+@keyframes nmSheetIn{from{opacity:.45;transform:translate3d(0,18px,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes nmUpdateCenterIn{from{opacity:.4;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
+@keyframes nmConfirmIn{from{opacity:.35;transform:translate3d(0,12px,0) scale(.975)}to{opacity:1;transform:none}}
+@keyframes nmPlanningForward{from{opacity:.28;transform:translate3d(16px,0,0)}to{opacity:1;transform:none}}
+@keyframes nmPlanningBack{from{opacity:.28;transform:translate3d(-14px,0,0)}to{opacity:1;transform:none}}
+@keyframes nmPlanningMode{from{opacity:.42;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
+@keyframes nmTabSelect{45%{transform:translateY(-1px) scale(1.015)}}
+@keyframes nmContentRefresh{from{opacity:.5;transform:translate3d(0,5px,0)}to{opacity:1;transform:none}}
+@keyframes nmContentBump{45%{transform:scale(1.012);filter:saturate(1.04)}}
+@keyframes nmFeedbackPop{from{opacity:.35;transform:translate3d(0,8px,0) scale(.985)}to{opacity:1}}
+@keyframes nmToastIn{from{opacity:0;transform:translate3d(0,-12px,0) scale(.97)}to{opacity:1;transform:none}}
+@keyframes nmToastOut{to{opacity:0;transform:translate3d(0,-7px,0)}}
+
+@media(prefers-reduced-motion:reduce){
+  html.nm-motion-active .nm-page-root,
+  html.nm-motion-active .nettoDrop,
+  html.nm-motion-active .nettoDropBackdrop,
+  html.nm-motion-active #agendaMount,
+  html.nm-motion-active .nm-content-refresh,
+  html.nm-motion-active .nm-content-bump,
+  html.nm-motion-active .planningToast,
+  html.nm-motion-active .toast,
+  html.nm-motion-active .nettoUpdateToast,
+  .nm-toast{animation:none!important;transition:none!important;transform:none!important}
+}
