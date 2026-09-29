@@ -41,7 +41,7 @@ dialog{border:0;padding:0;border-radius:22px;width:min(92vw,480px);box-shadow:0 
 <link rel="stylesheet" href="design-v4.css?v=9">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml"></head>
 <body>
-<header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'">N</button><div><div class="title">Boulangerie</div><div class="sub">Stock interne • Administrateur</div></div></div><button class="back" onclick="location.href='home.html'">← Accueil</button></div></header>
+<header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'">N</button><div><div class="title">Boulangerie</div><div class="sub">Stock interne • Administrateur</div></div></div><button class="back" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():location.href='home.html'">← Retour</button></div></header>
 <main>
   <div class="hero"><div><h1>Boulangerie</h1><p>Gestion séparée de la famille Boulangerie.</p></div><span class="scope">Administration</span></div>
   <nav class="modeNav"><button class="modeBtn active" data-mode="stock" onclick="setMode('stock')">Stock</button><button class="modeBtn" data-mode="consult" onclick="setMode('consult')">Consulter</button><button class="modeBtn" data-mode="manage" onclick="setMode('manage')">Gestion</button></nav>
