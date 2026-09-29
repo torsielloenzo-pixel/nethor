@@ -10,6 +10,7 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
 }
 
 /* Migrated from the shared shell: mobile navigation and user-menu presentation */
+@media (max-width:900px),(pointer:coarse){
 /* Navigation mobile unique : les en-têtes de page ne sont plus affichés. */
    body>header,body>#site>header{display:none!important}
    html.nettoKeyboardOpen body.nettoHasMobileBar{padding-bottom:0!important}
