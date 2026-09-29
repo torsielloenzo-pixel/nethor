@@ -1,10 +1,10 @@
 {
-  "version": 184,
-  "label": "v1.84",
+  "version": 185,
+  "label": "v1.185",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Gestion : Pages & menus entièrement synchronisé avec les pages, fonctionnalités et accès actuels.",
-  "published_at": "2026-09-29T00:00:13.042381Z",
+  "message": "Rush Rayon : décors inspirés du magasin et animation de course entièrement retravaillée.",
+  "published_at": "2026-09-29T00:23:00Z",
   "icon": "assets/app-icon-v63.svg"
 }

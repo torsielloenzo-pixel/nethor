@@ -23,3 +23,10 @@ Les décorations sont rendues par `reward-profile.js` dans les zones de profil c
 - Obstacles : cartons, chariots, flaques, palettes et bananes ; bonus : café, promo et article.
 - La difficulté augmente progressivement et le décor passe par Ouverture, Matinée, Rush et Rush du soir.
 - Le meilleur score est stocké uniquement dans le `localStorage` du navigateur (`nethor:rush-rayon-best-v1`) pendant la bêta. Aucune table Supabase ni donnée métier supplémentaire n’est créée.
+
+### Décors magasin — septembre 2026
+
+- Les décors de Rush Rayon sont désormais dessinés à partir des codes visuels observés sur les photos du magasin : mobilier Fruits & Légumes en bois, rayons d'épices avec rails de prix, meubles vitrés des surgelés, cave à vins et carrelage clair.
+- Quatre univers se succèdent avec une transition progressive : **Fruits & Légumes**, **Épices**, **Surgelés** et **Vins**.
+- Le personnage utilise une foulée procédurale articulée : bras et jambes opposés, flexion des genoux, mouvement des pieds, inclinaison du buste, rebond vertical et inertie des cheveux.
+- Une cagette Fruits & Légumes rejoint les obstacles possibles.
