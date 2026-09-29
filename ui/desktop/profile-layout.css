@@ -1,0 +1,4 @@
+/* Phase 4.5 — structure Mon profil Desktop. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout{
+ width:100%;min-width:0
+}
