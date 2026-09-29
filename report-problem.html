@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
 <script src="platform-resolver.js?v=3"></script>
-<script src="platform-navigation.js?v=1"></script>
+<script src="platform-navigation.js?v=1"></script><link rel="stylesheet" href="ui/desktop/user-pages-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/user-pages-layout.css?v=1" media="not all" data-nethor-shell="mobile"><script src="ui/desktop/desktop-shell.js?v=4"></script><script src="ui/mobile/mobile-shell.js?v=4"></script><script src="ui/desktop/user-pages-layout.js?v=1"></script><script src="ui/mobile/user-pages-layout.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
@@ -49,31 +49,7 @@ button{touch-action:manipulation}
 @media(max-height:540px){.rpShell{padding-top:calc(env(safe-area-inset-top) + 5px);padding-bottom:calc(env(safe-area-inset-bottom) + 5px)}.rpTop{min-height:42px;padding-bottom:6px}.rpCard{padding:11px;border-radius:18px}.rpIntro{grid-template-columns:36px minmax(0,1fr);gap:8px}.rpIcon{width:36px;height:36px;border-radius:11px}.rpIntro strong{font-size:15px}.rpIntro p{display:none}.rpContext{margin:8px 0 7px;padding:6px 9px;min-height:30px}.rpText{min-height:72px;padding:10px 12px}.rpHelp{margin:5px 2px 6px}.rpSend{min-height:42px}}
 </style>
 </head>
-<body>
-<div class="rpShell">
- <div class="rpTop">
-  <button id="cancelBtn" class="rpCancel" type="button">Annuler</button>
-  <div class="rpTopTitle"><strong>Signaler un problème</strong><small>Rapport à l’administration</small></div>
-  <span class="rpTopSpacer" aria-hidden="true"></span>
- </div>
- <main class="rpMain">
-  <section id="reportCard" class="rpCard">
-   <div class="rpIntro">
-    <span class="rpIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 21 20H3L12 4Z"/><path d="M12 9v5"/><path d="M12 17.2v.2"/></svg></span>
-    <div><strong>Que s’est-il passé ?</strong><p>Décris simplement le bug ou le comportement anormal. Le contexte technique sera joint automatiquement.</p></div>
-   </div>
-   <div class="rpContext"><span>Page concernée</span><b id="sourceLabel">Nethor</b></div>
-   <label class="rpLabel" for="problemText"><span>Description du problème</span><span id="problemCount" class="rpCount">0 / 2000</span></label>
-   <textarea id="problemText" class="rpText" maxlength="2000" minlength="8" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Ex. Le bouton Semaine ne répond pas quand je l’ouvre…"></textarea>
-   <div class="rpHelp">Évite les mots de passe ou informations confidentielles. Ton compte, la page, la version Nethor, l’appareil, le navigateur, l’affichage et les informations réseau disponibles seront ajoutés automatiquement.</div>
-   <button id="sendBtn" class="rpSend" type="button">Envoyer le problème</button>
-   <div id="reportState" class="rpState" aria-live="polite"></div>
-  </section>
-  <section id="successCard" class="rpCard rpSuccess hidden">
-   <div class="rpSuccessBox"><div class="rpSuccessIcon">✓</div><h2>Problème envoyé</h2><p>Le signalement est maintenant disponible pour l’administrateur dans Gestion → Problèmes signalés.</p><button id="returnBtn" class="rpReturn" type="button">Retour au menu</button></div>
-  </section>
- </main>
-</div>
+<body><div data-nethor-platform-header></div><div data-nethor-platform-lead></div><div data-nethor-user-page-layout></div><script src="platform-page-layout.js?v=5"></script>
 <script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
