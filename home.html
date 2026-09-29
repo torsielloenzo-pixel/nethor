@@ -365,7 +365,7 @@ main{position:relative;z-index:1}
 <link rel="stylesheet" href="ui/desktop/home-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/home-layout.css?v=1" media="not all" data-nethor-shell="mobile">
 </head>
 <body><div data-nethor-platform-header></div><main><div data-nethor-platform-lead></div><div data-nethor-home-layout></div><script src="platform-page-layout.js?v=3"></script></main>
-<dialog id="pageViewsDialog" class="pageViewsDialog"><div class="pageViewsCard"><div class="pageViewsHead"><div><h2 id="pageViewsTitle">Consultations</h2><p>Statistiques depuis la dernière réinitialisation. Les administrateurs sont exclus.</p></div><button class="pageViewsClose" onclick="$('pageViewsDialog').close()" aria-label="Fermer">×</button></div><div class="pageViewsTotal"><span>Total des consultations</span><strong id="pageViewsTotal">0</strong></div><div id="pageViewsList" class="pageViewsList"></div><div class="pageViewsActions"><button class="pageViewsReset" onclick="resetCurrentPageViews()">Réinitialiser le compteur</button><button class="pageViewsDone" onclick="$('pageViewsDialog').close()">Fermer</button></div></div></dialog>
+
 <script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
