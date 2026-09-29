@@ -1,10 +1,10 @@
 {
-  "version": 199,
-  "label": "v1.99",
+  "version": 200,
+  "label": "v2.00",
   "important": false,
   "mode": "auto",
-  "title": "Gestion · réglages compacts",
-  "message": "Les anciens gros panneaux de Gestion sont remplacés par des lignes de réglages plus compactes et adaptées à la nouvelle navigation.",
-  "published_at": "2026-09-29T12:15:09.957Z",
+  "title": "Accueil · correctif Pilotage magasin",
+  "message": "Le widget Pilotage magasin occupe désormais correctement toute la largeur de la grille sur ordinateur et son affichage responsive a été stabilisé sur mobile.",
+  "published_at": "2026-09-29T14:30:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
