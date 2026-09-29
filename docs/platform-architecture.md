@@ -673,3 +673,88 @@ Personnalisation et Réglages des notifications déclarent leur navigation Retou
 Les règles historiques de Settings et Notifications ont été séparées en feuilles propres à chaque page afin qu’aucune règle générique comme `main` ou `.panel` ne puisse affecter le formulaire de signalement.
 
 La logique métier reste partagée et inchangée.
+
+
+## Phase 4.7 — Notifications et Scanner
+
+La séparation structurelle couvre maintenant le centre de notifications et le Scanner.
+
+### Fichiers de plateforme
+
+```text
+ui/
+├── desktop/
+│   ├── tool-pages-layout.js
+│   └── tool-pages-layout.css
+└── mobile/
+    ├── tool-pages-layout.js
+    └── tool-pages-layout.css
+```
+
+`platform-page-layout.js` v6 monte ces pages via `data-nethor-tool-page-layout`.
+
+### Notifications
+
+Avant la phase 4.7, `notifications.html` contenait un header Desktop et un seul DOM. Une media query :
+
+```css
+@media(max-width:900px),(pointer:coarse)
+```
+
+cachait le header et transformait la présentation en Mobile.
+
+Ce mécanisme est supprimé.
+
+Desktop et Mobile construisent maintenant leurs propres wrappers de page. Le moteur de notifications reste commun : chargement, filtres, recherche, marquage lu/non lu, suppression et navigation vers la cible ne sont pas dupliqués.
+
+Les anciennes règles Mobile à 900 px et 380 px ont quitté le CSS commun pour la feuille Mobile.
+
+### Scanner
+
+Le Scanner possédait auparavant un DOM unique contenant simultanément :
+
+- caméra ;
+- lecteur HTML5 QR / EAN ;
+- recherche manuelle ;
+- message `Scanner est réservé au mobile`.
+
+Une règle `@media(min-width:901px)` masquait ensuite la caméra sur Desktop.
+
+Cette logique est remplacée par deux structures physiques.
+
+Desktop construit uniquement :
+
+- son titre Scanner ;
+- son retour ;
+- le message indiquant que la lecture caméra est réservée à Mobile.
+
+Desktop ne possède plus dans son DOM :
+
+- `reader` ;
+- `cameraStateText` ;
+- `cameraFallback` ;
+- `eanInput` ;
+- `result`.
+
+Mobile construit uniquement l’interface Scanner opérationnelle : caméra, overlay, préférence caméra, recherche EAN et résultat.
+
+Le moteur conserve `NethorPlatform.isMobile()` comme source de vérité. Un redimensionnement Desktop ne peut donc pas initialiser la caméra.
+
+Le chargement des préférences caméra est également évité entièrement sur Desktop.
+
+### CSS
+
+Le breakpoint `max-width:900px` du Scanner a été déplacé vers la feuille Mobile.
+
+Le breakpoint `min-width:901px` qui servait uniquement à masquer le Scanner sur Desktop a été supprimé, puisque la structure Desktop ne contient plus les éléments caméra à cacher.
+
+### Prochaines pages identifiées
+
+L’audit de 4.7 a identifié notamment :
+
+- `articles.html` : plusieurs couches Mobile historiques ;
+- `accounts.html` : logique responsive complexe ;
+- `admin-portal.html` : grand nombre de media queries de structure ;
+- `fl-assistant.html` : une couche responsive plus simple.
+
+Ces pages seront traitées séparément pour conserver un périmètre de validation maîtrisable.
