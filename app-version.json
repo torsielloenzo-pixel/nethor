@@ -1,10 +1,11 @@
 {
-  "version": 208,
-  "label": "v1.20.3",
+  "version": 209,
+  "label": "v1.20.4",
   "important": false,
+  "clear_cache": false,
   "mode": "auto",
-  "title": "Planning mobile · ordre des blocs",
-  "message": "Le bloc Indisponibilités / Congés est désormais placé en bas du planning sur mobile, sans modifier son emplacement desktop.",
+  "title": "Mises à jour · fiabilisation",
+  "message": "Activation forcée des nouvelles versions, gestion des mises à jour majeures avec purge du cache Nethor et correction du bouton de mise à jour mobile.",
   "published_at": "2026-09-29T17:19:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
