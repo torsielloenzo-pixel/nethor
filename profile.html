@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#171717"><script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(e){}})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><title>Nethor</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=3" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=2"></script><script src="ui/mobile/mobile-shell.js?v=2"></script><script src="profile-ui.js?v=199"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=3" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=3"></script><script src="ui/mobile/mobile-shell.js?v=3"></script><script src="ui/desktop/profile-layout.js?v=1"></script><script src="ui/mobile/profile-layout.js?v=1"></script><script src="profile-ui.js?v=200"></script>
 <style>
 :root{--red:#ff2f1f;--orange:#ff8500;--black:#171717;--line:#e5e7eb;--muted:#777;--grad:linear-gradient(135deg,#ff2f1f 0%,#ff151f 44%,#ff8500 100%)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;min-height:100dvh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#182235;background:radial-gradient(circle at 0 20%,#ff2f1f0b,transparent 27%),radial-gradient(circle at 100% 85%,#ff85000b,transparent 30%),linear-gradient(135deg,#f7f8fa,#fff 50%,#f3f5f7)}
@@ -16,12 +16,12 @@ main{width:min(92vw,760px);margin:auto;padding:50px 0 70px}.hero{text-align:cent
 .avatarWrap{position:relative;width:126px;height:126px}.avatar{width:126px;height:126px;border-radius:32px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:38px;font-weight:950;overflow:visible;box-shadow:0 10px 28px #ff3b1f2a;position:relative;isolation:isolate}.avatar>img{width:100%;height:100%;object-fit:cover;border-radius:inherit;position:relative;z-index:2}.rewardVirtualAvatar{position:absolute;inset:0;border-radius:inherit;overflow:hidden;display:grid;place-items:center;z-index:2;background:radial-gradient(circle at 35% 28%,#ffffff4d 0 8%,transparent 30%),linear-gradient(145deg,#ff9b35,#ff5225 52%,#df251c);box-shadow:inset 0 0 0 1px #ffffff38}.rewardVirtualAvatar:before,.rewardVirtualAvatar:after{content:"";position:absolute;border-radius:999px;background:#ffffff22}.rewardVirtualAvatar:before{width:82px;height:82px;right:-28px;bottom:-22px}.rewardVirtualAvatar:after{width:52px;height:52px;left:-16px;top:-14px}.rewardVirtualAvatar .rewardAvatarGlyph{position:relative;z-index:2;font-size:62px;line-height:1;filter:drop-shadow(0 7px 8px #5c140f42);transform:translateY(2px)}.rewardVirtualAvatar .rewardAvatarShine{position:absolute;left:17px;top:15px;width:18px;height:7px;border-radius:999px;background:#fff8;transform:rotate(-25deg);z-index:3}.rewardFrameLayer{position:absolute;inset:5px;border:3px solid var(--reward-frame,#ff7a1a);border-radius:calc(32px - 5px);z-index:5;pointer-events:none;box-shadow:inset 0 0 0 2px #ffffff45,0 0 14px color-mix(in srgb,var(--reward-frame,#ff7a1a) 45%,transparent)}.rewardAccessoryLayer{position:absolute;right:-10px;top:-15px;z-index:20;width:46px;height:46px;display:grid;place-items:center;font-size:31px;line-height:1;filter:drop-shadow(0 5px 5px #0004);pointer-events:none;transform:rotate(8deg)}.rewardAccessoryLayer[data-accessory="⭐"]{font-size:29px;right:-7px;top:-10px}.rewardAccessoryLayer[data-accessory="⚡"]{font-size:32px;right:-8px;top:-9px;transform:rotate(15deg)}.rewardAccessoryLayer[data-accessory="👑"]{font-size:34px;right:-8px;top:-18px;transform:rotate(9deg)}.avatarBadge{position:absolute;right:-4px;bottom:3px;width:38px;height:38px;padding:0;border-radius:50%;border:4px solid #fff;background:#171717;color:#fff;display:grid;place-items:center;font-size:14px;cursor:pointer;box-shadow:0 4px 12px #0003}.avatarBadge:active{transform:scale(.95)}
 .avatarEditorModal{position:fixed;inset:0;z-index:6000;background:#11182766;backdrop-filter:blur(4px);display:grid;place-items:center;padding:18px}.avatarEditorModal.hidden{display:none!important}.avatarEditorCard{width:min(92vw,430px);max-height:90dvh;overflow:auto;background:#fff;border:1px solid #e3e5e8;border-radius:20px;padding:17px;box-shadow:0 26px 80px #0005}.avatarEditorHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.avatarEditorHead strong{display:block;font-size:15px}.avatarEditorHead p{font-size:10px;color:#888;margin:4px 0 0}.avatarEditorClose{width:31px;height:31px;border:0;border-radius:9px;background:#f0f1f3;font-size:19px;display:grid;place-items:center}.avatarCropStage{position:relative;width:min(72vw,280px);height:min(72vw,280px);max-width:280px;max-height:280px;aspect-ratio:1;margin:0 auto 12px;overflow:hidden;border-radius:26px;background:#202124;touch-action:none;cursor:grab;box-shadow:inset 0 0 0 1px #ffffff22}.avatarCropStage:active{cursor:grabbing}.avatarCropStage.hidden,.avatarCropTools.hidden{display:none!important}.avatarCropStage img{position:absolute;left:0;top:0;max-width:none!important;max-height:none!important;user-select:none;pointer-events:none;transform-origin:0 0}.avatarCropGuide{position:absolute;inset:0;border:2px solid #ffffffcc;border-radius:26px;box-shadow:inset 0 0 0 999px #00000016;pointer-events:none}.avatarCropTools{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;gap:9px;margin:0 auto 14px;width:min(100%,320px)}.avatarCropTools input{width:100%;accent-color:#ff4b21}.cropZoomBtn{width:36px;height:36px;border:1px solid #e0e3e7;border-radius:10px;background:#f5f6f7;font-size:20px;line-height:1}.avatarPhotoActions{align-items:center;justify-content:center}
 .name{font-size:24px;font-weight:900}.role{font-size:11px;color:#f13b20;font-weight:850;text-transform:uppercase;letter-spacing:.65px;margin-top:5px}.divider{height:1px;background:#eceef1;margin:22px 0}
-.avatarPhotoActions{align-items:center}.avatarValidateBtn{padding:7px 11px!important;min-height:34px!important;font-size:10px!important;border-radius:9px!important}.avatarPhotoActions .hidden{display:none!important}.uploadBox{border:1px dashed #d8dbe0;border-radius:16px;padding:17px;background:#fafbfc}.uploadBox strong{font-size:13px}.uploadBox p{font-size:11px;color:#888;margin:5px 0 14px}.profileFields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:10px;font-weight:850;color:#666}.field input[type="text"],.field input[type="password"]{height:42px;border:1px solid #dfe2e7;border-radius:11px;padding:0 12px;background:#fff;outline:none;font:inherit}.field input[type="text"]:focus,.field input[type="password"]:focus{border-color:#ff6f45;box-shadow:0 0 0 3px #ff5a2a15}.readonlyProfileName{height:42px;border:1px solid #e1e3e7;border-radius:11px;padding:0 12px;background:#f4f5f7;display:flex;align-items:center;font-size:12px;font-weight:850;color:#333}.fieldHelp{font-size:9px;color:#999;margin-top:-2px}.colorField{display:flex;align-items:center;gap:9px;min-height:42px}.profileColorPicker{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.profileColorPicker input[type="hidden"]{display:none}.profileColorChoice{width:38px;height:38px;border-radius:12px;border:2px solid transparent;background:var(--profile-color);cursor:pointer;position:relative;box-shadow:inset 0 0 0 1px #00000016,0 4px 12px #00000012;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.profileColorChoice:hover{transform:translateY(-1px)}.profileColorChoice.selected{border-color:#fff;box-shadow:0 0 0 2px #1f2937,0 6px 15px #0002}.profileColorChoice.selected:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:16px;font-weight:950;text-shadow:0 1px 3px #0007}:root[data-theme="dark"] .profileColorChoice.selected{box-shadow:0 0 0 2px #f3eee9,0 6px 18px #0006}:root[data-theme="dark"] .avatarEditorCard{background:#23272d;border-color:#3d444d;color:#eef1f4}:root[data-theme="dark"] .avatarEditorHead p{color:#b8bec6}:root[data-theme="dark"] .avatarEditorClose,:root[data-theme="dark"] .cropZoomBtn{background:#343a42;border-color:#4a515b;color:#f3f4f6}.buttons{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:10px 13px;font-weight:800}.primary{background:var(--grad);color:#fff;box-shadow:0 7px 18px #ff3b1f28}.secondary{background:#f0f1f3;color:#222}.danger{background:#fff2ef;color:#bd271a;border:1px solid #ffd8cb}.state{font-size:10px;color:#888;margin-top:10px;min-height:15px}.rewardCard{margin-top:16px}.rewardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}.rewardHead h2{margin:0;font-size:18px}.rewardHead p{margin:5px 0 0;color:#888;font-size:10px;line-height:1.45;max-width:540px}.rewardGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rewardChoice{display:grid;gap:6px}.rewardChoice label{font-size:10px;font-weight:850;color:#666}.rewardChoice select,.field select{height:42px;border:1px solid #dfe2e7;border-radius:11px;padding:0 12px;background:#fff;outline:none;font:inherit;color:inherit}.rewardChoice select:focus,.field select:focus{border-color:#ff6f45;box-shadow:0 0 0 3px #ff5a2a15}.rewardState{font-size:10px;color:#888;min-height:15px;margin-top:12px}.rewardState.ok{color:#188443;font-weight:800}.rewardState.err{color:#b42318;font-weight:800}.rewardChoice select:disabled{opacity:.65;cursor:not-allowed}:root[data-theme="dark"] .rewardChoice select,:root[data-theme="dark"] .field select{background:#202126;border-color:#3a3c42;color:#eee}@media(max-width:600px){.rewardHead{display:grid}.rewardGrid{grid-template-columns:1fr}.rewardHead .btn{justify-self:start}}.soundCard{margin-top:16px}.soundHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.soundHead h2{margin:0;font-size:18px}.soundHead p{margin:5px 0 0;color:#888;font-size:10px;line-height:1.45;max-width:520px}.soundSettings{display:grid;grid-template-columns:minmax(180px,.7fr) minmax(220px,1.3fr);gap:14px;margin-top:16px}.soundToggle,.soundVolume{border:1px solid #e4e6e9;background:#f8f9fa;border-radius:13px;padding:12px 13px}.soundToggle{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800}.soundToggle input{width:18px;height:18px;accent-color:#ff4b28}.soundVolume{display:grid;gap:8px}.soundVolume>span{display:flex;justify-content:space-between;font-size:10px;font-weight:800}.soundVolume input{width:100%;accent-color:#ff4b28}.soundPreviewGrid{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.soundPreviewGrid button{border:1px solid #e1e3e6;background:#fff;border-radius:10px;padding:8px 10px;font-size:9px;font-weight:800}.soundPreviewGrid button:disabled{opacity:.4;cursor:not-allowed}:root[data-theme="dark"] .soundToggle,:root[data-theme="dark"] .soundVolume{background:#202126;border-color:#393b40}:root[data-theme="dark"] .soundPreviewGrid button{background:#202126;border-color:#393b40;color:#eee}@media(max-width:600px){.soundHead{display:grid}.soundSettings{grid-template-columns:1fr}}
-.pushCard{display:none;margin-top:16px}@media(max-width:700px){.pushCard{display:block}}.pushHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.pushHead h2{margin:0;font-size:18px}.pushHead p{margin:5px 0 0;color:#888;font-size:10px;line-height:1.45;max-width:520px}.pushPanel{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-top:15px;padding:14px 15px;border:1px solid #e4e6e9;border-radius:15px;background:#f8f9fa}.pushStatus{display:flex;align-items:flex-start;gap:10px}.pushDot{width:10px;height:10px;border-radius:50%;background:#a4a7ad;box-shadow:0 0 0 4px #a4a7ad18;margin-top:3px;flex:none}.pushStatus.active .pushDot{background:#1b9a50;box-shadow:0 0 0 4px #1b9a5018}.pushStatus.blocked .pushDot{background:#d23b2d;box-shadow:0 0 0 4px #d23b2d18}.pushStatus.warning .pushDot{background:#d88400;box-shadow:0 0 0 4px #d8840018}.pushStatus strong{display:block;font-size:11px}.pushStatus span{display:block;color:#81858c;font-size:9px;line-height:1.4;margin-top:3px}.pushActions{display:flex;gap:7px;align-items:center}.pushActions .btn{white-space:nowrap}.pushState{font-size:9px;color:#888;margin-top:9px;min-height:13px}.pushInstallHelp{display:none;margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7ec;border:1px solid #f7d9a9;font-size:9px;line-height:1.45;color:#7a5220}.pushInstallHelp.show{display:block}:root[data-theme="dark"] .pushPanel{background:#202126;border-color:#393b40}:root[data-theme="dark"] .pushInstallHelp{background:#302719;border-color:#554122;color:#e8c995}@media(max-width:600px){.pushHead{display:grid}.pushPanel{grid-template-columns:1fr}.pushActions{justify-content:flex-start}.pushActions .btn{flex:1}.pushStatus span{font-size:9.5px}}
+.avatarPhotoActions{align-items:center}.avatarValidateBtn{padding:7px 11px!important;min-height:34px!important;font-size:10px!important;border-radius:9px!important}.avatarPhotoActions .hidden{display:none!important}.uploadBox{border:1px dashed #d8dbe0;border-radius:16px;padding:17px;background:#fafbfc}.uploadBox strong{font-size:13px}.uploadBox p{font-size:11px;color:#888;margin:5px 0 14px}.profileFields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:10px;font-weight:850;color:#666}.field input[type="text"],.field input[type="password"]{height:42px;border:1px solid #dfe2e7;border-radius:11px;padding:0 12px;background:#fff;outline:none;font:inherit}.field input[type="text"]:focus,.field input[type="password"]:focus{border-color:#ff6f45;box-shadow:0 0 0 3px #ff5a2a15}.readonlyProfileName{height:42px;border:1px solid #e1e3e7;border-radius:11px;padding:0 12px;background:#f4f5f7;display:flex;align-items:center;font-size:12px;font-weight:850;color:#333}.fieldHelp{font-size:9px;color:#999;margin-top:-2px}.colorField{display:flex;align-items:center;gap:9px;min-height:42px}.profileColorPicker{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.profileColorPicker input[type="hidden"]{display:none}.profileColorChoice{width:38px;height:38px;border-radius:12px;border:2px solid transparent;background:var(--profile-color);cursor:pointer;position:relative;box-shadow:inset 0 0 0 1px #00000016,0 4px 12px #00000012;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.profileColorChoice:hover{transform:translateY(-1px)}.profileColorChoice.selected{border-color:#fff;box-shadow:0 0 0 2px #1f2937,0 6px 15px #0002}.profileColorChoice.selected:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:16px;font-weight:950;text-shadow:0 1px 3px #0007}:root[data-theme="dark"] .profileColorChoice.selected{box-shadow:0 0 0 2px #f3eee9,0 6px 18px #0006}:root[data-theme="dark"] .avatarEditorCard{background:#23272d;border-color:#3d444d;color:#eef1f4}:root[data-theme="dark"] .avatarEditorHead p{color:#b8bec6}:root[data-theme="dark"] .avatarEditorClose,:root[data-theme="dark"] .cropZoomBtn{background:#343a42;border-color:#4a515b;color:#f3f4f6}.buttons{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:10px 13px;font-weight:800}.primary{background:var(--grad);color:#fff;box-shadow:0 7px 18px #ff3b1f28}.secondary{background:#f0f1f3;color:#222}.danger{background:#fff2ef;color:#bd271a;border:1px solid #ffd8cb}.state{font-size:10px;color:#888;margin-top:10px;min-height:15px}.rewardCard{margin-top:16px}.rewardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}.rewardHead h2{margin:0;font-size:18px}.rewardHead p{margin:5px 0 0;color:#888;font-size:10px;line-height:1.45;max-width:540px}.rewardGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rewardChoice{display:grid;gap:6px}.rewardChoice label{font-size:10px;font-weight:850;color:#666}.rewardChoice select,.field select{height:42px;border:1px solid #dfe2e7;border-radius:11px;padding:0 12px;background:#fff;outline:none;font:inherit;color:inherit}.rewardChoice select:focus,.field select:focus{border-color:#ff6f45;box-shadow:0 0 0 3px #ff5a2a15}.rewardState{font-size:10px;color:#888;min-height:15px;margin-top:12px}.rewardState.ok{color:#188443;font-weight:800}.rewardState.err{color:#b42318;font-weight:800}.rewardChoice select:disabled{opacity:.65;cursor:not-allowed}:root[data-theme="dark"] .rewardChoice select,:root[data-theme="dark"] .field select{background:#202126;border-color:#3a3c42;color:#eee}.soundCard{margin-top:16px}.soundHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.soundHead h2{margin:0;font-size:18px}.soundHead p{margin:5px 0 0;color:#888;font-size:10px;line-height:1.45;max-width:520px}.soundSettings{display:grid;grid-template-columns:minmax(180px,.7fr) minmax(220px,1.3fr);gap:14px;margin-top:16px}.soundToggle,.soundVolume{border:1px solid #e4e6e9;background:#f8f9fa;border-radius:13px;padding:12px 13px}.soundToggle{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800}.soundToggle input{width:18px;height:18px;accent-color:#ff4b28}.soundVolume{display:grid;gap:8px}.soundVolume>span{display:flex;justify-content:space-between;font-size:10px;font-weight:800}.soundVolume input{width:100%;accent-color:#ff4b28}.soundPreviewGrid{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.soundPreviewGrid button{border:1px solid #e1e3e6;background:#fff;border-radius:10px;padding:8px 10px;font-size:9px;font-weight:800}.soundPreviewGrid button:disabled{opacity:.4;cursor:not-allowed}:root[data-theme="dark"] .soundToggle,:root[data-theme="dark"] .soundVolume{background:#202126;border-color:#393b40}:root[data-theme="dark"] .soundPreviewGrid button{background:#202126;border-color:#393b40;color:#eee}
+.pushCard{display:none;margin-top:16px}.pushHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.pushHead h2{margin:0;font-size:18px}.pushHead p{margin:5px 0 0;color:#888;font-size:10px;line-height:1.45;max-width:520px}.pushPanel{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-top:15px;padding:14px 15px;border:1px solid #e4e6e9;border-radius:15px;background:#f8f9fa}.pushStatus{display:flex;align-items:flex-start;gap:10px}.pushDot{width:10px;height:10px;border-radius:50%;background:#a4a7ad;box-shadow:0 0 0 4px #a4a7ad18;margin-top:3px;flex:none}.pushStatus.active .pushDot{background:#1b9a50;box-shadow:0 0 0 4px #1b9a5018}.pushStatus.blocked .pushDot{background:#d23b2d;box-shadow:0 0 0 4px #d23b2d18}.pushStatus.warning .pushDot{background:#d88400;box-shadow:0 0 0 4px #d8840018}.pushStatus strong{display:block;font-size:11px}.pushStatus span{display:block;color:#81858c;font-size:9px;line-height:1.4;margin-top:3px}.pushActions{display:flex;gap:7px;align-items:center}.pushActions .btn{white-space:nowrap}.pushState{font-size:9px;color:#888;margin-top:9px;min-height:13px}.pushInstallHelp{display:none;margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7ec;border:1px solid #f7d9a9;font-size:9px;line-height:1.45;color:#7a5220}.pushInstallHelp.show{display:block}:root[data-theme="dark"] .pushPanel{background:#202126;border-color:#393b40}:root[data-theme="dark"] .pushInstallHelp{background:#302719;border-color:#554122;color:#e8c995}
 .securityCard{margin-top:16px}.securityHead{margin-bottom:15px}.securityHead h2{margin:0;font-size:18px}.securityHead p{margin:5px 0 0;color:#888;font-size:10px;line-height:1.45}.securityFields{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:12px}.securityState{margin-top:8px}.notificationsCard{margin-top:16px;background:#fff;border:1px solid #e3e5e8;border-radius:20px;padding:18px;box-shadow:0 9px 26px #00000009}.notificationsHead{display:flex;justify-content:space-between;align-items:center;gap:12px}.notificationsHead h2{margin:0;font-size:18px}.notificationsHead p{margin:4px 0 0;color:#888;font-size:10px}.notificationsList{display:grid;gap:8px;margin-top:13px}.notificationItem{display:grid;grid-template-columns:34px minmax(0,1fr) 28px;gap:9px;padding:10px 11px;border-radius:12px;border:1px solid #e8e9ec;background:#f8f9fa;cursor:pointer}.notificationItem.unread{background:#fff7f2;border-color:#ffd9ca;box-shadow:0 5px 14px #ff5a2a0a}.notificationIcon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-weight:900}.notificationItem.manual_edit .notificationIcon{background:#e7efff;color:#335fba}.notificationItem.import_new .notificationIcon{background:#e1f4e6;color:#188443}.notificationItem.import_replace .notificationIcon{background:#ffead2;color:#c96a00}.notificationItem.reset_day .notificationIcon,.notificationItem.reset_week .notificationIcon{background:#ffe2dc;color:#bd3022}.notificationBody{min-width:0}.notificationBody strong{display:block;font-size:11px;line-height:1.25}.notificationBody span{display:block;font-size:9.5px;color:#666;line-height:1.4;margin-top:2px}.notificationBody small{display:block;font-size:8.5px;color:#999;margin-top:4px}.unreadDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff4c24;margin-left:6px;vertical-align:1px}.notificationDelete{width:27px;height:27px;border:0;border-radius:8px;background:#ffffffaa;color:#999;font-size:16px;cursor:pointer}.notificationDelete:hover{background:#fff0ee;color:#b52c20}.notificationsEmpty{text-align:center;color:#999;font-size:10px;padding:18px 8px}
 .nMenuWrap{position:relative}.nMenu{position:absolute;left:0;top:49px;width:255px;padding:8px;background:#fffffff8;border:1px solid #dedee2;border-radius:15px;box-shadow:0 16px 44px #0003;backdrop-filter:blur(16px);z-index:100}.hidden{display:none!important}.nMenuTitle{padding:7px 10px 8px;color:#f33a22;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.8px}.nMenu button{width:100%;display:grid;grid-template-columns:34px 1fr;gap:9px;align-items:center;text-align:left;padding:9px;border:0;border-radius:10px;background:transparent}.nMenu button:hover{background:linear-gradient(90deg,#fff1ef,#fff8ef)}.nMenu button>span{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#fff0ed,#fff7ec);color:#f43a20;display:grid;place-items:center}.nMenu button strong{display:block;font-size:12px}.nMenu button small{display:block;font-size:10px;color:#888;margin-top:2px}.nMenu .logoutItem{margin-top:4px;border-top:1px solid #ececee;border-radius:0 0 9px 9px;color:#a30d15}
 :root[data-theme="dark"]{color-scheme:dark}:root[data-theme="dark"] body{background:#111317;color:#f4f4f5}:root[data-theme="dark"] header{background:#17191df0;border-color:#2d3036}:root[data-theme="dark"] .card{background:#1b1d22;border-color:#30333a}:root[data-theme="dark"] .notificationsCard{background:#1b1d22;border-color:#30333a}:root[data-theme="dark"] .notificationItem{background:#202227;border-color:#34373d}:root[data-theme="dark"] .notificationItem.unread{background:#2b211e;border-color:#51352c}:root[data-theme="dark"] .notificationBody span{color:#bbb}:root[data-theme="dark"] .uploadBox{background:#202126;border-color:#3a3c42}:root[data-theme="dark"] .secondary,:root[data-theme="dark"] .back{background:#242529;color:#eee;border-color:#393a40}:root[data-theme="dark"] .nMenu{background:#1c1d20f6;border-color:#38393e}:root[data-theme="dark"] .nMenu button:hover{background:linear-gradient(90deg,#38211d,#2d241d)}:root[data-theme="dark"] .nMenu button>span{background:#32231f;color:#ff8a55}:root[data-theme="dark"] .avatarBadge{border-color:#1b1d22}
-@media(max-width:600px){main{padding-top:30px}.profileTop{grid-template-columns:1fr;text-align:center}.avatarWrap{margin:auto}.buttons{justify-content:center}.card{padding:20px}.profileFields,.securityFields{grid-template-columns:1fr}.field.full{grid-column:auto}.securityHead{text-align:left}.securityCard .buttons{justify-content:flex-start}.notificationsCard{padding:14px;border-radius:17px}.notificationsHead{align-items:flex-start;flex-wrap:wrap}.notificationsHead .btn{font-size:9px;padding:8px 9px}.notificationItem{grid-template-columns:32px minmax(0,1fr);padding:9px}.notificationIcon{width:30px;height:30px}.notificationBody strong{font-size:10.5px}.notificationBody span{font-size:9px}}
+
 
 /* Logos personnalisés des outils */
 .toolLogoImg{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
@@ -33,36 +33,11 @@ main{width:min(92vw,760px);margin:auto;padding:50px 0 70px}.hero{text-align:cent
 .pageCard .icon{overflow:hidden;padding:0!important}
 .pageCard .icon img{width:100%;height:100%;object-fit:cover;display:block}
 
-@media(max-width:700px){
-  .nMenu,.brandMenu,.userMenu{
-    position:fixed!important;left:10px!important;right:10px!important;top:auto!important;bottom:10px!important;
-    width:auto!important;max-width:none!important;max-height:min(74dvh,620px)!important;overflow-y:auto!important;
-    overscroll-behavior:contain;padding:10px!important;border-radius:20px!important;
-    box-shadow:0 22px 70px #00000045!important;backdrop-filter:blur(22px)!important;z-index:500!important
-  }
-  .nMenu:before,.brandMenu:before,.userMenu:before{content:"";display:block;width:42px;height:4px;border-radius:99px;background:#c9c9ce;margin:1px auto 8px}
-  .nMenuTitle,.brandMenuTitle{padding:5px 10px 9px!important;font-size:9px!important}
-  .nMenu button,.brandMenu button,.userMenu button{min-height:50px!important;padding:8px 9px!important;border-radius:12px!important;grid-template-columns:38px 1fr!important;gap:10px!important}
-  .nMenu button>span,.brandMenu button>span,.userMenu button>span{width:36px!important;height:36px!important;border-radius:10px!important}
-  .nMenu button strong,.brandMenu button strong,.userMenu button strong{font-size:12px!important}
-  .nMenu button small,.brandMenu button small,.userMenu button small{font-size:9.5px!important}
-  .logoutItem,.brandLogout,.userLogout{margin-top:6px!important;padding-top:9px!important}
-}
+
 
 /* Menu N mobile — overlay plein écran fiable sur iOS/PWA */
 .mobileNavBackdrop{display:none}
-@media(max-width:700px){
-  body.mobileNavOpen{overflow:hidden!important}
-  body.mobileNavOpen .mobileNavBackdrop{display:block!important;position:fixed!important;inset:0!important;background:rgba(17,24,39,.38)!important;backdrop-filter:blur(2px)!important;z-index:998!important}
-  body.mobileNavOpen #nMenu{
-    display:block!important;position:fixed!important;left:10px!important;right:10px!important;top:max(64px,calc(env(safe-area-inset-top) + 50px))!important;bottom:auto!important;
-    width:auto!important;max-width:none!important;max-height:calc(100dvh - max(82px,calc(env(safe-area-inset-top) + 68px)))!important;
-    overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
-    padding:9px!important;border-radius:20px!important;z-index:999!important;
-    box-shadow:0 22px 70px rgba(0,0,0,.32)!important
-  }
-  body.mobileNavOpen #nMenu:before{display:none!important}
-}
+
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -71,225 +46,10 @@ main{width:min(92vw,760px);margin:auto;padding:50px 0 70px}.hero{text-align:cent
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="design-v2.css?v=3"><link rel="stylesheet" href="design-v3.css?v=3">
 <link rel="stylesheet" href="design-v4.css?v=9">
-<style id="profile-mobile-layout-v141">
-.profileMobileTop{display:none}
-@media(max-width:700px){
-  body>header{display:none!important}
-  main{
-    width:min(100%,760px)!important;
-    margin:0 auto!important;
-    padding:calc(env(safe-area-inset-top) + 14px) 10px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important
-  }
-  main>.hero{display:none!important}
-  .profileMobileTop{
-    display:flex;
-    align-items:center;
-    gap:11px;
-    margin:2px 2px 13px
-  }
-  .profileMobileBack{
-    width:42px;
-    height:42px;
-    flex:0 0 42px;
-    border:1px solid #e4e7eb;
-    border-radius:14px;
-    background:#fff;
-    display:grid;
-    place-items:center;
-    color:inherit;
-    font-size:24px;
-    line-height:1;
-    font-weight:700;
-    padding:0;
-    box-shadow:none
-  }
-  .profileMobileTitle{min-width:0}
-  .profileMobileTitle h1{
-    margin:0!important;
-    font-size:26px!important;
-    line-height:1.05!important;
-    letter-spacing:-.8px!important
-  }
-  .profileMobileTitle p{
-    margin:5px 0 0!important;
-    color:#7b828b!important;
-    font-size:10px!important;
-    line-height:1.35!important
-  }
 
-  .profileMainCard{
-    padding:15px!important;
-    border-radius:20px!important;
-    overflow:hidden
-  }
-  .profileTop{
-    grid-template-columns:88px minmax(0,1fr)!important;
-    gap:14px!important;
-    align-items:center!important;
-    text-align:left!important
-  }
-  .avatarWrap,.avatar{
-    width:88px!important;
-    height:88px!important
-  }
-  .avatar{
-    border-radius:24px!important;
-    font-size:30px!important
-  }
-  .rewardFrameLayer{border-radius:19px!important}
-  .rewardAccessoryLayer{transform:scale(.82) rotate(8deg);transform-origin:top right}
-  .avatarBadge{
-    right:-3px!important;
-    bottom:0!important;
-    width:34px!important;
-    height:34px!important;
-    border-width:3px!important
-  }
-  .name{
-    font-size:20px!important;
-    line-height:1.15!important;
-    overflow-wrap:anywhere
-  }
-  .role{
-    margin-top:4px!important;
-    font-size:9.5px!important;
-    line-height:1.35!important
-  }
-  .divider{margin:16px 0!important}
-
-  .profileFields,.securityFields{
-    grid-template-columns:1fr!important;
-    gap:14px!important;
-    margin-bottom:0!important
-  }
-  .profileFields>.field,.securityFields>.field{
-    min-width:0!important
-  }
-  .readonlyProfileName,
-  .profileFields select,
-  .securityFields input{
-    width:100%!important;
-    min-width:0!important
-  }
-  .profileColorPicker{
-    display:grid!important;
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    gap:8px!important;
-    width:100%!important
-  }
-  .profileColorChoice{
-    width:100%!important;
-    height:42px!important;
-    min-width:0!important
-  }
-  .profileFields>.buttons.field.full{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:8px!important;
-    width:100%!important
-  }
-  .profileFields>.buttons.field.full .btn,
-  .profileFields>.buttons.field.full .state{
-    width:100%!important;
-    max-width:none!important
-  }
-
-  .rewardHead,.soundHead,.notificationsHead{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:10px!important
-  }
-  .rewardHead .btn,.soundHead .btn,.securityCard .buttons .btn,.notificationsHead .btn{
-    width:100%!important;
-    max-width:none!important
-  }
-  .rewardGrid,.soundSettings{
-    grid-template-columns:1fr!important
-  }
-  .soundPreviewGrid{
-    display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:8px!important
-  }
-  .soundPreviewGrid button{
-    width:100%!important;
-    min-width:0!important
-  }
-  .securityCard .buttons{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    width:100%!important
-  }
-  .notificationsCard{
-    padding:14px!important;
-    border-radius:17px!important;
-    overflow:hidden!important
-  }
-  .notificationItem{
-    grid-template-columns:32px minmax(0,1fr) 30px!important;
-    gap:8px!important;
-    align-items:start!important;
-    padding:9px!important
-  }
-  .notificationIcon{
-    width:30px!important;
-    height:30px!important
-  }
-  .notificationBody{
-    min-width:0!important;
-    overflow:hidden!important
-  }
-  .notificationBody strong,
-  .notificationBody span,
-  .notificationBody small{
-    overflow-wrap:anywhere!important
-  }
-  .notificationDelete{
-    grid-column:3!important;
-    grid-row:1!important;
-    justify-self:end!important;
-    align-self:start!important
-  }
-
-  .avatarEditorModal{
-    padding:10px!important;
-    align-items:end!important
-  }
-  .avatarEditorCard{
-    width:100%!important;
-    max-width:none!important;
-    max-height:86dvh!important;
-    border-radius:24px 24px 18px 18px!important;
-    padding:15px!important
-  }
-  .avatarPhotoActions{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:8px!important;
-    width:100%!important
-  }
-  .avatarPhotoActions .btn{
-    width:100%!important;
-    max-width:none!important
-  }
-
-  :root[data-theme="dark"] .profileMobileBack{
-    background:#22252a!important;
-    border-color:#343940!important;
-    color:#f1eeea!important
-  }
-  :root[data-theme="dark"] .profileMobileTitle p{
-    color:#aaa59f!important
-  }
-}
-@media(max-width:380px){
-  .profileTop{grid-template-columns:80px minmax(0,1fr)!important;gap:12px!important}
-  .avatarWrap,.avatar{width:80px!important;height:80px!important}
-  .name{font-size:18px!important}
-}
-</style>
+<link rel="stylesheet" href="ui/desktop/profile-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/profile-layout.css?v=1" media="not all" data-nethor-shell="mobile">
 </head>
-<body><div data-nethor-platform-header></div><main><div data-nethor-platform-lead></div><script src="platform-page-layout.js?v=3"></script><div class="hero"><h1>Mon profil</h1><p>Personnalise l’identité affichée dans les menus, le chat et les outils du site.</p></div><section class="card profileMainCard"><div class="profileTop"><div class="avatarWrap"><div id="avatar" class="avatar">U</div><button type="button" class="avatarBadge" onclick="openAvatarEditor()" title="Modifier la photo" aria-label="Modifier la photo de profil">✎</button></div><div><div id="displayName" class="name">Utilisateur</div><div id="role" class="role"></div></div></div><div class="divider"></div><div class="profileFields"><div class="field"><label>Nom affiché</label><div class="readonlyProfileName" id="readonlyProfileName">Utilisateur</div><span class="fieldHelp">Le nom affiché est géré par un administrateur.</span></div><div class="field"><label>Couleur du profil</label><div class="colorField profileColorPicker" id="profileColorPicker"><input id="colorInput" type="hidden" value="#FF3B30"><button type="button" class="profileColorChoice" style="--profile-color:#FF3B30" data-color="#FF3B30" title="Rouge Nethor" aria-label="Rouge Nethor" onclick="selectProfileColor('#FF3B30')"></button><button type="button" class="profileColorChoice" style="--profile-color:#FF8A00" data-color="#FF8A00" title="Orange Nethor" aria-label="Orange Nethor" onclick="selectProfileColor('#FF8A00')"></button><button type="button" class="profileColorChoice" style="--profile-color:#1F2937" data-color="#1F2937" title="Anthracite" aria-label="Anthracite" onclick="selectProfileColor('#1F2937')"></button><button type="button" class="profileColorChoice" style="--profile-color:#6B7280" data-color="#6B7280" title="Ardoise" aria-label="Ardoise" onclick="selectProfileColor('#6B7280')"></button></div><span class="fieldHelp">Palette Nethor uniquement · utilisée quand aucune photo n’est définie.</span></div><div class="field"><label for="themeSelect">Apparence du site</label><select id="themeSelect" onchange="applyTheme(this.value)"><option value="light">Mode clair</option><option value="dark">Mode sombre</option></select></div><div class="buttons field full"><button class="btn primary" onclick="saveProfile()">Enregistrer le profil</button><div id="profileState" class="state"></div></div></div><div id="avatarEditorModal" class="avatarEditorModal hidden" onclick="if(event.target===this)closeAvatarEditor()"><div class="avatarEditorCard" role="dialog" aria-modal="true" aria-labelledby="avatarEditorTitle"><div class="avatarEditorHead"><div><strong id="avatarEditorTitle">Photo de profil</strong><p>Choisis puis recadre l’image avant de la valider.</p></div><button type="button" class="avatarEditorClose" onclick="closeAvatarEditor()" aria-label="Fermer">×</button></div><input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="previewFile(this)"><div id="avatarCropStage" class="avatarCropStage hidden"><img id="avatarCropImage" alt="Image à recadrer"><div class="avatarCropGuide"></div></div><div id="avatarCropTools" class="avatarCropTools hidden"><button type="button" class="cropZoomBtn" onclick="stepCropZoom(-0.1)" aria-label="Réduire">−</button><input id="avatarZoom" type="range" min="1" max="3" step="0.01" value="1" oninput="setCropZoom(this.value)" aria-label="Zoom de la photo"><button type="button" class="cropZoomBtn" onclick="stepCropZoom(0.1)" aria-label="Agrandir">+</button></div><div class="buttons avatarPhotoActions"><button id="chooseAvatarBtn" class="btn primary" onclick="avatarInput.click()">Choisir une image</button><button id="removeBtn" class="btn danger hidden" onclick="stageRemoveAvatar()">Supprimer la photo</button><button id="validateAvatarBtn" class="btn secondary avatarValidateBtn" onclick="validateAvatarChange()" disabled>Valider</button></div><div id="state" class="state"></div></div></div></section><section id="rewardCustomizer" class="card rewardCard hidden"><div class="rewardHead"><div><h2>Personnalisation avancée</h2><p>Centralise ici l’apparence de ton compte. La photo de profil et son recadrage se gèrent avec le stylo ; ici, l’administrateur peut choisir un avatar de poste, puis appliquer cadres, accessoires, titres et thèmes. La photo personnalisée reste prioritaire.</p></div><a href="rewards.html" class="btn secondary" style="display:inline-block;text-decoration:none">Ouvrir Défis & Boutique</a></div><div class="rewardGrid"><div class="rewardChoice"><label for="rewardAvatar">Avatar de poste</label><select id="rewardAvatar" onchange="equipReward('avatar',this.value)"></select></div><div class="rewardChoice"><label for="rewardFrame">Cadre</label><select id="rewardFrame" onchange="equipReward('frame',this.value)"></select></div><div class="rewardChoice"><label for="rewardAccessory">Accessoire</label><select id="rewardAccessory" onchange="equipReward('accessory',this.value)"></select></div><div class="rewardChoice"><label for="rewardTitleSelect">Titre</label><select id="rewardTitleSelect" onchange="equipReward('title',this.value)"></select></div><div class="rewardChoice"><label for="rewardTheme">Thème d’accent</label><select id="rewardTheme" onchange="equipReward('theme',this.value)"></select></div></div><div id="rewardState" class="rewardState"></div></section><section id="adminSoundWidget" class="card soundCard adminOnlyProfileWidget hidden"><div class="soundHead"><div><h2>Sons d’interface</h2><p>Régle les retours sonores du portail sur cet appareil. Les sons importants restent courts et distincts pour éviter de rendre l’interface fatigante.</p></div><button class="btn secondary" onclick="previewSound('confirm')">Tester</button></div><div class="soundSettings"><label class="soundToggle"><input id="soundEnabled" type="checkbox" onchange="setSoundEnabled(this.checked)"><span>Activer les sons d’interface</span></label><label class="soundVolume"><span>Volume <b id="soundVolumeValue">72%</b></span><input id="soundVolume" type="range" min="0" max="100" step="1" value="72" oninput="setSoundVolume(this.value,true)" onchange="setSoundVolume(this.value,false)"></label></div><div class="soundPreviewGrid"><button data-sound-preview onclick="previewSound('loginSuccess')">Connexion</button><button data-sound-preview onclick="previewSound('error')">Erreur</button><button data-sound-preview onclick="previewSound('notification')">Notification</button><button data-sound-preview onclick="previewSound('success')">Validation</button><button data-sound-preview onclick="previewSound('logout')">Déconnexion</button></div></section><section class="card securityCard"><div class="securityHead"><h2>Sécurité du compte</h2><p>Change ton mot de passe directement depuis ton profil. Le mot de passe actuel est demandé avant validation.</p></div><div class="profileFields securityFields"><div class="field"><label for="currentPassword">Mot de passe actuel</label><input id="currentPassword" type="password" autocomplete="current-password" placeholder="Mot de passe actuel"></div><div class="field"><label for="newPassword">Nouveau mot de passe</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" placeholder="8 caractères minimum"></div><div class="field"><label for="confirmPassword">Confirmer le nouveau mot de passe</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Retape le mot de passe"></div></div><div class="buttons"><button id="passwordSaveBtn" class="btn primary" onclick="changePassword()">Changer le mot de passe</button></div><div id="passwordState" class="state securityState" aria-live="polite"></div></section><section id="adminNotificationsWidget" class="notificationsCard adminOnlyProfileWidget hidden"><div class="notificationsHead"><div><h2>Notifications</h2><p>Modifications importantes concernant ton planning.</p></div><button id="markAllReadBtn" class="btn secondary hidden" onclick="markAllNotificationsRead()">Tout marquer comme lu</button></div><div id="notificationsList" class="notificationsList"><div class="notificationsEmpty">Aucune notification pour le moment.</div></div></section></main>
+<body><div data-nethor-platform-header></div><main><div data-nethor-platform-lead></div><div data-nethor-profile-layout></div><script src="platform-page-layout.js?v=4"></script></main>
 <script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC',db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const PROFILE_COLORS=['#FF3B30','#FF8A00','#1F2937','#6B7280'];
@@ -301,8 +61,8 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 function initials(n){return String(n||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
 function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1}
 function isStandalone(){return window.matchMedia?.('(display-mode: standalone)')?.matches===true||navigator.standalone===true}
-const MOBILE_PROFILE_QUERY=window.matchMedia('(max-width:700px)');
-function isMobileProfileView(){return document.documentElement.classList.contains('nethorPhoneDevice')||MOBILE_PROFILE_QUERY.matches}
+function profilePlatformKind(){const kind=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase();return kind==='desktop'?'desktop':'mobile'}
+function isMobileProfileView(){return profilePlatformKind()==='mobile'}
 function pushSupported(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window}
 function base64UrlToUint8Array(value){const pad='='.repeat((4-value.length%4)%4),base64=(value+pad).replace(/-/g,'+').replace(/_/g,'/'),raw=atob(base64),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
 function setPushUI(mode,title,text){
