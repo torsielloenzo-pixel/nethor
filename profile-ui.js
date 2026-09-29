@@ -241,7 +241,7 @@ const BASE_MODULES=Object.freeze([
  {id:'chat',label:'Chat',homeLabel:'Chat',subtitle:'Messagerie interne',url:'chat.html',asset:'assets/logo-chat.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'COMMUNICATION',description:'Centraliser les échanges, la présence des membres et les informations utiles au fonctionnement quotidien.',action:'Ouvrir le chat',cardClass:'chatCard',group:'principal',platform:'all'},
  {id:'scanner',label:'Scanner (bêta)',homeLabel:'Scanner (bêta)',subtitle:'EAN13 vers fiche article',url:'scanner.html',icon:'⌁',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'OUTIL MOBILE',description:'Scanner un code-barres ou saisir une référence courte pour retrouver rapidement une fiche article.',action:'Ouvrir le scanner',cardClass:'scannerCard',group:'terrain',platform:'mobile',mobileBar:true},
  {id:'articles',label:'Fiches articles',homeLabel:'Fiches articles',subtitle:'Référentiel articles',url:'articles.html',asset:'assets/logo-article.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'RÉFÉRENTIEL',description:'Retrouver rapidement les références, codes et informations produit utilisées dans les procédures du rayon.',action:'Ouvrir le référentiel',cardClass:'articlesCard',group:'principal',platform:'all'},
- {id:'notifications',label:'Notifications',homeLabel:'Notifications',subtitle:'Centre d’activité',url:'notifications.html',icon:'◇',roles:null,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'INFORMATIONS',description:'Consulter les notifications et informations reçues dans Nethor.',action:'Ouvrir les notifications',cardClass:'notificationsCard',group:'communication',platform:'all',mobileBarLocked:true},
+ {id:'notifications',label:'Notifications',homeLabel:'Notifications',subtitle:'Centre d’activité',url:'notifications.html',icon:'◇',roles:null,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'INFORMATIONS',description:'Consulter les notifications et informations reçues dans Nethor.',action:'Ouvrir les notifications',cardClass:'notificationsCard',group:'communication',platform:'all',mobileBar:true},
  {id:'notification_settings',label:'Réglages des notifications',homeLabel:'Réglages des notifications',subtitle:'Préférences et alertes',url:'notification-settings.html',icon:'♢',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'PRÉFÉRENCES',description:'Choisir les canaux et types de notifications à recevoir.',action:'Régler les notifications',cardClass:'notificationSettingsCard',group:'communication',platform:'all'},
  {id:'problem_report',label:'Signaler un problème',homeLabel:'Signaler un problème',subtitle:'Décrire et envoyer un bug',url:'report-problem.html',icon:'⚠',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ASSISTANCE',description:'Envoyer à l’administration un signalement détaillé depuis Nethor.',action:'Signaler un problème',cardClass:'problemReportCard',group:'communication',platform:'mobile'},
  {id:'fl_assistant',label:'Assistant Précommande',homeLabel:'Assistant Précommande',subtitle:'Analyse Fruits & Légumes',url:'fl-assistant.html',icon:'▤',roles:['admin','responsable'],home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'F&L',description:'Analyser les données utiles à la préparation des précommandes Fruits & Légumes.',action:'Ouvrir l’assistant',cardClass:'assistantCard',group:'terrain',platform:'all'},
@@ -356,10 +356,18 @@ const MOBILE_NAV_ICONS=Object.freeze({
  accounts:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="2.5"/><circle cx="16.5" cy="10" r="2"/><path d="M4.5 18c1.1-2.3 3-3.5 4.5-3.5s3.4 1.2 4.5 3.5"/><path d="M14 18c.7-1.5 2-2.4 3.2-2.4 1.1 0 2.4.9 3.1 2.4"/></svg>',
  portal_admin:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4.5" y="4.5" width="15" height="15" rx="3"/><path d="M8 8h8M8 12h5M8 16h8"/></svg>',
  settings:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="2.75"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.8-1L14.4 3H9.6l-.3 3a7 7 0 0 0-1.8 1l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .7.1 1.1l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 1.8 1l.3 3h4.8l.3-3a7 7 0 0 0 1.8-1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1Z"/></svg>',
+ notification_settings:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 9a5 5 0 0 1 10 0v3.2l1.7 2.8H5.3L7 12.2V9Z"/><path d="M9.5 18h5M12 3v1"/></svg>',
+ fl_assistant:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h14v14H5z"/><path d="M8 9h8M8 12h5M8 15h7"/></svg>',
  default:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="5" width="5" height="5" rx="1.2"/><rect x="14" y="5" width="5" height="5" rx="1.2"/><rect x="5" y="14" width="5" height="5" rx="1.2"/><rect x="14" y="14" width="5" height="5" rx="1.2"/></svg>'
 });
 function mobileNavIcon(id){return MOBILE_NAV_ICONS[id]||MOBILE_NAV_ICONS.default}
 function mobileModuleForId(id){return NAV_MODULES.find(m=>m.id===id)}
+function mobileBarEligible(module){
+ if(!module||module.custom)return false;
+ if(module.navigation===false||module.mobileBar===false)return false;
+ if(module.platform==='desktop'||module.platform==='system')return false;
+ return true
+}
 
 function mobileBarItems(config=api?.siteConfig){
  const raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[];
@@ -367,9 +375,9 @@ function mobileBarItems(config=api?.siteConfig){
  const seen=new Set(),out=[];
  for(const item of source){
   const id=String(item?.id||'').trim();
-  if(!id||id==='notifications'||seen.has(id))continue;
+  if(!id||seen.has(id))continue;
   const module=NAV_MODULES.find(m=>m.id===id);
-  if(!module)continue;
+  if(!mobileBarEligible(module))continue;
   seen.add(id);
   out.push({id,enabled:item?.enabled!==false,label:String(item?.label||'').trim().slice(0,18)});
   if(out.length>=5)break;
@@ -469,7 +477,7 @@ function renderMobileQuickBar(){
   },0)
  }
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
