@@ -1,0 +1,10 @@
+html[data-nethor-platform="mobile"],html[data-nethor-platform="mobile-preview"]{--nethor-shell:"mobile"}
+html[data-nethor-platform="mobile"] .nettoMobileQuickBar,
+html[data-nethor-platform="mobile-preview"] .nettoMobileQuickBar{display:grid}
+html[data-nethor-platform="mobile"] .nettoUserDesktopMenu,
+html[data-nethor-platform="mobile-preview"] .nettoUserDesktopMenu{display:none!important}
+html[data-nethor-platform="mobile"] .nettoMobileQuickItem,
+html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
+ width:100%;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;
+ appearance:none!important;-webkit-appearance:none!important
+}
