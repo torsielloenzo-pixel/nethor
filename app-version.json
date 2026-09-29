@@ -1,10 +1,10 @@
 {
-  "version": 196,
-  "label": "v1.96",
+  "version": 197,
+  "label": "v1.97",
   "important": false,
   "mode": "auto",
-  "title": "Planning · couverture magasin",
-  "message": "Amélioration de la lisibilité de l’échelle horaire dans Couverture magasin : repères 6 à 20 plus visibles et guides horaires.",
-  "published_at": "2026-09-29T10:59:00Z",
+  "title": "Signalements · diagnostic technique",
+  "message": "Les problèmes signalés disposent maintenant d’un espace administrateur dédié avec diagnostic technique, suivi et notes de traitement.",
+  "published_at": "2026-09-29T11:30:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
