@@ -1,10 +1,10 @@
 {
-  "version": 204,
+  "version": 205,
   "label": "v1.20.0",
   "important": false,
   "mode": "auto",
-  "title": "Correctif critique v1.20.0",
-  "message": "Correction du runtime SemVer, restauration de l’interface globale et sécurisation de l’accès Administrateur.",
-  "published_at": "2026-09-29T14:48:00+02:00",
+  "title": "Planning · alignement des vues",
+  "message": "Recentrage de la vue classique, de l’agenda et de la détection d’anomalies sur un même axe.",
+  "published_at": "2026-09-29T15:30:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
