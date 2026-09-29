@@ -1,11 +1,11 @@
 {
-  "version": 218,
-  "label": "v1.25.0",
+  "version": 219,
+  "label": "v1.25.1",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.1 — Structures Desktop / Mobile",
-  "message": "Début de la phase 4 : Accueil, Planning et Mon profil ne portent plus leurs anciens en-têtes hybrides. Le shell actif construit maintenant son propre chrome de page ; le profil Mobile reçoit sa zone haute dédiée tandis que Desktop conserve son en-tête distinct. Les données et fonctionnalités métier restent communes.",
-  "published_at": "2026-09-29T22:52:00+02:00",
+  "title": "Phase 4.2 — Planning Desktop / Mobile",
+  "message": "Le Planning possède désormais deux structures d’interface distinctes. Desktop et Mobile construisent séparément la navigation semaine/calendrier, le sélecteur de jour et les actions d’import/modification. mobileSchedule n’existe plus dans le DOM Desktop. Les décisions de plateforme du Planning et de l’Agenda utilisent le résolveur Nethor au lieu de la largeur de fenêtre.",
+  "published_at": "2026-09-29T23:00:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
