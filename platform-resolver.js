@@ -93,8 +93,46 @@ function installIsolationStyle(){
  (document.head||document.documentElement).appendChild(style)
 }
 
+function mobileMediaCondition(text){
+ const value=String(text||'').toLowerCase();
+ if(/pointer\s*:\s*coarse|hover\s*:\s*none/.test(value))return true;
+ const matches=[...value.matchAll(/max-width\s*:\s*([\d.]+)px/g)];
+ return matches.some(m=>Number(m[1])<=900)
+}
+function disableDesktopMobileMediaRules(rules){
+ if(!rules)return;
+ for(const rule of Array.from(rules)){
+  try{
+   if(rule.media&&rule.cssRules&&mobileMediaCondition(rule.media.mediaText)){
+    rule.media.mediaText='not all';
+    continue
+   }
+   if(rule.cssRules)disableDesktopMobileMediaRules(rule.cssRules)
+  }catch(_){}
+ }
+}
+function enforceDesktopMediaIsolation(){
+ if(state.kind!=='desktop')return;
+ const scan=()=>{
+  if(state.kind!=='desktop')return;
+  for(const sheet of Array.from(document.styleSheets)){
+   try{disableDesktopMobileMediaRules(sheet.cssRules)}catch(_){}
+  }
+  ROOT.dataset.nethorDesktopMedia='isolated'
+ };
+ scan();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan,{once:true});
+ window.addEventListener('load',scan,{once:true});
+ if(document.head&&typeof MutationObserver!=='undefined'){
+  const observer=new MutationObserver(()=>queueMicrotask(scan));
+  observer.observe(document.head,{childList:true,subtree:true});
+  window.addEventListener('pagehide',()=>observer.disconnect(),{once:true})
+ }
+}
+
 let state=apply(resolve());
 installIsolationStyle();
+enforceDesktopMediaIsolation();
 
 const api=Object.freeze({
  current:()=>state.kind,
