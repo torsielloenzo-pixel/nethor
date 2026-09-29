@@ -33,6 +33,7 @@ function shell(){
     '<div class="rushBestCard"><span>Meilleur score</span><strong data-rush-best>0 pts</strong></div>',
    '</div>',
    '<div class="rushDevice">',
+    '<button class="rushExitGames" type="button" data-rush-exit aria-label="Retour aux jeux">‹ <span>Jeux</span></button>',
     '<div class="rushMenu" data-rush-menu><div class="rushMenuBrand"><span class="rushMenuN">N</span><div><small>NETHOR ARCADE</small><strong>RUSH RAYON</strong></div></div><div class="rushMenuRunner">🏃</div><button class="rushMenuPlay" type="button" data-rush-menu-play>▶ Jouer</button><button class="rushMenuScore" type="button" data-rush-menu-score>★ Scores</button><button class="rushMenuSound" type="button" data-rush-sound>🔊 Son</button><div class="rushScores" data-rush-scores hidden><div class="rushScoresHead"><strong>Meilleurs scores</strong><button type="button" data-rush-score-close>✕</button></div><div data-rush-score-list><p>Chargement…</p></div></div></div>',
     '<div class="rushHud">',
      '<div class="rushMetric"><span>Score</span><strong data-rush-score>0</strong></div>',
@@ -75,7 +76,7 @@ function RushGame(root){
  this.itemsEl=q(root,"[data-rush-items]");
  this.distanceEl=q(root,"[data-rush-distance]");
  this.bestEl=q(root,"[data-rush-best]");
- this.menu=q(root,"[data-rush-menu]");this.menuPlay=q(root,"[data-rush-menu-play]");this.menuScore=q(root,"[data-rush-menu-score]");this.menuBack=q(root,"[data-rush-menu-back]");this.soundBtn=q(root,"[data-rush-sound]");this.scoresPanel=q(root,"[data-rush-scores]");this.scoreList=q(root,"[data-rush-score-list]");this.scoreClose=q(root,"[data-rush-score-close]");
+ this.menu=q(root,"[data-rush-menu]");this.exitGames=q(root,"[data-rush-exit]");this.menuPlay=q(root,"[data-rush-menu-play]");this.menuScore=q(root,"[data-rush-menu-score]");this.menuBack=q(root,"[data-rush-menu-back]");this.soundBtn=q(root,"[data-rush-sound]");this.scoresPanel=q(root,"[data-rush-scores]");this.scoreList=q(root,"[data-rush-score-list]");this.scoreClose=q(root,"[data-rush-score-close]");
  this.api=window.NettoProfileUI||null;this.db=this.api&&this.api.client;this.user=this.api&&this.api.session&&this.api.session.user;this.soundOn=true;try{this.soundOn=localStorage.getItem("rushRayonSound")!=="0"}catch(_){};this.audio=new RushAudio(this);
  this.phaseEl=q(root,"[data-rush-phase]");
  this.speedEl=q(root,"[data-rush-speed]");
@@ -88,8 +89,8 @@ function RushGame(root){
  this.boundVisibility=this.onVisibility.bind(this);
  this.boundPause=this.togglePause.bind(this);
  this.boundStart=this.onStart.bind(this);
- this.boundRestart=this.restart.bind(this);this.boundPointerUp=this.onPointerUp.bind(this);this.boundKeyUp=this.onKeyUp.bind(this);this.boundMenuPlay=this.playFromMenu.bind(this);this.boundMenuScore=this.openScores.bind(this);this.boundMenuBack=this.backToMenu.bind(this);this.boundSound=this.toggleSound.bind(this);this.boundScoreClose=this.closeScores.bind(this);
- this.stage.addEventListener("pointerdown",this.boundPointer,{passive:false});this.stage.addEventListener("pointerup",this.boundPointerUp,{passive:false});this.stage.addEventListener("pointercancel",this.boundPointerUp,{passive:false});this.menuPlay.addEventListener("click",this.boundMenuPlay);this.menuScore.addEventListener("click",this.boundMenuScore);this.menuBack.addEventListener("click",this.boundMenuBack);this.soundBtn.addEventListener("click",this.boundSound);this.scoreClose.addEventListener("click",this.boundScoreClose);
+ this.boundRestart=this.restart.bind(this);this.boundPointerUp=this.onPointerUp.bind(this);this.boundKeyUp=this.onKeyUp.bind(this);this.boundExitGames=this.exitToGames.bind(this);this.boundMenuPlay=this.playFromMenu.bind(this);this.boundMenuScore=this.openScores.bind(this);this.boundMenuBack=this.backToMenu.bind(this);this.boundSound=this.toggleSound.bind(this);this.boundScoreClose=this.closeScores.bind(this);
+ this.stage.addEventListener("pointerdown",this.boundPointer,{passive:false});this.stage.addEventListener("pointerup",this.boundPointerUp,{passive:false});this.stage.addEventListener("pointercancel",this.boundPointerUp,{passive:false});this.exitGames.addEventListener("click",this.boundExitGames);this.menuPlay.addEventListener("click",this.boundMenuPlay);this.menuScore.addEventListener("click",this.boundMenuScore);this.menuBack.addEventListener("click",this.boundMenuBack);this.soundBtn.addEventListener("click",this.boundSound);this.scoreClose.addEventListener("click",this.boundScoreClose);
  document.addEventListener("keydown",this.boundKey);document.addEventListener("keyup",this.boundKeyUp);
  document.addEventListener("visibilitychange",this.boundVisibility);
  this.pauseBtn.addEventListener("click",this.boundPause);
@@ -102,7 +103,7 @@ function RushGame(root){
 RushGame.prototype.destroy=function(){
  cancelAnimationFrame(this.raf);
  clearTimeout(this.toastTimer);
- this.stage.removeEventListener("pointerdown",this.boundPointer);this.stage.removeEventListener("pointerup",this.boundPointerUp);this.stage.removeEventListener("pointercancel",this.boundPointerUp);this.menuPlay.removeEventListener("click",this.boundMenuPlay);this.menuScore.removeEventListener("click",this.boundMenuScore);this.menuBack.removeEventListener("click",this.boundMenuBack);this.soundBtn.removeEventListener("click",this.boundSound);this.scoreClose.removeEventListener("click",this.boundScoreClose);this.audio.destroy();
+ this.stage.removeEventListener("pointerdown",this.boundPointer);this.stage.removeEventListener("pointerup",this.boundPointerUp);this.stage.removeEventListener("pointercancel",this.boundPointerUp);this.exitGames.removeEventListener("click",this.boundExitGames);this.menuPlay.removeEventListener("click",this.boundMenuPlay);this.menuScore.removeEventListener("click",this.boundMenuScore);this.menuBack.removeEventListener("click",this.boundMenuBack);this.soundBtn.removeEventListener("click",this.boundSound);this.scoreClose.removeEventListener("click",this.boundScoreClose);this.audio.destroy();
  document.removeEventListener("keydown",this.boundKey);document.removeEventListener("keyup",this.boundKeyUp);
  document.removeEventListener("visibilitychange",this.boundVisibility);
  this.pauseBtn.removeEventListener("click",this.boundPause);
@@ -126,6 +127,7 @@ RushGame.prototype.resetState=function(){
  this.updateHud();
 };
 RushGame.prototype.restart=function(){this.audio.menu();this.start(false)};
+RushGame.prototype.exitToGames=function(e){if(e)e.stopPropagation();this.audio.menu();window.dispatchEvent(new CustomEvent("nethor:game-exit",{detail:{game:"rush"}}))};
 RushGame.prototype.playFromMenu=function(e){if(e)e.stopPropagation();this.audio.menu();this.menu.hidden=true;this.start(false)};
 RushGame.prototype.backToMenu=function(e){if(e)e.stopPropagation();cancelAnimationFrame(this.raf);this.mode="ready";this.pauseBtn.disabled=true;this.overlay.hidden=true;this.menu.hidden=false;this.closeScores();this.audio.stopMusic();this.audio.menu();this.resetState();this.draw()};
 RushGame.prototype.toggleSound=function(e){if(e)e.stopPropagation();this.soundOn=!this.soundOn;try{localStorage.setItem("rushRayonSound",this.soundOn?"1":"0")}catch(_){}this.updateSoundButton();if(!this.soundOn)this.audio.stopMusic();else if(this.mode==="running")this.audio.startMusic()};
