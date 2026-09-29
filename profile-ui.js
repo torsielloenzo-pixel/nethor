@@ -1167,7 +1167,10 @@ function addStyle(){
  .nettoMobileUserMenu{display:none}
  @media (max-width:900px),(pointer:coarse){
    html.nettoMobileUserMenuOpen body>#nettoDropBackdrop.nettoMobilePortaledBackdrop{display:none!important}
-   html.nettoMobileUserMenuOpen,html.nettoMobileUserMenuOpen body{overflow:hidden!important}
+   /* Le menu plein écran possède son propre scroll. Ne pas verrouiller html/body :
+      sur iOS WebKit ce verrou pouvait laisser le scroller du menu figé après un retour BFCache,
+      une fermeture de clavier ou plusieurs ouvertures successives. */
+   html.nettoMobileUserMenuOpen,html.nettoMobileUserMenuOpen body{overflow:visible!important;overscroll-behavior:auto!important}
    html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"]{color:#ef5a2f}
    html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"] .nettoMobileQuickIcon{background:#fff2ec;transform:translateY(-1px)}
    html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"]:before{
@@ -1180,7 +1183,8 @@ function addStyle(){
      width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;
      margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
      background:#f2f4f7!important;box-shadow:none!important;overflow-y:auto!important;overflow-x:hidden!important;
-     z-index:2147481400!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important
+     z-index:2147481400!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior-y:contain!important;
+     touch-action:pan-y!important;scroll-behavior:auto!important;
    }
    #nettoUserDrop:before{display:none!important}
    #nettoUserDrop .nettoUserDesktopMenu{display:none!important}
@@ -1777,14 +1781,17 @@ function closeDrops(){
  syncMobileQuickBarActive()
 }
 function resetMobileNavigationState(){
- if(!mobileDropMode())return;
+ /* Toujours nettoyer les verrous/classes, même si la taille/orientation a changé pendant
+    que la page était en cache. Cela évite un état mobile bloqué au retour sur iOS. */
  document.documentElement.classList.remove('nettoMobileUserMenuOpen','nettoMobileDropOpen');
+ document.body?.classList.remove('nettoMobileDropOpen');
  closeDrops()
 }
 if(!window.__nettoMobileNavLifecycleBound){
  window.__nettoMobileNavLifecycleBound=true;
  window.addEventListener('pagehide',resetMobileNavigationState,{capture:true});
- window.addEventListener('pageshow',e=>{if(e.persisted)resetMobileNavigationState()},{capture:true})
+ window.addEventListener('pageshow',()=>resetMobileNavigationState(),{capture:true});
+ window.addEventListener('orientationchange',()=>setTimeout(()=>{if(!document.documentElement.classList.contains('nettoMobileUserMenuOpen'))resetMobileNavigationState()},80),{passive:true})
 }
 function loginDate(v){const d=new Date(v);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
 function renderLoginHistory(){
