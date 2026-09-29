@@ -53,6 +53,7 @@ function buildUserMenu(ctx){
 function buildPageLayout(page){
  const id=String(page||'').toLowerCase();
  if(!['home','profile','planning','settings','notification-settings','report-problem','notifications','scanner','articles','accounts'].includes(id))return null;
+ if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'mobile',handlesBack:true,header:'',lead:''};
  const lead=id==='profile'
   ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.backToUserMenu?window.NettoProfileUI.backToUserMenu():location.href=\'home.html?open_user_menu=1\'" aria-label="Retour au menu utilisateur">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
   :'';
