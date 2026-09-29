@@ -1,4 +1,4 @@
-/* Nethor Motion v1 — identité d'animation mobile commune */
+/* Nethor Motion v2 — identité d'animation mobile commune */
 :root{
   --nm-fast:160ms;
   --nm-base:220ms;
@@ -101,7 +101,7 @@
 @keyframes nmTabSelect{45%{transform:translateY(-1px) scale(1.015)}}
 @keyframes nmContentRefresh{from{opacity:.5;transform:translate3d(0,5px,0)}to{opacity:1;transform:none}}
 @keyframes nmContentBump{45%{transform:scale(1.012);filter:saturate(1.04)}}
-@keyframes nmFeedbackPop{from{opacity:.35;transform:translate3d(0,8px,0) scale(.985)}to{opacity:1}}
+@keyframes nmFeedbackPop{from{opacity:.35;filter:brightness(.96)}to{opacity:1;filter:none}}
 @keyframes nmToastIn{from{opacity:0;transform:translate3d(0,-12px,0) scale(.97)}to{opacity:1;transform:none}}
 @keyframes nmToastOut{to{opacity:0;transform:translate3d(0,-7px,0)}}
 
