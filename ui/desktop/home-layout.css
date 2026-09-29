@@ -1,0 +1,7 @@
+/* Phase 4.4 — structure Accueil Desktop. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopLayout{
+ width:100%;min-width:0
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopDashboard{
+ display:block;width:100%;max-width:100%;margin:0 0 24px
+}
