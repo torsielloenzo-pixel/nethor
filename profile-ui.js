@@ -438,40 +438,14 @@ function samePageDestination(url){
   return current===target
  }catch(_){return false}
 }
-const USER_MENU_PARENT_KEY='nettoUserMenuParentV1';
-function cleanUserMenuParent(raw=location.href){
- try{
-  const u=new URL(raw,location.href);
-  if(u.origin!==location.origin)return 'home.html';
-  u.searchParams.delete('open_user_menu');
-  u.searchParams.delete('from_user_menu');
-  const file=u.pathname.split('/').pop()||'home.html';
-  return file+u.search+u.hash
- }catch(_){return 'home.html'}
-}
 function rememberUserMenuParent(){
- try{sessionStorage.setItem(USER_MENU_PARENT_KEY,cleanUserMenuParent(location.href))}catch(_){}
+ return window.NethorNavigation?.rememberUserMenuParent?.()||'home.html'
 }
 function userMenuChildUrl(raw){
- try{
-  const u=new URL(raw||'home.html',location.href);
-  if(u.origin!==location.origin)return raw||'home.html';
-  u.searchParams.set('from_user_menu','1');
-  return (u.pathname.split('/').pop()||'home.html')+u.search+u.hash
- }catch(_){return raw||'home.html'}
+ return window.NethorNavigation?.userMenuChildUrl?.(raw)||raw||'home.html'
 }
 function userMenuReturnUrl(){
- const fromMenu=new URLSearchParams(location.search).get('from_user_menu')==='1';
- let parent='home.html';
- if(fromMenu){
-  try{parent=cleanUserMenuParent(sessionStorage.getItem(USER_MENU_PARENT_KEY)||'home.html')}catch(_){}
- }
- try{
-  const u=new URL(parent,location.href);
-  u.searchParams.delete('from_user_menu');
-  u.searchParams.set('open_user_menu','1');
-  return (u.pathname.split('/').pop()||'home.html')+u.search+u.hash
- }catch(_){return 'home.html?open_user_menu=1'}
+ return window.NethorNavigation?.userMenuReturnUrl?.()||'home.html?open_user_menu=1'
 }
 function tryOpenRequestedUserMenu(){
  if(new URLSearchParams(location.search).get('open_user_menu')!=='1'||!mobileDropMode())return false;
@@ -490,7 +464,7 @@ function tryOpenRequestedUserMenu(){
 }
 function backToUserMenu(){
  sounds.play('navigate');
- location.href=mobileDropMode()?userMenuReturnUrl():'home.html'
+ location.href=window.NethorNavigation?.backTarget?.()||(mobileDropMode()?userMenuReturnUrl():'home.html')
 }
 function mobileBarActive(module){
  try{
@@ -2242,28 +2216,9 @@ function enforceLegacyAccessUI(root=document){
  return true
 }
 function updateKnownUI(){const p=api.profile;if(!p)return;const name=p.display_name||'Utilisateur',role=roleLabel(p.role);['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});['userAvatar','userMenuAvatar'].forEach(id=>paint(document.getElementById(id),api.avatarUrl,name,p.profile_color,p.avatar_frame));enforceLegacyAccessUI();buildGlobalHeader();renderMobileQuickBar()}
-function pageFile(){return (location.pathname.split('/').pop()||'home.html').toLowerCase()}
-const PAGE_PARENT_ROUTES=Object.freeze({
- 'profile.html':'home.html',
- 'settings.html':'home.html',
- 'notification-settings.html':'home.html',
- 'notifications.html':'home.html',
- 'index.html':'home.html',
- 'planning.html':'home.html',
- 'chat.html':'home.html',
- 'articles.html':'home.html',
- 'scanner.html':'home.html',
- 'fl-assistant.html':'home.html',
- 'bakery.html':'home.html',
- 'rewards.html':'home.html',
- 'accounts.html':'admin-portal.html',
- 'admin-portal.html':'home.html'
-});
+function pageFile(){return window.NethorNavigation?.pageFile?.()||(location.pathname.split('/').pop()||'home.html').toLowerCase()}
 function backFallback(){
- const p=pageFile();
- const mobile=mobileDropMode();
- if(mobile&&(new URLSearchParams(location.search).get('from_user_menu')==='1'||['profile.html','settings.html','notification-settings.html'].includes(p)))return userMenuReturnUrl();
- return PAGE_PARENT_ROUTES[p]||'home.html'
+ return window.NethorNavigation?.backTarget?.(pageFile())||'home.html'
 }
 function goBack(){
  sounds.play('navigate');
