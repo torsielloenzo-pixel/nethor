@@ -382,11 +382,13 @@ function mobileBarItems(config=api?.siteConfig){
   out.push({id,enabled:item?.enabled!==false,label:String(item?.label||'').trim().slice(0,18)});
   if(out.length>=5)break;
  }
- const notifications={id:'notifications',enabled:true,label:''};
- const chatIndex=out.findIndex(x=>x.id==='chat'),profileIndex=out.findIndex(x=>x.id==='profile');
- if(chatIndex>=0)out.splice(chatIndex+1,0,notifications);
- else if(profileIndex>=0)out.splice(profileIndex,0,notifications);
- else out.push(notifications);
+ if(!out.some(x=>x.id==='notifications')){
+  const notifications={id:'notifications',enabled:true,label:''};
+  const chatIndex=out.findIndex(x=>x.id==='chat'),profileIndex=out.findIndex(x=>x.id==='profile');
+  if(chatIndex>=0)out.splice(chatIndex+1,0,notifications);
+  else if(profileIndex>=0)out.splice(profileIndex,0,notifications);
+  else out.push(notifications)
+ }
  return out.slice(0,6)
 }
 function samePageDestination(url){
