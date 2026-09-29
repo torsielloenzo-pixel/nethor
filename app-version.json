@@ -1,10 +1,10 @@
 {
-  "version": 207,
-  "label": "v1.20.2",
+  "version": 208,
+  "label": "v1.20.3",
   "important": false,
   "mode": "auto",
-  "title": "QA · formulaires et imports",
-  "message": "Prévention des doubles soumissions, verrouillage des imports simultanés et validation explicite des fichiers de l’Assistant Précommande.",
-  "published_at": "2026-09-29T16:05:00+02:00",
+  "title": "Planning mobile · ordre des blocs",
+  "message": "Le bloc Indisponibilités / Congés est désormais placé en bas du planning sur mobile, sans modifier son emplacement desktop.",
+  "published_at": "2026-09-29T17:19:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
