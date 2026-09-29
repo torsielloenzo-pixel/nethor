@@ -1,11 +1,11 @@
 {
-  "version": 222,
-  "label": "v1.28.0",
+  "version": 223,
+  "label": "v1.29.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.5 — Profil & Menu utilisateur",
-  "message": "Mon profil possède désormais des structures Desktop et Mobile distinctes. Le Profil Mobile n’est plus fabriqué par media query, les règles mobiles ont quitté profile.html, le faux header technique Mobile a été supprimé et les outils globaux se montent dans un hôte explicite du shell. Les boutons Retour sont désormais gérés par le shell lorsqu’une page les possède déjà.",
-  "published_at": "2026-09-29T23:36:00+02:00",
+  "title": "Phase 4.6 — Réglages & pages utilisateur",
+  "message": "Personnalisation, Réglages des notifications et Signaler un problème possèdent désormais des structures Desktop et Mobile distinctes. Les anciens tops et breakpoints Mobile ont quitté le DOM commun, les styles spécifiques sont isolés par page et par plateforme, et le formulaire de signalement conserve le même moteur de diagnostic avec une présentation Desktop dédiée.",
+  "published_at": "2026-09-29T23:52:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
