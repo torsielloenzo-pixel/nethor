@@ -63,12 +63,12 @@ button{touch-action:manipulation}
    <div class="rpContext"><span>Page concernée</span><b id="sourceLabel">Nethor</b></div>
    <label class="rpLabel" for="problemText"><span>Description du problème</span><span id="problemCount" class="rpCount">0 / 2000</span></label>
    <textarea id="problemText" class="rpText" maxlength="2000" minlength="8" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Ex. Le bouton Semaine ne répond pas quand je l’ouvre…"></textarea>
-   <div class="rpHelp">Évite les mots de passe ou informations confidentielles. Ton compte, la page et le type d’appareil seront ajoutés au signalement.</div>
+   <div class="rpHelp">Évite les mots de passe ou informations confidentielles. Ton compte, la page, la version Nethor, l’appareil, le navigateur, l’affichage et les informations réseau disponibles seront ajoutés automatiquement.</div>
    <button id="sendBtn" class="rpSend" type="button">Envoyer le problème</button>
    <div id="reportState" class="rpState" aria-live="polite"></div>
   </section>
   <section id="successCard" class="rpCard rpSuccess hidden">
-   <div class="rpSuccessBox"><div class="rpSuccessIcon">✓</div><h2>Problème envoyé</h2><p>Le signalement est maintenant disponible pour l’administrateur dans Gestion → Journal → Problèmes rapportés.</p><button id="returnBtn" class="rpReturn" type="button">Retour au menu</button></div>
+   <div class="rpSuccessBox"><div class="rpSuccessIcon">✓</div><h2>Problème envoyé</h2><p>Le signalement est maintenant disponible pour l’administrateur dans Gestion → Problèmes signalés.</p><button id="returnBtn" class="rpReturn" type="button">Retour au menu</button></div>
   </section>
  </main>
 </div>
@@ -77,7 +77,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
-let session=null,profile=null,siteConfig={},sending=false;
+let session=null,profile=null,siteConfig={},sending=false,appVersionInfo=null;
 
 function safeSource(){
  const raw=new URLSearchParams(location.search).get('from')||'home.html';
@@ -128,13 +128,176 @@ function returnToMenu(){
 }
 function updateCount(){const n=$('problemText').value.length;$('problemCount').textContent=n+' / 2000'}
 function state(message,type=''){$('reportState').className='rpState'+(type?' '+type:'');$('reportState').textContent=message}
+
+function sameOriginPath(raw){
+ if(!raw)return'';
+ try{const u=new URL(raw,location.href);return u.origin===location.origin?(u.pathname.split('/').pop()||'home.html')+(u.search||''):''}catch(_){return''}
+}
+function displayMode(){
+ try{
+  if(navigator.standalone===true)return'standalone-ios';
+  for(const mode of ['fullscreen','standalone','minimal-ui'])if(matchMedia('(display-mode: '+mode+')').matches)return mode
+ }catch(_){}
+ return'browser'
+}
+function parseBrowser(ua){
+ const s=String(ua||'');let m;
+ if((m=s.match(/Edg\/([\d.]+)/)))return{name:'Microsoft Edge',version:m[1]};
+ if((m=s.match(/OPR\/([\d.]+)/)))return{name:'Opera',version:m[1]};
+ if((m=s.match(/CriOS\/([\d.]+)/)))return{name:'Chrome iOS',version:m[1]};
+ if((m=s.match(/FxiOS\/([\d.]+)/)))return{name:'Firefox iOS',version:m[1]};
+ if((m=s.match(/Chrome\/([\d.]+)/)))return{name:'Chrome',version:m[1]};
+ if((m=s.match(/Firefox\/([\d.]+)/)))return{name:'Firefox',version:m[1]};
+ if(/Safari\//.test(s)&&(m=s.match(/Version\/([\d.]+)/)))return{name:'Safari',version:m[1]};
+ return{name:'Navigateur non identifié',version:null}
+}
+function parseOS(ua){
+ const s=String(ua||'');let m;
+ if(/iPhone|iPad|iPod/.test(s)&&(m=s.match(/OS ([\d_]+)/)))return'iOS '+m[1].replace(/_/g,'.');
+ if((m=s.match(/Android ([^;\)]+)/)))return'Android '+m[1].trim();
+ if((m=s.match(/Windows NT ([\d.]+)/)))return'Windows NT '+m[1];
+ if((m=s.match(/Mac OS X ([\d_]+)/)))return'macOS '+m[1].replace(/_/g,'.');
+ if(/Linux/.test(s))return'Linux';
+ return'Non identifié'
+}
+function deviceKind(ua){
+ const s=String(ua||'');
+ if(/iPad|Tablet|Android(?!.*Mobile)/i.test(s))return'Tablette';
+ if(navigator.userAgentData?.mobile===true||/iPhone|iPod|Android.+Mobile|Windows Phone|webOS|BlackBerry|IEMobile/i.test(s))return'Mobile';
+ return'Ordinateur'
+}
+async function readAppVersion(){
+ try{
+  const r=await fetch('app-version.json?diagnostic='+Date.now(),{cache:'no-store'});
+  if(!r.ok)return null;
+  const x=await r.json();
+  return x&&typeof x==='object'?x:null
+ }catch(_){return null}
+}
+async function highEntropyUA(){
+ try{
+  if(!navigator.userAgentData?.getHighEntropyValues)return null;
+  const x=await navigator.userAgentData.getHighEntropyValues(['platform','platformVersion','architecture','bitness','model','uaFullVersion','fullVersionList']);
+  return {
+   mobile:typeof navigator.userAgentData.mobile==='boolean'?navigator.userAgentData.mobile:null,
+   brands:Array.isArray(navigator.userAgentData.brands)?navigator.userAgentData.brands:null,
+   platform:x.platform||navigator.userAgentData.platform||null,
+   platform_version:x.platformVersion||null,
+   architecture:x.architecture||null,
+   bitness:x.bitness||null,
+   model:x.model||null,
+   ua_full_version:x.uaFullVersion||null,
+   full_version_list:Array.isArray(x.fullVersionList)?x.fullVersionList:null
+  }
+ }catch(_){return null}
+}
+async function cacheInfo(){
+ try{
+  if(!window.caches?.keys)return[];
+  return (await caches.keys()).filter(x=>/^netto-tools-v/i.test(String(x))).slice(0,10)
+ }catch(_){return[]}
+}
+async function collectDiagnostics(){
+ const ua=String(navigator.userAgent||''),vv=window.visualViewport||null,conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection||null;
+ const navEntry=performance.getEntriesByType?.('navigation')?.[0]||null;
+ const [uaData,cacheNames]=await Promise.all([highEntropyUA(),cacheInfo()]);
+ const sw=navigator.serviceWorker?.controller||null;
+ let orientationType=null,orientationAngle=null;
+ try{orientationType=screen.orientation?.type||null;orientationAngle=Number.isFinite(screen.orientation?.angle)?screen.orientation.angle:null}catch(_){}
+ let theme=null;try{theme=localStorage.getItem('nettoTheme')||null}catch(_){}
+ const browser=parseBrowser(ua);
+ return {
+  schema_version:1,
+  captured_at:new Date().toISOString(),
+  source:{
+   path:sourcePath,
+   title:sourceTitle(),
+   referrer:sameOriginPath(document.referrer)
+  },
+  app:{
+   version:appVersionInfo?.version??null,
+   label:appVersionInfo?.label||null,
+   published_at:appVersionInfo?.published_at||null,
+   display_mode:displayMode(),
+   standalone:navigator.standalone===true||displayMode().includes('standalone'),
+   service_worker_controlled:!!sw,
+   service_worker_script:sameOriginPath(sw?.scriptURL||''),
+   service_worker_state:sw?.state||null,
+   cache_names:cacheNames,
+   theme
+  },
+  device:{
+   kind:deviceKind(ua),
+   model:uaData?.model||null,
+   os:parseOS(ua),
+   platform:uaData?.platform||navigator.platform||null,
+   platform_version:uaData?.platform_version||null,
+   architecture:uaData?.architecture||null,
+   bitness:uaData?.bitness||null,
+   max_touch_points:Number.isFinite(navigator.maxTouchPoints)?navigator.maxTouchPoints:null,
+   device_memory_gb:Number.isFinite(navigator.deviceMemory)?navigator.deviceMemory:null,
+   logical_processors:Number.isFinite(navigator.hardwareConcurrency)?navigator.hardwareConcurrency:null
+  },
+  browser:{
+   name:browser.name,
+   version:browser.version,
+   vendor:navigator.vendor||null,
+   user_agent:ua,
+   user_agent_data:uaData
+  },
+  display:{
+   screen_width:screen.width||null,
+   screen_height:screen.height||null,
+   available_width:screen.availWidth||null,
+   available_height:screen.availHeight||null,
+   pixel_ratio:window.devicePixelRatio||1,
+   color_depth:screen.colorDepth||null,
+   orientation_type:orientationType,
+   orientation_angle:orientationAngle,
+   viewport_width:window.innerWidth||null,
+   viewport_height:window.innerHeight||null,
+   visual_viewport_width:vv?Math.round(vv.width):null,
+   visual_viewport_height:vv?Math.round(vv.height):null,
+   visual_viewport_scale:vv?vv.scale:null
+  },
+  network:{
+   online:navigator.onLine,
+   effective_type:conn?.effectiveType||null,
+   downlink_mbps:Number.isFinite(conn?.downlink)?conn.downlink:null,
+   rtt_ms:Number.isFinite(conn?.rtt)?conn.rtt:null,
+   save_data:typeof conn?.saveData==='boolean'?conn.saveData:null
+  },
+  locale:{
+   language:navigator.language||null,
+   languages:Array.isArray(navigator.languages)?navigator.languages:null,
+   timezone:(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||null}catch(_){return null}})(),
+   utc_offset_minutes:new Date().getTimezoneOffset()
+  },
+  interaction:{
+   pointer_coarse:matchMedia?.('(pointer:coarse)')?.matches??null,
+   hover:matchMedia?.('(hover:hover)')?.matches??null,
+   reduced_motion:matchMedia?.('(prefers-reduced-motion: reduce)')?.matches??null,
+   color_scheme_dark:matchMedia?.('(prefers-color-scheme: dark)')?.matches??null,
+   mobile_preview:new URLSearchParams(location.search).get('mobile_preview')==='1'
+  },
+  navigation:{
+   type:navEntry?.type||null,
+   duration_ms:Number.isFinite(navEntry?.duration)?Math.round(navEntry.duration):null,
+   transfer_size:Number.isFinite(navEntry?.transferSize)?navEntry.transferSize:null,
+   encoded_body_size:Number.isFinite(navEntry?.encodedBodySize)?navEntry.encodedBodySize:null,
+   visibility_state:document.visibilityState||null
+  }
+ }
+}
 async function sendReport(){
  if(sending)return;
  const description=$('problemText').value.trim();
  if(description.length<8){state('Décris un peu plus précisément le problème.','err');$('problemText').focus();return}
- sending=true;$('sendBtn').disabled=true;state('Envoi du signalement…');
+ sending=true;$('sendBtn').disabled=true;state('Collecte du diagnostic et envoi…');
  try{
   if(!session)throw new Error('Session indisponible');
+  const diagnostics=await collectDiagnostics();
+  const appVersion=appVersionInfo?.label||(appVersionInfo?.version!=null?'v'+appVersionInfo.version:null);
   const payload={
    reporter_id:session.user.id,
    reporter_name:profile?.display_name||'Utilisateur',
@@ -142,7 +305,9 @@ async function sendReport(){
    description,
    source_path:sourcePath.slice(0,500),
    source_title:sourceTitle().slice(0,160),
-   user_agent:String(navigator.userAgent||'').slice(0,800)
+   user_agent:String(navigator.userAgent||'').slice(0,800),
+   app_version:appVersion?String(appVersion).slice(0,80):null,
+   diagnostics
   };
   const {error}=await db.from('reported_problems').insert(payload);
   if(error)throw error;
@@ -164,11 +329,12 @@ async function init(){
  const {data:{session:s}}=await db.auth.getSession();
  if(!s){location.replace('home.html');return}
  session=s;
- const [{data},{data:setting}]=await Promise.all([
+ const [{data},{data:setting},versionInfo]=await Promise.all([
   db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle(),
-  db.from('app_settings').select('value').eq('key','site_config').maybeSingle()
+  db.from('app_settings').select('value').eq('key','site_config').maybeSingle(),
+  readAppVersion()
  ]);
- profile=data||null;siteConfig=setting?.value&&typeof setting.value==='object'?setting.value:{};
+ profile=data||null;siteConfig=setting?.value&&typeof setting.value==='object'?setting.value:{};appVersionInfo=versionInfo;
  if(!profile||!problemPageAllowed(profile.role)){location.replace('home.html');return}
  applyProblemPageConfig();
  $('sourceLabel').textContent=sourceTitle()
