@@ -1412,6 +1412,136 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
 @media(max-width:760px){.coverageModeDock,.coverageOverlay{display:none!important}}
 :root[data-theme="dark"] .coverageModeBtn{background:#23272c;border-color:#3c4249;color:#f2f3f4}:root[data-theme="dark"] .coverageModeBtnCopy small{color:#a9b0b8}:root[data-theme="dark"] .coverageOverlay{background:rgba(18,20,23,.56)}:root[data-theme="dark"] .coverageOverlayPanel{background:rgba(30,33,37,.95);border-color:#41464d;box-shadow:0 18px 50px rgba(0,0,0,.34)}:root[data-theme="dark"] .coverageOverlayMetric,:root[data-theme="dark"] .coverageOverlayDetail{background:#25292e;border-color:#3b4148}:root[data-theme="dark"] .coverageOverlaySlots{background:linear-gradient(180deg,#202328,#1b1e22);border-color:#373d44}:root[data-theme="dark"] .coverageOverlaySlot.selected{background:#38251f}:root[data-theme="dark"] .coverageOverlaySlot b,:root[data-theme="dark"] .coverageOverlayDetailTime strong{color:#eef1f4}:root[data-theme="dark"] .coverageOverlaySlot small{background:#272b30;border-color:#464c54;color:#f4f6f8;box-shadow:none}:root[data-theme="dark"] .coverageOverlaySlot.hourMark::after{background:linear-gradient(180deg,rgba(214,220,226,.04),rgba(214,220,226,.20))}:root[data-theme="dark"] .coveragePersonChip{background:#24282d;border-color:#3b4148;color:#eef1f4}
 </style>
+
+<style id="planning-layout-refactor-v2">
+/* Nethor — refonte structurée du planning desktop
+   Hiérarchie : navigation > journée/actions > planning > contrôles > suivi. */
+@media(min-width:761px){
+  header .top{width:min(96vw,1540px)!important;max-width:1540px!important}
+  main#planningApp{width:min(96vw,1540px)!important;max-width:1540px!important;padding:16px 8px 56px!important}
+
+  .planningViewBar{
+    display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;
+    align-items:center!important;gap:18px!important;
+    margin:0 0 10px!important;padding:10px 12px!important;
+    border:1px solid var(--ui-line,#e1e5e9)!important;border-radius:16px!important;
+    background:rgba(255,255,255,.96)!important;box-shadow:0 6px 18px rgba(25,34,45,.055)!important
+  }
+  .desktopPlanningViewGroup{display:flex!important;align-items:center!important;gap:9px!important}
+  .desktopPlanningMenuLabel{
+    font-size:8px!important;font-weight:900!important;letter-spacing:.08em!important;text-transform:uppercase!important;
+    color:#8b929a!important
+  }
+  .viewTabs{margin:0!important;flex:none!important}
+  .viewTab{min-height:38px!important;padding:8px 14px!important;font-size:10px!important}
+  .weekNav{
+    display:grid!important;grid-template-columns:minmax(230px,1fr) 38px auto 38px!important;
+    align-items:center!important;justify-content:end!important;gap:7px!important;width:100%!important
+  }
+  .weekNav .weekLabel{
+    grid-column:1!important;grid-row:1!important;text-align:right!important;margin-right:8px!important;
+    font-size:10.5px!important;line-height:1.25!important;color:#626a73!important
+  }
+  .weekNav>button:nth-of-type(1){grid-column:2!important;grid-row:1!important}
+  .weekNav>button:nth-of-type(2){grid-column:3!important;grid-row:1!important;min-height:38px!important}
+  .weekNav>button:nth-of-type(3){grid-column:4!important;grid-row:1!important}
+  .weekNav .miniNav{width:38px!important;height:38px!important;padding:0!important}
+
+  #planningToolbar{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
+    margin:0 0 14px!important;padding:8px 10px!important;
+    background:#fff!important;border:1px solid #e3e7eb!important;border-radius:15px!important;
+    box-shadow:0 5px 16px rgba(25,34,45,.045)!important
+  }
+  .desktopPlanningDayGroup{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important;flex:1!important}
+  .days{gap:5px!important;padding:0!important}
+  .day{min-height:42px!important;padding:7px 11px!important;border:1px solid #eceff2!important;background:#f5f7f8!important}
+  .day.active{background:#20252a!important;border-color:#20252a!important;color:#fff!important}
+  .weekTotalChip{height:42px!important;min-width:54px!important}
+  #planningActions{margin-left:auto!important;flex:none!important}
+  #planningActions #saveState{padding:6px 8px!important;border-radius:9px!important;background:#f5f6f8!important;font-size:8.5px!important}
+
+  .readerHead{
+    align-items:center!important;margin:2px 2px 10px!important;padding:0!important
+  }
+  .dateTitle{font-size:24px!important;line-height:1.08!important;letter-spacing:-.55px!important}
+  .readerMeta{font-size:9.5px!important;margin-top:4px!important;color:#7d858e!important}
+  .sourceActions{gap:7px!important}
+  .sourceActions .compactImport{min-width:0!important}
+  .sourceActions .excelDrop{min-height:39px!important;padding:6px 9px!important}
+  .sourceActions .excelIcon{width:27px!important;height:27px!important}
+  .sourceActions .excelDrop strong{font-size:9px!important}
+  .sourceActions .excelDrop small{display:none!important}
+  .sourceActions #editPlanningBtn{min-height:39px!important;padding:8px 13px!important;font-size:10px!important}
+
+  .planningWorkspaceTabs{
+    display:flex!important;align-items:center!important;gap:5px!important;margin:0 0 10px!important
+  }
+  .planningWorkspaceTab{
+    min-height:37px!important;display:inline-flex!important;align-items:center!important;gap:7px!important;
+    border:1px solid #e1e5e9!important;border-radius:11px!important;background:#fff!important;color:#616a73!important;
+    padding:7px 11px!important;font-size:9.5px!important;font-weight:850!important;cursor:pointer!important
+  }
+  .planningWorkspaceTab:hover{background:#f7f8fa!important;border-color:#d6dce2!important}
+  .planningWorkspaceTab.active{background:linear-gradient(135deg,#fff1ed,#fff7ef)!important;border-color:#f0d4ca!important;color:#de4f31!important}
+  .workspaceTabIcon{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:#f1f3f5;font-size:10px}
+  .planningWorkspaceTab.active .workspaceTabIcon{background:linear-gradient(135deg,#f53627,#f58a22);color:#fff}
+  html:not([data-pw-coverage="1"]) #workspaceCoverageBtn{display:none!important}
+  html:not([data-pw-anomalies="1"]) #workspaceAnalysisBtn{display:none!important}
+
+  /* Le bouton flottant historique de couverture est remplacé par les onglets de contexte. */
+  #coverageModeDock{display:none!important}
+
+  .sheetViewport{border-radius:14px!important;box-shadow:0 9px 26px rgba(25,34,45,.065)!important}
+  .xlsTable thead th{height:39px!important}
+  .xlsTable th,.xlsTable td{height:32px!important}
+  .xlsTable .nameCell,.xlsTable .nameHead{padding-left:9px!important}
+
+  .anomalyHistoryRow{margin:10px 0 0!important}
+  .anomalyHistoryRow .planningInsightCard{border-radius:14px!important}
+  .compactInsightCard>.insightHead{padding:10px 12px!important}
+  .compactInsightCard>.insightHead strong{font-size:10.5px!important}
+  .compactInsightCard>.insightHead small{font-size:8px!important;max-width:900px!important}
+  .anomalyList{max-height:320px!important}
+  .anomalyItem{min-height:58px!important;padding:10px 12px!important}
+  .anomalyItem strong{font-size:11px!important}.anomalyItem span{font-size:9.5px!important;margin-top:3px!important}
+
+  .legend{margin:7px 2px 0!important;gap:10px!important}
+  .legend span{font-size:9px!important}
+
+  .planningSupportGrid{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:12px!important;align-items:start!important;margin-top:12px!important
+  }
+  .planningSupportGrid #planningLogs,.planningSupportGrid .absencesWideRow{margin:0!important;min-width:0!important}
+  .planningSupportGrid #planningLogs,.planningSupportGrid #absencesWidget{height:100%!important}
+  .planningLogs{border-radius:15px!important;padding:12px!important}
+  .planningLogsList{max-height:250px!important}
+  .absencesWideRow #absencesWidget{padding:12px!important;border-radius:15px!important}
+  .absenceList{max-height:250px!important}
+
+  #planningInsights{margin:12px 0 0!important}
+  #planningInsights .planningInsightCard{border-radius:15px!important}
+  .personalStatsGrid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .personalStat.primary{grid-column:auto!important}
+
+  .editSaveBar{margin-top:9px!important}
+}
+@media(min-width:761px) and (max-width:1080px){
+  .planningViewBar{grid-template-columns:1fr!important}
+  .weekNav{grid-template-columns:minmax(160px,1fr) 38px auto 38px!important}
+  .planningSupportGrid{grid-template-columns:1fr!important}
+  .personalStatsGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .personalStat.primary{grid-column:1/-1!important}
+}
+:root[data-theme="dark"] .planningViewBar,
+:root[data-theme="dark"] #planningToolbar{background:#1d2022!important;border-color:#383d42!important}
+:root[data-theme="dark"] .planningWorkspaceTab{background:#22262a!important;border-color:#3b4146!important;color:#c4c9cf!important}
+:root[data-theme="dark"] .planningWorkspaceTab.active{background:#34251f!important;border-color:#56382e!important;color:#f0a083!important}
+:root[data-theme="dark"] .workspaceTabIcon{background:#2d3135!important}
+:root[data-theme="dark"] #planningActions #saveState{background:#282c30!important;color:#b9bec4!important}
+</style>
+
 </head><body><header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button><div><div class="title">Planning équipe</div><div class="sub">Organisation du magasin</div></div></div><div class="navActions"><button class="btn light backBtn" onclick="location.href='home.html'">← Retour</button></div></div></header><main id="planningApp">
   <div class="planningViewBar">
     <div class="desktopPlanningViewGroup"><span class="desktopPlanningMenuLabel">Vue</span><div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div></div>
@@ -1423,18 +1553,13 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
       <div id="planningActions" class="planningActions"><span id="saveState" class="saveState passive">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
     </div>
     <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><div class="sourceActions"><span id="sourceBadge" class="sourceBadge hidden"></span><button id="downloadSourceBtn" class="sourceDownloadBtn hidden" type="button" onclick="downloadPlanningSource()">⇩ Télécharger Excel</button></div></div>
+    <nav class="planningWorkspaceTabs" aria-label="Sections du planning">
+      <button id="workspacePlanningBtn" class="planningWorkspaceTab active" type="button" onclick="setPlanningWorkspaceView('planning')"><span class="workspaceTabIcon">▦</span><span>Planning</span></button>
+      <button id="workspaceCoverageBtn" class="planningWorkspaceTab" type="button" onclick="setPlanningWorkspaceView('coverage')"><span class="workspaceTabIcon">▥</span><span>Couverture</span></button>
+      <button id="workspaceAnalysisBtn" class="planningWorkspaceTab" type="button" onclick="setPlanningWorkspaceView('analysis')"><span class="workspaceTabIcon">⌁</span><span>Analyse</span></button>
+    </nav>
 
-    <section id="planningInsights" class="planningInsights">
 
-      <article id="personalStatsCard" class="planningInsightCard personalStatsCard compactStats">
-        <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePersonalStats()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePersonalStats()}"><div><strong>Mes statistiques</strong><small id="personalStatsSubtitle">Résumé personnel de la semaine affichée.</small></div><div class="personalStatsHeadRight"><span class="insightMetric">Moi</span><span class="personalStatsChevron" aria-hidden="true">⌄</span></div></div>
-        <div id="personalStatsBody" class="personalStatsBody collapsed">
-          <div id="personalStatsGrid" class="personalStatsGrid"></div>
-          <div id="personalStatsFoot" class="personalStatsFoot"></div>
-        </div>
-      </article>
-
-    </section>
     <div id="editTools" class="editTools hidden">
       <strong>Modifier directement le tableau</strong>
       <div class="paintChoices">
@@ -1481,6 +1606,7 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
 
     <div class="legend"><span><i class="sw" style="background:#1FB714"></i>Matin</span><span><i class="sw" style="background:#00ABEA"></i>Après-midi</span></div><div id="editSaveBar" class="editSaveBar hidden"><div class="editSaveBarText"><strong>Modifications du planning</strong><small>Quand tout est correct, enregistre et quitte le mode modification.</small></div><div class="editSaveActions"><button class="btn saveFinishBtn" onclick="saveAndFinishEdit()">✓ Enregistrer et terminer</button><button class="cancelEditBtn" type="button" onclick="cancelPlanningEdit()">Annuler</button></div></div>
 
+<div class="planningSupportGrid">
 <section id="planningLogs" class="planningLogs"><div class="planningLogsHead"><div><strong>Historique du planning</strong><small>Imports et modifications du tableau</small></div><button id="clearPlanningLogs" class="btn light hidden" onclick="clearPlanningLogs()">Effacer les logs</button></div><div id="planningLogsList" class="planningLogsList"><span class="logsEmpty">Aucune activité enregistrée.</span></div></section>
     <div class="absencesWideRow">
       <article id="absencesWidget" class="planningInsightCard">
@@ -1489,6 +1615,19 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
               <div id="absenceList" class="absenceList"></div>
             </article>
     </div>
+</div>
+    <section id="planningInsights" class="planningInsights">
+
+      <article id="personalStatsCard" class="planningInsightCard personalStatsCard compactStats">
+        <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePersonalStats()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePersonalStats()}"><div><strong>Mes statistiques</strong><small id="personalStatsSubtitle">Résumé personnel de la semaine affichée.</small></div><div class="personalStatsHeadRight"><span class="insightMetric">Moi</span><span class="personalStatsChevron" aria-hidden="true">⌄</span></div></div>
+        <div id="personalStatsBody" class="personalStatsBody collapsed">
+          <div id="personalStatsGrid" class="personalStatsGrid"></div>
+          <div id="personalStatsFoot" class="personalStatsFoot"></div>
+        </div>
+      </article>
+
+    </section>
+
   </section>
 
   <div id="absenceRequestModal" class="planningModal hidden" onclick="if(event.target===this)closeAbsenceRequest()">
@@ -1718,9 +1857,34 @@ function setCoverageMode(next){
  document.body.classList.toggle('coverageMode',active);
  if(btn){btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',active?'true':'false');const strong=btn.querySelector('.coverageModeBtnCopy strong');if(strong)strong.textContent=active?'Fermer':'Couverture'}
  if(overlay)overlay.classList.toggle('hidden',!active);
- if(active){renderCoverageOverlay();window.NettoSounds?.play?.('menuOpen')}else if(next===false){window.NettoSounds?.play?.('menuClose')}
+ if(active){renderCoverageOverlay();window.NettoSounds?.play?.('menuOpen');if(typeof syncPlanningWorkspaceTabs==='function')syncPlanningWorkspaceTabs('coverage')}else if(next===false){window.NettoSounds?.play?.('menuClose');if(typeof planningWorkspaceMode!=='undefined'&&planningWorkspaceMode==='coverage'&&typeof syncPlanningWorkspaceTabs==='function')syncPlanningWorkspaceTabs('planning')}
 }
 function toggleCoverageMode(){setCoverageMode(!coverageModeActive)}
+let planningWorkspaceMode='planning';
+function syncPlanningWorkspaceTabs(mode){
+ planningWorkspaceMode=mode||'planning';
+ ['planning','coverage','analysis'].forEach(key=>{
+  const id='workspace'+key.charAt(0).toUpperCase()+key.slice(1)+'Btn';
+  const btn=document.getElementById(id);
+  if(btn){const on=key===planningWorkspaceMode;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',on?'true':'false')}
+ })
+}
+function setPlanningWorkspaceView(mode){
+ if(mode==='coverage'){
+  if(!coverageModeAvailable())return;
+  syncPlanningWorkspaceTabs('coverage');setCoverageMode(true);return
+ }
+ if(coverageModeActive)setCoverageMode(false);
+ syncPlanningWorkspaceTabs(mode==='analysis'?'analysis':'planning');
+ if(mode==='analysis'){
+  const card=document.getElementById('anomalyWidget'),body=document.getElementById('anomalyInsightBody');
+  if(card&&body?.classList.contains('collapsed'))togglePlanningInsight('anomalies');
+  requestAnimationFrame(()=>document.querySelector('.anomalyHistoryRow')?.scrollIntoView({behavior:'smooth',block:'center'}))
+ }else{
+  requestAnimationFrame(()=>document.getElementById('sheetViewport')?.scrollIntoView({behavior:'smooth',block:'nearest'}))
+ }
+}
+
 function coveragePeopleForSlot(day,si){
  const rows=day?.cells||[],employees=model?.employees||[];
  return rows.map((row,ri)=>{const v=row?.[si];if(v!=='g'&&v!=='b')return null;const emp=employees[ri],p=planningProfileFor(emp?.name||''),name=p?.display_name||emp?.name||'Employé';return{name,color:p?.profile_color||'#ff5a2a',shift:v}}).filter(Boolean)
@@ -2435,7 +2599,7 @@ async function init(){
  const initialConfig=(api?.siteConfig&&Object.keys(api.siteConfig).length?api.siteConfig:window.__planningFastContext?.siteConfig)||{};
  await applyPlanningWidgetPermissions(role,initialConfig,planningPermissionLevel);
  updatePlanningRoleActions();
- restorePersonalStatsState();restorePlanningInsightStates();
+ restorePersonalStatsState();restorePlanningInsightStates();syncPlanningWorkspaceTabs('planning');
  const shouldLogs=document.documentElement.dataset.planningLogs==='1';
  await Promise.all([
   loadTeamProfiles(),
