@@ -52,14 +52,15 @@ function buildUserMenu(ctx){
 }
 function buildPageLayout(page){
  const id=String(page||'').toLowerCase();
- if(!['home','profile','planning'].includes(id))return null;
+ if(!['home','profile','planning','settings','notification-settings','report-problem'].includes(id))return null;
  const lead=id==='profile'
   ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.backToUserMenu?window.NettoProfileUI.backToUserMenu():location.href=\'home.html?open_user_menu=1\'" aria-label="Retour au menu utilisateur">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
   :'';
+ const ownChrome=id==='report-problem';
  return {
   platform:'mobile',
-  handlesBack:id==='profile',
-  header:'<div class="nethorMobileUtilityHost" data-nethor-page-chrome="mobile" data-nethor-global-tools-host></div>',
+  handlesBack:['profile','settings','notification-settings','report-problem'].includes(id),
+  header:ownChrome?'':'<div class="nethorMobileUtilityHost" data-nethor-page-chrome="mobile" data-nethor-global-tools-host></div>',
   lead
  }
 }
