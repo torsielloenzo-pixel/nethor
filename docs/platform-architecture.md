@@ -130,3 +130,26 @@ Tester chaque modification d'interface sur :
 - Vision mobile depuis Desktop
 
 Toute régression où un redimensionnement desktop active une fonction mobile doit être considérée comme un bug de plateforme.
+
+## Navigation par plateforme
+
+`platform-navigation.js` est la source de vérité pour les parents de pages.
+
+Il contient deux cartes distinctes :
+
+- `DESKTOP_ROUTES`
+- `MOBILE_ROUTES`
+
+Le shell global ne doit plus maintenir sa propre table de retour.
+
+Exemple :
+
+```text
+profile.html
+Desktop -> home.html
+Mobile  -> user-menu
+```
+
+Les pages autonomes doivent appeler `window.NethorNavigation.backTarget()` ou les helpers dédiés au Menu utilisateur au lieu d'utiliser `history.back()`, `document.referrer` ou une détection par largeur.
+
+La Vision mobile conserve `mobile-preview` dans les URL de navigation pour rester dans le même shell pendant tout le parcours.
