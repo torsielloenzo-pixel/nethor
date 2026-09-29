@@ -1,0 +1,30 @@
+/* Phase 4.6 — pages du Menu utilisateur, Desktop uniquement. */
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout{width:100%;min-width:0}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="settings"] main{
+ width:min(1180px,calc(100% - 48px));margin:0 auto;padding:34px 0 72px
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notification-settings"] main{
+ width:min(1080px,calc(100% - 48px));margin:0 auto;padding:34px 0 72px
+}
+html[data-nethor-page-layout="desktop"] .nsDesktopIntro{display:flex;align-items:end;justify-content:space-between;margin:0 0 22px}
+html[data-nethor-page-layout="desktop"] .nsDesktopIntro h1{margin:3px 0 6px;font-size:38px;line-height:1.05;letter-spacing:-1.1px}
+html[data-nethor-page-layout="desktop"] .nsDesktopIntro p{margin:0;color:var(--ns-muted);font-size:13px}
+html[data-nethor-page-layout="desktop"] .nsEyebrow{font-size:10px;font-weight:900;letter-spacing:1.3px;color:var(--ns-accent)}
+html[data-nethor-page-layout="desktop"] .ruleRow{grid-template-columns:48px minmax(0,1fr) minmax(260px,360px)}
+html[data-nethor-page-layout="desktop"] .pushPanel{grid-template-columns:minmax(0,1fr) auto}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] body{position:static;overflow:auto}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopShell{
+ width:min(920px,calc(100% - 48px));height:auto;min-height:100dvh;margin:0 auto;padding:38px 0 56px;display:block;overflow:visible
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop{
+ display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 4px 18px
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop .rpTopTitle{text-align:left}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop .rpTopTitle strong{font-size:26px}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop .rpTopTitle small{font-size:10px}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpMain{display:block;overflow:visible}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpCard{
+ width:min(100%,760px);height:auto;min-height:0;margin:0 auto;padding:24px;border-radius:24px
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpText{min-height:180px}
