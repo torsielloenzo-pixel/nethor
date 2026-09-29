@@ -206,3 +206,15 @@ Ordre de choix :
 5. détection de plateforme -> `platform-resolver.js`.
 
 Une modification dans `ui/mobile/` ne doit jamais modifier le comportement Desktop sans une modification explicite d'un fichier commun.
+
+
+### Activation des stylesheets de shell
+
+Les deux stylesheets sont référencés avec `media="not all"` et `data-nethor-shell`.
+
+`platform-resolver.js` active ensuite uniquement le stylesheet correspondant à la plateforme résolue :
+
+- Desktop -> `ui/desktop/desktop-shell.css`
+- Mobile / Mobile Preview -> `ui/mobile/mobile-shell.css`
+
+Le stylesheet de l'autre plateforme reste désactivé. Une règle Desktop ne peut donc pas s'appliquer sur Mobile simplement parce qu'un écran est large, et inversement.
