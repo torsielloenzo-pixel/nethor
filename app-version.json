@@ -1,10 +1,10 @@
 {
-  "version": 193,
-  "label": "v1.93",
+  "version": 194,
+  "label": "v1.94",
   "important": true,
   "mode": "manual",
-  "title": "Correctif de stabilité Nethor",
-  "message": "Harmonisation de l’interface, du responsive mobile/desktop et des couches d’affichage.",
-  "published_at": "2026-09-29T10:02:00Z",
+  "title": "Correctif d’affichage Nethor",
+  "message": "Stabilisation globale des pages mobile et desktop : débordements, superpositions, menus, modales et zones fixes.",
+  "published_at": "2026-09-29T10:38:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
