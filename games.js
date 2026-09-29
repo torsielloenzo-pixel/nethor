@@ -2,6 +2,7 @@
 const URL='https://gioxrpaiwogqqtakjpnv.supabase.co',KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const overlay=document.getElementById('gameOverlay'),host=document.getElementById('gameHost'),title=document.getElementById('gameName');
 function closeGame(){
+ overlay.removeAttribute('data-game');
  window.RushRayon?.unmount?.();window.CaisseRush?.unmount?.();
  host.replaceChildren();overlay.classList.add('hidden');overlay.setAttribute('aria-hidden','true');
  if(location.search)history.replaceState({},'','games.html');
@@ -10,7 +11,7 @@ function openGame(kind,push=true){
  const api=kind==='rush'?window.RushRayon:window.CaisseRush;
  if(!api?.mount){host.innerHTML='<div style="padding:24px;text-align:center">Le jeu n’a pas pu être chargé.<br><button type="button" onclick="location.reload()" style="margin-top:14px;padding:10px 16px">Recharger</button></div>';overlay.classList.remove('hidden');return}
  window.RushRayon?.unmount?.();window.CaisseRush?.unmount?.();host.replaceChildren();
- title.textContent=kind==='rush'?'Rush Rayon':'Caisse Rush';overlay.classList.remove('hidden');overlay.setAttribute('aria-hidden','false');
+ title.textContent=kind==='rush'?'Rush Rayon':'Caisse Rush';overlay.dataset.game=kind;overlay.classList.remove('hidden');overlay.setAttribute('aria-hidden','false');
  api.mount('gameHost');
  if(push)history.pushState({game:kind},'','games.html?game='+encodeURIComponent(kind));
 }
