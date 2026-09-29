@@ -1,11 +1,11 @@
 {
-  "version": 223,
-  "label": "v1.29.0",
+  "version": 224,
+  "label": "v1.30.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.6 — Réglages & pages utilisateur",
-  "message": "Personnalisation, Réglages des notifications et Signaler un problème possèdent désormais des structures Desktop et Mobile distinctes. Les anciens tops et breakpoints Mobile ont quitté le DOM commun, les styles spécifiques sont isolés par page et par plateforme, et le formulaire de signalement conserve le même moteur de diagnostic avec une présentation Desktop dédiée.",
-  "published_at": "2026-09-29T23:52:00+02:00",
+  "title": "Phase 4.7 — Notifications & Scanner",
+  "message": "Le centre de notifications et le Scanner utilisent désormais des structures Desktop et Mobile distinctes. Les notifications ne cachent plus un header Desktop via breakpoint Mobile. Le Scanner ne monte plus la caméra, le lecteur EAN ou la recherche manuelle dans le DOM Desktop ; ces éléments existent uniquement sur la plateforme Mobile résolue.",
+  "published_at": "2026-09-30T00:02:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
