@@ -965,3 +965,101 @@ La phase ne duplique pas :
 - communication iframe vers Gestion.
 
 Les mêmes IDs fonctionnels sont présents dans les layouts Desktop, Mobile et embarqué.
+
+
+## Phase 4.10 — Gestion Desktop / Mobile
+
+`admin-portal.html` rejoint l’architecture de plateforme séparée.
+
+### Structures dédiées
+
+```text
+ui/
+├── desktop/
+│   ├── admin-portal-layout.js
+│   └── admin-portal-layout.css
+└── mobile/
+    ├── admin-portal-layout.js
+    └── admin-portal-layout.css
+```
+
+Le HTML commun expose désormais uniquement :
+
+```html
+<div data-nethor-admin-portal-layout></div>
+```
+
+`platform-page-layout.js` v9 choisit ensuite le builder Gestion correspondant à la plateforme résolue.
+
+### Gestion Desktop
+
+Desktop construit son propre chrome :
+
+- logo Nethor ;
+- titre Gestion ;
+- recherche globale `managementSearchInput` ;
+- outils globaux ;
+- bouton Enregistrer ;
+- hero dynamique ;
+- navigation hiérarchique latérale ;
+- workspace Gestion.
+
+Le bloc historique `@media(min-width:901px)` n’est plus utilisé pour activer cette présentation. Son contenu appartient maintenant à `ui/desktop/admin-portal-layout.css`.
+
+### Gestion Mobile
+
+Mobile construit un top indépendant :
+
+- bouton Retour ;
+- titre Gestion ;
+- bouton Enregistrer ;
+- hôte technique des outils globaux hors du top visible.
+
+La recherche globale Desktop n’est volontairement pas créée sur Mobile, conformément au comportement antérieur où elle était masquée.
+
+La structure Mobile du builder et de la navigation est explicitement définie dans la feuille Mobile et ne dépend plus d’une largeur maximale de 900 px. Une tablette ou un aperçu Mobile large reste donc Mobile.
+
+### Fin du sélecteur de plateforme par CSS
+
+Les anciens blocs :
+
+```css
+@media(min-width:901px) { ... }
+@media(max-width:900px) { ... management-mobile-v166 ... }
+```
+
+ont quitté le CSS commun.
+
+Le bloc Desktop est désormais statique dans la feuille Desktop.
+
+Le bloc Mobile est désormais statique dans la feuille Mobile.
+
+Le raffinement Desktop entre 901 et 1100 px est conservé comme simple responsive interne Desktop via `@media(max-width:1100px)`.
+
+Les autres breakpoints internes aux éditeurs restent partagés lorsqu’ils ne servent qu’à compacter des formulaires, tables ou widgets et ne choisissent pas la plateforme.
+
+### Moteur métier inchangé
+
+La phase ne duplique pas les modules Gestion :
+
+- Tableau de bord ;
+- Comptes et iframe `accounts.html?embedded=1` ;
+- Rôles et activité ;
+- Fiches articles ;
+- Identité et apparence ;
+- Pages et menus ;
+- Navigation Mobile ;
+- Blocs et widgets ;
+- Médias et logos ;
+- Notifications ;
+- Problèmes signalés ;
+- Maintenance ;
+- Journal des modifications.
+
+Les mêmes IDs fonctionnels et les mêmes fonctions JavaScript alimentent le layout actif.
+
+### Invariant important
+
+Desktop et Mobile n’existent plus simultanément dans le DOM Gestion.
+
+Réduire une fenêtre Desktop ne peut pas monter la structure Mobile, et élargir une interface Mobile ne peut pas monter le header Desktop.
