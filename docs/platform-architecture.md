@@ -588,3 +588,88 @@ La séparation ne duplique pas :
 - logique mot de passe ;
 - notifications ;
 - préférences de thème.
+
+
+## Phase 4.6 — Réglages et pages enfants du Menu utilisateur
+
+La séparation Desktop / Mobile s’étend aux pages ouvertes depuis le Menu utilisateur :
+
+- `settings.html` — Personnalisation ;
+- `notification-settings.html` — Réglages des notifications ;
+- `report-problem.html` — Signaler un problème.
+
+### Builders dédiés par plateforme
+
+```text
+ui/
+├── desktop/
+│   ├── user-pages-layout.js
+│   └── user-pages-layout.css
+└── mobile/
+    ├── user-pages-layout.js
+    ├── user-pages-layout.css
+    ├── settings-page.css
+    └── notification-settings-page.css
+```
+
+Les trois pages utilisent un point de montage neutre :
+
+```html
+<div data-nethor-user-page-layout></div>
+```
+
+`platform-page-layout.js` v5 appelle uniquement le builder correspondant à la plateforme résolue.
+
+### Personnalisation
+
+Desktop construit son hero `Mon portail`, son badge de rôle et ses panneaux de configuration.
+
+Mobile construit sa propre zone haute avec retour vers le Menu utilisateur, un badge de rôle compact et les mêmes panneaux fonctionnels.
+
+L’ancien `settingsMobileTop` n’est plus présent dans le HTML commun et les règles Mobile historiques de `settings-mobile-layout-v142` sont chargées uniquement sur Mobile.
+
+Le breakpoint historique à 620 px a également quitté le CSS commun.
+
+### Réglages des notifications
+
+Desktop dispose maintenant d’une introduction Desktop et d’une largeur de travail dédiée.
+
+Mobile conserve son en-tête compact avec retour Menu utilisateur.
+
+Le DOM commun ne contient plus simultanément `nsTop` et les cartes de réglages.
+
+Les adaptations petits écrans sont isolées dans `ui/mobile/notification-settings-page.css`.
+
+### Signaler un problème
+
+Le moteur de signalement n’est pas dupliqué :
+
+- même session Supabase ;
+- même collecte de diagnostic ;
+- même payload ;
+- même validation et envoi ;
+- mêmes routes de retour.
+
+Seule la structure d’interface change.
+
+Desktop construit une page centrée avec titre et bouton Annuler dans une barre Desktop, un formulaire plus large et un défilement normal.
+
+Mobile conserve une vue plein écran compacte, avec safe areas et comportement tactile.
+
+Les mesures de `window.innerWidth`, du pointeur et du viewport restent présentes uniquement dans le diagnostic envoyé avec un signalement : elles ne servent pas à choisir la plateforme.
+
+### Navigation
+
+Les shells Desktop et Mobile reconnaissent maintenant :
+
+- `settings` ;
+- `notification-settings` ;
+- `report-problem`.
+
+Personnalisation et Réglages des notifications déclarent leur navigation Retour comme gérée par leur propre structure, ce qui empêche tout bouton Retour concurrent injecté par la couche globale.
+
+### Isolation CSS
+
+Les règles historiques de Settings et Notifications ont été séparées en feuilles propres à chaque page afin qu’aucune règle générique comme `main` ou `.panel` ne puisse affecter le formulaire de signalement.
+
+La logique métier reste partagée et inchangée.
