@@ -34,3 +34,35 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .admi
  .managementAccountsFrame{width:100%;height:calc(100dvh - 170px);min-height:650px;border:1px solid #e1e5ea;border-radius:14px;background:#fff}
  .managementEmbeddedHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.managementEmbeddedHead h2{margin:0;font-size:16px}.managementEmbeddedHead p{margin:2px 0 0;font-size:8px;color:#8b929b}
 
+
+/* Identité structurelle Mobile indépendante de la largeur. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout main{
+ width:calc(100% - 20px);margin:0 auto;padding:18px 0 36px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .builder{
+ grid-template-columns:1fr!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .side{
+ position:sticky;top:58px;display:flex;overflow:auto;gap:7px;z-index:30;border-radius:14px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .side button{
+ min-width:170px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .moduleGrid{
+ grid-template-columns:1fr 1fr
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .moduleGrid .span4{
+ grid-column:1/-1
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .childGrid{
+ grid-template-columns:58px 1fr
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .childGrid .wide{
+ grid-column:1/-1
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout .childGrid>button{
+ grid-column:2
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileUtilityHost{
+ display:none!important
+}
