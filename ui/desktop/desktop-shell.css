@@ -1,0 +1,8 @@
+html[data-nethor-platform="desktop"]{--nethor-shell:"desktop"}
+html[data-nethor-platform="desktop"] .nettoMobileQuickBar,
+html[data-nethor-platform="desktop"] .nettoMobileUserMenu,
+html[data-nethor-platform="desktop"] .profileMobileTop,
+html[data-nethor-platform="desktop"] .settingsMobileTop,
+html[data-nethor-platform="desktop"] .mobileNavBackdrop{display:none!important}
+html[data-nethor-platform="desktop"] .nettoUserDesktopMenu{display:block!important}
+html[data-nethor-platform="desktop"] body.nettoHasMobileBar{padding-bottom:0!important}
