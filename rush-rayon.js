@@ -125,9 +125,16 @@ RushGame.prototype.resetState=function(){
  this.last=0;
  this.updateHud();
 };
-RushGame.prototype.restart=function(){
- this.start(false);
-};
+RushGame.prototype.restart=function(){this.audio.menu();this.start(false)};
+RushGame.prototype.playFromMenu=function(e){if(e)e.stopPropagation();this.audio.menu();this.menu.hidden=true;this.start(false)};
+RushGame.prototype.backToMenu=function(e){if(e)e.stopPropagation();cancelAnimationFrame(this.raf);this.mode="ready";this.pauseBtn.disabled=true;this.overlay.hidden=true;this.menu.hidden=false;this.closeScores();this.audio.stopMusic();this.audio.menu();this.resetState();this.draw()};
+RushGame.prototype.toggleSound=function(e){if(e)e.stopPropagation();this.soundOn=!this.soundOn;try{localStorage.setItem("rushRayonSound",this.soundOn?"1":"0")}catch(_){}this.updateSoundButton();if(!this.soundOn)this.audio.stopMusic();else if(this.mode==="running")this.audio.startMusic()};
+RushGame.prototype.updateSoundButton=function(){this.soundBtn.textContent=(this.soundOn?"🔊":"🔇")+" Son"};
+RushGame.prototype.openScores=function(e){if(e)e.stopPropagation();this.audio.menu();this.scoresPanel.hidden=false;this.loadScores()};
+RushGame.prototype.closeScores=function(e){if(e)e.stopPropagation();this.scoresPanel.hidden=true};
+RushGame.prototype.loadScores=async function(){if(!this.db){this.updateBest();return}try{var r=await this.db.from("rush_rayon_scores").select("user_id,best_score,best_distance,best_articles").order("best_score",{ascending:false}).limit(10);if(r.error)throw r.error;var rows=r.data||[],ids=rows.map(function(x){return x.user_id}),names={};if(ids.length){var pr=await this.db.from("profiles").select("id,display_name").in("id",ids);if(!pr.error)(pr.data||[]).forEach(function(x){names[x.id]=x.display_name||"Joueur"})}var mine=rows.find(function(x){return this.user&&x.user_id===this.user.id}.bind(this));if(mine&&mine.best_score>this.best.score){this.best={score:mine.best_score,distance:mine.best_distance,articles:mine.best_articles};saveBest(this.best)}this.updateBest();this.scoreList.innerHTML=rows.length?rows.map(function(x,i){return '<div class="rushScoreRow"><b>#'+(i+1)+'</b><span>'+String(names[x.user_id]||"Joueur").replace(/[<>]/g,"")+'</span><strong>'+Number(x.best_score).toLocaleString("fr-FR")+'</strong></div>'}).join(""):"<p>Aucun score enregistré.</p>"}catch(_){this.scoreList.innerHTML="<p>Scores indisponibles pour le moment.</p>"}};
+RushGame.prototype.saveScore=async function(score){if(!this.db||!this.user)return;try{var r=await this.db.rpc("submit_rush_rayon_score",{p_score:score,p_distance:Math.floor(this.distance),p_articles:this.articles});if(!r.error)this.loadScores()}catch(_){}};
+
 RushGame.prototype.onStart=function(){
  if(this.mode==="paused"){this.resume();return}
  this.start(false);
@@ -141,12 +148,12 @@ RushGame.prototype.start=function(jumpNow){
  this.pauseBtn.textContent="Ⅱ";
  this.pauseBtn.setAttribute("aria-label","Mettre en pause");
  this.last=performance.now();
- this.showToast("Ouverture · 06:00 — on prépare le magasin !");
+ this.showToast("Ouverture · 06:00 — on prépare le magasin !");this.audio.startMusic();
  if(jumpNow)this.jump();
  this.raf=requestAnimationFrame(this.loop.bind(this));
 };
 RushGame.prototype.pause=function(){
- if(this.mode!=="running")return;
+ if(this.mode!=="running")return;this.player.holding=false;this.audio.stopMusic();
  this.mode="paused";
  cancelAnimationFrame(this.raf);
  this.pauseBtn.textContent="▶";
@@ -159,7 +166,7 @@ RushGame.prototype.resume=function(){
  this.overlay.hidden=true;
  this.pauseBtn.textContent="Ⅱ";
  this.pauseBtn.setAttribute("aria-label","Mettre en pause");
- this.last=performance.now();
+ this.last=performance.now();this.audio.startMusic();
  this.raf=requestAnimationFrame(this.loop.bind(this));
 };
 RushGame.prototype.togglePause=function(e){
