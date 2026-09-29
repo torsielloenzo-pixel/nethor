@@ -75,6 +75,8 @@ function RushGame(root){
  this.itemsEl=q(root,"[data-rush-items]");
  this.distanceEl=q(root,"[data-rush-distance]");
  this.bestEl=q(root,"[data-rush-best]");
+ this.menu=q(root,"[data-rush-menu]");this.menuPlay=q(root,"[data-rush-menu-play]");this.menuScore=q(root,"[data-rush-menu-score]");this.menuBack=q(root,"[data-rush-menu-back]");this.soundBtn=q(root,"[data-rush-sound]");this.scoresPanel=q(root,"[data-rush-scores]");this.scoreList=q(root,"[data-rush-score-list]");this.scoreClose=q(root,"[data-rush-score-close]");
+ this.api=window.NettoProfileUI||null;this.db=this.api&&this.api.client;this.user=this.api&&this.api.session&&this.api.session.user;this.soundOn=true;try{this.soundOn=localStorage.getItem("rushRayonSound")!=="0"}catch(_){};this.audio=new RushAudio(this);
  this.phaseEl=q(root,"[data-rush-phase]");
  this.speedEl=q(root,"[data-rush-speed]");
  this.best=safeBest();
@@ -86,23 +88,22 @@ function RushGame(root){
  this.boundVisibility=this.onVisibility.bind(this);
  this.boundPause=this.togglePause.bind(this);
  this.boundStart=this.onStart.bind(this);
- this.boundRestart=this.restart.bind(this);
- this.stage.addEventListener("pointerdown",this.boundPointer,{passive:false});
- document.addEventListener("keydown",this.boundKey);
+ this.boundRestart=this.restart.bind(this);this.boundPointerUp=this.onPointerUp.bind(this);this.boundKeyUp=this.onKeyUp.bind(this);this.boundMenuPlay=this.playFromMenu.bind(this);this.boundMenuScore=this.openScores.bind(this);this.boundMenuBack=this.backToMenu.bind(this);this.boundSound=this.toggleSound.bind(this);this.boundScoreClose=this.closeScores.bind(this);
+ this.stage.addEventListener("pointerdown",this.boundPointer,{passive:false});this.stage.addEventListener("pointerup",this.boundPointerUp,{passive:false});this.stage.addEventListener("pointercancel",this.boundPointerUp,{passive:false});this.menuPlay.addEventListener("click",this.boundMenuPlay);this.menuScore.addEventListener("click",this.boundMenuScore);this.menuBack.addEventListener("click",this.boundMenuBack);this.soundBtn.addEventListener("click",this.boundSound);this.scoreClose.addEventListener("click",this.boundScoreClose);
+ document.addEventListener("keydown",this.boundKey);document.addEventListener("keyup",this.boundKeyUp);
  document.addEventListener("visibilitychange",this.boundVisibility);
  this.pauseBtn.addEventListener("click",this.boundPause);
  this.startBtn.addEventListener("click",this.boundStart);
  this.restartBtn.addEventListener("click",this.boundRestart);
- this.resetState();
- this.updateBest();
+ this.resetState();this.updateSoundButton();this.loadScores();this.updateBest();
  this.updateHud();
  this.draw();
 }
 RushGame.prototype.destroy=function(){
  cancelAnimationFrame(this.raf);
  clearTimeout(this.toastTimer);
- this.stage.removeEventListener("pointerdown",this.boundPointer);
- document.removeEventListener("keydown",this.boundKey);
+ this.stage.removeEventListener("pointerdown",this.boundPointer);this.stage.removeEventListener("pointerup",this.boundPointerUp);this.stage.removeEventListener("pointercancel",this.boundPointerUp);this.menuPlay.removeEventListener("click",this.boundMenuPlay);this.menuScore.removeEventListener("click",this.boundMenuScore);this.menuBack.removeEventListener("click",this.boundMenuBack);this.soundBtn.removeEventListener("click",this.boundSound);this.scoreClose.removeEventListener("click",this.boundScoreClose);this.audio.destroy();
+ document.removeEventListener("keydown",this.boundKey);document.removeEventListener("keyup",this.boundKeyUp);
  document.removeEventListener("visibilitychange",this.boundVisibility);
  this.pauseBtn.removeEventListener("click",this.boundPause);
  this.startBtn.removeEventListener("click",this.boundStart);
@@ -120,7 +121,7 @@ RushGame.prototype.resetState=function(){
  this.phaseKey="";
  this.obstacles=[];
  this.collectibles=[];
- this.player={x:132,y:GROUND-118,w:74,h:118,vy:0,grounded:true};
+ this.player={x:132,y:GROUND-128,w:80,h:128,vy:0,grounded:true,holding:false,holdTime:0,landSquash:0};
  this.last=0;
  this.updateHud();
 };
