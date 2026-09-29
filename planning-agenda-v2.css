@@ -1,3 +1,4 @@
+/* Planning Agenda v15 — base commune. Les variantes de plateforme sont sorties en phase 4.3. */
 /* Nethor Planning V2 — Agenda */
 .planningLayoutBar{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.9);box-shadow:0 6px 24px rgba(15,23,42,.05)}
 .planningLayoutIntro{display:flex;align-items:baseline;gap:8px}.planningLayoutIntro span{font-size:12px;color:var(--muted);font-weight:700}.planningLayoutIntro strong{font-size:14px;color:var(--ink)}
@@ -18,19 +19,7 @@ body.agendaLayout #days,body.agendaLayout .readerHead,body.agendaLayout #sheetVi
 .mobileAgendaModeBar,.mobileAgendaDays,.agendaStats{display:none}
 .agendaDayList{display:grid;gap:8px}.agendaDayCard{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #eceef0;background:#fff}.agendaDayCard:last-child{border-bottom:0}.agendaDayPerson{display:flex;align-items:center;gap:10px;min-width:160px}.agendaDayPerson .planningIdentityAvatar{width:38px;height:38px;border-radius:50%;font-size:11px}.agendaDayPerson>strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.agendaDayShifts{margin-left:auto;display:grid;gap:6px;min-width:240px}.agendaDayShift{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px}.agendaDayShift[data-color="g"]{background:#c9f3d8}.agendaDayShift[data-color="b"]{background:#cfe2ff}.agendaDayShift[data-color="w"]{background:#eeeeef}.agendaDayShift strong{display:block;font-size:16px;line-height:1.05}.agendaDayShift small{display:block;margin-top:4px;font-size:11px;font-weight:700;color:#5d6570}.agendaDayShift>span{font-size:24px;color:#59616d}.agendaDayEmpty{padding:34px 18px;text-align:center;color:#7b8189}.agendaDayEmpty strong{display:block;color:#202328;font-size:15px}.agendaDayEmpty span{display:block;margin-top:5px;font-size:12px}
 html[data-theme="dark"] .planningLayoutBar,html[data-theme="dark"] .agendaMount,html[data-theme="dark"] .agendaEmployee,html[data-theme="dark"] .agendaCell,html[data-theme="dark"] .agendaDayCard{background:#1b1d20;border-color:#32363b}html[data-theme="dark"] .planningLayoutSwitch{background:#101214}html[data-theme="dark"] .planningLayoutBtn.active{background:#30343a;color:#fff}html[data-theme="dark"] .agendaCorner,html[data-theme="dark"] .agendaDayHead{background:#23262a;border-color:#34383d}html[data-theme="dark"] .agendaDayHead.today,html[data-theme="dark"] .agendaCell.today{background:#2b231b}html[data-theme="dark"] .agendaWeekTotalHead,html[data-theme="dark"] .agendaWeekTotalCell{background:#24282d;border-color:#3a4047}html[data-theme="dark"] .agendaWeekTotalCell strong{color:#f3f4f6}
-@media(max-width:760px){
- body.mobileAgendaForced #planningLayoutBar{display:none!important}
- body.mobileAgendaForced #weekView>.planningViewBar{margin-bottom:10px}
- body.mobileAgendaForced .agendaView{margin-top:0}
- .mobileAgendaModeBar{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#eceff3;border-radius:14px;margin:0 0 10px}.mobileAgendaModeBtn{min-height:44px;border:0;border-radius:11px;background:transparent;font-weight:850;color:#31343a;font-size:14px}.mobileAgendaModeBtn.active{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;box-shadow:0 5px 14px rgba(255,91,42,.22)}
- .mobileAgendaDays{display:grid;grid-template-columns:36px repeat(7,minmax(44px,1fr)) 36px;gap:5px;align-items:stretch;margin:0 0 12px;overflow-x:auto}.mobileAgendaDay,.agendaDayArrow{border:1px solid #e0e3e7;background:#f2f4f6;border-radius:11px;min-height:52px;font-weight:800}.agendaDayArrow{display:grid;place-items:center;font-size:22px}.mobileAgendaDay{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:5px 3px;min-width:46px}.mobileAgendaDay span{font-size:10px;text-transform:capitalize;color:#69707a}.mobileAgendaDay strong{font-size:15px}.mobileAgendaDay.active{background:#fff4ec;border-color:#ff7a50;color:#e44b19;box-shadow:0 0 0 1px #ff7a5030}.mobileAgendaDay.active span{color:#e44b19}
- .agendaHeader{align-items:flex-start;padding:8px 2px 10px}.agendaHeader .agendaEyebrow{display:none}.agendaHeader h2{font-size:20px;line-height:1.15;margin:0}.agendaHeader p{font-size:11px;line-height:1.35;margin-top:5px}.agendaTodayBtn{display:none}
- .agendaStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}.agendaStat{display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid #e4e7eb;border-radius:13px;background:#fff}.agendaStatIcon{width:28px;height:28px;border-radius:9px;background:#f1f3f5;display:grid;place-items:center;font-size:15px}.agendaStat strong{display:block;font-size:14px}.agendaStat small{display:block;margin-top:2px;font-size:9px;color:#7a8088;font-weight:700}
- .agendaMount{margin:0;border-radius:14px;box-shadow:0 6px 18px rgba(15,23,42,.05);border-color:#dde1e5}
- .agendaDayList{display:block}.agendaDayCard{display:grid;grid-template-columns:minmax(105px,.85fr) minmax(0,1.45fr);gap:10px;padding:10px 9px}.agendaDayPerson{min-width:0;gap:8px}.agendaDayPerson .planningIdentityAvatar{width:34px;height:34px;min-width:34px}.agendaDayPerson>strong{font-size:12px}.agendaDayShifts{min-width:0;width:100%}.agendaDayShift{padding:10px 11px;border-radius:11px}.agendaDayShift strong{font-size:17px;letter-spacing:-.02em}.agendaDayShift small{font-size:10px;margin-top:3px}.agendaDayShift>span{font-size:20px}
- .agendaGrid{grid-template-columns:112px repeat(7,88px);min-width:728px}.agendaCorner,.agendaDayHead{padding:9px 5px}.agendaCorner{font-size:10px}.agendaDayHead strong{font-size:11px}.agendaDayHead span{font-size:10px}.agendaEmployee{min-height:68px;padding:6px 7px;gap:6px}.agendaEmployee .planningIdentityAvatar{width:28px;height:28px;min-width:28px;border-radius:50%}.agendaEmployee .planningIdentityText strong{font-size:10px}.agendaEmployeeTotal{font-size:8px}.agendaCell{min-height:68px;padding:5px}.agendaShift{padding:6px 5px;margin:0;border-radius:9px;text-align:center}.agendaShift strong{font-size:11px;white-space:nowrap}.agendaShift small{font-size:8px}
- html[data-theme="dark"] .mobileAgendaModeBar{background:#101214}html[data-theme="dark"] .mobileAgendaDay,html[data-theme="dark"] .agendaDayArrow,html[data-theme="dark"] .agendaStat{background:#1b1d20;border-color:#34383d;color:#f6f7f8}html[data-theme="dark"] .mobileAgendaDay.active{background:#32241c;border-color:#ff764d}
-}
+
 
 
 /* Planning Agenda v3 — chargement stable et mobile prioritaire */
@@ -47,238 +36,19 @@ html[data-theme="dark"] .planningLayoutBar,html[data-theme="dark"] .agendaMount,
 @keyframes agendaSpin{to{transform:rotate(360deg)}}
 html[data-theme="dark"] .agendaLoading{background:#1b1d20;color:#b8bec6}
 html[data-theme="dark"] .agendaLoading strong{color:#f2f4f6}
-@media(max-width:760px){
- .agendaView{width:100%;min-width:0}
- .agendaHeader{padding:6px 2px 8px}
- .agendaHeader h2{font-size:18px}
- .agendaHeader p{font-size:10px;margin-top:3px}
- .mobileAgendaModeBar{margin-bottom:8px}
- .mobileAgendaModeBtn{min-height:40px;font-size:12px}
- .mobileAgendaDays{
-   grid-template-columns:34px repeat(7,minmax(42px,1fr)) 34px;
-   gap:4px;margin-bottom:9px;padding-bottom:1px
- }
- .mobileAgendaDay,.agendaDayArrow{min-height:48px;border-radius:10px}
- .mobileAgendaDay{min-width:43px}
- .mobileAgendaDay span{font-size:9px}.mobileAgendaDay strong{font-size:14px}
- .agendaStats{gap:6px;margin-bottom:8px}
- .agendaStat{padding:8px 10px;border-radius:11px}
- .agendaStatIcon{width:25px;height:25px;border-radius:8px;font-size:13px}
- .agendaStat strong{font-size:13px}.agendaStat small{font-size:8px}
- .agendaMount{border-radius:13px}
- .agendaDayCard{padding:9px 8px;gap:8px}
- .agendaDayShift{padding:9px 10px}
- .agendaDayShift strong{font-size:15px}
- .agendaDayShift>span{display:none}
- .agendaLoading{min-height:132px;border-radius:13px}
-}
+
 
 
 /* Planning Agenda v4 — priorité à mon horaire et aux collègues croisés */
-@media(max-width:760px){
-  .agendaStats{display:none!important}
-  .agendaDayList.hasCurrentUser .agendaDayCardMe{
-    position:relative;
-    margin:0 0 10px!important;
-    border-bottom:0!important;
-    border:1px solid rgba(255,104,55,.34)!important;
-    border-radius:14px!important;
-    background:#fff!important;
-    box-shadow:0 5px 16px rgba(255,91,42,.08)!important;
-  }
-  .agendaDayList.hasCurrentUser .agendaDayCardMe + .agendaDayCard{
-    border-top:1px solid #e8ebee!important;
-  }
-  .agendaDayCardCoworker{
-    background:#fff!important;
-  }
-  html[data-theme="dark"] .agendaDayList.hasCurrentUser .agendaDayCardMe{
-    background:#202328!important;
-    border-color:rgba(255,119,72,.36)!important;
-    box-shadow:0 6px 18px rgba(0,0,0,.16)!important;
-  }
-  html[data-theme="dark"] .agendaDayCardCoworker{background:#1b1d20!important}
-}
+
 
 
 /* Planning Agenda v5 — mon agenda isolé du planning équipe */
-@media(max-width:760px){
-  .agendaMount{
-    background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-    overflow:visible!important;
-  }
-  .agendaDayList.agendaSeparated{
-    display:block!important;
-    background:transparent!important;
-  }
-  .agendaPersonalBlock,
-  .agendaGlobalBlock{
-    display:block;
-    overflow:hidden;
-    background:#fff;
-    border:1px solid #dde1e5;
-    border-radius:14px;
-    box-shadow:0 4px 14px rgba(15,23,42,.045);
-  }
-  .agendaDayList.hasCurrentUser .agendaPersonalBlock .agendaDayCardMe{
-    margin:0!important;
-    border:0!important;
-    border-radius:0!important;
-    box-shadow:none!important;
-    background:#fff!important;
-  }
-  .agendaSectionGap{
-    display:block;
-    height:14px;
-    margin:0;
-    background:#f0f2f5;
-  }
-  .agendaGlobalBlock .agendaDayCard{
-    border-radius:0!important;
-    margin:0!important;
-  }
-  .agendaGlobalBlock .agendaDayCard:last-child{
-    border-bottom:0!important;
-  }
-  html[data-theme="dark"] .agendaPersonalBlock,
-  html[data-theme="dark"] .agendaGlobalBlock{
-    background:#1b1d20;
-    border-color:#32363b;
-    box-shadow:0 4px 14px rgba(0,0,0,.14);
-  }
-  html[data-theme="dark"] .agendaPersonalBlock .agendaDayCardMe{
-    background:#202328!important;
-  }
-  html[data-theme="dark"] .agendaSectionGap{
-    background:#141619;
-  }
-}
+
 
 
 /* Planning Agenda v7 — desktop ultra compact */
-@media(min-width:761px){
-  body.agendaLayout .agendaView{margin-top:0}
-  body.agendaLayout .agendaHeader{
-    min-height:0;
-    padding:5px 2px 7px;
-    gap:9px;
-    align-items:center
-  }
-  body.agendaLayout .agendaEyebrow{display:none}
-  body.agendaLayout .agendaHeader h2{
-    margin:0;
-    font-size:17px;
-    line-height:1.05
-  }
-  body.agendaLayout .agendaHeader p{
-    margin-top:2px;
-    font-size:9.5px;
-    line-height:1.2
-  }
-  body.agendaLayout .agendaTodayBtn{
-    min-height:30px;
-    padding:6px 9px;
-    border-radius:8px;
-    font-size:10px
-  }
-  body.agendaLayout .agendaMount{
-    border-radius:12px;
-    box-shadow:0 5px 18px rgba(15,23,42,.045)
-  }
-  body.agendaLayout .agendaGrid{
-    grid-template-columns:minmax(138px,168px) repeat(7,minmax(102px,1fr)) minmax(78px,92px);
-    min-width:1030px
-  }
-  body.agendaLayout .agendaWeekTotalHead{
-    min-height:0;
-    padding:5px 4px
-  }
-  body.agendaLayout .agendaWeekTotalHead strong{
-    font-size:10.5px;
-    line-height:1.05
-  }
-  body.agendaLayout .agendaWeekTotalHead span{
-    margin-top:1px;
-    font-size:8px;
-    line-height:1
-  }
-  body.agendaLayout .agendaWeekTotalCell{
-    min-height:52px;
-    padding:4px
-  }
-  body.agendaLayout .agendaWeekTotalCell strong{
-    font-size:11px;
-    line-height:1
-  }
-  body.agendaLayout .agendaWeekTotalCell span{
-    margin-top:2px;
-    font-size:7.5px;
-    line-height:1
-  }
-  body.agendaLayout .agendaCorner,
-  body.agendaLayout .agendaDayHead{
-    padding:5px 5px
-  }
-  body.agendaLayout .agendaCorner{font-size:9.5px}
-  body.agendaLayout .agendaDayHead strong{
-    font-size:10.5px;
-    line-height:1.05
-  }
-  body.agendaLayout .agendaDayHead span{
-    margin-top:1px;
-    font-size:8.5px;
-    line-height:1
-  }
-  body.agendaLayout .agendaEmployee{
-    min-height:52px;
-    gap:5px;
-    padding:5px 6px
-  }
-  body.agendaLayout .agendaEmployee .planningIdentityAvatar{
-    width:26px;
-    height:26px;
-    min-width:26px;
-    font-size:8px
-  }
-  body.agendaLayout .agendaEmployee .planningIdentityText strong{
-    font-size:9.5px;
-    line-height:1.05
-  }
-  body.agendaLayout .agendaEmployee .planningIdentityText small{
-    margin-top:1px;
-    font-size:7.5px;
-    line-height:1
-  }
-  body.agendaLayout .agendaEmployeeTotal{
-    margin-top:1px;
-    font-size:8px;
-    line-height:1
-  }
-  body.agendaLayout .agendaCell{
-    min-height:52px;
-    padding:3px
-  }
-  body.agendaLayout .agendaShift{
-    gap:1px;
-    margin-bottom:2px;
-    padding:4px 5px;
-    border-radius:7px;
-    box-shadow:none;
-    font-size:9.5px;
-    line-height:1.05
-  }
-  body.agendaLayout .agendaShift:last-child{margin-bottom:0}
-  body.agendaLayout .agendaShift strong{
-    font-size:10.5px;
-    line-height:1
-  }
-  body.agendaLayout .agendaShift small{
-    font-size:7.5px;
-    line-height:1
-  }
-}
+
 
 
 /* Vue Agenda : lecture uniquement, actions d'import/modification masquées */
@@ -343,22 +113,7 @@ html[data-theme="dark"] .agendaCell.activeDay.today{background:#30251f}
   color:#956552;
   font-weight:700
 }
-@media(max-width:760px){
-  .agendaPersonalBlock.agendaRestFocusBlock{
-    border-color:#ff9a72!important;
-    box-shadow:0 0 0 2px rgba(255,101,47,.12),0 7px 20px rgba(255,91,42,.10)!important
-  }
-  .agendaDayCardRest{
-    background:#fffaf7!important
-  }
-  .agendaDayCardRest .agendaDayPerson strong{
-    color:#b8421f
-  }
-  .agendaRestState{
-    min-height:48px;
-    border-radius:10px
-  }
-}
+
 html[data-theme="dark"] .agendaRestState{
   background:#34241f;
   border-color:#5d392c;
@@ -382,123 +137,7 @@ html[data-theme="dark"] .agendaDayCardRest{
 /* Planning mobile v10 — hiérarchie Jour / Semaine / Calendrier */
 .mobileAgendaContentTitle{display:none}
 
-@media(max-width:900px){
-  body.agendaLayout .planningViewBar{display:none!important}
-  body.agendaLayout #planningToolbar,
-  body.agendaLayout .readerHead,
-  body.agendaLayout .legend{display:none!important}
-  body.agendaLayout .agendaView{margin-top:0!important}
-  body.agendaLayout .mobilePlanningPrimaryNav{
-    display:grid!important;
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    gap:4px!important;
-    width:100%!important;
-    margin:0 0 10px!important;
-    padding:4px!important;
-    border-radius:14px!important;
-    background:#eceff3!important;
-    box-sizing:border-box!important
-  }
-  body.agendaLayout .mobilePlanningPrimaryNav .mobileAgendaModeBtn{
-    min-width:0!important;
-    min-height:42px!important;
-    padding:0 8px!important;
-    border-radius:11px!important;
-    font-size:12px!important;
-    white-space:nowrap!important
-  }
-  body.agendaLayout .mobilePlanningSelector{
-    display:grid!important;
-    grid-template-columns:42px minmax(0,1fr) 42px!important;
-    align-items:stretch!important;
-    gap:7px!important;
-    width:100%!important;
-    margin:0 0 14px!important;
-    padding:0!important;
-    overflow:visible!important;
-    box-sizing:border-box!important
-  }
-  body.agendaLayout .mobilePlanningSelectorArrow{
-    width:42px!important;
-    min-width:42px!important;
-    min-height:42px!important;
-    height:42px!important;
-    border:1px solid #e1e5e9!important;
-    border-radius:12px!important;
-    background:#fff!important;
-    color:#30343a!important;
-    font-size:22px!important;
-    box-shadow:0 2px 8px rgba(15,23,42,.03)!important
-  }
-  body.agendaLayout .mobilePlanningSelectBtn{
-    min-width:0!important;
-    min-height:42px!important;
-    height:42px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:8px!important;
-    padding:0 12px!important;
-    border:1px solid #e1e5e9!important;
-    border-radius:12px!important;
-    background:#fff!important;
-    color:#252a31!important;
-    font:inherit!important;
-    font-size:11.5px!important;
-    font-weight:800!important;
-    cursor:pointer!important;
-    box-shadow:0 2px 8px rgba(15,23,42,.03)!important
-  }
-  body.agendaLayout .mobilePlanningSelectIcon{
-    font-size:14px!important;
-    color:#535b66!important
-  }
-  body.agendaLayout .mobilePlanningDateInput{
-    position:fixed!important;
-    left:-10000px!important;
-    width:1px!important;
-    height:1px!important;
-    opacity:0!important;
-    pointer-events:none!important
-  }
-  body.agendaLayout .agendaHeader{
-    display:block!important;
-    margin:0!important;
-    padding:0 1px 13px!important
-  }
-  body.agendaLayout .agendaHeader>div{min-width:0!important}
-  body.agendaLayout .agendaHeader h2{
-    margin:0!important;
-    font-size:22px!important;
-    line-height:1.12!important;
-    letter-spacing:-.45px!important
-  }
-  body.agendaLayout .agendaHeader p{
-    margin:5px 0 0!important;
-    font-size:11px!important;
-    line-height:1.35!important;
-    color:#727985!important
-  }
-  body.agendaLayout .agendaTodayBtn{display:none!important}
-  body.agendaLayout .mobileAgendaContentTitle{
-    display:block!important;
-    margin:0 1px 9px!important;
-    font-size:14px!important;
-    line-height:1.1!important;
-    font-weight:900!important;
-    color:#20242a!important
-  }
-  body.agendaLayout .agendaMount{margin:0!important}
-  html[data-theme="dark"] body.agendaLayout .mobilePlanningPrimaryNav{background:#101214!important}
-  html[data-theme="dark"] body.agendaLayout .mobilePlanningSelectorArrow,
-  html[data-theme="dark"] body.agendaLayout .mobilePlanningSelectBtn{
-    background:#202328!important;
-    border-color:#383d44!important;
-    color:#f3f5f7!important
-  }
-  html[data-theme="dark"] body.agendaLayout .mobilePlanningSelectIcon{color:#bbc2ca!important}
-  html[data-theme="dark"] body.agendaLayout .mobileAgendaContentTitle{color:#f3f5f7!important}
-}
+
 html.nethorPhoneDevice body.agendaLayout .planningViewBar{display:none!important}
 html.nethorPhoneDevice body.agendaLayout #planningToolbar,
 html.nethorPhoneDevice body.agendaLayout .readerHead,
@@ -556,86 +195,11 @@ html.nethorPhoneDevice[data-theme="dark"] body.agendaLayout .mobilePlanningSelec
 html.nethorPhoneDevice[data-theme="dark"] body.agendaLayout .mobileAgendaContentTitle{color:#f3f5f7!important}
 
 /* Paysage mobile : même ordre et mêmes éléments, sans seconde navigation. */
-@media(max-width:980px) and (orientation:landscape){
-  html.nethorPhoneDevice body.agendaLayout .agendaView{
-    width:min(760px,100%)!important;
-    margin-left:auto!important;
-    margin-right:auto!important
-  }
-  html.nethorPhoneDevice body.agendaLayout .mobilePlanningPrimaryNav,
-  html.nethorPhoneDevice body.agendaLayout .mobilePlanningSelector,
-  html.nethorPhoneDevice body.agendaLayout .agendaHeader,
-  html.nethorPhoneDevice body.agendaLayout .mobileAgendaContentTitle,
-  html.nethorPhoneDevice body.agendaLayout .agendaMount{
-    max-width:100%!important
-  }
-}
+
 
 
 /* Planning Agenda v11 — colonne active continue sur desktop */
-@media(min-width:761px){
-  body.agendaLayout .agendaDayHead.activeDay{
-    background:#fff1e9!important;
-    border-left:2px solid #ff7447!important;
-    border-right:2px solid #ff7447!important;
-    box-shadow:none!important
-  }
-  body.agendaLayout .agendaCell.activeDay{
-    position:relative!important;
-    background:#fffaf6!important;
-    border-left:2px solid rgba(255,116,71,.62)!important;
-    border-right:2px solid rgba(255,116,71,.62)!important;
-    border-radius:0!important;
-    outline:0!important;
-    box-shadow:none!important
-  }
-  body.agendaLayout .agendaCell.empty.activeDay,
-  body.agendaLayout .agendaCell.activeDay.empty{
-    display:grid!important;
-    place-items:center!important;
-    background:#fffaf6!important;
-    border-left:2px solid rgba(255,116,71,.62)!important;
-    border-right:2px solid rgba(255,116,71,.62)!important;
-    border-top:0!important;
-    border-radius:0!important;
-    outline:0!important;
-    box-shadow:none!important
-  }
-  body.agendaLayout .agendaCell.activeDay.today,
-  body.agendaLayout .agendaCell.empty.activeDay.today{
-    background:#fff7ef!important
-  }
-  body.agendaLayout .agendaGrid > .agendaCell.activeDay:nth-last-child(-n+7){
-    border-bottom:2px solid #ff7447!important
-  }
-  body.agendaLayout .agendaCell.activeDay .agendaWeekDash{
-    color:#d78b70!important
-  }
 
-  html[data-theme="dark"] body.agendaLayout .agendaDayHead.activeDay{
-    background:#36261f!important;
-    border-left-color:#ff8a61!important;
-    border-right-color:#ff8a61!important;
-    box-shadow:none!important
-  }
-  html[data-theme="dark"] body.agendaLayout .agendaCell.activeDay,
-  html[data-theme="dark"] body.agendaLayout .agendaCell.empty.activeDay,
-  html[data-theme="dark"] body.agendaLayout .agendaCell.activeDay.empty{
-    background:#27211e!important;
-    border-left-color:rgba(255,138,97,.68)!important;
-    border-right-color:rgba(255,138,97,.68)!important;
-    border-radius:0!important;
-    outline:0!important;
-    box-shadow:none!important
-  }
-  html[data-theme="dark"] body.agendaLayout .agendaCell.activeDay.today,
-  html[data-theme="dark"] body.agendaLayout .agendaCell.empty.activeDay.today{
-    background:#30251f!important
-  }
-  html[data-theme="dark"] body.agendaLayout .agendaGrid > .agendaCell.activeDay:nth-last-child(-n+7){
-    border-bottom-color:#ff8a61!important
-  }
-}
 
 
 /* Planning mobile Jour v12 — utilisateur toujours visible */
@@ -680,33 +244,7 @@ html[data-theme="dark"] .agendaDayCardRest .agendaDayPerson strong{color:#d2d7dd
 
 
 /* Planning mobile Semaine v13 — défilement horizontal */
-@media(max-width:760px){
-  body.agendaLayout .agendaMount.agendaMountWeekScroll{
-    width:100%!important;
-    max-width:100%!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
-    -webkit-overflow-scrolling:touch!important;
-    overscroll-behavior-x:contain;
-    touch-action:pan-x pan-y;
-    scrollbar-width:none;
-    border:1px solid #dde1e5!important;
-    border-radius:13px!important;
-    background:#fff!important;
-    box-shadow:0 6px 18px rgba(15,23,42,.05)!important
-  }
-  body.agendaLayout .agendaMount.agendaMountWeekScroll::-webkit-scrollbar{
-    display:none
-  }
-  body.agendaLayout .agendaMount.agendaMountWeekScroll .agendaGrid{
-    width:max-content!important;
-    min-width:728px!important
-  }
-  html[data-theme="dark"] body.agendaLayout .agendaMount.agendaMountWeekScroll{
-    background:#1b1d20!important;
-    border-color:#32363b!important
-  }
-}
+
 
 /* Même comportement pour un téléphone en paysage, même au-dessus de 760 px. */
 html.nethorPhoneDevice body.agendaLayout .agendaMount.agendaMountWeekScroll{
@@ -726,21 +264,3 @@ html.nethorPhoneDevice body.agendaLayout .agendaMount.agendaMountWeekScroll::-we
 /* Desktop agenda width parity v1
    L'Agenda reprend exactement la largeur 130 % de la vue Classique.
    La largeur supplémentaire sert notamment à la colonne Total semaine. */
-@media(min-width:1280px){
-  body.agendaLayout #agendaView{
-    position:relative;
-    left:50%;
-    transform:translateX(-50%);
-    width:130%;
-    max-width:none;
-  }
-  body.agendaLayout #agendaMount{
-    width:100%;
-    max-width:none;
-    overflow-x:hidden;
-  }
-  body.agendaLayout .agendaGridDesktop{
-    width:100%;
-    min-width:0;
-  }
-}
