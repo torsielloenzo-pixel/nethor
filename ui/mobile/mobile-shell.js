@@ -59,7 +59,7 @@ function buildPageLayout(page){
  return {
   platform:'mobile',
   handlesBack:id==='profile',
-  header:'<header class="nethorMobileUtilityHost" data-nethor-page-chrome="mobile" aria-hidden="true"><div class="top"></div></header>',
+  header:'<div class="nethorMobileUtilityHost" data-nethor-page-chrome="mobile" data-nethor-global-tools-host></div>',
   lead
  }
 }
