@@ -15,7 +15,7 @@ function openGame(kind,push=true){
  api.mount('gameHost');
  if(push)history.pushState({game:kind},'','games.html?game='+encodeURIComponent(kind));
 }
-document.addEventListener('click',e=>{const b=e.target.closest('[data-game]');if(b){e.preventDefault();openGame(b.dataset.game)}});
+document.addEventListener('click',e=>{const b=e.target.closest('.gameRow[data-game]');if(b){e.preventDefault();openGame(b.dataset.game)}});
 document.getElementById('gameExit')?.addEventListener('click',()=>history.state?.game?history.back():closeGame());
 document.getElementById('back')?.addEventListener('click',()=>location.assign('home.html'));
 addEventListener('popstate',closeGame);
