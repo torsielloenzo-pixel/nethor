@@ -446,7 +446,7 @@ function syncMobileQuickBarActive(preferredId=''){
   const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
   active=items.find(x=>{
    if(current==='notification-settings.html'&&x.dataset.mobileId==='profile')return true;
-   return x.dataset.mobileAction!=='user-menu'&&samePageDestination(x.getAttribute('href')||'home.html')
+   return samePageDestination(x.getAttribute('href')||'home.html')
   })||null
  }
  items.forEach(item=>{
@@ -472,27 +472,27 @@ function renderMobileQuickBar(){
  let nav=old;
  if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
  nav.style.setProperty('--netto-mobile-count',String(items.length));
- nav.innerHTML=items.map(({item,module})=>{const isUserMenu=module.id==='profile',label=isUserMenu?'Menu utilisateur':(item.label||module.label||'Menu'),badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';if(isUserMenu)return '<button type="button" class="nettoMobileQuickItem" data-mobile-id="profile" data-mobile-action="user-menu" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</button>';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
- warmMobileRoutes(items.map(({module})=>module?.id==='profile'?'':(module?.url||'')).filter(Boolean));
+ nav.innerHTML=items.map(({item,module})=>{const label=item.label||module.label||'Menu',badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
+ warmMobileRoutes(items.map(({module})=>module?.url||'').filter(Boolean));
  syncMobileQuickBarActive();
- nav.querySelectorAll('.nettoMobileQuickItem').forEach(a=>{
+ nav.querySelectorAll('a').forEach(a=>{
   const activate=()=>syncMobileQuickBarActive(a.dataset.mobileId||'');
   a.addEventListener('pointerdown',()=>{
    if(mobileDropMode()&&a.dataset.mobileId!=='profile')closeDrops();
    activate()
   },{passive:true});
   a.addEventListener('click',e=>{
-   if(a.dataset.mobileAction==='user-menu'&&mobileDropMode()){
+   if(a.dataset.mobileId==='profile'&&mobileDropMode()){
     e.preventDefault();e.stopPropagation();
     openMobileUserMenu();return
    }
    if(mobileDropMode())closeDrops();
    activate();
-   if(mobileDropMode()&&a.matches('a[href]')&&samePageDestination(a.getAttribute('href'))){
+   if(mobileDropMode()&&samePageDestination(a.getAttribute('href'))){
     e.preventDefault();e.stopPropagation();return
    }
   });
-  if(a.dataset.mobileAction==='user-menu')a.addEventListener('dblclick',e=>{
+  if(a.dataset.mobileId==='profile')a.addEventListener('dblclick',e=>{
    if(!mobileDropMode())return;
    e.preventDefault();e.stopPropagation();
    openMobileUserMenu()
