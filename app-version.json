@@ -1,10 +1,10 @@
 {
-  "version": 202,
+  "version": 203,
   "label": "v1.20.0",
   "important": false,
   "mode": "auto",
-  "title": "Correctif interface Administrateur",
-  "message": "Restauration de la barre administrateur : connexions, aperçu mobile, mise à jour, notifications et profil.",
-  "published_at": "2026-09-29T14:30:00+02:00",
+  "title": "Correctif critique v1.20.0",
+  "message": "Correction du chargement de l’interface globale, des menus Administrateur et des contrôles d’accès aux pages.",
+  "published_at": "2026-09-29T14:48:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
