@@ -91,6 +91,8 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
 
 .journalSubnav{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;margin:0 0 12px;border:1px solid #e1e4e8;border-radius:14px;background:#f0f2f4}.journalSubnav button{min-height:42px;border:0;border-radius:10px;background:transparent;color:#686d74;font-size:10px;font-weight:900;cursor:pointer}.journalSubnav button.active{background:#fff;color:#23272d;box-shadow:0 2px 8px #11182714}.journalSubnav b{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:6px;padding:0 5px;border-radius:999px;background:#ffebe5;color:#d94726;font-size:8px}.journalView.hidden{display:none!important}
 .problemStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 13px}.problemStat{padding:10px 11px;border:1px solid #e4e7ea;border-radius:12px;background:#fafbfc}.problemStat span{display:block;font-size:7.5px;color:#8b9097;text-transform:uppercase;letter-spacing:.5px;font-weight:850}.problemStat strong{display:block;margin-top:3px;font-size:17px}.problemFilters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}.problemFilter{border:1px solid #e1e4e8;background:#f6f7f9;color:#62666d;border-radius:10px;padding:8px 10px;font-size:9px;font-weight:850;cursor:pointer}.problemFilter.active{background:#1d2025;color:#fff;border-color:#1d2025}.problemList{display:grid;gap:10px}.problemCard{border:1px solid #e3e6ea;border-radius:15px;background:#fff;padding:13px;box-shadow:0 5px 16px #18223508}.problemHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.problemIdentity{min-width:0}.problemIdentity strong{display:block;font-size:12px}.problemIdentity small{display:block;margin-top:3px;color:#858a91;font-size:8.5px}.problemStatusSelect{min-height:34px;border:1px solid #dfe3e7;border-radius:10px;background:#f7f8fa;color:#33383e;padding:0 9px;font-size:9px;font-weight:850}.problemDescription{margin:11px 0 9px;padding:11px 12px;border:1px solid #e9ebee;border-radius:12px;background:#fafbfc;font-size:10.5px;line-height:1.5;color:#4f555d;white-space:pre-wrap;overflow-wrap:anywhere}.problemMeta{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.problemMeta span{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border-radius:999px;background:#f2f4f6;color:#747a82;font-size:8px;font-weight:800}.problemStatusDot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}.problemStatusDot.new{background:#e85b31}.problemStatusDot.in_progress{background:#d89816}.problemStatusDot.resolved{background:#249358}.problemEmpty{padding:24px;text-align:center;color:#8a8f96;font-size:10px;border:1px dashed #d9dde2;border-radius:14px}
+.problemSideBadge{display:inline-grid;place-items:center;min-width:18px;height:18px;margin-left:5px;padding:0 5px;border-radius:999px;background:#ffebe5;color:#d94726;font-size:7.5px;vertical-align:1px}.problemTools{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}.problemTools .problemFilters{margin-bottom:0}.problemSearch{min-width:min(100%,320px);height:36px;border:1px solid #e1e4e8;border-radius:10px;background:#f8f9fa;display:flex;align-items:center;gap:7px;padding:0 10px;color:#8b9097}.problemSearch input{width:100%;border:0;outline:0;background:transparent;color:inherit;font-size:9px}.problemDiagnostic{margin-top:10px;border:1px solid #e6e9ed;border-radius:12px;background:#fbfcfd;overflow:hidden}.problemDiagnostic summary{cursor:pointer;list-style:none;padding:10px 12px;font-size:9px;font-weight:900;color:#4d535b}.problemDiagnostic summary::-webkit-details-marker{display:none}.problemDiagnostic summary:after{content:'＋';float:right;color:#8a9097}.problemDiagnostic[open] summary:after{content:'−'}.problemDiagGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#e9ecef;border-top:1px solid #e9ecef}.problemDiagItem{min-width:0;background:#fff;padding:9px 11px}.problemDiagItem span{display:block;color:#8c9299;font-size:7px;font-weight:850;text-transform:uppercase;letter-spacing:.35px}.problemDiagItem b{display:block;margin-top:3px;color:#424850;font-size:9px;line-height:1.4;overflow-wrap:anywhere}.problemDiagWide{grid-column:1/-1}.problemAdminBox{margin-top:10px;padding:11px;border:1px solid #e6e9ed;border-radius:12px;background:#f8f9fa}.problemAdminBox label{display:block;margin-bottom:6px;font-size:8px;font-weight:900;color:#666c74}.problemAdminNote{width:100%;min-height:66px;resize:vertical;border:1px solid #dfe3e7;border-radius:10px;background:#fff;color:#33383e;padding:9px 10px;font-size:9px;line-height:1.45;outline:0}.problemAdminNote:focus{border-color:#ff9b79;box-shadow:0 0 0 3px #ff5a2a12}.problemActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.problemAction{border:1px solid #dde1e5;border-radius:9px;background:#fff;color:#444a51;padding:7px 9px;font-size:8px;font-weight:850}.problemAction.primary{border:0;background:linear-gradient(135deg,#ff3f26,#ff8426);color:#fff}.problemAction:disabled{opacity:.55}.problemResolvedInfo{margin-left:auto;color:#8b9097;font-size:7.5px;align-self:center}
+@media(max-width:720px){.problemTools{display:grid}.problemSearch{min-width:100%}.problemDiagGrid{grid-template-columns:1fr}.problemDiagWide{grid-column:auto}}
 :root[data-theme="dark"] .journalSubnav,:root[data-theme="dark"] .problemStat,:root[data-theme="dark"] .problemStatusSelect{background:#202328;border-color:#393e45;color:#e7e9ec}:root[data-theme="dark"] .journalSubnav button{color:#adb3bb}:root[data-theme="dark"] .journalSubnav button.active{background:#30343a;color:#fff}:root[data-theme="dark"] .problemCard{background:#202328;border-color:#383d43}:root[data-theme="dark"] .problemDescription{background:#1b1e22;border-color:#343940;color:#d9dde2}:root[data-theme="dark"] .problemMeta span{background:#2b2f34;color:#b5bbc3}
 @media(max-width:620px){.problemStats{grid-template-columns:repeat(2,minmax(0,1fr))}.problemHead{display:grid;grid-template-columns:1fr}.problemStatusSelect{width:100%}}
 @media(max-width:900px){.pagesEditorPanel{padding:11px!important}.pageEditorStats{grid-template-columns:repeat(2,minmax(0,1fr))}.pageEditorTools{grid-template-columns:1fr}.moduleGrid{grid-template-columns:1fr 1fr}.moduleGrid .span2,.moduleGrid .span4{grid-column:1/-1}.moduleHeadActions{display:none}.moduleTech{grid-template-columns:1fr}.moduleTech a{justify-self:start}}
@@ -136,6 +138,7 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
 <button data-tab="accounts" onclick="showTab('accounts',this)"><span class="sideIcon">♙</span><span><strong>Comptes & rôles</strong><small>Utilisateurs et permissions</small></span></button>
 <button data-tab="articles" onclick="showTab('articles',this);loadManagementArticles()"><span class="sideIcon">▤</span><span><strong>Fiches articles</strong><small>Référentiel EAN13</small></span></button>
 <button data-tab="notifications" onclick="showTab('notifications',this);loadNotificationAdmin()"><span class="sideIcon">♢</span><span><strong>Notifications</strong><small>Envoi et règles</small></span></button>
+<button data-tab="problems" onclick="showTab('problems',this);loadReportedProblems()"><span class="sideIcon">⚠</span><span><strong>Problèmes signalés <b id="problemReportBadge" class="problemSideBadge hidden">0</b></strong><small>Signalements et diagnostics</small></span></button>
 <button data-tab="logs" onclick="showTab('logs',this);loadPortalLogs()"><span class="sideIcon">≡</span><span><strong>Journal</strong><small>MAJ, patchs et historique</small></span></button>
 </nav>
 <div class="workspace">
@@ -291,15 +294,27 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
   </div>
  </div>
 </section>
-<section id="tab-logs" class="section">
- <div class="journalSubnav" role="tablist" aria-label="Journal">
-  <button id="journalChangesBtn" class="active" type="button" onclick="showJournalView('changes',this)" aria-selected="true">Modifications</button>
-  <button id="journalProblemsBtn" type="button" onclick="showJournalView('problems',this)" aria-selected="false">Problèmes rapportés <b id="problemReportBadge" class="hidden">0</b></button>
+<section id="tab-problems" class="section">
+ <div class="panel">
+  <div class="toolbar"><div><h2>Problèmes signalés</h2><p>Espace dédié aux problèmes envoyés par les utilisateurs. Les signalements ne sont pas ajoutés au Journal des modifications.</p></div><div class="logHeaderTools"><button class="btn secondaryBtn mini" onclick="loadReportedProblems()">↻ Actualiser</button></div></div>
+  <div class="notifNotice"><b>Diagnostic automatique :</b> Nethor joint le compte, la page concernée, sa version, l’appareil, le navigateur, le mode Web/PWA, l’écran, l’orientation et les informations réseau disponibles. Les mots de passe, contenus de formulaire et presse-papiers ne sont pas collectés.</div>
+  <div class="problemStats"><div class="problemStat"><span>Total</span><strong id="problemTotalCount">0</strong></div><div class="problemStat"><span>Nouveaux</span><strong id="problemNewCount">0</strong></div><div class="problemStat"><span>En cours</span><strong id="problemProgressCount">0</strong></div><div class="problemStat"><span>Résolus</span><strong id="problemResolvedCount">0</strong></div></div>
+  <div class="problemTools">
+   <div class="problemFilters">
+    <button class="problemFilter active" data-problem-status="all" onclick="setProblemFilter('all',this)">Tous</button>
+    <button class="problemFilter" data-problem-status="new" onclick="setProblemFilter('new',this)">Nouveaux</button>
+    <button class="problemFilter" data-problem-status="in_progress" onclick="setProblemFilter('in_progress',this)">En cours</button>
+    <button class="problemFilter" data-problem-status="resolved" onclick="setProblemFilter('resolved',this)">Résolus</button>
+   </div>
+   <label class="problemSearch"><span>⌕</span><input type="search" placeholder="Utilisateur, page, appareil ou description…" oninput="setProblemSearch(this.value)"></label>
+  </div>
+  <div id="reportedProblems" class="problemList"><div class="problemEmpty">Chargement des signalements…</div></div>
  </div>
- <div id="journalChangesView" class="journalView">
-<div class="panel">
+</section>
+<section id="tab-logs" class="section">
+ <div class="panel">
   <div class="toolbar"><div><h2>Journal des modifications</h2><p>Historique des évolutions du portail, qu’elles soient appliquées automatiquement ou manuellement.</p></div><div class="logHeaderTools"><button class="btn secondaryBtn mini" onclick="loadPortalLogs()">↻ Actualiser</button></div></div>
-  <div class="notifNotice"><b>AUTO</b> correspond aux évolutions techniques appliquées au projet. <b>MANUEL</b> correspond aux modifications réalisées depuis l’interface administrateur. Les descriptions détaillées des versions sont réservées à ce journal administrateur ; l’annonce « Nouvelle version de Nethor » reste volontairement générale pour les utilisateurs.</div>
+  <div class="notifNotice"><b>AUTO</b> correspond aux évolutions techniques appliquées au projet. <b>MANUEL</b> correspond aux modifications réalisées depuis l’interface administrateur. Les signalements utilisateurs sont volontairement exclus de ce journal et se trouvent dans <b>Problèmes signalés</b>.</div>
   <div class="logStats"><div class="logStat"><span>Total</span><strong id="logTotalCount">0</strong></div><div class="logStat"><span>Auto</span><strong id="logAutoCount">0</strong></div><div class="logStat"><span>Manuel</span><strong id="logManualCount">0</strong></div></div>
   <div class="logFilters">
    <button class="logFilter active" data-log-source="all" onclick="setLogSource('all',this)">Tous</button>
@@ -311,20 +326,6 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
   </div>
   <div id="portalLogs" class="logList"><div class="logEmpty">Chargement du journal…</div></div>
  </div>
- </div>
- <div id="journalProblemsView" class="journalView hidden">
-  <div class="panel">
-   <div class="toolbar"><div><h2>Problèmes rapportés</h2><p>Signalements envoyés par les utilisateurs depuis le menu mobile.</p></div><div class="logHeaderTools"><button class="btn secondaryBtn mini" onclick="loadReportedProblems()">↻ Actualiser</button></div></div>
-   <div class="problemStats"><div class="problemStat"><span>Total</span><strong id="problemTotalCount">0</strong></div><div class="problemStat"><span>Nouveaux</span><strong id="problemNewCount">0</strong></div><div class="problemStat"><span>En cours</span><strong id="problemProgressCount">0</strong></div><div class="problemStat"><span>Résolus</span><strong id="problemResolvedCount">0</strong></div></div>
-   <div class="problemFilters">
-    <button class="problemFilter active" data-problem-status="all" onclick="setProblemFilter('all',this)">Tous</button>
-    <button class="problemFilter" data-problem-status="new" onclick="setProblemFilter('new',this)">Nouveaux</button>
-    <button class="problemFilter" data-problem-status="in_progress" onclick="setProblemFilter('in_progress',this)">En cours</button>
-    <button class="problemFilter" data-problem-status="resolved" onclick="setProblemFilter('resolved',this)">Résolus</button>
-   </div>
-   <div id="reportedProblems" class="problemList"><div class="problemEmpty">Chargement des signalements…</div></div>
-  </div>
- </div>
 </section>
 </div></div>
 </main>
@@ -334,7 +335,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_p
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let ROLES=['admin','responsable','employe','lecture'];const ROLE_LABEL={admin:'Administrateur',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'};
 function roleName(r){return config?.role_definitions?.[r]?.label||ROLE_LABEL[r]||r||'Compte'}
-let session=null,profile=null,config={},dirty=false,notificationUsers=[],notificationRules=[],portalLogs=[],reportedProblems=[],logSourceFilter='all',logTypeFilter='all',problemStatusFilter='all',journalView='changes';
+let session=null,profile=null,config={},dirty=false,notificationUsers=[],notificationRules=[],portalLogs=[],reportedProblems=[],logSourceFilter='all',logTypeFilter='all',problemStatusFilter='all',problemSearchFilter='';
 let managementArticles=[],managementFamilies=[],managementCategories=[],managementArticleSort={key:null,direction:'asc'};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -343,7 +344,7 @@ function clone(v){return JSON.parse(JSON.stringify(v||{}))}
 function validColor(v,f='#ff2f1f'){return /^#[0-9a-f]{6}$/i.test(String(v||''))?v:f}
 function validUrl(v){const s=String(v||'').trim();return !s||(!/^\s*(javascript|data|vbscript):/i.test(s)&&(/^(https?:\/\/|\.\/|\.\.\/|[a-zA-Z0-9_./?=&%-]+$)/.test(s)))}
 function markDirty(){dirty=true;$('saveState').textContent='Modifications non enregistrées';$('saveState').className='saveState'}
-function showTab(name,btn,opts={}){const valid=['overview','general','system','mobile','accounts','articles','notifications','logs'];if(!valid.includes(name))name='overview';btn=btn||document.querySelector('.side button[data-tab="'+CSS.escape(name)+'"]');document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));document.querySelectorAll('.side button').forEach(x=>x.classList.toggle('active',x===btn));document.querySelector('.stickySave')?.classList.toggle('hidden',['overview','accounts','articles','logs','notifications'].includes(name));try{localStorage.setItem('nettoManagementTab',name)}catch(_){ }const u=new URL(location.href);u.searchParams.set('tab',name);history.replaceState({},'',u);if(name==='overview')loadManagementOverview().catch(()=>{});if(name==='articles')loadManagementArticles().catch(()=>{});enhanceCompactPortal();if(opts.sound!==false)window.NettoSounds?.play?.('menuOpen')}
+function showTab(name,btn,opts={}){const valid=['overview','general','system','mobile','accounts','articles','notifications','problems','logs'];if(!valid.includes(name))name='overview';btn=btn||document.querySelector('.side button[data-tab="'+CSS.escape(name)+'"]');document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));document.querySelectorAll('.side button').forEach(x=>x.classList.toggle('active',x===btn));document.querySelector('.stickySave')?.classList.toggle('hidden',['overview','accounts','articles','problems','logs','notifications'].includes(name));try{localStorage.setItem('nettoManagementTab',name)}catch(_){ }const u=new URL(location.href);u.searchParams.set('tab',name);history.replaceState({},'',u);if(name==='overview')loadManagementOverview().catch(()=>{});if(name==='articles')loadManagementArticles().catch(()=>{});enhanceCompactPortal();if(opts.sound!==false)window.NettoSounds?.play?.('menuOpen')}
 function filterManagementNav(value){const q=String(value||'').trim().toLowerCase();document.querySelectorAll('.managementSide button').forEach(b=>{b.style.display=!q||b.textContent.toLowerCase().includes(q)?'':'none'})}
 function reloadAccountsFrame(){const f=$('managementAccountsFrame');if(f){const u=new URL(f.src,location.href);u.searchParams.set('_',Date.now());f.src=u.href}}
 function managementInitials(name){return String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
@@ -822,16 +823,8 @@ async function writeManualLog(type,title,description,area,details={}){
  }catch(e){console.warn('Écriture log manuel:',e)}
 }
 
-function showJournalView(view,btn){
- journalView=view==='problems'?'problems':'changes';
- $('journalChangesView')?.classList.toggle('hidden',journalView!=='changes');
- $('journalProblemsView')?.classList.toggle('hidden',journalView!=='problems');
- document.querySelectorAll('.journalSubnav button').forEach(x=>{const active=x===btn||(journalView==='changes'&&x.id==='journalChangesBtn')||(journalView==='problems'&&x.id==='journalProblemsBtn');x.classList.toggle('active',active);x.setAttribute('aria-selected',active?'true':'false')});
- try{localStorage.setItem('nethorJournalView',journalView)}catch(_){}
- if(journalView==='problems')loadReportedProblems()
-}
 function problemStatusLabel(status){return status==='resolved'?'Résolu':status==='in_progress'?'En cours':'Nouveau'}
-function problemDeviceLabel(ua){
+function problemLegacyDeviceLabel(ua){
  const s=String(ua||'');
  if(/iPhone|iPod/i.test(s))return'iPhone';
  if(/iPad/i.test(s))return'iPad';
@@ -839,6 +832,58 @@ function problemDeviceLabel(ua){
  if(/Windows/i.test(s))return'Windows';
  if(/Macintosh|Mac OS X/i.test(s))return'Mac';
  return'Appareil'
+}
+function problemDiag(row){const d=row?.diagnostics;return d&&typeof d==='object'&&!Array.isArray(d)?d:{}}
+function problemTextValue(v,fallback='Non disponible'){return v===null||v===undefined||v===''?fallback:String(v)}
+function problemBool(v){return v===true?'Oui':v===false?'Non':'Non disponible'}
+function problemDeviceSummary(row){
+ const d=problemDiag(row),device=d.device||{},browser=d.browser||{};
+ const kind=device.kind||problemLegacyDeviceLabel(row?.user_agent),model=device.model?(' · '+device.model):'',os=device.os?(' · '+device.os):'',b=browser.name?(' · '+browser.name+(browser.version?' '+browser.version:'')):'';
+ return kind+model+os+b
+}
+function problemDiagItem(label,value,wide=false){
+ return '<div class="problemDiagItem '+(wide?'problemDiagWide':'')+'"><span>'+esc(label)+'</span><b>'+esc(problemTextValue(value))+'</b></div>'
+}
+function problemDiagnosticHtml(row){
+ const d=problemDiag(row),app=d.app||{},device=d.device||{},browser=d.browser||{},display=d.display||{},network=d.network||{},locale=d.locale||{},interaction=d.interaction||{},source=d.source||{};
+ const screenSize=display.screen_width&&display.screen_height?display.screen_width+' × '+display.screen_height+' px':'Non disponible';
+ const viewport=display.viewport_width&&display.viewport_height?display.viewport_width+' × '+display.viewport_height+' px':'Non disponible';
+ const visual=display.visual_viewport_width&&display.visual_viewport_height?display.visual_viewport_width+' × '+display.visual_viewport_height+' px'+(display.visual_viewport_scale?' · zoom '+display.visual_viewport_scale:''):'Non disponible';
+ const orientation=[display.orientation_type,display.orientation_angle!==null&&display.orientation_angle!==undefined?display.orientation_angle+'°':''].filter(Boolean).join(' · ');
+ const net=[network.effective_type,network.downlink_mbps!==null&&network.downlink_mbps!==undefined?network.downlink_mbps+' Mb/s':'',network.rtt_ms!==null&&network.rtt_ms!==undefined?network.rtt_ms+' ms':''].filter(Boolean).join(' · ');
+ const sw=app.service_worker_controlled?'Actif'+(app.service_worker_state?' · '+app.service_worker_state:''):'Non contrôlé';
+ const caches=Array.isArray(app.cache_names)&&app.cache_names.length?app.cache_names.join(', '):'Non disponible';
+ const ua=browser.user_agent||row.user_agent||'';
+ return '<details class="problemDiagnostic"><summary>Diagnostic technique détaillé</summary><div class="problemDiagGrid">'+
+  problemDiagItem('Page source',source.path||row.source_path)+
+  problemDiagItem('Référent',source.referrer)+
+  problemDiagItem('Version Nethor',row.app_version||app.label||(app.version!=null?'v'+app.version:null))+
+  problemDiagItem('Mode d’utilisation',app.display_mode)+
+  problemDiagItem('Type d’appareil',device.kind||problemLegacyDeviceLabel(row.user_agent))+
+  problemDiagItem('Modèle exact',device.model||'Non exposé par le navigateur')+
+  problemDiagItem('Système',device.os)+
+  problemDiagItem('Plateforme',device.platform)+
+  problemDiagItem('Navigateur',browser.name?browser.name+(browser.version?' '+browser.version:''):null)+
+  problemDiagItem('Architecture',[device.architecture,device.bitness].filter(Boolean).join(' · '))+
+  problemDiagItem('Écran',screenSize)+
+  problemDiagItem('Viewport',viewport)+
+  problemDiagItem('Viewport visuel',visual)+
+  problemDiagItem('Orientation',orientation)+
+  problemDiagItem('Densité pixels',display.pixel_ratio)+
+  problemDiagItem('Points tactiles',device.max_touch_points)+
+  problemDiagItem('Mémoire appareil',device.device_memory_gb!=null?device.device_memory_gb+' Go':null)+
+  problemDiagItem('Processeurs logiques',device.logical_processors)+
+  problemDiagItem('Connexion',net||null)+
+  problemDiagItem('En ligne',problemBool(network.online))+
+  problemDiagItem('Économie de données',problemBool(network.save_data))+
+  problemDiagItem('Langue',locale.language)+
+  problemDiagItem('Fuseau horaire',locale.timezone)+
+  problemDiagItem('Service Worker',sw)+
+  problemDiagItem('Cache Nethor',caches,true)+
+  problemDiagItem('Interface tactile',problemBool(interaction.pointer_coarse))+
+  problemDiagItem('Mode sombre système',problemBool(interaction.color_scheme_dark))+
+  problemDiagItem('User-Agent',ua,true)+
+  '</div></details>'
 }
 function renderReportedProblems(){
  const host=$('reportedProblems');if(!host)return;
@@ -848,26 +893,34 @@ function renderReportedProblems(){
  $('problemResolvedCount').textContent=String(reportedProblems.filter(x=>x.status==='resolved').length);
  const openCount=reportedProblems.filter(x=>x.status!=='resolved').length,badge=$('problemReportBadge');
  if(badge){badge.textContent=String(openCount);badge.classList.toggle('hidden',openCount<1)}
- const rows=reportedProblems.filter(x=>problemStatusFilter==='all'||x.status===problemStatusFilter);
+ const q=problemSearchFilter.trim().toLocaleLowerCase('fr');
+ const rows=reportedProblems.filter(x=>{
+  if(problemStatusFilter!=='all'&&x.status!==problemStatusFilter)return false;
+  if(!q)return true;
+  const d=problemDiag(x);
+  return [x.reporter_name,x.reporter_role,x.description,x.source_title,x.source_path,x.app_version,problemDeviceSummary(x),d?.device?.model,d?.device?.os,d?.browser?.name].some(v=>String(v||'').toLocaleLowerCase('fr').includes(q))
+ });
  if(!rows.length){host.innerHTML='<div class="problemEmpty">Aucun problème ne correspond à ce filtre.</div>';return}
  host.innerHTML=rows.map(x=>{
-  const status=x.status||'new',source=x.source_title||x.source_path||'Nethor',role=roleName(x.reporter_role),device=problemDeviceLabel(x.user_agent);
-  return '<article class="problemCard"><div class="problemHead"><div class="problemIdentity"><strong>'+esc(x.reporter_name||'Utilisateur')+'</strong><small>'+esc(role)+' · '+esc(logDate(x.created_at))+'</small></div><select class="problemStatusSelect" aria-label="État du signalement" onchange="updateReportedProblemStatus('+Number(x.id)+',this.value,this)"><option value="new" '+(status==='new'?'selected':'')+'>Nouveau</option><option value="in_progress" '+(status==='in_progress'?'selected':'')+'>En cours</option><option value="resolved" '+(status==='resolved'?'selected':'')+'>Résolu</option></select></div><div class="problemDescription">'+esc(x.description||'')+'</div><div class="problemMeta"><span><i class="problemStatusDot '+esc(status)+'"></i>'+esc(problemStatusLabel(status))+'</span><span>Page : '+esc(source)+'</span><span>'+esc(device)+'</span></div></article>'
+  const status=x.status||'new',source=x.source_title||x.source_path||'Nethor',role=roleName(x.reporter_role),device=problemDeviceSummary(x),d=problemDiag(x),mode=d?.app?.display_mode||'Mode non disponible';
+  const resolved=x.resolved_at?'<span class="problemResolvedInfo">Résolu le '+esc(logDate(x.resolved_at))+'</span>':'';
+  return '<article class="problemCard"><div class="problemHead"><div class="problemIdentity"><strong>'+esc(x.reporter_name||'Utilisateur')+'</strong><small>'+esc(role)+' · '+esc(logDate(x.created_at))+' · #'+Number(x.id)+'</small></div><select class="problemStatusSelect" aria-label="État du signalement" onchange="updateReportedProblemStatus('+Number(x.id)+',this.value,this)"><option value="new" '+(status==='new'?'selected':'')+'>Nouveau</option><option value="in_progress" '+(status==='in_progress'?'selected':'')+'>En cours</option><option value="resolved" '+(status==='resolved'?'selected':'')+'>Résolu</option></select></div><div class="problemDescription">'+esc(x.description||'')+'</div><div class="problemMeta"><span><i class="problemStatusDot '+esc(status)+'"></i>'+esc(problemStatusLabel(status))+'</span><span>Page : '+esc(source)+'</span><span>'+esc(x.app_version||d?.app?.label||'Version inconnue')+'</span><span>'+esc(device)+'</span><span>'+esc(mode)+'</span></div>'+problemDiagnosticHtml(x)+'<div class="problemAdminBox"><label for="problem-note-'+Number(x.id)+'">Note administrateur</label><textarea class="problemAdminNote" id="problem-note-'+Number(x.id)+'" maxlength="2000" placeholder="Cause probable, test effectué, correctif appliqué…">'+esc(x.admin_note||'')+'</textarea><div class="problemActions"><button class="problemAction primary" type="button" onclick="saveReportedProblemNote('+Number(x.id)+',this)">Enregistrer la note</button><button class="problemAction" type="button" onclick="copyProblemDiagnostic('+Number(x.id)+',this)">Copier le diagnostic</button>'+resolved+'</div></div></article>'
  }).join('')
 }
 async function loadReportedProblems(){
  const host=$('reportedProblems');if(!host)return;
  host.innerHTML='<div class="problemEmpty">Chargement des signalements…</div>';
  try{
-  const {data,error}=await db.from('reported_problems').select('id,reporter_id,reporter_name,reporter_role,description,source_path,source_title,user_agent,status,created_at,updated_at,resolved_at').order('created_at',{ascending:false}).limit(250);
+  const {data,error}=await db.from('reported_problems').select('id,reporter_id,reporter_name,reporter_role,description,source_path,source_title,user_agent,app_version,diagnostics,status,admin_note,resolved_by,created_at,updated_at,resolved_at').order('created_at',{ascending:false}).limit(250);
   if(error)throw error;reportedProblems=data||[];renderReportedProblems()
- }catch(e){console.error('Problèmes rapportés:',e);host.innerHTML='<div class="problemEmpty">Impossible de charger les problèmes rapportés.</div>'}
+ }catch(e){console.error('Problèmes signalés:',e);host.innerHTML='<div class="problemEmpty">Impossible de charger les problèmes signalés.</div>'}
 }
 function setProblemFilter(value,btn){
  problemStatusFilter=['new','in_progress','resolved'].includes(value)?value:'all';
  document.querySelectorAll('[data-problem-status]').forEach(x=>x.classList.toggle('active',x===btn));
  renderReportedProblems()
 }
+function setProblemSearch(value){problemSearchFilter=String(value||'');renderReportedProblems()}
 async function updateReportedProblemStatus(id,status,input){
  if(!['new','in_progress','resolved'].includes(status))return;
  const row=reportedProblems.find(x=>Number(x.id)===Number(id));if(!row)return;
@@ -875,8 +928,69 @@ async function updateReportedProblemStatus(id,status,input){
  try{
   const now=new Date().toISOString(),patch={status,updated_at:now,resolved_at:status==='resolved'?now:null,resolved_by:status==='resolved'?session.user.id:null};
   const {error}=await db.from('reported_problems').update(patch).eq('id',id);if(error)throw error;
-  row.status=status;row.updated_at=now;row.resolved_at=patch.resolved_at;renderReportedProblems();window.NettoSounds?.play?.('switch')
+  row.status=status;row.updated_at=now;row.resolved_at=patch.resolved_at;row.resolved_by=patch.resolved_by;renderReportedProblems();window.NettoSounds?.play?.('switch')
  }catch(e){console.error('Mise à jour signalement:',e);row.status=previous;renderReportedProblems();alert('Impossible de modifier l’état de ce signalement.')}
+ finally{if(input)input.disabled=false}
+}
+async function saveReportedProblemNote(id,button){
+ const row=reportedProblems.find(x=>Number(x.id)===Number(id)),field=$('problem-note-'+id);if(!row||!field)return;
+ const note=String(field.value||'').trim().slice(0,2000),old=button?.textContent;if(button){button.disabled=true;button.textContent='Enregistrement…'}
+ try{
+  const now=new Date().toISOString(),{error}=await db.from('reported_problems').update({admin_note:note||null,updated_at:now}).eq('id',id);if(error)throw error;
+  row.admin_note=note||null;row.updated_at=now;if(button)button.textContent='✓ Note enregistrée';window.NettoSounds?.play?.('success')
+ }catch(e){console.error('Note signalement:',e);if(button)button.textContent='Erreur';window.NettoSounds?.play?.('error')}
+ finally{if(button)setTimeout(()=>{button.disabled=false;button.textContent=old||'Enregistrer la note'},900)}
+}
+function problemDiagnosticText(row){
+ const d=problemDiag(row),app=d.app||{},device=d.device||{},browser=d.browser||{},display=d.display||{},network=d.network||{},locale=d.locale||{},source=d.source||{};
+ const line=(label,value)=>label+' : '+problemTextValue(value);
+ return [
+  'Signalement Nethor #'+row.id,
+  line('Utilisateur',(row.reporter_name||'Utilisateur')+' ('+roleName(row.reporter_role)+')'),
+  line('Date',logDate(row.created_at)),
+  line('Statut',problemStatusLabel(row.status)),
+  line('Page',row.source_title||source.title||row.source_path),
+  line('Chemin source',source.path||row.source_path),
+  line('Version Nethor',row.app_version||app.label||(app.version!=null?'v'+app.version:null)),
+  '',
+  'Description :',
+  row.description||'',
+  '',
+  line('Type appareil',device.kind||problemLegacyDeviceLabel(row.user_agent)),
+  line('Modèle exact',device.model||'Non exposé par le navigateur'),
+  line('Système',device.os),
+  line('Plateforme',device.platform),
+  line('Navigateur',browser.name?browser.name+(browser.version?' '+browser.version:''):null),
+  line('Mode Web/PWA',app.display_mode),
+  line('Écran',display.screen_width&&display.screen_height?display.screen_width+' x '+display.screen_height+' px':null),
+  line('Viewport',display.viewport_width&&display.viewport_height?display.viewport_width+' x '+display.viewport_height+' px':null),
+  line('Orientation',[display.orientation_type,display.orientation_angle!==null&&display.orientation_angle!==undefined?display.orientation_angle+'°':''].filter(Boolean).join(' · ')),
+  line('Densité pixels',display.pixel_ratio),
+  line('Points tactiles',device.max_touch_points),
+  line('Mémoire appareil',device.device_memory_gb!=null?device.device_memory_gb+' Go':null),
+  line('Processeurs logiques',device.logical_processors),
+  line('Connexion',[network.effective_type,network.downlink_mbps!=null?network.downlink_mbps+' Mb/s':'',network.rtt_ms!=null?network.rtt_ms+' ms':''].filter(Boolean).join(' · ')),
+  line('En ligne',problemBool(network.online)),
+  line('Fuseau horaire',locale.timezone),
+  line('Service Worker',app.service_worker_controlled?'Actif':'Non contrôlé'),
+  line('Caches Nethor',Array.isArray(app.cache_names)&&app.cache_names.length?app.cache_names.join(', '):null),
+  line('User-Agent',browser.user_agent||row.user_agent),
+  '',
+  'Note administrateur :',
+  row.admin_note||'Aucune'
+ ].join('\n')
+}
+async function copyProblemDiagnostic(id,button){
+ const row=reportedProblems.find(x=>Number(x.id)===Number(id));if(!row)return;
+ const textValue=problemDiagnosticText(row),old=button?.textContent;
+ try{
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(textValue);
+  else{
+   const ta=document.createElement('textarea');ta.value=textValue;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()
+  }
+  if(button)button.textContent='✓ Diagnostic copié';window.NettoSounds?.play?.('success')
+ }catch(e){console.error('Copie diagnostic:',e);if(button)button.textContent='Copie impossible'}
+ finally{if(button)setTimeout(()=>button.textContent=old||'Copier le diagnostic',1000)}
 }
 
 function notificationRole(role){return roleName(role)}
@@ -1147,12 +1261,12 @@ async function saveManagementArticle(id){
 async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
  const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;
- await waitProfileUI();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];bindGlobal();await loadConfig();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();loadNotificationAdmin();enhanceCompactPortal();
+ await waitProfileUI();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];bindGlobal();await loadConfig();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();loadNotificationAdmin();loadReportedProblems().catch(()=>{});enhanceCompactPortal();
  const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoManagementTab')||'overview';
- const tab=['overview','general','system','mobile','accounts','articles','notifications','logs'].includes(saved)?saved:'overview';
+ const tab=['overview','general','system','mobile','accounts','articles','notifications','problems','logs'].includes(saved)?saved:'overview';
  showTab(tab,document.querySelector('.side button[data-tab="'+CSS.escape(tab)+'"]'),{sound:false});
  loadManagementOverview().catch(()=>{});
- if(tab==='articles')loadManagementArticles();if(tab==='notifications')loadNotificationAdmin();if(tab==='logs')loadPortalLogs()
+ if(tab==='articles')loadManagementArticles();if(tab==='notifications')loadNotificationAdmin();if(tab==='problems')loadReportedProblems();if(tab==='logs')loadPortalLogs()
 }
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 boot();
