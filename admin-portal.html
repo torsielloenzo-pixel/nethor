@@ -561,8 +561,7 @@ function renderOperationsWidgetEditor(){
   const key=el.dataset.operationsWidget,node=ensureOperationsWidgetConfig();
   let value=el.type==='checkbox'?el.checked:el.value;
   if(key==='max_items')value=Math.min(8,Math.max(1,Number(value)||3));
-  node[key]=value;markDirty();
-  if(['label','subtitle','enabled'].includes(key))renderOperationsWidgetEditor()
+  node[key]=value;markDirty()
  });
  host.querySelectorAll('[data-operations-section]').forEach(el=>el.onchange=()=>{
   const node=ensureOperationsWidgetConfig();node.sections[el.dataset.operationsSection]=el.checked;markDirty()
