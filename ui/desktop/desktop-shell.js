@@ -19,15 +19,19 @@ function buildPageLayout(page){
  const pages={
   home:{title:'Nethor',subtitle:'Portail opérationnel',back:false},
   profile:{title:'Mon profil',subtitle:'Identité & notifications',back:true},
-  planning:{title:'Planning équipe',subtitle:'Organisation du magasin',back:true}
+  planning:{title:'Planning équipe',subtitle:'Organisation du magasin',back:true},
+  settings:{title:'Personnalisation',subtitle:'Mon affichage et mes raccourcis',back:true},
+  'notification-settings':{title:'Notifications',subtitle:'Préférences et canaux',back:true},
+  'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true,chrome:false}
  };
  const cfg=pages[id];
  if(!cfg)return null;
- const back=cfg.back?'<div class="navActions"><button class="btn light backBtn" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():location.href=\'home.html\'">← Retour</button></div>':'';
+ const back=cfg.back?'<div class="navActions"><button class="btn light backBtn" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'home.html\'">← Retour</button></div>':'';
+ const header=cfg.chrome===false?'':'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="mark" type="button" onclick="location.href=\'home.html\'" aria-label="Retour à l’accueil">N</button><div><div class="title">'+esc(cfg.title)+'</div><div class="sub">'+esc(cfg.subtitle)+'</div></div></div>'+back+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>';
  return {
   platform:'desktop',
   handlesBack:!!cfg.back,
-  header:'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="mark" type="button" onclick="location.href=\'home.html\'" aria-label="Retour à l’accueil">N</button><div><div class="title">'+esc(cfg.title)+'</div><div class="sub">'+esc(cfg.subtitle)+'</div></div></div>'+back+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>',
+  header,
   lead:''
  }
 }
