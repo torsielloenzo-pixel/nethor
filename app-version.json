@@ -1,10 +1,10 @@
 {
-  "version": 197,
-  "label": "v1.97",
+  "version": 198,
+  "label": "v1.98",
   "important": false,
   "mode": "auto",
-  "title": "Signalements · diagnostic technique",
-  "message": "Les problèmes signalés disposent maintenant d’un espace administrateur dédié avec diagnostic technique, suivi et notes de traitement.",
-  "published_at": "2026-09-29T11:15:00Z",
+  "title": "Gestion · organisation des menus",
+  "message": "Refonte de Gestion avec navigation hiérarchique : utilisateurs, contenus, éditeur du portail, communication et système sont maintenant clairement séparés.",
+  "published_at": "2026-09-29T11:17:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
