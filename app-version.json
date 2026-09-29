@@ -1,10 +1,10 @@
 {
-  "version": 203,
+  "version": 204,
   "label": "v1.20.0",
   "important": false,
   "mode": "auto",
   "title": "Correctif critique v1.20.0",
-  "message": "Correction du chargement de l’interface globale, des menus Administrateur et des contrôles d’accès aux pages.",
+  "message": "Correction du runtime SemVer, restauration de l’interface globale et sécurisation de l’accès Administrateur.",
   "published_at": "2026-09-29T14:48:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
