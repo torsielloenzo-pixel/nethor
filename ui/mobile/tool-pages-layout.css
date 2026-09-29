@@ -1,0 +1,17 @@
+/* Phase 4.7 — Notifications & Scanner Mobile */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .notificationsMobileLayout{width:100%;min-width:0}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"],
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] body{
+ width:100%;height:100%;min-height:0;overflow:hidden;overscroll-behavior:none
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] body{
+ position:fixed;inset:0;height:100dvh;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(12px + env(safe-area-inset-bottom));touch-action:manipulation
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .scannerMobileLayout{
+ width:min(100%,560px);margin:0 auto;height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);
+ min-height:0;display:flex;flex-direction:column;overflow:hidden
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .top{flex:0 0 auto}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .cameraCard{flex:0 1 350px;min-height:220px;height:min(350px,43dvh)}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader video{height:100%!important}
