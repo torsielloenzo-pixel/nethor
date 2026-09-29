@@ -153,16 +153,41 @@ function isMobileTextEntry(el){
  const type=String(el.type||'text').toLowerCase();
  return !['button','checkbox','radio','range','file','submit','reset','color','hidden','image'].includes(type)
 }
+let mobileKeyboardViewportBaseline=0;
+function currentMobileVisualHeight(){
+ const vv=window.visualViewport;
+ return Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0)
+}
+function refreshMobileKeyboardBaseline(force=false){
+ if(!isMobileViewport()){mobileKeyboardViewportBaseline=0;return}
+ if(force||!isMobileTextEntry(document.activeElement)){
+  mobileKeyboardViewportBaseline=Math.max(mobileKeyboardViewportBaseline,currentMobileVisualHeight())
+ }
+}
 function syncMobileKeyboardState(){
  const root=document.documentElement,body=document.body;
- const active=isMobileViewport()&&isMobileTextEntry(document.activeElement);
+ const focused=isMobileViewport()&&isMobileTextEntry(document.activeElement);
+ const current=currentMobileVisualHeight();
+ const baseline=Math.max(mobileKeyboardViewportBaseline,current);
+ const threshold=Math.max(120,Math.round(baseline*.16));
+ const viewportReduced=!!window.visualViewport&&baseline-current>=threshold;
+ const active=focused&&(!window.visualViewport||viewportReduced);
  root.classList.toggle('nettoKeyboardOpen',active);
- body?.classList.toggle('nettoKeyboardOpen',active)
+ body?.classList.toggle('nettoKeyboardOpen',active);
+ if(!focused)refreshMobileKeyboardBaseline()
 }
 function bindMobileKeyboardState(){
- document.addEventListener('focusin',syncMobileKeyboardState,true);
- document.addEventListener('focusout',()=>setTimeout(syncMobileKeyboardState,100),true);
+ if(window.__nettoMobileKeyboardBound)return;
+ window.__nettoMobileKeyboardBound=true;
+ refreshMobileKeyboardBaseline(true);
+ document.addEventListener('focusin',()=>requestAnimationFrame(syncMobileKeyboardState),true);
+ document.addEventListener('focusout',()=>setTimeout(syncMobileKeyboardState,120),true);
  window.addEventListener('resize',syncMobileKeyboardState,{passive:true});
+ window.addEventListener('orientationchange',()=>setTimeout(()=>{mobileKeyboardViewportBaseline=0;refreshMobileKeyboardBaseline(true);syncMobileKeyboardState()},180),{passive:true});
+ try{
+  window.visualViewport?.addEventListener?.('resize',syncMobileKeyboardState,{passive:true});
+  window.visualViewport?.addEventListener?.('scroll',syncMobileKeyboardState,{passive:true})
+ }catch(_){}
  syncMobileKeyboardState()
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboardState,{once:true});
