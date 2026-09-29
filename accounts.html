@@ -296,11 +296,12 @@ function homeWidgetDefinitions(){return[
  {id:'tasks',label:'Tâches du jour',description:'Missions quotidiennes créées par l’encadrement et validées par les équipes.'},
  {id:'important_info',label:'Informations importantes',description:'Dernières notifications importantes du portail.'},
  {id:'team_today',label:'Équipe aujourd’hui',description:'Personnes planifiées sur la journée.'},
- {id:'quick_access',label:'Accès rapides',description:'Raccourcis vers les outils accessibles.'}
+ {id:'quick_access',label:'Accès rapides',description:'Raccourcis vers les outils accessibles.'},
+ {id:'operations_hub',label:'Pilotage magasin',description:'Relève, service, commandes clients, livraisons et Flash magasin.'}
 ]}
 function homeWidgetRoleValue(widget,roleKey){
- const v=siteConfig?.home_widgets?.[widget]?.roles?.[roleKey];
- return typeof v==='boolean'?v:true
+ const v=siteConfig?.home_widgets?.[widget]?.roles?.[roleKey],fallback=widget==='operations_hub'?roleKey==='admin':true;
+ return typeof v==='boolean'?v:fallback
 }
 function homeWidgetSubroleValue(widget,subroleKey){
  return siteConfig?.home_widgets?.[widget]?.subroles?.[subroleKey]===true
