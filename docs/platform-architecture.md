@@ -153,3 +153,56 @@ Mobile  -> user-menu
 Les pages autonomes doivent appeler `window.NethorNavigation.backTarget()` ou les helpers dédiés au Menu utilisateur au lieu d'utiliser `history.back()`, `document.referrer` ou une détection par largeur.
 
 La Vision mobile conserve `mobile-preview` dans les URL de navigation pour rester dans le même shell pendant tout le parcours.
+
+
+## Phase 3 — shells physiques
+
+Les composants d'interface spécifiques sont maintenant séparés physiquement :
+
+```text
+ui/
+├── desktop/
+│   ├── desktop-shell.js
+│   └── desktop-shell.css
+└── mobile/
+    ├── mobile-shell.js
+    └── mobile-shell.css
+```
+
+### Responsabilités
+
+`ui/desktop/desktop-shell.js`
+- construit les composants spécifiques Desktop du shell global ;
+- actuellement : menu utilisateur Desktop.
+
+`ui/mobile/mobile-shell.js`
+- construit les composants spécifiques Mobile ;
+- actuellement : barre de navigation basse et Menu utilisateur Mobile.
+
+`ui/desktop/desktop-shell.css`
+- contient les styles de présentation spécifiques Desktop ;
+- contient notamment l'échelle et les adaptations Desktop historiques extraites du noyau commun.
+
+`ui/mobile/mobile-shell.css`
+- contient les styles de navigation et Menu utilisateur Mobile.
+
+`profile-ui.js`
+- reste le noyau commun ;
+- fournit données, permissions, notifications, thèmes, événements et appels communs ;
+- délègue le rendu des composants spécifiques aux shells.
+
+### Règle de maintenance obligatoire
+
+Ne pas ajouter une correction Mobile directement dans le shell Desktop ou dans une règle globale si elle ne concerne que Mobile.
+
+Ne pas ajouter une correction Desktop dans le shell Mobile.
+
+Ordre de choix :
+
+1. comportement commun aux deux plateformes -> noyau commun ;
+2. rendu/composant Desktop -> `ui/desktop/` ;
+3. rendu/composant Mobile -> `ui/mobile/` ;
+4. hiérarchie de navigation -> `platform-navigation.js` ;
+5. détection de plateforme -> `platform-resolver.js`.
+
+Une modification dans `ui/mobile/` ne doit jamais modifier le comportement Desktop sans une modification explicite d'un fichier commun.
