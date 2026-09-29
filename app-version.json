@@ -1,11 +1,11 @@
 {
-  "version": 227,
-  "label": "v1.33.0",
+  "version": 228,
+  "label": "v1.34.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.10 — Gestion Desktop / Mobile",
-  "message": "La page Gestion possède désormais deux structures de plateforme distinctes. Desktop conserve son header d’administration avec recherche et enregistrement, tandis que Mobile utilise un top compact dédié. Les anciens blocs CSS min-width 901 px / max-width 900 px qui choisissaient la plateforme ont quitté le fichier commun, sans dupliquer les éditeurs ni les modules métier.",
-  "published_at": "2026-09-30T00:36:11.000+02:00",
+  "title": "Phase 4.11 — Assistant F&L & Boulangerie",
+  "message": "Assistant Précommande F&L et Boulangerie possèdent désormais des structures Desktop et Mobile distinctes. Les anciens headers communs et les breakpoints 820/700 px qui fabriquaient la version Mobile ont quitté le HTML/CSS commun. Les moteurs métier, imports F&L, stock Boulangerie, dialogues et deep-links EAN restent partagés.",
+  "published_at": "2026-09-30T00:43:57.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
