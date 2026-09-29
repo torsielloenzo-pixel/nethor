@@ -19,12 +19,25 @@ function planningShell(){
 function homeShell(){
  return platformKind()==='desktop'?window.NethorDesktopHomeLayout:window.NethorMobileHomeLayout
 }
+function profileShell(){
+ return platformKind()==='desktop'?window.NethorDesktopProfileLayout:window.NethorMobileProfileLayout
+}
 function replaceHost(selector,html){
  const host=document.querySelector(selector);
  if(!host)return false;
  if(html)host.outerHTML=html;
  else host.remove();
  return true
+}
+function mountProfile(id){
+ if(id!=='profile')return null;
+ const builder=profileShell()?.build;
+ if(typeof builder!=='function')return null;
+ const layout=builder();
+ if(!layout)return null;
+ replaceHost('[data-nethor-profile-layout]',layout.html||'');
+ ROOT.dataset.nethorProfileLayout=layout.platform||platformKind();
+ return layout
 }
 function mountHome(id){
  if(id!=='home')return null;
@@ -62,15 +75,16 @@ function mount(){
  ROOT.dataset.nethorPageId=id;
  if(layout.handlesBack)ROOT.dataset.nethorPageBackHandled='1';
  else delete ROOT.dataset.nethorPageBackHandled;
+ const profile=mountProfile(id);
  const home=mountHome(id);
  const planning=mountPlanning(id);
  try{
   document.dispatchEvent(new CustomEvent('nethor:page-layout-ready',{
-   detail:{page:id,platform:ROOT.dataset.nethorPageLayout,home:home?.platform||null,planning:planning?.platform||null}
+   detail:{page:id,platform:ROOT.dataset.nethorPageLayout,profile:profile?.platform||null,home:home?.platform||null,planning:planning?.platform||null}
   }))
  }catch(_){}
  return layout
 }
-window.NethorPageLayout=Object.freeze({mount,mountHome,mountPlanning,pageId,platformKind});
+window.NethorPageLayout=Object.freeze({mount,mountProfile,mountHome,mountPlanning,pageId,platformKind});
 if(!mount()&&document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});
 })();
