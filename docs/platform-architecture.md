@@ -333,3 +333,67 @@ Les comportements suivants utilisent maintenant la plateforme résolue et non la
 Un redimensionnement Desktop ne peut donc plus faire basculer ces fonctions vers leur logique Mobile.
 
 La logique métier reste commune : Supabase, permissions, imports Excel, données horaires, anomalies, couverture, congés, logs et calculs ne sont pas dupliqués.
+
+
+## Phase 4.3 — mise en page interne du Planning
+
+La séparation de plateforme descend maintenant au niveau de la présentation interne.
+
+### CSS inline réduit
+
+Les blocs historiques suivants ont quitté `planning.html` :
+
+- `planningMobilePolish` -> `ui/mobile/planning-layout.css`
+- `planning-desktop-menu-v1` -> `ui/desktop/planning-layout.css`
+- `planning-desktop-full-day-v1` -> `ui/desktop/planning-layout.css`
+- `planning-reader-actions-row-v1` -> `ui/desktop/planning-layout.css`
+- `planning-layout-refactor-v2` -> `ui/desktop/planning-layout.css`
+
+Le bloc imbriqué invalide `planning-empty-actions-fix-v1` a été normalisé en CSS valide.
+
+Les media queries historiques Mobile jusqu’à 900 px ont également été extraites du CSS commun vers la couche Mobile. Les adaptations génériques Desktop/tablette à 1180/1350 px restent partagées lorsqu’elles ne représentent pas un changement de plateforme.
+
+### Agenda en trois couches
+
+`planning-agenda-v2.css` v15 contient uniquement la base commune.
+
+Les variantes sont désormais séparées :
+
+```text
+ui/desktop/planning-agenda.css
+ui/mobile/planning-agenda.css
+```
+
+Le résolveur de plateforme n’active que la feuille correspondante.
+
+### DOM Agenda propre à la plateforme
+
+`planning-agenda-v2.js` v18 ne crée plus une structure hybride.
+
+Desktop construit :
+
+- la bascule Classique / Agenda ;
+- l’en-tête Agenda Desktop ;
+- les statistiques Agenda ;
+- le contenu Agenda.
+
+Mobile construit :
+
+- Jour / Semaine / Calendrier ;
+- le sélecteur de date/semaine ;
+- l’en-tête Agenda Mobile ;
+- le contenu Agenda.
+
+Ainsi, les contrôles Mobile ne sont plus présents puis masqués sur Desktop, et inversement.
+
+### Invariants conservés
+
+Aucune duplication de logique métier :
+
+- mêmes données Supabase ;
+- mêmes imports Excel ;
+- mêmes permissions ;
+- mêmes calculs horaires ;
+- mêmes congés / indisponibilités ;
+- mêmes anomalies et couverture ;
+- mêmes fonctions de rendu de données.
