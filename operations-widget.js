@@ -180,20 +180,28 @@ function orderForm(){return'<form class="operationsHubModal"><div class="operati
 function deliveryForm(){return'<form class="operationsHubModal"><div class="operationsHubModalHead"><div><h3>Nouvelle livraison</h3><p>Suivi du camion et de la réception.</p></div><button type="button" class="operationsHubClose" data-op-close>×</button></div><div class="operationsHubForm"><div class="operationsHubField"><label>Flux</label><select name="stream"><option value="sec">Sec</option><option value="frais">Frais</option><option value="surg">Surgelé</option><option value="fl">Fruits & Légumes</option><option value="other">Autre</option></select></div><div class="operationsHubField"><label>Fournisseur / origine</label><input name="supplier"></div><div class="operationsHubField"><label>Prévision</label><input name="expected_label" placeholder="16h30"></div><div class="operationsHubField"><label>Supports</label><input type="number" min="0" name="supports"></div><div class="operationsHubField"><label>Position</label><input name="position_label" placeholder="1re position"></div><div class="operationsHubField full"><label>Note</label><textarea name="note"></textarea></div></div><div class="operationsHubModalActions"><button type="button" class="operationsHubCancel" data-op-close>Annuler</button><button class="operationsHubSave">Créer</button></div></form>'}
 function flashForm(){return'<form class="operationsHubModal"><div class="operationsHubModalHead"><div><h3>Nouveau Flash</h3><p>Information temporaire visible par les rôles autorisés.</p></div><button type="button" class="operationsHubClose" data-op-close>×</button></div><div class="operationsHubForm"><div class="operationsHubField"><label>Type</label><select name="category"><option value="procedure">Procédure</option><option value="price">Prix</option><option value="material">Matériel</option><option value="product">Produit</option><option value="info">Information</option></select></div><div class="operationsHubField"><label>Expiration</label><select name="expiry"><option value="today">Fin de journée</option><option value="week">7 jours</option><option value="none">Sans expiration</option></select></div><div class="operationsHubField full"><label>Titre</label><input name="title" required maxlength="140"></div><div class="operationsHubField full"><label>Message</label><textarea name="body" required maxlength="1200"></textarea></div><div class="operationsHubField"><label>EAN13 lié · optionnel</label><input name="target_ean13" inputmode="numeric" maxlength="13"></div></div><div class="operationsHubModalActions"><button type="button" class="operationsHubCancel" data-op-close>Annuler</button><button class="operationsHubSave">Publier</button></div></form>'}
 async function submitDialog(e,kind){
- e.preventDefault();const f=new FormData(e.currentTarget),db=api.ctx.db,uid=api.ctx.session?.user?.id;let res;
- if(kind==='orders'){
-  const items=String(f.get('items')||'').split(/\n+/).map(x=>x.trim()).filter(Boolean).map(label=>({label}));
-  res=await db.from('operations_orders').insert({customer_name:String(f.get('customer_name')||'').trim(),pickup_label:String(f.get('pickup_label')||'').trim()||null,items,payment_status:String(f.get('payment_status')||'unpaid'),location:String(f.get('location')||'').trim()||null,note:String(f.get('note')||'').trim()||null,created_by:uid})
- }else if(kind==='deliveries'){
-  const supports=String(f.get('supports')||'').trim();
-  res=await db.from('operations_deliveries').insert({delivery_date:api.ctx.todayKey,stream:String(f.get('stream')||'other'),supplier:String(f.get('supplier')||'').trim()||null,expected_label:String(f.get('expected_label')||'').trim()||null,supports:supports?Number(supports):null,position_label:String(f.get('position_label')||'').trim()||null,note:String(f.get('note')||'').trim()||null,created_by:uid})
- }else{
-  const expiry=f.get('expiry'),now=new Date(),expires=expiry==='today'?new Date(now.getFullYear(),now.getMonth(),now.getDate()+1).toISOString():expiry==='week'?new Date(Date.now()+7*86400000).toISOString():null,ean=String(f.get('target_ean13')||'').trim();
-  if(ean&&!/^\d{13}$/.test(ean)){alert('EAN13 invalide : 13 chiffres attendus.');return}
-  res=await db.from('operations_flashes').insert({category:String(f.get('category')||'info'),title:String(f.get('title')||'').trim(),body:String(f.get('body')||'').trim(),target_ean13:ean||null,expires_at:expires,created_by:uid})
+ e.preventDefault();
+ const form=e.currentTarget,submit=form.querySelector('.operationsHubSave');
+ if(form.dataset.submitting==='1')return;
+ form.dataset.submitting='1';if(submit)submit.disabled=true;
+ const f=new FormData(form),db=api.ctx.db,uid=api.ctx.session?.user?.id;let res;
+ try{
+  if(kind==='orders'){
+   const items=String(f.get('items')||'').split(/\n+/).map(x=>x.trim()).filter(Boolean).map(label=>({label}));
+   res=await db.from('operations_orders').insert({customer_name:String(f.get('customer_name')||'').trim(),pickup_label:String(f.get('pickup_label')||'').trim()||null,items,payment_status:String(f.get('payment_status')||'unpaid'),location:String(f.get('location')||'').trim()||null,note:String(f.get('note')||'').trim()||null,created_by:uid})
+  }else if(kind==='deliveries'){
+   const supports=String(f.get('supports')||'').trim();
+   res=await db.from('operations_deliveries').insert({delivery_date:api.ctx.todayKey,stream:String(f.get('stream')||'other'),supplier:String(f.get('supplier')||'').trim()||null,expected_label:String(f.get('expected_label')||'').trim()||null,supports:supports?Number(supports):null,position_label:String(f.get('position_label')||'').trim()||null,note:String(f.get('note')||'').trim()||null,created_by:uid})
+  }else{
+   const expiry=f.get('expiry'),now=new Date(),expires=expiry==='today'?new Date(now.getFullYear(),now.getMonth(),now.getDate()+1).toISOString():expiry==='week'?new Date(Date.now()+7*86400000).toISOString():null,ean=String(f.get('target_ean13')||'').trim();
+   if(ean&&!/^\d{13}$/.test(ean)){alert('EAN13 invalide : 13 chiffres attendus.');return}
+   res=await db.from('operations_flashes').insert({category:String(f.get('category')||'info'),title:String(f.get('title')||'').trim(),body:String(f.get('body')||'').trim(),target_ean13:ean||null,expires_at:expires,created_by:uid})
+  }
+  if(res.error){alert('Enregistrement impossible : '+res.error.message);return}
+  ensureDialog().close();await loadData(true)
+ }finally{
+  delete form.dataset.submitting;if(submit)submit.disabled=false
  }
- if(res.error){alert('Enregistrement impossible : '+res.error.message);return}
- ensureDialog().close();await loadData(true)
 }
 async function advanceOrder(id){
  const row=api.state.orders.find(x=>x.id===id);if(!row||!canManage())return;
