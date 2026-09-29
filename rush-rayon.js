@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-var STORAGE_KEY="nethor:rush-rayon-best-v1";
+var STORAGE_KEY="nethor:rush-rayon-best-v2";
 var current=null;
 var W=900,H=1180,GROUND=972;
 function q(root,sel){return root.querySelector(sel)}
@@ -29,10 +29,11 @@ function shell(){
  return [
   '<div class="rushShell">',
    '<div class="rushGameHead">',
-    '<div><span class="rushGameEyebrow">MINI-JEU · BÊTA ADMIN</span><h2>Rush Rayon</h2><p>Traverse les vrais univers du magasin : saute les obstacles, récupère les bonus et tiens le plus longtemps possible.</p></div>',
-    '<div class="rushBestCard"><span>Record local</span><strong data-rush-best>0 pts</strong></div>',
+    '<div><span class="rushGameEyebrow">MINI-JEU · NETHOR</span><h2>Rush Rayon</h2><p>Un runner arcade inspiré du magasin : simple, rapide et de plus en plus intense.</p></div>',
+    '<div class="rushBestCard"><span>Meilleur score</span><strong data-rush-best>0 pts</strong></div>',
    '</div>',
    '<div class="rushDevice">',
+    '<div class="rushMenu" data-rush-menu><div class="rushMenuBrand"><span class="rushMenuN">N</span><div><small>NETHOR ARCADE</small><strong>RUSH RAYON</strong></div></div><div class="rushMenuRunner">🏃</div><button class="rushMenuPlay" type="button" data-rush-menu-play>▶ Jouer</button><button class="rushMenuScore" type="button" data-rush-menu-score>★ Scores</button><button class="rushMenuSound" type="button" data-rush-sound>🔊 Son</button><div class="rushScores" data-rush-scores hidden><div class="rushScoresHead"><strong>Meilleurs scores</strong><button type="button" data-rush-score-close>✕</button></div><div data-rush-score-list><p>Chargement…</p></div></div></div>',
     '<div class="rushHud">',
      '<div class="rushMetric"><span>Score</span><strong data-rush-score>0</strong></div>',
      '<div class="rushMetric"><span>Articles</span><strong data-rush-items>0</strong></div>',
@@ -50,10 +51,10 @@ function shell(){
       '<button type="button" data-rush-start>Jouer</button>',
      '</div>',
     '</div>',
-    '<div class="rushHint"><span class="rushJumpIcon">↑</span><strong>Toucher pour sauter</strong><small>Évite cartons, chariots, palettes, flaques et autres surprises du magasin.</small></div>',
+    '<div class="rushHint"><span class="rushJumpIcon">↑</span><strong>Maintenir = saut plus long</strong><small>Relâche pour redescendre plus vite. Espace / ↑ fonctionne aussi.</small></div>',
    '</div>',
-   '<div class="rushGameFoot"><button type="button" data-rush-restart>Recommencer</button></div>',
-   '<p class="rushRules">Le record est enregistré uniquement sur cet appareil pendant la bêta. Aucun score n’est envoyé à la base Nethor.</p>',
+   '<div class="rushGameFoot"><button type="button" data-rush-restart>Recommencer</button><button type="button" data-rush-menu-back>Menu</button></div>',
+   '<p class="rushRules">Les meilleurs scores sont enregistrés sur le compte Nethor connecté.</p>',
   '</div>'
  ].join("");
 }
