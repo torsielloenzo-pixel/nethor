@@ -1,0 +1,14 @@
+/* Phase 4.11 — modules métiers Mobile */
+html[data-nethor-page-layout="mobile"] .departmentMobileLayout{min-height:100dvh;padding-bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))}
+html[data-nethor-page-layout="mobile"] .departmentMobileTop{
+ position:sticky;top:0;z-index:80;display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px;
+ padding:calc(env(safe-area-inset-top) + 8px) 10px 8px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line,#e3e6ea);backdrop-filter:blur(14px)
+}
+html[data-nethor-page-layout="mobile"] .departmentMobileBack{width:42px;height:42px;border:1px solid #e0e4e8;border-radius:14px;background:#fff;color:inherit;font-size:24px;line-height:1;padding:0}
+html[data-nethor-page-layout="mobile"] .departmentMobileTitle{min-width:0}
+html[data-nethor-page-layout="mobile"] .departmentMobileTitle strong{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-nethor-page-layout="mobile"] .departmentMobileTitle small{display:block;margin-top:2px;color:#8a8e95;font-size:8.5px}
+html[data-nethor-page-layout="mobile"] .departmentMobileBadge{padding:6px 8px;border-radius:999px;background:#171717;color:#fff;font-size:8px;font-weight:900}
+html[data-nethor-page-layout="mobile"] .departmentMobileUtilityHost{display:none!important}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"] .departmentMobileTop{background:rgba(23,25,29,.96);border-color:#32363d}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"] .departmentMobileBack{background:#23262b;border-color:#3a3f46;color:#f2f4f6}
