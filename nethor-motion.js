@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 
-const VERSION='1';
+const VERSION='2';
 const MOBILE_QUERY='(max-width:900px), (pointer:coarse)';
 const REDUCED_QUERY='(prefers-reduced-motion:reduce)';
 const ROUTE_STATE_KEY='nethorMotionRoute';
@@ -108,7 +108,7 @@ function planningIntent(e){
  const arrow=e.target?.closest?.('.mobilePlanningSelectorArrow[data-move]');
  if(arrow){planningPending=Number(arrow.dataset.move)<0?'back':'forward';bindPlanningMount();return}
  const mode=e.target?.closest?.('.mobileAgendaModeBtn');
- if(mode){planningPending='mode';bindPlanningMount();return}
+ if(mode){if(mode.id==='mobileAgendaCalendarBtn'){planningPending='';return}planningPending='mode';bindPlanningMount();return}
  const today=e.target?.closest?.('#agendaTodayBtn');
  if(today){planningPending='mode';bindPlanningMount()}
 }
