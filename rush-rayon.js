@@ -177,21 +177,15 @@ RushGame.prototype.togglePause=function(e){
 RushGame.prototype.onVisibility=function(){
  if(document.hidden&&this.mode==="running")this.pause();
 };
-RushGame.prototype.onPointer=function(e){
- if(e.target.closest("button"))return;
- e.preventDefault();
- this.stage.focus({preventScroll:true});
- if(this.mode==="ready"||this.mode==="over"){this.start(true);return}
- if(this.mode==="paused"){this.resume();return}
- this.jump();
-};
+RushGame.prototype.onPointer=function(e){if(e.target.closest("button"))return;e.preventDefault();this.stage.focus({preventScroll:true});if(this.mode==="ready"||this.mode==="over"){this.start(true);return}if(this.mode==="paused"){this.resume();return}this.jump(true)};
+RushGame.prototype.onPointerUp=function(e){if(e)e.preventDefault();this.releaseJump()};
 RushGame.prototype.onKey=function(e){
  var jumpKey=e.code==="Space"||e.code==="ArrowUp";
- if(jumpKey){
+ if(jumpKey){if(e.repeat)return;
   e.preventDefault();
   if(this.mode==="ready"||this.mode==="over"){this.start(true);return}
   if(this.mode==="paused"){this.resume();return}
-  this.jump();
+  this.jump(true);
   return;
  }
  if((e.code==="KeyP"||e.code==="Escape")&&(this.mode==="running"||this.mode==="paused")){
@@ -199,11 +193,10 @@ RushGame.prototype.onKey=function(e){
   this.togglePause();
  }
 };
-RushGame.prototype.jump=function(){
- if(this.mode!=="running"||!this.player.grounded)return;
- this.player.vy=-1000;
- this.player.grounded=false;
-};
+RushGame.prototype.onKeyUp=function(e){if(e.code==="Space"||e.code==="ArrowUp")this.releaseJump()};
+RushGame.prototype.jump=function(holding){if(this.mode!=="running"||!this.player.grounded)return;this.player.vy=-930;this.player.grounded=false;this.player.holding=!!holding;this.player.holdTime=0;this.audio.jump()};
+RushGame.prototype.releaseJump=function(){var p=this.player;p.holding=false;if(!p.grounded&&p.vy<0)p.vy=Math.max(p.vy,-390)};
+
 RushGame.prototype.loop=function(now){
  if(this.mode!=="running")return;
  var dt=Math.min((now-this.last)/1000,.034);
@@ -229,13 +222,11 @@ RushGame.prototype.update=function(dt){
  var eventBoost=this.elapsed<this.eventBoostUntil?1.12:1;
  this.currentSpeed=base*phase.mult*eventBoost;
  this.distance+=this.currentSpeed*dt*.038;
- this.player.vy+=2550*dt;
- this.player.y+=this.player.vy*dt;
+ var p=this.player;if(p.holding&&!p.grounded&&p.vy<80&&p.holdTime<.19){p.vy-=1050*dt;p.holdTime+=dt}var gravity=p.holding&&p.vy<0?1850:2850;p.vy+=gravity*dt;p.y+=p.vy*dt;p.landSquash=Math.max(0,p.landSquash-dt*4);
  var floorY=GROUND-this.player.h;
  if(this.player.y>=floorY){
   this.player.y=floorY;
-  this.player.vy=0;
-  this.player.grounded=true;
+  if(!this.player.grounded&&this.player.vy>420){this.player.landSquash=.16;this.audio.land()}this.player.vy=0;this.player.grounded=true;this.player.holding=false;
  }
  this.spawnTimer-=dt;
  if(this.spawnTimer<=0)this.spawnWave();
@@ -262,7 +253,7 @@ RushGame.prototype.update=function(dt){
    this.collectibles.splice(i,1);
    this.articles+=1;
    this.bonusScore+=120;
-   this.showToast(c.kind==="coffee"?"Pause café récupérée ☕":c.kind==="promo"?"Promo attrapée · +120":"Article récupéré · +120");
+   this.audio.collect();this.showToast(c.kind==="coffee"?"Pause café récupérée ☕":c.kind==="promo"?"Promo attrapée · +120":"Article récupéré · +120");
   }
  }
  this.updateHud();
@@ -318,8 +309,7 @@ RushGame.prototype.score=function(){
 };
 RushGame.prototype.gameOver=function(){
  if(this.mode!=="running")return;
- this.mode="over";
- cancelAnimationFrame(this.raf);
+ this.mode="over";cancelAnimationFrame(this.raf);this.player.holding=false;this.audio.gameOver();
  this.pauseBtn.disabled=true;
  var score=this.score();
  var isBest=score>this.best.score;
@@ -328,7 +318,7 @@ RushGame.prototype.gameOver=function(){
   saveBest(this.best);
   this.updateBest();
  }
- this.updateHud();
+ this.updateHud();this.saveScore(score);
  this.showOverlay(isBest?"NOUVEAU RECORD":"FIN DU RUSH",isBest?"Nouveau record !":"Oups, obstacle !","Score : "+score+" · "+Math.floor(this.distance)+" m · "+this.articles+" article"+(this.articles>1?"s":""),"Rejouer");
 };
 RushGame.prototype.showOverlay=function(badge,title,text,button){
