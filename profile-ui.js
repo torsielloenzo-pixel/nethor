@@ -499,7 +499,7 @@ function renderMobileQuickBar(){
    }
    if(mobileDropMode())closeDrops();
    activate();
-   if(mobileDropMode()&&samePageDestination(a.getAttribute('href'))){
+   if(mobileDropMode()&&a.matches('a[href]')&&samePageDestination(a.getAttribute('href'))){
     e.preventDefault();e.stopPropagation();return
    }
   });
