@@ -1249,7 +1249,7 @@ function addStyle(){
    .nettoMobileMenuIcon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#fff2ec;color:#ef5a2f}
    .nettoMobileMenuIcon svg{width:23px;height:23px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
    .nettoMobileMenuChevron{color:#838991;font-size:31px;font-weight:400;line-height:1;transform:translateY(-1px)}
-   .nettoMobileMenuRow:active,.nettoMobileProfileMain:active{background:#f7f8fa}
+   .nettoMobileMenuRow:disabled{opacity:.58;cursor:wait}.nettoMobileMenuRow:disabled .nettoMobileMenuChevron{visibility:hidden}.nettoMobileMenuRow:active,.nettoMobileProfileMain:active{background:#f7f8fa}
    .nettoMobileMenuDanger .nettoMobileMenuIcon{background:#fff0ee;color:#d93f32}
    .nettoMobileMenuDanger .nettoMobileMenuCopy strong{color:#c9362d}
    :root[data-theme="dark"] body>#nettoUserDrop.nettoMobilePortaledDrop{background:#171a1e!important}
@@ -1439,8 +1439,8 @@ function askUpdateSearch(){
   sounds.play('menuOpen')
  })
 }
-const APP_RELEASE=204;
-const APP_RELEASE_LABEL='v1.20.0';
+const APP_RELEASE=209;
+const APP_RELEASE_LABEL='v1.20.4';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL]]);
@@ -1489,12 +1489,56 @@ function waitForUpdateWorker(reg,timeout=2500){
   finish()
  })
 }
+function updateRequiresCacheReset(info){
+ return info?.clear_cache===true||info?.cache_reset===true||info?.major===true||info?.important===true
+}
+async function purgeNethorCaches(){
+ if(!('caches' in window))return;
+ try{
+  const keys=await caches.keys();
+  await Promise.all(keys.filter(k=>/^netto-tools-v\d+$/.test(String(k))).map(k=>caches.delete(k)))
+ }catch(e){console.warn('Purge cache Nethor:',e)}
+}
+function forcedUpdateUrl(version,url=location.href){
+ const u=new URL(url,location.href);
+ u.searchParams.delete('_nethor_update');
+ u.searchParams.set('_nethor_update',String(version||'latest')+'-'+Date.now());
+ return u.href
+}
+function updateControlButtons(){
+ return [document.getElementById('nettoUpdateCheckBtn'),document.getElementById('nettoMobileUpdateBtn')].filter(Boolean)
+}
+function setManualUpdateBusy(active){
+ updateControlButtons().forEach(btn=>{
+  btn.disabled=!!active;
+  btn.classList.toggle('checking',!!active);
+  if(active)btn.setAttribute('aria-busy','true');else btn.removeAttribute('aria-busy')
+ });
+ const mobile=document.getElementById('nettoMobileUpdateBtn');
+ const small=mobile?.querySelector('.nettoMobileMenuCopy small');
+ if(small)small.textContent=active?'Vérification en cours…':'Rechercher une nouvelle version'
+}
+async function prepareWaitingUpdate(reg,timeout=8000){
+ if(!reg)return null;
+ if(reg.waiting)return reg.waiting;
+ await reg.update().catch(()=>{});
+ return reg.waiting||await waitForUpdateWorker(reg,timeout)
+}
+async function forceUpdateReload(reg,targetVersion,info,url=location.href){
+ if(updateRequiresCacheReset(info))await purgeNethorCaches();
+ try{await reg?.unregister?.()}catch(_){}
+ try{
+  sessionStorage.removeItem('nettoUpdateLater');
+  sessionStorage.setItem('nettoForceUpdateVersion',String(targetVersion||''))
+ }catch(_){}
+ location.replace(forcedUpdateUrl(targetVersion,url))
+}
+
 async function manualCheckForUpdates(){
- const btn=document.getElementById('nettoUpdateCheckBtn');
- if(btn?.classList.contains('checking'))return;
+ if(updateControlButtons().some(btn=>btn.classList.contains('checking')))return;
  const confirmed=await askUpdateSearch();
  if(!confirmed)return;
- btn?.classList.add('checking');btn?.setAttribute('aria-busy','true');sounds.play('tap');
+ setManualUpdateBusy(true);sounds.play('tap');
  try{
   if(!('serviceWorker' in navigator)){mobilePreviewNotice('Mises à jour non prises en charge');return}
   mobilePreviewNotice('Vérification de la version publiée…');
@@ -1506,62 +1550,43 @@ async function manualCheckForUpdates(){
   const manifestVersion=Number(info.version)||APP_RELEASE;
   const stored=Number(localStorage.getItem('nettoAppVersion')||0)||0;
 
-  // Cas le plus fréquent : la version publiée est déjà celle installée.
-  // On répond immédiatement, puis on laisse le navigateur vérifier le SW en arrière-plan.
-  if(!reg.waiting&&stored>=manifestVersion){
-   mobilePreviewNotice('Nethor est à jour - '+displayVersion(stored,stored===manifestVersion?info.label:''));
-   sounds.play('update');
-   reg.update().catch(()=>{});
-   return
-  }
-
-  // Une mise à jour déjà prête doit s'afficher immédiatement.
-  if(reg.waiting){
-   const waitingVersion=await workerVersion(reg.waiting);
-   const current=Math.max(stored,Number(await workerVersion(navigator.serviceWorker.controller||reg.active))||0,APP_RELEASE);
-   const latest=Math.max(manifestVersion,waitingVersion||0);
-   if(latest>current){
-    sessionStorage.removeItem('nettoUpdateLater');
-    await showUpdateAvailable(reg,latest,true);
-    mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest));
-    return
-   }
-  }
-
-  // Si le stockage local est absent ou ancien, on vérifie rapidement la version active.
-  const active=await workerVersion(navigator.serviceWorker.controller||reg.active);
-  const current=Math.max(stored,active||0,APP_RELEASE);
-  if(current>=manifestVersion){
-   try{localStorage.setItem('nettoAppVersion',String(current))}catch(_){}
-   mobilePreviewNotice('Nethor est à jour - '+displayVersion(current,current===manifestVersion?info.label:''));
-   sounds.play('update');
-   reg.update().catch(()=>{});
-   return
-  }
-
-  // On sait déjà qu'une nouvelle version existe : on l'annonce tout de suite.
-  mobilePreviewNotice('Nouvelle version détectée : '+displayVersion(manifestVersion,info.label));
-
-  // La préparation du Service Worker ne bloque désormais que quelques secondes au maximum.
+  // Toujours interroger le réseau avant d'annoncer que l'application est à jour.
+  // C'est important sur iOS/PWA où une registration peut rester active longtemps.
   await reg.update().catch(()=>{});
-  if(!reg.waiting)await waitForUpdateWorker(reg,2500);
+  if(!reg.waiting)await waitForUpdateWorker(reg,3200);
 
-  if(reg.waiting){
-   const waitingVersion=await workerVersion(reg.waiting);
-   const latest=Math.max(manifestVersion,waitingVersion||0);
+  const active=Number(await workerVersion(navigator.serviceWorker.controller||reg.active))||0;
+  const current=active||stored||0;
+  const waitingVersion=Number(await workerVersion(reg.waiting))||0;
+  const latest=Math.max(manifestVersion,waitingVersion);
+
+  if(reg.waiting&&latest>current){
    sessionStorage.removeItem('nettoUpdateLater');
    await showUpdateAvailable(reg,latest,true);
-   mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest));
+   mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest,info.label));
    return
   }
 
-  mobilePreviewNotice(displayVersion(manifestVersion,info.label)+' détectée · préparation en arrière-plan');
+  // Le manifeste peut être plus récent avant que le navigateur ait fini
+  // d'installer le nouveau worker. On affiche quand même la mise à jour :
+  // l'acceptation forcera sa préparation puis son activation.
+  if(manifestVersion>current){
+   sessionStorage.removeItem('nettoUpdateLater');
+   await showUpdateAvailable(reg,manifestVersion,true);
+   mobilePreviewNotice('Mise à jour disponible : '+displayVersion(manifestVersion,info.label));
+   return
+  }
+
+  const installed=Math.max(current,waitingVersion);
+  if(installed>0)try{localStorage.setItem('nettoAppVersion',String(installed))}catch(_){}
+  mobilePreviewNotice('Nethor est à jour - '+displayVersion(installed||manifestVersion,installed===manifestVersion?info.label:''));
+  sounds.play('update')
  }catch(e){
   console.warn('Recherche de mise à jour:',e);
   mobilePreviewNotice('Impossible de vérifier les mises à jour');
   sounds.play('error')
  }finally{
-  btn?.classList.remove('checking');btn?.removeAttribute('aria-busy')
+  setManualUpdateBusy(false)
  }
 }
 
@@ -1626,7 +1651,7 @@ function buildGlobalHeader(){
  });
  document.getElementById('nettoThemeBtn').onclick=e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()};
  document.getElementById('nettoMobileThemeBtn')?.addEventListener('click',e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()});
- document.getElementById('nettoMobileUpdateBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeDrops();manualCheckForUpdates()});
+ document.getElementById('nettoMobileUpdateBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeDrops();void manualCheckForUpdates()});
  const logoutAction=async()=>{sounds.play('logout');await new Promise(r=>setTimeout(r,390));await recordChatPresence('end');await detachPushBeforeLogout();await api.client.auth.signOut({scope:'local'});location.href='index.html'};
  document.getElementById('nettoLogoutBtn').onclick=logoutAction;
  const mobileLogoutBtn=document.getElementById('nettoMobileLogoutBtn');if(mobileLogoutBtn)mobileLogoutBtn.onclick=logoutAction;
@@ -2216,35 +2241,59 @@ function startUpdateProgress(){
  }
 }
 async function activateWaitingUpdate(info){
- const reg=updateRegistration||await navigator.serviceWorker.getRegistration();const worker=reg&&reg.waiting;
- if(!worker){mobilePreviewNotice('La mise à jour n’est pas encore prête');return false}
+ const reg=updateRegistration||await navigator.serviceWorker.getRegistration();
+ if(!reg){mobilePreviewNotice('Service de mise à jour indisponible');return false}
+
  const toast=document.getElementById('nettoUpdateToast'),btn=document.getElementById('nettoUpdateNow'),later=document.getElementById('nettoUpdateLater');
  toast?.classList.add('updating');
  if(btn){btn.disabled=true;btn.textContent='Mise à jour…'}
  if(later)later.disabled=true;
+
  const progress=startUpdateProgress();
- const workerV=await workerVersion(worker),targetVersion=Math.max(Number(info?.version)||0,workerV||0,APP_RELEASE);
+ let worker=reg.waiting;
+ const advertised=Number(info?.version)||APP_RELEASE;
+ if(!worker){
+  setUpdateProgress(8,'Préparation de la nouvelle version…');
+  worker=await prepareWaitingUpdate(reg,8000)
+ }
+
+ const workerV=Number(await workerVersion(worker))||0;
+ const targetVersion=Math.max(advertised,workerV,APP_RELEASE);
  let finished=false;
- const complete=()=>{
+
+ const complete=async()=>{
   if(finished)return;finished=true;progress.stop();
-  try{localStorage.setItem('nettoAppVersion',String(targetVersion));localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())}catch(_){}
-  syncAppIconLinks();showUpdateSuccess('Nethor a bien été mis à jour');
-  setTimeout(()=>location.reload(),1250)
+  if(updateRequiresCacheReset(info)){
+   setUpdateProgress(97,'Nettoyage de l’ancienne version…');
+   await purgeNethorCaches()
+  }
+  try{
+   localStorage.setItem('nettoAppVersion',String(targetVersion));
+   localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())
+  }catch(_){}
+  syncAppIconLinks();showUpdateSuccess(updateRequiresCacheReset(info)?'Mise à jour majeure installée · cache renouvelé':'Nethor a bien été mis à jour');
+  setTimeout(()=>location.replace(forcedUpdateUrl(targetVersion)),700)
  };
- navigator.serviceWorker.addEventListener('controllerchange',complete,{once:true});
- setTimeout(()=>{if(!finished)progress.finalize()},3300);
+
+ if(!worker){
+  const current=Number(await workerVersion(navigator.serviceWorker.controller||reg.active))||0;
+  if(current>=targetVersion){await complete();return true}
+  setUpdateProgress(94,'Redémarrage forcé de Nethor…');
+  setTimeout(()=>forceUpdateReload(reg,targetVersion,info),180);
+  return true
+ }
+
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{void complete()},{once:true});
+ setTimeout(()=>{if(!finished)progress.finalize()},3600);
  setTimeout(async()=>{
   if(finished)return;
-  const current=await workerVersion(navigator.serviceWorker.controller);
-  if(current&&current>=targetVersion){complete();return}
-  progress.stop();
-  setUpdateProgress(94,'Finalisation en attente…');
-  if(btn){btn.disabled=false;btn.textContent='Réessayer'}
-  if(later)later.disabled=false;
-  toast?.classList.remove('updating');
-  mobilePreviewNotice('La mise à jour prend plus de temps que prévu')
- },7000);
- worker.postMessage({type:'SKIP_WAITING'});
+  const current=Number(await workerVersion(navigator.serviceWorker.controller))||0;
+  if(current>=targetVersion){await complete();return}
+  setUpdateProgress(96,'Activation forcée de la nouvelle version…');
+  await forceUpdateReload(reg,targetVersion,info)
+ },9500);
+
+ worker.postMessage({type:updateRequiresCacheReset(info)?'PURGE_CACHES_AND_SKIP_WAITING':'SKIP_WAITING'});
  return true
 }
 async function showUpdateAvailable(reg,forcedVersion=0,force=false){
@@ -2253,14 +2302,17 @@ async function showUpdateAvailable(reg,forcedVersion=0,force=false){
  const version=Math.max(Number(info.version)||APP_RELEASE,Number(forcedVersion)||0,waitingVersion||0);
  info.version=version;
  if(updateInstallMode(info)==='auto'){await activateWaitingUpdate(info);return}
- if(sessionStorage.getItem('nettoUpdateLater')===String(version))return;
- if(document.getElementById('nettoUpdateToast'))return;
+ if(!force&&sessionStorage.getItem('nettoUpdateLater')===String(version))return;
+ const existing=document.getElementById('nettoUpdateToast');
+ if(existing){if(!force)return;existing.remove()}
  ensureUpdateStyles();
  const el=document.createElement('aside');el.id='nettoUpdateToast';el.className='nettoUpdateToast';el.setAttribute('role','status');el.setAttribute('aria-live','polite');
- const copy=publicUpdateCopy();el.innerHTML='<div class="nettoUpdateTop"><img class="nettoUpdateIcon" src="'+esc(info.icon||APP_ICON)+'" alt=""><div class="nettoUpdateCopy"><strong>'+esc(copy.title)+'</strong><span>'+esc(copy.message)+'</span><span class="nettoUpdateVersion">'+esc(displayVersion(version,info.label))+' • dernière version</span></div></div><div id="nettoUpdateProgressWrap" class="nettoUpdateProgressWrap hidden"><div class="nettoUpdateProgressHead"><span id="nettoUpdateProgressLabel" class="nettoUpdateProgressLabel">Préparation de la mise à jour…</span><strong id="nettoUpdateProgressValue" class="nettoUpdateProgressValue">0%</strong></div><div class="nettoUpdateProgressBar" aria-hidden="true"><div id="nettoUpdateProgressFill" class="nettoUpdateProgressFill"></div></div><div id="nettoUpdateProgressDone" class="nettoUpdateProgressDone hidden">Nethor a bien été mis à jour</div></div><div class="nettoUpdateActions"><button type="button" class="nettoUpdateLater" id="nettoUpdateLater">Plus tard</button><button type="button" class="nettoUpdateNow" id="nettoUpdateNow">Mettre à jour</button></div>';
+ const copy=publicUpdateCopy(),major=updateRequiresCacheReset(info);
+ const message=major?'Mise à jour majeure : l’ancien cache Nethor sera vidé avant le redémarrage pour éviter les collisions.':copy.message;
+ el.innerHTML='<div class="nettoUpdateTop"><img class="nettoUpdateIcon" src="'+esc(info.icon||APP_ICON)+'" alt=""><div class="nettoUpdateCopy"><strong>'+esc(copy.title)+'</strong><span>'+esc(message)+'</span><span class="nettoUpdateVersion">'+esc(displayVersion(version,info.label))+(major?' • majeure':' • dernière version')+'</span></div></div><div id="nettoUpdateProgressWrap" class="nettoUpdateProgressWrap hidden"><div class="nettoUpdateProgressHead"><span id="nettoUpdateProgressLabel" class="nettoUpdateProgressLabel">Préparation de la mise à jour…</span><strong id="nettoUpdateProgressValue" class="nettoUpdateProgressValue">0%</strong></div><div class="nettoUpdateProgressBar" aria-hidden="true"><div id="nettoUpdateProgressFill" class="nettoUpdateProgressFill"></div></div><div id="nettoUpdateProgressDone" class="nettoUpdateProgressDone hidden">Nethor a bien été mis à jour</div></div><div class="nettoUpdateActions"><button type="button" class="nettoUpdateLater" id="nettoUpdateLater">Plus tard</button><button type="button" class="nettoUpdateNow" id="nettoUpdateNow">Mettre à jour</button></div>';
  document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('show'));sounds.play('notification');
  document.getElementById('nettoUpdateLater').onclick=()=>{sessionStorage.setItem('nettoUpdateLater',String(version));hideUpdateToast()};
- document.getElementById('nettoUpdateNow').onclick=()=>activateWaitingUpdate(info);
+ document.getElementById('nettoUpdateNow').onclick=()=>{void activateWaitingUpdate(info)};
  notifyUpdateSystem(reg,info)
 }
 async function setupAppUpdates(){
