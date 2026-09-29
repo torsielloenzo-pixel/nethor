@@ -258,3 +258,6 @@ html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rp
 
 /* Settings — responsive interne Mobile. */
 @media(max-width:620px){#userBarSettingsPanel{display:none!important}.themeChoices{grid-template-columns:1fr}.themeChoice{min-height:64px}header{height:66px}.top{width:calc(100% - 22px)}main{width:calc(100% - 22px);padding-top:28px}.hero{align-items:flex-start;flex-direction:column}.hero h1{font-size:29px}.panel{padding:15px;border-radius:17px}.panelHead{display:grid}.item{grid-template-columns:38px minmax(0,1fr) auto}.icon{width:38px;height:38px}.info span{max-width:180px}.adminLink{align-items:flex-start;flex-direction:column}.actions{bottom:max(8px,env(safe-area-inset-bottom));flex-wrap:wrap}.saveState{width:100%;margin:0}.actions .btn{flex:1}}
+
+/* Réglages des notifications — adaptations petits écrans. */
+@media(max-width:560px){main{padding-left:10px;padding-right:10px}.nsTop{margin-bottom:13px}.nsTitle h1{font-size:26px}.pushPanel{grid-template-columns:1fr}.pushActions .btn{flex:1}.ruleRow{grid-template-columns:42px minmax(0,1fr);padding:12px}.ruleIcon{width:40px;height:40px}.ruleCopy strong{font-size:12.5px}.channelControl,.channelControl.two{grid-column:1/-1;width:100%;min-width:0;margin-top:2px}.channelOption{min-height:38px;font-size:9px;padding:0 5px}}
