@@ -61,7 +61,18 @@ function detectDates(rows){let dates=[];for(const row of rows.slice(0,500)){for(
 function fDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 async function inspectFile(file){const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array',cellDates:true}),sheetNames=wb.SheetNames||[];let total=0,headers=[],sample=[];for(const sn of sheetNames.slice(0,12)){const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:null});total+=rows.length;if(!headers.length&&rows[0])headers=Object.keys(rows[0]);sample.push(...rows.slice(0,60))}const period=detectDates(sample);return{sheetNames,rowCount:total,headers:headers.slice(0,80),periodStart:period[0],periodEnd:period[1],category:classify(file.name,headers)}}
 async function uploadOne(file){if(file.size>15728640)throw new Error(file.name+' dépasse 15 Mo.');const info=await inspectFile(file),path=session.user.id+'/'+Date.now()+'-'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const up=await db.storage.from('fl-analysis').upload(path,file,{upsert:false,contentType:file.type||undefined});if(up.error)throw up.error;const ins=await db.from('fl_analysis_files').insert({uploaded_by:session.user.id,file_name:file.name,storage_path:path,mime_type:file.type||null,file_size:file.size,category:info.category,sheet_names:info.sheetNames,row_count:info.rowCount,columns:info.headers,period_start:info.periodStart,period_end:info.periodEnd,summary:{detected_category:info.category}});if(ins.error){await db.storage.from('fl-analysis').remove([path]);throw ins.error}}
-async function handleFiles(list){const arr=[...list];if(!arr.length)return;const st=document.getElementById('uploadState');for(let i=0;i<arr.length;i++){st.textContent='Analyse et envoi '+(i+1)+'/'+arr.length+' : '+arr[i].name;try{await uploadOne(arr[i])}catch(e){st.textContent='Erreur : '+e.message;await refreshAll();return}}st.textContent='✓ '+arr.length+' fichier'+(arr.length>1?'s':'')+' analysé'+(arr.length>1?'s':'')+' et enregistré'+(arr.length>1?'s':'')+'.';window.NettoSounds?.play?.('success');await refreshAll()}
+let fileUploadBusy=false;
+async function handleFiles(list){
+ if(fileUploadBusy)return;
+ const arr=[...list];if(!arr.length)return;
+ const st=document.getElementById('uploadState'),invalid=arr.find(f=>!(/\.(xls|xlsx|csv)$/i.test(f.name||'')));
+ if(invalid){st.textContent='Erreur : format non pris en charge pour '+invalid.name+'. Formats acceptés : XLS, XLSX ou CSV.';return}
+ fileUploadBusy=true;
+ try{
+  for(let i=0;i<arr.length;i++){st.textContent='Analyse et envoi '+(i+1)+'/'+arr.length+' : '+arr[i].name;try{await uploadOne(arr[i])}catch(e){st.textContent='Erreur : '+e.message;await refreshAll();return}}
+  st.textContent='✓ '+arr.length+' fichier'+(arr.length>1?'s':'')+' analysé'+(arr.length>1?'s':'')+' et enregistré'+(arr.length>1?'s':'')+'.';window.NettoSounds?.play?.('success');await refreshAll()
+ }finally{fileUploadBusy=false}
+}
 async function loadFiles(){const {data,error}=await db.from('fl_analysis_files').select('*').order('created_at',{ascending:false}).limit(100);if(error)throw error;files=data||[]}
 async function deleteFile(id){const f=files.find(x=>x.id===id);if(!f||!confirm('Supprimer ce fichier de l’analyse ?'))return;const del=await db.from('fl_analysis_files').delete().eq('id',id);if(del.error)return alert(del.error.message);await db.storage.from('fl-analysis').remove([f.storage_path]);await refreshAll()}
 async function openFile(id){const f=files.find(x=>x.id===id);if(!f)return;const {data,error}=await db.storage.from('fl-analysis').createSignedUrl(f.storage_path,60);if(error)return alert('Ouverture impossible.');window.open(data.signedUrl,'_blank','noopener')}
