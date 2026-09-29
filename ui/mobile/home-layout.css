@@ -1,0 +1,10 @@
+/* Phase 4.4 — structure Accueil Mobile. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="home"] body{background:#eef1f4}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="home"] main{
+ width:100%;max-width:100%;margin:0;
+ padding:calc(env(safe-area-inset-top) + 8px) 9px calc(82px + env(safe-area-inset-bottom))
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="home"] .homeMobileLayout,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="home"] .homeMobileDashboard{
+ display:block;width:100%;max-width:100%;min-width:0
+}
