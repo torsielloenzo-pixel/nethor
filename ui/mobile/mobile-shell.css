@@ -219,3 +219,32 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
    .nettoMobileProfileMain,.nettoMobileMenuRow{padding-left:11px;padding-right:11px;gap:10px}
    .nettoMobileMenuCopy strong{font-size:13px}
  }
+
+
+/* Phase 4.1 — structure de page réellement mobile.
+   Ce fichier n'est activé que par platform-resolver pour mobile/mobile-preview. */
+.nethorMobileUtilityHost{display:none!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] main{
+  width:min(100%,760px)!important;
+  margin:0 auto!important;
+  padding:calc(env(safe-area-inset-top) + 14px) 10px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] main>.hero{display:none!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileTop{
+  display:flex!important;align-items:center;gap:11px;margin:2px 2px 13px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileBack{
+  width:42px;height:42px;flex:0 0 42px;border:1px solid #e4e7eb;border-radius:14px;
+  background:#fff;display:grid;place-items:center;color:inherit;font-size:24px;line-height:1;
+  font-weight:700;padding:0;box-shadow:none
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileTitle{min-width:0}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileTitle h1{
+  margin:0!important;font-size:26px!important;line-height:1.05!important;letter-spacing:-.8px!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileTitle p{
+  margin:5px 0 0!important;color:#7b828b!important;font-size:10px!important;line-height:1.35!important
+}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileBack{
+  background:#202328;border-color:#363b42;color:#f2f4f6
+}
