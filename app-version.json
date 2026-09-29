@@ -1,11 +1,11 @@
 {
-  "version": 225,
-  "label": "v1.31.0",
+  "version": 226,
+  "label": "v1.32.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.8 — Fiches articles",
-  "message": "Fiches articles possède désormais deux structures distinctes. L’ancien menu N, le backdrop Mobile et les breakpoints qui fabriquaient l’interface Mobile ont été retirés du fichier commun. Desktop conserve son hero et sa grille dédiée ; Mobile dispose d’un top compact propre, tout en partageant le même moteur de référentiel, droits, filtres, dialogues et deep-links EAN.",
-  "published_at": "2026-09-30T00:11:23.000+02:00",
+  "title": "Phase 4.9 — Gestion des comptes",
+  "message": "Gestion des comptes possède désormais des structures Desktop, Mobile et un contexte embarqué Gestion explicitement séparé. Le mode Mobile ne dépend plus de innerWidth, les breakpoints 600/700 px ont quitté le CSS commun, et l’iframe Gestion conserve la même logique métier sans shell ni bouton Retour parasite.",
+  "published_at": "2026-09-30T00:24:18.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
