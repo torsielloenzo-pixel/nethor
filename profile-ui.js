@@ -886,7 +886,7 @@ function bindHomeMark(){
  document.querySelectorAll('#nMenu,.brandMenu').forEach(x=>x.classList.add('hidden'))
  document.body.classList.remove('mobileNavOpen')
 }
-function findHeaderTop(){return document.querySelector('#site header .top')||document.querySelector('header .top')}
+function findHeaderTop(){return document.querySelector('[data-nethor-global-tools-host]')||document.querySelector('#site header .top')||document.querySelector('header .top')}
 async function detachPushBeforeLogout(){
  try{
   if(!api.client||!api.session||!('serviceWorker' in navigator)||!('PushManager' in window))return;
@@ -1653,6 +1653,7 @@ function goBack(){
 }
 function addBackButton(){
  const p=pageFile();if(p==='home.html'||p==='')return;
+ if(document.documentElement.dataset.nethorPageBackHandled==='1')return;
  document.querySelectorAll('header .backBtn').forEach(x=>x.classList.add('nettoLegacyBackHidden'));
  if(document.getElementById('nettoGlobalBack'))return;
  const b=document.createElement('button');b.id='nettoGlobalBack';b.type='button';b.className='nettoBackBtn';b.setAttribute('aria-label','Retour');b.innerHTML='<span class="nettoBackArrow">←</span><span class="nettoBackLabel">Retour</span>';b.onclick=goBack;
