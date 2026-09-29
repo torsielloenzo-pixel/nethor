@@ -29,7 +29,8 @@ function buildPageLayout(page){
   accounts:{title:'Gestion des comptes',subtitle:'Administration · Accès · Journal',back:true},
   'admin-portal':{title:'Gestion',subtitle:'Administration Nethor',back:true,chrome:false},
   'fl-assistant':{title:'Assistant Précommande F&L',subtitle:'Analyse dédiée',back:true,chrome:false},
-  bakery:{title:'Boulangerie',subtitle:'Stock interne',back:true,chrome:false}
+  bakery:{title:'Boulangerie',subtitle:'Stock interne',back:true,chrome:false},
+  rewards:{title:'Défis & Boutique',subtitle:'Missions et récompenses',back:true,chrome:false}
  };
  const cfg=pages[id];
  if(!cfg)return null;
