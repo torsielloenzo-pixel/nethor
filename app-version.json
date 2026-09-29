@@ -1,11 +1,11 @@
 {
-  "version": 215,
-  "label": "v1.23.0",
+  "version": 216,
+  "label": "v1.24.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Séparation Desktop / Mobile — Phase 2",
-  "message": "La navigation Desktop et Mobile utilise désormais deux hiérarchies indépendantes. Les parents de pages sont définis dans un routeur dédié et profile-ui ne décide plus lui-même où retourner. Sur Desktop, Mon profil revient à l’accueil ; sur Mobile, Mon profil et les pages du Menu utilisateur reviennent au Menu utilisateur. Scanner et Signaler un problème utilisent également cette même hiérarchie. Le cache est vidé pour supprimer l’ancienne navigation.",
-  "published_at": "2026-09-29T22:20:00+02:00",
+  "title": "Séparation Desktop / Mobile — Phase 3",
+  "message": "Les composants d’interface Desktop et Mobile sont désormais séparés physiquement. La barre mobile et le Menu utilisateur Mobile vivent dans ui/mobile, tandis que le Menu utilisateur et la présentation Desktop vivent dans ui/desktop. profile-ui reste le noyau commun pour les données et les événements. Cette mise à jour vide le cache afin de supprimer les anciens styles mélangés.",
+  "published_at": "2026-09-29T22:35:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
