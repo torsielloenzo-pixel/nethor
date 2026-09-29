@@ -852,3 +852,116 @@ Aucune duplication de logique pour :
 - liens vers Stock F&L et Boulangerie.
 
 Les mêmes IDs fonctionnels sont présents dans le layout actif sur les deux plateformes.
+
+
+## Phase 4.9 — Gestion des comptes
+
+`accounts.html` rejoint l’architecture de plateforme séparée tout en conservant son intégration dans Gestion.
+
+### Trois contextes, deux plateformes
+
+La page possède maintenant :
+
+```text
+ui/
+├── desktop/
+│   ├── accounts-layout.js
+│   └── accounts-layout.css
+├── mobile/
+│   ├── accounts-layout.js
+│   └── accounts-layout.css
+└── accounts-embedded.css
+```
+
+Desktop et Mobile ont leurs propres structures pleine page.
+
+Le mode `?embedded=1`, utilisé dans Gestion, reste un contexte spécial indépendant de la plateforme : il réutilise le même contenu fonctionnel, sans hero ni shell externe.
+
+### Point de montage
+
+Le HTML commun ne contient plus directement le header ou le `main` de Gestion des comptes.
+
+Il expose :
+
+```html
+<div data-nethor-accounts-layout></div>
+```
+
+`platform-page-layout.js` v8 choisit ensuite le builder actif.
+
+### Desktop
+
+Desktop construit :
+
+- le hero `Comptes & activité` ;
+- les actions Actualiser / Créer un compte ;
+- les statistiques ;
+- les onglets Comptes / Rôles & permissions / Journal ;
+- la liste utilisateurs et la fiche détaillée ;
+- les matrices de rôles, widgets et sous-rôles ;
+- le journal d’activité.
+
+Le shell Desktop fournit l’en-tête de page et le retour vers Gestion.
+
+### Mobile
+
+Mobile ne construit pas le hero Desktop.
+
+Il possède :
+
+- un top compact ;
+- un retour utilisant `NethorNavigation` ;
+- les actions d’administration ;
+- les statistiques ;
+- les trois onglets ;
+- les mêmes vues fonctionnelles.
+
+Les adaptations à 600 et 700 px sont désormais confinées à `ui/mobile/accounts-layout.css`.
+
+### Mode embarqué Gestion
+
+Quand `embedded=1` est présent :
+
+- aucun header Desktop n’est construit ;
+- aucun chrome Mobile n’est construit ;
+- aucun bouton Retour global n’est injecté ;
+- le hero pleine page n’est pas construit ;
+- le contenu fonctionnel commence directement par les statistiques / onglets ;
+- `nav=external` continue de permettre au parent de piloter la navigation des onglets.
+
+Le responsive interne à 900 px de l’iframe est conservé dans `ui/accounts-embedded.css`. Il adapte uniquement la largeur du contenu embarqué et ne sert pas à choisir Desktop ou Mobile.
+
+### Fin de `innerWidth` comme décision Mobile
+
+L’ancien comportement :
+
+```js
+if (scroll && innerWidth < 900) ...
+```
+
+est remplacé par :
+
+```js
+NethorPlatform.isMobile()
+```
+
+Réduire une fenêtre Desktop ne déclenche donc plus un comportement Mobile.
+
+### Moteur métier inchangé
+
+La phase ne duplique pas :
+
+- authentification Supabase ;
+- contrôle du rôle administrateur ;
+- création / modification / suppression de comptes ;
+- demandes de réinitialisation de mot de passe ;
+- rôles personnalisés ;
+- permissions par module ;
+- widgets Planning ;
+- widgets Accueil ;
+- sous-rôles ;
+- journal et statistiques de visites ;
+- sélection d’utilisateur par query string ;
+- communication iframe vers Gestion.
+
+Les mêmes IDs fonctionnels sont présents dans les layouts Desktop, Mobile et embarqué.
