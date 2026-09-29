@@ -13,7 +13,7 @@ html[data-nethor-page-layout="desktop"] .nsDesktopIntro p{margin:0;color:var(--n
 html[data-nethor-page-layout="desktop"] .nsEyebrow{font-size:10px;font-weight:900;letter-spacing:1.3px;color:var(--ns-accent)}
 html[data-nethor-page-layout="desktop"] .ruleRow{grid-template-columns:48px minmax(0,1fr) minmax(260px,360px)}
 html[data-nethor-page-layout="desktop"] .pushPanel{grid-template-columns:minmax(0,1fr) auto}
-html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] body{position:static;overflow:auto}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"],html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] body{position:static;overflow:auto;height:auto;min-height:100%}
 html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopShell{
  width:min(920px,calc(100% - 48px));height:auto;min-height:100dvh;margin:0 auto;padding:38px 0 56px;display:block;overflow:visible
 }
