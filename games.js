@@ -18,6 +18,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-game]');if
 document.getElementById('gameExit')?.addEventListener('click',()=>history.state?.game?history.back():closeGame());
 document.getElementById('back')?.addEventListener('click',()=>location.assign('home.html'));
 addEventListener('popstate',closeGame);
+addEventListener('nethor:game-exit',()=>{history.state?.game?history.back():closeGame()});
 async function boot(){
  try{
   if(!window.supabase)throw Error('Supabase indisponible');
