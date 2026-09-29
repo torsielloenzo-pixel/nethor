@@ -40,12 +40,25 @@ function adminPortalShell(){
 function departmentPagesShell(){
  return platformKind()==='desktop'?window.NethorDesktopDepartmentPagesLayout:window.NethorMobileDepartmentPagesLayout
 }
+function rewardsShell(){
+ return platformKind()==='desktop'?window.NethorDesktopRewardsLayout:window.NethorMobileRewardsLayout
+}
 function replaceHost(selector,html){
  const host=document.querySelector(selector);
  if(!host)return false;
  if(html)host.outerHTML=html;
  else host.remove();
  return true
+}
+function mountRewards(id){
+ if(id!=='rewards')return null;
+ const builder=rewardsShell()?.build;
+ if(typeof builder!=='function')return null;
+ const layout=builder();
+ if(!layout)return null;
+ replaceHost('[data-nethor-rewards-layout]',layout.html||'');
+ ROOT.dataset.nethorRewardsLayout=layout.platform||platformKind();
+ return layout
 }
 function mountDepartmentPage(id){
  if(!['fl-assistant','bakery'].includes(id))return null;
@@ -153,6 +166,7 @@ function mount(){
  ROOT.dataset.nethorPageId=id;
  if(layout.handlesBack)ROOT.dataset.nethorPageBackHandled='1';
  else delete ROOT.dataset.nethorPageBackHandled;
+ const rewards=mountRewards(id);
  const departmentPage=mountDepartmentPage(id);
  const adminPortal=mountAdminPortal(id);
  const accounts=mountAccounts(id);
@@ -164,11 +178,11 @@ function mount(){
  const planning=mountPlanning(id);
  try{
   document.dispatchEvent(new CustomEvent('nethor:page-layout-ready',{
-   detail:{page:id,platform:ROOT.dataset.nethorPageLayout,departmentPage:departmentPage?.platform||null,adminPortal:adminPortal?.platform||null,accounts:accounts?.platform||null,articles:articles?.platform||null,toolPage:toolPage?.platform||null,userPage:userPage?.platform||null,profile:profile?.platform||null,home:home?.platform||null,planning:planning?.platform||null}
+   detail:{page:id,platform:ROOT.dataset.nethorPageLayout,rewards:rewards?.platform||null,departmentPage:departmentPage?.platform||null,adminPortal:adminPortal?.platform||null,accounts:accounts?.platform||null,articles:articles?.platform||null,toolPage:toolPage?.platform||null,userPage:userPage?.platform||null,profile:profile?.platform||null,home:home?.platform||null,planning:planning?.platform||null}
   }))
  }catch(_){}
  return layout
 }
-window.NethorPageLayout=Object.freeze({mount,mountDepartmentPage,mountAdminPortal,mountAccounts,mountArticles,mountToolPage,mountUserPage,mountProfile,mountHome,mountPlanning,pageId,platformKind});
+window.NethorPageLayout=Object.freeze({mount,mountRewards,mountDepartmentPage,mountAdminPortal,mountAccounts,mountArticles,mountToolPage,mountUserPage,mountProfile,mountHome,mountPlanning,pageId,platformKind});
 if(!mount()&&document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});
 })();
