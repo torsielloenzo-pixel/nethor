@@ -1,0 +1,4 @@
+/* Phase 4.5 — structure Mon profil Mobile. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileLayout{
+ width:100%;min-width:0
+}
