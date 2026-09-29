@@ -306,6 +306,9 @@ function moduleAllowed(module,profileOrRole,config=api?.siteConfig){
  const role=typeof profileOrRole==='string'?profileOrRole:profileOrRole?.role;
  if(!role)return false;
  if(module.id!=='settings'&&config?.pages?.[module.id]?.enabled===false)return false;
+ /* Sécurité Nethor : l'Administrateur conserve l'accès aux pages actives,
+    même pendant une synchronisation ou avec un ancien cache de permissions. */
+ if(role==='admin')return true;
  const extra=api?.subrolePermissions?.[module.id];
  if(extra==='view'||extra==='operate'||extra==='manage')return true;
  const explicit=config?.role_permissions?.[module.id]?.[role];
@@ -316,7 +319,9 @@ function permissionLevel(moduleOrId,profileOrRole,config=api?.siteConfig){
  const module=typeof moduleOrId==='string'?NAV_MODULES.find(m=>m.id===moduleOrId):moduleOrId;
  const role=typeof profileOrRole==='string'?profileOrRole:profileOrRole?.role;
  if(!module||!role)return'none';
- if(module.id==='settings')return'view';
+ if(module.id==='settings')return role==='admin'?'manage':'view';
+ if(module.id!=='settings'&&config?.pages?.[module.id]?.enabled===false)return'none';
+ if(role==='admin')return'manage';
  const baseExplicit=config?.role_permissions?.[module.id]?.[role];
  let base=['none','view','operate','manage'].includes(baseExplicit)?baseExplicit:(configuredRoles(module,config).includes(role)?(role==='admin'?'manage':'view'):'none');
  const extra=api?.subrolePermissions?.[module.id];
@@ -1409,7 +1414,7 @@ function askUpdateSearch(){
   sounds.play('menuOpen')
  })
 }
-const APP_RELEASE=203;
+const APP_RELEASE=204;
 const APP_RELEASE_LABEL='v1.20.0';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
