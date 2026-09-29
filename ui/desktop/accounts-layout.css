@@ -1,0 +1,4 @@
+/* Phase 4.9 — Gestion des comptes Desktop */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="accounts"] .accountsDesktopLayout{
+ width:min(95vw,1320px);margin:auto;padding:30px 0 60px
+}
