@@ -1,0 +1,8 @@
+/* Phase 4.9 — contexte embarqué Gestion, indépendant de la plateforme. */
+html.embeddedAccounts .accountsEmbeddedLayout{width:100%;max-width:none;margin:0;padding:0}
+html.embeddedAccounts .accountsEmbeddedLayout .stats{margin-top:0!important}
+html.embeddedAccounts .accountsEmbeddedLayout .tabs{position:sticky;top:0;z-index:15;padding:8px;background:#f7f9fc;border:1px solid #e5e9ef;border-radius:14px}
+html.embeddedAccounts.externalAccountsNav .accountsEmbeddedLayout .tabs{display:none!important}
+html.embeddedAccounts.externalAccountsNav .accountsEmbeddedLayout .stats{margin-bottom:12px!important}
+html.embeddedAccounts .accountsEmbeddedLayout .workspace{grid-template-columns:320px minmax(0,1fr)}
+@media(max-width:900px){html.embeddedAccounts .accountsEmbeddedLayout .workspace{grid-template-columns:1fr}}
