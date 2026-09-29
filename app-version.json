@@ -1,10 +1,10 @@
 {
-  "version": 187,
-  "label": "v1.87",
+  "version": 188,
+  "label": "v1.88",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Rush Rayon : style cartoon, saut variable, sons, musique dynamique, menu et meilleurs scores par compte.",
-  "published_at": "2026-09-29T02:06:00Z",
+  "message": "Rush Rayon : refonte visuelle cartoon, plein écran, retour Jeux, décors et identité sonore retravaillés.",
+  "published_at": "2026-09-29T03:00:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
