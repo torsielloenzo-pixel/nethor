@@ -1,10 +1,10 @@
 {
-  "version": 201,
+  "version": 202,
   "label": "v1.20.0",
   "important": false,
   "mode": "auto",
-  "title": "Accueil · Pilotage magasin",
-  "message": "Le widget Pilotage magasin est intégré et son affichage responsive a été corrigé. Nethor utilise désormais l’affichage de version MAJEURE.MINEURE.CORRECTIF.",
+  "title": "Correctif interface Administrateur",
+  "message": "Restauration de la barre administrateur : connexions, aperçu mobile, mise à jour, notifications et profil.",
   "published_at": "2026-09-29T14:30:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
