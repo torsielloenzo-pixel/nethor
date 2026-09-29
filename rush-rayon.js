@@ -518,76 +518,23 @@ RushGame.prototype.runnerLimb=function(ctx,a,b,c,width,color){
  ctx.beginPath();ctx.arc(b.x,b.y,width*.37,0,Math.PI*2);ctx.fill();
 };
 RushGame.prototype.drawRunner=function(ctx){
- var p=this.player;
- var running=this.mode==="running"&&p.grounded;
- var airborne=!p.grounded;
- var phase=running?this.elapsed*16.5:0;
- var stride=running?Math.sin(phase):0;
- var bob=running?Math.abs(Math.cos(phase))*2.5:0;
- var lean=airborne?-.03:.115;var squash=p.landSquash>0?Math.sin((p.landSquash/.16)*Math.PI)*.08:0;
- var baseX=p.x+p.w*.5,baseY=p.y+4+bob;
- var self=this;
- function legPoints(offset){
-  var ph=phase+offset,s=Math.sin(ph),c=Math.cos(ph);
-  if(airborne){s=offset?-.38:.55;c=-.25}
-  var hip={x:0,y:68};
-  var knee={x:hip.x+s*24+c*5,y:hip.y+29-Math.max(0,c)*7};
-  var lift=running?Math.max(0,-c)*15:airborne?14:0;
-  var foot={x:hip.x+s*39-c*12,y:hip.y+60-lift};
-  return {hip:hip,knee:knee,foot:foot};
- }
- function armPoints(offset){
-  var ph=phase+offset,s=running?Math.sin(ph):0;
-  if(airborne)s=offset?.55:-.5;
-  var shoulder={x:1,y:37};
-  var a=s*.9;
-  var elbow={x:shoulder.x+Math.sin(a)*23,y:shoulder.y+Math.cos(a)*23};
-  var bend=a+(s>=0?-.62:.62);
-  var hand={x:elbow.x+Math.sin(bend)*20,y:elbow.y+Math.cos(bend)*20};
-  return {shoulder:shoulder,elbow:elbow,hand:hand};
- }
- var backLeg=legPoints(Math.PI),frontLeg=legPoints(0);
- var backArm=armPoints(0),frontArm=armPoints(Math.PI);
- ctx.save();
- ctx.translate(baseX,baseY);ctx.rotate(lean);ctx.scale(1+squash,1-squash);
- ctx.fillStyle="#00000026";
- ctx.save();ctx.rotate(-lean);ctx.beginPath();ctx.ellipse(0,GROUND-baseY+4,48,11,0,0,Math.PI*2);ctx.fill();ctx.restore();
-
- self.runnerLimb(ctx,backLeg.hip,backLeg.knee,backLeg.foot,15,"#1f252c");
- ctx.save();ctx.translate(backLeg.foot.x,backLeg.foot.y);ctx.rotate(-.08+stride*.08);ctx.fillStyle="#11161b";rounded(ctx,-12,-3,29,10,5);ctx.fill();ctx.fillStyle="#e6e7e9";ctx.fillRect(-9,5,27,3);ctx.restore();
-
- self.runnerLimb(ctx,backArm.shoulder,backArm.elbow,backArm.hand,11,"#d89b77");
- ctx.strokeStyle="#252b32";ctx.lineWidth=14;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(backArm.shoulder.x,backArm.shoulder.y);ctx.lineTo(backArm.elbow.x,backArm.elbow.y);ctx.stroke();
-
- ctx.fillStyle="#252b32";
- ctx.beginPath();ctx.moveTo(-20,32);ctx.quadraticCurveTo(-25,49,-17,69);ctx.lineTo(-10,82);ctx.lineTo(15,82);ctx.lineTo(21,64);ctx.quadraticCurveTo(24,47,18,31);ctx.closePath();ctx.fill();
- ctx.fillStyle="#ff6a1a";ctx.beginPath();ctx.moveTo(-18,36);ctx.lineTo(-12,34);ctx.lineTo(-7,75);ctx.lineTo(-13,77);ctx.closePath();ctx.fill();
- ctx.fillStyle="#ffffff";rounded(ctx,3,43,13,10,2);ctx.fill();
- ctx.fillStyle="#ff5d2e";ctx.font="900 8px system-ui";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("N",9.5,48);
-
- self.runnerLimb(ctx,frontLeg.hip,frontLeg.knee,frontLeg.foot,16,"#252b32");
- ctx.save();ctx.translate(frontLeg.foot.x,frontLeg.foot.y);ctx.rotate(.02-stride*.1);ctx.fillStyle="#10151a";rounded(ctx,-12,-3,30,11,5);ctx.fill();ctx.fillStyle="#f1f2f4";ctx.fillRect(-8,6,28,3);ctx.restore();
-
- self.runnerLimb(ctx,frontArm.shoulder,frontArm.elbow,frontArm.hand,12,"#e5aa84");
- ctx.strokeStyle="#252b32";ctx.lineWidth=14;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(frontArm.shoulder.x,frontArm.shoulder.y);ctx.lineTo(frontArm.elbow.x,frontArm.elbow.y);ctx.stroke();
-
- var hairLag=running?Math.sin(phase-.8)*6:airborne?-8:0;
- ctx.strokeStyle="#4b342a";ctx.lineCap="round";
- ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(-9,13);ctx.bezierCurveTo(-26,17,-35+hairLag,25,-42+hairLag,38);ctx.stroke();
- ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-8,10);ctx.bezierCurveTo(-25,5,-36+hairLag,13,-47+hairLag,24);ctx.stroke();
-
- ctx.fillStyle="#e8ad87";ctx.beginPath();ctx.arc(5,14,23,0,Math.PI*2);ctx.fill();ctx.fillStyle="#f3c3a4";ctx.beginPath();ctx.ellipse(16,19,9,7,.15,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#4b342a";ctx.beginPath();ctx.arc(0,7,23,Math.PI,Math.PI*2);ctx.fill();ctx.strokeStyle="#3a271f";ctx.lineWidth=5;ctx.lineCap="round";for(var hs=0;hs<5;hs++){ctx.beginPath();ctx.moveTo(-15+hs*7,-2);ctx.quadraticCurveTo(-8+hs*7,-13-hs%2*3,0+hs*6,2);ctx.stroke()}
- ctx.beginPath();ctx.ellipse(-11,12,8,17,-.35,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#e8ad87";ctx.beginPath();ctx.moveTo(23,14);ctx.lineTo(30,18);ctx.lineTo(23,21);ctx.closePath();ctx.fill();
- ctx.fillStyle="#fff";ctx.beginPath();ctx.ellipse(14,12,6,4,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#27313b";ctx.beginPath();ctx.arc(16,12,2.4,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#4b342a";ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(8,5);ctx.quadraticCurveTo(15,1,21,5);ctx.stroke();
- ctx.strokeStyle="#8f4c3d";ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(14,23,7,.18,1.18);ctx.stroke();
-
- if(running){
-  ctx.strokeStyle="#ffffff55";ctx.lineWidth=3;ctx.lineCap="round";
-  ctx.beginPath();ctx.moveTo(-57,50);ctx.lineTo(-77,50);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(-51,62);ctx.lineTo(-67,62);ctx.stroke();
- }
+ var p=this.player,running=this.mode==="running"&&p.grounded,air=!p.grounded,phase=running?this.elapsed*17:0,s=Math.sin(phase),bob=running?Math.abs(Math.cos(phase))*4:0,squash=p.landSquash>0?Math.sin((p.landSquash/.16)*Math.PI)*.11:0;
+ var x=p.x+p.w*.5,y=p.y+2+bob,lean=air?-.06:.13;
+ ctx.save();ctx.translate(x,y);ctx.rotate(lean);ctx.scale(1+squash,1-squash);
+ ctx.fillStyle="#13242a28";ctx.save();ctx.rotate(-lean);ctx.beginPath();ctx.ellipse(0,GROUND-y+3,53,12,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ function limb(ax,ay,bx,by,cx,cy,w,col){ctx.strokeStyle="#16262b";ctx.lineWidth=w+7;ctx.lineCap="round";ctx.lineJoin="round";ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.lineTo(cx,cy);ctx.stroke();ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.lineTo(cx,cy);ctx.stroke()}
+ var l1=air?.65:s,l2=air?-.5:-s;
+ limb(-8,78,l1*24,104,l1*42-10,132,17,"#263b4b");limb(7,78,l2*24+7,104,l2*43+14,132,18,"#304b60");
+ ctx.fillStyle="#f6f0e5";rounded(ctx,l1*42-25,126,40,14,7);ctx.fill();ctx.fillStyle="#ee633d";ctx.fillRect(l1*42-20,135,34,5);ctx.fillStyle="#f6f0e5";rounded(ctx,l2*43-7,126,40,14,7);ctx.fill();
+ var a1=air?-.8:-s*.9,a2=air?.7:s*.9;limb(-16,40,a1*25-13,60,a1*39-13,78,12,"#e9a47c");limb(17,41,a2*25+13,59,a2*39+13,75,13,"#f1b28a");
+ ctx.fillStyle="#f05d37";ctx.strokeStyle="#16262b";ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-25,32);ctx.quadraticCurveTo(-32,58,-18,86);ctx.quadraticCurveTo(0,95,22,84);ctx.quadraticCurveTo(31,56,22,31);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.fillStyle="#ffd43f";rounded(ctx,-16,49,12,30,4);ctx.fill();ctx.fillStyle="#fff";rounded(ctx,2,48,16,13,3);ctx.fill();ctx.fillStyle="#ef5c37";ctx.font="950 10px system-ui";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("N",10,55);
+ var hair=running?s*5:air?-9:0;ctx.fillStyle="#f0ad83";ctx.strokeStyle="#16262b";ctx.lineWidth=7;ctx.beginPath();ctx.arc(4,10,27,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.fillStyle="#51352b";ctx.strokeStyle="#16262b";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-23,6);ctx.bezierCurveTo(-22,-19,-5,-24,14,-17);ctx.bezierCurveTo(27,-12,31,-2,27,5);ctx.bezierCurveTo(16,-2,8,-1,0,4);ctx.bezierCurveTo(-9,-3,-17,0,-23,6);ctx.fill();ctx.stroke();
+ for(var h=0;h<4;h++){ctx.strokeStyle="#6a4637";ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-17+h*9,-5);ctx.quadraticCurveTo(-12+h*9,-20-(h%2)*5,-4+h*9,-6);ctx.stroke()}
+ ctx.fillStyle="#fff";ctx.strokeStyle="#16262b";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(14,10,8,6,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#2b4b55";ctx.beginPath();ctx.arc(17,10,3,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle="#704238";ctx.lineWidth=3;ctx.beginPath();ctx.arc(13,22,8,.05,1.25);ctx.stroke();
+ if(running){ctx.strokeStyle="#fff9";ctx.lineWidth=5;for(var z=0;z<3;z++){ctx.beginPath();ctx.moveTo(-62-z*9,52+z*13);ctx.lineTo(-86-z*12,52+z*13);ctx.stroke()}}
  ctx.restore();
 };
 RushGame.prototype.drawObstacle=function(ctx,o){
