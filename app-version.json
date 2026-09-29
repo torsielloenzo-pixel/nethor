@@ -1,10 +1,10 @@
 {
-  "version": 205,
-  "label": "v1.20.0",
+  "version": 206,
+  "label": "v1.20.1",
   "important": false,
   "mode": "auto",
-  "title": "Planning · alignement des vues",
-  "message": "Recentrage de la vue classique, de l’agenda et de la détection d’anomalies sur un même axe.",
-  "published_at": "2026-09-29T15:30:00+02:00",
+  "title": "Stabilité · QA mobile et PWA",
+  "message": "Correction de l’état du clavier mobile, prévention des doubles gestionnaires globaux et navigation PWA fiabilisée.",
+  "published_at": "2026-09-29T16:05:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
