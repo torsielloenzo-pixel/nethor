@@ -1,10 +1,10 @@
 {
-  "version": 192,
-  "label": "v1.92",
+  "version": 193,
+  "label": "v1.93",
   "important": true,
   "mode": "manual",
-  "title": "Nouvelle version de Nethor",
-  "message": "Les mini-jeux et la page Jeux ont été supprimés.",
-  "published_at": "2026-09-29T03:05:17Z",
+  "title": "Correctif de stabilité Nethor",
+  "message": "Harmonisation de l’interface, du responsive mobile/desktop et des couches d’affichage.",
+  "published_at": "2026-09-29T10:02:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
