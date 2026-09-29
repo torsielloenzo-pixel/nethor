@@ -2208,6 +2208,15 @@ async function saveWeek(){
 }
 
 
+function syncAbsencesWidgetPosition(mobile){
+ const row=document.querySelector('.absencesWideRow'),support=document.querySelector('.planningSupportGrid'),insights=document.getElementById('planningInsights');
+ if(!row||!support||!insights)return;
+ if(mobile){
+  if(row.previousElementSibling!==insights)insights.insertAdjacentElement('afterend',row);
+ }else if(row.parentElement!==support){
+  support.appendChild(row)
+ }
+}
 function placePlanningActions(){
  const actions=document.getElementById('planningActions'),toolbar=document.getElementById('planningToolbar'),dock=document.getElementById('mobilePlanningActionsDock'),sourceActions=document.querySelector('.readerHead .sourceActions');
  const status=document.getElementById('saveState'),importPanel=document.getElementById('importPanel'),editBtn=document.getElementById('editPlanningBtn');
@@ -2218,6 +2227,7 @@ function placePlanningActions(){
  const target=mobile?dock:sourceActions;
  if(importPanel.parentElement!==target)target.appendChild(importPanel);
  if(editBtn.parentElement!==target)target.appendChild(editBtn);
+ syncAbsencesWidgetPosition(mobile)
 }
 let planningActionsResizeTimer=null;
 window.addEventListener('resize',()=>{clearTimeout(planningActionsResizeTimer);planningActionsResizeTimer=setTimeout(placePlanningActions,80)},{passive:true});
