@@ -30,17 +30,6 @@ function lockMobileAppViewport(){
 
 lockMobileAppViewport();
 
-function loadNethorMotionAssets(){
- if(!document.head)return;
- if(!document.querySelector('link[data-nethor-motion-css]')){
-  const link=document.createElement('link');link.rel='stylesheet';link.href='nethor-motion.css?v=1';link.dataset.nethorMotionCss='1';document.head.appendChild(link)
- }
- if(!document.querySelector('script[data-nethor-motion-js]')){
-  const script=document.createElement('script');script.src='nethor-motion.js?v=1';script.async=false;script.dataset.nethorMotionJs='1';document.head.appendChild(script)
- }
-}
-loadNethorMotionAssets();
-
 function isNethorPhoneDevice(){
  if(isMobilePreviewContext())return true;
  try{
