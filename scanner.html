@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nethor">
 <script src="platform-resolver.js?v=2"></script>
+<script src="platform-navigation.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
@@ -157,20 +158,8 @@ function permissionDenied(error){
  const name=String(error?.name||'').toLowerCase(),msg=String(error?.message||error||'').toLowerCase();
  return name==='notallowederror'||name==='permissiondeniederror'||msg.includes('permission denied')||msg.includes('not allowed')
 }
-function scannerUserMenuReturnUrl(){
-  if(new URLSearchParams(location.search).get('from_user_menu')!=='1')return 'home.html';
-  try{
-    const raw=sessionStorage.getItem('nettoUserMenuParentV1')||'home.html';
-    const u=new URL(raw,location.href);
-    if(u.origin!==location.origin)return 'home.html?open_user_menu=1';
-    u.searchParams.delete('from_user_menu');
-    u.searchParams.delete('open_user_menu');
-    u.searchParams.set('open_user_menu','1');
-    return (u.pathname.split('/').pop()||'home.html')+u.search+u.hash
-  }catch(_){return 'home.html?open_user_menu=1'}
-}
 function goBack(){
-  location.href=scannerUserMenuReturnUrl()
+  location.href=window.NethorNavigation?.backTarget?.()||'home.html'
 }
 function isMobileView(){return window.NethorPlatform?.isMobile?.()??new URLSearchParams(location.search).get('mobile_preview')==='1'}
 function setCameraState(text){const el=$('cameraStateText');if(el)el.textContent=text}
