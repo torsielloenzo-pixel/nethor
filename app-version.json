@@ -1,11 +1,11 @@
 {
-  "version": 210,
-  "label": "v1.20.5",
+  "version": 211,
+  "label": "v1.21.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Centre de mise à jour",
-  "message": "Restauration de l’interface de mise à jour avec version actuelle, dernière version disponible et installation manuelle confirmée.",
-  "published_at": "2026-09-29T17:19:00+02:00",
+  "title": "Nethor Motion mobile",
+  "message": "Nouvelle identité d’animation mobile : transitions de pages, feuilles basses, planning, listes, retours visuels et micro-interactions. Le cache est vidé pour éviter les collisions avec l’ancienne interface.",
+  "published_at": "2026-09-29T20:26:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
