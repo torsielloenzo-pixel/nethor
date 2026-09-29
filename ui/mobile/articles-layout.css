@@ -12,3 +12,8 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articles
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileTitle h1{margin:0;font-size:24px;line-height:1.05;letter-spacing:-.6px}
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileTitle p{margin:4px 0 0;color:var(--muted);font-size:9.5px}
 :root[data-theme="dark"][data-nethor-page-layout="mobile"] .articlesMobileBack{background:#1b1d22;border-color:#30333a;color:#f4f4f5}
+
+/* Phase 4.8 — responsive interne Mobile. */
+@media(max-width:650px){.countBox{padding:8px 10px}.controls{grid-template-columns:1fr}.filters{width:100%}.filter{flex:1}.grid{grid-template-columns:1fr}.photo{height:125px}}
+@media(max-width:390px){.foot{align-items:stretch}.switchWrap{width:100%;flex-basis:100%}.openBtn{width:100%;min-height:38px}.countBox{margin-left:auto}}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
