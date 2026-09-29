@@ -1,0 +1,33 @@
+/* Phase 4.6 — pages du Menu utilisateur, Mobile uniquement. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="settings"] main{
+ width:min(100%,760px);margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 10px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))
+}
+html[data-nethor-page-layout="mobile"] .settingsMobileTop{display:flex;align-items:center;gap:11px;margin:2px 2px 13px}
+html[data-nethor-page-layout="mobile"] .settingsMobileBack{
+ width:42px;height:42px;flex:0 0 42px;border:1px solid #e4e7eb;border-radius:14px;background:#fff;
+ display:grid;place-items:center;color:inherit;font-size:24px;line-height:1;font-weight:700;padding:0;box-shadow:none
+}
+html[data-nethor-page-layout="mobile"] .settingsMobileTitle{min-width:0}
+html[data-nethor-page-layout="mobile"] .settingsMobileTitle h1{margin:0;font-size:26px;line-height:1.05;letter-spacing:-.8px}
+html[data-nethor-page-layout="mobile"] .settingsMobileTitle p{margin:5px 0 0;color:#7b828b;font-size:10px;line-height:1.35}
+html[data-nethor-page-layout="mobile"] .settingsMobileRole{margin:0 2px 12px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] main{
+ width:min(100%,760px);margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 10px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpMobileShell{
+ height:100dvh;max-height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;
+ padding:calc(env(safe-area-inset-top) + 10px) 11px calc(env(safe-area-inset-bottom) + 10px)
+}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"] .settingsMobileBack{background:#22252a;border-color:#343940;color:#f1eeea}
+@media(max-width:430px){
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="settings"] .item{grid-template-columns:38px minmax(0,1fr);align-items:start}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="settings"] .icon{grid-row:1 / span 2}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="settings"] .toggle{grid-column:2;justify-self:start;margin-top:3px}
+}
+@media(max-width:560px){
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] .pushPanel{grid-template-columns:1fr}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] .pushActions .btn{flex:1}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] .ruleRow{grid-template-columns:42px minmax(0,1fr);padding:12px}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] .channelControl,
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] .channelControl.two{grid-column:1/-1;width:100%;min-width:0;margin-top:2px}
+}
