@@ -429,6 +429,60 @@ function samePageDestination(url){
   return current===target
  }catch(_){return false}
 }
+const USER_MENU_PARENT_KEY='nettoUserMenuParentV1';
+function cleanUserMenuParent(raw=location.href){
+ try{
+  const u=new URL(raw,location.href);
+  if(u.origin!==location.origin)return 'home.html';
+  u.searchParams.delete('open_user_menu');
+  u.searchParams.delete('from_user_menu');
+  const file=u.pathname.split('/').pop()||'home.html';
+  return file+u.search+u.hash
+ }catch(_){return 'home.html'}
+}
+function rememberUserMenuParent(){
+ try{sessionStorage.setItem(USER_MENU_PARENT_KEY,cleanUserMenuParent(location.href))}catch(_){}
+}
+function userMenuChildUrl(raw){
+ try{
+  const u=new URL(raw||'home.html',location.href);
+  if(u.origin!==location.origin)return raw||'home.html';
+  u.searchParams.set('from_user_menu','1');
+  return (u.pathname.split('/').pop()||'home.html')+u.search+u.hash
+ }catch(_){return raw||'home.html'}
+}
+function userMenuReturnUrl(){
+ const fromMenu=new URLSearchParams(location.search).get('from_user_menu')==='1';
+ let parent='home.html';
+ if(fromMenu){
+  try{parent=cleanUserMenuParent(sessionStorage.getItem(USER_MENU_PARENT_KEY)||'home.html')}catch(_){}
+ }
+ try{
+  const u=new URL(parent,location.href);
+  u.searchParams.delete('from_user_menu');
+  u.searchParams.set('open_user_menu','1');
+  return (u.pathname.split('/').pop()||'home.html')+u.search+u.hash
+ }catch(_){return 'home.html?open_user_menu=1'}
+}
+function tryOpenRequestedUserMenu(){
+ if(new URLSearchParams(location.search).get('open_user_menu')!=='1'||!mobileDropMode())return false;
+ const target=document.getElementById('nettoUserDrop');
+ if(!target)return false;
+ if(target.classList.contains('hidden'))toggleDrop('user',true);
+ else{
+  document.documentElement.classList.add('nettoMobileUserMenuOpen');
+  syncMobileDropState(true);
+  syncMobileQuickBarActive('profile')
+ }
+ if(target.classList.contains('hidden'))return false;
+ window.__nettoOpenUserMenuHandled=true;
+ try{const u=new URL(location.href);u.searchParams.delete('open_user_menu');history.replaceState({},'',u)}catch(_){}
+ return true
+}
+function backToUserMenu(){
+ sounds.play('navigate');
+ location.href=userMenuReturnUrl()
+}
 function mobileBarActive(module){
  try{
   const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
@@ -500,16 +554,9 @@ function renderMobileQuickBar(){
  });
  updateMobileNotificationBadge();
  document.body.classList.add('nettoHasMobileBar');
- if(!window.__nettoOpenUserMenuHandled&&new URLSearchParams(location.search).get('open_user_menu')==='1'&&mobileDropMode()){
-  window.__nettoOpenUserMenuHandled=true;
-  setTimeout(()=>{
-   const drop=document.getElementById('nettoUserDrop');
-   if(drop?.classList.contains('hidden'))toggleDrop('user');
-   try{const u=new URL(location.href);u.searchParams.delete('open_user_menu');history.replaceState({},'',u)}catch(_){}
-  },0)
- }
+ if(!window.__nettoOpenUserMenuHandled)setTimeout(tryOpenRequestedUserMenu,0)
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -1717,11 +1764,14 @@ function buildGlobalHeader(){
  top.appendChild(wrap);
  paint(document.getElementById('nettoTopAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMobileMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);updateThemeText();
  wrap.querySelectorAll('.nettoNavBtn[data-url],.nettoMobileMenuLink[data-url]').forEach(b=>b.onclick=()=>{
+  let targetUrl=b.dataset.url;
   if(mobileDropMode()&&b.classList.contains('nettoMobileMenuLink')){
-   if(samePageDestination(b.dataset.url)){closeDrops();syncMobileQuickBarActive();return}
+   if(samePageDestination(targetUrl)){closeDrops();syncMobileQuickBarActive();return}
+   rememberUserMenuParent();
+   targetUrl=userMenuChildUrl(targetUrl);
    closeDrops()
   }
-  sounds.play('navigate');location.href=b.dataset.url
+  sounds.play('navigate');location.href=targetUrl
  });
  document.getElementById('nettoThemeBtn').onclick=e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()};
  document.getElementById('nettoMobileThemeBtn')?.addEventListener('click',e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()});
@@ -1743,6 +1793,7 @@ function buildGlobalHeader(){
  document.getElementById('nettoMarkRead').onclick=e=>{e.stopPropagation();sounds.play('confirm');markAllRead()};
  document.getElementById('nettoDeleteAll').onclick=e=>{e.stopPropagation();sounds.play('warning');deleteAllNotifications()};
  if(!api.globalListenersBound){document.addEventListener('click',e=>{if(!e.target.closest('#nettoGlobalTools'))closeDrops()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrops()});api.globalListenersBound=true}
+ if(!window.__nettoOpenUserMenuHandled)tryOpenRequestedUserMenu();
 }
 function bindMobilePreviewGlobal(){
  if(window.__nettoMobilePreviewGlobalBound)return;
@@ -1911,6 +1962,7 @@ function syncMobileDropState(open){
 }
 function openMobileUserMenu(){
  if(!mobileDropMode())return;
+ rememberUserMenuParent();
  const target=document.getElementById('nettoUserDrop');
  if(!target)return;
  if(target.classList.contains('hidden')){toggleDrop('user',true);return}
@@ -2195,7 +2247,11 @@ const PAGE_PARENT_ROUTES=Object.freeze({
  'accounts.html':'admin-portal.html',
  'admin-portal.html':'home.html'
 });
-function backFallback(){return PAGE_PARENT_ROUTES[pageFile()]||'home.html'}
+function backFallback(){
+ const p=pageFile();
+ if(new URLSearchParams(location.search).get('from_user_menu')==='1'||['profile.html','settings.html','notification-settings.html'].includes(p))return userMenuReturnUrl();
+ return PAGE_PARENT_ROUTES[p]||'home.html'
+}
 function goBack(){
  sounds.play('navigate');
  location.href=backFallback()
