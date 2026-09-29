@@ -50,5 +50,18 @@ function buildUserMenu(ctx){
   '</section>'+
  '</div>'
 }
-window.NethorMobileShell=Object.freeze({buildQuickBar,buildUserMenu});
+function buildPageLayout(page){
+ const id=String(page||'').toLowerCase();
+ if(!['home','profile','planning'].includes(id))return null;
+ const lead=id==='profile'
+  ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.backToUserMenu?window.NettoProfileUI.backToUserMenu():location.href=\'home.html?open_user_menu=1\'" aria-label="Retour au menu utilisateur">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
+  :'';
+ return {
+  platform:'mobile',
+  handlesBack:id==='profile',
+  header:'<header class="nethorMobileUtilityHost" data-nethor-page-chrome="mobile" aria-hidden="true"><div class="top"></div></header>',
+  lead
+ }
+}
+window.NethorMobileShell=Object.freeze({buildQuickBar,buildUserMenu,buildPageLayout});
 })();
