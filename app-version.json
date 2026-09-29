@@ -1,11 +1,11 @@
 {
-  "version": 219,
-  "label": "v1.25.1",
+  "version": 220,
+  "label": "v1.26.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.2 — Planning Desktop / Mobile",
-  "message": "Le Planning possède désormais deux structures d’interface distinctes. Desktop et Mobile construisent séparément la navigation semaine/calendrier, le sélecteur de jour et les actions d’import/modification. mobileSchedule n’existe plus dans le DOM Desktop. Les décisions de plateforme du Planning et de l’Agenda utilisent le résolveur Nethor au lieu de la largeur de fenêtre.",
-  "published_at": "2026-09-29T23:00:00+02:00",
+  "title": "Phase 4.3 — Planning interne isolé",
+  "message": "La mise en page interne du Planning est désormais largement isolée par plateforme. Les styles Mobile et Desktop ont quitté planning.html, l’Agenda possède un CSS commun et deux couches de plateforme distinctes, et son DOM ne crée plus les contrôles de la plateforme opposée. Les règles Mobile historiques ≤900 px ne résident plus dans le CSS inline commun.",
+  "published_at": "2026-09-29T23:18:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
