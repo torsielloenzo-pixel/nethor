@@ -1,0 +1,14 @@
+/* Phase 4.8 — Fiches articles Mobile */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileLayout{
+ width:calc(100% - 20px);margin:0 auto;padding:calc(env(safe-area-inset-top) + 12px) 0 calc(36px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileTop{
+ display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;margin-bottom:15px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileBack{
+ width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:#fff;color:inherit;font-size:24px;line-height:1;padding:0
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileTitle{min-width:0}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileTitle h1{margin:0;font-size:24px;line-height:1.05;letter-spacing:-.6px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="articles"] .articlesMobileTitle p{margin:4px 0 0;color:var(--muted);font-size:9.5px}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"] .articlesMobileBack{background:#1b1d22;border-color:#30333a;color:#f4f4f5}
