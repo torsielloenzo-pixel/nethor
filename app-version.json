@@ -1,11 +1,11 @@
 {
-  "version": 211,
-  "label": "v1.21.0",
+  "version": 212,
+  "label": "v1.21.1",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Navigation mobile stable",
-  "message": "Correctif majeur de navigation mobile : chaque page reste affichée jusqu’à une action explicite, le Menu utilisateur est séparé de Mon profil et les boutons Retour suivent désormais la hiérarchie de Nethor. Cette mise à jour vide le cache pour supprimer les anciennes versions de l’interface.",
-  "published_at": "2026-09-29T21:30:00+02:00",
+  "title": "Correction retours Menu utilisateur",
+  "message": "Correction de la navigation mobile : les pages ouvertes depuis le Menu utilisateur reviennent désormais à ce menu, sans saut vers l’accueil. Le menu mémorise la page depuis laquelle il a été ouvert et se rouvre uniquement après le chargement complet de son interface. Le cache est vidé pour supprimer l’ancienne logique de navigation.",
+  "published_at": "2026-09-29T21:45:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
