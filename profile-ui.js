@@ -446,7 +446,7 @@ function syncMobileQuickBarActive(preferredId=''){
   const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
   active=items.find(x=>{
    if(current==='notification-settings.html'&&x.dataset.mobileId==='profile')return true;
-   return samePageDestination(x.getAttribute('href')||'home.html')
+   return x.dataset.mobileAction!=='user-menu'&&samePageDestination(x.getAttribute('href')||'home.html')
   })||null
  }
  items.forEach(item=>{
@@ -472,27 +472,27 @@ function renderMobileQuickBar(){
  let nav=old;
  if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
  nav.style.setProperty('--netto-mobile-count',String(items.length));
- nav.innerHTML=items.map(({item,module})=>{const label=item.label||module.label||'Menu',badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
- warmMobileRoutes(items.map(({module})=>module?.url||'').filter(Boolean));
+ nav.innerHTML=items.map(({item,module})=>{const isUserMenu=module.id==='profile',label=isUserMenu?'Menu utilisateur':(item.label||module.label||'Menu'),badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';if(isUserMenu)return '<button type="button" class="nettoMobileQuickItem" data-mobile-id="profile" data-mobile-action="user-menu" aria-label="Menu utilisateur" title="Menu utilisateur"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span></button>';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
+ warmMobileRoutes(items.filter(({module})=>module?.id!=='profile').map(({module})=>module?.url||'').filter(Boolean));
  syncMobileQuickBarActive();
- nav.querySelectorAll('a').forEach(a=>{
+ nav.querySelectorAll('.nettoMobileQuickItem').forEach(a=>{
   const activate=()=>syncMobileQuickBarActive(a.dataset.mobileId||'');
   a.addEventListener('pointerdown',()=>{
    if(mobileDropMode()&&a.dataset.mobileId!=='profile')closeDrops();
    activate()
   },{passive:true});
   a.addEventListener('click',e=>{
-   if(a.dataset.mobileId==='profile'&&mobileDropMode()){
+   if(a.dataset.mobileAction==='user-menu'&&mobileDropMode()){
     e.preventDefault();e.stopPropagation();
     openMobileUserMenu();return
    }
    if(mobileDropMode())closeDrops();
    activate();
-   if(mobileDropMode()&&samePageDestination(a.getAttribute('href'))){
+   if(mobileDropMode()&&a.matches('a[href]')&&samePageDestination(a.getAttribute('href'))){
     e.preventDefault();e.stopPropagation();return
    }
   });
-  if(a.dataset.mobileId==='profile')a.addEventListener('dblclick',e=>{
+  if(a.dataset.mobileAction==='user-menu')a.addEventListener('dblclick',e=>{
    if(!mobileDropMode())return;
    e.preventDefault();e.stopPropagation();
    openMobileUserMenu()
@@ -2179,13 +2179,26 @@ function enforceLegacyAccessUI(root=document){
 }
 function updateKnownUI(){const p=api.profile;if(!p)return;const name=p.display_name||'Utilisateur',role=roleLabel(p.role);['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});['userAvatar','userMenuAvatar'].forEach(id=>paint(document.getElementById(id),api.avatarUrl,name,p.profile_color,p.avatar_frame));enforceLegacyAccessUI();buildGlobalHeader();renderMobileQuickBar()}
 function pageFile(){return (location.pathname.split('/').pop()||'home.html').toLowerCase()}
-function backFallback(){return 'home.html'}
+const PAGE_PARENT_ROUTES=Object.freeze({
+ 'profile.html':'home.html?open_user_menu=1',
+ 'settings.html':'home.html?open_user_menu=1',
+ 'notification-settings.html':'home.html?open_user_menu=1',
+ 'notifications.html':'home.html',
+ 'index.html':'home.html',
+ 'planning.html':'home.html',
+ 'chat.html':'home.html',
+ 'articles.html':'home.html',
+ 'scanner.html':'home.html',
+ 'fl-assistant.html':'home.html',
+ 'bakery.html':'home.html',
+ 'rewards.html':'home.html',
+ 'accounts.html':'admin-portal.html',
+ 'admin-portal.html':'home.html'
+});
+function backFallback(){return PAGE_PARENT_ROUTES[pageFile()]||'home.html'}
 function goBack(){
  sounds.play('navigate');
- const fallback=backFallback();
- let sameOriginRef=false;
- try{sameOriginRef=!!document.referrer&&new window.URL(document.referrer).origin===location.origin}catch(_){}
- if(sameOriginRef&&history.length>1)history.back();else location.href=fallback
+ location.href=backFallback()
 }
 function addBackButton(){
  const p=pageFile();if(p==='home.html'||p==='')return;
