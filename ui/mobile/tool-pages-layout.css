@@ -15,3 +15,37 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .top{flex:
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .cameraCard{flex:0 1 350px;min-height:220px;height:min(350px,43dvh)}
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader,
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader video{height:100%!important}
+
+/* Phase 4.7 — Notifications Mobile, ancien breakpoint rendu explicite. */
+
+  .notificationsPageMain{
+    padding:calc(8px + env(safe-area-inset-top)) 0 calc(18px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));
+    width:100%;max-width:100%
+  }
+  .npFilterLine{padding:0 12px 7px;margin:0;justify-content:flex-end}
+  .npFilterLine>strong{display:none}
+  .npFilterTools{width:100%;gap:8px}
+  .npFilterState{min-height:40px;padding:7px 12px;font-size:10px}
+  .npCircleBtn{width:40px;height:40px}
+  .npCircleBtn svg{width:20px;height:20px}
+  .npTopMenu{top:46px;right:0}
+  .npSearchWrap{padding:0 10px;margin:0 0 8px}
+  .npList{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;gap:8px!important;padding:0 10px 10px!important}
+  .npGroup{padding:14px 3px 1px;font-size:13px}
+  .npRow{grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;padding:11px 8px 11px 12px;min-height:78px;border:1px solid var(--np-line)!important;border-radius:17px!important;overflow:hidden!important;box-shadow:0 4px 14px rgba(17,24,39,.055)}.npRowMore{justify-self:center;align-self:center;min-width:42px;max-width:42px;width:42px;white-space:nowrap!important}
+  .npGroup+.npRow{border:1px solid var(--np-line)!important}
+  .npIcon{width:56px;height:56px}
+  .npRowText .npSentence{font-size:13.5px;line-height:1.38}
+  .npRowText .npSentence b{font-size:14px}
+  .npCategory{font-size:9px}.npAge{font-size:10px}
+  .npRowMore{width:42px;height:42px}
+
+@media(max-width:380px){
+  .npFilterLine{padding-left:9px;padding-right:9px}
+  .npFilterTools{gap:6px}
+  .npFilterState{padding-left:10px;padding-right:10px}
+  .npCircleBtn{width:38px;height:38px}
+  .npRow{grid-template-columns:50px minmax(0,1fr) 38px;gap:8px;padding-left:9px;padding-right:6px}.npRowMore{min-width:38px;max-width:38px;width:38px}
+  .npIcon{width:50px;height:50px}.npIcon span{width:31px;height:31px;font-size:15px}
+  .npRowText .npSentence{font-size:12.5px}.npRowText .npSentence b{font-size:13px}
+}
