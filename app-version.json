@@ -1,10 +1,10 @@
 {
-  "version": 198,
-  "label": "v1.98",
+  "version": 199,
+  "label": "v1.99",
   "important": false,
   "mode": "auto",
-  "title": "Gestion · organisation des menus",
-  "message": "Refonte de Gestion avec navigation hiérarchique : utilisateurs, contenus, éditeur du portail, communication et système sont maintenant clairement séparés.",
-  "published_at": "2026-09-29T11:17:00Z",
+  "title": "Gestion · réglages compacts",
+  "message": "Les anciens gros panneaux de Gestion sont remplacés par des lignes de réglages plus compactes et adaptées à la nouvelle navigation.",
+  "published_at": "2026-09-29T12:15:09.957Z",
   "icon": "assets/app-icon-v63.svg"
 }
