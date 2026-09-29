@@ -1,0 +1,19 @@
+/* Phase 4.10 — cadre Gestion Mobile */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileLayout{
+ min-height:100dvh;padding-bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileTop{
+ position:sticky;top:0;z-index:110;display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px;
+ padding:calc(env(safe-area-inset-top) + 8px) 10px 8px;background:rgba(255,255,255,.96);border-bottom:1px solid #e5e7eb;backdrop-filter:blur(16px)
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileBack{
+ width:42px;height:42px;border:1px solid #e0e4e8;border-radius:14px;background:#fff;color:inherit;font-size:24px;line-height:1;padding:0
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileTitle{min-width:0}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileTitle strong{display:block;font-size:17px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileTitle small{display:block;margin-top:2px;color:#8b929c;font-size:8px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="admin-portal"] .adminPortalMobileSave{
+ border:0;border-radius:11px;padding:9px 10px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;font-size:9px;font-weight:900
+}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"] .adminPortalMobileTop{background:rgba(27,29,34,.96);border-color:#353941}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"] .adminPortalMobileBack{background:#24272c;border-color:#3b4047;color:#f2f3f4}
