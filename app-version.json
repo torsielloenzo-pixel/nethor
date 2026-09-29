@@ -1,11 +1,11 @@
 {
-  "version": 216,
-  "label": "v1.24.0",
+  "version": 217,
+  "label": "v1.24.1",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Séparation Desktop / Mobile — Phase 3",
-  "message": "Les composants d’interface Desktop et Mobile sont désormais séparés physiquement. La barre mobile et le Menu utilisateur Mobile vivent dans ui/mobile, tandis que le Menu utilisateur et la présentation Desktop vivent dans ui/desktop. profile-ui reste le noyau commun pour les données et les événements. Cette mise à jour vide le cache afin de supprimer les anciens styles mélangés.",
-  "published_at": "2026-09-29T22:35:00+02:00",
+  "title": "Isolation stricte Desktop / Mobile",
+  "message": "Finalisation de la phase 3 : les shells Desktop et Mobile sont physiquement séparés et seul le stylesheet de la plateforme active est chargé. Le shell opposé reste désactivé, y compris sur les écrans atypiques et après redimensionnement. Le cache est vidé pour éliminer tout ancien mélange de styles.",
+  "published_at": "2026-09-29T22:45:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
