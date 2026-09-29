@@ -2086,7 +2086,7 @@ function ensureUpdateStyles(){
 function syncGlobalDesignAsset(){
  document.querySelectorAll('link[rel="stylesheet"]').forEach(link=>{
   const href=link.getAttribute('href')||'';
-  if(/design-v4\.css(?:\?v=\d+)?$/i.test(href)&&href!=='design-v4.css?v=8')link.setAttribute('href','design-v4.css?v=8')
+  if(/design-v4\.css(?:\?v=\d+)?$/i.test(href)&&href!=='design-v4.css?v=9')link.setAttribute('href','design-v4.css?v=9')
  })
 }
 function syncAppIconLinks(){
