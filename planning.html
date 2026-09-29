@@ -2359,8 +2359,10 @@ async function processPlanningFile(file,state){
  await notifyWholePlanning(replacing?'import_replace':'import_new',next);
  return{status:'ok',file,replacing,next}
 }
+let planningImportBusy=false;
 async function importPlanningFiles(fileList){
- if(!canEdit)return;const files=[...(fileList||[])].filter(f=>/\.(xls|xlsx|xlsm)$/i.test(f.name||''));if(!files.length)return;
+ if(!canEdit||planningImportBusy)return;const files=[...(fileList||[])].filter(f=>/\.(xls|xlsx|xlsm)$/i.test(f.name||''));if(!files.length)return;
+ planningImportBusy=true;
  const state=document.getElementById('importState');state.className='importState';state.textContent='Préparation de '+files.length+' fichier'+(files.length>1?'s':'')+'…';
  const results=[];try{
   await ensureXlsx();
@@ -2373,7 +2375,7 @@ async function importPlanningFiles(fileList){
   const parts=[];if(ok.length)parts.push('✓ '+ok.length+' traité'+(ok.length>1?'s':''));if(cancelled.length)parts.push(cancelled.length+' annulé'+(cancelled.length>1?'s':''));if(errors.length)parts.push(errors.length+' erreur'+(errors.length>1?'s':''));
   state.textContent=parts.join(' • ')+(errors.length?' — '+errors.map(x=>x.file.name).join(', '):'');
   if(ok.length){renderAll();showToast(ok.length>1?'✓ '+ok.length+' plannings importés':(ok[0].replacing?'✓ Planning remplacé':'✓ Planning importé'))}
- }finally{document.getElementById('excelFile').value=''}
+ }finally{planningImportBusy=false;document.getElementById('excelFile').value=''}
 }
 
 function setPaintColor(c){paintColor=c;document.querySelectorAll('.paintChoice').forEach(b=>b.classList.toggle('active',b.dataset.color===c))}
