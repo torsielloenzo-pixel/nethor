@@ -1,11 +1,11 @@
 {
-  "version": 220,
-  "label": "v1.26.0",
+  "version": 221,
+  "label": "v1.27.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.3 — Planning interne isolé",
-  "message": "La mise en page interne du Planning est désormais largement isolée par plateforme. Les styles Mobile et Desktop ont quitté planning.html, l’Agenda possède un CSS commun et deux couches de plateforme distinctes, et son DOM ne crée plus les contrôles de la plateforme opposée. Les règles Mobile historiques ≤900 px ne résident plus dans le CSS inline commun.",
-  "published_at": "2026-09-29T23:18:00+02:00",
+  "title": "Phase 4.4 — Accueil Desktop / Mobile",
+  "message": "L’Accueil possède désormais deux structures réellement distinctes. Desktop construit son bandeau Bonjour, son tableau de bord, ses cartes d’outils et ses statistiques de consultations. Mobile construit uniquement son tableau de bord applicatif. Le choix de plateforme ne dépend plus de la largeur de fenêtre et les anciens styles Mobile hybrides ont été retirés du fichier commun.",
+  "published_at": "2026-09-29T23:25:34+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
