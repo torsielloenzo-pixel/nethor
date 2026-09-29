@@ -1,10 +1,10 @@
 {
-  "version": 200,
-  "label": "v2.00",
+  "version": 201,
+  "label": "v2.01",
   "important": false,
   "mode": "auto",
-  "title": "Accueil · correctif Pilotage magasin",
-  "message": "Le widget Pilotage magasin occupe désormais correctement toute la largeur de la grille sur ordinateur et son affichage responsive a été stabilisé sur mobile.",
-  "published_at": "2026-09-29T14:30:00+02:00",
+  "title": "Gestion · inventaire mobile et desktop",
+  "message": "Gestion est maintenant synchronisée avec le registre réel de Nethor : 16 destinations de barre mobile, Notifications incluse, inventaire mobile/desktop et filtres par appareil.",
+  "published_at": "2026-09-29T12:35:24.178Z",
   "icon": "assets/app-icon-v63.svg"
 }
