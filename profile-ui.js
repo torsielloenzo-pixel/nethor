@@ -153,16 +153,41 @@ function isMobileTextEntry(el){
  const type=String(el.type||'text').toLowerCase();
  return !['button','checkbox','radio','range','file','submit','reset','color','hidden','image'].includes(type)
 }
+let mobileKeyboardBaselineHeight=0,mobileKeyboardFocusAt=0;
+function mobileVisualHeight(){
+ const h=Number(window.visualViewport?.height)||Number(window.innerHeight)||Number(document.documentElement?.clientHeight)||0;
+ return Number.isFinite(h)?h:0
+}
+function rememberMobileKeyboardBaseline(){
+ if(!isMobileViewport()||isMobileTextEntry(document.activeElement))return;
+ const h=mobileVisualHeight();if(h>0)mobileKeyboardBaselineHeight=Math.max(mobileKeyboardBaselineHeight,h)
+}
+function mobileKeyboardLikelyVisible(){
+ if(!isMobileViewport()||!isMobileTextEntry(document.activeElement))return false;
+ const vv=window.visualViewport;
+ if(!vv)return true;
+ const h=mobileVisualHeight();
+ if(!mobileKeyboardBaselineHeight)mobileKeyboardBaselineHeight=Math.max(h,Number(window.innerHeight)||0,Number(document.documentElement?.clientHeight)||0);
+ const shrink=Math.max(0,mobileKeyboardBaselineHeight-h);
+ const occluded=Math.max(0,(Number(window.innerHeight)||0)-h-(Number(vv.offsetTop)||0));
+ return shrink>110||occluded>110||Date.now()-mobileKeyboardFocusAt<420
+}
 function syncMobileKeyboardState(){
- const root=document.documentElement,body=document.body;
- const active=isMobileViewport()&&isMobileTextEntry(document.activeElement);
+ const root=document.documentElement,body=document.body,active=mobileKeyboardLikelyVisible();
  root.classList.toggle('nettoKeyboardOpen',active);
- body?.classList.toggle('nettoKeyboardOpen',active)
+ body?.classList.toggle('nettoKeyboardOpen',active);
+ if(!isMobileTextEntry(document.activeElement))rememberMobileKeyboardBaseline()
 }
 function bindMobileKeyboardState(){
- document.addEventListener('focusin',syncMobileKeyboardState,true);
+ if(window.__nettoMobileKeyboardStateBound)return;window.__nettoMobileKeyboardStateBound=true;
+ rememberMobileKeyboardBaseline();
+ document.addEventListener('focusin',e=>{if(isMobileTextEntry(e.target))mobileKeyboardFocusAt=Date.now();syncMobileKeyboardState();setTimeout(syncMobileKeyboardState,460)},true);
  document.addEventListener('focusout',()=>setTimeout(syncMobileKeyboardState,100),true);
  window.addEventListener('resize',syncMobileKeyboardState,{passive:true});
+ window.visualViewport?.addEventListener?.('resize',syncMobileKeyboardState,{passive:true});
+ window.visualViewport?.addEventListener?.('scroll',syncMobileKeyboardState,{passive:true});
+ window.addEventListener('orientationchange',()=>{mobileKeyboardBaselineHeight=0;setTimeout(()=>{rememberMobileKeyboardBaseline();syncMobileKeyboardState()},180)},{passive:true});
+ window.addEventListener('pageshow',()=>{rememberMobileKeyboardBaseline();syncMobileKeyboardState()},{passive:true});
  syncMobileKeyboardState()
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMobileKeyboardState,{once:true});
@@ -253,7 +278,7 @@ const BASE_MODULES=Object.freeze([
  {id:'maintenance',label:'Maintenance',homeLabel:'Maintenance',subtitle:'Page d’indisponibilité',url:'maintenance.html',icon:'⚙',roles:null,rolesLocked:true,enabledLocked:true,placementLocked:true,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'SYSTÈME',description:'Page affichée automatiquement lorsque le mode maintenance du portail est activé.',action:'Voir la page',cardClass:'maintenanceCard',group:'systeme',platform:'system',navigation:false,mobileBar:false}
 ]);
 let NAV_MODULES=[...BASE_MODULES];
-const SYSTEM_ROLES=Object.freeze(['admin','responsable','employe','lecture']);
+const SYSTEM_ROLES=Object.freeze(['admin','role_point-de-vente','responsable','employe','lecture']);
 function roleKeys(config=api?.siteConfig){const defs=config?.role_definitions&&typeof config.role_definitions==='object'?Object.keys(config.role_definitions):[];return [...new Set([...SYSTEM_ROLES,...defs])]}
 function roleDefinition(key,config=api?.siteConfig){return config?.role_definitions?.[key]||null}
 function cleanColor(v,fallback=''){const s=String(v||'').trim();return /^#[0-9a-f]{6}$/i.test(s)?s:fallback}
@@ -1414,8 +1439,8 @@ function askUpdateSearch(){
   sounds.play('menuOpen')
  })
 }
-const APP_RELEASE=204;
-const APP_RELEASE_LABEL='v1.20.0';
+const APP_RELEASE=206;
+const APP_RELEASE_LABEL='v1.20.1';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL]]);
@@ -1666,6 +1691,7 @@ function mobilePreviewNotice(message){
  mobilePreviewNoticeTimer=setTimeout(function(){notice.classList.remove('show');setTimeout(function(){if(notice.parentNode)notice.parentNode.removeChild(notice)},220)},2200)
 }
 let mobilePreviewOrientation='portrait';
+let mobilePreviewPreviousBodyOverflow=null;
 function setMobilePreviewOrientation(orientation,announce=false){
  var mode=orientation==='landscape'?'landscape':'portrait';
  mobilePreviewOrientation=mode;
@@ -1690,7 +1716,11 @@ function closeMobilePreview(showNotice=true){
  var overlay=document.getElementById('nettoMobilePreviewOverlay'),hadPreview=!!overlay;
  if(overlay&&overlay.parentNode)overlay.parentNode.removeChild(overlay);
  setMobilePreviewButton(false);
- if(document.body)document.body.style.removeProperty('overflow');
+ if(hadPreview&&document.body){
+  if(mobilePreviewPreviousBodyOverflow===null)document.body.style.removeProperty('overflow');
+  else document.body.style.overflow=mobilePreviewPreviousBodyOverflow;
+  mobilePreviewPreviousBodyOverflow=null
+ }
  if(hadPreview&&showNotice)mobilePreviewNotice('Vision mobile désactivée')
 }
 function toggleMobilePreview(){
@@ -1741,7 +1771,8 @@ function toggleMobilePreview(){
  bar.appendChild(state);bar.appendChild(notch);bar.appendChild(rotate);bar.appendChild(close);
  device.appendChild(bar);device.appendChild(frame);overlay.appendChild(device);
  document.body.appendChild(overlay);
- document.body.style.overflow='hidden';
+ mobilePreviewPreviousBodyOverflow=document.body?document.body.style.overflow:null;
+ if(document.body)document.body.style.overflow='hidden';
  setMobilePreviewOrientation('portrait',false);
  setMobilePreviewButton(true);
  mobilePreviewNotice('Vision mobile activée');
