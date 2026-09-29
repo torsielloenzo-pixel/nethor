@@ -14,5 +14,22 @@ function buildUserMenu(ctx){
   '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>↪</span><span><strong>Déconnexion</strong><small>Quitter la session</small></span></button>'+
  '</div>'
 }
-window.NethorDesktopShell=Object.freeze({buildUserMenu});
+function buildPageLayout(page){
+ const id=String(page||'').toLowerCase();
+ const pages={
+  home:{title:'Nethor',subtitle:'Portail opérationnel',back:false},
+  profile:{title:'Mon profil',subtitle:'Identité & notifications',back:true},
+  planning:{title:'Planning équipe',subtitle:'Organisation du magasin',back:true}
+ };
+ const cfg=pages[id];
+ if(!cfg)return null;
+ const back=cfg.back?'<div class="navActions"><button class="btn light backBtn" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():location.href=\'home.html\'">← Retour</button></div>':'';
+ return {
+  platform:'desktop',
+  handlesBack:false,
+  header:'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="mark" type="button" onclick="location.href=\'home.html\'" aria-label="Retour à l’accueil">N</button><div><div class="title">'+esc(cfg.title)+'</div><div class="sub">'+esc(cfg.subtitle)+'</div></div></div>'+back+'</div></header>',
+  lead:''
+ }
+}
+window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout});
 })();
