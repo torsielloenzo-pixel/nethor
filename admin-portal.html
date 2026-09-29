@@ -177,10 +177,12 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  .managementNavChildren{grid-template-columns:1fr}
  .managementHero h1{font-size:26px!important}
 }
+
+.managementActionGridSingle{grid-template-columns:1fr!important}
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'">N</button><div><div class="title">Nethor</div><div class="sub">Gestion</div></div></div><div class="managementSearch"><span>⌕</span><input id="managementSearchInput" placeholder="Rechercher dans la gestion…" oninput="filterManagementNav(this.value)"></div><div class="headActions"><button class="btn secondaryBtn" onclick="location.href='settings.html'">Personnalisation</button><button class="btn primary" onclick="saveConfig()">Enregistrer</button></div></div></header>
+<header><div class="top"><div class="brand"><button class="mark" onclick="location.href='home.html'">N</button><div><div class="title">Nethor</div><div class="sub">Gestion</div></div></div><div class="managementSearch"><span>⌕</span><input id="managementSearchInput" placeholder="Rechercher dans la gestion…" oninput="filterManagementNav(this.value)"></div><div class="headActions"><button class="btn primary" onclick="saveConfig()">Enregistrer</button></div></div></header>
 <main>
 <div class="hero managementHero"><div><div id="managementBreadcrumb" class="managementBreadcrumb">Gestion <span>›</span> Tableau de bord</div><h1 id="managementHeroTitle">Tableau de bord</h1><p id="managementHeroText">Vue d’ensemble de l’administration Nethor et accès aux principales zones de gestion.</p></div><div id="saveState" class="saveState">Chargement…</div></div>
 <div class="builder">
@@ -196,13 +198,7 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  </div>
 </div>
 
-<div class="managementNavGroup" data-nav-group="content">
- <button class="managementNavParent" type="button" onclick="toggleManagementNavGroup('content',this)" aria-expanded="false"><span class="sideIcon">▤</span><span><strong>Contenus</strong><small>Référentiels et médias</small></span><b class="managementNavChevron">⌄</b></button>
- <div class="managementNavChildren">
-  <button class="managementNavChild" data-tab="articles" type="button" onclick="showTab('articles',this);loadManagementArticles()">Fiches articles</button>
-  <button class="managementNavChild" data-tab="media" type="button" onclick="showTab('media',this)">Médias & logos</button>
- </div>
-</div>
+<button class="managementNavDirect" data-tab="articles" type="button" onclick="showTab('articles',this);loadManagementArticles()"><span class="sideIcon">▤</span><span><strong>Contenus</strong><small>Fiches articles & référentiel EAN13</small></span></button>
 
 <div class="managementNavGroup" data-nav-group="portal">
  <button class="managementNavParent" type="button" onclick="toggleManagementNavGroup('portal',this)" aria-expanded="false"><span class="sideIcon">▦</span><span><strong>Éditeur du portail</strong><small>Structure et interface Nethor</small></span><b class="managementNavChevron">⌄</b></button>
@@ -211,6 +207,7 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
   <button class="managementNavChild" data-tab="system" type="button" onclick="showTab('system',this)">Pages & menus</button>
   <button class="managementNavChild" data-tab="mobile" type="button" onclick="showTab('mobile',this)">Navigation mobile</button>
   <button class="managementNavChild" data-tab="blocks" type="button" onclick="showTab('blocks',this)">Blocs & widgets</button>
+  <button class="managementNavChild" data-tab="media" type="button" onclick="showTab('media',this)">Médias & logos</button>
  </div>
 </div>
 
@@ -248,6 +245,7 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
     <button onclick="showTab('system')"><span>▦</span><div><strong>Pages & menus</strong><small>Visibilité et organisation</small></div><b>Ouvrir</b></button>
     <button onclick="showTab('mobile')"><span>▣</span><div><strong>Navigation mobile</strong><small>Barre d’accès rapide</small></div><b>Ouvrir</b></button>
     <button onclick="showTab('blocks')"><span>▥</span><div><strong>Blocs & widgets</strong><small>Éléments fonctionnels</small></div><b>Ouvrir</b></button>
+    <button onclick="showTab('media')"><span>▧</span><div><strong>Médias & logos</strong><small>Bibliothèque visuelle</small></div><b>Ouvrir</b></button>
    </div>
   </article>
 
@@ -262,10 +260,9 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
   </article>
 
   <article class="managementOverviewCard">
-   <div class="managementCardHead"><div><span class="managementCardIcon orange">▤</span><div><strong>Contenus</strong><small>Référentiels et ressources visuelles.</small></div></div></div>
-   <div class="managementActionGrid">
-    <button onclick="showTab('articles')"><span>▤</span><div><strong>Fiches articles</strong><small>Référentiel EAN13</small></div><b>Ouvrir</b></button>
-    <button onclick="showTab('media')"><span>▧</span><div><strong>Médias & logos</strong><small>Bibliothèque Nethor</small></div><b>Ouvrir</b></button>
+   <div class="managementCardHead"><div><span class="managementCardIcon orange">▤</span><div><strong>Contenus</strong><small>Référentiel métier administré dans Nethor.</small></div></div><button onclick="showTab('articles')">Gérer</button></div>
+   <div class="managementActionGrid managementActionGridSingle">
+    <button onclick="showTab('articles')"><span>▤</span><div><strong>Fiches articles</strong><small>Produits, familles, catégories, EAN13 et statut</small></div><b>Ouvrir</b></button>
    </div>
   </article>
 
@@ -340,7 +337,7 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  <div class="panel">
   <div class="toolbar"><div><h2>Blocs & widgets</h2><p>Configure les composants fonctionnels affichés dans Nethor sans mélanger leur réglage avec celui des pages.</p></div></div>
   <div class="operationsWidgetAdmin">
-   <div class="operationsWidgetAdminHead"><div><span class="eyebrow">WIDGET D’ACCUEIL</span><h3>Pilotage magasin</h3><p>Paramètre ici le widget Relève · Mon service · Commandes · Livraisons · Flash. Sa visibilité par rôle se règle dans Comptes & rôles → Rôles & permissions.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderOperationsWidgetEditor()">↻ Actualiser</button></div>
+   <div class="operationsWidgetAdminHead"><div><span class="eyebrow">WIDGET D’ACCUEIL</span><h3>Pilotage magasin</h3><p>Paramètre ici le widget Relève · Mon service · Commandes · Livraisons · Flash. Sa visibilité par rôle se règle dans Utilisateurs → Rôles & permissions.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderOperationsWidgetEditor()">↻ Actualiser</button></div>
    <div id="operationsWidgetEditor"></div>
   </div>
  </div>
