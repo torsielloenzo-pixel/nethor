@@ -83,7 +83,7 @@ function renderShell(){
  api.host.innerHTML='<div class="operationsHubHead"><div class="operationsHubHeadCopy"><span class="operationsHubKicker">WIDGET TERRAIN</span><h2>'+esc(c.label)+'</h2><p>'+esc(c.subtitle)+'</p></div><button class="operationsHubRefresh" type="button" data-op-refresh>↻ Actualiser</button></div>'+
   '<div class="operationsHubTabs">'+tabs.map(x=>'<button type="button" class="operationsHubTab '+(api.state.active===x.id?'active':'')+'" data-op-tab="'+x.id+'"><span>'+esc(x.icon)+'</span>'+esc(x.label)+(c.show_counters?'<b class="operationsHubCount">'+String(cs[x.id]||0)+'</b>':'')+'</button>').join('')+'</div>'+
   '<div class="operationsHubBody" id="operationsHubBody">'+renderActive()+'</div>'+
-  '<div class="operationsHubFoot"><span>Données Nethor · accès selon Rôles & permissions</span><a href="admin-portal.html?tab=system">Configurer</a></div>';
+  '<div class="operationsHubFoot"><span>Données Nethor · accès selon Rôles & permissions</span>'+(canManage()?'<a href="admin-portal.html?tab=system">Configurer</a>':'<span>Consultation</span>')+'</div>';
  api.host.querySelectorAll('[data-op-tab]').forEach(b=>b.onclick=()=>{api.state.active=b.dataset.opTab;renderShell()});
  api.host.querySelector('[data-op-refresh]')?.addEventListener('click',()=>loadData(true));
  bindActions()
