@@ -44,3 +44,49 @@
  .operationsHubService{grid-template-columns:1fr}.operationsHubTabs{padding:8px}.operationsHubTab{min-height:33px}
  .operationsHubForm{grid-template-columns:1fr}.operationsHubField.full{grid-column:auto}
 }
+
+/* Correctif d’intégration accueil v2 */
+.operationsHub{
+  grid-column:1 / -1;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  align-self:start;
+  box-sizing:border-box;
+}
+.operationsHub *{box-sizing:border-box}
+.operationsHubHead,.operationsHubBody,.operationsHubFoot,.operationsHubTabs{min-width:0;max-width:100%}
+.operationsHubHeadCopy,.operationsHubToolbarCopy,.operationsHubRowCopy{min-width:0}
+.operationsHubTabs{width:100%;overscroll-behavior-inline:contain}
+.operationsHubRow>div:last-child{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:0}
+.operationsHubRowAction{white-space:nowrap}
+.operationsHubService,.operationsHubMiniStats{min-width:0}
+.operationsHubServiceCard,.operationsHubMiniStat{min-width:0}
+.operationsHubServiceCard strong{overflow-wrap:anywhere}
+@media(min-width:701px){
+  .mobileHomeDashboard .mhdStack>.operationsHub{grid-column:1 / -1!important}
+  .operationsHub{margin-top:0}
+  .operationsHubHead{padding:17px 18px 14px}
+  .operationsHubBody{padding:14px}
+  .operationsHubTabs{padding:10px 12px}
+  .operationsHubTab{min-height:36px;font-size:9px;padding:0 11px}
+  .operationsHubToolbarCopy strong{font-size:12px}
+  .operationsHubToolbarCopy small{font-size:9px}
+  .operationsHubRowCopy strong{font-size:11px}
+  .operationsHubRowCopy small{font-size:8.5px}
+  .operationsHubBadge{font-size:7.5px}
+}
+@media(max-width:700px){
+  .operationsHub{grid-column:auto;width:100%;margin-top:0}
+  .operationsHubHead{align-items:center}
+  .operationsHubRefresh{min-width:38px;padding:0 9px;font-size:0}
+  .operationsHubRefresh::before{content:"↻";font-size:16px;line-height:1}
+  .operationsHubRow{grid-template-columns:auto minmax(0,1fr)}
+  .operationsHubRow>div:last-child{grid-column:1 / -1;justify-content:flex-end;padding-top:1px}
+  .operationsHubRowCopy strong{font-size:10.5px}
+  .operationsHubRowCopy small{font-size:8.5px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .operationsHubToolbarCopy strong{font-size:11px}
+  .operationsHubToolbarCopy small{font-size:8.5px}
+  .operationsHubBadge{font-size:7.5px}
+  .operationsHubFoot{font-size:8px}
+}
