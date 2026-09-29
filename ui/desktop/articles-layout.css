@@ -2,3 +2,6 @@
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .articlesDesktopLayout{
  width:min(94vw,1120px);margin:auto;padding:34px 0 60px
 }
+
+/* Phase 4.8 — responsive interne Desktop. */
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
