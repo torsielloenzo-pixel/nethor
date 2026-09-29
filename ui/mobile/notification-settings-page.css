@@ -1,0 +1,2 @@
+/* Réglages des notifications — adaptations petits écrans. */
+@media(max-width:560px){main{padding-left:10px;padding-right:10px}.nsTop{margin-bottom:13px}.nsTitle h1{font-size:26px}.pushPanel{grid-template-columns:1fr}.pushActions .btn{flex:1}.ruleRow{grid-template-columns:42px minmax(0,1fr);padding:12px}.ruleIcon{width:40px;height:40px}.ruleCopy strong{font-size:12.5px}.channelControl,.channelControl.two{grid-column:1/-1;width:100%;min-width:0;margin-top:2px}.channelOption{min-height:38px;font-size:9px;padding:0 5px}}
