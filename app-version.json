@@ -1,10 +1,10 @@
 {
-  "version": 195,
-  "label": "v1.95",
+  "version": 196,
+  "label": "v1.96",
   "important": false,
   "mode": "auto",
-  "title": "Planning · heures contrat",
-  "message": "Détection d’anomalies : affichage par utilisateur des écarts entre total hebdomadaire et heures contrat, à partir des données du planning Excel.",
-  "published_at": "2026-09-29T10:55:00Z",
+  "title": "Planning · couverture magasin",
+  "message": "Amélioration de la lisibilité de l’échelle horaire dans Couverture magasin : repères 6 à 20 plus visibles et guides horaires.",
+  "published_at": "2026-09-29T10:59:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
