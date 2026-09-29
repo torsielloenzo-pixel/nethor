@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nethor">
 <script src="platform-resolver.js?v=3"></script>
-<script src="platform-navigation.js?v=1"></script>
+<script src="platform-navigation.js?v=1"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=4" media="not all" data-nethor-shell="mobile"><link rel="stylesheet" href="ui/desktop/tool-pages-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/tool-pages-layout.css?v=1" media="not all" data-nethor-shell="mobile"><script src="ui/desktop/desktop-shell.js?v=5"></script><script src="ui/mobile/mobile-shell.js?v=5"></script><script src="ui/desktop/tool-pages-layout.js?v=1"></script><script src="ui/mobile/tool-pages-layout.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
@@ -22,18 +22,7 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-fa
 body{min-height:100dvh;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(12px + env(safe-area-inset-bottom))}
 button,input{font:inherit}button{cursor:pointer}
 .page{width:min(100%,560px);margin:0 auto}
-@media(max-width:900px){
- html,body{width:100%;height:100%;min-height:0;overflow:hidden!important;overscroll-behavior:none!important}
- body{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;touch-action:manipulation}
- .page{height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);min-height:0;display:flex;flex-direction:column;overflow:hidden!important}
- .top{flex:0 0 auto}
- .cameraCard{flex:0 1 350px;min-height:220px!important;height:min(350px,43dvh)!important}
- #reader,#reader video{height:100%!important}
- #reader__scan_region{min-height:100%!important;height:100%!important}
- .hint,.cameraPreference{flex:0 0 auto}
- .panel{flex:0 1 auto;max-height:min(35dvh,330px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
- .desktopOnly{display:none!important}
-}
+
 .top{display:flex;align-items:center;gap:11px;margin:0 2px 13px}
 .back{width:42px;height:42px;flex:none;border:1px solid #e1e5e9;border-radius:14px;background:#fff;color:#2b3036;display:grid;place-items:center;font-size:24px;font-weight:750;box-shadow:0 3px 10px #00000008}
 .title{min-width:0;flex:1}.titleRow{display:flex;align-items:center;gap:8px;min-width:0}.title h1{margin:0;font-size:25px;line-height:1.05;letter-spacing:-.65px;white-space:nowrap}.beta{padding:5px 8px;border-radius:999px;background:#fff0e9;color:#db4c22;border:1px solid #ffd3c3;font-size:8px;font-weight:950;letter-spacing:.5px;text-transform:uppercase}.title p{margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.35}
@@ -78,36 +67,10 @@ button,input{font:inherit}button{cursor:pointer}
 .desktopOnly{display:none}
 :root[data-theme="dark"]{color-scheme:dark;--ink:#f2f4f6;--muted:#a8afb8;--line:#30353b;--card:#1b1e22;--bg:#111317}
 :root[data-theme="dark"] .back{background:#202328;border-color:#373c42;color:#f4f5f7}:root[data-theme="dark"] .beta{background:#3a261f;border-color:#613728;color:#ff9b77}:root[data-theme="dark"] .panel{background:#1b1e22;border-color:#30353b}:root[data-theme="dark"] .manual input{background:#20242a;border-color:#383d43;color:#f4f5f7}:root[data-theme="dark"] .manual button{background:#efefef;color:#1d2126}:root[data-theme="dark"] .fact{background:#20242a;border-color:#30353b}:root[data-theme="dark"] .productPhoto{background:#24282d}:root[data-theme="dark"] .resultActions .secondary{background:#282c31;color:#eee}:root[data-theme="dark"] .notFoundBox{background:#2a211e;border-color:#654031}:root[data-theme="dark"] .resultModalCard{background:#1b1e22;border-color:#353a40;box-shadow:0 28px 90px rgba(0,0,0,.62)}:root[data-theme="dark"] .resultModalClose{background:#292d32;color:#f1f3f5}:root[data-theme="dark"] .resultModalTitle small{color:#aaaeb5}:root[data-theme="dark"] .resultModal .resultActions{background:linear-gradient(180deg,rgba(27,30,34,.88),#1b1e22 28%);border-color:#30353a}:root[data-theme="dark"] .cameraPreference{background:#1b2a21;border-color:#2d4937;color:#8bd3a5}:root[data-theme="dark"] .cameraPreferenceIcon{background:#254231;color:#9ee1b5}
-@media(min-width:901px){.cameraCard,.hint,.panel{display:none}.desktopOnly{display:block;margin-top:70px;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--card);text-align:center}.desktopOnly strong{font-size:20px}.desktopOnly p{color:var(--muted);font-size:11px}}
+
 </style>
 </head>
-<body>
-<main class="page">
-  <div class="top">
-    <button class="back" type="button" onclick="goBack()" aria-label="Retour">‹</button>
-    <div class="title"><div class="titleRow"><h1>Scanner</h1><span class="beta">bêta</span></div><p>Scanne un code-barres pour retrouver sa fiche article EAN13.</p></div>
-  </div>
-
-  <section class="cameraCard" aria-label="Scanner un code-barres">
-    <div class="cameraHead"><span class="cameraState"><i class="cameraDot"></i><span id="cameraStateText">Initialisation…</span></span><span class="cameraFormat">EAN8 · EAN13</span></div>
-    <div id="reader"></div>
-    <div class="scanOverlay"><div class="scanFrame"><i></i><span class="scanLine"></span></div></div>
-    <div id="cameraFallback" class="cameraFallback"><div><strong>Caméra indisponible</strong><p id="cameraFallbackText">Autorise l’accès à la caméra pour scanner un code-barres.</p><button type="button" onclick="startCamera()">Réessayer</button></div></div>
-  </section>
-
-  <div class="hint"><span class="hintIcon">i</span><span>Place le code-barres à l’intérieur du cadre. La recherche démarre automatiquement dès que le code est reconnu.</span></div>
-  <div id="cameraPreference" class="cameraPreference"><span class="cameraPreferenceIcon">✓</span><span>Autorisation caméra mémorisée dans tes préférences.</span></div>
-
-  <section class="panel">
-    <div class="panelHead"><h2>Recherche manuelle</h2><small>EAN13</small></div>
-    <form class="manual" onsubmit="manualSearch(event)"><input id="eanInput" inputmode="none" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="14" readonly tabindex="-1" placeholder="Ex. 3760123456789" aria-label="Code EAN13" onpointerdown="activateManualInput(this,event)"><button type="submit">Rechercher</button></form>
-
-    <div id="result" class="result" aria-live="polite"></div>
-  </section>
-
-  <section class="desktopOnly"><strong>Scanner est réservé au mobile</strong><p>Ouvre Nethor sur ton téléphone pour utiliser l’appareil photo.</p></section>
-</main>
-
+<body><div data-nethor-platform-header></div><div data-nethor-platform-lead></div><div data-nethor-tool-page-layout></div><script src="platform-page-layout.js?v=6"></script>
 <script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
@@ -367,9 +330,9 @@ async function boot(){
   applyScannerPageConfig(cfg);
   if(!profile||!scannerPageAccess(profile.role,cfg))return location.replace('home.html');
   sessionUserId=session.user.id;
+  if(!isMobileView())return;
   lockScannerViewport();
   await loadCameraPreference();
-  if(!isMobileView())return;
   lockScannerViewport();
   setTimeout(startCamera,cameraRemembered?90:160)
 }
