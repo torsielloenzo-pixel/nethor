@@ -481,7 +481,7 @@ function tryOpenRequestedUserMenu(){
 }
 function backToUserMenu(){
  sounds.play('navigate');
- location.href=userMenuReturnUrl()
+ location.href=mobileDropMode()?userMenuReturnUrl():'home.html'
 }
 function mobileBarActive(module){
  try{
@@ -1160,9 +1160,11 @@ function addStyle(){
      box-shadow:0 -8px 24px rgba(17,24,39,.08);backdrop-filter:blur(22px) saturate(1.15);-webkit-backdrop-filter:blur(22px) saturate(1.15);gap:0
    }
    .nettoMobileQuickItem{
-     position:relative;min-width:0;min-height:56px;display:flex;align-items:center;justify-content:center;
-     border-radius:0;color:#707780;text-decoration:none!important;transition:color .14s ease,transform .12s ease;
-     -webkit-tap-highlight-color:transparent;touch-action:manipulation
+     position:relative;min-width:0;width:100%;min-height:56px;display:flex;align-items:center;justify-content:center;
+     margin:0!important;padding:0!important;border:0!important;border-radius:0;background:transparent!important;
+     box-shadow:none!important;appearance:none!important;-webkit-appearance:none!important;font:inherit;
+     color:#707780;text-decoration:none!important;transition:color .14s ease,transform .12s ease;
+     -webkit-tap-highlight-color:transparent;touch-action:manipulation;cursor:pointer
    }
    .nettoMobileQuickItem:active{transform:scale(.94)}
    .nettoMobileQuickItem.active:before{
@@ -2232,9 +2234,9 @@ function enforceLegacyAccessUI(root=document){
 function updateKnownUI(){const p=api.profile;if(!p)return;const name=p.display_name||'Utilisateur',role=roleLabel(p.role);['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});['userAvatar','userMenuAvatar'].forEach(id=>paint(document.getElementById(id),api.avatarUrl,name,p.profile_color,p.avatar_frame));enforceLegacyAccessUI();buildGlobalHeader();renderMobileQuickBar()}
 function pageFile(){return (location.pathname.split('/').pop()||'home.html').toLowerCase()}
 const PAGE_PARENT_ROUTES=Object.freeze({
- 'profile.html':'home.html?open_user_menu=1',
- 'settings.html':'home.html?open_user_menu=1',
- 'notification-settings.html':'home.html?open_user_menu=1',
+ 'profile.html':'home.html',
+ 'settings.html':'home.html',
+ 'notification-settings.html':'home.html',
  'notifications.html':'home.html',
  'index.html':'home.html',
  'planning.html':'home.html',
@@ -2249,7 +2251,8 @@ const PAGE_PARENT_ROUTES=Object.freeze({
 });
 function backFallback(){
  const p=pageFile();
- if(new URLSearchParams(location.search).get('from_user_menu')==='1'||['profile.html','settings.html','notification-settings.html'].includes(p))return userMenuReturnUrl();
+ const mobile=mobileDropMode();
+ if(mobile&&(new URLSearchParams(location.search).get('from_user_menu')==='1'||['profile.html','settings.html','notification-settings.html'].includes(p)))return userMenuReturnUrl();
  return PAGE_PARENT_ROUTES[p]||'home.html'
 }
 function goBack(){
