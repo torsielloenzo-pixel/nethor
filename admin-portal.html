@@ -6,7 +6,7 @@
 <script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
 <title>Nethor</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="profile-ui.js?v=188"></script>
+<script src="profile-ui.js?v=190"></script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <link rel="stylesheet" href="design-v2.css?v=3"><link rel="stylesheet" href="design-v3.css?v=3"><link rel="stylesheet" href="design-v4.css?v=9">
@@ -684,7 +684,19 @@ function normalize(raw){
  c.mobile_bar=c.mobile_bar&&typeof c.mobile_bar==='object'?c.mobile_bar:{enabled:true,items:[]};
  return c
 }
-function waitProfileUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI?.profile||n++>50){clearInterval(t);resolve()}},50)})}
+function waitProfileUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI||n++>100){clearInterval(t);resolve()}},50)})}
+async function ensureAdminGlobalTools(){
+ const ui=window.NettoProfileUI;if(!ui)return false;
+ try{
+  if(!ui.profile)await ui.refresh?.();
+  ui.rebuildGlobalHeader?.();
+  if(!document.getElementById('nettoGlobalTools')){
+   await ui.refresh?.();
+   ui.rebuildGlobalHeader?.()
+  }
+  return !!document.getElementById('nettoGlobalTools')
+ }catch(e){console.warn('Restauration barre administrateur:',e);return false}
+}
 function builtinModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom)}
 function maxRoles(m){return window.NettoProfileUI?.maxRoles?.(m)||ROLES}
 function defaultPage(m,index){return{
@@ -1613,7 +1625,7 @@ async function saveManagementArticle(id){
 async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
  const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;
- await waitProfileUI();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];bindGlobal();await loadConfig();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();loadNotificationAdmin();loadReportedProblems().catch(()=>{});enhanceCompactPortal();
+ await waitProfileUI();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];bindGlobal();await loadConfig();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();loadNotificationAdmin();loadReportedProblems().catch(()=>{});enhanceCompactPortal();
  const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoManagementTab')||'overview';
  const validTabs=['overview','general','system','mobile','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
  const tab=validTabs.includes(saved)?saved:'overview';
