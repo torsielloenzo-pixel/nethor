@@ -26,8 +26,8 @@ function buildPageLayout(page){
  const back=cfg.back?'<div class="navActions"><button class="btn light backBtn" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():location.href=\'home.html\'">← Retour</button></div>':'';
  return {
   platform:'desktop',
-  handlesBack:false,
-  header:'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="mark" type="button" onclick="location.href=\'home.html\'" aria-label="Retour à l’accueil">N</button><div><div class="title">'+esc(cfg.title)+'</div><div class="sub">'+esc(cfg.subtitle)+'</div></div></div>'+back+'</div></header>',
+  handlesBack:!!cfg.back,
+  header:'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="mark" type="button" onclick="location.href=\'home.html\'" aria-label="Retour à l’accueil">N</button><div><div class="title">'+esc(cfg.title)+'</div><div class="sub">'+esc(cfg.subtitle)+'</div></div></div>'+back+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>',
   lead:''
  }
 }
