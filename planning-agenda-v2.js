@@ -4,6 +4,168 @@ let layout='classic',mobileMode='day',booted=false,restFocusRevealed=false;
 const mq=window.matchMedia('(max-width:760px)');
 const escLocal=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function isMobile(){return document.documentElement.classList.contains('nethorPhoneDevice')||mq.matches}
+function ensureCenteredLayoutStyle(){
+ if(document.getElementById('planningCenteredLayoutRuntime'))return;
+ const style=document.createElement('style');
+ style.id='planningCenteredLayoutRuntime';
+ style.textContent=`
+@media(min-width:761px){
+  header .top,
+  main#planningApp{
+    width:min(calc(100vw - 24px),1560px)!important;
+    max-width:1560px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  main#planningApp{padding-left:0!important;padding-right:0!important}
+
+  .planningViewBar,
+  #planningToolbar,
+  .readerHead,
+  .planningWorkspaceTabs,
+  #sheetViewport,
+  #agendaView,
+  .agendaHeader,
+  .agendaMount,
+  .anomalyHistoryRow,
+  .anomalyHistoryRow #anomalyWidget,
+  .legend,
+  .planningSupportGrid,
+  #planningInsights,
+  .editSaveBar{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    box-sizing:border-box!important;
+  }
+
+  .planningViewBar{
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:16px!important;
+    padding:10px 12px!important;
+    margin-bottom:10px!important;
+  }
+  .desktopPlanningViewGroup{grid-column:1!important;min-width:0!important}
+  .weekNav{
+    grid-column:2!important;
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:38px minmax(180px,max-content) 38px auto!important;
+    justify-content:center!important;
+    align-items:center!important;
+    gap:7px!important;
+  }
+  .weekNav>button:nth-of-type(1){grid-column:1!important;grid-row:1!important}
+  .weekNav .weekLabel{
+    grid-column:2!important;grid-row:1!important;
+    margin:0!important;text-align:center!important;white-space:nowrap!important
+  }
+  .weekNav>button:nth-of-type(3){grid-column:3!important;grid-row:1!important}
+  .weekNav>button:nth-of-type(2){grid-column:4!important;grid-row:1!important}
+
+  #planningLayoutBar{
+    grid-column:3!important;grid-row:1!important;
+    width:auto!important;min-width:0!important;
+    margin:0!important;padding:0!important;border:0!important;
+    background:transparent!important;box-shadow:none!important;
+    justify-self:end!important
+  }
+  #planningLayoutBar .planningLayoutIntro{display:none!important}
+  #planningLayoutBar .planningLayoutSwitch{min-height:38px!important;padding:4px!important;border-radius:12px!important}
+  #planningLayoutBar .planningLayoutBtn{min-height:30px!important;padding:0 11px!important;font-size:10px!important}
+
+  #planningToolbar{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:9px 12px!important;
+    margin-bottom:12px!important;
+  }
+  .desktopPlanningDayGroup{
+    grid-column:1!important;
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:10px!important;
+    min-width:0!important
+  }
+  .days{
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    display:flex!important;align-items:center!important;gap:6px!important;
+    overflow-x:auto!important;margin:0!important;padding:0!important
+  }
+  .days .weekTotalChip{margin-left:auto!important;flex:none!important}
+  #planningActions{
+    grid-column:2!important;grid-row:1!important;
+    padding:0!important;margin:0!important;border:0!important;align-self:center!important
+  }
+  #planningActions:has(#saveState.passive){display:none!important}
+
+  #sheetViewport{
+    position:relative!important;
+    left:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important
+  }
+  .xlsTable{
+    width:100%!important;
+    min-width:100%!important;
+    max-width:none!important;
+    table-layout:fixed!important
+  }
+  .xlsTable col.nameCol{width:160px!important}
+  .xlsTable col.totalCol{width:60px!important}
+  .xlsTable col.slotCol{width:calc((100% - 220px) / 58)!important}
+  .xlsTable .slot{width:auto!important;min-width:0!important}
+  .xlsTable .nameCell,.xlsTable .nameHead{width:160px!important;max-width:160px!important}
+  .xlsTable .totalCell,.xlsTable .totalHead{width:60px!important;max-width:60px!important}
+
+  #agendaView{
+    position:relative!important;
+    left:auto!important;
+    transform:none!important;
+    margin-top:0!important
+  }
+  .agendaHeader{padding-left:2px!important;padding-right:2px!important}
+  .agendaMount{overflow:auto!important}
+  .agendaGridDesktop{width:100%!important;max-width:100%!important;min-width:1030px!important}
+
+  .anomalyHistoryRow{
+    position:relative!important;
+    left:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin-top:10px!important
+  }
+  .anomalyHistoryRow #anomalyWidget{width:100%!important;max-width:100%!important;margin:0!important}
+
+  .coverageModeDock{
+    position:relative!important;
+    left:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0 0 7px!important
+  }
+  #saveState.passive{display:none!important}
+}
+@media(min-width:761px) and (max-width:1180px){
+  .planningViewBar{grid-template-columns:auto minmax(0,1fr)!important}
+  #planningLayoutBar{grid-column:1/-1!important;grid-row:2!important;justify-self:end!important}
+  .weekNav{grid-template-columns:38px minmax(150px,max-content) 38px auto!important}
+}
+`;
+ document.head.appendChild(style)
+}
 function normalize(v){return v==='agenda'?'agenda':'classic'}
 function restFocusActive(){try{return new URLSearchParams(location.search).get('focus')==='rest'}catch(_){return false}}
 function agendaRanges(row){return rowRanges(row).filter(r=>!['r','y','o'].includes(r.c))}
@@ -247,7 +409,7 @@ function arrangeMobilePlanningWidgets(){
 }
 function handleViewport(){arrangeMobilePlanningWidgets();document.body.classList.toggle('mobileAgendaForced',isMobile());setLayout(isMobile()?'agenda':'classic',false)}
 function boot(){
- if(booted)return;inject();arrangeMobilePlanningWidgets();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
+ if(booted)return;ensureCenteredLayoutStyle();inject();arrangeMobilePlanningWidgets();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
  if(isMobile()){
   try{mobileMode=localStorage.getItem('nettoAgendaMobileMode')==='week'?'week':'day'}catch(_){}
   if(restFocusActive())mobileMode='day';
