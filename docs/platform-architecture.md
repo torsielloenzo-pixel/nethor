@@ -397,3 +397,94 @@ Aucune duplication de logique métier :
 - mêmes congés / indisponibilités ;
 - mêmes anomalies et couverture ;
 - mêmes fonctions de rendu de données.
+
+
+## Phase 4.4 — Accueil physiquement séparé
+
+L’Accueil n’utilise plus une structure commune remodelée en Mobile par des media queries.
+
+### Fichiers dédiés
+
+```text
+ui/
+├── desktop/
+│   ├── home-layout.js
+│   └── home-layout.css
+└── mobile/
+    ├── home-layout.js
+    └── home-layout.css
+```
+
+`platform-page-layout.js` v3 monte uniquement la structure correspondant à la plateforme déjà résolue.
+
+### Point de montage commun
+
+`home.html` expose maintenant seulement :
+
+```html
+<div data-nethor-home-layout></div>
+```
+
+Aucune structure Accueil Desktop ou Mobile n’est présente avant le montage du shell actif.
+
+### Structure Desktop
+
+Desktop construit uniquement :
+
+- le bandeau Bonjour ;
+- le message de planning du jour ;
+- le tableau de bord opérationnel Desktop ;
+- les cartes des outils autorisés ;
+- le statut de session ;
+- la fenêtre de statistiques de consultations pour l’administration.
+
+La fenêtre de statistiques n’est plus présente dans le DOM Mobile.
+
+### Structure Mobile
+
+Mobile construit uniquement :
+
+- le tableau de bord applicatif ;
+- le hero de bienvenue Mobile lorsque le widget est autorisé ;
+- les blocs opérationnels ;
+- les accès rapides Mobile lorsque le widget est autorisé.
+
+Il ne construit plus :
+
+- le bandeau Bonjour Desktop ;
+- `homePages` ;
+- les cartes Desktop ;
+- le statut Desktop ;
+- la fenêtre de statistiques de consultations.
+
+### Fin de la détection par largeur
+
+L’ancien helper basé sur :
+
+```js
+matchMedia('(max-width:700px)')
+```
+
+a été supprimé.
+
+Le moteur utilise désormais exclusivement `NethorPlatform.current()`.
+
+Réduire une fenêtre Desktop ne transforme donc plus la structure Accueil en structure Mobile.
+
+### CSS
+
+Les anciens blocs `mobile-home-dashboard-v137` et `desktop-home-dashboard-v157` ont quitté `home.html` et sont intégrés à leurs feuilles de plateforme.
+
+Les couches historiques Mobile de l’ancien Accueil à cartes ont été supprimées puisqu’elles ne correspondent plus à une structure montée sur Mobile.
+
+Le cœur du composant Passation reste partagé ; seules ses adaptations strictement Mobile ont été transférées à la feuille Mobile.
+
+### DOM généré selon la plateforme
+
+Le rendu des widgets ne crée plus certains éléments des deux plateformes pour ensuite les masquer :
+
+- le hero `welcome` est créé uniquement sur Mobile ;
+- les accès rapides sont créés uniquement sur Mobile ;
+- le titre Équipe est généré directement dans sa version Desktop ou Mobile.
+
+Les données restent communes : Supabase, permissions, widgets, tâches, planning, équipe, notifications et préférences utilisateur ne sont pas dupliqués.
