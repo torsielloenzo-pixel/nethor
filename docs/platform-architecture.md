@@ -758,3 +758,97 @@ L’audit de 4.7 a identifié notamment :
 - `fl-assistant.html` : une couche responsive plus simple.
 
 Ces pages seront traitées séparément pour conserver un périmètre de validation maîtrisable.
+
+
+## Phase 4.8 — Fiches articles
+
+La page `articles.html` rejoint l’architecture Desktop / Mobile séparée.
+
+### Structures dédiées
+
+```text
+ui/
+├── desktop/
+│   ├── articles-layout.js
+│   └── articles-layout.css
+└── mobile/
+    ├── articles-layout.js
+    └── articles-layout.css
+```
+
+Le HTML commun expose uniquement :
+
+```html
+<div data-nethor-articles-layout></div>
+```
+
+`platform-page-layout.js` v7 monte ensuite uniquement le layout actif.
+
+### Suppression de l’ancienne navigation locale
+
+`articles.html` contenait encore son propre système de navigation historique :
+
+- `nMenu` ;
+- `nMenuWrap` ;
+- `mobileNavBackdrop` ;
+- bouton Personnalisation `settingsLink` ;
+- logique `toggleMenu()` ;
+- listeners globaux du menu.
+
+Cette couche est supprimée.
+
+La page utilise désormais les shells Nethor comme les autres pages migrées.
+
+### Desktop
+
+Desktop construit :
+
+- le hero `Référentiel articles` ;
+- le compteur de fiches ;
+- les outils administrateur ;
+- recherche et filtres ;
+- la grille d’articles.
+
+Le shell Desktop fournit l’en-tête `Fiches articles / Référentiel produit interne` et son bouton Retour.
+
+### Mobile
+
+Mobile construit :
+
+- un top compact propre à Fiches articles ;
+- un bouton Retour utilisant `NethorNavigation` ;
+- le compteur ;
+- les outils administrateur ;
+- recherche et filtres ;
+- la grille d’articles.
+
+Le hero Desktop n’est pas créé sur Mobile.
+
+### CSS
+
+Les anciens breakpoints sont sortis du CSS commun.
+
+- `max-width:900px` est conservé comme adaptation interne de la grille Desktop, mais uniquement dans la feuille Desktop ;
+- `650px`, `390px` et `520px` appartiennent maintenant uniquement à la feuille Mobile ;
+- le breakpoint `700px` consacré à l’ancien overlay `nMenu` est supprimé.
+
+La largeur d’une fenêtre ne choisit donc plus la plateforme.
+
+### Moteur métier conservé
+
+Aucune duplication de logique pour :
+
+- Supabase ;
+- permissions `articles` ;
+- chargement du référentiel ;
+- familles / catégories / conditionnements ;
+- recherche ;
+- filtres Actif / Inactif ;
+- création et modification ;
+- photos ;
+- statut produit ;
+- dialogues ;
+- deep-link `?ean=` depuis le Scanner ;
+- liens vers Stock F&L et Boulangerie.
+
+Les mêmes IDs fonctionnels sont présents dans le layout actif sur les deux plateformes.
