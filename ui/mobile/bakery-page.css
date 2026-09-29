@@ -1,0 +1,8 @@
+/* Phase 4.11 — Boulangerie Mobile */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="bakery"] .bakeryMobile main{width:calc(100% - 18px);margin:0 auto;padding:18px 0 36px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="bakery"] .bakeryMobile .modeNav{margin-top:0}
+.toolbar{grid-template-columns:1fr auto}.addBtn{padding:0 12px}.rows{grid-template-columns:1fr}.consultGrid{grid-template-columns:1fr 1fr}.manageGrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}
+@media(max-width:430px){
+.consultGrid{grid-template-columns:1fr}
+.codeGrid,.articleInfoGrid{grid-template-columns:1fr 1fr}.articleHero{height:165px}
+}
