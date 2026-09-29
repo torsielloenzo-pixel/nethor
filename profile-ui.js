@@ -1409,9 +1409,24 @@ function askUpdateSearch(){
   sounds.play('menuOpen')
  })
 }
-function displayVersion(value){
- const n=Math.max(0,Math.trunc(Number(value)||0)),major=Math.floor(n/100),minor=String(n%100).padStart(2,'0');
- return 'v'+major+'.'+minor
+const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL]]);
+function normalizeReleaseLabel(label){
+ const value=String(label||'').trim();
+ if(!value)return'';
+ const m=value.match(/^v?(\d+)\.(\d+)\.(\d+)$/i);
+ return m?'v'+Number(m[1])+'.'+Number(m[2])+'.'+Number(m[3]):''
+}
+function rememberReleaseLabel(version,label){
+ const n=Math.max(0,Math.trunc(Number(version)||0)),normalized=normalizeReleaseLabel(label);
+ if(n&&normalized)RELEASE_LABELS.set(n,normalized);
+ return normalized
+}
+function displayVersion(value,label=''){
+ const n=Math.max(0,Math.trunc(Number(value)||0));
+ const normalized=rememberReleaseLabel(n,label);
+ if(normalized)return normalized;
+ if(RELEASE_LABELS.has(n))return RELEASE_LABELS.get(n);
+ return n===APP_RELEASE?APP_RELEASE_LABEL:'Build '+n
 }
 function parseVersionFromLog(row){
  const direct=Number(row?.details?.version||row?.details?.app_version||row?.details?.release_version||0);
@@ -1460,7 +1475,7 @@ async function manualCheckForUpdates(){
   // Cas le plus fréquent : la version publiée est déjà celle installée.
   // On répond immédiatement, puis on laisse le navigateur vérifier le SW en arrière-plan.
   if(!reg.waiting&&stored>=manifestVersion){
-   mobilePreviewNotice('Nethor est à jour - '+displayVersion(stored));
+   mobilePreviewNotice('Nethor est à jour - '+displayVersion(stored,stored===manifestVersion?info.label:''));
    sounds.play('update');
    reg.update().catch(()=>{});
    return
@@ -1484,14 +1499,14 @@ async function manualCheckForUpdates(){
   const current=Math.max(stored,active||0,APP_RELEASE);
   if(current>=manifestVersion){
    try{localStorage.setItem('nettoAppVersion',String(current))}catch(_){}
-   mobilePreviewNotice('Nethor est à jour - '+displayVersion(current));
+   mobilePreviewNotice('Nethor est à jour - '+displayVersion(current,current===manifestVersion?info.label:''));
    sounds.play('update');
    reg.update().catch(()=>{});
    return
   }
 
   // On sait déjà qu'une nouvelle version existe : on l'annonce tout de suite.
-  mobilePreviewNotice('Nouvelle version détectée : '+displayVersion(manifestVersion));
+  mobilePreviewNotice('Nouvelle version détectée : '+displayVersion(manifestVersion,info.label));
 
   // La préparation du Service Worker ne bloque désormais que quelques secondes au maximum.
   await reg.update().catch(()=>{});
@@ -1506,7 +1521,7 @@ async function manualCheckForUpdates(){
    return
   }
 
-  mobilePreviewNotice(displayVersion(manifestVersion)+' détectée · préparation en arrière-plan');
+  mobilePreviewNotice(displayVersion(manifestVersion,info.label)+' détectée · préparation en arrière-plan');
  }catch(e){
   console.warn('Recherche de mise à jour:',e);
   mobilePreviewNotice('Impossible de vérifier les mises à jour');
@@ -2083,7 +2098,8 @@ function buildAccessSnapshot(){
 function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localStorage.setItem(k,JSON.stringify({saved_at:Date.now(),profile:api.profile,siteConfig:api.siteConfig,subrolePermissions:api.subrolePermissions,avatarUrl:api.avatarUrl,accessSnapshot:buildAccessSnapshot()}))}catch(_){}}
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
-const APP_RELEASE=193;
+const APP_RELEASE=200;
+const APP_RELEASE_LABEL='v1.20.0';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 let updateRegistration=null;
@@ -2125,7 +2141,13 @@ function publicUpdateCopy(){
 }
 function updateInstallMode(info){return String(info?.mode||'manual').toLowerCase()==='auto'?'auto':'manual'}
 async function releaseInfo(){
- try{const r=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));const info=await r.json();return{...info,mode:updateInstallMode(info)}}catch(_){const copy=publicUpdateCopy();return{version:APP_RELEASE,label:displayVersion(APP_RELEASE),important:true,mode:'manual',title:copy.title,message:copy.message,icon:APP_ICON}}
+ try{
+  const r=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));
+  const info=await r.json();rememberReleaseLabel(info.version,info.label);
+  return{...info,label:displayVersion(info.version,info.label),mode:updateInstallMode(info)}
+ }catch(_){
+  const copy=publicUpdateCopy();return{version:APP_RELEASE,label:APP_RELEASE_LABEL,important:true,mode:'manual',title:copy.title,message:copy.message,icon:APP_ICON}
+ }
 }
 async function notifyUpdateSystem(){
  /* Les mises à jour Nethor ne doivent jamais déclencher de notification système/push. */
@@ -2205,7 +2227,7 @@ async function showUpdateAvailable(reg,forcedVersion=0,force=false){
  if(document.getElementById('nettoUpdateToast'))return;
  ensureUpdateStyles();
  const el=document.createElement('aside');el.id='nettoUpdateToast';el.className='nettoUpdateToast';el.setAttribute('role','status');el.setAttribute('aria-live','polite');
- const copy=publicUpdateCopy();el.innerHTML='<div class="nettoUpdateTop"><img class="nettoUpdateIcon" src="'+esc(info.icon||APP_ICON)+'" alt=""><div class="nettoUpdateCopy"><strong>'+esc(copy.title)+'</strong><span>'+esc(copy.message)+'</span><span class="nettoUpdateVersion">'+esc(displayVersion(version))+' • dernière version</span></div></div><div id="nettoUpdateProgressWrap" class="nettoUpdateProgressWrap hidden"><div class="nettoUpdateProgressHead"><span id="nettoUpdateProgressLabel" class="nettoUpdateProgressLabel">Préparation de la mise à jour…</span><strong id="nettoUpdateProgressValue" class="nettoUpdateProgressValue">0%</strong></div><div class="nettoUpdateProgressBar" aria-hidden="true"><div id="nettoUpdateProgressFill" class="nettoUpdateProgressFill"></div></div><div id="nettoUpdateProgressDone" class="nettoUpdateProgressDone hidden">Nethor a bien été mis à jour</div></div><div class="nettoUpdateActions"><button type="button" class="nettoUpdateLater" id="nettoUpdateLater">Plus tard</button><button type="button" class="nettoUpdateNow" id="nettoUpdateNow">Mettre à jour</button></div>';
+ const copy=publicUpdateCopy();el.innerHTML='<div class="nettoUpdateTop"><img class="nettoUpdateIcon" src="'+esc(info.icon||APP_ICON)+'" alt=""><div class="nettoUpdateCopy"><strong>'+esc(copy.title)+'</strong><span>'+esc(copy.message)+'</span><span class="nettoUpdateVersion">'+esc(displayVersion(version,info.label))+' • dernière version</span></div></div><div id="nettoUpdateProgressWrap" class="nettoUpdateProgressWrap hidden"><div class="nettoUpdateProgressHead"><span id="nettoUpdateProgressLabel" class="nettoUpdateProgressLabel">Préparation de la mise à jour…</span><strong id="nettoUpdateProgressValue" class="nettoUpdateProgressValue">0%</strong></div><div class="nettoUpdateProgressBar" aria-hidden="true"><div id="nettoUpdateProgressFill" class="nettoUpdateProgressFill"></div></div><div id="nettoUpdateProgressDone" class="nettoUpdateProgressDone hidden">Nethor a bien été mis à jour</div></div><div class="nettoUpdateActions"><button type="button" class="nettoUpdateLater" id="nettoUpdateLater">Plus tard</button><button type="button" class="nettoUpdateNow" id="nettoUpdateNow">Mettre à jour</button></div>';
  document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('show'));sounds.play('notification');
  document.getElementById('nettoUpdateLater').onclick=()=>{sessionStorage.setItem('nettoUpdateLater',String(version));hideUpdateToast()};
  document.getElementById('nettoUpdateNow').onclick=()=>activateWaitingUpdate(info);
