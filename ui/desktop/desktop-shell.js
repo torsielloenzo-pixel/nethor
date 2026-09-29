@@ -25,7 +25,8 @@ function buildPageLayout(page){
   'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true,chrome:false},
   notifications:{title:'Notifications',subtitle:'Centre d’activité Nethor',back:false},
   scanner:{title:'Scanner',subtitle:'Lecture EAN13',back:true,chrome:false},
-  articles:{title:'Fiches articles',subtitle:'Référentiel produit interne',back:true}
+  articles:{title:'Fiches articles',subtitle:'Référentiel produit interne',back:true},
+  accounts:{title:'Gestion des comptes',subtitle:'Administration · Accès · Journal',back:true}
  };
  const cfg=pages[id];
  if(!cfg)return null;
