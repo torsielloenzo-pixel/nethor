@@ -182,22 +182,43 @@ function avatarFor(emp){
  const avatar=typeof identityAvatarHtml==='function'?identityAvatarHtml(prof,label):'<span class="planningIdentityAvatar">'+escLocal((label||'?')[0])+'</span>';
  return {prof,label,avatar};
 }
+function desktopAgendaControls(){
+ return '<div class="planningLayoutIntro"><span>Affichage</span><strong id="planningLayoutLabel">Classique</strong></div><div class="planningLayoutSwitch" role="group" aria-label="Mode d\'affichage"><button id="layoutClassicBtn" class="planningLayoutBtn active" type="button"><span aria-hidden="true">▦</span> Classique</button><button id="layoutAgendaBtn" class="planningLayoutBtn" type="button"><span aria-hidden="true">☷</span> Agenda</button></div>'
+}
+function desktopAgendaMarkup(){
+ return '<div class="agendaHeader"><div><span class="agendaEyebrow">VUE ÉQUIPE</span><h2 id="agendaTitle">Agenda de la semaine</h2><p id="agendaSubtitle">Horaires calculés depuis le même import Excel.</p></div><button class="btn light agendaTodayBtn" type="button" id="agendaTodayBtn">Aujourd’hui</button></div><div id="agendaStats" class="agendaStats"></div><div id="agendaMount" class="agendaMount"></div>'
+}
+function mobileAgendaMarkup(){
+ return '<div id="mobileAgendaModeBar" class="mobileAgendaModeBar mobilePlanningPrimaryNav"><button id="mobileAgendaDayBtn" class="mobileAgendaModeBtn active" type="button">Jour</button><button id="mobileAgendaWeekBtn" class="mobileAgendaModeBtn" type="button">Semaine</button><button id="mobileAgendaCalendarBtn" class="mobileAgendaModeBtn" type="button">Calendrier</button></div><div id="mobileAgendaDays" class="mobileAgendaDays mobilePlanningSelector"></div><div class="agendaHeader"><div><span class="agendaEyebrow">VUE ÉQUIPE</span><h2 id="agendaTitle">Agenda de la semaine</h2><p id="agendaSubtitle">Horaires calculés depuis le même import Excel.</p></div><button class="btn light agendaTodayBtn" type="button" id="agendaTodayBtn">Aujourd’hui</button></div><div id="mobileAgendaContentTitle" class="mobileAgendaContentTitle">Agenda</div><div id="agendaMount" class="agendaMount"></div>'
+}
 function inject(){
- if(document.getElementById('planningLayoutBar'))return;
- const toolbar=document.getElementById('planningToolbar'),topBar=document.querySelector('.planningViewBar');if(!toolbar||!topBar)return;
- const bar=document.createElement('div');bar.id='planningLayoutBar';bar.className='planningLayoutBar';
- bar.innerHTML='<div class="planningLayoutIntro"><span>Affichage</span><strong id="planningLayoutLabel">Classique</strong></div><div class="planningLayoutSwitch" role="group" aria-label="Mode d\'affichage"><button id="layoutClassicBtn" class="planningLayoutBtn active" type="button"><span aria-hidden="true">▦</span> Classique</button><button id="layoutAgendaBtn" class="planningLayoutBtn" type="button"><span aria-hidden="true">☷</span> Agenda</button></div>';
- topBar.appendChild(bar);
+ if(document.getElementById('agendaView'))return;
+ const toolbar=document.getElementById('planningToolbar'),topBar=document.querySelector('.planningViewBar');
+ if(!toolbar||!topBar)return;
+
+ if(!isMobile()){
+  const bar=document.createElement('div');
+  bar.id='planningLayoutBar';
+  bar.className='planningLayoutBar';
+  bar.innerHTML=desktopAgendaControls();
+  topBar.appendChild(bar)
+ }
+
  const dock=document.getElementById('mobilePlanningActionsDock')||document.getElementById('emptyState');
- const view=document.createElement('section');view.id='agendaView';view.className='agendaView hidden';view.setAttribute('aria-label','Agenda de la semaine');
- view.innerHTML='<div id="mobileAgendaModeBar" class="mobileAgendaModeBar mobilePlanningPrimaryNav"><button id="mobileAgendaDayBtn" class="mobileAgendaModeBtn active" type="button">Jour</button><button id="mobileAgendaWeekBtn" class="mobileAgendaModeBtn" type="button">Semaine</button><button id="mobileAgendaCalendarBtn" class="mobileAgendaModeBtn" type="button">Calendrier</button></div><div id="mobileAgendaDays" class="mobileAgendaDays mobilePlanningSelector"></div><div class="agendaHeader"><div><span class="agendaEyebrow">VUE ÉQUIPE</span><h2 id="agendaTitle">Agenda de la semaine</h2><p id="agendaSubtitle">Horaires calculés depuis le même import Excel.</p></div><button class="btn light agendaTodayBtn" type="button" id="agendaTodayBtn">Aujourd’hui</button></div><div id="mobileAgendaContentTitle" class="mobileAgendaContentTitle">Agenda</div><div id="agendaStats" class="agendaStats"></div><div id="agendaMount" class="agendaMount"></div>';
+ const view=document.createElement('section');
+ view.id='agendaView';
+ view.className='agendaView hidden';
+ view.dataset.agendaPlatform=isMobile()?'mobile':'desktop';
+ view.setAttribute('aria-label','Agenda de la semaine');
+ view.innerHTML=isMobile()?mobileAgendaMarkup():desktopAgendaMarkup();
  if(dock&&dock.parentNode)dock.parentNode.insertBefore(view,dock.nextSibling);
- document.getElementById('layoutClassicBtn').onclick=()=>setLayout('classic',true);
- document.getElementById('layoutAgendaBtn').onclick=()=>setLayout('agenda',true);
- document.getElementById('mobileAgendaDayBtn').onclick=()=>setMobileMode('day',true);
- document.getElementById('mobileAgendaWeekBtn').onclick=()=>setMobileMode('week',true);
- document.getElementById('mobileAgendaCalendarBtn').onclick=()=>openMobilePlanningCalendar();
- document.getElementById('agendaTodayBtn').onclick=goToday;
+
+ document.getElementById('layoutClassicBtn')?.addEventListener('click',()=>setLayout('classic',true));
+ document.getElementById('layoutAgendaBtn')?.addEventListener('click',()=>setLayout('agenda',true));
+ document.getElementById('mobileAgendaDayBtn')?.addEventListener('click',()=>setMobileMode('day',true));
+ document.getElementById('mobileAgendaWeekBtn')?.addEventListener('click',()=>setMobileMode('week',true));
+ document.getElementById('mobileAgendaCalendarBtn')?.addEventListener('click',()=>openMobilePlanningCalendar());
+ document.getElementById('agendaTodayBtn')?.addEventListener('click',goToday)
 }
 function setLayout(v,sound){
 
