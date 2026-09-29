@@ -1,0 +1,226 @@
+/* Settings Mobile — ancien layout v142, désormais isolé. */
+
+
+  body>header{display:none!important}
+  main{
+    width:min(100%,760px)!important;
+    margin:0 auto!important;
+    padding:calc(env(safe-area-inset-top) + 14px) 10px calc(28px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))!important
+  }
+  .settingsMobileTop{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin:2px 2px 13px
+  }
+  .settingsMobileBack{
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
+    border:1px solid #e4e7eb;
+    border-radius:14px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    color:inherit;
+    font-size:24px;
+    line-height:1;
+    font-weight:700;
+    padding:0;
+    box-shadow:none
+  }
+  .settingsMobileTitle{min-width:0}
+  .settingsMobileTitle h1{
+    margin:0!important;
+    font-size:26px!important;
+    line-height:1.05!important;
+    letter-spacing:-.8px!important
+  }
+  .settingsMobileTitle p{
+    margin:5px 0 0!important;
+    color:#7b828b!important;
+    font-size:10px!important;
+    line-height:1.35!important
+  }
+
+  .hero{
+    margin:0 2px 12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important
+  }
+  .hero>div{display:none!important}
+  .roleBadge{
+    padding:6px 9px!important;
+    font-size:9px!important;
+    line-height:1!important
+  }
+
+  .panel{
+    padding:15px!important;
+    margin-bottom:12px!important;
+    border-radius:20px!important;
+    overflow:hidden!important
+  }
+  .panelHead{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important
+  }
+  .panelHead>div{min-width:0!important}
+  .panel h2{
+    margin:0!important;
+    font-size:17px!important;
+    line-height:1.2!important
+  }
+  .panel p{
+    margin:5px 0 0!important;
+    font-size:10px!important;
+    line-height:1.45!important;
+    overflow-wrap:anywhere
+  }
+  .panelTools{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    width:100%!important
+  }
+  .panelTools .mini{
+    width:100%!important;
+    min-width:0!important;
+    min-height:38px!important;
+    padding:8px 9px!important
+  }
+
+  .themeChoices{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    margin-top:12px!important
+  }
+  .themeChoice{
+    width:100%!important;
+    min-width:0!important;
+    min-height:66px!important;
+    grid-template-columns:42px minmax(0,1fr) 20px!important;
+    gap:10px!important;
+    padding:11px 12px!important
+  }
+  .themeChoiceText{min-width:0!important}
+  .themeChoiceText strong,
+  .themeChoiceText span{
+    overflow-wrap:anywhere!important
+  }
+
+  .grid{
+    gap:8px!important;
+    margin-top:12px!important
+  }
+  .item{
+    min-width:0!important;
+    grid-template-columns:38px minmax(0,1fr) auto!important;
+    gap:9px!important;
+    padding:10px!important;
+    align-items:center!important
+  }
+  .icon{
+    width:38px!important;
+    height:38px!important;
+    border-radius:11px!important
+  }
+  .info{
+    min-width:0!important;
+    overflow:hidden!important
+  }
+  .info strong{
+    font-size:11.5px!important;
+    line-height:1.25!important;
+    overflow-wrap:anywhere!important
+  }
+  .info span{
+    max-width:none!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    font-size:9.5px!important;
+    line-height:1.35!important;
+    overflow-wrap:anywhere!important
+  }
+  .toggle{
+    min-width:0!important;
+    white-space:nowrap!important;
+    font-size:9px!important;
+    gap:5px!important
+  }
+  .toggle input{
+    width:18px!important;
+    height:18px!important;
+    flex:none!important
+  }
+
+  .adminLink{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important
+  }
+  .adminLink .open{
+    width:100%!important;
+    min-height:42px!important;
+    white-space:normal!important;
+    text-align:center!important
+  }
+
+  .actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:9px!important;
+    border-radius:16px!important;
+    width:100%!important
+  }
+  .saveState{
+    grid-column:1/-1!important;
+    width:100%!important;
+    margin:0!important;
+    text-align:center!important;
+    min-width:0!important;
+    overflow-wrap:anywhere!important
+  }
+  .actions .btn{
+    width:100%!important;
+    min-width:0!important
+  }
+
+  :root[data-theme="dark"] .settingsMobileBack{
+    background:#22252a!important;
+    border-color:#343940!important;
+    color:#f1eeea!important
+  }
+  :root[data-theme="dark"] .settingsMobileTitle p{
+    color:#aaa59f!important
+  }
+
+@media(max-width:430px){
+  .item{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    align-items:start!important
+  }
+  .icon{
+    grid-row:1 / span 2!important
+  }
+  .toggle{
+    grid-column:2!important;
+    justify-self:start!important;
+    margin-top:3px!important
+  }
+  .themeChoice{
+    grid-template-columns:38px minmax(0,1fr) 18px!important;
+    padding:10px!important
+  }
+  .themeSwatch{
+    width:38px!important;
+    height:38px!important
+  }
+}
+
+/* Settings — responsive interne Mobile. */
+@media(max-width:620px){#userBarSettingsPanel{display:none!important}.themeChoices{grid-template-columns:1fr}.themeChoice{min-height:64px}header{height:66px}.top{width:calc(100% - 22px)}main{width:calc(100% - 22px);padding-top:28px}.hero{align-items:flex-start;flex-direction:column}.hero h1{font-size:29px}.panel{padding:15px;border-radius:17px}.panelHead{display:grid}.item{grid-template-columns:38px minmax(0,1fr) auto}.icon{width:38px;height:38px}.info span{max-width:180px}.adminLink{align-items:flex-start;flex-direction:column}.actions{bottom:max(8px,env(safe-area-inset-bottom));flex-wrap:wrap}.saveState{width:100%;margin:0}.actions .btn{flex:1}}
