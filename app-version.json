@@ -1,10 +1,10 @@
 {
-  "version": 191,
-  "label": "v1.91",
+  "version": 192,
+  "label": "v1.92",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Netto Rush rejoint Jeux : course sur trois allées, paniers, missions du jour et retour au menu.",
-  "published_at": "2026-09-29T02:54:02Z",
+  "message": "Les mini-jeux et la page Jeux ont été supprimés.",
+  "published_at": "2026-09-29T03:05:17Z",
   "icon": "assets/app-icon-v63.svg"
 }
