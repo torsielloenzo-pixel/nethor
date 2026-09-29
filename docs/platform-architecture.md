@@ -1150,3 +1150,91 @@ Aucun moteur métier n’est dupliqué entre Desktop et Mobile.
 Les deux pages ont maintenant leur propre chrome de plateforme.
 
 Un redimensionnement Desktop ne crée plus le top Mobile, et une interface Mobile large ne recrée plus le header Desktop.
+
+
+## Phase 4.12 — Défis & Boutique
+
+`rewards.html` rejoint l’architecture Desktop / Mobile séparée.
+
+### Structures dédiées
+
+```text
+ui/
+├── desktop/
+│   ├── rewards-layout.js
+│   └── rewards-layout.css
+└── mobile/
+    ├── rewards-layout.js
+    └── rewards-layout.css
+```
+
+Le HTML commun expose uniquement :
+
+```html
+<div data-nethor-rewards-layout></div>
+```
+
+Le modal d’édition reste commun, puisqu’il s’agit du même moteur fonctionnel sur les deux plateformes.
+
+`platform-page-layout.js` v11 monte ensuite uniquement le layout actif.
+
+### Desktop
+
+Desktop conserve :
+
+- le header Défis & Boutique ;
+- le hero complet « À chaque défi, sa récompense » ;
+- le solde de jetons ;
+- les onglets ;
+- le contenu Missions / Boutique / Collection / Historique / Classement / Gestion.
+
+L’ancien breakpoint 850 px de la grille appartient désormais uniquement à la feuille Desktop et constitue un responsive interne.
+
+### Mobile
+
+Mobile construit :
+
+- un top compact propre ;
+- un bouton Retour utilisant `NethorNavigation` ;
+- un hero Mobile distinct ;
+- le même solde ;
+- les mêmes onglets et contenus métier.
+
+La grille Mobile est une colonne par défaut et peut passer à deux colonnes sur un appareil Mobile large, sans changer de plateforme.
+
+### Fin des breakpoints de plateforme dans rewards.css
+
+Les anciens blocs :
+
+```css
+@media(max-width:850px)
+@media(max-width:560px)
+```
+
+ont quitté `rewards.css`.
+
+La feuille commune ne contient plus aucun `@media`.
+
+Les adaptations Desktop sont dans `ui/desktop/rewards-layout.css`.
+
+Les adaptations Mobile sont dans `ui/mobile/rewards-layout.css`.
+
+### Moteur métier inchangé
+
+`rewards.js` reste unique et ne contient aucune décision `innerWidth` ou `matchMedia`.
+
+La phase ne duplique pas :
+
+- missions ;
+- validation des missions ;
+- jetons ;
+- catalogue ;
+- inventaire ;
+- équipement ;
+- historique ;
+- classement ;
+- formulaires administrateur ;
+- RPC Supabase ;
+- chargement et rafraîchissement des données.
+
+Les mêmes IDs fonctionnels sont créés dans le layout actif sur Desktop et Mobile.
