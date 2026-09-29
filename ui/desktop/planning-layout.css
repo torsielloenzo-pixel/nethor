@@ -1,0 +1,8 @@
+/* Phase 4.2 — Planning Desktop uniquement. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .planningDesktopSourceActions{
+ display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .desktopPlanningViewBar,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .desktopPlanningToolbar{
+ box-sizing:border-box
+}
