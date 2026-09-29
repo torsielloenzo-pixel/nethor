@@ -22,7 +22,9 @@ function buildPageLayout(page){
   planning:{title:'Planning équipe',subtitle:'Organisation du magasin',back:true},
   settings:{title:'Personnalisation',subtitle:'Mon affichage et mes raccourcis',back:true},
   'notification-settings':{title:'Notifications',subtitle:'Préférences et canaux',back:true},
-  'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true,chrome:false}
+  'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true,chrome:false},
+  notifications:{title:'Notifications',subtitle:'Centre d’activité Nethor',back:false},
+  scanner:{title:'Scanner',subtitle:'Lecture EAN13',back:true,chrome:false}
  };
  const cfg=pages[id];
  if(!cfg)return null;
