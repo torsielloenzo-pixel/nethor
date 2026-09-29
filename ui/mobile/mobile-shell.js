@@ -52,15 +52,15 @@ function buildUserMenu(ctx){
 }
 function buildPageLayout(page){
  const id=String(page||'').toLowerCase();
- if(!['home','profile','planning','settings','notification-settings','report-problem','notifications','scanner','articles','accounts','admin-portal','fl-assistant','bakery'].includes(id))return null;
+ if(!['home','profile','planning','settings','notification-settings','report-problem','notifications','scanner','articles','accounts','admin-portal','fl-assistant','bakery','rewards'].includes(id))return null;
  if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'mobile',handlesBack:true,header:'',lead:''};
  const lead=id==='profile'
   ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.backToUserMenu?window.NettoProfileUI.backToUserMenu():location.href=\'home.html?open_user_menu=1\'" aria-label="Retour au menu utilisateur">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
   :'';
- const ownChrome=id==='report-problem'||id==='scanner'||id==='articles'||id==='accounts'||id==='admin-portal'||id==='fl-assistant'||id==='bakery';
+ const ownChrome=id==='report-problem'||id==='scanner'||id==='articles'||id==='accounts'||id==='admin-portal'||id==='fl-assistant'||id==='bakery'||id==='rewards';
  return {
   platform:'mobile',
-  handlesBack:['profile','settings','notification-settings','report-problem','scanner','articles','accounts','admin-portal','fl-assistant','bakery'].includes(id),
+  handlesBack:['profile','settings','notification-settings','report-problem','scanner','articles','accounts','admin-portal','fl-assistant','bakery','rewards'].includes(id),
   header:ownChrome?'':'<div class="nethorMobileUtilityHost" data-nethor-page-chrome="mobile" data-nethor-global-tools-host></div>',
   lead
  }
