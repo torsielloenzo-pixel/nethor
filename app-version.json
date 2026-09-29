@@ -1,10 +1,10 @@
 {
-  "version": 202,
-  "label": "v2.02",
+  "version": 201,
+  "label": "v1.20.0",
   "important": false,
   "mode": "auto",
-  "title": "Gestion · menus synchronisés",
-  "message": "Les fonctions de Gestion sont synchronisées avec le registre Nethor : inventaire mobile/desktop, 16 destinations mobiles, filtres par appareil et configuration compatible de Notifications.",
-  "published_at": "2026-09-29T12:38:36.262Z",
+  "title": "Accueil · Pilotage magasin",
+  "message": "Le widget Pilotage magasin est intégré et son affichage responsive a été corrigé. Nethor utilise désormais l’affichage de version MAJEURE.MINEURE.CORRECTIF.",
+  "published_at": "2026-09-29T14:30:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
