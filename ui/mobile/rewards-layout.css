@@ -1,0 +1,25 @@
+/* Phase 4.12 — Défis & Boutique Mobile */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileLayout{min-height:100dvh;padding-bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileTop{
+ position:sticky;top:0;z-index:80;display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:10px;
+ padding:calc(env(safe-area-inset-top) + 8px) 10px 8px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(14px)
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileBack{
+ width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:inherit;font-size:24px;line-height:1;padding:0
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileTitle{min-width:0}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileTitle strong{display:block;font-size:17px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileTitle small{display:block;margin-top:2px;color:var(--muted);font-size:8.5px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileUtilityHost{display:none!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileLayout main{width:100%;max-width:none;margin:0;padding:20px 16px 48px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileHero{display:grid;gap:14px;margin-bottom:18px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileHero h1{font-size:29px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileHero .wallet{display:flex;align-items:center;justify-content:space-between;padding:12px 18px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .rewardsMobileHero .wallet strong{font-size:26px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .grid{grid-template-columns:1fr}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .card{padding:18px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .entry{flex-wrap:wrap}
+@media(min-width:600px){
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="rewards"] .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+.wallet{display:flex;align-items:center;justify-content:space-between;padding:12px 18px}.wallet strong{font-size:26px}.grid{grid-template-columns:1fr}.card{padding:18px}h1{font-size:29px}.entry{flex-wrap:wrap}
