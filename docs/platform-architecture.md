@@ -488,3 +488,103 @@ Le rendu des widgets ne crée plus certains éléments des deux plateformes pour
 - le titre Équipe est généré directement dans sa version Desktop ou Mobile.
 
 Les données restent communes : Supabase, permissions, widgets, tâches, planning, équipe, notifications et préférences utilisateur ne sont pas dupliqués.
+
+
+## Phase 4.5 — Profil et Menu utilisateur
+
+La séparation de plateforme couvre maintenant `profile.html` ainsi que le point de montage des outils globaux et du Menu utilisateur.
+
+### Profil : structures dédiées
+
+```text
+ui/
+├── desktop/
+│   ├── profile-layout.js
+│   └── profile-layout.css
+└── mobile/
+    ├── profile-layout.js
+    └── profile-layout.css
+```
+
+`profile.html` expose uniquement :
+
+```html
+<div data-nethor-profile-layout></div>
+```
+
+`platform-page-layout.js` v4 construit ensuite uniquement le Profil de la plateforme résolue.
+
+Desktop conserve son hero `Mon profil` et ses cartes de compte.
+
+Mobile ne reçoit pas le hero Desktop : il utilise sa zone haute Mobile produite par le shell, puis sa propre structure de contenu.
+
+Les IDs fonctionnels restent identiques dans la structure active afin de conserver la même logique métier : avatar, nom, couleur, thème, récompenses, sons, mot de passe et notifications.
+
+### Fin de la sélection Profil par largeur
+
+L’ancien code :
+
+```js
+const MOBILE_PROFILE_QUERY = window.matchMedia('(max-width:700px)')
+```
+
+est supprimé.
+
+Le mode Profil utilise désormais exclusivement `NethorPlatform.current()`.
+
+Les adaptations Mobile à 600/700 px ont quitté le CSS commun de `profile.html` pour rejoindre `ui/mobile/profile-layout.css`.
+
+Les anciens styles du menu `nMenu` Mobile présents dans le Profil ont été supprimés : le Menu utilisateur est maintenant celui du shell Mobile.
+
+### Menu utilisateur
+
+Les builders restent physiquement séparés :
+
+- `NethorDesktopShell.buildUserMenu()`
+- `NethorMobileShell.buildUserMenu()`
+
+`profile-ui.js` ne construit que le menu du shell actif.
+
+### Suppression du faux header Mobile
+
+Le shell Mobile n’utilise plus :
+
+```html
+<header class="nethorMobileUtilityHost">
+  <div class="top"></div>
+</header>
+```
+
+Il fournit maintenant un hôte technique neutre :
+
+```html
+<div data-nethor-global-tools-host></div>
+```
+
+Le shell Desktop expose lui aussi `data-nethor-global-tools-host` dans sa barre supérieure.
+
+`profile-ui.js` monte les notifications, mises à jour et menu utilisateur dans cet hôte explicite, avec fallback vers les anciens headers pour les pages qui ne sont pas encore migrées.
+
+### Navigation Retour
+
+Lorsqu’un layout déclare `data-nethor-page-back-handled="1"`, `profile-ui.js` n’injecte plus un second bouton Retour.
+
+Ainsi :
+
+- Profil Mobile garde son retour vers le Menu utilisateur ;
+- Profil Desktop garde son retour Desktop ;
+- Planning Desktop garde le bouton du shell ;
+- aucune version opposée n’écrase la navigation active.
+
+### Invariants
+
+La séparation ne duplique pas :
+
+- Supabase/Auth ;
+- données du profil ;
+- rôles et permissions ;
+- stockage avatar ;
+- récompenses ;
+- logique mot de passe ;
+- notifications ;
+- préférences de thème.
