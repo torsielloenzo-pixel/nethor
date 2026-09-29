@@ -157,7 +157,7 @@ function permissionDenied(error){
  return name==='notallowederror'||name==='permissiondeniederror'||msg.includes('permission denied')||msg.includes('not allowed')
 }
 function goBack(){
-  try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1)return history.back()}catch(_){}
+  if(window.NettoProfileUI?.goBack)return window.NettoProfileUI.goBack();
   location.href='home.html'
 }
 function isMobileView(){return matchMedia('(max-width:900px)').matches||new URLSearchParams(location.search).get('mobile_preview')==='1'}
