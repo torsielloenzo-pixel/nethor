@@ -19,10 +19,10 @@ function avatarFor(emp){
 }
 function inject(){
  if(document.getElementById('planningLayoutBar'))return;
- const toolbar=document.getElementById('planningToolbar');if(!toolbar)return;
+ const toolbar=document.getElementById('planningToolbar'),topBar=document.querySelector('.planningViewBar');if(!toolbar||!topBar)return;
  const bar=document.createElement('div');bar.id='planningLayoutBar';bar.className='planningLayoutBar';
  bar.innerHTML='<div class="planningLayoutIntro"><span>Affichage</span><strong id="planningLayoutLabel">Classique</strong></div><div class="planningLayoutSwitch" role="group" aria-label="Mode d\'affichage"><button id="layoutClassicBtn" class="planningLayoutBtn active" type="button"><span aria-hidden="true">▦</span> Classique</button><button id="layoutAgendaBtn" class="planningLayoutBtn" type="button"><span aria-hidden="true">☷</span> Agenda</button></div>';
- toolbar.prepend(bar);
+ topBar.appendChild(bar);
  const dock=document.getElementById('mobilePlanningActionsDock')||document.getElementById('emptyState');
  const view=document.createElement('section');view.id='agendaView';view.className='agendaView hidden';view.setAttribute('aria-label','Agenda de la semaine');
  view.innerHTML='<div id="mobileAgendaModeBar" class="mobileAgendaModeBar mobilePlanningPrimaryNav"><button id="mobileAgendaDayBtn" class="mobileAgendaModeBtn active" type="button">Jour</button><button id="mobileAgendaWeekBtn" class="mobileAgendaModeBtn" type="button">Semaine</button><button id="mobileAgendaCalendarBtn" class="mobileAgendaModeBtn" type="button">Calendrier</button></div><div id="mobileAgendaDays" class="mobileAgendaDays mobilePlanningSelector"></div><div class="agendaHeader"><div><span class="agendaEyebrow">VUE ÉQUIPE</span><h2 id="agendaTitle">Agenda de la semaine</h2><p id="agendaSubtitle">Horaires calculés depuis le même import Excel.</p></div><button class="btn light agendaTodayBtn" type="button" id="agendaTodayBtn">Aujourd’hui</button></div><div id="mobileAgendaContentTitle" class="mobileAgendaContentTitle">Agenda</div><div id="agendaStats" class="agendaStats"></div><div id="agendaMount" class="agendaMount"></div>';
