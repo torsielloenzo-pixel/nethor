@@ -1,9 +1,12 @@
 (function(){
 'use strict';
 let layout='classic',mobileMode='day',booted=false,restFocusRevealed=false;
-const mq=window.matchMedia('(max-width:760px)');
 const escLocal=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function isMobile(){return document.documentElement.classList.contains('nethorPhoneDevice')||mq.matches}
+function planningPlatformKind(){
+ const kind=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase();
+ return kind==='desktop'?'desktop':'mobile'
+}
+function isMobile(){return planningPlatformKind()==='mobile'}
 function ensureCenteredLayoutStyle(){
  if(document.getElementById('planningCenteredLayoutRuntime'))return;
  const style=document.createElement('style');
@@ -409,7 +412,7 @@ function arrangeMobilePlanningWidgets(){
 }
 function handleViewport(){arrangeMobilePlanningWidgets();document.body.classList.toggle('mobileAgendaForced',isMobile());setLayout(isMobile()?'agenda':'classic',false)}
 function boot(){
- if(booted)return;ensureCenteredLayoutStyle();inject();arrangeMobilePlanningWidgets();hookRender();booted=true;mq.addEventListener?.('change',handleViewport);
+ if(booted)return;ensureCenteredLayoutStyle();inject();arrangeMobilePlanningWidgets();hookRender();booted=true;
  if(isMobile()){
   try{mobileMode=localStorage.getItem('nettoAgendaMobileMode')==='week'?'week':'day'}catch(_){}
   if(restFocusActive())mobileMode='day';
