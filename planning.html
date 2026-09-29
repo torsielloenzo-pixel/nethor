@@ -44,7 +44,7 @@
   if(!ctx||Date.now()-Number(ctx.saved_at||0)>120000)return;
   apply(ctx)
  }catch(_){}
-})();</script><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><title>Nethor</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=3" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=2"></script><script src="ui/mobile/mobile-shell.js?v=2"></script><script src="profile-ui.js?v=199"></script><style>
+})();</script><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><title>Nethor</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=3" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=2"></script><script src="ui/mobile/mobile-shell.js?v=2"></script><link rel="stylesheet" href="ui/desktop/planning-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/planning-layout.css?v=1" media="not all" data-nethor-shell="mobile"><script src="ui/desktop/planning-layout.js?v=1"></script><script src="ui/mobile/planning-layout.js?v=1"></script><script src="profile-ui.js?v=199"></script><style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--red:#ff2d20;--orange:#ff8a00;--ink:#171717;--muted:#737780;--line:#cfd3d8;--soft:#f5f6f7}
 body{margin:0;background:#f7f8fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
@@ -1023,7 +1023,7 @@ body:not(.planningYearOpen) #yearView{display:none!important}
   .sourceActions:empty{display:none!important}
 }
 </style>
-<link rel="stylesheet" href="planning-agenda-v2.css?v=14"><link rel="preload" href="planning-agenda-v2.js?v=16" as="script"><script src="planning-agenda-v2.js?v=16" defer></script>
+<link rel="stylesheet" href="planning-agenda-v2.css?v=14"><link rel="preload" href="planning-agenda-v2.js?v=17" as="script"><script src="planning-agenda-v2.js?v=17" defer></script>
 <style id="planning-desktop-menu-v1">
 /* Desktop uniquement — réorganisation des menus supérieurs du planning. */
 .desktopPlanningMenuLabel{display:none}
@@ -1543,17 +1543,11 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
 :root[data-theme="dark"] #planningActions #saveState{background:#282c30!important;color:#b9bec4!important}
 </style>
 
-</head><body><div data-nethor-platform-header></div><main id="planningApp"><div data-nethor-platform-lead></div><script src="platform-page-layout.js?v=1"></script>
-  <div class="planningViewBar">
-    <div class="desktopPlanningViewGroup"><span class="desktopPlanningMenuLabel">Vue</span><div class="viewTabs"><button id="weekViewBtn" class="viewTab active" onclick="setPlanningView('week')">Semaine</button><button id="yearViewBtn" class="viewTab yearMenuBtn" onclick="setPlanningView('year')" aria-label="Ouvrir le calendrier annuel"><span class="yearTabDesktop">Année</span><span class="yearTabMobile"><span>Calendrier</span><small id="planningDeviceLabel">Mobile</small></span></button></div></div>
-    <div class="weekNav"><button class="btn light miniNav" onclick="changeWeek(-1)">←</button><button class="btn light" onclick="goCurrentWeek()">Cette semaine</button><button class="btn light miniNav" onclick="changeWeek(1)">→</button><span id="weekLabel" class="weekLabel"></span></div>
-  </div>
+</head><body><div data-nethor-platform-header></div><main id="planningApp"><div data-nethor-platform-lead></div>
+  <div data-nethor-planning-top></div>
   <section id="weekView">
-    <div id="planningToolbar" class="toolbar">
-      <div class="desktopPlanningDayGroup"><span class="desktopPlanningMenuLabel">Jour</span><div id="days" class="days"></div></div>
-      <div id="planningActions" class="planningActions"><span id="saveState" class="saveState passive">Lecture seule</span><div id="importPanel" class="importPanel compactImport hidden"><input id="excelFile" type="file" accept=".xls,.xlsx,.xlsm" multiple hidden onchange="importPlanningFiles(this.files)"><div class="excelDrop" onclick="document.getElementById('excelFile').click()" ondragover="excelDrag(event,true)" ondragleave="excelDrag(event,false)" ondrop="excelDropFile(event)"><span class="excelIcon">▦</span><div><strong>Importer Excel</strong><small>Un ou plusieurs fichiers à la fois</small></div></div><div id="importState" class="importState"></div></div><button id="editPlanningBtn" class="btn dark hidden" onclick="toggleEditMode()">✎ Modifier le planning</button></div>
-    </div>
-    <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><div class="sourceActions"><span id="sourceBadge" class="sourceBadge hidden"></span><button id="downloadSourceBtn" class="sourceDownloadBtn hidden" type="button" onclick="downloadPlanningSource()">⇩ Télécharger Excel</button></div></div>
+    <div data-nethor-planning-toolbar></div>
+    <div class="readerHead"><div><div id="dateTitle" class="dateTitle"></div><div id="readerMeta" class="readerMeta"></div></div><div class="sourceActions"><span id="sourceBadge" class="sourceBadge hidden"></span><button id="downloadSourceBtn" class="sourceDownloadBtn hidden" type="button" onclick="downloadPlanningSource()">⇩ Télécharger Excel</button><div data-nethor-planning-source-actions></div></div></div>
     <nav class="planningWorkspaceTabs" aria-label="Sections du planning">
       <button id="workspacePlanningBtn" class="planningWorkspaceTab active" type="button" onclick="setPlanningWorkspaceView('planning')"><span class="workspaceTabIcon">▦</span><span>Planning</span></button>
       <button id="workspaceCoverageBtn" class="planningWorkspaceTab" type="button" onclick="setPlanningWorkspaceView('coverage')"><span class="workspaceTabIcon">▥</span><span>Couverture</span></button>
@@ -1573,7 +1567,7 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
       </div>
       <button class="btn light" onclick="resetDay()">Réinitialiser le jour</button><button class="btn danger" onclick="resetWeek()">Réinitialiser la semaine</button>
     </div>
-    <div id="mobilePlanningActionsDock" class="mobilePlanningActionsDock"></div>
+    <div data-nethor-planning-mobile-actions></div>
     <div id="emptyState" class="emptyState hidden"><strong>Aucun planning importé pour cette semaine</strong><span>Un administrateur ou responsable peut glisser le fichier Excel correspondant.</span></div>
     <div id="coverageModeDock" class="coverageModeDock">
       <button id="coverageModeBtn" class="coverageModeBtn" type="button" aria-pressed="false" onclick="toggleCoverageMode()">
@@ -1595,7 +1589,7 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
           <div id="coverageOverlayDetail" class="coverageOverlayDetail"></div>
         </div>
       </div>
-    </div><div id="mobileSchedule" class="mobileSchedule hidden"></div>
+    </div><div data-nethor-planning-mobile-schedule></div>
     <div class="anomalyHistoryRow">
       <article id="anomalyWidget" class="planningInsightCard compactInsightCard">
         <div class="insightHead" role="button" tabindex="0" aria-expanded="false" onclick="togglePlanningInsight('anomalies')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePlanningInsight('anomalies')}"><div><strong>Détection d’anomalies</strong><small>Écarts hebdomadaires heures contrat et contrôles automatiques d’organisation. Ils ne remplacent pas un contrôle RH ou réglementaire.</small></div><div class="compactInsightHeadRight"><span id="anomalyMetric" class="insightMetric">0</span><span class="compactInsightChevron" aria-hidden="true">⌄</span></div></div>
@@ -1670,7 +1664,7 @@ body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body
       </div>
     </div>
   </section>
-</main><script>
+</main><script src="platform-page-layout.js?v=2"></script><script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const COLOR={g:'#1FB714',b:'#00ABEA',r:'#DD0806',y:'#FFFF00',o:'#EDA900',w:'#FFFFFF'};
 const DAYS=[['LUNDI','Lundi'],['MARDI','Mardi'],['MERCREDI','Mercredi'],['JEUDI','Jeudi'],['VENDREDI','Vendredi'],['SAMEDI','Samedi'],['DIMANCHE','Dimanche']];
@@ -1704,6 +1698,7 @@ function bindPlanningCalendarViewport(){
  window.visualViewport?.addEventListener('scroll',syncPlanningCalendarViewport,{passive:true})
 }
 function detectPlanningDevice(){
+ if(String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase()==='desktop')return{key:'desktop',label:'Bureau'};
  const ua=String(navigator.userAgent||'');
  const platform=String(navigator.userAgentData?.platform||navigator.platform||'');
  const ipadAsMac=/Mac/i.test(platform)&&navigator.maxTouchPoints>1;
@@ -1849,7 +1844,7 @@ function coverageForDay(day){
 }
 let coverageModeActive=false,coverageSelectedSlot=0;
 function coverageModeAvailable(){
- return window.innerWidth>760&&document.documentElement.dataset.pwCoverage==='1'&&!document.body.classList.contains('agendaLayout')&&!editMode&&!!model&&!!modelDay()
+ return planningPlatformKind()==='desktop'&&document.documentElement.dataset.pwCoverage==='1'&&!document.body.classList.contains('agendaLayout')&&!editMode&&!!model&&!!modelDay()
 }
 function setCoverageMode(next){
  const btn=document.getElementById('coverageModeBtn'),overlay=document.getElementById('coverageOverlay');
@@ -2170,7 +2165,7 @@ async function reviewAbsence(id,status){
 function renderWeekHeader(){
  const a=currentWeekStart,b=addDays(a,6);document.getElementById('weekLabel').textContent='Semaine du '+a.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+' au '+b.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
  document.querySelector('header .sub')&&(document.querySelector('header .sub').textContent='Nethor • Semaine du '+a.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+' au '+b.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}));
- const box=document.getElementById('days');box.innerHTML=DAYS.map((d,i)=>{const dt=addDays(a,i);return '<button class="day '+(i===currentDay?'active':'')+'" onclick="selectDay('+i+')">'+d[1]+'<small>'+dt.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</small></button>'}).join('')+(model?'<button class="weekTotalChip" type="button" title="Voir le total de chaque utilisateur" onclick="openWeekTotals()"><b>Total</b><small>détail</small></button>':'');if((planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')&&window.matchMedia?.('(max-width:900px),(pointer:coarse)')?.matches)requestAnimationFrame(()=>box.querySelector('.day.active')?.scrollIntoView({behavior:'auto',block:'nearest',inline:'center'}));
+ const box=document.getElementById('days');box.innerHTML=DAYS.map((d,i)=>{const dt=addDays(a,i);return '<button class="day '+(i===currentDay?'active':'')+'" onclick="selectDay('+i+')">'+d[1]+'<small>'+dt.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</small></button>'}).join('')+(model?'<button class="weekTotalChip" type="button" title="Voir le total de chaque utilisateur" onclick="openWeekTotals()"><b>Total</b><small>détail</small></button>':'');if((planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')&&planningIsMobilePlatform())requestAnimationFrame(()=>box.querySelector('.day.active')?.scrollIntoView({behavior:'auto',block:'nearest',inline:'center'}));
 }
 function weeklyEmployeeTotals(){if(!model)return[];const employees=model.employees||[],a=currentWeekStart;return employees.map((emp,ri)=>{let total=0;for(let di=0;di<7;di++){const d=model.days?.[isoDate(addDays(a,di))];total+=totalForRow(d?.cells?.[ri]||[])}const p=planningProfileFor(emp.name);return{name:p?.display_name||emp.name,total}}).filter(x=>x.total>0)}
 function openWeekTotals(){const modal=document.getElementById('weekTotalsModal'),list=document.getElementById('weekTotalsList'),sub=document.getElementById('weekTotalsSubtitle');if(!modal||!list)return;const rows=weeklyEmployeeTotals(),a=currentWeekStart,b=addDays(a,6);if(sub)sub.textContent='Du '+frDate(a)+' au '+frDate(b);list.innerHTML=rows.length?rows.map(x=>'<div class="weekTotalRow"><span>'+esc(x.name)+'</span><b>'+String(Math.round(x.total*100)/100).replace('.',',')+' h</b></div>').join(''):'<div class="weekTotalsEmpty">Aucun horaire enregistré sur cette semaine.</div>';modal.classList.remove('hidden');document.body.style.overflow='hidden'}
@@ -2208,6 +2203,11 @@ async function saveWeek(){
 }
 
 
+function planningPlatformKind(){
+ const kind=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase();
+ return kind==='desktop'?'desktop':'mobile'
+}
+function planningIsMobilePlatform(){return planningPlatformKind()==='mobile'}
 function syncAbsencesWidgetPosition(mobile){
  const row=document.querySelector('.absencesWideRow'),support=document.querySelector('.planningSupportGrid'),insights=document.getElementById('planningInsights');
  if(!row||!support||!insights)return;
@@ -2218,19 +2218,10 @@ function syncAbsencesWidgetPosition(mobile){
  }
 }
 function placePlanningActions(){
- const actions=document.getElementById('planningActions'),toolbar=document.getElementById('planningToolbar'),dock=document.getElementById('mobilePlanningActionsDock'),sourceActions=document.querySelector('.readerHead .sourceActions');
- const status=document.getElementById('saveState'),importPanel=document.getElementById('importPanel'),editBtn=document.getElementById('editPlanningBtn');
- if(!actions||!toolbar||!dock||!sourceActions||!status||!importPanel||!editBtn)return;
- if(actions.parentElement!==toolbar)toolbar.appendChild(actions);
- if(status.parentElement!==actions)actions.appendChild(status);
- const mobile=window.matchMedia('(max-width:760px)').matches||document.documentElement.classList.contains('nethorPhoneDevice');
- const target=mobile?dock:sourceActions;
- if(importPanel.parentElement!==target)target.appendChild(importPanel);
- if(editBtn.parentElement!==target)target.appendChild(editBtn);
- syncAbsencesWidgetPosition(mobile)
+ /* Phase 4.2 : les actions sont créées directement dans le layout actif.
+    Aucun déplacement Desktop/Mobile et aucune décision par largeur. */
+ syncAbsencesWidgetPosition(planningIsMobilePlatform())
 }
-let planningActionsResizeTimer=null;
-window.addEventListener('resize',()=>{clearTimeout(planningActionsResizeTimer);planningActionsResizeTimer=setTimeout(placePlanningActions,80)},{passive:true});
 
 function excelDrag(e,on){e.preventDefault();if(!canEdit)return;document.querySelector('.excelDrop')?.classList.toggle('drag',!!on)}
 function excelDropFile(e){e.preventDefault();excelDrag(e,false);const files=e.dataTransfer?.files;if(files?.length)importPlanningFiles(files)}
