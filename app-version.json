@@ -1,11 +1,11 @@
 {
-  "version": 212,
-  "label": "v1.21.1",
+  "version": 213,
+  "label": "v1.21.2",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Correction retours Menu utilisateur",
-  "message": "Correction de la navigation mobile : les pages ouvertes depuis le Menu utilisateur reviennent désormais à ce menu, sans saut vers l’accueil. Le menu mémorise la page depuis laquelle il a été ouvert et se rouvre uniquement après le chargement complet de son interface. Le cache est vidé pour supprimer l’ancienne logique de navigation.",
-  "published_at": "2026-09-29T21:45:00+02:00",
+  "title": "Navigation responsive corrigée",
+  "message": "Correction de la barre mobile et séparation stricte des retours desktop/mobile. Le bouton Menu utilisateur retrouve le même affichage que les autres boutons. Sur desktop, Mon profil retourne à l’accueil ; sur mobile, les pages ouvertes depuis le Menu utilisateur retournent à ce menu. Le cache est vidé pour charger la nouvelle interface.",
+  "published_at": "2026-09-29T21:58:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
