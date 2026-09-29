@@ -261,3 +261,75 @@ Le header Mobile restant dans le DOM est uniquement un hôte technique invisible
 Pour cette première étape, le contenu métier de Planning et Accueil reste partagé. Seul leur chrome de page est séparé.
 
 La suite de la phase 4 consiste à extraire progressivement les groupes de mise en page propres à chaque plateforme — sans dupliquer les données, permissions, appels Supabase ni logique métier.
+
+
+## Phase 4.2 — Planning physiquement séparé
+
+Le Planning ne partage plus ses blocs supérieurs entre Desktop et Mobile.
+
+### Fichiers dédiés
+
+```text
+ui/
+├── desktop/
+│   ├── planning-layout.js
+│   └── planning-layout.css
+└── mobile/
+    ├── planning-layout.js
+    └── planning-layout.css
+```
+
+Ces modules construisent uniquement la structure de leur plateforme.
+
+### Points de montage neutres
+
+`planning.html` conserve les données et blocs métier communs mais remplace les anciens composants hybrides par des points de montage :
+
+- `data-nethor-planning-top`
+- `data-nethor-planning-toolbar`
+- `data-nethor-planning-source-actions`
+- `data-nethor-planning-mobile-actions`
+- `data-nethor-planning-mobile-schedule`
+
+`platform-page-layout.js` v2 monte ensuite exclusivement le layout Desktop ou Mobile déjà choisi par `platform-resolver.js`.
+
+### Desktop
+
+La structure Desktop contient notamment :
+
+- Vue Semaine / Année ;
+- navigation de semaine ;
+- sélecteur de jours Desktop ;
+- état de sauvegarde ;
+- import Excel et modification dans les actions Desktop.
+
+Elle ne contient plus :
+
+- `mobilePlanningActionsDock` ;
+- `mobileSchedule` ;
+- les groupes de navigation Mobile.
+
+### Mobile
+
+La structure Mobile contient notamment :
+
+- Semaine / Calendrier avec indication iOS / Android / Mobile ;
+- navigation semaine ;
+- sélecteur de jours Mobile ;
+- dock Import / Modifier ;
+- `mobileSchedule`.
+
+Elle ne contient plus les groupes `desktopPlanningViewGroup` et `desktopPlanningDayGroup`.
+
+### Fin de la sélection par largeur
+
+Les comportements suivants utilisent maintenant la plateforme résolue et non la largeur :
+
+- placement logique des actions ;
+- affichage simplifié Mobile pour les deep-links repos/congés ;
+- disponibilité du mode Couverture Desktop ;
+- choix Mobile/Desktop de l’Agenda.
+
+Un redimensionnement Desktop ne peut donc plus faire basculer ces fonctions vers leur logique Mobile.
+
+La logique métier reste commune : Supabase, permissions, imports Excel, données horaires, anomalies, couverture, congés, logs et calculs ne sont pas dupliqués.
