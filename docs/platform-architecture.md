@@ -1063,3 +1063,90 @@ Les mêmes IDs fonctionnels et les mêmes fonctions JavaScript alimentent le lay
 Desktop et Mobile n’existent plus simultanément dans le DOM Gestion.
 
 Réduire une fenêtre Desktop ne peut pas monter la structure Mobile, et élargir une interface Mobile ne peut pas monter le header Desktop.
+
+
+## Phase 4.11 — Assistant F&L et Boulangerie
+
+La séparation structurelle couvre maintenant deux modules métier secondaires :
+
+- `fl-assistant.html` ;
+- `bakery.html`.
+
+### Layouts partagés par famille de pages
+
+```text
+ui/
+├── desktop/
+│   ├── department-pages-layout.js
+│   └── department-pages-layout.css
+└── mobile/
+    ├── department-pages-layout.js
+    ├── department-pages-layout.css
+    ├── fl-assistant-page.css
+    └── bakery-page.css
+```
+
+`platform-page-layout.js` v10 monte ces pages via :
+
+```html
+<div data-nethor-department-page-layout></div>
+```
+
+### Assistant Précommande F&L
+
+Desktop conserve :
+
+- son header métier ;
+- le hero Assistant Précommande ;
+- l’état de l’analyse ;
+- les besoins de données ;
+- l’import XLS / XLSX / CSV ;
+- l’historique des fichiers ;
+- les métriques et le flux de recommandations.
+
+Mobile ne construit ni le header ni le hero Desktop. Il utilise un top compact propre avec Retour et badge BÊTA, puis le même cœur fonctionnel.
+
+L’ancien `@media(max-width:820px)` a quitté le CSS commun. La grille une colonne et les métriques Mobile appartiennent désormais à `ui/mobile/fl-assistant-page.css`.
+
+### Boulangerie
+
+Desktop conserve son header métier et son hero Boulangerie.
+
+Mobile utilise un top compact dédié, puis uniquement :
+
+- les modes Stock / Consulter / Gestion ;
+- le workspace `#work`.
+
+Les dialogues de création, fiche article et gestion des options restent communs et ne sont pas dupliqués.
+
+Les anciens breakpoints `700px` et `430px` ont quitté le CSS commun pour `ui/mobile/bakery-page.css`.
+
+### Invariants métier conservés
+
+Assistant F&L garde :
+
+- Supabase ;
+- stockage `fl-analysis` ;
+- inspection SheetJS ;
+- classification des fichiers ;
+- détection des périodes ;
+- données stock et référentiel internes.
+
+Boulangerie garde :
+
+- référentiel familles / catégories / conditionnements ;
+- stock ;
+- modes Stock / Consulter / Gestion ;
+- création et modification d’articles ;
+- photos ;
+- EAN13 ;
+- deep-link `?ean=` ;
+- permissions administrateur.
+
+Aucun moteur métier n’est dupliqué entre Desktop et Mobile.
+
+### Isolation
+
+Les deux pages ont maintenant leur propre chrome de plateforme.
+
+Un redimensionnement Desktop ne crée plus le top Mobile, et une interface Mobile large ne recrée plus le header Desktop.
