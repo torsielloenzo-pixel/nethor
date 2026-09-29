@@ -167,8 +167,8 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 
 
 @media(max-width:1180px){.yearGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:900px){main{padding:14px 10px 50px}.top{width:100%}.yearGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.xlsTable col.nameCol{width:135px}.xlsTable .nameCell,.xlsTable .nameHead{max-width:135px}.excelDrop{grid-template-columns:38px minmax(0,1fr)}.excelDrop>b{display:none}}
-@media(max-width:620px){.sub{display:none}.title{font-size:18px}.planningViewBar{align-items:flex-start}.weekNav{width:100%}.days{width:100%}.planningActions{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}.saveState{width:100%;text-align:right}.dateTitle{font-size:21px}.yearHero{display:grid;grid-template-columns:1fr;padding:13px;margin-bottom:10px}.yearIntro strong{font-size:13px}.yearHead{width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) 42px}.yearNavBtn{width:42px;height:42px}.yearCurrent{width:100%;height:42px}.yearTodayBtn{grid-column:1/-1;width:100%;height:38px}.yearLegend{gap:10px;margin:0 2px 10px}.yearGrid{grid-template-columns:1fr;gap:10px}.monthCard{padding:12px 13px;border-radius:15px}.monthCard:hover{transform:none}.monthCard h3{font-size:14px}.monthStatus{font-size:8px}.monthWeekdays,.monthDays{gap:5px}.monthWeekdays span{font-size:8px}.yearDay,.yearEmptySlot{min-height:38px}.yearDay{font-size:10.5px;border-radius:9px}.yearDay i{width:5px;height:5px;bottom:4px}.paintChoices{width:100%}.planningLogsHead{align-items:flex-start}.mobileSchedule{display:grid;gap:8px}.sheetViewport{display:none!important}body.planningEditing .mobileSchedule{display:none!important}body.planningEditing .sheetViewport{display:block!important}.xlsTable col.nameCol{width:145px}.xlsTable col.slotCol{width:27px}.xlsTable .slot{width:27px;min-width:27px}.readerHead{align-items:flex-start}.sourceBadge{max-width:48vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.legend{margin-top:8px}.editSaveBar{position:sticky;bottom:8px;z-index:60;box-shadow:0 10px 30px #0003}.editSaveBarText small{display:none}.saveFinishBtn{padding:10px 11px;font-size:10px}.cancelEditBtn{display:none!important}.planningLogs{padding:10px;margin-top:12px}.planningLogsList{max-height:none}.planningLog{grid-template-columns:32px minmax(0,1fr) auto;padding:9px}.logIcon{width:30px;height:30px}.logDelete{width:32px;height:32px;font-size:20px}.planningLog strong{font-size:10px}.planningLog span{font-size:9px}}
+
+
 
 
 .mobilePlanningActionsDock{
@@ -209,19 +209,7 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
   top:50px!important;
   max-width:min(82vw,320px)!important;
 }
-@media(max-width:620px){
-  .mobilePlanningActionsDock{
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:7px;
-    width:min(68vw,238px);
-    max-width:100%;
-    margin:7px 0 8px auto;
-  }
-  .mobilePlanningActionsDock .excelDrop{padding:6px 8px!important}
-  .mobilePlanningActionsDock .excelIcon{width:24px!important;height:24px!important;font-size:12px!important}
-  .mobilePlanningActionsDock .excelDrop strong{font-size:9px!important}
-  .mobilePlanningActionsDock #editPlanningBtn{font-size:10px!important;padding:7px 8px!important}
-}
+
 
 /* Planning intelligence : couverture, anomalies, indisponibilités */
 .planningInsights{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 12px}.absencesWideRow,.coverageWideRow,.anomalyHistoryRow{margin:10px 0 0}.absencesWideRow #absencesWidget,.coverageWideRow #coverageWidget,.anomalyHistoryRow #anomalyWidget{width:100%}
@@ -235,30 +223,13 @@ main{width:min(97vw,1700px);margin:auto;padding:22px 24px 60px}
 .planningModal{position:fixed;inset:0;z-index:6100;background:#11182755;backdrop-filter:blur(4px);display:grid;place-items:center;padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}.planningModalCard{width:min(460px,calc(100vw - max(20px,env(safe-area-inset-left) + env(safe-area-inset-right))));max-width:100%;max-height:calc(100dvh - max(24px,env(safe-area-inset-top) + env(safe-area-inset-bottom)));box-sizing:border-box;overflow-x:hidden;overflow-y:auto;background:#fff;border:1px solid #e0e3e7;border-radius:18px;padding:16px;box-shadow:0 24px 80px #0004}.planningModalCard *{box-sizing:border-box}.planningModalHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:13px;min-width:0}.planningModalHead>div{min-width:0}.planningModalHead strong{display:block;font-size:14px;overflow-wrap:anywhere}.planningModalHead small{display:block;font-size:9px;color:#858991;margin-top:3px}.planningModalClose{width:30px;height:30px;min-width:30px;flex:0 0 30px;border:0;border-radius:9px;background:#f0f1f3;font-size:18px;cursor:pointer}.absenceForm{display:grid;gap:10px;min-width:0;width:100%;max-width:100%}.absenceForm label{display:grid;gap:5px;min-width:0;width:100%;max-width:100%;font-size:9px;font-weight:850;color:#5f646b}.absenceForm input,.absenceForm select,.absenceForm textarea{display:block;width:100%;max-width:100%;min-width:0;min-inline-size:0;border:1px solid #d9dde2;border-radius:10px;background:#fff;color:#222;padding:9px 10px;outline:none;font:inherit}.absenceForm input[type="date"]{-webkit-appearance:none;appearance:none;min-height:42px;font-size:16px;line-height:1.2}.absenceForm select{min-height:42px;font-size:16px}.absenceForm textarea{min-height:78px;resize:vertical;font-size:16px;overflow-wrap:anywhere}.absenceDates{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;min-width:0;width:100%;max-width:100%}.absenceSubmit{width:100%;max-width:100%;min-width:0;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}.absenceFormHelp{font-size:8px;color:#8b9097;line-height:1.4;overflow-wrap:anywhere}
 :root[data-theme="dark"] .planningInsightCard,:root[data-theme="dark"] .planningModalCard{background:#1a1b1e;border-color:#34363b}:root[data-theme="dark"] .absenceManagementSummary{background:#23272d;border-color:#3d444d}:root[data-theme="dark"] .absenceManagementSummary .absenceManageIntro{color:#b8bec6}:root[data-theme="dark"] .absenceManagementSummary .absenceManageIntro b{color:#f2f4f6}:root[data-theme="dark"] .absenceManageStat{background:#2b3037;border-color:#434a54}:root[data-theme="dark"] .personalStat{background:#222429;border-color:#383b41}:root[data-theme="dark"] .personalStat.primary{background:#2a211d;border-color:#55382d}:root[data-theme="dark"] .personalStatIcon{background:#303238}:root[data-theme="dark"] .personalStat.primary .personalStatIcon{background:#4a2e25}:root[data-theme="dark"] .personalStatTop,:root[data-theme="dark"] .personalStat small,:root[data-theme="dark"] .personalStatsFoot{color:#b9bdc4}:root[data-theme="dark"] .personalStatsFoot{background:#24262b}:root[data-theme="dark"] .insightMetric,:root[data-theme="dark"] .coveragePill{background:#292b30;border-color:#3d4046;color:#f0f1f3}:root[data-theme="dark"] .coverageBars{border-color:#34363b}:root[data-theme="dark"] .coverageBar span,:root[data-theme="dark"] .coverageBar small,:root[data-theme="dark"] .insightHead small{color:#abb0b8}:root[data-theme="dark"] .anomalyItem,:root[data-theme="dark"] .absenceRow{background:#222429;border-color:#383b41}:root[data-theme="dark"] .anomalyItem span,:root[data-theme="dark"] .absenceMeta,:root[data-theme="dark"] .absenceNote{color:#b9bdc4}:root[data-theme="dark"] .anomalyItem.warn{background:#2c2418;border-color:#54401f}:root[data-theme="dark"] .anomalyItem.alert{background:#2f1e1c;border-color:#57302b}:root[data-theme="dark"] .anomalyItem.contractHours{background:linear-gradient(135deg,#2d2519,#2a2117);border-color:#5a4323}:root[data-theme="dark"] .anomalyItem.contractHours .ai{background:#4b371c;color:#ffd28d}:root[data-theme="dark"] .anomalyItem .contractHoursDiff{background:#4b3518;color:#ffd28d}:root[data-theme="dark"] .anomalyItem.contractHours.under .contractHoursDiff{background:#4d2925;color:#ffb7ae}:root[data-theme="dark"] .anomalyItem .contractHoursMeta span{background:#24211d;border-color:#4a4034;color:#d3c6b4}:root[data-theme="dark"] .contractHoursCaption{color:#b9a78f!important}:root[data-theme="dark"] .anomalyGood{background:#18271d;border-color:#2b4a35;color:#7ed69b}:root[data-theme="dark"] .planningModalClose,:root[data-theme="dark"] .absenceCancel{background:#303238;color:#f1f2f4}:root[data-theme="dark"] .absenceForm input,:root[data-theme="dark"] .absenceForm select,:root[data-theme="dark"] .absenceForm textarea{background:#222429;border-color:#41444b;color:#f2f3f5}:root[data-theme="dark"] .absenceForm label{color:#d5d8dd}
 @media(max-width:1350px){.planningInsights{grid-template-columns:1fr}}
-@media(max-width:720px){.planningInsights{grid-template-columns:1fr}.planningInsightCard{padding:11px;border-radius:14px}.absenceDates{grid-template-columns:1fr}.anomalyList,.absenceList{max-height:260px}.coverageBars{min-width:680px}.planningModal{place-items:center;padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}.planningModalCard{width:100%;max-width:100%;border-radius:20px;padding:14px 12px}.absenceForm{gap:11px}.absenceForm input,.absenceForm select,.absenceForm textarea{border-radius:12px}.absenceFormHelp{font-size:8.5px}.absenceSubmit{min-height:46px}.planningModalHead strong{font-size:15px}.planningModalHead small{font-size:9.5px}}@media(max-width:360px){.planningModal{padding-left:6px;padding-right:6px}.planningModalCard{padding:12px 10px;border-radius:17px}.absenceForm input,.absenceForm select,.absenceForm textarea{padding-left:9px;padding-right:9px}.planningModalClose{width:28px;height:28px;min-width:28px;flex-basis:28px}}
+
 
 
 /* Nethor v101 — mobile shape safeguards: small phones, large phones and landscape */
-@media(max-width:760px){
-  .planningViewBar,.viewTabs,.weekNav,#planningToolbar,.days,.readerHead,.mobileSchedule,.planningInsights,
-  .absencesWideRow,.coverageWideRow,.anomalyHistoryRow,#planningLogs{box-sizing:border-box!important;min-width:0!important;max-width:100%!important}
-  .viewTabs,.weekNav{overflow:visible!important}
-  .viewTab,.weekNav .btn{min-width:0!important;max-width:100%!important}
-}
-@media(max-width:380px){
-  #planningApp{padding-left:8px!important;padding-right:8px!important}
-  .planningViewBar{padding:7px!important;border-radius:14px!important}
-  .viewTab{min-height:40px!important;padding-left:8px!important;padding-right:8px!important;font-size:10.5px!important}
-  .weekNav{grid-template-columns:40px minmax(0,1fr) 40px!important;gap:5px!important}
-  .weekNav .miniNav{width:40px!important;min-width:40px!important;height:40px!important}
-  .weekNav>button:nth-of-type(2){min-height:40px!important;padding-left:6px!important;padding-right:6px!important;font-size:10px!important}
-  .weekNav .weekLabel{font-size:9.5px!important}
-  .days .day,.days .weekTotalChip{flex-basis:68px!important;min-width:68px!important;max-width:68px!important;min-height:55px!important}
-}
-@media(max-width:760px) and (orientation:landscape){
-  .planningViewBar{grid-template-columns:minmax(160px,.7fr) minmax(280px,1.3fr)!important;align-items:center!important}
-  .weekNav .weekLabel{grid-column:1/-1!important}
-}
+
+
+
 
 /* Vue Année — interface dédiée */
 body.planningYearOpen{overflow:hidden!important}
@@ -307,27 +278,7 @@ body.planningYearOpen{overflow:hidden!important}
 :root[data-theme="dark"] .yearBackBtn,:root[data-theme="dark"] .yearCloseBtn{background:#2b3037;border-color:#454c55;color:#f0f2f4}
 :root[data-theme="dark"] .yearView .yearLegend{background:#23272d;border-color:#3d444d;color:#c1c7cf}
 
-@media(max-width:900px){
-  .yearView{padding:0!important;place-items:stretch}
-  .yearInterface{width:100vw;height:100dvh;border:0;border-radius:0;box-shadow:none}
-  .yearInterfaceHeader{min-height:72px;padding:10px 12px;position:sticky;top:0;z-index:5}
-  .yearInterfaceBrand{gap:9px}
-  .yearInterfaceBrand strong{font-size:18px}
-  .yearInterfaceBrand small{font-size:9.5px;max-width:48vw}
-  .yearBackBtn{width:39px;height:39px;border-radius:12px}
-  .yearCloseBtn{display:none}
-  .yearInterfaceHeader .yearHead{gap:5px}
-  .yearInterfaceHeader .yearTodayBtn{display:none}
-  .yearInterfaceHeader .yearNavBtn{width:35px;height:35px}
-  .yearInterfaceHeader .yearCurrent{min-width:70px;height:35px!important;font-size:14px;padding:0 8px!important}
-  .yearInterfaceBody{padding:12px 10px 24px}
-  .yearView .yearLegend{font-size:9.5px;gap:9px}
-  .yearView .yearGrid{grid-template-columns:1fr;gap:10px}
-  .yearView .monthCard{padding:12px}
-  .yearView .monthCard h3{font-size:16px}
-  .yearView .yearDay{min-height:38px;font-size:11px}
-  .yearView .yearEmptySlot{min-height:38px}
-}
+
 @media(min-width:901px) and (max-width:1180px){
   .yearView .yearGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
@@ -336,267 +287,15 @@ body.planningYearOpen{overflow:hidden!important}
 .anomalyHistoryRow .planningInsightCard{margin:0}
 
 /* Correctif robuste de l’interface Année sur mobile */
-@media(max-width:900px){
-  body.planningYearOpen{
-    overflow:hidden!important;
-    padding-bottom:0!important;
-  }
-  body.planningYearOpen .nettoMobileQuickBar{
-    display:none!important;
-  }
-  .yearView{
-    position:fixed!important;
-    inset:0!important;
-    width:100vw!important;
-    max-width:100vw!important;
-    height:100dvh!important;
-    min-height:100dvh!important;
-    z-index:2147482000!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-    background:#f6f7f9!important;
-    backdrop-filter:none!important;
-    -webkit-backdrop-filter:none!important;
-    display:block!important;
-  }
-  .yearView.hidden{display:none!important}
-  .yearInterface{
-    position:absolute!important;
-    inset:0!important;
-    width:100%!important;
-    max-width:none!important;
-    height:100%!important;
-    min-height:0!important;
-    border:0!important;
-    border-radius:0!important;
-    box-shadow:none!important;
-    overflow:hidden!important;
-    display:grid!important;
-    grid-template-rows:auto minmax(0,1fr)!important;
-    background:#f6f7f9!important;
-  }
-  .yearInterfaceHeader{
-    position:relative!important;
-    top:auto!important;
-    z-index:10!important;
-    min-height:0!important;
-    padding:max(10px,env(safe-area-inset-top)) 12px 10px!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:10px!important;
-    align-items:stretch!important;
-    background:rgba(255,255,255,.98)!important;
-    border-bottom:1px solid #e3e6ea!important;
-    box-shadow:0 6px 18px rgba(20,28,38,.06)!important;
-  }
-  .yearInterfaceBrand{
-    display:grid!important;
-    grid-template-columns:40px minmax(0,1fr)!important;
-    gap:10px!important;
-    align-items:center!important;
-    min-width:0!important;
-  }
-  .yearBackBtn{
-    width:40px!important;
-    height:40px!important;
-    min-width:40px!important;
-    border-radius:12px!important;
-  }
-  .yearInterfaceBrand>div{
-    min-width:0!important;
-  }
-  .yearInterfaceKicker{
-    font-size:8px!important;
-    margin-bottom:2px!important;
-  }
-  .yearInterfaceBrand strong{
-    font-size:18px!important;
-    line-height:1.12!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  .yearInterfaceBrand small{
-    display:block!important;
-    max-width:100%!important;
-    margin-top:3px!important;
-    font-size:9.5px!important;
-    line-height:1.3!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  .yearInterfaceHeader .yearHead{
-    width:100%!important;
-    display:grid!important;
-    grid-template-columns:42px minmax(82px,1fr) 42px minmax(92px,auto)!important;
-    gap:7px!important;
-    align-items:center!important;
-  }
-  .yearInterfaceHeader .yearNavBtn{
-    width:42px!important;
-    min-width:42px!important;
-    height:40px!important;
-    padding:0!important;
-    border-radius:11px!important;
-  }
-  .yearInterfaceHeader .yearCurrent{
-    width:100%!important;
-    min-width:0!important;
-    height:40px!important;
-    padding:0 8px!important;
-    font-size:15px!important;
-    border-radius:11px!important;
-  }
-  .yearInterfaceHeader .yearTodayBtn{
-    display:block!important;
-    width:100%!important;
-    min-width:0!important;
-    height:40px!important;
-    padding:0 10px!important;
-    font-size:10px!important;
-    white-space:nowrap!important;
-    border-radius:11px!important;
-  }
-  .yearCloseBtn{display:none!important}
-  .yearInterfaceBody{
-    min-height:0!important;
-    width:100%!important;
-    max-width:100%!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    -webkit-overflow-scrolling:touch!important;
-    overscroll-behavior:contain!important;
-    padding:10px 10px calc(22px + env(safe-area-inset-bottom))!important;
-    box-sizing:border-box!important;
-  }
-  .yearView .yearLegend{
-    width:100%!important;
-    max-width:100%!important;
-    margin:0 0 10px!important;
-    padding:9px 10px!important;
-    display:flex!important;
-    flex-wrap:wrap!important;
-    gap:7px 10px!important;
-    font-size:9px!important;
-    line-height:1.3!important;
-    box-sizing:border-box!important;
-  }
-  .yearView .yearGrid{
-    width:100%!important;
-    max-width:100%!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:10px!important;
-  }
-  .yearView .monthCard{
-    width:100%!important;
-    max-width:100%!important;
-    min-width:0!important;
-    padding:12px!important;
-    border-radius:16px!important;
-    box-sizing:border-box!important;
-    overflow:hidden!important;
-  }
-  .yearView .monthCardHeader{
-    min-width:0!important;
-    gap:8px!important;
-  }
-  .yearView .monthCard h3{
-    min-width:0!important;
-    font-size:16px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  .yearView .monthStatus{
-    flex:none!important;
-    max-width:48%!important;
-    font-size:8.5px!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  .yearView .monthWeekdays,
-  .yearView .monthDays{
-    width:100%!important;
-    min-width:0!important;
-    grid-template-columns:repeat(7,minmax(0,1fr))!important;
-    gap:4px!important;
-  }
-  .yearView .monthWeekdays span{
-    min-width:0!important;
-    font-size:8px!important;
-  }
-  .yearView .yearDay{
-    width:100%!important;
-    min-width:0!important;
-    min-height:40px!important;
-    padding:0!important;
-    font-size:11px!important;
-    border-radius:9px!important;
-  }
-  .yearView .yearEmptySlot{
-    min-width:0!important;
-    min-height:40px!important;
-  }
-  :root[data-theme="dark"] .yearView,
-  :root[data-theme="dark"] .yearInterface{
-    background:#181b1f!important;
-  }
-}
 
-@media(max-width:380px){
-  .yearInterfaceHeader{
-    padding-left:9px!important;
-    padding-right:9px!important;
-  }
-  .yearInterfaceHeader .yearHead{
-    grid-template-columns:38px minmax(70px,1fr) 38px minmax(82px,auto)!important;
-    gap:5px!important;
-  }
-  .yearInterfaceHeader .yearNavBtn{
-    width:38px!important;
-    min-width:38px!important;
-  }
-  .yearInterfaceHeader .yearTodayBtn{
-    font-size:9px!important;
-    padding:0 6px!important;
-  }
-  .yearInterfaceBrand strong{
-    font-size:17px!important;
-  }
-}
+
+
 
 /* Calendrier mobile : menu + détection iOS / Android */
 .yearTabMobile{display:none}
 .yearTabDesktop{display:inline}
 .yearInterfaceKicker b{font:inherit;color:#ff6b36}
-@media(max-width:900px){
-  .yearMenuBtn{display:flex!important;align-items:center!important;justify-content:center!important}
-  .yearTabDesktop{display:none!important}
-  .yearTabMobile{display:grid!important;place-items:center!important;gap:1px!important;line-height:1.05!important}
-  .yearTabMobile>span{font-size:12px!important;font-weight:900!important}
-  .yearTabMobile small{font-size:8px!important;font-weight:800!important;opacity:.7!important;letter-spacing:.2px!important}
-  .yearInterfaceHeader{position:relative!important;padding-right:52px!important}
-  .yearBackBtn{display:none!important}
-  .yearInterfaceBrand{grid-template-columns:minmax(0,1fr)!important;padding-right:2px!important}
-  .yearCloseBtn{
-    display:grid!important;
-    position:absolute!important;
-    right:10px!important;
-    top:max(10px,env(safe-area-inset-top))!important;
-    width:34px!important;
-    height:34px!important;
-    min-width:34px!important;
-    border-radius:10px!important;
-    padding:0!important;
-    font-size:20px!important;
-    line-height:1!important;
-    z-index:12!important;
-  }
-  .yearInterfaceKicker{padding-right:2px!important}
-}
+
 :root[data-planning-device="ios"] .yearMenuBtn{--device-accent:#ff633a}
 :root[data-planning-device="android"] .yearMenuBtn{--device-accent:#ff7a1f}
 
@@ -605,234 +304,11 @@ html:not(.planningCalendarReady) #yearView{display:none!important}
 body:not(.planningYearOpen) #yearView{display:none!important}
 
 /* Correctif hauteur réelle du Calendrier mobile (Safari iOS / Chrome Android) */
-@media(max-width:900px){
-  body.planningYearOpen{
-    position:fixed!important;
-    left:0!important;right:0!important;top:0!important;
-    width:100%!important;
-    height:var(--planning-calendar-h,100dvh)!important;
-    max-height:var(--planning-calendar-h,100dvh)!important;
-    overflow:hidden!important;
-  }
-  .yearView{
-    position:fixed!important;
-    left:0!important;
-    right:0!important;
-    top:var(--planning-calendar-top,0px)!important;
-    bottom:auto!important;
-    width:100vw!important;
-    height:var(--planning-calendar-h,100dvh)!important;
-    min-height:0!important;
-    max-height:var(--planning-calendar-h,100dvh)!important;
-    overflow:hidden!important;
-    box-sizing:border-box!important;
-  }
-  .yearInterface{
-    position:relative!important;
-    inset:auto!important;
-    width:100%!important;
-    height:100%!important;
-    min-height:0!important;
-    max-height:100%!important;
-    overflow:hidden!important;
-  }
-  .yearInterfaceHeader{
-    flex:none!important;
-    max-height:none!important;
-    box-sizing:border-box!important;
-  }
-  .yearInterfaceBody{
-    min-height:0!important;
-    max-height:100%!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    overscroll-behavior-y:contain!important;
-    touch-action:pan-y!important;
-  }
-  .yearCloseBtn{
-    position:fixed!important;
-    top:calc(var(--planning-calendar-top,0px) + max(10px,env(safe-area-inset-top)))!important;
-    right:max(10px,env(safe-area-inset-right))!important;
-    z-index:2147483000!important;
-    display:grid!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-  }
-}
+
 
 /* Calendrier mobile v2 — ancrage iOS/Android définitif */
-@media(max-width:900px){
-  body.planningYearOpen{
-    overflow:hidden!important;
-    position:static!important;
-    width:auto!important;
-    height:auto!important;
-    max-height:none!important;
-  }
-  body.planningYearOpen>header{
-    visibility:hidden!important;
-    pointer-events:none!important;
-  }
-  body.planningYearOpen .nettoMobileQuickBar{
-    display:none!important;
-  }
-  #yearView.yearView{
-    position:fixed!important;
-    inset:0 auto auto 0!important;
-    top:0!important;
-    left:0!important;
-    right:auto!important;
-    bottom:auto!important;
-    width:100vw!important;
-    height:var(--planning-calendar-h,100dvh)!important;
-    min-height:0!important;
-    max-height:var(--planning-calendar-h,100dvh)!important;
-    margin:0!important;
-    padding:0!important;
-    z-index:2147483000!important;
-    overflow:hidden!important;
-    background:#f6f7f9!important;
-    box-sizing:border-box!important;
-    transform:none!important;
-  }
-  #yearView.yearView.hidden{
-    display:none!important;
-  }
-  #yearView .yearInterface{
-    position:relative!important;
-    inset:auto!important;
-    width:100%!important;
-    height:100%!important;
-    min-height:0!important;
-    max-height:100%!important;
-    display:grid!important;
-    grid-template-rows:auto minmax(0,1fr)!important;
-    overflow:hidden!important;
-    border:0!important;
-    border-radius:0!important;
-    background:#f6f7f9!important;
-    box-shadow:none!important;
-    transform:none!important;
-  }
-  #yearView .yearInterfaceHeader{
-    position:relative!important;
-    top:0!important;
-    width:100%!important;
-    min-height:0!important;
-    max-height:none!important;
-    padding:calc(12px + env(safe-area-inset-top)) 54px 10px 12px!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:9px!important;
-    box-sizing:border-box!important;
-    z-index:20!important;
-    flex:none!important;
-  }
-  #yearView .yearInterfaceBrand{
-    display:block!important;
-    min-width:0!important;
-  }
-  #yearView .yearBackBtn{
-    display:none!important;
-  }
-  #yearView .yearInterfaceKicker{
-    display:block!important;
-    font-size:8px!important;
-  }
-  #yearView .yearInterfaceBrand strong{
-    display:block!important;
-    font-size:18px!important;
-    line-height:1.1!important;
-  }
-  #yearView .yearInterfaceBrand small{
-    display:block!important;
-    max-width:100%!important;
-    margin-top:3px!important;
-    font-size:9.5px!important;
-    line-height:1.25!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  #yearView .yearHead{
-    width:100%!important;
-    min-width:0!important;
-    display:grid!important;
-    grid-template-columns:42px minmax(76px,1fr) 42px minmax(88px,auto)!important;
-    gap:6px!important;
-    align-items:center!important;
-  }
-  #yearView .yearHead .yearNavBtn{
-    width:42px!important;
-    min-width:42px!important;
-    height:40px!important;
-    padding:0!important;
-  }
-  #yearView .yearHead .yearCurrent{
-    width:100%!important;
-    min-width:0!important;
-    height:40px!important;
-    padding:0 7px!important;
-  }
-  #yearView .yearHead .yearTodayBtn{
-    display:block!important;
-    width:100%!important;
-    min-width:0!important;
-    height:40px!important;
-    padding:0 8px!important;
-    white-space:nowrap!important;
-  }
-  #yearView .yearCloseBtn{
-    display:grid!important;
-    position:absolute!important;
-    top:calc(10px + env(safe-area-inset-top))!important;
-    right:10px!important;
-    width:36px!important;
-    height:36px!important;
-    min-width:36px!important;
-    min-height:36px!important;
-    margin:0!important;
-    padding:0!important;
-    border-radius:11px!important;
-    z-index:30!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-    place-items:center!important;
-    font-size:22px!important;
-    line-height:1!important;
-  }
-  #yearView .yearInterfaceBody{
-    min-height:0!important;
-    height:auto!important;
-    max-height:none!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    -webkit-overflow-scrolling:touch!important;
-    overscroll-behavior-y:contain!important;
-    padding:10px 10px calc(20px + env(safe-area-inset-bottom))!important;
-    box-sizing:border-box!important;
-  }
-  :root[data-theme="dark"] #yearView.yearView,
-  :root[data-theme="dark"] #yearView .yearInterface{
-    background:#181b1f!important;
-  }
-}
-@media(max-width:380px){
-  #yearView .yearInterfaceHeader{
-    padding-left:9px!important;
-    padding-right:50px!important;
-  }
-  #yearView .yearHead{
-    grid-template-columns:38px minmax(68px,1fr) 38px minmax(78px,auto)!important;
-    gap:5px!important;
-  }
-  #yearView .yearHead .yearNavBtn{
-    width:38px!important;
-    min-width:38px!important;
-  }
-}
+
+
 
 .planningAvatarButton{border:0;padding:0;margin:0;cursor:pointer;position:relative;transition:transform .15s ease,box-shadow .15s ease}
 .planningAvatarButton:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(24,34,53,.18)}
@@ -856,43 +332,10 @@ body:not(.planningYearOpen) #yearView{display:none!important}
 .coverageModeDock{display:none}
 html[data-pw-coverage="1"] .coverageModeDock{display:flex;align-items:center;justify-content:flex-start}
 body.agendaLayout .coverageModeDock,body.planningYearOpen .coverageModeDock,body.planningEditing .coverageModeDock{display:none!important}
-@media(min-width:761px){
-  .coverageModeDock{position:relative;left:50%;transform:translateX(-50%);width:100%;margin:0 0 7px}
-  .coverageModeBtn{min-height:40px;display:inline-flex;align-items:center;gap:9px;padding:6px 11px 6px 8px;border:1px solid #dde1e5;border-radius:12px;background:#fff;color:#34383e;box-shadow:0 5px 16px rgba(22,28,36,.05);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
-  .coverageModeBtn:hover{transform:translateY(-1px);border-color:#ffc6b2;box-shadow:0 8px 20px rgba(255,83,40,.10)}
-  .coverageModeBtn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
-  .coverageModeBtnIcon{width:29px;height:29px;border-radius:9px;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding:7px 6px;background:#fff0e8;color:#f0522d;flex:none}
-  .coverageModeBtnIcon i{display:block;width:3px;border-radius:3px;background:currentColor}.coverageModeBtnIcon i:nth-child(1){height:7px}.coverageModeBtnIcon i:nth-child(2){height:13px}.coverageModeBtnIcon i:nth-child(3){height:10px}
-  .coverageModeBtnCopy{text-align:left;line-height:1.05}.coverageModeBtnCopy strong{display:block;font-size:10.5px;font-weight:900}.coverageModeBtnCopy small{display:block;margin-top:2px;font-size:8px;font-weight:750;color:#8a9098}
-  body.coverageMode .coverageModeBtn{border-color:#ff6d45;background:linear-gradient(135deg,#ff3925,#ff8124);color:#fff;box-shadow:0 8px 20px rgba(255,76,35,.20)}
-  body.coverageMode .coverageModeBtnIcon{background:#ffffff25;color:#fff}body.coverageMode .coverageModeBtnCopy small{color:#fffbdc}
-  #sheetViewport{position:relative!important}
-  #sheetMount{transition:filter .22s ease,opacity .22s ease,transform .22s ease}
-  body.coverageMode #sheetMount{filter:blur(2.6px) saturate(.55);opacity:.20;transform:scale(.998);pointer-events:none;user-select:none}
-  .coverageOverlay{position:absolute;inset:0;z-index:40;display:flex;align-items:stretch;justify-content:center;padding:10px 12px;background:rgba(247,248,250,.48);backdrop-filter:blur(2px);opacity:1;transition:opacity .2s ease}
-  .coverageOverlay.hidden{display:none!important}
-  .coverageOverlayPanel{width:100%;height:100%;max-width:none;max-height:none;display:grid;grid-template-rows:auto auto minmax(150px,1fr) auto;gap:10px;padding:14px 15px;border:1px solid rgba(220,224,229,.96);border-radius:16px;background:rgba(255,255,255,.94);box-shadow:0 18px 50px rgba(21,27,35,.16);overflow:hidden}
-  .coverageOverlayHead{display:grid;grid-template-columns:minmax(280px,1fr) auto auto;align-items:center;gap:14px;padding:2px 2px 0}
-  .coverageOverlayKicker{display:block;font-size:8px;font-weight:950;letter-spacing:.09em;color:#f15a31}.coverageOverlayTitle strong{display:block;margin-top:3px;font-size:16px;line-height:1.1}.coverageOverlayTitle small{display:block;margin-top:4px;font-size:9px;color:#858c95}
-  .coverageOverlaySummary{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}.coverageOverlayMetric{min-width:70px;padding:8px 10px;border:1px solid #e5e8eb;border-radius:11px;background:#f8f9fa;text-align:center}.coverageOverlayMetric b{display:block;font-size:14px;line-height:1}.coverageOverlayMetric span{display:block;margin-top:4px;font-size:7px;font-weight:800;color:#8b929a;text-transform:uppercase;letter-spacing:.03em}
-  .coverageOverlayClose{width:30px;height:30px;border:0;border-radius:9px;background:#f0f2f4;color:#6f767f;font-size:18px;line-height:1;cursor:pointer}.coverageOverlayClose:hover{background:#e8ebee;color:#2c3137}
-  .coverageOverlayLegend{display:flex;align-items:center;gap:11px;font-size:7.5px;font-weight:800;color:#7e858e}.coverageOverlayLegend span{display:inline-flex;align-items:center;gap:4px}.coverageOverlayLegend i{width:8px;height:8px;border-radius:3px;background:#e7eaed}.coverageOverlayLegend i.one{background:#ff6750}.coverageOverlayLegend i.two{background:#f4ad42}.coverageOverlayLegend i.three{background:#35b86b}
-  .coverageOverlaySlots{min-height:150px;height:100%;display:grid;grid-template-columns:repeat(58,minmax(0,1fr));align-items:end;gap:3px;padding:12px 8px 38px;border:1px solid #e6e9ec;border-radius:14px;background:linear-gradient(180deg,#fbfcfd,#f6f8f9);overflow:hidden}
-  .coverageOverlaySlot{position:relative;height:100%;min-width:0;border:0;padding:0;background:transparent;cursor:pointer;border-radius:5px;outline:none}.coverageOverlaySlot:focus-visible{box-shadow:0 0 0 2px #ff6840}
-  .coverageOverlaySlot::before{content:"";position:absolute;left:1px;right:1px;bottom:0;height:var(--coverage-height,6%);min-height:4px;border-radius:5px 5px 2px 2px;background:var(--coverage-color,#e7eaed);transition:height .18s ease,filter .14s ease,transform .14s ease;z-index:1}.coverageOverlaySlot.hourMark::after{content:"";position:absolute;left:50%;top:0;bottom:-9px;width:1px;transform:translateX(-50%);background:linear-gradient(180deg,rgba(116,124,134,.05),rgba(116,124,134,.22));pointer-events:none;z-index:0}
-  .coverageOverlaySlot:hover::before,.coverageOverlaySlot.selected::before{filter:brightness(.96);transform:translateY(-2px)}.coverageOverlaySlot.selected{background:#fff2ec}
-  .coverageOverlaySlot b{position:absolute;left:50%;bottom:calc(var(--coverage-height,6%) + 4px);transform:translateX(-50%);font-size:7px;line-height:1;color:#636b74;opacity:0;transition:opacity .12s;z-index:2}.coverageOverlaySlot:hover b,.coverageOverlaySlot.selected b{opacity:1}
-  .coverageOverlaySlot small{position:absolute;left:50%;top:calc(100% + 12px);transform:translateX(-50%);min-width:23px;padding:4px 3px;border-radius:6px;background:#fff;border:1px solid #dfe3e7;box-shadow:0 1px 3px rgba(22,27,34,.07);font-size:11px;font-weight:900;line-height:1;color:#3f454d;text-align:center;white-space:nowrap;letter-spacing:-.15px;z-index:3}
-  .coverageOverlayDetail{min-height:54px;display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid #e7eaed;border-radius:12px;background:#fafbfc;overflow:hidden}.coverageOverlayDetailTime{flex:none;min-width:86px}.coverageOverlayDetailTime strong{display:block;font-size:11.5px}.coverageOverlayDetailTime small{display:block;margin-top:3px;font-size:8px;color:#8a9199}
-  .coverageOverlayPeople{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden}.coveragePersonChip{display:inline-flex;align-items:center;gap:6px;min-width:0;padding:5px 9px 5px 5px;border:1px solid #e3e6e9;border-radius:999px;background:#fff;font-size:8.5px;font-weight:850;white-space:nowrap}.coveragePersonDot{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:7px;font-weight:900;flex:none}.coverageNoPeople{font-size:9px;color:#8b929a}.coverageMorePeople{font-size:8.5px;font-weight:850;color:#7d858e;white-space:nowrap}
-}
-@media(min-width:1280px){.coverageModeDock{width:130%;max-width:none}}
-@media(min-width:761px) and (max-height:760px){
-  .coverageOverlayPanel{grid-template-rows:auto auto minmax(110px,1fr) auto;gap:7px;padding:10px 12px}
-  .coverageOverlaySlots{min-height:110px;padding-top:8px;padding-bottom:34px}
-  .coverageOverlayDetail{min-height:44px}
-}
-@media(max-width:760px){.coverageModeDock,.coverageOverlay{display:none!important}}
+
+
+
+
 :root[data-theme="dark"] .coverageModeBtn{background:#23272c;border-color:#3c4249;color:#f2f3f4}:root[data-theme="dark"] .coverageModeBtnCopy small{color:#a9b0b8}:root[data-theme="dark"] .coverageOverlay{background:rgba(18,20,23,.56)}:root[data-theme="dark"] .coverageOverlayPanel{background:rgba(30,33,37,.95);border-color:#41464d;box-shadow:0 18px 50px rgba(0,0,0,.34)}:root[data-theme="dark"] .coverageOverlayMetric,:root[data-theme="dark"] .coverageOverlayDetail{background:#25292e;border-color:#3b4148}:root[data-theme="dark"] .coverageOverlaySlots{background:linear-gradient(180deg,#202328,#1b1e22);border-color:#373d44}:root[data-theme="dark"] .coverageOverlaySlot.selected{background:#38251f}:root[data-theme="dark"] .coverageOverlaySlot b,:root[data-theme="dark"] .coverageOverlayDetailTime strong{color:#eef1f4}:root[data-theme="dark"] .coverageOverlaySlot small{background:#272b30;border-color:#464c54;color:#f4f6f8;box-shadow:none}:root[data-theme="dark"] .coverageOverlaySlot.hourMark::after{background:linear-gradient(180deg,rgba(214,220,226,.04),rgba(214,220,226,.20))}:root[data-theme="dark"] .coveragePersonChip{background:#24282d;border-color:#3b4148;color:#eef1f4}
 </style>
 
