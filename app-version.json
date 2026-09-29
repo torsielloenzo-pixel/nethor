@@ -1,10 +1,10 @@
 {
-  "version": 201,
-  "label": "v2.01",
+  "version": 202,
+  "label": "v2.02",
   "important": false,
   "mode": "auto",
-  "title": "Gestion · inventaire mobile et desktop",
-  "message": "Gestion est maintenant synchronisée avec le registre réel de Nethor : 16 destinations de barre mobile, Notifications incluse, inventaire mobile/desktop et filtres par appareil.",
-  "published_at": "2026-09-29T12:35:24.178Z",
+  "title": "Gestion · menus synchronisés",
+  "message": "Les fonctions de Gestion sont synchronisées avec le registre Nethor : inventaire mobile/desktop, 16 destinations mobiles, filtres par appareil et configuration compatible de Notifications.",
+  "published_at": "2026-09-29T12:38:36.262Z",
   "icon": "assets/app-icon-v63.svg"
 }
