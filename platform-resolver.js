@@ -130,8 +130,39 @@ function enforceDesktopMediaIsolation(){
  }
 }
 
+function shellKindForLink(link){
+ if(!link||String(link.tagName||'').toUpperCase()!=='LINK')return'';
+ const explicit=String(link.dataset?.nethorShell||'').toLowerCase();
+ if(explicit==='desktop'||explicit==='mobile')return explicit;
+ const href=String(link.getAttribute?.('href')||'');
+ if(/ui\/desktop\/desktop-shell\.css/i.test(href))return'desktop';
+ if(/ui\/mobile\/mobile-shell\.css/i.test(href))return'mobile';
+ return''
+}
+function syncPlatformShellStyles(kind){
+ const active=kind==='desktop'?'desktop':'mobile';
+ document.querySelectorAll('link[rel="stylesheet"]').forEach(link=>{
+  const shell=shellKindForLink(link);if(!shell)return;
+  link.media=shell===active?'all':'not all';
+  link.dataset.nethorShellActive=shell===active?'1':'0'
+ })
+}
+function observePlatformShellStyles(){
+ if(!document.head||typeof MutationObserver==='undefined')return;
+ const sync=()=>syncPlatformShellStyles(state.kind);
+ const observer=new MutationObserver(mutations=>{
+  if(mutations.some(m=>[...m.addedNodes].some(node=>node.nodeType===1&&(node.matches?.('link[rel="stylesheet"]')||node.querySelector?.('link[rel="stylesheet"]')))))queueMicrotask(sync)
+ });
+ observer.observe(document.head,{childList:true,subtree:true});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});
+ window.addEventListener('load',sync,{once:true});
+ window.addEventListener('pagehide',()=>observer.disconnect(),{once:true})
+}
+
 let state=apply(resolve());
 installIsolationStyle();
+syncPlatformShellStyles(state.kind);
+observePlatformShellStyles();
 enforceDesktopMediaIsolation();
 
 const api=Object.freeze({
