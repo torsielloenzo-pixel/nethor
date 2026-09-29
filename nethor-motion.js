@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 
-const VERSION='2';
+const VERSION='3';
 const MOBILE_QUERY='(max-width:900px), (pointer:coarse)';
 const REDUCED_QUERY='(prefers-reduced-motion:reduce)';
 const ROUTE_STATE_KEY='nethorMotionRoute';
@@ -43,49 +43,19 @@ function applyEntryMotion(){
  animateClass(root,direction==='back'?'nm-route-enter-back':'nm-route-enter-forward',360);
  clearRouteState()
 }
-function normalizeInternalUrl(raw){
- try{
-  const u=new URL(raw,location.href);
-  if(u.origin!==location.origin)return null;
-  if(!/\.html$/i.test(u.pathname)&&!u.pathname.endsWith('/'))return null;
-  if(u.pathname===location.pathname&&u.search===location.search&&u.hash===location.hash)return null;
-  return u
- }catch(_){return null}
-}
-function navigate(raw,direction='forward'){
- const u=normalizeInternalUrl(raw);
- if(!u){location.href=raw;return}
- if(routeLocked)return;
- if(!mobile()||reduced()){
-  setRouteState(direction,u.href);location.href=u.href;return
- }
- routeLocked=true;
- setRouteState(direction,u.href);
- const root=primaryRoot();
- if(root){
-  root.classList.add('nm-page-root');
-  animateClass(root,direction==='back'?'nm-route-exit-back':'nm-route-exit-forward',240)
- }
- document.documentElement.classList.add('nm-route-leaving');
- setTimeout(()=>{location.href=u.href},ROUTE_DELAY)
-}
-function simpleInlineRoute(el){
- const code=String(el?.getAttribute?.('onclick')||'').trim();
- const m=code.match(/^\s*(?:window\.)?location(?:\.href)?\s*=\s*(['"])([^'"]+)\1\s*;?\s*$/i);
- return m?m[2]:''
-}
-function routeClickCapture(e){
- if(!mobile()||reduced()||e.defaultPrevented||e.button>0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
- const target=e.target?.closest?.('a[href],button[data-url],button[onclick]');if(!target)return;
- if(target.closest('[data-nm-no-route]')||target.hasAttribute('download')||target.getAttribute('target'))return;
- let raw='';
- if(target.matches('a[href]'))raw=target.getAttribute('href')||'';
- else if(target.dataset?.url)raw=target.dataset.url;
- else raw=simpleInlineRoute(target);
- if(!raw||raw.startsWith('#')||raw.startsWith('javascript:'))return;
- const u=normalizeInternalUrl(raw);if(!u)return;
- e.preventDefault();e.stopImmediatePropagation();
- navigate(u.href,'forward')
+// La navigation reste volontairement sous le contrôle exclusif du code métier de chaque page.
+// Nethor Motion n'intercepte aucun lien, bouton Retour, menu utilisateur ou location.href.
+function observeNativeNavigation(){
+ document.addEventListener('click',e=>{
+  if(!mobile()||reduced())return;
+  const el=e.target?.closest?.('a[href],button');
+  if(!el)return;
+  // Retour visuel uniquement : aucune annulation d'événement et aucune redirection ici.
+  if(el.matches('.nettoBackBtn,.profileMobileBack,.settingsMobileBack,.back,[aria-label*="Retour"]')){
+   const root=primaryRoot();
+   if(root)animateClass(root,'nm-route-exit-back',220)
+  }
+ },false)
 }
 
 function animatePlanning(kind){
@@ -177,12 +147,12 @@ function boot(){
  applyEntryMotion();setupPlanningMotion();enhanceExistingFeedback()
 }
 
-document.addEventListener('click',routeClickCapture,true);
+observeNativeNavigation();
 document.addEventListener('pointerdown',planningIntent,true);
 document.addEventListener('click',contentIntent,true);
 document.addEventListener('input',inputIntent,true);
 window.addEventListener('pageshow',e=>{if(e.persisted)requestAnimationFrame(applyEntryMotion)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 
-window.NethorMotion=Object.freeze({version:VERSION,navigate,toast:makeToast,refreshContent,animatePlanning});
+window.NethorMotion=Object.freeze({version:VERSION,toast:makeToast,refreshContent,animatePlanning});
 })();
