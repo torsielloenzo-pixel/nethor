@@ -1,11 +1,11 @@
 {
-  "version": 209,
-  "label": "v1.20.4",
-  "important": false,
-  "clear_cache": false,
-  "mode": "auto",
-  "title": "Mises à jour · fiabilisation",
-  "message": "Activation forcée des nouvelles versions, gestion des mises à jour majeures avec purge du cache Nethor et correction du bouton de mise à jour mobile.",
+  "version": 210,
+  "label": "v1.20.5",
+  "important": true,
+  "clear_cache": true,
+  "mode": "manual",
+  "title": "Centre de mise à jour",
+  "message": "Restauration de l’interface de mise à jour avec version actuelle, dernière version disponible et installation manuelle confirmée.",
   "published_at": "2026-09-29T17:19:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
