@@ -26,7 +26,8 @@ function buildPageLayout(page){
   notifications:{title:'Notifications',subtitle:'Centre d’activité Nethor',back:false},
   scanner:{title:'Scanner',subtitle:'Lecture EAN13',back:true,chrome:false},
   articles:{title:'Fiches articles',subtitle:'Référentiel produit interne',back:true},
-  accounts:{title:'Gestion des comptes',subtitle:'Administration · Accès · Journal',back:true}
+  accounts:{title:'Gestion des comptes',subtitle:'Administration · Accès · Journal',back:true},
+  'admin-portal':{title:'Gestion',subtitle:'Administration Nethor',back:true,chrome:false}
  };
  const cfg=pages[id];
  if(!cfg)return null;
