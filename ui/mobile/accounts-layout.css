@@ -14,3 +14,9 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accounts
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileActions .heroActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileActions .btn{width:100%}
 :root[data-theme="dark"][data-nethor-page-layout="mobile"] .accountsMobileBack{background:#202329;border-color:#3d444d;color:#eef1f4}
+
+/* Phase 4.9 — structure Mobile et adaptations internes. */
+@media(max-width:600px){.avatarFramePicker{grid-template-columns:1fr 1fr}}
+.stats{grid-template-columns:repeat(2,1fr)}.workspace{grid-template-columns:1fr}.userList{max-height:320px}.logsToolbar{grid-template-columns:1fr 1fr}.logsToolbar .wide{grid-column:1/-1}
+@media(max-width:600px){.preferencesGrid{grid-template-columns:1fr}.preferencesBlock{padding:11px}.stats{grid-template-columns:1fr 1fr}.stat strong{font-size:20px}.formGrid{grid-template-columns:1fr}.field.full{grid-column:auto}.metaGrid{grid-template-columns:1fr}.logsToolbar{grid-template-columns:1fr}.logsToolbar .wide{grid-column:auto}}
+@media(max-width:700px){.permissionAccordionHead{padding:12px 13px}.permissionAccordionBody{padding:0 10px 12px}.permissionAccordionHead strong{font-size:12px}}
