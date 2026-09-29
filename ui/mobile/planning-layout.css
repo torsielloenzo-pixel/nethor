@@ -1,0 +1,14 @@
+/* Phase 4.2 — Planning Mobile uniquement. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .mobilePlanningViewGroup,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .mobilePlanningDayGroup{
+ width:100%;min-width:0;max-width:100%
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .mobilePlanningToolbar{
+ width:100%;min-width:0
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .mobilePlanningStatus{
+ min-width:0
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] #mobileSchedule{
+ width:100%;min-width:0;max-width:100%
+}
