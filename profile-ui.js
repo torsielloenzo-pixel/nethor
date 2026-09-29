@@ -1,11 +1,30 @@
 (function(){
 'use strict';
+function resolvedPlatformKind(){
+ try{
+  const kind=window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'';
+  return ['desktop','mobile','mobile-preview'].includes(kind)?kind:''
+ }catch(_){return''}
+}
 function isMobilePreviewContext(){
+ const kind=resolvedPlatformKind();
+ if(kind)return kind==='mobile-preview';
  try{return new URLSearchParams(location.search).get('mobile_preview')==='1'}catch(_){return false}
 }
 function isMobileViewport(){
+ const kind=resolvedPlatformKind();
+ if(kind)return kind==='mobile'||kind==='mobile-preview';
  if(isMobilePreviewContext())return true;
- try{return window.matchMedia('(max-width:900px)').matches||window.matchMedia('(pointer:coarse)').matches}catch(_){return window.innerWidth<=900}
+ try{
+  if(navigator.userAgentData?.mobile===true)return true;
+  const ua=String(navigator.userAgent||'');
+  if(/iPhone|iPod|iPad|Android|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua))return true;
+  if(String(navigator.platform||'')==='MacIntel'&&Number(navigator.maxTouchPoints||0)>1)return true;
+  const coarse=window.matchMedia?.('(hover:none) and (pointer:coarse)')?.matches===true;
+  const touch=Number(navigator.maxTouchPoints||0)>0;
+  const sw=Number(screen.width)||0,sh=Number(screen.height)||0;
+  return coarse&&touch&&sw>0&&sh>0&&Math.min(sw,sh)<=768
+ }catch(_){return false}
 }
 function ensureMobileMeta(name,content){
  let el=document.head?.querySelector('meta[name="'+name+'"]');
@@ -30,17 +49,7 @@ function lockMobileAppViewport(){
 
 lockMobileAppViewport();
 
-function isNethorPhoneDevice(){
- if(isMobilePreviewContext())return true;
- try{
-  if(typeof navigator.userAgentData?.mobile==='boolean')return navigator.userAgentData.mobile;
-  const ua=String(navigator.userAgent||'');
-  if(/iPhone|iPod|Android.+Mobile|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua))return true;
-  const coarse=window.matchMedia?.('(hover:none) and (pointer:coarse)')?.matches===true;
-  const sw=Number(screen.width)||window.innerWidth,sh=Number(screen.height)||window.innerHeight;
-  return coarse&&Math.min(sw,sh)<=600
- }catch(_){return false}
-}
+function isNethorPhoneDevice(){return isMobileViewport()}
 function isNethorPhysicalLandscape(){
  if(isMobilePreviewContext())return window.innerWidth>window.innerHeight;
  try{
@@ -515,7 +524,7 @@ function updateMobileNotificationBadge(forced){
 }
 function renderMobileQuickBar(){
  const old=document.getElementById('nettoMobileQuickBar');
- if(!api.profile||api.siteConfig?.mobile_bar?.enabled===false){
+ if(!isMobileViewport()||!api.profile||api.siteConfig?.mobile_bar?.enabled===false){
   old?.remove();document.body?.classList.remove('nettoHasMobileBar');return
  }
  const items=mobileBarItems(api.siteConfig)
@@ -1720,7 +1729,8 @@ function buildGlobalHeader(){
  const p=api.profile,name=p.display_name||'Utilisateur',role=roleLabel(p.role);
  const visibleUserModules=visibleModules('user_menu',p,api.siteConfig);
  const shortcuts=visibleUserModules.map(m=>makeButton(moduleIcon(m),m.label,m.subtitle,m.url)).join('');
- const mobileModules=visibleUserModules.filter(m=>!['profile','settings'].includes(m.id));
+ const mobileShell=isMobileViewport();
+ const mobileModules=mobileShell?visibleUserModules.filter(m=>!['profile','settings'].includes(m.id)):[];
  const mobilePrimaryIds=new Set(['home','stock','planning','chat','scanner','articles']);
  const mobileAdminIds=new Set(['accounts','portal_admin']);
  const mobileSpecialIds=new Set(['notification_settings','problem_report']);
@@ -1738,7 +1748,7 @@ function buildGlobalHeader(){
  const mobileThemeIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z"/></svg>';
  const mobileUpdateIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v10"/><path d="m8.5 9.5 3.5 3.5 3.5-3.5"/><path d="M5 17.5V20h14v-2.5"/></svg>';
  const mobileLogoutIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><path d="M14 8l4 4-4 4M18 12H9"/></svg>';
- const mobileUserMenuHtml=
+ const mobileUserMenuHtml=mobileShell?(
   '<div class="nettoMobileUserMenu" aria-label="Menu utilisateur">'+
    '<div class="nettoMobileMenuHeader"><h2>Menu</h2></div>'+
    '<section class="nettoMobileMenuCard nettoMobileProfileCard">'+
@@ -1757,7 +1767,7 @@ function buildGlobalHeader(){
     (problemReport?mobileMenuRow(problemReport.id,problemReport.label,problemReport.subtitle,mobileProblemUrl):'')+
     '<button id="nettoMobileLogoutBtn" class="nettoMobileMenuRow nettoMobileMenuDanger" type="button"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileLogoutIcon+'</span><span class="nettoMobileMenuCopy"><strong>Déconnexion</strong><small>Quitter la session</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
    '</section>'+
-  '</div>';
+  '</div>'):'';
  const wrap=document.createElement('div');wrap.id='nettoGlobalTools';wrap.className='nettoGlobalTools';
  const adminLoginTool=p.role==='admin'?'<div class="nettoLoginWrap"><button id="nettoLoginBtn" class="nettoBellBtn nettoLoginBtn" aria-label="Historique des connexions" aria-expanded="false" title="Connexions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.41 3.3 1.9-1 1.73L11 13.59V7h2Z"/></svg></button><div id="nettoLoginDrop" class="nettoDrop nettoLoginDrop hidden"><div class="nettoNotifHead"><div class="nettoLoginHeadTitle"><strong>Connexions</strong><small>Qui s’est connecté et à quelle heure</small></div><div class="nettoNotifHeadActions"><button id="nettoLoginDeleteAll">Tout supprimer</button></div></div><div id="nettoLoginList" class="nettoLoginList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div>':'';
  const inMobilePreview=new URLSearchParams(location.search).get('mobile_preview')==='1';
@@ -1925,7 +1935,7 @@ function toggleMobilePreview(){
  try{sounds.play('menuOpen')}catch(_){}
 }
 const mobileDropPortalState=new Map();
-function mobileDropMode(){return !!window.matchMedia?.('(max-width:900px),(pointer:coarse)')?.matches}
+function mobileDropMode(){return isMobileViewport()}
 function portalMobileLayer(el,extraClass){
  if(!el||!document.body||mobileDropPortalState.has(el))return;
  mobileDropPortalState.set(el,{parent:el.parentNode,next:el.nextSibling});
