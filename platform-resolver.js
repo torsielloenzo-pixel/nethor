@@ -72,7 +72,29 @@ function apply(state){
  return state
 }
 
+function installIsolationStyle(){
+ if(document.getElementById('nethorPlatformIsolation'))return;
+ const style=document.createElement('style');
+ style.id='nethorPlatformIsolation';
+ style.textContent=`
+ html[data-nethor-platform="desktop"] .nettoMobileQuickBar,
+ html[data-nethor-platform="desktop"] .nettoMobileUserMenu,
+ html[data-nethor-platform="desktop"] .profileMobileTop,
+ html[data-nethor-platform="desktop"] .settingsMobileTop,
+ html[data-nethor-platform="desktop"] .flMobileBack,
+ html[data-nethor-platform="desktop"] .mobileBack,
+ html[data-nethor-platform="desktop"] .mobileNavBackdrop{display:none!important}
+ html[data-nethor-platform="desktop"][data-nethor-page="profile"] body>header,
+ html[data-nethor-platform="desktop"][data-nethor-page="settings"] body>header{display:flex!important}
+ html[data-nethor-platform="desktop"] body.nettoHasMobileBar{padding-bottom:0!important}
+ html[data-nethor-platform="mobile"] .nettoMobileQuickBar,
+ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickBar{display:grid}
+ `;
+ (document.head||document.documentElement).appendChild(style)
+}
+
 let state=apply(resolve());
+installIsolationStyle();
 
 const api=Object.freeze({
  current:()=>state.kind,
