@@ -178,6 +178,41 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
 }
 
 .managementActionGridSingle{grid-template-columns:1fr!important}
+
+/* management-settings-v199 — panneaux compacts alignés avec la nouvelle Gestion */
+.managementSettingsSection{width:min(100%,1040px)}
+.managementSettingList{display:grid;gap:8px;width:100%}
+.managementSettingRow{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:72px;padding:11px 13px;border:1px solid #e1e5e9;border-radius:14px;background:#fff;box-shadow:0 2px 8px #17212d08}
+.managementSettingIcon,.managementSettingHeadIcon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#f0f2f4;color:#69727d;font-size:15px;font-weight:900;flex:none}
+.managementSettingText{min-width:0}.managementSettingText>strong{display:block;font-size:12px;line-height:1.25}.managementSettingText>span{display:block;margin-top:3px;color:#7f8790;font-size:8.8px;line-height:1.4}
+.managementSettingStatus{display:block;margin-top:6px;color:#8a9199;font-size:7.8px;line-height:1.4}.managementSettingStatus b{color:#5d6670}.managementSettingStatus.active,.managementSettingStatus.active b{color:#bc4c28}
+.managementSettingControl{display:flex;align-items:center;gap:10px;padding-left:12px}.managementSettingState{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border-radius:999px;background:#f0f2f4;color:#7a8189;font-size:7.8px;font-weight:900}.managementSettingState.active{background:#fff0ea;color:#d64a26}
+.managementSettingPanel.panel{width:100%;margin:0 0 8px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+.managementSettingHead.compactPanelHead{display:flex;align-items:center;gap:11px;min-height:62px;margin:0;padding:10px 12px!important;border:1px solid #e1e5e9;border-radius:13px;background:#fff;box-shadow:0 2px 8px #17212d08;user-select:none;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease}
+.managementSettingHead.compactPanelHead:hover{background:#fcfcfd;border-color:#d8dde2;box-shadow:0 4px 12px #17212d0d}
+.managementSettingHeadText{min-width:0;flex:1}.managementSettingHeadText h2{margin:0!important;font-size:12px!important;line-height:1.25}.managementSettingHeadText .panelIntro,.managementSettingHeadText p{margin:3px 0 0!important;color:#838b94!important;font-size:8.5px!important;line-height:1.35!important}
+.managementSettingChevron.compactPanelChevron{width:26px;height:26px;border-radius:8px;background:#f1f3f5;color:#818891;font-size:13px}
+.managementSettingPanel.open>.managementSettingHead{border-radius:13px 13px 0 0;border-bottom-color:#edf0f2;box-shadow:none}
+.managementSettingPanel.open>.managementSettingHead .managementSettingHeadIcon{background:#fff0ea;color:#ee4b23}
+.managementSettingBody.compactPanelBody{margin:0;padding:14px!important;border:1px solid #e1e5e9;border-top:0;border-radius:0 0 13px 13px;background:#fff;box-shadow:0 5px 14px #17212d08}
+.managementSettingPanel:not(.open)>.managementSettingBody{display:none}
+.managementSettingPanel .toolbar{margin-bottom:0}
+.managementSettingPanel .headerLogoEditor,.managementSettingPanel .preview,.managementSettingPanel .colorBox,.managementSettingPanel .recipientBox,.managementSettingPanel .sendPreview{box-shadow:none}
+#tab-general.managementSettingsSection,#tab-mobile.managementSettingsSection,#tab-blocks.managementSettingsSection,#tab-media.managementSettingsSection,#tab-notifications.managementSettingsSection,#tab-maintenance.managementSettingsSection{max-width:1040px}
+#tab-maintenance{max-width:920px!important}
+#tab-maintenance .maintenanceSettingRow{max-width:920px}
+#tab-blocks .operationsWidgetAdmin{margin:0;padding:0;border:0}
+#tab-blocks .operationsWidgetAdminHead{margin-bottom:10px}
+#tab-blocks .operationsWidgetAdminCard{border-radius:12px;box-shadow:none}
+#tab-media .logoLibrary{margin-top:0}
+:root[data-theme="dark"] .managementSettingRow,:root[data-theme="dark"] .managementSettingHead.compactPanelHead,:root[data-theme="dark"] .managementSettingBody.compactPanelBody{background:#1c1f23;border-color:#343940;color:#eef0f3}
+:root[data-theme="dark"] .managementSettingHead.compactPanelHead:hover{background:#202328;border-color:#3b4148}
+:root[data-theme="dark"] .managementSettingIcon,:root[data-theme="dark"] .managementSettingHeadIcon,:root[data-theme="dark"] .managementSettingChevron.compactPanelChevron{background:#292d32;color:#b5bbc3}
+:root[data-theme="dark"] .managementSettingPanel.open>.managementSettingHead .managementSettingHeadIcon{background:#3a2821;color:#ff9a77}
+:root[data-theme="dark"] .managementSettingText>span,:root[data-theme="dark"] .managementSettingHeadText .panelIntro,:root[data-theme="dark"] .managementSettingHeadText p,:root[data-theme="dark"] .managementSettingStatus{color:#a5acb5!important}
+:root[data-theme="dark"] .managementSettingState{background:#292d32;color:#b7bdc5}:root[data-theme="dark"] .managementSettingState.active{background:#3a2821;color:#ff9a77}
+@media(max-width:900px){.managementSettingsSection{width:100%;max-width:none!important}.managementSettingRow{grid-template-columns:34px minmax(0,1fr) auto;gap:9px;padding:10px}.managementSettingControl{padding-left:4px}.managementSettingState{display:none}.managementSettingHead.compactPanelHead{min-height:58px;padding:9px 10px!important}.managementSettingBody.compactPanelBody{padding:11px!important}}
+@media(max-width:560px){.managementSettingRow{grid-template-columns:32px minmax(0,1fr) auto}.managementSettingIcon,.managementSettingHeadIcon{width:32px;height:32px}.managementSettingText>span{font-size:8px}.managementSettingStatus{font-size:7.3px}.managementSettingHeadText h2{font-size:11px!important}}
 </style>
 </head>
 <body>
@@ -360,9 +395,20 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  </div>
 </section>
 
-<section id="tab-maintenance" class="section">
- <div class="panel"><div class="toolbar"><div><h2>Site en maintenance</h2><p>Force tous les utilisateurs non administrateurs vers une page unique de maintenance.</p></div><label class="adminSwitch" title="Activer ou désactiver la maintenance"><input id="maintenanceEnabled" type="checkbox"><span></span></label></div>
-  <div class="notifNotice" id="maintenanceNotice"><b>Maintenance désactivée.</b> Le portail reste accessible normalement. L’administrateur n’est jamais concerné par ce mode.</div>
+<section id="tab-maintenance" class="section managementSettingsSection">
+ <div class="managementSettingList">
+  <div class="managementSettingRow maintenanceSettingRow">
+   <div class="managementSettingIcon" aria-hidden="true">⚙</div>
+   <div class="managementSettingText">
+    <strong>Mode maintenance</strong>
+    <span>Redirige temporairement les utilisateurs non administrateurs vers la page de maintenance.</span>
+    <small id="maintenanceNotice" class="managementSettingStatus"><b>Maintenance désactivée.</b> Le portail reste accessible normalement.</small>
+   </div>
+   <div class="managementSettingControl">
+    <span id="maintenanceStateLabel" class="managementSettingState">Désactivée</span>
+    <label class="adminSwitch" title="Activer ou désactiver la maintenance"><input id="maintenanceEnabled" type="checkbox"><span></span></label>
+   </div>
+  </div>
  </div>
 </section>
 <section id="tab-notifications" class="section">
@@ -916,23 +962,45 @@ function toggleModuleBody(id,event){
  const body=$('moduleBody_'+id),card=$('moduleCard_'+id);if(!body)return;
  const opening=body.classList.contains('collapsed');body.classList.toggle('collapsed',!opening);card?.classList.toggle('open',opening);window.NettoSounds?.play?.(opening?'menuOpen':'menuClose')
 }
+const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-mobile','tab-blocks','tab-media','tab-notifications']);
+const MANAGEMENT_PANEL_ICONS={
+ 'Identité du portail':'◈','Couleurs générales':'◉','Barre de navigation mobile':'▣',
+ 'Blocs & widgets':'▥','Bibliothèque des logos Nethor':'▧','Envoyer une notification':'↗',
+ 'Notifications existantes':'♢','Autorisation par utilisateur':'♙'
+};
+function managementPanelIcon(title){return MANAGEMENT_PANEL_ICONS[String(title||'').trim()]||'•'}
 function enhanceCompactPortal(){
- document.querySelectorAll('.workspace .panel').forEach((panel,index)=>{
-  if(panel.dataset.compactReady==='1')return;panel.dataset.compactReady='1';panel.classList.add('compactPanel');
-  let head=panel.querySelector(':scope > .toolbar'),title=panel.querySelector(':scope > h2'),intro=panel.querySelector(':scope > .panelIntro');
+ document.querySelectorAll('.workspace .section').forEach(section=>{
+  section.classList.toggle('managementSettingsSection',MANAGEMENT_COMPACT_SECTIONS.has(section.id)||section.id==='tab-maintenance')
+ });
+ document.querySelectorAll('.workspace .section .panel').forEach((panel,index)=>{
+  const section=panel.closest('.section');
+  if(!section||!MANAGEMENT_COMPACT_SECTIONS.has(section.id))return;
+  if(panel.dataset.compactReady==='1')return;
+  panel.dataset.compactReady='1';panel.classList.add('compactPanel','managementSettingPanel');
+  let head=panel.querySelector(':scope > .toolbar'),title=panel.querySelector(':scope > h2'),intro=panel.querySelector(':scope > .panelIntro'),txt=null;
   if(head){
-   head.classList.add('compactPanelHead');
-   let txt=head.firstElementChild;
-   if(txt)txt.classList.add('compactPanelHeadText');
-   const chev=document.createElement('span');chev.className='compactPanelChevron';chev.textContent='⌄';head.appendChild(chev);
+   head.classList.add('compactPanelHead','managementSettingHead');
+   txt=head.firstElementChild;
+   if(txt)txt.classList.add('compactPanelHeadText','managementSettingHeadText');
   }else if(title){
-   head=document.createElement('div');head.className='compactPanelHead';
-   const txt=document.createElement('div');txt.className='compactPanelHeadText';txt.appendChild(title);if(intro)txt.appendChild(intro);
-   const chev=document.createElement('span');chev.className='compactPanelChevron';chev.textContent='⌄';head.append(txt,chev);panel.insertBefore(head,panel.firstChild)
+   head=document.createElement('div');head.className='compactPanelHead managementSettingHead';
+   txt=document.createElement('div');txt.className='compactPanelHeadText managementSettingHeadText';txt.appendChild(title);if(intro)txt.appendChild(intro);
+   head.appendChild(txt);panel.insertBefore(head,panel.firstChild)
   }else return;
-  const body=document.createElement('div');body.className='compactPanelBody';
+  const titleText=txt?.querySelector('h2')?.textContent||title?.textContent||'Réglage';
+  const icon=document.createElement('span');icon.className='managementSettingHeadIcon';icon.setAttribute('aria-hidden','true');icon.textContent=managementPanelIcon(titleText);
+  head.insertBefore(icon,txt);
+  const chev=document.createElement('span');chev.className='compactPanelChevron managementSettingChevron';chev.textContent='⌄';chev.setAttribute('aria-hidden','true');head.appendChild(chev);
+  head.setAttribute('role','button');head.setAttribute('tabindex','0');head.setAttribute('aria-expanded','false');
+  const body=document.createElement('div');body.className='compactPanelBody managementSettingBody';
   [...panel.children].filter(x=>x!==head).forEach(x=>body.appendChild(x));panel.appendChild(body);
-  head.addEventListener('click',e=>{if(e.target.closest('button,a,input,label,select,textarea'))return;const opening=!panel.classList.contains('open');panel.classList.toggle('open',opening);window.NettoSounds?.play?.(opening?'menuOpen':'menuClose')})
+  const toggle=()=>{
+   const opening=!panel.classList.contains('open');panel.classList.toggle('open',opening);head.setAttribute('aria-expanded',opening?'true':'false');
+   window.NettoSounds?.play?.(opening?'menuOpen':'menuClose')
+  };
+  head.addEventListener('click',e=>{if(e.target.closest('button,a,input,label,select,textarea'))return;toggle()});
+  head.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('button,a,input,label,select,textarea')){e.preventDefault();toggle()}})
  })
 }
 function choosePageImage(id){$('pageFile_'+id)?.click()}
@@ -995,7 +1063,7 @@ function bindGlobal(){
  ['brandName','brandSubtitle','homeEyebrow','homeIntro','primaryColor','secondaryColor','inkColor'].forEach(id=>$(id).addEventListener('input',()=>{collectGlobal();paintGlobal();markDirty()}));$('maintenanceEnabled').addEventListener('change',()=>{collectGlobal();paintGlobal();markDirty();window.NettoSounds?.play?.('switch')})
 }
 function collectGlobal(){config.brand.name=$('brandName').value.trim()||'Nethor';config.brand.subtitle=$('brandSubtitle').value.trim();config.home.eyebrow=$('homeEyebrow').value.trim();config.home.intro=$('homeIntro').value.trim();config.theme.primary=$('primaryColor').value;config.theme.secondary=$('secondaryColor').value;config.theme.ink=$('inkColor').value;config.maintenance={enabled:!!$('maintenanceEnabled').checked}}
-function paintGlobal(){document.documentElement.style.setProperty('--primary',config.theme.primary);document.documentElement.style.setProperty('--secondary',config.theme.secondary);document.documentElement.style.setProperty('--ink',config.theme.ink);$('previewName').textContent=config.brand.name;$('previewSubtitle').textContent=config.brand.subtitle;$('primaryHex').textContent=config.theme.primary;$('secondaryHex').textContent=config.theme.secondary;$('inkHex').textContent=config.theme.ink;const pm=$('previewMark'),logo=String(config.brand.header_logo_url||'').trim();if(pm){pm.classList.toggle('hasHeaderLogo',!!logo);pm.textContent=logo?'':'N';if(logo){pm.style.background='';pm.style.backgroundImage='url('+JSON.stringify(logo)+')'}else{pm.style.backgroundImage='';pm.style.background='linear-gradient(135deg,'+config.theme.primary+','+config.theme.secondary+')'}}renderHeaderLogoAsset();const mn=$('maintenanceNotice');if(mn)mn.innerHTML=config.maintenance?.enabled?'<b>Maintenance activée.</b> Tous les utilisateurs non administrateurs seront redirigés uniquement vers la page de maintenance.':'<b>Maintenance désactivée.</b> Le portail reste accessible normalement. L’administrateur n’est jamais concerné par ce mode.'}
+function paintGlobal(){document.documentElement.style.setProperty('--primary',config.theme.primary);document.documentElement.style.setProperty('--secondary',config.theme.secondary);document.documentElement.style.setProperty('--ink',config.theme.ink);$('previewName').textContent=config.brand.name;$('previewSubtitle').textContent=config.brand.subtitle;$('primaryHex').textContent=config.theme.primary;$('secondaryHex').textContent=config.theme.secondary;$('inkHex').textContent=config.theme.ink;const pm=$('previewMark'),logo=String(config.brand.header_logo_url||'').trim();if(pm){pm.classList.toggle('hasHeaderLogo',!!logo);pm.textContent=logo?'':'N';if(logo){pm.style.background='';pm.style.backgroundImage='url('+JSON.stringify(logo)+')'}else{pm.style.backgroundImage='';pm.style.background='linear-gradient(135deg,'+config.theme.primary+','+config.theme.secondary+')'}}renderHeaderLogoAsset();const enabled=!!config.maintenance?.enabled,mn=$('maintenanceNotice'),ml=$('maintenanceStateLabel');if(mn){mn.classList.toggle('active',enabled);mn.innerHTML=enabled?'<b>Maintenance activée.</b> Les utilisateurs non administrateurs sont redirigés vers la page de maintenance.':'<b>Maintenance désactivée.</b> Le portail reste accessible normalement.'}if(ml){ml.textContent=enabled?'Activée':'Désactivée';ml.classList.toggle('active',enabled)}}
 function fillGlobal(){$('brandName').value=config.brand.name;$('brandSubtitle').value=config.brand.subtitle;$('homeEyebrow').value=config.home.eyebrow;$('homeIntro').value=config.home.intro;$('primaryColor').value=config.theme.primary;$('secondaryColor').value=config.theme.secondary;$('inkColor').value=config.theme.ink;$('maintenanceEnabled').checked=!!config.maintenance?.enabled;paintGlobal()}
 function validateConfig(){
  for(const [id,p] of Object.entries(config.pages)){if(p?.url&&!validUrl(p.url))throw new Error('Destination invalide pour '+(p.label||id))}
