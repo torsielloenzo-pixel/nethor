@@ -4,18 +4,12 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] body{padd
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopLayout{
  width:min(900px,calc(100% - 48px));margin:0 auto;padding:42px 0 72px
 }
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopIntro{
- display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px
-}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopIntro h1{margin:4px 0 8px;font-size:38px;letter-spacing:-1px}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopIntro h1 small{font-size:11px;color:#db4c22;text-transform:uppercase;letter-spacing:.5px}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopIntro p{margin:0;color:var(--muted);font-size:13px}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerEyebrow{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#db4c22}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopBack{
- border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 14px;font-weight:800;color:inherit
-}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .desktopOnly{
  display:block;margin-top:0;padding:30px;border:1px solid var(--line);border-radius:22px;background:var(--card);text-align:center
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .desktopOnly strong{font-size:20px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .desktopOnly p{color:var(--muted);font-size:11px}
+
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopLayout .top{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopLayout .back{width:auto;min-width:92px;padding:10px 14px;border-radius:12px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopLayout .title h1{font-size:34px}
