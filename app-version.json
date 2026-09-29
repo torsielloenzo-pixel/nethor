@@ -1,11 +1,11 @@
 {
-  "version": 210,
-  "label": "v1.20.5",
+  "version": 211,
+  "label": "v1.21.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Centre de mise à jour",
-  "message": "Restauration de l’interface de mise à jour avec version actuelle, dernière version disponible et installation manuelle confirmée.",
-  "published_at": "2026-09-29T17:19:00+02:00",
+  "title": "Navigation mobile stable",
+  "message": "Correctif majeur de navigation mobile : chaque page reste affichée jusqu’à une action explicite, le Menu utilisateur est séparé de Mon profil et les boutons Retour suivent désormais la hiérarchie de Nethor. Cette mise à jour vide le cache pour supprimer les anciennes versions de l’interface.",
+  "published_at": "2026-09-29T21:30:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
