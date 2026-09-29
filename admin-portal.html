@@ -575,6 +575,20 @@ function filterManagementNav(value){
  })
 }
 function reloadAccountsFrame(){setAccountsFrame(accountSubview,true)}
+window.addEventListener('message',event=>{
+ const frame=$('managementAccountsFrame');
+ if(event.origin!==location.origin||!frame||event.source!==frame.contentWindow)return;
+ const data=event.data;if(!data||data.type!=='nethor-accounts-tab'||!['accounts','roles','logs'].includes(data.tab))return;
+ accountSubview=data.tab;
+ try{localStorage.setItem('nettoManagementAccountsView',accountSubview)}catch(_){}
+ const meta=ACCOUNT_META[accountSubview]||ACCOUNT_META.accounts;
+ if($('managementAccountsTitle'))$('managementAccountsTitle').textContent=meta.title;
+ if($('managementAccountsIntro'))$('managementAccountsIntro').textContent=meta.description;
+ if($('tab-accounts')?.classList.contains('active')){
+  activateManagementNav(managementButtonFor('accounts'));updateManagementHero('accounts');
+  const u=new URL(location.href);u.searchParams.set('tab','accounts');u.searchParams.set('sub',accountSubview);history.replaceState({},'',u)
+ }
+});
 function managementInitials(name){return String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
 async function loadManagementOverview(){
  const usersBox=$('managementUsersPreview'),logsBox=$('managementLogsPreview');
