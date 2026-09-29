@@ -1,0 +1,16 @@
+/* Phase 4.9 — Gestion des comptes Mobile */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileLayout{
+ width:calc(100% - 20px);margin:0 auto;padding:calc(env(safe-area-inset-top) + 12px) 0 calc(38px + var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom))
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileTop{
+ display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:10px;margin-bottom:12px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileBack{
+ width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:#fff;color:inherit;font-size:24px;line-height:1;padding:0
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileTitle h1{margin:0;font-size:23px;line-height:1.05;letter-spacing:-.5px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileTitle p{margin:4px 0 0;color:var(--muted);font-size:9.5px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileActions{margin:0 0 12px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileActions .heroActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="accounts"] .accountsMobileActions .btn{width:100%}
+:root[data-theme="dark"][data-nethor-page-layout="mobile"] .accountsMobileBack{background:#202329;border-color:#3d444d;color:#eef1f4}
