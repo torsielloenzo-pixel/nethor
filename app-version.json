@@ -1,10 +1,10 @@
 {
-  "version": 186,
-  "label": "v1.86",
+  "version": 187,
+  "label": "v1.87",
   "important": true,
   "mode": "manual",
   "title": "Nouvelle version de Nethor",
-  "message": "Défis & Boutique : ajout de Caisse Rush, un mini-jeu de scan avec score, combos, erreurs et difficulté progressive.",
-  "published_at": "2026-09-29T00:23:16.763Z",
+  "message": "Rush Rayon : style cartoon, saut variable, sons, musique dynamique, menu et meilleurs scores par compte.",
+  "published_at": "2026-09-29T02:06:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
