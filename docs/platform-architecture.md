@@ -218,3 +218,46 @@ Les deux stylesheets sont référencés avec `media="not all"` et `data-nethor-s
 - Mobile / Mobile Preview -> `ui/mobile/mobile-shell.css`
 
 Le stylesheet de l'autre plateforme reste désactivé. Une règle Desktop ne peut donc pas s'appliquer sur Mobile simplement parce qu'un écran est large, et inversement.
+
+
+## Phase 4.1 — structures de page par plateforme
+
+La séparation ne concerne plus seulement les styles et composants du shell : elle commence désormais au niveau du HTML réellement monté.
+
+### Résolveur de structure
+
+`platform-page-layout.js` choisit le constructeur de page du shell déjà résolu :
+
+- Desktop -> `NethorDesktopShell.buildPageLayout()`
+- Mobile / Vision mobile -> `NethorMobileShell.buildPageLayout()`
+
+Il ne consulte ni `innerWidth` ni une media query pour choisir la plateforme.
+
+### Pages migrées
+
+Première vague :
+
+- `home.html`
+- `profile.html`
+- `planning.html`
+
+Ces pages ne contiennent plus leur ancien en-tête hybride. Elles exposent seulement des points de montage neutres :
+
+```html
+<div data-nethor-platform-header></div>
+<div data-nethor-platform-lead></div>
+```
+
+Le shell actif remplace ces points par **sa propre structure**. La structure du shell opposé n'est donc pas présente dans le DOM.
+
+### Profil Mobile
+
+`profile.html` possède désormais une zone haute Mobile produite par le shell Mobile, avec son propre bouton Retour vers le Menu utilisateur. Le hero Desktop n'est pas utilisé pour construire cette vue.
+
+Le header Mobile restant dans le DOM est uniquement un hôte technique invisible pour les outils globaux (notifications/menu utilisateur) avant leur portage dans le shell Mobile.
+
+### Planning et Accueil
+
+Pour cette première étape, le contenu métier de Planning et Accueil reste partagé. Seul leur chrome de page est séparé.
+
+La suite de la phase 4 consiste à extraire progressivement les groupes de mise en page propres à chaque plateforme — sans dupliquer les données, permissions, appels Supabase ni logique métier.
