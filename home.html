@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#171717"><script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(e){}})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><title>Nethor</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="profile-ui.js?v=188"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="profile-ui.js?v=188"></script><script src="operations-widget.js?v=1" defer></script>
 <style>
 :root{--red:#e30613;--red-dark:#b90710;--black:#171717;--muted:#777;--line:#e4e4e6}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -377,7 +377,7 @@ main{position:relative;z-index:1}
   .userMenu{z-index:1200!important}
 }
 </style>
-<link rel="stylesheet" href="design-v4.css?v=9">
+<link rel="stylesheet" href="design-v4.css?v=9"><link rel="stylesheet" href="operations-widget.css?v=1">
 <style>
 .pageCard.portalThemeCard:after{background:linear-gradient(90deg,var(--menu-color,#ff2f1f),var(--menu-accent,#ff8500))!important}
 .pageCard.portalThemeCard .arrow{background:var(--menu-color,#ff2f1f)!important;color:#fff!important}
@@ -1531,8 +1531,8 @@ function homeDayHours(model,dateKey,name){
  const d=homeDayFacts(model,dateKey,name);return{hours:d.hours,ranges:d.ranges,idx:d.idx}
 }
 function homeWidgetVisible(cfg,id,profile,subroleKeys=[]){
- const node=cfg?.home_widgets?.[id]||{},role=profile?.role||'';
- const roleValue=node?.roles?.[role],allowed=(typeof roleValue==='boolean'?roleValue:true)||subroleKeys.some(k=>node?.subroles?.[k]===true);
+ const node=cfg?.home_widgets?.[id]||{},role=profile?.role||'',fallback=id==='operations_hub'?role==='admin':true;
+ const roleValue=node?.roles?.[role],allowed=(typeof roleValue==='boolean'?roleValue:fallback)||subroleKeys.some(k=>node?.subroles?.[k]===true);
  if(!allowed)return false;
  const personal=profile?.ui_preferences?.home_widgets?.[id];
  return typeof personal==='boolean'?personal:true
@@ -1869,6 +1869,12 @@ async function renderMobileHomeDashboard(profile,name,cfg){
   if(modules.length)sections.push('<section class="mhdCard mhdSection mhdQuickSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('quick_access')+'</span><strong>Accès rapides</strong></div></div><div class="mhdQuickGrid">'+modules.map(m=>'<button class="mhdQuick" type="button" onclick="location.href=\''+homeEsc(m.url||m.baseUrl||'home.html')+'\'"><span class="mhdQuickIcon">'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'')+'</span><strong>'+homeEsc(m.homeLabel||m.label||m.id)+'</strong></button>').join('')+'</div></section>')
  }
  host.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
+ const todaySelf=todayModel?homeDayFacts(todayModel,todayKey,name):{hours:0,ranges:[]};
+ await window.NethorOperationsWidget?.mount?.({
+  host,db,session:homeSession,profile,config:cfg||{},subroleKeys,todayKey,
+  service:{hours:todaySelf.hours,ranges:todaySelf.ranges,weekHours:currentHours,nextShift},
+  tasks:{rows:homeTaskRows,assignees:homeTaskAssignees,completions:homeTaskCompletions,team:homeTaskTeam}
+ });
  // Paint team avatars after the final DOM exists.
  if(widget('team_today')){
   const shown=todayTeam.slice(0,3);
