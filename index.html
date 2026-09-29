@@ -1118,7 +1118,9 @@ function resumeForgotCooldown(){if(forgotCooldownUntil()>Date.now()){if(forgotCo
 function openForgotPassword(){const d=$('forgotDialog'),ident=$('forgotIdentifier'),state=$('forgotState');ident.value=$('email').value.trim();state.textContent='';state.className='forgotState';d.showModal();resumeForgotCooldown();window.NettoSounds?.play?.('menuOpen');setTimeout(()=>ident.focus(),80)}
 async function sendForgotRequest(){const ident=$('forgotIdentifier').value.trim(),btn=$('forgotSubmit'),state=$('forgotState');if(forgotCooldownUntil()>Date.now()){resumeForgotCooldown();return}if(ident.length<3){state.className='forgotState err';state.textContent='Saisis ton identifiant.';window.NettoSounds?.play?.('error');return}btn.disabled=true;state.className='forgotState';state.textContent='Envoi de la demande…';try{const {data,error}=await db.functions.invoke('password-reset-request',{body:{identifier:ident}});if(error)throw error;state.className='forgotState ok';state.textContent=data?.message||'Si cet identifiant correspond à un compte, la demande a été transmise à l’administrateur.';startForgotCooldown(30);window.NettoSounds?.play?.('success')}catch(e){state.className='forgotState err';state.textContent='La demande n’a pas pu être envoyée. Réessaie dans quelques instants.';btn.disabled=false;window.NettoSounds?.play?.('error')}}
 
-function displayVersion(value){
+function displayVersion(value,label=''){
+ const normalized=String(label||'').trim();
+ if(/^v?\d+\.\d+\.\d+$/i.test(normalized))return normalized.startsWith('v')?normalized:'v'+normalized;
  const n=Math.max(0,Math.trunc(Number(value)||0)),major=Math.floor(n/100),minor=String(n%100).padStart(2,'0');
  return 'v'+major+'.'+minor
 }
