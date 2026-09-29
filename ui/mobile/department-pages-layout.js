@@ -1,0 +1,18 @@
+(function(){
+'use strict';
+function top(title,subtitle,badge=''){
+ return '<div class="departmentMobileTop"><button class="departmentMobileBack" type="button" onclick="window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'home.html\'" aria-label="Retour">‹</button><div class="departmentMobileTitle"><strong>'+title+'</strong><small>'+subtitle+'</small></div>'+(badge?'<span class="departmentMobileBadge">'+badge+'</span>':'')+'</div><div class="departmentMobileUtilityHost" data-nethor-global-tools-host></div>'
+}
+function flAssistant(){
+ return{platform:'mobile',html:'<div class="departmentMobileLayout flAssistantMobile" data-nethor-department-page="fl-assistant">'+top('Assistant Précommande','Fruits & Légumes','BÊTA')+'<main>'+"<div class=\"grid\">\n  <div>\n   <section class=\"panel aiCard\"><div class=\"aiTop\"><div class=\"aiIcon\">✦</div><div><h2>État de l’analyse</h2><p id=\"aiIntro\">Je vérifie les données disponibles et je te dis ce qu’il me faut pour commencer.</p></div></div><div class=\"aiStatus\"><strong id=\"readinessTitle\">Analyse en cours…</strong><span id=\"readinessText\">Vérification des sources.</span></div></section>\n   <section class=\"panel\" style=\"margin-top:16px\"><div class=\"panelHead\"><div><h2>Données nécessaires</h2><small>La qualité de la précommande dépend directement de ces sources.</small></div></div><div id=\"needs\" class=\"needs\"></div></section>\n   <section class=\"panel analysis\"><div class=\"panelHead\"><div><h2>Lecture rapide</h2><small>Résumé des données déjà exploitables.</small></div><button class=\"back\" onclick=\"refreshAll()\">↻ Actualiser</button></div><div id=\"metrics\" class=\"analysisGrid\"></div><div id=\"assistantFeed\" class=\"assistantFeed\"></div></section>\n  </div>\n  <div>\n   <section class=\"panel\"><div class=\"panelHead\"><div><h2>Transmettre des fichiers</h2><small>Excel XLS/XLSX ou CSV • 15 Mo maximum.</small></div></div>\n    <div id=\"drop\" class=\"drop\"><strong>Dépose les exports ici</strong><span>Ventes, stock, casse/dons, commandes précédentes…</span><button onclick=\"fileInput.click()\">Choisir des fichiers</button><input id=\"fileInput\" type=\"file\" accept=\".xls,.xlsx,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\" multiple hidden></div>\n    <div id=\"uploadState\" class=\"uploadState\"></div>\n   </section>\n   <section class=\"panel\" style=\"margin-top:16px\"><div class=\"panelHead\"><div><h2>Fichiers transmis</h2><small>Historique des sources utilisées par l’assistant.</small></div></div><div id=\"files\" class=\"files\"><div class=\"empty\">Chargement…</div></div></section>\n  </div>\n </div>"+'</main></div>'}
+}
+function bakery(){
+ return{platform:'mobile',html:'<div class="departmentMobileLayout bakeryMobile" data-nethor-department-page="bakery">'+top('Boulangerie','Stock interne')+'<main>'+"<nav class=\"modeNav\"><button class=\"modeBtn active\" data-mode=\"stock\" onclick=\"setMode('stock')\">Stock</button><button class=\"modeBtn\" data-mode=\"consult\" onclick=\"setMode('consult')\">Consulter</button><button class=\"modeBtn\" data-mode=\"manage\" onclick=\"setMode('manage')\">Gestion</button></nav>\r\n  <section id=\"work\"></section>"+'</main></div>'}
+}
+function build(page){
+ if(page==='fl-assistant')return flAssistant();
+ if(page==='bakery')return bakery();
+ return null
+}
+window.NethorMobileDepartmentPagesLayout=Object.freeze({build});
+})();
