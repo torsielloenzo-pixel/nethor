@@ -10,6 +10,8 @@ create table if not exists public.reported_problems (
   source_path text,
   source_title text,
   user_agent text,
+  app_version text,
+  diagnostics jsonb not null default '{}'::jsonb,
   status text not null default 'new' check (status in ('new','in_progress','resolved')),
   admin_note text,
   resolved_by uuid references auth.users(id) on delete set null,
