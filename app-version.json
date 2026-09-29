@@ -1,11 +1,11 @@
 {
-  "version": 226,
-  "label": "v1.32.0",
+  "version": 227,
+  "label": "v1.33.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.9 — Gestion des comptes",
-  "message": "Gestion des comptes possède désormais des structures Desktop, Mobile et un contexte embarqué Gestion explicitement séparé. Le mode Mobile ne dépend plus de innerWidth, les breakpoints 600/700 px ont quitté le CSS commun, et l’iframe Gestion conserve la même logique métier sans shell ni bouton Retour parasite.",
-  "published_at": "2026-09-30T00:24:18.000+02:00",
+  "title": "Phase 4.10 — Gestion Desktop / Mobile",
+  "message": "La page Gestion possède désormais deux structures de plateforme distinctes. Desktop conserve son header d’administration avec recherche et enregistrement, tandis que Mobile utilise un top compact dédié. Les anciens blocs CSS min-width 901 px / max-width 900 px qui choisissaient la plateforme ont quitté le fichier commun, sans dupliquer les éditeurs ni les modules métier.",
+  "published_at": "2026-09-30T00:36:11.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
