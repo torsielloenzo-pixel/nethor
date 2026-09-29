@@ -1,11 +1,11 @@
 {
-  "version": 217,
-  "label": "v1.24.1",
+  "version": 218,
+  "label": "v1.25.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Isolation stricte Desktop / Mobile",
-  "message": "Finalisation de la phase 3 : les shells Desktop et Mobile sont physiquement séparés et seul le stylesheet de la plateforme active est chargé. Le shell opposé reste désactivé, y compris sur les écrans atypiques et après redimensionnement. Le cache est vidé pour éliminer tout ancien mélange de styles.",
-  "published_at": "2026-09-29T22:45:00+02:00",
+  "title": "Phase 4.1 — Structures Desktop / Mobile",
+  "message": "Début de la phase 4 : Accueil, Planning et Mon profil ne portent plus leurs anciens en-têtes hybrides. Le shell actif construit maintenant son propre chrome de page ; le profil Mobile reçoit sa zone haute dédiée tandis que Desktop conserve son en-tête distinct. Les données et fonctionnalités métier restent communes.",
+  "published_at": "2026-09-29T22:52:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
