@@ -1653,6 +1653,7 @@ function goBack(){
 }
 function addBackButton(){
  const p=pageFile();if(p==='home.html'||p==='')return;
+ if(document.documentElement.dataset.nethorPageLayout==='mobile')return;
  if(document.documentElement.dataset.nethorPageBackHandled==='1')return;
  document.querySelectorAll('header .backBtn').forEach(x=>x.classList.add('nettoLegacyBackHidden'));
  if(document.getElementById('nettoGlobalBack'))return;
