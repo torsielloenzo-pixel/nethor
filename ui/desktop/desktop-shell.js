@@ -27,7 +27,9 @@ function buildPageLayout(page){
   scanner:{title:'Scanner',subtitle:'Lecture EAN13',back:true,chrome:false},
   articles:{title:'Fiches articles',subtitle:'Référentiel produit interne',back:true},
   accounts:{title:'Gestion des comptes',subtitle:'Administration · Accès · Journal',back:true},
-  'admin-portal':{title:'Gestion',subtitle:'Administration Nethor',back:true,chrome:false}
+  'admin-portal':{title:'Gestion',subtitle:'Administration Nethor',back:true,chrome:false},
+  'fl-assistant':{title:'Assistant Précommande F&L',subtitle:'Analyse dédiée',back:true,chrome:false},
+  bakery:{title:'Boulangerie',subtitle:'Stock interne',back:true,chrome:false}
  };
  const cfg=pages[id];
  if(!cfg)return null;
