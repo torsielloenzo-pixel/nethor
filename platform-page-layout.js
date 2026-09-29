@@ -25,12 +25,25 @@ function profileShell(){
 function userPagesShell(){
  return platformKind()==='desktop'?window.NethorDesktopUserPagesLayout:window.NethorMobileUserPagesLayout
 }
+function toolPagesShell(){
+ return platformKind()==='desktop'?window.NethorDesktopToolPagesLayout:window.NethorMobileToolPagesLayout
+}
 function replaceHost(selector,html){
  const host=document.querySelector(selector);
  if(!host)return false;
  if(html)host.outerHTML=html;
  else host.remove();
  return true
+}
+function mountToolPage(id){
+ if(!['notifications','scanner'].includes(id))return null;
+ const builder=toolPagesShell()?.build;
+ if(typeof builder!=='function')return null;
+ const layout=builder(id);
+ if(!layout)return null;
+ replaceHost('[data-nethor-tool-page-layout]',layout.html||'');
+ ROOT.dataset.nethorToolPageLayout=layout.platform||platformKind();
+ return layout
 }
 function mountUserPage(id){
  if(!['settings','notification-settings','report-problem'].includes(id))return null;
@@ -88,17 +101,18 @@ function mount(){
  ROOT.dataset.nethorPageId=id;
  if(layout.handlesBack)ROOT.dataset.nethorPageBackHandled='1';
  else delete ROOT.dataset.nethorPageBackHandled;
+ const toolPage=mountToolPage(id);
  const userPage=mountUserPage(id);
  const profile=mountProfile(id);
  const home=mountHome(id);
  const planning=mountPlanning(id);
  try{
   document.dispatchEvent(new CustomEvent('nethor:page-layout-ready',{
-   detail:{page:id,platform:ROOT.dataset.nethorPageLayout,userPage:userPage?.platform||null,profile:profile?.platform||null,home:home?.platform||null,planning:planning?.platform||null}
+   detail:{page:id,platform:ROOT.dataset.nethorPageLayout,toolPage:toolPage?.platform||null,userPage:userPage?.platform||null,profile:profile?.platform||null,home:home?.platform||null,planning:planning?.platform||null}
   }))
  }catch(_){}
  return layout
 }
-window.NethorPageLayout=Object.freeze({mount,mountUserPage,mountProfile,mountHome,mountPlanning,pageId,platformKind});
+window.NethorPageLayout=Object.freeze({mount,mountToolPage,mountUserPage,mountProfile,mountHome,mountPlanning,pageId,platformKind});
 if(!mount()&&document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});
 })();
