@@ -1006,3 +1006,82 @@ table:not(.xlsTable) td{
   .userMenuWrap{z-index:auto!important}
   .userMenu{z-index:5000!important}
 }
+
+
+/* =========================================================
+   Nethor — Layout stability v194
+   Correctif transversal desktop + mobile :
+   anti-débordement, couches fixes, safe-area et menus/modales.
+   ========================================================= */
+*,*:before,*:after{box-sizing:border-box}
+html,body{max-width:100%}
+main,.workspace,.section,.panel,.card,.pageCard,.toolbar,.hero,.grid,.row,.flex{min-width:0}
+img,video,canvas,iframe,svg{max-width:100%}
+iframe{border:0}
+table{max-width:100%}
+td,th{min-width:0}
+
+/* Empêche les enfants flex/grid de forcer un débordement horizontal. */
+.workspace>*,.grid>*,.row>*,.flex>*,.toolbar>*,.hero>*,.panelHead>*,.top>*{min-width:0}
+
+/* Les menus globaux ne doivent jamais sortir de l'écran. */
+.nettoDrop,.nettoNotifDrop,.userMenu,#nMenu,.brandMenu{
+  max-width:min(430px,calc(100vw - 16px))!important;
+  max-height:calc(100dvh - 76px - env(safe-area-inset-bottom))!important;
+  overscroll-behavior:contain;
+}
+
+/* Les fenêtres passent toujours devant les barres et menus. */
+.modalBackdrop,.planningModal,.conversationActionBackdrop,dialog[open],.pageViewsDialog[open]{
+  isolation:isolate;
+}
+.modalCard,.planningModalCard,.conversationActionSheet,dialog{
+  max-width:calc(100vw - 16px)!important;
+}
+
+/* Les éléments collants/fixes ne masquent plus le dernier contenu sur mobile. */
+@media(max-width:900px){
+  body.nettoHasMobileBar{
+    padding-bottom:calc(76px + env(safe-area-inset-bottom))!important;
+  }
+  body.nettoHasMobileBar main{
+    padding-bottom:calc(88px + env(safe-area-inset-bottom))!important;
+  }
+  body.nettoHasMobileBar .actions,
+  body.nettoHasMobileBar .stickySave{
+    bottom:calc(76px + env(safe-area-inset-bottom))!important;
+  }
+
+  .nettoDrop,.nettoNotifDrop,.userMenu,#nMenu,.brandMenu{
+    left:max(8px,env(safe-area-inset-left))!important;
+    right:max(8px,env(safe-area-inset-right))!important;
+    width:auto!important;
+    max-width:none!important;
+  }
+
+  .modalBackdrop,.planningModal,.conversationActionBackdrop{
+    padding-left:max(8px,env(safe-area-inset-left))!important;
+    padding-right:max(8px,env(safe-area-inset-right))!important;
+    padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
+  }
+
+  .tabs,.viewTabs,.stockModeNav{
+    max-width:100%;
+  }
+
+  /* Les contrôles et textes longs restent dans leur carte. */
+  input,select,textarea,button,.btn,.primary,.secondary,.light,.dark,.manage,.send{
+    min-width:0;
+  }
+}
+
+/* Bureau : dropdowns ancrés au viewport sans recouvrir inutilement la page. */
+@media(min-width:901px){
+  .nettoDrop,.nettoNotifDrop,.userMenu,#nMenu,.brandMenu{
+    max-height:min(78vh,760px)!important;
+    overflow:auto;
+  }
+}
+
+/* Les ancres/sections restent visibles sous l'en-tête sticky. */
+[id]{scroll-margin-top:86px}
