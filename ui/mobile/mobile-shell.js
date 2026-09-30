@@ -55,7 +55,7 @@ function buildPageLayout(page){
  if(!['home','profile','planning','settings','notification-settings','report-problem','notifications','scanner','articles','accounts','admin-portal','fl-assistant','bakery','rewards','chat'].includes(id))return null;
  if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'mobile',handlesBack:true,header:'',lead:''};
  const lead=id==='profile'
-  ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.backToUserMenu?window.NettoProfileUI.backToUserMenu():location.href=\'home.html?open_user_menu=1\'" aria-label="Retour au menu utilisateur">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
+  ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'home.html\'" aria-label="Retour">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
   :'';
  const ownChrome=id==='report-problem'||id==='scanner'||id==='articles'||id==='accounts'||id==='admin-portal'||id==='fl-assistant'||id==='bakery'||id==='rewards'||id==='chat';
  return {
