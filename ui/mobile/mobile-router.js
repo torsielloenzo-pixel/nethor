@@ -1,23 +1,23 @@
 (function(){
 'use strict';
 
-const ROUTES=Object.freeze({
-  home:{legacy:'home.html',label:'Accueil'},
-  planning:{legacy:'planning.html',label:'Planning'},
-  chat:{legacy:'chat.html',label:'Chat'},
-  notifications:{legacy:'notifications.html',label:'Notifications'},
-  'user-menu':{legacy:'user-menu.html',label:'Menu utilisateur'},
-  profile:{legacy:'profile.html',label:'Mon profil'},
-  settings:{legacy:'settings.html',label:'Personnalisation'},
-  'notification-settings':{legacy:'notification-settings.html',label:'Réglages des notifications'},
-  'report-problem':{legacy:'report-problem.html',label:'Signaler un problème'},
-  scanner:{legacy:'scanner.html',label:'Scanner'},
-  articles:{legacy:'articles.html',label:'Fiches articles'},
-  accounts:{legacy:'accounts.html',label:'Comptes'},
-  'admin-portal':{legacy:'admin-portal.html',label:'Gestion'},
-  'fl-assistant':{legacy:'fl-assistant.html',label:'Assistant Précommande'},
-  bakery:{legacy:'bakery.html',label:'Boulangerie'},
-  rewards:{legacy:'rewards.html',label:'Défis & Boutique'}
+const VIEW_META=Object.freeze({
+  home:{label:'Accueil'},
+  planning:{label:'Planning'},
+  chat:{label:'Chat'},
+  notifications:{label:'Notifications'},
+  'user-menu':{label:'Menu utilisateur'},
+  profile:{label:'Mon profil'},
+  settings:{label:'Personnalisation'},
+  'notification-settings':{label:'Réglages des notifications'},
+  'report-problem':{label:'Signaler un problème'},
+  scanner:{label:'Scanner'},
+  articles:{label:'Fiches articles'},
+  accounts:{label:'Comptes'},
+  'admin-portal':{label:'Gestion'},
+  'fl-assistant':{label:'Assistant Précommande'},
+  bakery:{label:'Boulangerie'},
+  rewards:{label:'Défis & Boutique'}
 });
 
 const views=new Map();
@@ -41,7 +41,20 @@ function normalizeView(value){
   if(id==='user_menu'||id==='menu'||id==='profile-menu')return'user-menu';
   return id||'home'
 }
-function route(view){return ROUTES[normalizeView(view)]||null}
+function navigationTarget(view){
+  const id=normalizeView(view);
+  try{
+    const target=window.NethorNavigation?.mobileViewTarget?.(id);
+    if(target)return target
+  }catch(_){}
+  return''
+}
+function route(view){
+  const id=normalizeView(view);
+  const legacy=navigationTarget(id);
+  const meta=VIEW_META[id]||{};
+  return legacy||views.has(id)?{id,legacy,label:meta.label||id}:null
+}
 function registered(view){return views.has(normalizeView(view))}
 function query(){
   try{return new URLSearchParams(location.search)}catch(_){return new URLSearchParams()}
@@ -65,7 +78,7 @@ function shellUrl(view=current(),extra){
 }
 function legacyUrl(view=current()){
   const item=route(view);
-  if(!item)return'home.html';
+  if(!item?.legacy)return'home.html';
   const base=new URL(item.legacy,location.href);
   const source=query();
   source.forEach((value,key)=>{
@@ -218,7 +231,7 @@ async function start(options={}){
 }
 function back(){history.back()}
 function forward(){history.forward()}
-function routeTable(){return ROUTES}
+function routeTable(){return window.NethorNavigation?.mobileViewTable?.()||{}}
 function registeredViews(){return Array.from(views.keys())}
 
 const api=Object.freeze({
