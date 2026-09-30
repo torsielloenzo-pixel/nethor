@@ -37,7 +37,7 @@ function buildPageLayout(page){
  if(!cfg)return null;
  if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'desktop',handlesBack:true,header:'',lead:''};
  const back=cfg.back?'<div class="navActions"><button class="btn light backBtn" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'home.html\'">← Retour</button></div>':'';
- const header=cfg.chrome===false?'':'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="mark" type="button" onclick="location.href=\'home.html\'" aria-label="Retour à l’accueil">N</button><div><div class="title">'+esc(cfg.title)+'</div><div class="sub">'+esc(cfg.subtitle)+'</div></div></div>'+back+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>';
+ const header=cfg.chrome===false?'':'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="nethorDesktopBrandButton" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorDesktopWordmark" aria-hidden="true"><span class="nethorDesktopWordmarkNe">ne</span><span class="nethorDesktopWordmarkThor">thor</span></span></button></div>'+back+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>';
  return {
   platform:'desktop',
   handlesBack:!!cfg.back,
