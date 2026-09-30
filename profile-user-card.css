@@ -1,0 +1,22 @@
+.nettoUserCardBackdrop{position:fixed;inset:0;z-index:2147482750;background:rgba(12,16,21,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}
+ .nettoUserCardBackdrop.hidden{display:none!important}
+ .nettoUserCard{width:min(92vw,390px);border:1px solid #e0e4e9;border-radius:22px;background:#fff;color:#1f2730;box-shadow:0 28px 90px rgba(0,0,0,.28);padding:18px;position:relative}
+ .nettoUserCardClose{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:10px;background:#f1f3f5;color:#5d6670;font-size:20px;line-height:1;display:grid;place-items:center;cursor:pointer}
+ .nettoUserCardKicker{font-size:8px;font-weight:950;letter-spacing:.75px;color:#ef542b;text-transform:uppercase;margin:0 42px 11px 0}
+ .nettoUserCardHero{display:grid;grid-template-columns:58px minmax(0,1fr);gap:13px;align-items:center;padding-right:38px}
+ .nettoUserCardAvatar{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:#ff5a2a;color:#fff;font-size:16px;font-weight:950;background-size:cover!important;background-position:center!important}
+ .nettoUserCardHero h3{margin:0;font-size:18px;line-height:1.15;overflow-wrap:anywhere}
+ .nettoUserCardFields{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+ .nettoUserCardField{min-width:0;border:1px solid #e9edf1;border-radius:13px;background:#fafbfc;padding:11px 12px}
+ .nettoUserCardField small{display:block;color:#9098a2;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.45px}
+ .nettoUserCardField strong{display:flex;align-items:center;gap:7px;margin-top:5px;font-size:11px;line-height:1.3;overflow-wrap:anywhere}
+ .nettoUserPresenceDot{width:8px;height:8px;border-radius:50%;background:#a9b0b8;flex:none;box-shadow:0 0 0 3px rgba(169,176,184,.13)}
+ .nettoUserPresenceDot.online{background:#20b15a;box-shadow:0 0 0 3px rgba(32,177,90,.14)}
+ .nettoUserCardMessage{width:100%;min-height:46px;margin-top:13px;border:0;border-radius:13px;background:linear-gradient(135deg,#ff3f25,#ff8125);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 9px 22px rgba(255,91,37,.2)}
+ .nettoUserCardMessage svg{width:18px;height:18px;fill:currentColor}
+ .nettoUserCardMessage:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+ :root[data-theme="dark"] .nettoUserCard{background:#202328;color:#f2f4f6;border-color:#383e45}
+ :root[data-theme="dark"] .nettoUserCardClose{background:#2c3137;color:#d6d9dd}
+ :root[data-theme="dark"] .nettoUserCardField{background:#25292e;border-color:#383e45}
+ :root[data-theme="dark"] .nettoUserCardField small{color:#a8afb8}
+ @media(max-width:520px){.nettoUserCard{width:min(94vw,390px);border-radius:19px;padding:16px}.nettoUserCardFields{grid-template-columns:1fr}}
