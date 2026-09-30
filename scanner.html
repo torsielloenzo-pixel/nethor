@@ -38,18 +38,22 @@ button,input{font:inherit}button{cursor:pointer}
 #reader__scan_region{min-height:350px!important;background:#11151a!important}
 #reader__dashboard{display:none!important}
 .scanOverlay{position:absolute;inset:0;z-index:6;pointer-events:none;display:grid;place-items:center}
-.scanFrame{width:min(90%,360px);height:112px;border-radius:18px;position:relative;box-shadow:0 0 0 999px rgba(5,8,12,.24)}
+.scanFrame{width:min(76%,292px);aspect-ratio:1/1;height:auto;border-radius:22px;position:relative;box-shadow:0 0 0 999px rgba(5,8,12,.22)}
 .scanFrame:before,.scanFrame:after,.scanFrame i:before,.scanFrame i:after{content:"";position:absolute;width:30px;height:30px;border-color:#ff6a35;border-style:solid}
 .scanFrame:before{left:0;top:0;border-width:3px 0 0 3px;border-radius:13px 0 0 0}.scanFrame:after{right:0;top:0;border-width:3px 3px 0 0;border-radius:0 13px 0 0}.scanFrame i:before{left:0;bottom:0;border-width:0 0 3px 3px;border-radius:0 0 0 13px}.scanFrame i:after{right:0;bottom:0;border-width:0 3px 3px 0;border-radius:0 0 13px 0}
 .scanLine{position:absolute;left:12px;right:12px;top:50%;height:2px;background:linear-gradient(90deg,transparent,#ff7d3c,#ff3b26,#ff7d3c,transparent);box-shadow:0 0 12px #ff603d;animation:scanline 1.45s ease-in-out infinite}
-@keyframes scanline{0%,100%{transform:translateY(-42px);opacity:.5}50%{transform:translateY(42px);opacity:1}}
+@keyframes scanline{0%,100%{transform:translateY(-104px);opacity:.45}50%{transform:translateY(104px);opacity:1}}
 .cameraFallback{position:absolute;z-index:7;inset:0;display:none;place-items:center;padding:28px;text-align:center;color:#fff;background:linear-gradient(145deg,#171c22,#252a31)}.cameraFallback.show{display:grid}.cameraFallback strong{display:block;font-size:18px}.cameraFallback p{margin:7px 0 14px;color:#b8c0c9;font-size:11px;line-height:1.5}.cameraFallback button{min-height:42px;border:0;border-radius:12px;padding:0 14px;background:var(--grad);color:#fff;font-size:10px;font-weight:900}
 .hint{display:flex;align-items:flex-start;gap:9px;margin:10px 2px 0;padding:0 3px;color:#77808b;font-size:9.5px;line-height:1.45}.hintIcon{width:21px;height:21px;flex:none;border-radius:7px;background:#fff0e8;color:#ed532a;display:grid;place-items:center;font-weight:950}.cameraPreference{display:none;align-items:center;gap:7px;margin:8px 2px 0;padding:8px 10px;border:1px solid #d8eadf;border-radius:11px;background:#f3fbf6;color:#2f7e4e;font-size:8.8px;font-weight:850;line-height:1.25}.cameraPreference.show{display:flex}.cameraPreferenceIcon{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#dff4e6;color:#268348;font-size:11px;font-weight:950;flex:none}
 .panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 7px 22px #1420300a}
 .panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.panelHead h2{margin:0;font-size:15px}.panelHead small{color:#9299a2;font-size:8px}
 .manual{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.manual input{min-width:0;height:44px;border:1px solid #dfe3e7;border-radius:12px;padding:0 12px;background:#fafbfc;color:var(--ink);font-size:16px;font-weight:750;outline:none}.manual input:focus{border-color:#ff815f;box-shadow:0 0 0 3px #ff60351a}.manual button,.resultActions button{min-height:44px;border:0;border-radius:12px;padding:0 14px;font-size:10px;font-weight:900}.manual button{background:#242a31;color:#fff}
 .result{display:none;margin-top:12px}.result.show{display:block}
-.result.resultModal{position:fixed!important;inset:0!important;z-index:2147483000!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important;overflow:hidden!important}
+body.scannerResultOpen{overflow:hidden!important}
+body.scannerResultOpen .cameraHead,
+body.scannerResultOpen .scanOverlay,
+body.scannerResultOpen #reader{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+.result.resultModal{position:fixed!important;inset:0!important;z-index:2147483646!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important;overflow:hidden!important;isolation:isolate!important;transform:translateZ(0)!important}
 .resultModalBackdrop{position:absolute;inset:0;background:rgba(10,14,19,.64);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
 .resultModalCard{position:relative;z-index:1;width:min(calc(100vw - 28px),430px);max-height:min(78dvh,650px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:16px;border:1px solid #e4e7eb;border-radius:22px;background:#fff;box-shadow:0 28px 90px rgba(0,0,0,.34)}
 .resultModalTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
@@ -290,7 +294,10 @@ async function startCamera(){
         {facingMode:'environment'},
         {
           fps:24,
-          qrbox:(w,h)=>({width:Math.min(380,Math.max(260,w*.92)),height:Math.min(140,Math.max(88,h*.28))}),
+          qrbox:(w,h)=>{
+            const size=Math.max(220,Math.min(330,w*.82,h*.78));
+            return{width:size,height:size}
+          },
           aspectRatio:1.777778,
           disableFlip:true
         },
@@ -367,6 +374,7 @@ async function findProduct(raw,fromCamera=false){
 }
 
 function renderProduct(p){
+  document.body.classList.add('scannerResultOpen');
   const family=p.product_families?.name||'Non répertorié';
   const category=p.product_categories?.name||'Non répertorié';
   const packaging=p.product_packagings?.name||'Non répertorié';
@@ -403,12 +411,14 @@ function renderNotFound(code,message){
 function closeProductModal(){
   const result=$('result');
   currentProduct=null;
+  document.body.classList.remove('scannerResultOpen');
   if(result){result.className='result';result.innerHTML=''}
   $('eanInput').value='';lastCode='';resetManualInputLock();
   setCameraState('Prêt à scanner');
   if(isMobileView()&&!scannerRunning)setTimeout(startCamera,90)
 }
 function scanAnother(){
+  document.body.classList.remove('scannerResultOpen');
   currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';resetManualInputLock();startCamera()
 }
 function focusManual(){const input=$('eanInput');if(!input)return;input.removeAttribute('readonly');input.setAttribute('tabindex','0');input.setAttribute('inputmode','numeric');input.focus({preventScroll:true});input.select()}
