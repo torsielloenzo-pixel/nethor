@@ -1,11 +1,11 @@
 {
-  "version": 264,
-  "label": "v1.43.27",
+  "version": 265,
+  "label": "v1.43.28",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Scanner magasin — optimisation EAN/GTIN de terrain",
-  "message": "Le Scanner mobile est désormais optimisé à partir des pratiques GS1 et des lecteurs professionnels de magasin : voie rapide limitée aux principaux formats retail, caméra arrière 1280×720/30 i/s en cible, autofocus/exposition/balance des blancs continus lorsque disponibles, lampe manuelle, validation du chiffre de contrôle GS1, normalisation UPC/GTIN, alternance automatique entre vue large et crop rapproché, lecture 0°/90°/180°/270°, contraste renforcé, passe noir/blanc, récupération prudente des Quiet Zones réduites et ZXing TRY_HARDER/inversion en secours. Les traitements coûteux ne sont déclenchés qu'après échec des passes rapides afin de préserver la vitesse.",
-  "published_at": "2026-09-30T18:54:01.260920Z",
+  "title": "Correctif caméra iOS — ouverture et permission persistante",
+  "message": "Le Scanner mobile n’impose plus de contraintes vidéo avancées au moment d’ouvrir la caméra : elles sont appliquées seulement après acquisition du flux. Nethor libère explicitement les anciennes pistes vidéo, effectue jusqu’à trois tentatives temporisées en cas de caméra encore occupée par son propre flux, et ne bloque plus l’ouverture sur l’état parfois imprécis de l’API Permissions de Safari. L’autorisation acceptée reste enregistrée localement et dans les préférences utilisateur cachées ; elle n’est effacée qu’après un véritable refus navigateur.",
+  "published_at": "2026-09-30T19:09:59.560792Z",
   "icon": "assets/app-icon-v63.svg"
 }
