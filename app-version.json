@@ -1,11 +1,11 @@
 {
-  "version": 267,
-  "label": "v1.43.30",
+  "version": 268,
+  "label": "v1.43.31",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — conteneur unique, phase 1",
-  "message": "Nethor prépare sa future navigation Mobile dans un document unique avec un nouveau mobile.html isolé du Desktop. Cette première phase ajoute le shell, la zone #mobile-view, la navigation et les points d’accroche du futur routeur sans remplacer les pages mobiles actuelles. Les liens du nouveau shell conservent un repli vers les pages existantes, y compris en Vision mobile. Le Service Worker précache ce nouveau socle et passe en v267.",
-  "published_at": "2026-09-30T19:52:00.000Z",
+  "title": "Architecture mobile — routeur interne, phase 2",
+  "message": "Nethor ajoute le MobileRouter au nouveau shell mobile. Le routeur gère maintenant pushState, replaceState, popstate, les deep-links mobile.html?view=..., Retour/Avant et le montage futur des vues dans #mobile-view. Tant qu’une vue n’est pas migrée, elle retombe automatiquement sur sa page HTML actuelle. Les correspondances de navigation restent centralisées dans platform-navigation.js afin d’éviter une seconde logique concurrente. Le Service Worker passe en v268.",
+  "published_at": "2026-09-30T19:49:00.000Z",
   "icon": "assets/app-icon-v63.svg"
 }
