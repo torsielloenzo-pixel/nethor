@@ -1,11 +1,11 @@
 {
-  "version": 238,
-  "label": "v1.43.1",
+  "version": 239,
+  "label": "v1.43.2",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Navigation mobile contextuelle",
-  "message": "Sur mobile uniquement, les boutons Retour reviennent désormais vers la page ou le menu réellement utilisé pour ouvrir l’écran. La provenance de navigation est mémorisée par session, le Menu utilisateur est restauré lorsqu’il est l’origine, les retours évitent les boucles A ↔ B et les anciennes routes fixes ne servent plus que de solution de secours. Le comportement Desktop reste inchangé.",
-  "published_at": "2026-09-30T08:57:00.000+02:00",
+  "title": "Navigation mobile — Menu utilisateur en vraie page",
+  "message": "Le Menu utilisateur mobile devient une vraie page Nethor tout en restant au même emplacement dans la barre inférieure. Les ouvertures de pages enregistrent désormais leur origine réelle et tous les boutons Retour mobiles utilisent le routeur contextuel. Les anciens paramètres open_user_menu/from_user_menu ne sont plus nécessaires. Desktop conserve son menu et sa navigation existants.",
+  "published_at": "2026-09-30T09:24:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
