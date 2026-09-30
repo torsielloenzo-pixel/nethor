@@ -538,7 +538,7 @@ function renderMobileQuickBar(){
  document.body.classList.add('nettoHasMobileBar');
  if(!window.__nettoOpenUserMenuHandled)setTimeout(tryOpenRequestedUserMenu,0)
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,logout:logoutFromNethor,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -894,6 +894,15 @@ async function detachPushBeforeLogout(){
  }catch(e){console.warn('Désabonnement Push:',e)}
 }
 
+async function logoutFromNethor(){
+ sounds.play('logout');
+ await new Promise(r=>setTimeout(r,390));
+ await recordChatPresence('end');
+ await detachPushBeforeLogout();
+ try{await api.client?.auth?.signOut?.({scope:'local'})}catch(e){console.warn('Déconnexion Nethor:',e)}
+ location.href='index.html'
+}
+
 
 function askUpdateSearch(){
  ensureUpdateStyles();
@@ -1182,7 +1191,7 @@ function buildGlobalHeader(){
  document.getElementById('nettoThemeBtn')?.addEventListener('click',e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()});
  document.getElementById('nettoMobileThemeBtn')?.addEventListener('click',e=>{e.stopPropagation();sounds.play('switch');changeTheme();updateThemeText()});
  document.getElementById('nettoMobileUpdateBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeDrops();void openUpdateCenter()});
- const logoutAction=async()=>{sounds.play('logout');await new Promise(r=>setTimeout(r,390));await recordChatPresence('end');await detachPushBeforeLogout();await api.client.auth.signOut({scope:'local'});location.href='index.html'};
+ const logoutAction=()=>logoutFromNethor();
  document.getElementById('nettoLogoutBtn')?.addEventListener('click',logoutAction);
  const mobileLogoutBtn=document.getElementById('nettoMobileLogoutBtn');if(mobileLogoutBtn)mobileLogoutBtn.onclick=logoutAction;
  document.getElementById('nettoUserBtn').onclick=e=>{e.stopPropagation();if(mobileDropMode()){openMobileUserMenu();return}toggleDrop('user')};document.querySelectorAll('[data-notif-tab]').forEach(b=>b.onclick=e=>{e.stopPropagation();setNotificationTab(b.dataset.notifTab)});
