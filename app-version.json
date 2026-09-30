@@ -1,11 +1,11 @@
 {
-  "version": 277,
-  "label": "v1.43.40",
+  "version": 278,
+  "label": "v1.43.41",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — icônes de navigation restaurées",
-  "message": "Restauration des pictogrammes SVG historiques de la barre Mobile : Accueil, Planning, Chat, Notifications et Menu/profil. Aucun changement de navigation ni d’architecture.",
-  "published_at": "2026-09-30T21:41:30.292Z",
+  "title": "Mobile — navigation 3 colonnes et actions en en-tête",
+  "message": "Notifications et Menu utilisateur quittent la barre de navigation basse et sont déplacés dans l’en-tête Mobile à droite du logo Nethor. La barre basse contient désormais uniquement Accueil, Planning et Chat sur une ligne de trois colonnes équitablement réparties. Les routes, le badge de notifications et les états actifs restent synchronisés avec MobileRouter.",
+  "published_at": "2026-09-30T21:50:12.604Z",
   "icon": "assets/app-icon-v63.svg"
 }
