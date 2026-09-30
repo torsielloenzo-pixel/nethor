@@ -1,4 +1,4 @@
-/* Nethor Mobile App — migration SPA, phase 2 */
+/* Nethor Mobile App — migration SPA, phase 3 */
 :root{
   --mobile-app-bg:#f6f6f8;
   --mobile-app-surface:rgba(255,255,255,.94);
@@ -33,3 +33,10 @@ html[data-theme="dark"] .nethorMobileAppNav a[aria-current="page"]{background:#2
 
 .nethorMobileView[aria-busy="true"]{cursor:progress}
 .nethorMobileView[aria-busy="true"]>*{pointer-events:none}
+
+.nethorMobileNavIconWrap{position:relative;display:grid;place-items:center;width:30px;height:27px}
+.nethorMobileNavIconWrap>span{display:grid;place-items:center;font-size:22px;line-height:1}
+.nethorMobileNotifBadge{position:absolute;top:-3px;right:-7px;display:grid;place-items:center;min-width:16px;height:16px;padding:0 4px;border:2px solid var(--mobile-app-surface);border-radius:999px;background:#ff3b30;color:#fff;font-size:8px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.nethorMobileNotifBadge[hidden]{display:none!important}
+.nethorMobileApp[data-services="starting"] .nethorMobileAppBrand span:after{content:" · Connexion…"}
+.nethorMobileApp[data-services="error"] .nethorMobileAppBrand span:after{content:" · Données indisponibles"}
