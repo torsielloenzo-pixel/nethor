@@ -96,7 +96,7 @@ async function waitForSupabase(ms=8000){
  throw new Error('Supabase indisponible')
 }
 const $=id=>document.getElementById(id);
-let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartPromise=null,visibilityStopTimer=null,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false,cameraPermissionState='unknown',assistTimer=null,assistBusy=false,nativeDetectorPromise=null,hypothesisProducts=[];
+let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartPromise=null,visibilityStopTimer=null,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false,cameraPermissionState='unknown',assistTimer=null,assistBusy=false,nativeDetectorPromise=null,zxingLibraryPromise=null,zxingReader=null,hypothesisProducts=[];
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
 function cameraPreferenceKey(){return sessionUserId?'nethorScannerCamera:'+sessionUserId:'nethorScannerCamera'}
@@ -260,7 +260,7 @@ function readAssistProfile(){
  }catch(_){return{rotations:{},enhanced:0,normal:0}}
 }
 function recordAssistSuccess(meta={}){
- if(meta.source!=='native')return;
+ if(!['native','zxing'].includes(meta.source))return;
  try{
   const p=readAssistProfile(),key=String(Number(meta.rotation)||0);
   p.rotations[key]=Number(p.rotations[key]||0)+1;
@@ -274,16 +274,30 @@ function assistRotationOrder(){
 }
 async function detectAssistSet(detector,source,enhanced){
  for(const deg of assistRotationOrder()){
-  const hits=await detector.detect(rotateCapture(source,deg));
-  const hit=(hits||[]).find(x=>normalizeEan(x.rawValue).length>=6);
-  if(hit){await onScanSuccess(hit.rawValue,{source:'native',rotation:deg,enhanced});return true}
+  const rotated=rotateCapture(source,deg);
+  if(detector){
+   try{
+    const hits=await detector.detect(rotated);
+    const hit=(hits||[]).find(x=>normalizeEan(x.rawValue).length>=6);
+    if(hit){await onScanSuccess(hit.rawValue,{source:'native',rotation:deg,enhanced});return true}
+   }catch(_){}
+  }
+  const zxingText=zxingDecodeCanvas(rotated);
+  if(zxingText&&normalizeEan(zxingText).length>=6){
+   await onScanSuccess(zxingText,{source:'zxing',rotation:deg,enhanced});
+   return true
+  }
  }
  return false
 }
 async function runRobustAssist(){
  if(assistBusy||!scannerRunning||searchBusy||currentProduct||document.hidden)return;
- const detector=await nativeBarcodeDetector();if(!detector)return;
- const video=$('reader')?.querySelector('video'),base=captureVideoFrame(video);if(!base)return;
+ const detector=await nativeBarcodeDetector();
+ if(!detector&&!window.ZXing?.BrowserMultiFormatReader){
+  try{await loadZxingLibrary()}catch(_){}
+ }
+ if(!detector&&!window.ZXing?.BrowserMultiFormatReader)return;
+ const video=$('reader')?.querySelector('video'),base=captureVideoFrame(video,460);if(!base)return;
  assistBusy=true;
  try{
   const p=readAssistProfile(),preferEnhanced=p.enhanced>p.normal+1;
@@ -299,8 +313,8 @@ async function runRobustAssist(){
 }
 function startAssistLoop(){
  stopAssistLoop();
- assistTimer=setInterval(()=>{runRobustAssist()},1250);
- setTimeout(()=>{runRobustAssist()},450)
+ assistTimer=setInterval(()=>{runRobustAssist()},850);
+ setTimeout(()=>{runRobustAssist()},280)
 }
 function stopAssistLoop(){
  if(assistTimer){clearInterval(assistTimer);assistTimer=null}
@@ -368,6 +382,56 @@ function loadQrLibrary(){
     document.head.appendChild(script)
   }).catch(err=>{qrLibraryPromise=null;throw err});
   return qrLibraryPromise
+}
+function loadZxingLibrary(){
+ if(window.ZXing?.BrowserMultiFormatReader)return Promise.resolve(true);
+ if(zxingLibraryPromise)return zxingLibraryPromise;
+ zxingLibraryPromise=new Promise((resolve,reject)=>{
+  const existing=document.querySelector('script[data-nethor-zxing-runtime="1"]');
+  const ready=()=>window.ZXing?.BrowserMultiFormatReader?resolve(true):reject(new Error('ZXing indisponible'));
+  if(existing){
+   existing.addEventListener('load',ready,{once:true});
+   existing.addEventListener('error',()=>reject(new Error('Chargement ZXing impossible')),{once:true});
+   return
+  }
+  const script=document.createElement('script');
+  script.src='https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js';
+  script.async=true;
+  script.dataset.nethorZxingRuntime='1';
+  script.onload=ready;
+  script.onerror=()=>reject(new Error('Chargement ZXing impossible'));
+  document.head.appendChild(script)
+ }).catch(err=>{zxingLibraryPromise=null;throw err});
+ return zxingLibraryPromise
+}
+function getZxingReader(){
+ if(zxingReader)return zxingReader;
+ const Z=window.ZXing;if(!Z?.BrowserMultiFormatReader)return null;
+ try{
+  const hints=new Map();
+  const formats=[
+   Z.BarcodeFormat?.EAN_13,
+   Z.BarcodeFormat?.EAN_8,
+   Z.BarcodeFormat?.UPC_A,
+   Z.BarcodeFormat?.ITF,
+   Z.BarcodeFormat?.CODE_128
+  ].filter(v=>v!==undefined&&v!==null);
+  if(Z.DecodeHintType?.POSSIBLE_FORMATS!==undefined)hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,formats);
+  if(Z.DecodeHintType?.TRY_HARDER!==undefined)hints.set(Z.DecodeHintType.TRY_HARDER,true);
+  zxingReader=new Z.BrowserMultiFormatReader(hints);
+  return zxingReader
+ }catch(e){
+  console.debug('Initialisation ZXing:',e);
+  return null
+ }
+}
+function zxingDecodeCanvas(canvas){
+ const reader=getZxingReader();if(!reader)return null;
+ try{
+  const result=reader.decodeFromCanvas(canvas);
+  const text=typeof result?.getText==='function'?result.getText():result?.text;
+  return text?String(text):null
+ }catch(_){return null}
 }
 async function startCamera(){
   if(!isMobileView())return;
@@ -608,7 +672,10 @@ function applyScannerPageConfig(cfg){
   document.title=title+' · Nethor'
 }
 async function boot(){
-  if(isMobileView())loadQrLibrary().catch(()=>{});
+  if(isMobileView()){
+   loadQrLibrary().catch(()=>{});
+   loadZxingLibrary().catch(()=>{})
+  }
   await waitForSupabase();
   db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const {data:{session}}=await db.auth.getSession();
