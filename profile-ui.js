@@ -675,7 +675,7 @@ function applyHeaderLogo(config={}){
  document.documentElement.style.setProperty('--nethor-header-logo','url('+JSON.stringify(url)+')');
  addDesktopNethorMarkStyle();
  let s=document.getElementById('nethorPlatformHeaderAssetStyle');if(!s){s=document.createElement('style');s.id='nethorPlatformHeaderAssetStyle';document.head?.appendChild(s)}
- const custom=!!platformUrl;
+ const custom=!!(platformUrl||globalUrl);
  if(!custom){s.textContent='';return}
  if(platformKey==='mobile')s.textContent='.nethorMobileAppBrand .nethorMobileWordmark{display:block!important;width:132px!important;height:38px!important;font-size:0!important;letter-spacing:0!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorMobileAppBrand .nethorMobileWordmark>*{display:none!important}';
  else s.textContent='.nethorDesktopBrandButton{min-width:128px!important;min-height:40px!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorDesktopBrandButton .nethorDesktopWordmark{visibility:hidden!important}';
