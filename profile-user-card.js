@@ -1,0 +1,73 @@
+(function(){
+'use strict';
+window.NethorProfileFeatures=window.NethorProfileFeatures||{};
+
+let active={user:null,opts:null};
+
+function api(){return window.NettoProfileUI||{}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function ensureStyle(){
+ if(document.querySelector('link[href*="profile-user-card.css"]'))return;
+ const link=document.createElement('link');link.rel='stylesheet';link.href='profile-user-card.css?v=1';document.head?.appendChild(link)
+}
+function historyLabel(value){
+ if(!value)return'Hors ligne';
+ const d=new Date(value);if(Number.isNaN(d.getTime()))return'Hors ligne';
+ const now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
+ const time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+ if(d.toDateString()===now.toDateString())return'En ligne aujourd’hui à '+time;
+ if(d.toDateString()===y.toDateString())return'En ligne hier à '+time;
+ return'En ligne le '+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' à '+time
+}
+async function presenceLabel(userId){
+ const a=api();
+ if(!userId)return'Hors ligne';
+ if(a.onlineIds?.has?.(userId))return'En ligne';
+ try{
+  const {data,error}=await a.client?.from('chat_presence_history').select('last_seen_at').eq('user_id',userId).maybeSingle();
+  if(!error&&data?.last_seen_at)return historyLabel(data.last_seen_at)
+ }catch(_){}
+ return'Hors ligne'
+}
+function close(){
+ const bg=document.getElementById('nettoUserCardBackdrop');bg?.classList.add('hidden');
+ active={user:null,opts:null}
+}
+async function refreshPresence(){
+ const user=active.user,opts=active.opts;if(!user)return;
+ const value=typeof opts?.presenceLabel==='function'?opts.presenceLabel(user):opts?.presenceLabel;
+ const label=value||await presenceLabel(user.id);
+ if(active.user?.id!==user.id)return;
+ const strong=document.getElementById('nettoUserCardPresenceValue'),dot=document.getElementById('nettoUserCardPresenceDot');
+ if(strong?.lastChild)strong.lastChild.textContent=label;
+ if(dot)dot.classList.toggle('online',api().onlineIds?.has?.(user.id)||/^En ligne$/.test(label))
+}
+function open(user,opts={}){
+ if(!user?.id)return;
+ ensureStyle();
+ const a=api();
+ let bg=document.getElementById('nettoUserCardBackdrop');
+ if(!bg){
+  bg=document.createElement('div');bg.id='nettoUserCardBackdrop';bg.className='nettoUserCardBackdrop hidden';
+  bg.innerHTML='<section class="nettoUserCard" role="dialog" aria-modal="true" aria-labelledby="nettoUserCardName"><button class="nettoUserCardClose" type="button" aria-label="Fermer">×</button><div class="nettoUserCardKicker">Fiche utilisateur</div><div id="nettoUserCardContent"></div></section>';
+  document.body.appendChild(bg);
+  bg.querySelector('.nettoUserCardClose')?.addEventListener('click',close);
+  bg.addEventListener('click',e=>{if(e.target===bg)close()})
+ }
+ const name=user.display_name||user.name||'Utilisateur',self=user.id===a.session?.user?.id,box=document.getElementById('nettoUserCardContent');
+ active={user,opts};
+ if(!box)return;
+ box.innerHTML='<div class="nettoUserCardHero"><div id="nettoUserCardAvatar" class="nettoUserCardAvatar"></div><div><h3 id="nettoUserCardName">'+esc(name)+'</h3></div></div>'+
+ '<div class="nettoUserCardFields"><div class="nettoUserCardField"><small>Rôle</small><strong>'+esc(a.roleLabel?.(user.role)||user.role||'Compte')+'</strong></div><div class="nettoUserCardField"><small>Présence</small><strong id="nettoUserCardPresenceValue"><i id="nettoUserCardPresenceDot" class="nettoUserPresenceDot"></i><span>Chargement…</span></strong></div></div>'+
+ '<button id="nettoUserCardMessage" class="nettoUserCardMessage" type="button" '+(self?'disabled aria-disabled="true" title="Votre propre profil"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3l4-3h9a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>Envoyer un message</button>';
+ const avatar=document.getElementById('nettoUserCardAvatar');
+ a.paintAvatar?.(avatar,user.avatar_url||user.avatarUrl||null,name,user.profile_color,user.avatar_frame);
+ const message=document.getElementById('nettoUserCardMessage');
+ if(message&&!self)message.onclick=()=>{close();if(typeof opts.onMessage==='function')opts.onMessage(user);else location.href=opts.messageUrl||('chat.html?user='+encodeURIComponent(user.id))};
+ bg.classList.remove('hidden');void refreshPresence()
+}
+window.addEventListener('netto:presence',()=>{if(active.user)void refreshPresence()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&active.user)close()});
+
+window.NethorProfileFeatures.userCard=Object.freeze({open,close,presenceLabel});
+})();
