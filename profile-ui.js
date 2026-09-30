@@ -448,15 +448,7 @@ function userMenuReturnUrl(){
  return window.NethorNavigation?.userMenuReturnUrl?.()||'user-menu.html'
 }
 function tryOpenRequestedUserMenu(){
- if(new URLSearchParams(location.search).get('open_user_menu')!=='1'||!mobileDropMode())return false;
- const target=userMenuReturnUrl();
- window.__nettoOpenUserMenuHandled=true;
- if(samePageDestination(target)){
-  try{const u=new URL(location.href);u.searchParams.delete('open_user_menu');history.replaceState({},'',u)}catch(_){}
-  return false
- }
- location.replace(target);
- return true
+ return false
 }
 function backToUserMenu(){
  sounds.play('navigate');
