@@ -12,81 +12,18 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=2" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=1"></script><script src="ui/mobile/mobile-shell.js?v=1"></script><script src="profile-ui.js?v=199" defer></script>
+<script src="platform-resolver.js?v=3"></script><link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=4" media="not all" data-nethor-shell="mobile"><script src="platform-navigation.js?v=1"></script><script src="ui/desktop/desktop-shell.js?v=11"></script><script src="ui/mobile/mobile-shell.js?v=11"></script><script src="ui/desktop/chat-layout.js?v=1"></script><script src="ui/mobile/chat-layout.js?v=1"></script><script src="profile-ui.js?v=200" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <link rel="stylesheet" href="design-v2.css?v=3">
 <link rel="stylesheet" href="design-v3.css?v=3">
 <link rel="stylesheet" href="design-v4.css?v=9">
-<link rel="stylesheet" href="chat-v2.css?v=25">
-<script src="chat-v2.js?v=25" defer></script>
+<link rel="stylesheet" href="chat-v2.css?v=26">
+<script src="chat-v2.js?v=26" defer></script>
+<link rel="stylesheet" href="ui/desktop/chat-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/chat-layout.css?v=1" media="not all" data-nethor-shell="mobile">
 </head>
-<body>
-<header>
- <div class="top">
-  <div class="brand">
-   <button class="mark" type="button" onclick="location.href='home.html'" aria-label="Accueil Nethor">N</button>
-   <div><div class="title">Chat</div><div class="sub">Messagerie interne</div></div>
-  </div>
- </div>
-</header>
-
-<main class="chatApp">
- <aside class="conversationListPane">
-  <div class="listHead">
-   <div><h1>Discussions</h1><small>Équipe Nethor</small></div>
-   <div class="listHeadActions">
-    <button class="newChatBtn" type="button" onclick="openNewChat()" aria-label="Nouvelle discussion" title="Nouvelle discussion"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
-    <button id="chatMenuListBtn" class="chatMenuBtn" type="button" onclick="toggleDiscussionMenu(event)" aria-label="Gérer les discussions" title="Gérer les discussions"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
-   </div>
-  </div>
-  <div class="convSearchWrap"><input id="conversationSearch" class="convSearch" type="search" placeholder="Rechercher une discussion…" oninput="searchConversations(this.value)" autocomplete="off"></div>
-  <div class="conversationFilters" aria-label="Filtres des discussions">
-   <button id="conversationFilterAll" class="conversationFilter active" type="button" onclick="setConversationListFilter('all')">Toutes</button>
-   <button id="conversationFilterUnread" class="conversationFilter" type="button" onclick="setConversationListFilter('unread')">Non lues</button>
-   <button class="conversationFilter" type="button" onclick="openChatArchives()">Archivées</button>
-  </div>
-  <div id="conversationList" class="conversationList"><div class="listEmpty">Chargement des discussions…</div></div>
- </aside>
-
- <section class="conversationPane">
-  <div class="chatHeader">
-   <button class="mobileBack" type="button" onclick="closeMobileConversation()" aria-label="Retour aux discussions">‹</button>
-   <button id="activeAvatarButton" class="activeAvatarButton" type="button" onclick="openHeaderConversationActions(event)" aria-label="Actions personnelles de la discussion" title="Actions de la discussion" disabled><div id="activeAvatarMount"></div></button>
-   <div class="activeIdentity"><strong id="activeTitle">Sélectionne une discussion</strong><small id="activeSubtitle"></small></div>
-   <div class="chatHeadActions">
-    <button id="messageSearchBtn" class="headIconBtn" type="button" onclick="toggleMessageSearch()" aria-label="Rechercher dans la conversation" title="Rechercher" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.2 4.2"/></svg></button>
-    <button id="conversationMenuBtn" class="headIconBtn" type="button" onclick="toggleConversationMenu(event)" aria-label="Gérer la conversation" title="Gérer la conversation" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
-   </div>
-  </div>
-  <div id="messageSearchBar" class="messageSearchBar"><input id="messageSearchInput" type="search" placeholder="Rechercher dans les messages…" oninput="searchMessages(this.value)" autocomplete="off"><button type="button" onclick="toggleMessageSearch()">×</button></div>
-  <div id="messages" class="messages"><div class="noConversation"><div><div class="logo"><img src="assets/logo-chat.svg" alt=""></div><strong>Messagerie Nethor</strong><span>Choisis une discussion ou crée une conversation.</span></div></div></div>
-  <div id="typingLine" class="typingLine"></div>
-  <div id="composer" class="composer hidden">
-   <div id="composeBanner" class="composeBanner"><div><strong id="composeBannerTitle"></strong><span id="composeBannerText"></span></div><button type="button" onclick="cancelComposeMode()">×</button></div>
-   <div id="attachPreview" class="attachPreview"><span id="attachThumb" class="attachThumb" aria-hidden="true"><img id="attachThumbImage" alt=""></span><span id="attachName" class="attachName"></span><button type="button" onclick="clearAttachment()" aria-label="Retirer la pièce jointe">×</button></div>
-   <div class="composeRow">
-    <button class="composeIcon" type="button" onclick="document.getElementById('file').click()" aria-label="Joindre un fichier" title="Joindre un fichier">＋</button>
-    <input id="file" type="file" hidden accept="image/*,video/*,audio/*,.pdf,.txt,.doc,.docx,.xls,.xlsx" onchange="selectAttachment(this)">
-    <button id="micBtn" class="composeIcon" type="button" onclick="toggleRecording()" aria-label="Message vocal" title="Message vocal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1"/><path d="M12 18v3M9 21h6"/></svg></button>
-    <textarea id="message" rows="1" maxlength="5000" placeholder="Écrire un message…" oninput="composerInput()" onkeydown="handleKey(event)"></textarea>
-    <button id="sendBtn" class="sendBtn" type="button" onclick="sendMessage()" aria-label="Envoyer">↑</button>
-   </div>
-  </div>
- </section>
-
- <aside id="chatDetailsPane" class="chatDetailsPane" aria-label="Informations sur la discussion">
-  <div id="chatDetailsContent" class="chatDetailsContent">
-   <div class="detailsEmpty">
-    <img src="assets/logo-chat.svg" alt="">
-    <strong>Informations</strong>
-    <span>Sélectionne une discussion pour afficher ses détails.</span>
-   </div>
-  </div>
- </aside>
-</main>
-
+<body><div data-nethor-platform-header></div><div data-nethor-platform-lead></div><div data-nethor-chat-layout></div><script src="platform-page-layout.js?v=12"></script>
 <div id="discussionMenu" class="chatMenu hidden" role="menu" aria-label="Gérer les discussions">
  <div class="chatMenuTitle"><strong>Gérer les discussions</strong><small>Actions générales de la messagerie</small></div>
  <button class="chatMenuItem" type="button" onclick="openNewChat();closeDiscussionMenu()">
