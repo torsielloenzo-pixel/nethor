@@ -50,16 +50,89 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader vi
   .npRowText .npSentence{font-size:12.5px}.npRowText .npSentence b{font-size:13px}
 }
 
-/* Phase 4.7 — Scanner Mobile, ancien breakpoint 900px rendu explicite. */
+/* Phase 4.7 — Scanner Mobile, ancien breakpoint 900px rendu explicite.
+   IMPORTANT : toutes ces règles restent strictement limitées au Scanner. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"],
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] body{
+ width:100%;height:100%;min-height:0;overflow:hidden!important;overscroll-behavior:none!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] body{
+ position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;
+ overflow:hidden!important;touch-action:manipulation
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .page{
+ height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);
+ min-height:0;display:flex;flex-direction:column;overflow:hidden!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .top{flex:0 0 auto}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .cameraCard{
+ flex:0 1 350px;min-height:220px!important;height:min(350px,43dvh)!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader video{height:100%!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] #reader__scan_region{
+ min-height:100%!important;height:100%!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .hint,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .cameraPreference{flex:0 0 auto}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .panel{
+ flex:0 1 auto;max-height:min(35dvh,330px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="scanner"] .desktopOnly{display:none!important}
 
- html,body{width:100%;height:100%;min-height:0;overflow:hidden!important;overscroll-behavior:none!important}
- body{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;touch-action:manipulation}
- .page{height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);min-height:0;display:flex;flex-direction:column;overflow:hidden!important}
- .top{flex:0 0 auto}
- .cameraCard{flex:0 1 350px;min-height:220px!important;height:min(350px,43dvh)!important}
- #reader,#reader video{height:100%!important}
- #reader__scan_region{min-height:100%!important;height:100%!important}
- .hint,.cameraPreference{flex:0 0 auto}
- .panel{flex:0 1 auto;max-height:min(35dvh,330px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
- .desktopOnly{display:none!important}
 
+
+/* Mobile visual QA — Notifications */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"],
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] body{
+ min-height:100%;height:auto!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] body{
+ position:static!important;inset:auto!important;touch-action:auto!important;background:var(--np-bg)!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .notificationsPageMain{
+ padding:calc(env(safe-area-inset-top) + 14px) 0 calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 24px)!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npMobileHead{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 12px 10px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npMobileTitle{min-width:0}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npMobileTitle h1{
+ margin:0;font-size:28px;line-height:1.02;letter-spacing:-.8px;font-weight:950;color:var(--np-text)
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npMobileTitle p{
+ margin:5px 0 0;font-size:10px;line-height:1.3;color:var(--np-muted)
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npMobileHead .npFilterTools{
+ width:auto!important;margin-left:auto!important;flex:0 0 auto;gap:7px!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npFilterLine{
+ padding:0 12px 8px!important;justify-content:flex-start!important;gap:7px!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npFilterLine>strong{display:none!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npFilterState{
+ min-height:34px!important;padding:5px 12px!important;font-size:9.5px!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npCircleBtn{
+ width:40px!important;height:40px!important;flex:0 0 40px
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npTopMenu{
+ position:absolute!important;top:46px!important;right:0!important;left:auto!important;z-index:6100!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npRow{
+ overflow:visible!important;z-index:1
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npRow:has(.npRowMenu:not(.hidden)){z-index:80}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npRowMenu{
+ position:fixed!important;left:max(10px,env(safe-area-inset-left))!important;right:max(10px,env(safe-area-inset-right))!important;
+ top:auto!important;bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 10px)!important;
+ width:auto!important;max-width:none!important;z-index:6200!important;padding:8px!important;border-radius:18px!important;
+ box-shadow:0 -16px 48px rgba(17,24,39,.24)!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npRowMenu button{
+ min-height:48px!important;font-size:11px!important;border-radius:11px!important
+}
+@media(max-width:380px){
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npMobileTitle h1{font-size:25px}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="notifications"] .npMobileHead{padding-left:9px;padding-right:9px}
+}
