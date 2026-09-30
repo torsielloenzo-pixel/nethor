@@ -2005,3 +2005,19 @@ Règles :
 - les ressources `ui/desktop/*` et `ui/mobile/*` ne font plus partie du précache global du Service Worker. Elles entrent dans le cache à l'usage via la stratégie statique existante.
 
 Cette séparation évite le téléchargement et l'analyse du code de l'autre plateforme tout en conservant une base de données et une logique métier communes.
+
+
+## Performance Mobile — runtime commun allégé
+
+Depuis la phase Performance Mobile 3, `profile-ui.js` ne contient plus les grands blocs CSS injectés en JavaScript.
+
+Organisation :
+- `profile-ui.css` : styles critiques communs chargés immédiatement ;
+- `profile-user-card.css` : styles de fiche utilisateur chargés à la demande ;
+- `profile-update.css` : styles des interfaces de mise à jour chargés à la demande ;
+- `profile-ui.js` : logique commune allégée ;
+- `reward-profile.js` : chargé après le premier affichage.
+
+Les services non essentiels (mise à jour, journal de consultation, présence, historique de présence, notifications et abonnements temps réel) sont déclenchés après le premier rendu afin de ne pas bloquer l’ouverture visuelle de la page.
+
+Le Service Worker précache seulement `profile-ui.css` et `profile-ui.js`. Les feuilles secondaires entrent dans le cache lors de leur première utilisation.
