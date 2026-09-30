@@ -1710,3 +1710,71 @@ Le Service Worker v234 précache les builders, le monteur et les feuilles dédi�
 
 La version applicative associée est `v1.40.0` avec purge de cache.
 
+
+## Phase 4.18 — Nettoyage final du responsive hybride de `index.html`
+
+La séparation structurelle Stock F&L des phases 4.16 et 4.17 est désormais complétée par un nettoyage des anciens breakpoints de plateforme.
+
+### Résultat principal
+
+`index.html` ne contient plus aucune media query basée sur la largeur de viewport.
+
+Les seuls blocs `@media` conservés dans ce fichier sont :
+
+- `hover:hover` pour les interactions pointeur ;
+- `prefers-reduced-motion:reduce` pour l’accessibilité.
+
+Ils ne participent jamais au choix Desktop / Mobile.
+
+### Règles déplacées
+
+Les adaptations appartenant exclusivement au Stock Desktop ont été déplacées dans :
+
+```text
+ui/desktop/stock-layout.css
+```
+
+Les adaptations Stock Mobile ont été déplacées dans :
+
+```text
+ui/mobile/stock-layout.css
+ui/mobile/stock-modals-layout.css
+```
+
+Ces feuilles peuvent conserver des breakpoints internes lorsqu’ils servent uniquement à adapter une interface déjà résolue sur une plateforme donnée.
+
+Un breakpoint interne n’est donc pas considéré comme un sélecteur de plateforme.
+
+### Code hybride supprimé
+
+La phase retire notamment les anciennes règles qui :
+
+- masquaient `.desktopOnlyMenu` sous 899 px ;
+- transformaient `.brandMenu` en panneau Mobile sous 520 px ;
+- compactaient les actions Desktop `.suggestTop` selon la largeur ;
+- transformaient `.nMenu`, `.brandMenu` et `.userMenu` en feuilles Mobile sous 700 px ;
+- pilotaient l’ancien état `body.mobileNavOpen`.
+
+L’ancien élément `.mobileNavBackdrop`, devenu sans propriétaire fonctionnel, a également été supprimé du DOM.
+
+### Invariant de plateforme
+
+À partir de cette phase :
+
+- un Desktop redimensionné étroit reste Desktop ;
+- un Mobile ou `mobile-preview` large reste Mobile ;
+- la largeur du viewport peut uniquement modifier la mise en page interne d’une plateforme déjà choisie ;
+- seul `NethorPlatform` décide de l’identité de plateforme.
+
+### Taille de `index.html`
+
+Après extraction et suppression des règles hybrides, `index.html` est ramené à environ 138 Ko, contre environ 188 Ko avant la séparation Stock de la phase 4.16.
+
+### Cache
+
+La version applicative associée est `v1.41.0`.
+
+Le Service Worker passe en v235 / `netto-tools-v235`.
+
+Les URLs CSS Stock dédiées passent en `v=2` afin d’éviter la réutilisation d’une ancienne réponse HTTP ou Service Worker après le déplacement des règles.
+
