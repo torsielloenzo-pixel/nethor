@@ -1617,3 +1617,96 @@ Le Service Worker v233 précache le routeur Stock et les quatre fichiers de layo
 
 La version applicative associée est `v1.39.0`, avec purge de cache demandée pour éviter qu’un ancien header hybride ou un ancien CSS de plateforme reste actif.
 
+
+## Phase 4.17 — Dialogues Stock Desktop / Mobile
+
+Les dialogues du module Stock F&L quittent le HTML partagé de `index.html`.
+
+### Dialogues concernés
+
+La séparation couvre les sept surfaces modales du module :
+
+- Réinitialiser le stock ;
+- Ajouter un produit ;
+- Fiche article ;
+- Suggestions de commande ;
+- Panier de commande ;
+- Gérer les produits ;
+- Gérer les familles / catégories / conditionnements.
+
+### Point de montage unique
+
+`index.html` expose désormais uniquement :
+
+```html
+<div data-nethor-stock-dialogs></div>
+```
+
+`stock-modals-layout.js` sélectionne un seul builder selon `NethorPlatform`.
+
+### Fichiers dédiés
+
+```text
+ui/
+├── desktop/
+│   ├── stock-modals-layout.js
+│   └── stock-modals-layout.css
+└── mobile/
+    ├── stock-modals-layout.js
+    └── stock-modals-layout.css
+```
+
+Chaque builder produit ses propres éléments `dialog`. Les IDs fonctionnels restent identiques afin que le moteur métier partagé continue à fonctionner sans branche de plateforme.
+
+### Desktop
+
+Les dialogues Desktop restent centrés, dimensionnés pour une utilisation souris/clavier et limités en hauteur avec défilement interne.
+
+Suggestions et Panier restent des fenêtres de travail compactes et centrées.
+
+### Mobile
+
+Les dialogues Mobile possèdent une couche structurelle dédiée.
+
+Suggestions et Panier sont maintenant de vraies vues plein écran Mobile :
+
+- `100vw × 100dvh` ;
+- safe areas iOS ;
+- liste interne scrollable ;
+- actions accessibles en bas ;
+- cartes Suggestions tactiles ;
+- Panier optimisé pour modification rapide des quantités.
+
+Les autres dialogues Stock utilisent une présentation Mobile dédiée, avec contrôles tactiles et surface adaptée au viewport.
+
+### Fin des breakpoints de plateforme sur Suggestions / Panier
+
+Les anciens blocs `@media(max-width:600px)` qui transformaient `#suggestDialog` et `#cartDialog` ont été supprimés de `index.html`.
+
+Les feuilles `stock-modals-layout.css` Desktop et Mobile ne contiennent aucun media query. Leur sélection dépend exclusivement du résolveur de plateforme.
+
+### Moteur métier partagé
+
+La phase ne duplique pas :
+
+- `openSuggestions()` ;
+- `renderSuggestions()` ;
+- `openOrderCart()` ;
+- `renderOrderCart()` ;
+- `resetOrderCart()` ;
+- `openStockReset()` ;
+- `openAdd()` / `saveProduct()` ;
+- `openInfo()` / `saveInfo()` ;
+- `openManage()` ;
+- `openOptions()` ;
+- les requêtes Supabase ;
+- les permissions Stock.
+
+Un seul jeu de dialogues est présent dans le DOM actif, ce qui maintient l’unicité des IDs.
+
+### Cache
+
+Le Service Worker v234 précache les builders, le monteur et les feuilles dédiées de la phase 4.17.
+
+La version applicative associée est `v1.40.0` avec purge de cache.
+
