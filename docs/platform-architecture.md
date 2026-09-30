@@ -2021,3 +2021,17 @@ Organisation :
 Les services non essentiels (mise à jour, journal de consultation, présence, historique de présence, notifications et abonnements temps réel) sont déclenchés après le premier rendu afin de ne pas bloquer l’ouverture visuelle de la page.
 
 Le Service Worker précache seulement `profile-ui.css` et `profile-ui.js`. Les feuilles secondaires entrent dans le cache lors de leur première utilisation.
+
+
+## Performance Mobile — modules optionnels
+
+Depuis la phase Performance Mobile 4, `profile-ui.js` ne contient plus plusieurs fonctionnalités rarement utilisées au démarrage.
+
+Modules optionnels :
+- `profile-user-card.js` + `profile-user-card.css` : Fiche utilisateur, chargée au premier affichage d'une fiche ;
+- `profile-mobile-preview.js` + `profile-mobile-preview.css` : Vision mobile Desktop, chargée uniquement sur Desktop après le premier rendu ;
+- `profile-update.js` + `profile-update.css` : centre/recherche/installation des mises à jour, chargé uniquement à l'ouverture du centre ou lorsqu'une mise à jour est réellement détectée.
+
+Le Service Worker ne précache pas ces modules. Ils utilisent la stratégie statique habituelle et entrent dans le cache lors de leur première utilisation.
+
+Le runtime commun `profile-ui.js` est passé d'environ 130k caractères après la phase 3 à environ 99k caractères après la phase 4. Le CSS critique `profile-ui.css` ne contient plus les styles de la Vision mobile Desktop.
