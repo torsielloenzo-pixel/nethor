@@ -1,11 +1,11 @@
 {
-  "version": 233,
-  "label": "v1.39.0",
+  "version": 234,
+  "label": "v1.40.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.16 — Stock F&L Desktop / Mobile",
-  "message": "Le shell Stock Fruits & Légumes est désormais physiquement séparé entre Desktop et Mobile. Chaque plateforme possède son propre en-tête et sa propre navigation Stock / Consulter / Commande / Gestion, tandis que le moteur métier, les données Supabase, les recherches, quantités, permissions et dashboards restent communs. L’ancien header hybride, flMobileTop, le correctif mobile historique et le verrou Desktop à 781 px ont été retirés.",
-  "published_at": "2026-09-30T06:12:00.000+02:00",
+  "title": "Phase 4.17 — Modales Stock Desktop / Mobile",
+  "message": "Les sept dialogues du module Stock F&L sont désormais construits séparément pour Desktop et Mobile : réinitialisation du stock, ajout produit, fiche article, suggestions, panier, gestion produits et options. Suggestions et Panier deviennent de vraies vues plein écran sur Mobile, sans breakpoint de plateforme. Les fonctions métier, IDs, données Supabase et logique de panier/suggestions restent partagés.",
+  "published_at": "2026-09-30T06:28:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
