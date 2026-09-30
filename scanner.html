@@ -263,11 +263,7 @@ async function findProduct(raw,fromCamera=false){
   searchBusy=true;
   setCameraState('Recherche de la fiche…');
   const candidates=fromCamera?eanCandidates(code):manualEanCandidates(code);
-  const {data,error}=await db.from('products')
-    .select('id,name,ean,article_code,photo_url,on_sale,active,packaging_count,shelf_capacity,product_families(name,slug),product_categories(name),product_packagings(name)')
-    .eq('active',true)
-    .in('ean',candidates)
-    .limit(Math.max(2,candidates.length));
+  const {data,error}=await db.rpc('scan_products_by_ean',{lookup_eans:candidates});
   searchBusy=false;
   if(error){
     console.error(error);
@@ -275,7 +271,12 @@ async function findProduct(raw,fromCamera=false){
     if(fromCamera)setTimeout(()=>startCamera(),1200);
     return
   }
-  const rows=data||[];
+  const rows=(data||[]).map(p=>({
+    ...p,
+    product_families:p.family_name?{name:p.family_name,slug:p.family_slug}:null,
+    product_categories:p.category_name?{name:p.category_name}:null,
+    product_packagings:p.packaging_name?{name:p.packaging_name}:null
+  }));
   const product=candidates.map(candidate=>rows.find(p=>String(p.ean||'')===candidate)).find(Boolean)||rows[0]||null;
   if(!product){
     await safeStop();
