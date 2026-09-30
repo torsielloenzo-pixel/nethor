@@ -934,8 +934,10 @@ function renderPortalLogs(){
 }
 async function loadPortalLogs(){
  const host=$('portalLogs');if(!host)return;
- host.innerHTML='<div class="logEmpty">Chargement du journal…</div>';
+ host.innerHTML='<div class="logEmpty">Synchronisation du journal…</div>';
  try{
+  const syncRes=await db.rpc('sync_nethor_release_manifest');
+  if(syncRes?.error)console.warn('Synchronisation version publiée:',syncRes.error);
   const {data,error}=await db.from('portal_change_logs').select('id,source,release_type,title,description,area,actor_name,created_at,details').order('created_at',{ascending:false}).limit(250);
   if(error)throw error;portalLogs=data||[];renderPortalLogs()
  }catch(e){console.error('Logs portail:',e);host.innerHTML='<div class="logEmpty">Impossible de charger le journal des modifications.</div>'}
