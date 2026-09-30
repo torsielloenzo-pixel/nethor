@@ -25,7 +25,7 @@ let host=null;
 let activeView='';
 let activeDefinition=null;
 let activeMountToken=0;
-let navBound=false;
+const navBoundTargets=new WeakSet();
 let booted=false;
 
 function platform(){
@@ -221,11 +221,12 @@ function intercept(event){
   open(id,{source:'navigation'})
 }
 function bindNavigation(element){
-  if(navBound)return;
-  const nav=element||document.querySelector('[data-mobile-nav-host]');
-  if(!nav)return;
-  nav.addEventListener('click',intercept);
-  navBound=true
+  const targets=Array.isArray(element)?element:[element||document.querySelector('[data-mobile-nav-host]')];
+  for(const nav of targets){
+    if(!nav||navBoundTargets.has(nav))continue;
+    nav.addEventListener('click',intercept);
+    navBoundTargets.add(nav)
+  }
 }
 async function handlePopState(){
   const id=current();
