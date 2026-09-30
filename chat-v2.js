@@ -1,7 +1,33 @@
-function chatDesktopMode(){return window.NethorPlatform?.current?.()==='desktop'||document.documentElement.dataset.nethorPlatform==='desktop'}
+const CHAT_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
+function chatDesktopMode(){return !CHAT_SPA_MODE&&(window.NethorPlatform?.current?.()==='desktop'||document.documentElement.dataset.nethorPlatform==='desktop')}
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let db=CHAT_SPA_MODE?null:supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let chatRuntimeActive=false,chatPresenceListener=null,chatFocusListener=null,chatOwnPresenceChannel=null;
+function chatSharedServices(){return CHAT_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
+function chatPermissionFromShared(profile,config){
+ const role=profile?.role||'',page=config?.pages?.chat||{},levels={none:0,view:1,operate:2,manage:3};
+ if(!role||page.enabled===false)return'none';
+ if(role==='admin')return'manage';
+ const explicit=config?.role_permissions?.chat?.[role];
+ let base=Object.prototype.hasOwnProperty.call(levels,explicit)?explicit:(Array.isArray(page.roles)?(page.roles.includes(role)?'view':'none'):'view');
+ const extra=chatSharedServices()?.subrolePermissions?.chat;
+ if(Object.prototype.hasOwnProperty.call(levels,extra)&&(levels[extra]||0)>(levels[base]||0))base=extra;
+ return base
+}
+function chatRouteUrl(conversationId=null){
+ if(!CHAT_SPA_MODE)return conversationId?'chat.html?c='+encodeURIComponent(conversationId):'chat.html';
+ const u=new URL(location.href);
+ u.searchParams.set('view','chat');
+ u.searchParams.delete('user');
+ if(conversationId)u.searchParams.set('c',conversationId);else u.searchParams.delete('c');
+ return u.pathname.split('/').pop()+u.search+u.hash
+}
+function syncChatRoute(conversationId=null){history.replaceState(history.state,'',chatRouteUrl(conversationId))}
+function chatGoHome(){
+ if(CHAT_SPA_MODE&&window.NethorMobileRouter?.replace){window.NethorMobileRouter.replace('home',{source:'chat-access'});return}
+ location.replace('home.html')
+}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const state={
@@ -70,7 +96,25 @@ async function loadMembers(){
  await loadPresenceHistory();renderConversations();renderNewChatMembers();renderConversationHeader()
 }
 function syncPresence(ids){const before=new Set(state.onlineIds),next=new Set(ids||window.NettoProfileUI?.onlineIds||[]);const changed=before.size!==next.size||[...before].some(id=>!next.has(id));state.onlineIds=next;if(changed){state.lastConversationRenderKey='';renderConversations();renderConversationHeader()}renderTyping();const left=[...before].some(id=>!next.has(id));if(left)setTimeout(()=>loadPresenceHistory(),700)}
-function startPresence(){syncPresence();window.addEventListener('netto:presence',e=>syncPresence(e.detail?.ids||[]))}
+function syncOwnPresence(){
+ if(!chatOwnPresenceChannel)return;
+ const presence=chatOwnPresenceChannel.presenceState(),ids=new Set();
+ Object.values(presence||{}).flat().forEach(x=>{if(x?.user_id)ids.add(x.user_id)});
+ syncPresence([...ids])
+}
+function startPresence(){
+ if(CHAT_SPA_MODE){
+  if(chatOwnPresenceChannel||!db||!state.session)return;
+  chatOwnPresenceChannel=db.channel('team-presence',{config:{presence:{key:state.session.user.id}}})
+   .on('presence',{event:'sync'},syncOwnPresence)
+   .on('presence',{event:'join'},syncOwnPresence)
+   .on('presence',{event:'leave'},syncOwnPresence)
+   .subscribe(async status=>{if(status==='SUBSCRIBED'){await chatOwnPresenceChannel.track({user_id:state.session.user.id,display_name:state.profile?.display_name||'Utilisateur',page:'chat',online_at:new Date().toISOString()});syncOwnPresence()}});
+  return
+ }
+ syncPresence();
+ if(!chatPresenceListener){chatPresenceListener=e=>syncPresence(e.detail?.ids||[]);window.addEventListener('netto:presence',chatPresenceListener)}
+}
 async function loadConversations(){
  const {data,error}=await db.rpc('list_chat_conversations');if(error){console.error('Conversations:',error);showToast('Impossible de charger les discussions');return}
  state.conversations=data||[];renderConversations();
@@ -133,11 +177,21 @@ function openConversationActions(id,opts={}){
 function openHeaderConversationActions(e){e?.stopPropagation?.();if(!state.activeId)return;openConversationActions(state.activeId,{desktop:true,anchor:e?.currentTarget})}
 function closeConversationActions(){const backdrop=$('conversationActionSheet'),sheet=backdrop?.querySelector('.conversationActionSheet');backdrop?.classList.add('hidden');backdrop?.classList.remove('desktopContext');if(sheet){sheet.style.left='';sheet.style.top=''}state.actionConversationId=null}
 function contactPresence(userId){return state.onlineIds.has(userId)?'En ligne':lastSeenLabel(userId)}
-function openContactCard(userId){
+async function openContactCard(userId){
  const m=member(userId);if(!m)return showToast('Profil indisponible');
  closeConversationActions();closeDiscussionMenu();$('contactModal')?.classList.add('hidden');
- const shared=window.NettoProfileUI?.openUserCard;if(!shared)return showToast('Fiche utilisateur indisponible');
- shared(m,{presenceLabel:()=>contactPresence(m.id),onMessage:()=>openDirect(m.id)})
+ if(window.NettoProfileUI?.openUserCard){window.NettoProfileUI.openUserCard(m,{presenceLabel:()=>contactPresence(m.id),onMessage:()=>openDirect(m.id)});return}
+ try{
+  if(!window.NethorProfileFeatures?.userCard){
+   await new Promise((resolve,reject)=>{
+    const existing=document.querySelector('script[data-chat-user-card]');
+    const done=()=>window.NethorProfileFeatures?.userCard?resolve():reject(new Error('user-card'));
+    if(existing){existing.addEventListener('load',done,{once:true});existing.addEventListener('error',reject,{once:true});return}
+    const s=document.createElement('script');s.src='profile-user-card.js?v=2';s.async=true;s.dataset.chatUserCard='1';s.onload=done;s.onerror=reject;document.head.appendChild(s)
+   })
+  }
+  window.NethorProfileFeatures.userCard.open(m,{presenceLabel:()=>contactPresence(m.id),onMessage:()=>openDirect(m.id)})
+ }catch(_){showToast('Fiche utilisateur indisponible')}
 }
 function closeContactCard(){window.NettoProfileUI?.closeUserCard?.();$('contactModal')?.classList.add('hidden')}
 async function openDirectFromContact(userId){closeContactCard();await openDirect(userId)}
@@ -162,17 +216,17 @@ async function actionSheetHide(){
  if(!await setPersonalConversationState(id,'hide'))return;await afterPersonalConversationRemoval(id);showToast('Conversation supprimée de ta liste')
 }
 async function afterPersonalConversationRemoval(id){
- if(state.activeId===id){state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');renderConversationHeader();renderMessages()}
+ if(state.activeId===id){state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');syncChatRoute(null);renderConversationHeader();renderMessages()}
  await loadConversations()
 }
 async function openConversation(id,opts={}){
  if(!id)return;state.activeId=id;state.replyTo=null;state.editingId=null;state.messageSearch='';$('messageSearchInput').value='';$('messageSearchBar').classList.remove('show');renderComposeBanner();clearAttachment();
  const c=activeConversation();renderConversations();renderConversationHeader();
  if(!chatDesktopMode()&&opts.showMobile)document.body.classList.add('mobileConversationOpen');
- history.replaceState(null,'','chat.html?c='+encodeURIComponent(id));
+ syncChatRoute(id);
  await Promise.all([loadParticipants(),loadMessages()]);await markRead();setupTypingChannel();renderConversationHeader()
 }
-function closeMobileConversation(){document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html')}
+function closeMobileConversation(){document.body.classList.remove('mobileConversationOpen');syncChatRoute(null)}
 async function loadParticipants(){
  if(!state.activeId){state.participants=[];renderDesktopDetails();return}
  const {data,error}=await db.from('chat_participants').select('conversation_id,user_id,role,joined_at,last_read_at,muted').eq('conversation_id',state.activeId);
@@ -714,10 +768,10 @@ async function deleteConversation(){
  const conversationId=state.activeId;
  const {error}=await db.rpc('chat_archive_conversation',{p_conversation:conversationId});
  if(error){console.error('Archivage conversation:',error);return showToast('Suppression impossible')}
- closeConversationInfo();state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');
+ closeConversationInfo();state.activeId=null;state.messages=[];state.participants=[];document.body.classList.remove('mobileConversationOpen');syncChatRoute(null);
  await loadConversations();renderConversationHeader();renderMessages();showToast(isGeneral?'Canal Général supprimé des discussions':'Groupe supprimé des discussions')
 }
-async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');history.replaceState(null,'','chat.html');await loadConversations();renderConversationHeader();renderMessages()}
+async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');syncChatRoute(null);await loadConversations();renderConversationHeader();renderMessages()}
 function startRealtime(){
  if(state.dataChannel)return;
  let msgTimer=null,partTimer=null,convTimer=null,reactTimer=null;
@@ -738,17 +792,61 @@ document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeAllChatMenus();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('contactModal')?.classList.add('hidden');$('addMembersModal')?.classList.add('hidden');$('conversationActionSheet')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
 
 async function boot(){
- const {data:{session}}=await db.auth.getSession();state.session=session;if(!session){location.replace('index.html');return}
- const {data:p,error}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame').eq('id',session.user.id).maybeSingle();if(error||!p){location.replace('index.html');return}
- state.profile=p;window.currentRole=p.role;await window.NettoProfileUI?.refresh?.();const permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none';if(permission==='none'){location.replace('home.html');return}state.canManage=permission==='manage';
+ chatRuntimeActive=true;
+ const shared=chatSharedServices();
+ let session=null,p=null,permission='none';
+ if(shared){
+  await shared.ready();
+  db=shared.client;session=shared.session;p=shared.profile;
+  permission=chatPermissionFromShared(p,shared.siteConfig||{})
+ }else{
+  const auth=await db.auth.getSession();session=auth?.data?.session||null;
+  if(session){
+   const profileRes=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame').eq('id',session.user.id).maybeSingle();
+   p=profileRes.data;
+   if(!profileRes.error&&p){await window.NettoProfileUI?.refresh?.();permission=window.NettoProfileUI?.permissionLevel?.('chat',p)||'none'}
+  }
+ }
+ state.session=session;if(!session){if(CHAT_SPA_MODE)chatGoHome();else location.replace('index.html');return false}
+ if(!p){if(CHAT_SPA_MODE)chatGoHome();else location.replace('index.html');return false}
+ state.profile=p;window.currentRole=p.role;
+ if(permission==='none'){chatGoHome();return false}
+ state.canManage=permission==='manage';
+ state.lastConversationRenderKey='';state.lastMessageRenderKey='';state.search='';state.messageSearch='';state.onlyUnread=false;
  await loadMembers();startPresence();await loadConversations();startRealtime();startMemberRealtime();
  const params=new URLSearchParams(location.search),requestedUser=params.get('user');
- if(requestedUser&&requestedUser!==state.session.user.id&&state.members.some(m=>m.id===requestedUser)){await openDirect(requestedUser);return}
+ if(requestedUser&&requestedUser!==state.session.user.id&&state.members.some(m=>m.id===requestedUser)){await openDirect(requestedUser);return true}
  const requested=params.get('c'),general=state.conversations.find(c=>c.conversation_type==='general')?.conversation_id,initial=(requested&&state.conversations.some(c=>c.conversation_id===requested))?requested:general;
  if(initial)await openConversation(initial,{showMobile:!chatDesktopMode()&&(!!requested||!!requestedUser)});else{renderConversationHeader();renderMessages()}
- window.addEventListener('focus',async()=>{await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()})
+ if(!chatFocusListener){chatFocusListener=async()=>{if(!chatRuntimeActive)return;await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()};window.addEventListener('focus',chatFocusListener)}
+ return true
 }
-boot();
+async function unmountChatRuntime(){
+ chatRuntimeActive=false;
+ cancelConversationLongPress();
+ clearTimeout(showToast.timer);
+ for(const entry of state.typing.values())clearTimeout(entry?.timer);
+ state.typing.clear();
+ if(state.recording){try{state.recording.recorder?.stop?.()}catch(_){};try{state.recording.stream?.getTracks?.().forEach(t=>t.stop())}catch(_){};state.recording=null}
+ document.querySelectorAll('.voiceAudio').forEach(a=>{try{a.pause()}catch(_){}});
+ for(const key of ['typingChannel','dataChannel','memberChannel']){
+  const channel=state[key];if(channel&&db){try{await db.removeChannel(channel)}catch(_){}}
+  state[key]=null
+ }
+ if(chatOwnPresenceChannel&&db){try{await db.removeChannel(chatOwnPresenceChannel)}catch(_){}}
+ chatOwnPresenceChannel=null;
+ if(chatPresenceListener){window.removeEventListener('netto:presence',chatPresenceListener);chatPresenceListener=null}
+ document.body.classList.remove('mobileConversationOpen');
+ document.documentElement.classList.remove('nettoKeyboardOpen');
+ document.documentElement.style.removeProperty('--chat-vv-top');
+ document.documentElement.style.removeProperty('--chat-vv-h');
+ clearAttachment();
+ state.messages=[];state.participants=[];state.reactions=[];state.conversations=[];state.members=[];state.onlineIds=new Set();state.presenceHistory=new Map();
+ state.activeId=null;state.replyTo=null;state.editingId=null;state.actionConversationId=null;state.messageLoadSeq++;state.messageRenderSeq++;
+ state.lastMessageRenderKey='';state.lastConversationRenderKey='';
+ return true
+}
+
 
 /* Mobile chat viewport v22:
    le haut du chat reste fixé. Seule la hauteur utile se réduit avec le clavier. */
@@ -816,3 +914,6 @@ boot();
   setTimeout(sync,220)
  },true)
 })();
+
+if(!CHAT_SPA_MODE)boot().catch(e=>console.error('[Nethor Chat] boot',e));
+window.NethorChatRuntime=Object.freeze({mount:boot,unmount:unmountChatRuntime,get active(){return chatRuntimeActive},get activeConversationId(){return state.activeId}});
