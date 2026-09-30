@@ -1,11 +1,11 @@
 {
-  "version": 261,
-  "label": "v1.43.24",
+  "version": 262,
+  "label": "v1.43.25",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Scanner mobile — fiche prioritaire et lecture multi-orientation",
-  "message": "Lorsqu’un EAN est trouvé, la fiche article passe désormais au-dessus de toutes les couches caméra : vidéo, cadre de scan et indicateurs sont masqués tant que la fiche est ouverte. La zone de détection devient carrée afin de mieux accepter les codes horizontaux et verticaux, tout en laissant le décodeur traiter les codes retournés lorsque le moteur le supporte.",
-  "published_at": "2026-09-30T17:58:00.000Z",
+  "title": "Scanner assisté — analyse robuste et hypothèses contrôlées",
+  "message": "Le Scanner mobile dispose maintenant d’une analyse renforcée : lecture EAN/GTIN dans les quatre sens (0°, 90°, 180°, 270°), seconde passe native sur image renforcée en contraste, adaptation locale de l’ordre des rotations selon les succès précédents et prise en charge des formats EAN-8, EAN-13, UPC-A, ITF et Code 128 numériques. En cas de lecture imparfaite, Nethor compare les chiffres observés aux fiches réellement enregistrées et propose jusqu’à trois correspondances avec un score de concordance. Aucune hypothèse n’est validée automatiquement.",
+  "published_at": "2026-09-30T18:22:10.382536Z",
   "icon": "assets/app-icon-v63.svg"
 }
