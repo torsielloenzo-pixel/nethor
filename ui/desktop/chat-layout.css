@@ -1,0 +1,68 @@
+/* Phase 4.13 — Chat Desktop */
+
+ .conversationActionBackdrop.desktopContext{display:block!important;background:transparent!important;backdrop-filter:none!important}
+ .conversationActionBackdrop.desktopContext .conversationActionSheet{position:fixed;width:min(310px,calc(100vw - 20px));border-radius:18px;padding:8px 9px;box-shadow:0 22px 65px #11182735;border:1px solid #e1e5e9;animation:none}
+ .conversationActionBackdrop.desktopContext .conversationActionGrip,.conversationActionBackdrop.desktopContext .conversationActionCancel{display:none}
+ .conversationActionBackdrop.desktopContext .conversationActionHeader{padding:7px 7px 10px}
+
+
+  .listHead h1{font-size:20px;line-height:1.15}
+  .listHead small{font-size:11px}
+  .convTitleLine strong{font-size:14.5px;line-height:1.25;font-weight:850}
+  .convPreview{font-size:11px;line-height:1.35}
+  .convTime{font-size:9px}
+  .chatHeader{min-height:74px;padding:12px 16px;gap:12px}
+  .activeAvatar{width:48px;height:48px;border-radius:15px}
+  .activeIdentity strong{font-size:17px;line-height:1.2;font-weight:900}
+  .activeIdentity small{font-size:11px;line-height:1.35;margin-top:4px}
+  .messages{padding:20px 24px 28px}
+  .messageRow{gap:9px;margin:9px 0}
+  .msgAvatar{width:32px;height:32px;border-radius:10px}
+  .messageBlock{max-width:min(74%,760px);min-width:110px}
+  .messageSender{font-size:10px;margin-bottom:4px}
+  .generalSender{gap:7px;margin-bottom:6px;min-height:22px}
+  .generalSender .senderRole{min-height:20px;padding:3px 8px;font-size:7.5px}
+  .generalSender .senderName{font-size:11px;line-height:1.25}
+  .bubble{padding:10px 12px 8px;border-radius:6px 17px 17px 17px}
+  .mine .bubble{border-radius:17px 6px 17px 17px}
+  .messageBody{font-size:14px;line-height:1.5}
+  .messageDeleted{font-size:11.5px}
+  .messageMeta{font-size:8.5px;margin-top:5px}
+  .replyQuote strong,.replyQuote span{font-size:9px}
+
+
+  .convRow{
+    grid-template-columns:48px minmax(0,1fr) 48px;
+  }
+  .convCopy{
+    min-width:0;
+    overflow:hidden;
+  }
+  .convTitleLine{
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+  }
+  .convTitleLine strong{
+    display:block;
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .convPreview{
+    display:block;
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .convMeta{
+    width:48px;
+    min-width:48px;
+    overflow:hidden;
+  }
+
+@media(max-width:1199px){.chatApp{grid-template-columns:minmax(300px,360px) minmax(0,1fr)}.chatDetailsPane{display:none}}
