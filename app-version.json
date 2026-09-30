@@ -1,11 +1,11 @@
 {
-  "version": 252,
-  "label": "v1.43.15",
-  "important": true,
+  "version": 253,
+  "label": "v1.43.16",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Performance Mobile — phase 4 finalisée",
-  "message": "Le runtime commun de Nethor est désormais découpé en modules optionnels. La Fiche utilisateur, la Vision mobile Desktop et le Centre de mise à jour sont chargés uniquement lorsqu’ils servent. Sur mobile, la Vision mobile Desktop n’est plus téléchargée. profile-ui est descendu à environ 99 000 caractères et les styles propres à la Vision mobile ont quitté le CSS critique.",
-  "published_at": "2026-09-30T18:20:00.000+02:00",
+  "title": "Correctif Scanner mobile",
+  "message": "La page Scanner mobile a été réparée : l’en-tête était mal fermé dans le layout mobile, ce qui faisait entrer la caméra et le reste de la page dans la ligne du titre. Le Scanner retrouve maintenant sa structure verticale normale avec titre, caméra, aide et recherche manuelle correctement affichés.",
+  "published_at": "2026-09-30T18:12:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
