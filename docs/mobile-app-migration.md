@@ -818,6 +818,279 @@ Elles ne sont pas encore redirigées automatiquement vers le shell SPA.
 
 Desktop continue donc à utiliser son architecture de pages actuelle.
 
+## Phase 7 — Planning
+
+La phase 7 migre Planning dans `mobile.html` sans créer une seconde implémentation métier.
+
+### Principe
+
+L'ancien `planning.html` et la nouvelle vue SPA utilisent désormais les mêmes briques :
+
+```text
+planning-core.css
+planning-runtime.js
+planning-agenda-v2.js
+ui/shared/planning-shell.html
+```
+
+La différence se situe uniquement dans le conteneur :
+
+```text
+Desktop / fallback
+planning.html
+    ↓
+planning-runtime.js
+
+Mobile SPA
+mobile.html
+    ↓
+PlanningView
+    ↓
+planning-runtime.js
+```
+
+### Externalisation du moteur historique
+
+Le runtime métier auparavant embarqué directement dans `planning.html` a été extrait vers :
+
+```text
+planning-runtime.js
+```
+
+Il conserve les fonctions existantes :
+
+- chargement d'une semaine ;
+- lecture du modèle Planning ;
+- import Excel ;
+- modification du tableau ;
+- enregistrement ;
+- notifications liées aux modifications ;
+- historique ;
+- indisponibilités et congés ;
+- statistiques ;
+- anomalies ;
+- couverture magasin ;
+- vue annuelle ;
+- calculs utilisateurs ;
+- permissions.
+
+La page historique continue à charger exactement ce runtime.
+
+### CSS partagé
+
+Les styles communs auparavant intégrés dans `planning.html` sont maintenant dans :
+
+```text
+planning-core.css
+```
+
+Dans la SPA, les feuilles Planning sont ajoutées uniquement pendant le montage de la vue puis retirées lors de `unmount()`.
+
+Cela empêche les classes génériques historiques comme `.btn`, `.card` ou certaines règles responsive de modifier les autres vues Mobile.
+
+### Fragment Planning
+
+La structure métier est extraite dans :
+
+```text
+ui/shared/planning-shell.html
+```
+
+Le fragment contient les points de montage existants :
+
+- barre semaine / calendrier ;
+- toolbar ;
+- planning principal ;
+- import et édition ;
+- couverture ;
+- détection d'anomalies ;
+- historique ;
+- indisponibilités / congés ;
+- statistiques ;
+- modales ;
+- vue annuelle.
+
+`PlanningView` applique ensuite le layout Mobile via :
+
+```js
+NethorMobilePlanningLayout.build()
+```
+
+### Chargement paresseux
+
+Le moteur Planning n'est pas chargé au démarrage de `mobile.html`.
+
+Premier accès :
+
+```text
+Planning
+   ↓
+chargement CSS Planning
+   ↓
+planning-layout.js
+   ↓
+planning-runtime.js
+   ↓
+planning-agenda-v2.js
+   ↓
+mount()
+```
+
+Les scripts restent ensuite chargés dans le document.
+
+Seules les feuilles CSS propres à Planning sont retirées lors de la sortie.
+
+### Client Supabase
+
+En mode SPA, `planning-runtime.js` utilise :
+
+```js
+NethorMobileServices.client
+NethorMobileServices.session
+NethorMobileServices.profile
+NethorMobileServices.siteConfig
+NethorMobileServices.subrolePermissions
+```
+
+Il ne crée donc pas un second client Supabase.
+
+En ouverture historique de `planning.html`, le runtime conserve son initialisation classique afin de maintenir le fallback autonome.
+
+### Permissions
+
+Dans la SPA, l'accès Planning est calculé à partir de :
+
+- rôle système ;
+- activation de la page Planning ;
+- `site_config.pages.planning.roles` ;
+- `role_permissions.planning` ;
+- permissions de sous-rôle.
+
+Le niveau `manage` continue à contrôler le mode modification.
+
+### Deep-links
+
+Les paramètres sont conservés dans le shell :
+
+```text
+mobile.html?view=planning
+mobile.html?view=planning&week=2026-10-05
+mobile.html?view=planning&week=2026-10-05&day=2026-10-06
+mobile.html?view=planning&week=2026-10-05&day=2026-10-06&focus=leave
+mobile.html?view=planning&day=2026-10-06&focus=rest
+```
+
+Le runtime lit toujours :
+
+```text
+week
+day
+focus
+```
+
+Les focus reconnus restent :
+
+- `rest` ;
+- `leave`.
+
+### Agenda Mobile
+
+`planning-agenda-v2.js` possède maintenant :
+
+```js
+NethorPlanningAgenda.mount()
+NethorPlanningAgenda.unmount()
+```
+
+Il n'essaie plus de démarrer automatiquement lorsqu'il est chargé dans `mobile.html`.
+
+L'ordre de montage est :
+
+```text
+fragment DOM
+   ↓
+layout Mobile
+   ↓
+Agenda.mount()
+   ↓
+PlanningRuntime.mount()
+```
+
+Ainsi le hook Agenda est installé avant le premier rendu des données.
+
+### Cycle de vie du runtime
+
+`planning-runtime.js` expose :
+
+```js
+NethorPlanningRuntime.mount()
+NethorPlanningRuntime.unmount()
+NethorPlanningRuntime.render()
+NethorPlanningRuntime.loadWeek()
+```
+
+Le démontage :
+
+- retire le canal temps réel Planning spécifique ;
+- vide le modèle courant ;
+- réinitialise les états d'édition ;
+- retire les classes globales Planning ;
+- nettoie les datasets d'accès ;
+- ne détruit pas `MobileServices`.
+
+Les listeners globaux statiques du runtime sont installés une seule fois.
+
+Le listener de viewport possède également un garde afin de ne pas être dupliqué après plusieurs ouvertures de Planning.
+
+### Scroll
+
+`PlanningView` mémorise le scroll lors du démontage.
+
+Lors d'un retour sur le même jeu de paramètres, le scroll est restauré.
+
+Si le lien contient :
+
+```text
+focus=rest
+focus=leave
+```
+
+la restauration est désactivée afin de laisser le runtime positionner la vue sur l'élément ciblé.
+
+### Fonctionnalités maintenues
+
+La migration conserve notamment :
+
+- Jour ;
+- Semaine ;
+- Calendrier annuel ;
+- sélection d'une date ;
+- semaine précédente / suivante ;
+- semaine actuelle ;
+- Agenda équipe ;
+- affichage personnel prioritaire ;
+- import Excel ;
+- mode modification ;
+- couleurs Matin / Après-midi / Rouge / Jaune / Orange ;
+- suppression / réinitialisation ;
+- total de semaine ;
+- différences heures contrat ;
+- anomalies ;
+- couverture magasin ;
+- historique Planning ;
+- indisponibilités / congés ;
+- demandes et traitement ;
+- statistiques personnelles ;
+- notifications de modification / publication.
+
+### Fallback
+
+`planning.html` reste disponible.
+
+La page n'est pas redirigée de force vers la SPA.
+
+Elle sert donc encore de chemin de secours et partage désormais le même moteur que la vue Mobile.
+
 ## Prochaine phase
 
-La phase 7 pourra attaquer **Planning**, qui devient la première vue métier lourde à migrer. Elle devra préserver son état, ses calculs, son scroll, ses paramètres `week/day/focus`, ses widgets et ses outils d'administration sans réinitialiser le shell Mobile.
+La phase 8 pourra migrer **Chat** dans le document Mobile unique, avec conservation des canaux, messages, présence, pièces jointes, rôles, scroll et conversations directes.
