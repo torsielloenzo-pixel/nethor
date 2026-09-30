@@ -1,11 +1,11 @@
 {
-  "version": 239,
-  "label": "v1.43.2",
+  "version": 240,
+  "label": "v1.43.3",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Navigation mobile — Menu utilisateur en vraie page",
-  "message": "Le Menu utilisateur mobile devient une vraie page Nethor tout en restant au même emplacement dans la barre inférieure. Les ouvertures de pages enregistrent désormais leur origine réelle et tous les boutons Retour mobiles utilisent le routeur contextuel. Les anciens paramètres open_user_menu/from_user_menu ne sont plus nécessaires. Desktop conserve son menu et sa navigation existants.",
-  "published_at": "2026-09-30T09:24:00.000+02:00",
+  "title": "Navigation mobile unifiée",
+  "message": "Le Menu utilisateur mobile est désormais une vraie page Nethor, conservée au même emplacement dans la barre inférieure. Toutes les navigations mobiles de la barre et du menu enregistrent leur origine réelle, et les boutons Retour des pages concernées reviennent vers cette origine. Les anciens mécanismes open_user_menu/from_user_menu ont été retirés. Chat conserve son retour interne vers les discussions et Maintenance son retour vers la connexion. Desktop reste inchangé.",
+  "published_at": "2026-09-30T09:42:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
