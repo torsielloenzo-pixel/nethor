@@ -127,11 +127,9 @@ async function queryCameraPermission(){
   cameraPermissionState=status.state||'unknown';
   status.onchange=()=>{
    cameraPermissionState=status.state||'unknown';
-   if(cameraPermissionState==='granted'&&!cameraRemembered)rememberCameraPermission(true);
-   if(cameraPermissionState==='denied'&&cameraRemembered)rememberCameraPermission(false)
+   if(cameraPermissionState==='granted'&&!cameraRemembered)rememberCameraPermission(true)
   };
   if(cameraPermissionState==='granted'&&!cameraRemembered)rememberCameraPermission(true);
-  if(cameraPermissionState==='denied'&&cameraRemembered)rememberCameraPermission(false);
   return cameraPermissionState
  }catch(_){
   cameraPermissionState='unknown';
@@ -178,9 +176,24 @@ async function rememberCameraPermission(granted){
   if(updateError)throw updateError
  }catch(e){console.warn('Enregistrement préférence caméra:',e)}
 }
-function permissionDenied(error){
+function cameraErrorInfo(error){
  const name=String(error?.name||'').toLowerCase(),msg=String(error?.message||error||'').toLowerCase();
- return name==='notallowederror'||name==='permissiondeniederror'||msg.includes('permission denied')||msg.includes('not allowed')
+ const denied=name==='notallowederror'||name==='permissiondeniederror'||msg.includes('permission denied')||msg.includes('not allowed');
+ const busy=name==='notreadableerror'||name==='trackstarterror'||name==='aborterror'||msg.includes('could not start video source')||msg.includes('device in use')||msg.includes('not readable');
+ const constraints=name==='overconstrainederror'||name==='constraintnotsatisfiederror'||msg.includes('constraint');
+ const missing=name==='notfounderror'||name==='devicesnotfounderror'||msg.includes('no camera')||msg.includes('not found');
+ return{name,msg,denied,busy,constraints,missing,retryable:busy||constraints}
+}
+function permissionDenied(error){return cameraErrorInfo(error).denied}
+function releaseReaderTracks(){
+ try{
+  const videos=[...document.querySelectorAll('#reader video')];
+  for(const video of videos){
+   const stream=video.srcObject;
+   stream?.getTracks?.().forEach(track=>{try{track.stop()}catch(_){}});
+   try{video.srcObject=null}catch(_){}
+  }
+ }catch(_){}
 }
 function goBack(){
   if(window.NethorNavigation?.navigateBack)return window.NethorNavigation.navigateBack();
@@ -394,6 +407,7 @@ function safeStop(){
   torchEnabled=false;paintTorchButton();
   const track=activeCameraTrack;activeCameraTrack=null;
   if(track?.applyConstraints){try{track.applyConstraints({advanced:[{torch:false}]})}catch(_){}}
+  releaseReaderTracks();
   if(!scanner||(!scannerRunning&&!scannerStarting))return Promise.resolve();
   scannerRunning=false;scannerStarting=false;
   return Promise.resolve(scanner.stop?.()).catch(()=>{}).then(()=>{try{scanner.clear()}catch(_){}});
@@ -427,7 +441,12 @@ async function tuneActiveCamera(){
   if(Array.isArray(caps.focusMode)&&caps.focusMode.includes('continuous'))advanced.focusMode='continuous';
   if(Array.isArray(caps.exposureMode)&&caps.exposureMode.includes('continuous'))advanced.exposureMode='continuous';
   if(Array.isArray(caps.whiteBalanceMode)&&caps.whiteBalanceMode.includes('continuous'))advanced.whiteBalanceMode='continuous';
-  if(Object.keys(advanced).length)await track.applyConstraints({advanced:[advanced]});
+  const constraints={};
+  if(caps.width)constraints.width={ideal:1280};
+  if(caps.height)constraints.height={ideal:720};
+  if(caps.frameRate)constraints.frameRate={ideal:30};
+  if(Object.keys(advanced).length)constraints.advanced=[advanced];
+  if(Object.keys(constraints).length)await track.applyConstraints(constraints).catch(()=>{});
   paintTorchButton()
  }catch(e){console.debug('Optimisation caméra non appliquée:',e);paintTorchButton()}
 }
@@ -527,17 +546,54 @@ function zxingDecodeCanvas(canvas){
   return text?String(text):null
  }catch(_){return null}
 }
+async function createAndStartScanner(){
+ const config={
+  fps:24,
+  qrbox:(w,h)=>{
+   const size=Math.max(220,Math.min(330,w*.82,h*.78));
+   return{width:size,height:size}
+  },
+  aspectRatio:1.777778,
+  disableFlip:true
+ };
+ const sources=[
+  {facingMode:'environment'},
+  {facingMode:{ideal:'environment'}}
+ ];
+ let lastError=null;
+ for(let attempt=0;attempt<3;attempt++){
+  const source=sources[Math.min(attempt,sources.length-1)];
+  try{
+   releaseReaderTracks();
+   if(scanner){try{await scanner.stop()}catch(_){ }try{scanner.clear()}catch(_){}}
+   scanner=new Html5Qrcode('reader',{
+    formatsToSupport:scannerFormats(),
+    experimentalFeatures:{useBarCodeDetectorIfSupported:true},
+    verbose:false
+   });
+   if(attempt)setCameraState('Nouvelle tentative caméra…');
+   await scanner.start(source,config,onScanSuccess,()=>{});
+   return true
+  }catch(e){
+   lastError=e;
+   const info=cameraErrorInfo(e);
+   releaseReaderTracks();
+   try{scanner?.clear?.()}catch(_){}
+   if(info.denied||info.missing)break;
+   if(attempt<2)await new Promise(r=>setTimeout(r,attempt===0?450:900))
+  }
+ }
+ throw lastError||new Error('Camera start failed')
+}
 async function startCamera(){
   if(!isMobileView())return;
   if(cameraStartPromise)return cameraStartPromise;
   cameraStartPromise=(async()=>{
     if(scannerRunning)return;
     hideCameraFallback();
-    const permission=await queryCameraPermission();
-    if(permission==='denied'){
-      showCameraFallback('L’accès à la caméra est bloqué dans les réglages du navigateur. Autorise Nethor puis touche « Réessayer ».');
-      return
-    }
+    // La permission navigateur est une information, pas un verrou :
+    // Safari/iOS peut renvoyer un état incomplet ou "prompt" même après accord.
+    queryCameraPermission().catch(()=>{});
     try{await loadQrLibrary()}catch(e){
       console.warn('Scanner module:',e);
       showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
@@ -550,41 +606,31 @@ async function startCamera(){
     if(scannerRunning)return;
     try{
       scannerStarting=true;
-      scanner=new Html5Qrcode('reader',{
-        formatsToSupport:scannerFormats(),
-        experimentalFeatures:{useBarCodeDetectorIfSupported:true},
-        verbose:false
-      });
-      setCameraState(cameraRemembered||permission==='granted'?'Ouverture de la caméra…':'Autorisation caméra…');
-      await scanner.start(
-        {facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30}},
-        {
-          fps:24,
-          qrbox:(w,h)=>{
-            const size=Math.max(220,Math.min(330,w*.82,h*.78));
-            return{width:size,height:size}
-          },
-          aspectRatio:1.777778,
-          disableFlip:true
-        },
-        onScanSuccess,
-        ()=>{}
-      );
+      setCameraState(cameraRemembered?'Ouverture directe de la caméra…':'Autorisation caméra…');
+      await createAndStartScanner();
       scannerStarting=false;
       scannerRunning=true;
       assistCycle=0;
       setCameraState('Prêt à scanner');
-      tuneActiveCamera();
+      await tuneActiveCamera();
       startAssistLoop();
-      if(!cameraRemembered||permission!=='granted')rememberCameraPermission(true)
+      rememberCameraPermission(true)
     }catch(e){
       scannerStarting=false;
       scannerRunning=false;
+      releaseReaderTracks();
       console.warn('Scanner camera:',e);
-      if(permissionDenied(e))await rememberCameraPermission(false);
-      showCameraFallback(permissionDenied(e)
-        ?'Autorise la caméra dans les réglages du navigateur puis touche « Réessayer ».'
-        :'Impossible d’ouvrir la caméra. Ferme les autres applications qui l’utilisent puis réessaie.')
+      const info=cameraErrorInfo(e);
+      if(info.denied)await rememberCameraPermission(false);
+      if(info.denied){
+       showCameraFallback('L’accès caméra est refusé par iOS ou le navigateur. Autorise la caméra pour ce site puis touche « Réessayer ».')
+      }else if(info.missing){
+       showCameraFallback('Aucune caméra utilisable n’a été détectée sur cet appareil.')
+      }else if(info.busy){
+       showCameraFallback('La caméra n’a pas pu redémarrer correctement. Nethor a libéré le flux automatiquement : touche « Réessayer ».')
+      }else{
+       showCameraFallback('Impossible d’ouvrir la caméra pour le moment. Touche « Réessayer ».')
+      }
     }
   })().finally(()=>{cameraStartPromise=null});
   return cameraStartPromise
@@ -787,11 +833,10 @@ async function boot(){
   if(!isMobileView())return;
   lockScannerViewport();
   hydrateCameraPreferenceFromCache();
-  const permissionPromise=queryCameraPermission();
   const preferenceSync=loadCameraPreference();
   lockScannerViewport();
-  await permissionPromise;
   startCamera();
+  queryCameraPermission().catch(()=>{});
   preferenceSync.catch(()=>{})
 }
 window.addEventListener('pagehide',()=>{if(visibilityStopTimer)clearTimeout(visibilityStopTimer);safeStop()});
