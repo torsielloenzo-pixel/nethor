@@ -1,11 +1,11 @@
 {
-  "version": 287,
-  "label": "v1.43.50",
+  "version": 288,
+  "label": "v1.43.51",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — nouveau signet Nethor",
-  "message": "Le signet de l’application mobile passe au carré orange avec le « n » blanc. Le logo et l’identité visuelle affichés dans l’interface restent inchangés.",
-  "published_at": "2026-10-01T01:00:00+02:00",
+  "title": "Desktop — logo Nethor complet",
+  "message": "Correction du mot-symbole Desktop : le « thor » est de nouveau visible. « ne » reste orange ; « thor » est noir en thème clair et blanc en thème sombre. Le correctif neutralise l’ancienne règle qui masquait le pseudo-élément du logo et force le rechargement du cache.",
+  "published_at": "2026-10-01T01:08:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
