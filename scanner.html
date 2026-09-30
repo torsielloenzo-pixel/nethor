@@ -84,44 +84,82 @@ async function waitForSupabase(ms=8000){
  throw new Error('Supabase indisponible')
 }
 const $=id=>document.getElementById(id);
-let scanner=null,scannerRunning=false,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false;
+let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartPromise=null,visibilityStopTimer=null,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false,cameraPermissionState='unknown';
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
 function cameraPreferenceKey(){return sessionUserId?'nethorScannerCamera:'+sessionUserId:'nethorScannerCamera'}
-function paintCameraPreference(){
- const el=$('cameraPreference');if(el)el.classList.toggle('show',cameraRemembered)
-}
 function readLocalCameraPreference(){
- try{return localStorage.getItem(cameraPreferenceKey())==='1'}catch(_){return false}
+ try{
+  const raw=localStorage.getItem(cameraPreferenceKey());
+  if(raw==='1')return true;
+  const parsed=raw?JSON.parse(raw):null;
+  return parsed?.granted===true
+ }catch(_){return false}
 }
 function writeLocalCameraPreference(granted){
- try{if(granted)localStorage.setItem(cameraPreferenceKey(),'1');else localStorage.removeItem(cameraPreferenceKey())}catch(_){}
+ try{
+  if(granted)localStorage.setItem(cameraPreferenceKey(),JSON.stringify({granted:true,at:Date.now()}));
+  else localStorage.removeItem(cameraPreferenceKey())
+ }catch(_){}
+}
+function hydrateCameraPreferenceFromCache(){
+ cameraRemembered=readLocalCameraPreference();
+ return cameraRemembered
+}
+async function queryCameraPermission(){
+ if(!navigator.permissions?.query)return'unknown';
+ try{
+  const status=await navigator.permissions.query({name:'camera'});
+  cameraPermissionState=status.state||'unknown';
+  status.onchange=()=>{
+   cameraPermissionState=status.state||'unknown';
+   if(cameraPermissionState==='granted'&&!cameraRemembered)rememberCameraPermission(true);
+   if(cameraPermissionState==='denied'&&cameraRemembered)rememberCameraPermission(false)
+  };
+  if(cameraPermissionState==='granted'&&!cameraRemembered)rememberCameraPermission(true);
+  if(cameraPermissionState==='denied'&&cameraRemembered)rememberCameraPermission(false);
+  return cameraPermissionState
+ }catch(_){
+  cameraPermissionState='unknown';
+  return'unknown'
+ }
 }
 async function loadCameraPreference(){
- cameraRemembered=readLocalCameraPreference();
- paintCameraPreference();
- if(!sessionUserId)return cameraRemembered;
+ hydrateCameraPreferenceFromCache();
+ if(!sessionUserId){cameraPreferenceLoaded=true;return cameraRemembered}
  try{
   const {data,error}=await db.from('profiles').select('ui_preferences').eq('id',sessionUserId).maybeSingle();
   if(error)throw error;
   const prefs=data?.ui_preferences&&typeof data.ui_preferences==='object'?data.ui_preferences:{};
-  cameraRemembered=prefs.scanner_camera_authorized===true||cameraRemembered;
-  if(cameraRemembered)writeLocalCameraPreference(true);
+  if(prefs.scanner_camera_authorized===true){
+   cameraRemembered=true;
+   writeLocalCameraPreference(true)
+  }else if(prefs.scanner_camera_authorized===false&&cameraPermissionState==='denied'){
+   cameraRemembered=false;
+   writeLocalCameraPreference(false)
+  }
  }catch(e){console.warn('Préférence caméra:',e)}
- cameraPreferenceLoaded=true;paintCameraPreference();return cameraRemembered
+ cameraPreferenceLoaded=true;
+ return cameraRemembered
 }
 async function rememberCameraPermission(granted){
  const next=granted===true;
- cameraRemembered=next;writeLocalCameraPreference(next);paintCameraPreference();
- if(!sessionUserId)return;
+ cameraRemembered=next;
+ writeLocalCameraPreference(next);
+ if(!sessionUserId||!db)return;
  try{
   const {data,error}=await db.from('profiles').select('ui_preferences').eq('id',sessionUserId).maybeSingle();
   if(error)throw error;
   const prefs=data?.ui_preferences&&typeof data.ui_preferences==='object'?{...data.ui_preferences}:{};
   if(prefs.scanner_camera_authorized===next&&(!next||prefs.scanner_camera_authorized_at))return;
   prefs.scanner_camera_authorized=next;
-  if(next)prefs.scanner_camera_authorized_at=prefs.scanner_camera_authorized_at||new Date().toISOString();
-  else delete prefs.scanner_camera_authorized_at;
+  if(next){
+   prefs.scanner_camera_authorized_at=prefs.scanner_camera_authorized_at||new Date().toISOString();
+   prefs.scanner_camera_last_confirmed_at=new Date().toISOString()
+  }else{
+   delete prefs.scanner_camera_authorized_at;
+   delete prefs.scanner_camera_last_confirmed_at
+  }
   const {error:updateError}=await db.from('profiles').update({ui_preferences:prefs}).eq('id',sessionUserId);
   if(updateError)throw updateError
  }catch(e){console.warn('Enregistrement préférence caméra:',e)}
@@ -154,9 +192,24 @@ function manualEanCandidates(v){
  return [...new Set(out.filter(Boolean))]
 }
 function safeStop(){
-  if(!scanner||!scannerRunning)return Promise.resolve();
+  if(!scanner||(!scannerRunning&&!scannerStarting))return Promise.resolve();
   scannerRunning=false;
-  return scanner.stop().catch(()=>{}).then(()=>{try{scanner.clear()}catch(_){}});
+  scannerStarting=false;
+  return Promise.resolve(scanner.stop?.()).catch(()=>{}).then(()=>{try{scanner.clear()}catch(_){}});
+}
+async function tuneActiveCamera(){
+ try{
+  const video=$('reader')?.querySelector('video');
+  if(!video)return;
+  video.setAttribute('playsinline','');
+  video.muted=true;
+  const track=video.srcObject?.getVideoTracks?.()[0];
+  if(!track?.getCapabilities||!track?.applyConstraints)return;
+  const caps=track.getCapabilities(),advanced={};
+  if(Array.isArray(caps.focusMode)&&caps.focusMode.includes('continuous'))advanced.focusMode='continuous';
+  if(Array.isArray(caps.exposureMode)&&caps.exposureMode.includes('continuous'))advanced.exposureMode='continuous';
+  if(Object.keys(advanced).length)await track.applyConstraints({advanced:[advanced]})
+ }catch(e){console.debug('Optimisation caméra non appliquée:',e)}
 }
 function lockScannerViewport(){
  try{window.scrollTo(0,0)}catch(_){}
@@ -202,41 +255,64 @@ function loadQrLibrary(){
 }
 async function startCamera(){
   if(!isMobileView())return;
-  hideCameraFallback();
-  try{await loadQrLibrary()}catch(e){
-    console.warn('Scanner module:',e);
-    showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
-    return
-  }
-  if(!window.Html5Qrcode||!window.Html5QrcodeSupportedFormats){
-    showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
-    return
-  }
-  await safeStop();
-  try{
-    scanner=new Html5Qrcode('reader',{
-      formatsToSupport:[
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8,
-        Html5QrcodeSupportedFormats.UPC_A
-      ],
-      verbose:false
-    });
-    setCameraState(cameraRemembered?'Ouverture de la caméra…':'Demande d’accès…');
-    await scanner.start(
-      {facingMode:'environment'},
-      {fps:12,qrbox:(w,h)=>({width:Math.min(310,Math.max(220,w*.78)),height:Math.min(130,Math.max(100,h*.34))}),aspectRatio:1.777778,disableFlip:true},
-      onScanSuccess,
-      ()=>{}
-    );
-    scannerRunning=true;
-    setCameraState('Prêt à scanner');
-    if(!cameraRemembered)rememberCameraPermission(true);
-  }catch(e){
-    console.warn('Scanner camera:',e);
-    if(permissionDenied(e)&&cameraRemembered)await rememberCameraPermission(false);
-    showCameraFallback('Autorise la caméra dans les réglages du navigateur puis touche « Réessayer ».')
-  }
+  if(cameraStartPromise)return cameraStartPromise;
+  cameraStartPromise=(async()=>{
+    if(scannerRunning)return;
+    hideCameraFallback();
+    const permission=await queryCameraPermission();
+    if(permission==='denied'){
+      showCameraFallback('L’accès à la caméra est bloqué dans les réglages du navigateur. Autorise Nethor puis touche « Réessayer ».');
+      return
+    }
+    try{await loadQrLibrary()}catch(e){
+      console.warn('Scanner module:',e);
+      showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
+      return
+    }
+    if(!window.Html5Qrcode||!window.Html5QrcodeSupportedFormats){
+      showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
+      return
+    }
+    if(scannerRunning)return;
+    try{
+      scannerStarting=true;
+      scanner=new Html5Qrcode('reader',{
+        formatsToSupport:[
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.UPC_A
+        ],
+        experimentalFeatures:{useBarCodeDetectorIfSupported:true},
+        verbose:false
+      });
+      setCameraState(cameraRemembered||permission==='granted'?'Ouverture de la caméra…':'Autorisation caméra…');
+      await scanner.start(
+        {facingMode:'environment'},
+        {
+          fps:24,
+          qrbox:(w,h)=>({width:Math.min(380,Math.max(260,w*.92)),height:Math.min(140,Math.max(88,h*.28))}),
+          aspectRatio:1.777778,
+          disableFlip:true
+        },
+        onScanSuccess,
+        ()=>{}
+      );
+      scannerStarting=false;
+      scannerRunning=true;
+      setCameraState('Prêt à scanner');
+      tuneActiveCamera();
+      if(!cameraRemembered||permission!=='granted')rememberCameraPermission(true)
+    }catch(e){
+      scannerStarting=false;
+      scannerRunning=false;
+      console.warn('Scanner camera:',e);
+      if(permissionDenied(e))await rememberCameraPermission(false);
+      showCameraFallback(permissionDenied(e)
+        ?'Autorise la caméra dans les réglages du navigateur puis touche « Réessayer ».'
+        :'Impossible d’ouvrir la caméra. Ferme les autres applications qui l’utilisent puis réessaie.')
+    }
+  })().finally(()=>{cameraStartPromise=null});
+  return cameraStartPromise
 }
 
 async function onScanSuccess(decodedText){
@@ -374,13 +450,25 @@ async function boot(){
   sessionUserId=session.user.id;
   if(!isMobileView())return;
   lockScannerViewport();
-  await loadCameraPreference();
+  hydrateCameraPreferenceFromCache();
+  const permissionPromise=queryCameraPermission();
+  const preferenceSync=loadCameraPreference();
   lockScannerViewport();
-  setTimeout(startCamera,cameraRemembered?90:160)
+  await permissionPromise;
+  startCamera();
+  preferenceSync.catch(()=>{})
 }
-window.addEventListener('pagehide',()=>{safeStop()});
+window.addEventListener('pagehide',()=>{if(visibilityStopTimer)clearTimeout(visibilityStopTimer);safeStop()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('result')?.classList.contains('resultModal'))closeProductModal()});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)safeStop();else if(isMobileView()&&!currentProduct&&!scannerRunning)setTimeout(startCamera,180)});
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){
+  if(visibilityStopTimer)clearTimeout(visibilityStopTimer);
+  visibilityStopTimer=setTimeout(()=>{if(document.hidden)safeStop()},1800);
+  return
+ }
+ if(visibilityStopTimer){clearTimeout(visibilityStopTimer);visibilityStopTimer=null}
+ if(isMobileView()&&!currentProduct&&!scannerRunning&&!scannerStarting)setTimeout(startCamera,80)
+});
 document.addEventListener('gesturestart',e=>{if(isMobileView())e.preventDefault()},{passive:false});
 document.addEventListener('gesturechange',e=>{if(isMobileView())e.preventDefault()},{passive:false});
 document.addEventListener('touchmove',e=>{if(isMobileView()&&e.touches?.length>1)e.preventDefault()},{passive:false});
