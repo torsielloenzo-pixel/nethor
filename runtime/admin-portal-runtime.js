@@ -13,9 +13,10 @@ function validUrl(v){const s=String(v||'').trim();return !s||(!/^\s*(javascript|
 function markDirty(){dirty=true;$('saveState').textContent='Modifications non enregistrées';$('saveState').className='saveState'}
 const MANAGEMENT_META={
  overview:{group:'Gestion',title:'Tableau de bord',description:'Vue d’ensemble de l’administration Nethor et accès aux principales zones de gestion.'},
- general:{group:'Éditeur du portail',title:'Identité & apparence',description:'Configure le nom, le logo et les couleurs communes de Nethor.'},
- system:{group:'Éditeur du portail',title:'Pages & menus',description:'Organise les pages, leur visibilité, leurs libellés et leurs accès.'},
- mobile:{group:'Éditeur du portail',title:'Navigation mobile',description:'Configure les raccourcis affichés dans la barre de navigation mobile.'},
+ general:{group:'Éditeur du portail',title:'Identité globale',description:'Définit les valeurs communes et les couleurs utilisées lorsque Mobile ou Desktop n’ont pas de réglage spécifique.'},
+ system:{group:'Éditeur du portail',title:'Pages & menus',description:'Organise les pages, leur visibilité, leurs libellés et leurs accès communs.'},
+ mobile:{group:'Éditeur du portail',title:'Mobile',description:'Personnalise l’identité, les menus, les boutons, la barre rapide et le menu utilisateur réellement affichés sur mobile.'},
+ desktop:{group:'Éditeur du portail',title:'Desktop',description:'Personnalise l’identité, les menus et les boutons réellement affichés sur ordinateur.'},
  blocks:{group:'Éditeur du portail',title:'Blocs & widgets',description:'Règle les composants fonctionnels et widgets indépendamment des pages.'},
  articles:{group:'Contenus',title:'Fiches articles',description:'Administre le référentiel produits, les familles, catégories et EAN13.'},
  media:{group:'Éditeur du portail',title:'Médias & logos',description:'Consulte et télécharge les ressources visuelles officielles utilisées par Nethor.'},
@@ -61,9 +62,9 @@ function updateManagementHero(name){
  if($('managementHeroText'))$('managementHeroText').textContent=meta.description
 }
 function showTab(name,btn,opts={}){
- const aliases={pages:'system',identity:'general',navigation:'mobile',widgets:'blocks'};
+ const aliases={pages:'system',identity:'general',navigation:'mobile',widgets:'blocks',computer:'desktop'};
  name=aliases[name]||name;
- const valid=['overview','general','system','mobile','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
+ const valid=['overview','general','system','mobile','desktop','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
  if(!valid.includes(name))name='overview';
  btn=btn||managementButtonFor(name);
  document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));
@@ -165,6 +166,12 @@ function normalize(raw){
  c.mobile_user_menu=c.mobile_user_menu&&typeof c.mobile_user_menu==='object'?c.mobile_user_menu:{};
  c.mobile_user_menu.items=c.mobile_user_menu.items&&typeof c.mobile_user_menu.items==='object'?c.mobile_user_menu.items:{};
  c.mobile_bar=c.mobile_bar&&typeof c.mobile_bar==='object'?c.mobile_bar:{enabled:true,items:[]};
+ c.platform_ui=c.platform_ui&&typeof c.platform_ui==='object'?c.platform_ui:{};
+ for(const kind of ['mobile','desktop']){
+  const current=c.platform_ui[kind]&&typeof c.platform_ui[kind]==='object'?c.platform_ui[kind]:{};
+  const asset=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}};
+  c.platform_ui[kind]={header_logo:asset('header_logo'),login_logo:asset('login_logo'),welcome_media:{...asset('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'}}
+ }
  return c
 }
 function waitProfileUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI||n++>100){clearInterval(t);resolve()}},50)})}
@@ -214,6 +221,8 @@ function ensurePages(){
    config.pages[m.id].home=false;config.pages[m.id].user_menu=false;
    config.pages[m.id].default_home=false;config.pages[m.id].default_user=false
   }
+  const po=config.pages[m.id].platform_overrides&&typeof config.pages[m.id].platform_overrides==='object'?config.pages[m.id].platform_overrides:{};
+  config.pages[m.id].platform_overrides={mobile:po.mobile&&typeof po.mobile==='object'?po.mobile:{},desktop:po.desktop&&typeof po.desktop==='object'?po.desktop:{}}
  })
 }
 function field(label,value,key,id,cls=''){return '<div class="field '+cls+'"><label>'+esc(label)+'</label><input value="'+attr(value)+'" data-page="'+attr(id)+'" data-key="'+attr(key)+'"></div>'}
@@ -596,7 +605,172 @@ function toggleModuleBody(id,event){
  const body=$('moduleBody_'+id),card=$('moduleCard_'+id);if(!body)return;
  const opening=body.classList.contains('collapsed');body.classList.toggle('collapsed',!opening);card?.classList.toggle('open',opening);window.NettoSounds?.play?.(opening?'menuOpen':'menuClose')
 }
-const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-mobile','tab-blocks','tab-media','tab-notifications']);
+
+function ensurePlatformUiConfig(){
+ config.platform_ui=config.platform_ui&&typeof config.platform_ui==='object'?config.platform_ui:{};
+ for(const kind of ['mobile','desktop']){
+  const current=config.platform_ui[kind]&&typeof config.platform_ui[kind]==='object'?config.platform_ui[kind]:{};
+  const clean=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}};
+  config.platform_ui[kind]={header_logo:clean('header_logo'),login_logo:clean('login_logo'),welcome_media:{...clean('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'}}
+ }
+ return config.platform_ui
+}
+function platformUiNode(kind){ensurePlatformUiConfig();return config.platform_ui[kind==='desktop'?'desktop':'mobile']}
+function platformLabel(kind){return kind==='desktop'?'Desktop':'Mobile'}
+function platformDefaultAsset(kind,key){
+ if(key==='header_logo')return String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
+ if(key==='login_logo')return kind==='mobile'?'assets/app-icon-mobile-v73.svg?v=73':'assets/app-icon-v63.svg';
+ return kind==='mobile'?'assets/app-icon-mobile-v73.svg?v=73':'assets/app-icon-v63.svg'
+}
+function platformAssetNode(kind,key){const node=platformUiNode(kind);return node[key]}
+function platformAssetUrl(kind,key){return String(platformAssetNode(kind,key)?.url||'').trim()||platformDefaultAsset(kind,key)}
+function platformAssetIsVideo(asset){return /\.(mp4|webm)(?:$|\?)/i.test(String(asset?.url||''))}
+function platformAssetPreview(kind,key){
+ const asset=platformAssetNode(kind,key),url=platformAssetUrl(kind,key),isWelcome=key==='welcome_media';
+ if(isWelcome&&asset?.type==='animation'&&platformAssetIsVideo(asset))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
+ return '<img src="'+attr(url)+'" alt="">'
+}
+function platformAssetAccept(key){
+ return key==='welcome_media'
+  ?'.png,.webp,.svg,.gif,.mp4,.webm,image/png,image/webp,image/svg+xml,image/gif,video/mp4,video/webm'
+  :'.png,.webp,.svg,.ico,image/png,image/webp,image/svg+xml,image/x-icon,image/vnd.microsoft.icon'
+}
+function platformAssetRow(kind,key,title,description){
+ const asset=platformAssetNode(kind,key),custom=!!String(asset?.url||'').trim(),welcome=key==='welcome_media';
+ return '<div class="platformAssetRow">'+
+  '<div class="platformAssetPreview">'+platformAssetPreview(kind,key)+'</div>'+
+  '<div class="platformAssetCopy"><strong>'+esc(title)+'</strong><span>'+esc(description)+'</span>'+
+   (welcome?'<label class="platformMediaMode">Type <select data-platform-welcome-mode="'+attr(kind)+'"><option value="image" '+(asset.type!=='animation'?'selected':'')+'>Logo / image</option><option value="animation" '+(asset.type==='animation'?'selected':'')+'>Animation</option></select></label>':'')+
+   '<small>'+(custom?esc(asset.name||'Fichier personnalisé'):'Valeur Nethor par défaut')+'</small>'+
+  '</div>'+
+  '<div class="platformAssetActions"><button class="btn secondaryBtn mini" type="button" onclick="choosePlatformAsset(\''+kind+'\',\''+key+'\')">Importer</button><button class="btn secondaryBtn mini" type="button" onclick="downloadPlatformAsset(\''+kind+'\',\''+key+'\')">Télécharger</button>'+(custom?'<button class="btn secondaryBtn mini" type="button" onclick="removePlatformAsset(\''+kind+'\',\''+key+'\')">Réinitialiser</button>':'')+'</div>'+
+  '<input id="platformAssetFile_'+kind+'_'+key+'" type="file" accept="'+platformAssetAccept(key)+'" hidden onchange="uploadPlatformAsset(\''+kind+'\',\''+key+'\',this)">'+
+ '</div>'
+}
+function renderPlatformIdentity(kind){
+ const host=$('platformIdentity_'+kind);if(!host)return;
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Chaque ressource peut être différente de l’autre plateforme. Sans fichier personnalisé, Nethor conserve automatiquement son visuel actuel.</p></div></div>'+
+ '<div class="platformAssetList">'+
+ platformAssetRow(kind,'header_logo','Logo de l’entête','Logo utilisé dans les en-têtes de l’application sur '+platformLabel(kind)+'.')+
+ platformAssetRow(kind,'login_logo','Logo de connexion','Logo affiché sur la page de connexion '+platformLabel(kind)+'.')+
+ platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
+ '</div>';
+ host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)})
+}
+function choosePlatformAsset(kind,key){$('platformAssetFile_'+kind+'_'+key)?.click()}
+function platformAssetExtension(file){
+ const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
+ return ['png','webp','svg','ico','gif','mp4','webm'].includes(ext)?ext:''
+}
+async function uploadPlatformAsset(kind,key,input){
+ const file=input?.files?.[0],state=$('saveState');if(!file)return;
+ try{
+  const ext=platformAssetExtension(file),welcome=key==='welcome_media';
+  const allowed=welcome?['png','webp','svg','gif','mp4','webm']:['png','webp','svg','ico'];
+  if(!ext||!allowed.includes(ext))throw new Error('Format non compatible avec cet emplacement.');
+  const limit=welcome?12*1024*1024:5*1024*1024;if(file.size>limit)throw new Error('Fichier trop lourd : '+(welcome?'12':'5')+' Mo maximum.');
+  state.className='saveState';state.textContent='Import '+platformLabel(kind)+'…';
+  const storagePath='platform/'+kind+'/'+key+'-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=platformAssetNode(kind,key);
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;
+  if(welcome&&['gif','mp4','webm'].includes(ext))node.type='animation';
+  markDirty();renderPlatformIdentity(kind);state.textContent='Média prêt à être enregistré'
+ }catch(e){state.className='saveState err';state.textContent='Erreur média : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+async function downloadAssetUrl(url,name){
+ if(!url)return;
+ try{
+  const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('Téléchargement impossible');
+  const blob=await r.blob(),href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download=name||'nethor-media';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1200)
+ }catch(_){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.download=name||'nethor-media';document.body.appendChild(a);a.click();a.remove()}
+}
+function downloadPlatformAsset(kind,key){
+ const node=platformAssetNode(kind,key),url=platformAssetUrl(kind,key),name=node?.name||('Nethor-'+kind+'-'+key+'.svg');downloadAssetUrl(url,name)
+}
+function removePlatformAsset(kind,key){
+ const node=platformAssetNode(kind,key);node.url='';node.path='';node.name='';if(key==='welcome_media')node.type='image';markDirty();renderPlatformIdentity(kind)
+}
+function ensurePagePlatformOverride(id,kind){
+ const p=config.pages[id];if(!p)return{};
+ p.platform_overrides=p.platform_overrides&&typeof p.platform_overrides==='object'?p.platform_overrides:{};
+ p.platform_overrides[kind]=p.platform_overrides[kind]&&typeof p.platform_overrides[kind]==='object'?p.platform_overrides[kind]:{};
+ return p.platform_overrides[kind]
+}
+function pagePlatformValue(m,kind,key){
+ const p=config.pages[m.id]||{},o=ensurePagePlatformOverride(m.id,kind),fallback={
+  label:p.label||m.homeLabel||m.label,nav_label:p.nav_label||m.label,subtitle:p.subtitle||m.subtitle||'',description:p.description||m.description||'',
+  url:p.url||m.url||'',action:p.action||m.action||'Ouvrir',icon:p.icon||m.icon||'',image_url:p.image_url||m.asset||'',
+  color:p.color||config.theme.primary,accent:p.accent||config.theme.secondary
+ };
+ return o[key]!==undefined&&o[key]!==null&&String(o[key])!==''?o[key]:fallback[key]
+}
+function platformModulesFor(kind){return builtinModules().filter(m=>kind==='mobile'?moduleMobileAvailable(m):moduleDesktopAvailable(m))}
+function platformComponentCard(m,kind){
+ const o=ensurePagePlatformOverride(m.id,kind),image=String(pagePlatformValue(m,kind,'image_url')||'');
+ return '<article class="platformComponentCard" data-platform-component="'+attr(m.id)+'">'+
+  '<div class="platformComponentTop"><div class="platformComponentVisual">'+visualHtml(image,pagePlatformValue(m,kind,'icon'))+'</div><div><strong>'+esc(pagePlatformValue(m,kind,'nav_label')||m.label)+'</strong><small>'+esc(m.id)+' · '+esc(pagePlatformLabel(m))+'</small></div><button class="btn secondaryBtn mini" type="button" onclick="resetPlatformPage(\''+kind+'\',\''+attr(m.id)+'\')">Réinitialiser</button></div>'+
+  '<div class="platformComponentFields">'+
+   fieldPlatform('Nom accueil',pagePlatformValue(m,kind,'label'),'label',m.id,kind)+
+   fieldPlatform('Nom navigation',pagePlatformValue(m,kind,'nav_label'),'nav_label',m.id,kind)+
+   fieldPlatform('Sous-titre',pagePlatformValue(m,kind,'subtitle'),'subtitle',m.id,kind)+
+   fieldPlatform('Texte du bouton',pagePlatformValue(m,kind,'action'),'action',m.id,kind)+
+   fieldPlatform('Icône / emoji',pagePlatformValue(m,kind,'icon'),'icon',m.id,kind)+
+   fieldPlatform('Destination',pagePlatformValue(m,kind,'url'),'url',m.id,kind)+
+  '</div>'+
+  '<div class="platformImageEditor"><div class="platformImagePreview">'+visualHtml(image,pagePlatformValue(m,kind,'icon'))+'</div><div><strong>Logo / image de ce menu</strong><small>Cette image remplace uniquement le visuel '+platformLabel(kind)+'. La barre mobile utilise aussi ce visuel lorsqu’il est personnalisé.</small></div><div class="platformAssetActions"><button class="btn secondaryBtn mini" type="button" onclick="choosePlatformPageImage(\''+kind+'\',\''+attr(m.id)+'\')">Importer</button>'+(image?'<button class="btn secondaryBtn mini" type="button" onclick="downloadPlatformPageImage(\''+kind+'\',\''+attr(m.id)+'\')">Télécharger</button>':'')+(o.image_url?'<button class="btn secondaryBtn mini" type="button" onclick="removePlatformPageImage(\''+kind+'\',\''+attr(m.id)+'\')">Réinitialiser</button>':'')+'</div><input id="platformPageFile_'+kind+'_'+attr(m.id)+'" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml" hidden onchange="uploadPlatformPageImage(\''+kind+'\',\''+attr(m.id)+'\',this)"></div>'+
+  '<div class="platformColorRow"><label>Couleur <input type="color" value="'+attr(validColor(pagePlatformValue(m,kind,'color'),config.theme.primary))+'" data-platform-kind="'+kind+'" data-platform-page="'+attr(m.id)+'" data-platform-key="color"></label><label>Accent <input type="color" value="'+attr(validColor(pagePlatformValue(m,kind,'accent'),config.theme.secondary))+'" data-platform-kind="'+kind+'" data-platform-page="'+attr(m.id)+'" data-platform-key="accent"></label></div>'+
+ '</article>'
+}
+function fieldPlatform(label,value,key,id,kind){return '<div class="field"><label>'+esc(label)+'</label><input value="'+attr(value||'')+'" data-platform-kind="'+kind+'" data-platform-page="'+attr(id)+'" data-platform-key="'+attr(key)+'"></div>'}
+function renderPlatformComponents(kind){
+ const host=$('platformComponents_'+kind);if(!host)return;
+ const mods=platformModulesFor(kind);
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Menus & boutons '+platformLabel(kind)+'</h2><p>Modifie le libellé, l’icône, l’image, le bouton et la destination pour cette plateforme uniquement. Les droits et l’activation restent centralisés dans Pages & menus.</p></div></div>'+
+ PAGE_GROUP_ORDER.map(group=>{const rows=mods.filter(m=>pageGroup(m)===group);return rows.length?'<section class="platformComponentGroup"><div class="moduleGroupHead"><strong>'+esc(PAGE_GROUP_LABELS[group])+'</strong><span>'+rows.length+' élément'+(rows.length>1?'s':'')+'</span></div>'+rows.map(m=>platformComponentCard(m,kind)).join('')+'</section>':''}).join('');
+ host.querySelectorAll('[data-platform-kind][data-platform-page][data-platform-key]').forEach(el=>el.oninput=el.onchange=()=>{
+  const o=ensurePagePlatformOverride(el.dataset.platformPage,el.dataset.platformKind),key=el.dataset.platformKey;o[key]=el.value;markDirty()
+ })
+}
+function choosePlatformPageImage(kind,id){$('platformPageFile_'+kind+'_'+id)?.click()}
+async function uploadPlatformPageImage(kind,id,input){
+ const state=$('saveState');try{state.textContent='Import du visuel '+platformLabel(kind)+'…';const r=await uploadAsset(input.files?.[0],'page-'+kind+'-'+id);if(!r)return;const o=ensurePagePlatformOverride(id,kind);o.image_path=r.path;o.image_url=r.url;markDirty();renderPlatformComponents(kind)}catch(e){state.className='saveState err';state.textContent='Erreur image : '+e.message}finally{if(input)input.value=''}
+}
+function downloadPlatformPageImage(kind,id){
+ const m=builtinModules().find(x=>x.id===id);if(!m)return;const o=ensurePagePlatformOverride(id,kind),url=String(o.image_url||pagePlatformValue(m,kind,'image_url')||'');downloadAssetUrl(url,o.image_name||('Nethor-'+kind+'-'+id))
+}
+function removePlatformPageImage(kind,id){const o=ensurePagePlatformOverride(id,kind);delete o.image_url;delete o.image_path;delete o.image_name;markDirty();renderPlatformComponents(kind)}
+function resetPlatformPage(kind,id){
+ if(!confirm('Réinitialiser les réglages '+platformLabel(kind)+' de cette page ?'))return;
+ const p=config.pages[id];if(!p)return;p.platform_overrides=p.platform_overrides||{};p.platform_overrides[kind]={};markDirty();renderPlatformComponents(kind);window.NettoSounds?.play?.('confirm')
+}
+function renderPlatformEditors(){
+ ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop')
+}
+function ensurePortalPlatformStructure(){
+ const nav=document.querySelector('.managementNavGroup[data-nav-group="portal"] .managementNavChildren');
+ const mobileBtn=nav?.querySelector('[data-tab="mobile"]');
+ if(mobileBtn){mobileBtn.textContent='Mobile';mobileBtn.setAttribute('onclick',"showTab('mobile',this)")}
+ if(nav&&!nav.querySelector('[data-tab="desktop"]')){
+  const btn=document.createElement('button');btn.className='managementNavChild';btn.dataset.tab='desktop';btn.type='button';btn.textContent='Desktop';btn.setAttribute('onclick',"showTab('desktop',this)");
+  mobileBtn?.insertAdjacentElement('afterend',btn)
+ }
+ const mobileTab=$('tab-mobile');
+ if(mobileTab){
+  if(!$('platformIdentity_mobile')){const p=document.createElement('div');p.id='platformIdentity_mobile';p.className='panel platformIdentityPanel';mobileTab.prepend(p)}
+  if(!$('platformComponents_mobile')){const p=document.createElement('div');p.id='platformComponents_mobile';p.className='panel platformComponentsPanel';mobileTab.appendChild(p)}
+  const bar=mobileTab.querySelector('.panel:not(.platformIdentityPanel):not(.platformComponentsPanel):not(#mobileUserMenuAdminPanel) .toolbar h2');if(bar)bar.textContent='Barre de navigation mobile actuelle'
+ }
+ if(!$('tab-desktop')){
+  const section=document.createElement('section');section.id='tab-desktop';section.className='section';
+  section.innerHTML='<div id="platformIdentity_desktop" class="panel platformIdentityPanel"></div><div id="platformComponents_desktop" class="panel platformComponentsPanel"></div>';
+  const before=$('tab-blocks');before?.parentNode?.insertBefore(section,before)
+ }
+ document.querySelectorAll('.managementActionGrid button[onclick*="showTab(\'mobile\')"]').forEach(btn=>{const s=btn.querySelector('strong');if(s)s.textContent='Mobile';const sm=btn.querySelector('small');if(sm)sm.textContent='Identité, navigation et menus'});
+}
+
+const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-mobile','tab-desktop','tab-blocks','tab-media','tab-notifications']);
 const MANAGEMENT_PANEL_ICONS={
  'Identité du portail':'◈','Couleurs générales':'◉','Barre de navigation mobile':'▣',
  'Blocs & widgets':'▥','Bibliothèque des logos Nethor':'▧','Envoyer une notification':'↗',
@@ -707,10 +881,10 @@ function validateConfig(){
 }
 async function saveConfig(){
  const state=$('saveState');state.className='saveState';state.textContent='Enregistrement…';
- try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
+ try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
 }
 async function reloadConfig(){if(dirty&&!confirm('Annuler les modifications non enregistrées ?'))return;await loadConfig();window.NettoSounds?.play?.('confirm')}
-async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
+async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
 
 
 function logDate(value){const d=new Date(value);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
@@ -1378,9 +1552,9 @@ async function saveManagementArticle(id){
 async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
  const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;
- await waitProfileUI();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];bindGlobal();await loadConfig();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();enhanceCompactPortal();
+ await waitProfileUI();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];ensurePortalPlatformStructure();bindGlobal();await loadConfig();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();enhanceCompactPortal();
  const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoManagementTab')||'overview';
- const validTabs=['overview','general','system','mobile','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
+ const validTabs=['overview','general','system','mobile','desktop','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
  const tab=validTabs.includes(saved)?saved:'overview';
  const requestedAccountView=qs.get('sub')||localStorage.getItem('nettoManagementAccountsView')||'accounts';
  accountSubview=['accounts','roles','logs'].includes(requestedAccountView)?requestedAccountView:'accounts';
