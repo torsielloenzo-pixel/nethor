@@ -1,11 +1,11 @@
 {
-  "version": 288,
-  "label": "v1.43.51",
+  "version": 289,
+  "label": "v1.43.52",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — logo Nethor complet",
-  "message": "Correction du mot-symbole Desktop : le « thor » est de nouveau visible. « ne » reste orange ; « thor » est noir en thème clair et blanc en thème sombre. Le correctif neutralise l’ancienne règle qui masquait le pseudo-élément du logo et force le rechargement du cache.",
-  "published_at": "2026-10-01T01:08:00+02:00",
+  "title": "Desktop — logo strictement identique au Mobile",
+  "message": "Le logo Desktop ne repose plus sur des pseudo-éléments. Il utilise désormais le même mot-symbole HTML/CSS que le Mobile, avec exactement la même police, graisse, espacement et couleurs : « ne » orange, « thor » noir en clair et blanc en sombre. Les anciens titres accolés au logo ont été retirés des en-têtes Desktop concernés.",
+  "published_at": "2026-10-01T01:15:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
