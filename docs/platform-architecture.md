@@ -1238,3 +1238,117 @@ La phase ne duplique pas :
 - chargement et rafraîchissement des données.
 
 Les mêmes IDs fonctionnels sont créés dans le layout actif sur Desktop et Mobile.
+
+
+## Phase 4.13 — Chat Desktop / Mobile
+
+Le Chat rejoint l’architecture Desktop / Mobile séparée.
+
+### Structures dédiées
+
+```text
+ui/
+├── desktop/
+│   ├── chat-layout.js
+│   └── chat-layout.css
+└── mobile/
+    ├── chat-layout.js
+    └── chat-layout.css
+```
+
+Le HTML commun expose désormais :
+
+```html
+<div data-nethor-chat-layout></div>
+```
+
+Les menus, modales, feuilles d’actions et lightbox restent communs, car ils utilisent le même moteur Chat.
+
+`platform-page-layout.js` v12 monte uniquement la structure active.
+
+### Desktop
+
+Desktop construit physiquement :
+
+- la liste des discussions ;
+- la conversation active ;
+- le panneau latéral d’informations `chatDetailsPane`.
+
+Le bouton `mobileBack` n’est pas créé sur Desktop.
+
+Les styles auparavant protégés par `min-width:781px` appartiennent maintenant à `ui/desktop/chat-layout.css`.
+
+Le comportement responsive Desktop qui masque le panneau d’informations sous 1200 px reste un simple ajustement interne Desktop.
+
+### Mobile
+
+Mobile construit physiquement :
+
+- la liste des discussions ;
+- la conversation active ;
+- le bouton Retour conversation → discussions.
+
+Le panneau `chatDetailsPane` n’est pas créé sur Mobile.
+
+Le comportement Mobile historique protégé par `max-width:780px` est maintenant la base directe de `ui/mobile/chat-layout.css` : un Mobile large reste donc Mobile.
+
+Les petits breakpoints 560 px et 430 px restent des raffinements internes Mobile.
+
+### Fin de la décision de plateforme par viewport
+
+L’ancien code :
+
+```js
+!document.documentElement.classList.contains('nethorPhoneDevice')
+&& window.innerWidth > 780
+```
+
+est remplacé par `NethorPlatform`.
+
+Le listener `resize` qui pouvait ajouter la classe de conversation Mobile après redimensionnement a été supprimé.
+
+Une fenêtre Desktop réduite ne peut donc plus basculer le comportement Chat vers Mobile.
+
+### Conversation Mobile
+
+`mobileConversationOpen` est maintenant ajouté uniquement sur plateforme Mobile lorsqu’une conversation doit réellement être affichée.
+
+Desktop n’utilise plus cette classe pour afficher sa conversation, puisque la conversation fait partie en permanence de son propre DOM.
+
+Les deep-links `?c=` et `?user=` continuent d’ouvrir directement la conversation sur Mobile.
+
+### CSS partagé
+
+`chat-v2.css` v26 ne contient plus aucun `@media`.
+
+Les blocs :
+
+- `min-width:781px` ;
+- `max-width:780px` ;
+- `max-width:1199px` ;
+- `max-width:560px` ;
+- `max-width:430px`
+
+sont répartis dans les feuilles de plateforme appropriées.
+
+### Moteur temps réel conservé
+
+`chat-v2.js` reste le moteur unique pour :
+
+- conversations privées ;
+- groupes ;
+- canal Général ;
+- rôles affichés dans les messages ;
+- recherche ;
+- non-lus ;
+- archives ;
+- réactions ;
+- réponses et modifications ;
+- pièces jointes ;
+- messages vocaux ;
+- présence ;
+- participants ;
+- actions administrateur ;
+- Supabase Realtime sur messages, réactions, conversations et participants.
+
+Aucune logique de données n’est dupliquée entre Desktop et Mobile.
