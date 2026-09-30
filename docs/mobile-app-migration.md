@@ -413,6 +413,203 @@ Il n'est pas encore redirigé automatiquement vers `mobile.html`, ce qui garde u
 
 Desktop continue d'utiliser `home.html` et son architecture existante.
 
+## Phase 5 — Menu utilisateur et Notifications
+
+La phase 5 ajoute deux nouvelles vues à `mobile.html` :
+
+```text
+ui/mobile/views/
+├── notifications/
+│   ├── notifications-view.js
+│   └── notifications-view.css
+└── user-menu/
+    ├── user-menu-view.js
+    └── user-menu-view.css
+```
+
+Les vues sont enregistrées sous :
+
+```text
+notifications
+user-menu
+```
+
+### Menu utilisateur
+
+Le Menu utilisateur n'ouvre plus `user-menu.html` lorsqu'il est utilisé depuis le nouveau shell.
+
+Il est maintenant monté dans `#mobile-view` et réutilise :
+
+- profil ;
+- rôle ;
+- avatar ;
+- `site_config` ;
+- sous-rôles et permissions ;
+- préférences personnelles.
+
+La structure existante est conservée :
+
+- Mon profil ;
+- Personnalisation ;
+- Accueil ;
+- Stock F&L ;
+- Planning ;
+- Chat ;
+- Scanner ;
+- Fiches articles ;
+- Réglages des notifications ;
+- pages administratives autorisées ;
+- autres raccourcis configurés ;
+- thème clair/sombre ;
+- Mise à jour ;
+- Signaler un problème ;
+- Déconnexion.
+
+Le rendu réutilise le constructeur `NethorMobileShell.buildUserMenu()` déjà présent dans Nethor.
+
+### Droits et visibilité
+
+La vue respecte :
+
+- `pages[id].enabled` ;
+- `pages[id].roles` ;
+- `role_permissions` ;
+- les permissions de sous-rôle ;
+- `pages[id].user_menu` ;
+- `mobile_user_menu.items` ;
+- `ui_preferences.user_menu`.
+
+Desktop n'est pas concerné par cette logique.
+
+### Thème
+
+Le changement de thème est maintenant fourni par `NethorMobileServices.setThemePreference()`.
+
+Il :
+
+- applique immédiatement le thème au document Mobile ;
+- met à jour le cache local ;
+- met à jour `profiles.ui_preferences.theme` ;
+- conserve la même session Supabase.
+
+### Mise à jour
+
+Le Menu utilise maintenant `NethorMobileServices.checkForUpdates()`.
+
+La vérification compare :
+
+- la version publiée dans `app-version.json` ;
+- la version réelle du Service Worker actif.
+
+Lorsqu'une version supérieure existe, Nethor peut demander l'installation puis déclencher la purge des anciens caches et l'activation du nouveau Service Worker.
+
+### Déconnexion
+
+La déconnexion appelle directement le service partagé :
+
+```js
+NethorMobileServices.signOut()
+```
+
+Le shell n'ouvre donc pas un second client Auth pour cette action.
+
+### Signaler un problème
+
+Le paramètre historique :
+
+```text
+from=user-menu.html
+```
+
+est conservé pour identifier correctement la page concernée.
+
+Le fallback du routeur mémorise simultanément le parent SPA :
+
+```text
+mobile.html?view=user-menu
+```
+
+afin que le retour Mobile puisse retrouver le Menu après la future migration de cette sous-vue.
+
+### Notifications
+
+`NotificationsView` conserve les fonctions de la page actuelle :
+
+- liste des notifications ;
+- priorité visuelle des non lues ;
+- regroupement Nouveau / Aujourd'hui / Hier / Cette semaine / Plus anciennes ;
+- recherche ;
+- filtre Toutes / Non lues ;
+- menu d'options ;
+- marquer une notification comme lue ;
+- tout marquer comme lu ;
+- ouvrir la destination ;
+- supprimer une notification ;
+- supprimer toutes les notifications.
+
+### Source de données Notifications
+
+La vue n'interroge pas Supabase pour son initialisation.
+
+Elle consomme directement :
+
+```js
+NethorMobileServices.notifications
+NethorMobileServices.unread
+```
+
+et s'abonne au service partagé.
+
+Les changements temps réel reçus par le shell mettent donc à jour à la fois :
+
+- le badge de la barre Mobile ;
+- la liste ouverte dans Notifications.
+
+### Actions Notifications partagées
+
+`MobileServices` expose désormais :
+
+```js
+markNotificationRead(id)
+markAllNotificationsRead()
+deleteNotification(id)
+deleteAllNotifications()
+```
+
+Les modifications restent liées au compte courant et rafraîchissent l'état partagé.
+
+### Navigation depuis une notification
+
+Une notification qui cible une vue déjà migrée reste dans le même document.
+
+Exemple :
+
+```text
+Notifications
+   ↓
+Accueil
+   ↓
+MobileRouter.open("home")
+```
+
+Une destination non migrée utilise encore le fallback HTML avec conservation de ses paramètres.
+
+### Cycle de vie
+
+Les deux vues retirent leurs listeners et abonnements locaux lors de `unmount()`.
+
+Elles ne détruisent jamais :
+
+- la session ;
+- le client Supabase ;
+- les canaux temps réel globaux de `MobileServices`.
+
+### Compatibilité
+
+`user-menu.html` et `notifications.html` restent disponibles comme pages de secours.
+
+Aucune redirection forcée de ces anciennes URLs vers la SPA n'est encore activée.
+
 ## Prochaine phase
 
-La phase 5 pourra migrer **Menu utilisateur et Notifications** dans le shell Mobile. Ce sont les prochaines vues les moins risquées avant Planning et Chat.
+La phase 6 pourra migrer les **sous-vues du Menu utilisateur** — notamment Mon profil, Personnalisation, Réglages des notifications et Signaler un problème — avant d'aborder Planning et Chat.
