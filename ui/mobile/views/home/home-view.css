@@ -240,3 +240,41 @@
 .nethorHomeView .mhdLoadingPulse{animation:nethorHomePulse 1.2s ease-in-out infinite}
 @keyframes nethorHomePulse{0%,100%{opacity:.55}50%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.nethorHomeView *{scroll-behavior:auto!important}.nethorHomeView .mhdLoadingPulse{animation:none}}
+
+
+/* Accueil Mobile v3 — bienvenue + prise de poste liées */
+.mhdWelcomeShiftGroup{
+  display:grid;
+  gap:0;
+  overflow:hidden;
+  border:1px solid #dde2e7;
+  border-radius:22px;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(24,34,48,.07)
+}
+.mhdWelcomeShiftGroup .mhdHero{
+  min-height:104px;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  border-bottom:1px solid #e7ebef!important
+}
+.mhdWelcomeShiftGroup .mhdNext{
+  width:100%;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  text-align:left
+}
+:root[data-theme="dark"] .mhdWelcomeShiftGroup{
+  background:#171c22;
+  border-color:#303842;
+  box-shadow:0 8px 24px rgba(0,0,0,.22)
+}
+:root[data-theme="dark"] .mhdWelcomeShiftGroup .mhdHero{
+  border-bottom-color:#303842!important
+}
+@media(max-width:380px){
+  .mhdWelcomeShiftGroup{border-radius:19px}
+  .mhdWelcomeShiftGroup .mhdHero{min-height:98px}
+}
