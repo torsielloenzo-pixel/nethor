@@ -457,9 +457,14 @@ async function render(){
  const todayPersonal=todayModel?dayFacts(todayModel,todayKey,state.name):null;
  const todayRanges=todayPersonal?.ranges||[];
  const firstTodayRange=todayRanges[0]||null,lastTodayRange=todayRanges.length?todayRanges[todayRanges.length-1]:null;
- let welcomeTone=nowHour<12?'morning':nowHour<18?'afternoon':'evening';
- let welcomeTitle=(nowHour<12?'Bonjour ':nowHour<18?'Bon après-midi ':'Bonsoir ')+welcomeName+' 👋';
+
+ // 00:00–04:59 reste dans la continuité du soir ; Bonjour commence à 05:00.
+ const isMorning=nowHour>=5&&nowHour<12;
+ const isAfternoon=nowHour>=12&&nowHour<18;
+ let welcomeTone=isMorning?'morning':isAfternoon?'afternoon':'evening';
+ let welcomeTitle=(isMorning?'Bonjour ':isAfternoon?'Bon après-midi ':'Bonsoir ')+welcomeName+' 👋';
  let welcomeHint='Voici l’essentiel pour aujourd’hui.';
+
  if(todayPersonal?.isLeave){
   welcomeTone='leave';
   welcomeTitle='Tu es en congé aujourd’hui ☂️';
@@ -478,12 +483,22 @@ async function render(){
  }else if(nextShift?.dateKey===isoDate(addDays(parseDate(todayKey),1))){
   welcomeHint='Prochaine prise de poste demain.'
  }
- if(widgetVisible('welcome'))sections.push('<section class="mhdHero mhdWelcome '+esc(welcomeTone)+'"><div class="mhdWelcomeCopy"><h1>'+esc(welcomeTitle)+'</h1><span class="mhdWelcomeDate">'+esc(dateText)+'</span><p>'+esc(welcomeHint)+'</p></div></section>');
 
+ const welcomeHtml=widgetVisible('welcome')
+  ?'<section class="mhdHero mhdWelcome '+esc(welcomeTone)+'"><div class="mhdWelcomeCopy"><h1>'+esc(welcomeTitle)+'</h1><span class="mhdWelcomeDate">'+esc(dateText)+'</span><p>'+esc(welcomeHint)+'</p></div></section>'
+  :'';
+
+ let nextShiftHtml='';
  if(widgetVisible('next_shift')){
   const shiftText=nextShift?.ranges?.length?nextShift.ranges.map(r=>clock(r.a)+' - '+clock(r.b)).join(' • '):'Aucune prise de poste à venir',when=nextShift?dateLabel(nextShift.dateKey,todayKey):'—';
   const target=nextShift?'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseDate(nextShift.dateKey))))+'&day='+encodeURIComponent(nextShift.dateKey):'planning.html';
-  sections.push('<button class="mhdCard mhdNext" type="button" data-home-nav="'+esc(target)+'"><div class="mhdNextHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+dashboardIcon('next_shift')+'</span><strong>Prise de poste</strong></div><span class="mhdWhen">'+esc(when)+'</span></div><div class="mhdShiftLine"><b>'+esc(shiftText)+'</b><span class="mhdChevron">›</span></div><div class="mhdShiftMeta"><span class="mhdTag green">Planning personnel</span>'+(nextShift?.hours?'<span class="mhdTag amber">'+esc(String(nextShift.hours).replace('.',','))+' h</span>':'')+'</div></button>')
+  nextShiftHtml='<button class="mhdCard mhdNext" type="button" data-home-nav="'+esc(target)+'"><div class="mhdNextHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+dashboardIcon('next_shift')+'</span><strong>Prise de poste</strong></div><span class="mhdWhen">'+esc(when)+'</span></div><div class="mhdShiftLine"><b>'+esc(shiftText)+'</b><span class="mhdChevron">›</span></div><div class="mhdShiftMeta"><span class="mhdTag green">Planning personnel</span>'+(nextShift?.hours?'<span class="mhdTag amber">'+esc(String(nextShift.hours).replace('.',','))+' h</span>':'')+'</div></button>'
+ }
+
+ if(welcomeHtml&&nextShiftHtml)sections.push('<section class="mhdWelcomeShiftGroup">'+welcomeHtml+nextShiftHtml+'</section>');
+ else{
+  if(welcomeHtml)sections.push(welcomeHtml);
+  if(nextShiftHtml)sections.push(nextShiftHtml)
  }
  const stats=[];
  if(widgetVisible('hours'))stats.push('<button class="mhdStat" type="button" data-home-nav="planning.html"><div class="mhdStatHead"><span class="mhdMiniIcon">'+statIcon('hours')+'</span>Mes heures</div><strong>'+esc(String(currentHours).replace('.',','))+' h</strong><small>planifiées cette semaine</small><div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div></button>');
