@@ -26,6 +26,9 @@ self.addEventListener('install',e=>{e.waitUntil((async()=>{
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
  const keys=await caches.keys();
  await Promise.all(keys.filter(k=>/^netto-tools-v\d+$/.test(k)&&k!==CACHE).map(k=>caches.delete(k)));
+ const dependencyCache=await caches.open(DEPENDENCY_CACHE);
+ const dependencyKeys=await dependencyCache.keys();
+ await Promise.all(dependencyKeys.filter(request=>!EXTERNAL_RUNTIME_DEPS.has(request.url)).map(request=>dependencyCache.delete(request)));
  await self.registration.getNotifications().then(list=>{list.forEach(n=>n.close())}).catch(()=>{});
  await self.clients.claim()
 })())});
