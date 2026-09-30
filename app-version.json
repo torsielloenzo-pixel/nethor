@@ -1,11 +1,11 @@
 {
-  "version": 244,
-  "label": "v1.43.7",
-  "important": false,
+  "version": 245,
+  "label": "v1.43.8",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Contrôle de personnalisation de l’accueil",
-  "message": "L’administrateur peut désormais afficher ou masquer, pour les utilisateurs, le bloc « Menus de l’accueil » de Menu utilisateur → Personnalisation. Le réglage est centralisé dans Gestion → Éditeur du portail → Pages & menus. Les préférences déjà enregistrées sont conservées lorsque le bloc est masqué, et l’administrateur garde toujours accès à son propre réglage.",
-  "published_at": "2026-09-30T17:01:00.000+02:00",
+  "title": "Performance Mobile — phase 2",
+  "message": "Nethor charge désormais uniquement les ressources de la plateforme active. Sur mobile, les scripts et styles Desktop ne sont plus téléchargés ni analysés. Les 18 pages hybrides passent par un chargeur conditionnel commun et 71 ressources de plateforme ont été retirées du précache global ; elles sont mises en cache uniquement lorsqu’elles sont réellement utilisées.",
+  "published_at": "2026-09-30T17:12:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
