@@ -30,6 +30,27 @@ function requestedView(){
     return raw||'home'
   }catch(_){return'home'}
 }
+function enforceShellGeometry(){
+  if(!root||!navHost)return;
+  root.classList.add('nethorShellGeometryRepair');
+  const repair=()=>{
+    try{
+      const navRect=navHost.getBoundingClientRect();
+      const appRect=root.getBoundingClientRect();
+      const max=Math.max(120,Math.min(180,appRect.height*.18));
+      root.dataset.navGeometry=navRect.height>max?'repaired':'ok';
+      if(navRect.height>max){
+        navHost.style.height='calc(var(--mobile-app-nav-h) + env(safe-area-inset-bottom))';
+        navHost.style.minHeight='calc(var(--mobile-app-nav-h) + env(safe-area-inset-bottom))';
+        navHost.style.maxHeight='calc(var(--mobile-app-nav-h) + env(safe-area-inset-bottom))'
+      }
+    }catch(_){}
+  };
+  repair();
+  requestAnimationFrame(repair);
+  setTimeout(repair,120);
+}
+
 function syncLegacyLinks(){
   navHost.querySelectorAll('[data-mobile-destination]').forEach(link=>{
     const id=link.getAttribute('data-mobile-destination')||'home';
@@ -152,6 +173,7 @@ async function boot(){
   syncLegacyLinks();
   syncActive();
   bindEnvironmentState();
+  enforceShellGeometry();
   root.dataset.router='ready';
   root.dataset.ready='1';
 
