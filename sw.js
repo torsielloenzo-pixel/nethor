@@ -1,8 +1,28 @@
 const APP_VERSION=252;
 const CACHE='netto-tools-v252';
+const DEPENDENCY_CACHE='nethor-deps-v1';
+const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
+const EXTERNAL_RUNTIME_DEPS=new Set([
+ SUPABASE_UMD,
+ 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
+ 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js'
+]);
+const EXTERNAL_PRECACHE=[SUPABASE_UMD];
 const CORE=['./rewards.html','./rewards.css?v=2','./rewards.js?v=6','./reward-profile.js?v=2','./','./index.html','./auth/auth-session.js?v=1','./auth/auth-recovery.js?v=1','./auth/auth-update.js?v=1','./auth/auth-login.js?v=1','./stock/stock-runtime.js?v=1','./stock/stock-data.js?v=1','./stock/stock-render.js?v=1','./stock/stock-order.js?v=1','./stock/stock-products.js?v=1','./stock/stock-management.js?v=1','./stock-page-layout.js?v=1','./stock-modals-layout.js?v=1','./ui/desktop/stock-modals-layout.css?v=2','./ui/mobile/stock-modals-layout.css?v=2','./ui/desktop/stock-modals-layout.js?v=1','./ui/mobile/stock-modals-layout.js?v=1','./ui/desktop/stock-layout.css?v=2','./ui/mobile/stock-layout.css?v=2','./ui/desktop/stock-layout.js?v=1','./ui/mobile/stock-layout.js?v=1','./login-page-layout.js?v=1','./ui/desktop/login-layout.css?v=1','./ui/mobile/login-layout.css?v=1','./ui/desktop/login-layout.js?v=1','./ui/mobile/login-layout.js?v=1','./home.html','./user-menu.html','./user-menu-page.css?v=1','./user-menu-page.js?v=2','./maintenance.html','./maintenance-page-layout.js?v=1','./ui/desktop/maintenance-layout.css?v=1','./ui/mobile/maintenance-layout.css?v=1','./ui/desktop/maintenance-layout.js?v=1','./ui/mobile/maintenance-layout.js?v=1','./articles.html','./bakery.html','./planning.html','./planning-agenda-v2.css?v=15','./planning-agenda-v2.js?v=18','./planning-preferences-v2.js?v=2','./chat.html','./notifications.html','./notification-settings.html','./report-problem.html','./chat-v2.css?v=26','./chat-v2.js?v=26','./profile.html','./settings.html','./accounts.html','./admin-portal.html','./fl-assistant.html','./scanner.html','./manifest.webmanifest','./app-version.json','./platform-resolver.js?v=3','./platform-assets.js?v=1','./platform-navigation.js?v=1','./platform-page-layout.js?v=12','./ui/desktop/desktop-shell.css?v=2','./ui/mobile/mobile-shell.css?v=4','./ui/desktop/desktop-shell.js?v=11','./ui/mobile/mobile-shell.js?v=11','./ui/desktop/home-layout.css?v=1','./ui/mobile/home-layout.css?v=1','./ui/desktop/home-layout.js?v=1','./ui/mobile/home-layout.js?v=1','./ui/desktop/profile-layout.css?v=1','./ui/mobile/profile-layout.css?v=1','./ui/desktop/profile-layout.js?v=1','./ui/mobile/profile-layout.js?v=1','./ui/desktop/user-pages-layout.css?v=1','./ui/mobile/user-pages-layout.css?v=1','./ui/desktop/user-pages-layout.js?v=1','./ui/mobile/user-pages-layout.js?v=1','./ui/mobile/settings-page.css?v=1','./ui/mobile/planning-layout.css?v=1','./ui/mobile/notification-settings-page.css?v=1','./ui/desktop/tool-pages-layout.css?v=1','./ui/mobile/tool-pages-layout.css?v=1','./ui/desktop/tool-pages-layout.js?v=1','./ui/mobile/tool-pages-layout.js?v=1','./ui/desktop/articles-layout.css?v=1','./ui/mobile/articles-layout.css?v=1','./ui/desktop/articles-layout.js?v=1','./ui/mobile/articles-layout.js?v=1','./ui/desktop/accounts-layout.css?v=1','./ui/mobile/accounts-layout.css?v=1','./ui/accounts-embedded.css?v=1','./ui/desktop/accounts-layout.js?v=1','./ui/mobile/accounts-layout.js?v=1','./ui/desktop/admin-portal-layout.css?v=3','./ui/mobile/admin-portal-layout.css?v=1','./ui/desktop/admin-portal-layout.js?v=3','./ui/mobile/admin-portal-layout.js?v=1','./ui/desktop/department-pages-layout.css?v=1','./ui/mobile/department-pages-layout.css?v=1','./ui/desktop/department-pages-layout.js?v=1','./ui/mobile/department-pages-layout.js?v=1','./ui/mobile/fl-assistant-page.css?v=1','./ui/mobile/bakery-page.css?v=1','./ui/desktop/rewards-layout.css?v=1','./ui/mobile/rewards-layout.css?v=1','./ui/desktop/rewards-layout.js?v=1','./ui/mobile/rewards-layout.js?v=1','./ui/desktop/chat-layout.css?v=1','./ui/mobile/chat-layout.css?v=1','./ui/desktop/chat-layout.js?v=1','./ui/mobile/chat-layout.js?v=1','./ui/desktop/planning-layout.css?v=2','./ui/mobile/planning-layout.css?v=2','./ui/desktop/planning-layout.js?v=1','./ui/mobile/planning-layout.js?v=1','./ui/desktop/planning-agenda.css?v=1','./ui/mobile/planning-agenda.css?v=1','./design-v2.css?v=3','./design-v3.css?v=3','./design-v4.css?v=9','./operations-widget.css?v=2','./operations-widget.js?v=2','./profile-ui.css?v=3','./profile-ui.js?v=206','./assets/nethor-mark.svg','./assets/app-icon-v63.svg','./assets/app-icon-mobile-v71.svg','./assets/avatar-frame-admin.svg','./assets/avatar-frame-responsable.svg','./assets/avatar-frame-point-vente.svg','./assets/avatar-frame-employe.svg','./assets/avatar-frame-lecture.svg','./assets/avatar-role-employe.svg','./assets/avatar-role-responsable.svg','./assets/avatar-role-caisse.svg','./assets/avatar-role-stock.svg','./assets/avatar-role-gerant.svg','./assets/logo-stock.svg','./assets/logo-planning.svg','./assets/logo-chat.svg','./assets/logo-article.svg','./assets/logo-boulangerie.svg?v=3','./assets/logo-home.svg','./assets/logo-profile.svg?v=3','./assets/logo-rewards.svg?v=3','./assets/logo-accounts.svg','./assets/logo-admin-portal.svg','./assets/logo-settings.svg','./assets/fl-background.webp'];
 const INSTALL_CORE=[...new Set(CORE.filter(url=>!/^\.\/ui\/(?:desktop|mobile)\//.test(String(url))))];
-self.addEventListener('install',e=>{e.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.allSettled(INSTALL_CORE.map(async url=>{const response=await fetch(url,{cache:'reload'});if(response&&response.ok)await cache.put(url,response.clone())}))})())});
+self.addEventListener('install',e=>{e.waitUntil((async()=>{
+ const cache=await caches.open(CACHE);
+ const dependencyCache=await caches.open(DEPENDENCY_CACHE);
+ await Promise.allSettled(INSTALL_CORE.map(async url=>{
+  const response=await fetch(url,{cache:'reload'});
+  if(response&&response.ok)await cache.put(url,response.clone())
+ }));
+ await Promise.allSettled(EXTERNAL_PRECACHE.map(async url=>{
+  if(await dependencyCache.match(url))return;
+  const response=await fetch(url,{mode:'no-cors',cache:'reload'});
+  if(response)await dependencyCache.put(url,response.clone())
+ }))
+})())});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
  const keys=await caches.keys();
  await Promise.all(keys.filter(k=>/^netto-tools-v\d+$/.test(k)&&k!==CACHE).map(k=>caches.delete(k)));
@@ -55,6 +75,22 @@ async function staticFromCache(request){
  if(cached)return cached;
  return (await fetchAndStore(request))||Response.error()
 }
+async function externalDependencyFromCache(request){
+ const cache=await caches.open(DEPENDENCY_CACHE);
+ const cached=await cache.match(request);
+ if(cached){
+  fetch(request,{cache:'no-cache'}).then(response=>{
+   if(response)cache.put(request,response.clone()).catch(()=>{})
+  }).catch(()=>{});
+  return cached
+ }
+ try{
+  const response=await fetch(request,{cache:'no-cache'});
+  if(response)await cache.put(request,response.clone());
+  return response
+ }catch(_){return Response.error()}
+}
+
 const STRICT_NAVIGATION_FILES=new Set(['index.html','maintenance.html','repair.html']);
 function navigationFile(url){
  const path=String(url?.pathname||'');
@@ -62,7 +98,12 @@ function navigationFile(url){
 }
 self.addEventListener('fetch',e=>{
  const u=new URL(e.request.url);
- if(e.request.method!=='GET'||u.origin!==location.origin)return;
+ if(e.request.method!=='GET')return;
+ if(EXTERNAL_RUNTIME_DEPS.has(e.request.url)){
+  e.respondWith(externalDependencyFromCache(e.request));
+  return
+ }
+ if(u.origin!==location.origin)return;
  if(e.request.mode==='navigate'){
   const file=navigationFile(u);
   if(file==='repair.html'){
