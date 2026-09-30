@@ -1,11 +1,11 @@
 {
-  "version": 230,
-  "label": "v1.36.0",
+  "version": 231,
+  "label": "v1.37.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.13 — Chat Desktop / Mobile",
-  "message": "Le Chat possède désormais des structures Desktop et Mobile distinctes. Desktop monte la liste, la conversation et le panneau d’informations ; Mobile monte uniquement la liste et la conversation. Le choix de plateforme ne dépend plus de nethorPhoneDevice, innerWidth ou resize, et les anciens media queries 780/781 px ont quitté le CSS partagé.",
-  "published_at": "2026-09-30T05:22:09.000+02:00",
+  "title": "Phase 4.14 — Maintenance & Réparation",
+  "message": "Maintenance possède désormais des structures Desktop et Mobile distinctes choisies par le résolveur de plateforme, sans breakpoint de plateforme historique. La page Réparation reste volontairement autonome : aucun shell, aucun profil, aucun Supabase ni résolveur, avec purge ciblée du cache Nethor et rechargement réseau forcé.",
+  "published_at": "2026-09-30T05:34:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
