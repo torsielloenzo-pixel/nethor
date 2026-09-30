@@ -41,3 +41,16 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .adm
 
 /* Adaptation interne Desktop étroit. */
 @media(max-width:1100px){.managementStats{grid-template-columns:1fr 1fr}.managementOverviewGrid{grid-template-columns:1fr}}
+
+
+/* Journal Desktop — exports TXT individuels et pack ZIP complet. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logHeaderTools{align-items:center}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadAllBtn{border-color:#d9e1ea;background:#fff;color:#27303b;font-weight:900}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadAllBtn:hover{border-color:#ff805f;background:#fff7f3;color:#df4721}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logMetaActions{display:flex;align-items:center;gap:9px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadBtn{border:1px solid #dfe4ea;background:#f8fafc;color:#535d68;border-radius:8px;padding:5px 8px;font:850 7.5px/1 inherit;letter-spacing:.2px;cursor:pointer;transition:.15s ease}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadBtn:hover{background:#fff1eb;border-color:#ffc2ad;color:#dd4b24;transform:translateY(-1px)}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadAllBtn,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadBtn{background:#25282d;border-color:#3b4047;color:#d9dde3}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadAllBtn:hover,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadBtn:hover{background:#3a2922;border-color:#754836;color:#ffad86}
