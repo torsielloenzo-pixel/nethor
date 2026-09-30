@@ -16,6 +16,27 @@ function sourceUrl(raw){
   return (u.pathname.split('/').pop()||'report-problem.html')+u.search
  }catch(_){return'report-problem.html?from=user-menu.html'}
 }
+function mobileMenuItemSetting(api,profile,id,fallback=true){
+ if(profile?.role==='admin')return fallback;
+ const items=api?.siteConfig?.mobile_user_menu?.items;
+ const value=items&&typeof items==='object'?items[id]:undefined;
+ return typeof value==='boolean'?value:fallback
+}
+function mobileUserMenuModules(api,profile){
+ const cfg=api?.siteConfig||{};
+ if(profile?.role==='admin')return (api.visibleModules?.('user_menu',profile,cfg)||[]).filter(m=>!['profile','settings'].includes(m.id));
+ const items=cfg?.mobile_user_menu?.items&&typeof cfg.mobile_user_menu.items==='object'?cfg.mobile_user_menu.items:{};
+ return (api?.modules||[]).filter(m=>{
+  if(!m||['profile','settings'].includes(m.id)||m.navigation===false)return false;
+  if(m.platform==='desktop'||m.platform==='system')return false;
+  if(api?.canAccess&&!api.canAccess(m,profile,cfg))return false;
+  const explicit=items[m.id],globalAllowed=typeof explicit==='boolean'?explicit:m.userMenu===true;
+  if(!globalAllowed)return false;
+  const personal=profile?.ui_preferences?.user_menu?.[m.id];
+  if(typeof personal==='boolean')return personal;
+  return explicit===true?true:m.defaultUser!==false
+ })
+}
 function syncThemeText(){
  const dark=document.documentElement.dataset.theme==='dark';
  document.querySelectorAll('.nettoThemeLabel').forEach(el=>el.textContent=dark?'Mode clair':'Mode sombre')
@@ -65,8 +86,7 @@ function render(){
  if(!isMobile()){location.replace('home.html');return false}
  const api=window.NettoProfileUI,p=api?.profile;
  if(!host||!api||!p)return false;
- const visible=api.visibleModules?.('user_menu',p,api.siteConfig)||[];
- const mobileModules=visible.filter(m=>!['profile','settings'].includes(m.id));
+ const mobileModules=mobileUserMenuModules(api,p);
  const primaryIds=new Set(['home','stock','planning','chat','scanner','articles']);
  const adminIds=new Set(['accounts','portal_admin']);
  const specialIds=new Set(['notification_settings','problem_report']);
@@ -88,6 +108,10 @@ function render(){
   notificationSettings,
   problemReport,
   problemUrl,
+  profileVisible:mobileMenuItemSetting(api,p,'profile',true),
+  settingsVisible:mobileMenuItemSetting(api,p,'settings',true),
+  themeVisible:mobileMenuItemSetting(api,p,'theme',true),
+  updateVisible:mobileMenuItemSetting(api,p,'update',true),
   iconFor:api.mobileNavIcon
  });
  if(!html)return false;
