@@ -400,8 +400,12 @@ async function checkForUpdates({interactive=true}={}){
     return{available:false,error}
   }
   const current=await activeServiceWorkerVersion();
-  const available=Number(manifest?.version||0)>Number(current||0);
+  const available=current>0&&Number(manifest?.version||0)>Number(current||0);
   if(!interactive)return{available,current,manifest};
+  if(!current){
+    alert('La vérification automatique des mises à jour sera disponible après l’activation du Service Worker.');
+    return{available:false,current,manifest}
+  }
   if(!available){
     alert('Nethor est à jour'+(manifest?.label?' · '+manifest.label:'')+'.');
     return{available,current,manifest}
