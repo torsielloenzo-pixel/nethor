@@ -1,3 +1,8 @@
+/* Planning Mobile — les onglets Planning / Couverture / Analyse sont réservés au Desktop. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .planningWorkspaceTabs{
+ display:none!important
+}
+
 /* Phase 4.2 — Planning Mobile uniquement. */
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .mobilePlanningViewGroup,
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .mobilePlanningDayGroup{
