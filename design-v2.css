@@ -141,32 +141,6 @@ body:has(.pageCard) main{max-width:1120px!important}
 .offSaleBadge{background:#737780!important}
 .modal h2:after{background:var(--netto-grad)!important}
 
-/* Login */
-.loginWrap{
-  background:
-    radial-gradient(circle at 10% 10%,rgba(255,43,47,.12),transparent 28%),
-    radial-gradient(circle at 92% 90%,rgba(255,133,0,.13),transparent 32%),
-    #f8f9fa!important
-}
-.loginShell{border:1px solid #eceef1!important;box-shadow:0 26px 80px rgba(17,24,39,.14)!important}
-.loginVisual{
-  background:var(--netto-grad)!important;color:#fff!important;isolation:isolate!important
-}
-.loginVisual:before{
-  content:""!important;position:absolute!important;inset:-20% 38% -20% auto!important;width:180px!important;
-  border:0!important;border-radius:0!important;background:rgba(255,255,255,.09)!important;transform:skewX(-26deg)!important
-}
-.loginVisual:after{
-  content:""!important;position:absolute!important;inset:-20% 8% -20% auto!important;width:110px!important;
-  border:0!important;border-radius:0!important;background:rgba(255,255,255,.08)!important;transform:skewX(-26deg)!important
-}
-.loginMark{background:#fff!important;color:#f52f24!important;box-shadow:0 8px 24px rgba(99,25,10,.18)!important}
-.loginNetto{font-style:italic!important;font-weight:950!important;letter-spacing:-1px!important}
-.loginSub,.loginIntro span{color:rgba(255,255,255,.78)!important}
-.loginArt span{background:rgba(255,255,255,.11)!important;border-color:rgba(255,255,255,.18)!important}
-.loginHello{color:#f33d22!important}
-.loginCard{background:#fff!important}
-
 /* Planning / Chat / Référentiel */
 .viewTab.active,.day.active,.filter.active,.paintChoice.active{background:var(--netto-grad)!important;color:#fff!important;border-color:transparent!important}
 .chatHead{background:linear-gradient(90deg,#fff,#fff8f2)!important}
@@ -215,12 +189,6 @@ body:has(.pageCard) main{max-width:1120px!important}
   .stockViewOptions strong{font-size:10.5px!important}.stockViewOptions small{font-size:8.8px!important}
   dialog{max-width:calc(100vw - 12px)!important;width:calc(100vw - 12px)!important}
   .modal{border-radius:20px!important;padding:16px!important}
-  .loginWrap{padding:10px!important;min-height:100dvh!important}
-  .loginShell{width:100%!important;max-width:430px!important;border-radius:24px!important}
-  .loginVisual{padding:20px 20px 18px!important}
-  .loginBrand{margin-bottom:20px!important}.loginIntro{margin-top:10px!important}
-  .loginCard{padding:28px 20px 26px!important}
-  .loginCard h1{font-size:29px!important}
 }
 /* Dark */
 :root[data-theme="dark"] body{background:#0f172a!important;color:#f4f5f7!important}
