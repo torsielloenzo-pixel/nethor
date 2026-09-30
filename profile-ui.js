@@ -1220,11 +1220,18 @@ function ensureAccessibleNames(root=document){
 }
 function startAccessibleNameObserver(){
  if(!document.body||window.__nettoA11yObserver)return;
+ const pending=new Set();
+ let scheduled=false;
+ const flush=()=>{
+  scheduled=false;
+  const nodes=[...pending];pending.clear();
+  const run=()=>nodes.forEach(node=>{if(node?.isConnected)ensureAccessibleNames(node)});
+  if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:350});
+  else setTimeout(run,24)
+ };
  const observer=new MutationObserver(mutations=>{
-  mutations.forEach(m=>m.addedNodes.forEach(node=>{
-   if(node.nodeType!==1)return;
-   ensureAccessibleNames(node);
-  }));
+  mutations.forEach(m=>m.addedNodes.forEach(node=>{if(node.nodeType===1)pending.add(node)}));
+  if(!scheduled&&pending.size){scheduled=true;requestAnimationFrame(flush)}
  });
  observer.observe(document.body,{childList:true,subtree:true});
  window.__nettoA11yObserver=observer;
