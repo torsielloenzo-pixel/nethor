@@ -9,8 +9,8 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
  appearance:none!important;-webkit-appearance:none!important
 }
 
-/* Migrated from the shared shell: mobile navigation and user-menu presentation */
-@media (max-width:900px),(pointer:coarse){
+/* Mobile shell selected exclusively by NethorPlatform. Width only refines this already-mobile UI. */
+
 /* Navigation mobile unique : les en-têtes de page ne sont plus affichés. */
    body>header,body>#site>header{display:none!important}
    html.nettoKeyboardOpen body.nettoHasMobileBar{padding-bottom:0!important}
@@ -96,10 +96,10 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
    :root[data-theme="dark"] .nettoMobileQuickItem.active{color:#ff936d}
    :root[data-theme="dark"] .nettoMobileQuickItem.active .nettoMobileQuickIcon{background:#3b2923}
    body.nettoHasMobileBar .planningToast,body.nettoHasMobileBar .toast{bottom:calc(var(--netto-mobile-bar-h) + env(safe-area-inset-bottom) + 12px)!important}
- }
+ 
 
    /* Nethor v113 — notifications in mobile bottom bar */
-   @media (max-width:900px),(pointer:coarse){
+   
      .nettoBellWrap,.nettoUserWrap{display:none!important}
      .nettoMobileNotifBadge{
        position:absolute;top:5px;left:calc(50% + 9px);min-width:18px;height:18px;padding:0 5px;
@@ -109,12 +109,12 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
      }
      .nettoMobileNotifBadge.hidden{display:none!important}
      :root[data-theme="dark"] .nettoMobileNotifBadge{border-color:#1b1d20}
-   }
+   
 
  
 
  /* Nethor v100 — reliable mobile sheets for notifications/profile */
- @media (max-width:900px),(pointer:coarse){
+ 
    html.nettoMobileDropOpen header{
      z-index:9000!important;overflow:visible!important;
      backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
@@ -150,12 +150,12 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
    }
    .nettoNotifList{overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important}
    .nettoNavBtn{min-height:50px!important}
- }
+ 
  :root[data-theme="dark"] #nettoUserDrop:before,:root[data-theme="dark"] #nettoLoginDrop:before{background:#565c63}
 
  /* Nethor mobile — menu utilisateur plein écran, inspiré d'une page native */
  .nettoMobileUserMenu{display:none}
- @media (max-width:900px),(pointer:coarse){
+ 
    html.nettoMobileUserMenuOpen body>#nettoDropBackdrop.nettoMobilePortaledBackdrop{display:none!important}
    /* Le menu plein écran possède son propre scroll. Ne pas verrouiller html/body :
       sur iOS WebKit ce verrou pouvait laisser le scroller du menu figé après un retour BFCache,
@@ -212,7 +212,7 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
    :root[data-theme="dark"] .nettoMobileMenuChevron{color:#777e86}
    :root[data-theme="dark"] .nettoMobileMenuRow:active,:root[data-theme="dark"] .nettoMobileProfileMain:active{background:#292e34}
    :root[data-theme="dark"] html.nettoMobileUserMenuOpen .nettoMobileQuickItem[data-mobile-id="profile"] .nettoMobileQuickIcon{background:#3b2923}
- }
+ 
  @media(max-width:380px){
    #nettoUserDrop .nettoMobileUserMenu{padding-left:10px;padding-right:10px}
    .nettoMobileMenuHeader h2{font-size:31px!important}
