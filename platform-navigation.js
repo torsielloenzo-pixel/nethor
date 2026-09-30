@@ -23,6 +23,25 @@ const DESKTOP_ROUTES=Object.freeze({
  'user-menu.html':{type:'url',value:'home.html'}
 });
 
+const MOBILE_VIEW_TARGETS=Object.freeze({
+ home:'home.html',
+ planning:'planning.html',
+ chat:'chat.html',
+ notifications:'notifications.html',
+ 'user-menu':'user-menu.html',
+ profile:'profile.html',
+ settings:'settings.html',
+ 'notification-settings':'notification-settings.html',
+ 'report-problem':'report-problem.html',
+ scanner:'scanner.html',
+ articles:'articles.html',
+ accounts:'accounts.html',
+ 'admin-portal':'admin-portal.html',
+ 'fl-assistant':'fl-assistant.html',
+ bakery:'bakery.html',
+ rewards:'rewards.html'
+});
+
 const MOBILE_ROUTES=Object.freeze({
  'user-menu.html':{type:'url',value:'home.html'},
  'profile.html':{type:'url',value:'user-menu.html'},
@@ -212,6 +231,12 @@ function navigate(raw){
  return value
 }
 function routeTable(){return isMobileShell()?MOBILE_ROUTES:DESKTOP_ROUTES}
+function mobileViewTarget(view){
+ const id=String(view||'').trim().toLowerCase().replace(/\.html$/,'');
+ const file=MOBILE_VIEW_TARGETS[id]||'';
+ return file?relative(inheritPlatformQuery(localUrl(file))):''
+}
+function mobileViewTable(){return MOBILE_VIEW_TARGETS}
 
 window.NethorNavigation=Object.freeze({
  platform,
@@ -219,6 +244,8 @@ window.NethorNavigation=Object.freeze({
  pageFile,
  routeFor,
  routeTable,
+ mobileViewTarget,
+ mobileViewTable,
  backTarget,
  navigateBack,
  navigate,
