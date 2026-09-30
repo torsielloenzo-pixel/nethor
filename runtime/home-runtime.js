@@ -425,7 +425,33 @@ async function renderHomeDashboard(profile,name,cfg){
   }
  }
 }
-async function boot(){const {data:{session}}=await db.auth.getSession();if(!session){location.replace('index.html');return}homeSession=session;const {data:p}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',session.user.id).maybeSingle();window.currentRole=p?.role;document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',window.currentRole!=='admin'));const name=p?.display_name||p?.email?.split('@')[0]||'';const roleNames={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'},role=window.NettoProfileUI?.roleLabel?.(p?.role)||roleNames[p?.role]||p?.role||'Compte';const helloTitle=document.getElementById('helloTitle');if(helloTitle)helloTitle.textContent=name?'Bonjour '+name+' 👋':'Bonjour 👋';let avatarUrl=null;if(p?.avatar_path){const {data:av}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);avatarUrl=av?.signedUrl||null}['userAvatar','userMenuAvatar'].forEach(id=>{const e=document.getElementById(id);if(!e)return;if(window.NettoProfileUI?.paintAvatar)window.NettoProfileUI.paintAvatar(e,avatarUrl,name,p?.profile_color,p?.avatar_frame);else{e.style.background=p?.profile_color||'#ff5a2a';e.textContent=(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('');if(avatarUrl){e.classList.add('hasPhoto');e.style.backgroundImage='url("'+avatarUrl.replace(/"/g,'%22')+'")';e.textContent=''}}});['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name||'Utilisateur'});['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});await window.NettoProfileUI?.refresh?.();const sharedConfig=await loadSharedSiteConfig();window.NettoProfileUI?.rebuildModules?.(sharedConfig||{});renderHomeCards(p,sharedConfig);if(p?.role==='admin'&&homePlatformKind()==='desktop')await loadAdminPageViews();await loadHomeTodayPlanning(p,name);await renderHomeDashboard(p,name,sharedConfig||{});const status=document.getElementById('status');if(status)status.textContent='Session active'}
+function homeAfterFirstPaint(task){
+ const run=()=>{try{const result=task();if(result?.catch)result.catch(()=>{})}catch(_){}};
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{'requestIdleCallback' in window?requestIdleCallback(run,{timeout:700}):setTimeout(run,40)}))
+}
+async function boot(){
+ const {data:{session}}=await db.auth.getSession();if(!session){location.replace('index.html');return}
+ homeSession=session;
+ const {data:p}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',session.user.id).maybeSingle();
+ window.currentRole=p?.role;
+ document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',window.currentRole!=='admin'));
+ const name=p?.display_name||p?.email?.split('@')[0]||'';
+ const roleNames={admin:'Administrateur',responsable:'Responsable',lecture:'Lecture seule',employe:'Employé'},role=window.NettoProfileUI?.roleLabel?.(p?.role)||roleNames[p?.role]||p?.role||'Compte';
+ const helloTitle=document.getElementById('helloTitle');if(helloTitle)helloTitle.textContent=name?'Bonjour '+name+' 👋':'Bonjour 👋';
+ const paint=avatarUrl=>['userAvatar','userMenuAvatar'].forEach(id=>{const e=document.getElementById(id);if(!e)return;if(window.NettoProfileUI?.paintAvatar)window.NettoProfileUI.paintAvatar(e,avatarUrl,name,p?.profile_color,p?.avatar_frame);else{e.style.background=p?.profile_color||'#ff5a2a';e.textContent=(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('');if(avatarUrl){e.classList.add('hasPhoto');e.style.backgroundImage='url("'+avatarUrl.replace(/"/g,'%22')+'")';e.textContent=''}}});
+ paint(null);
+ if(p?.avatar_path)homeAfterFirstPaint(async()=>{const {data:av}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);if(av?.signedUrl)paint(av.signedUrl)});
+ ['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name||'Utilisateur'});
+ ['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});
+ await window.NettoProfileUI?.refresh?.();
+ const sharedConfig=await loadSharedSiteConfig();
+ window.NettoProfileUI?.rebuildModules?.(sharedConfig||{});
+ renderHomeCards(p,sharedConfig);
+ if(p?.role==='admin'&&homePlatformKind()==='desktop')homeAfterFirstPaint(loadAdminPageViews);
+ await loadHomeTodayPlanning(p,name);
+ await renderHomeDashboard(p,name,sharedConfig||{});
+ const status=document.getElementById('status');if(status)status.textContent='Session active'
+}
 function homeEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function renderHomeCards(profile,cfg){
  const host=document.getElementById('homePages'),nav=window.NettoProfileUI;if(!host)return;
