@@ -139,3 +139,23 @@ html[data-nethor-platform="mobile-preview"] .stockMobileDialog.stockOrderDialog 
 :root[data-theme="dark"][data-nethor-platform="mobile-preview"] #suggestDialog .suggestRow.isSuggested{background:linear-gradient(90deg,#33211d,#1b1d22 38%)!important}
 :root[data-theme="dark"][data-nethor-platform="mobile"] .stockMobileDialog.stockOrderDialog .actions,
 :root[data-theme="dark"][data-nethor-platform="mobile-preview"] .stockMobileDialog.stockOrderDialog .actions{background:#272b31!important;border-color:#434a54!important}
+
+
+/* Migrated from index.html — Phase 4.18 */
+@media(max-width:520px){.saleField{grid-template-columns:minmax(0,1fr) 110px}}
+
+
+/* Migrated from index.html — Phase 4.18 */
+@media(max-width:520px){.codeGroup{grid-template-columns:1fr}}
+
+
+/* Migrated from index.html — Phase 4.18 */
+@media(max-width:520px){.packagingGroup{grid-template-columns:1fr}}
+
+
+/* Migrated from index.html — Phase 4.18 */
+@media(max-width:520px){.orderConfigField{grid-template-columns:minmax(0,1fr) 92px}}
+
+
+/* Migrated from index.html — Phase 4.18 */
+@media(max-width:520px){dialog{width:calc(100vw - 20px)}.modal{padding:18px;border-radius:22px}.infoFacts{grid-template-columns:1fr 1fr}.infoHero img{height:165px}}
