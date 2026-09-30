@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f6f6f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Nethor">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Nethor</title>
+<script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(_){}})();</script>
+<script src="platform-resolver.js?v=3"></script>
+<script>
+(function(){
+  var kind=window.NethorPlatform&&window.NethorPlatform.current?window.NethorPlatform.current():'desktop';
+  if(kind!=='mobile'&&kind!=='mobile-preview'){
+    location.replace(new URL('home.html',location.href).href);
+    return;
+  }
+  document.documentElement.dataset.nethorMobileApp='1';
+  document.documentElement.dataset.nethorMobileAppPhase='1';
+})();
+</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=1">
+</head>
+<body>
+<div id="nethorMobileApp" class="nethorMobileApp" data-mobile-app-shell>
+  <header class="nethorMobileAppTop" data-mobile-app-header>
+    <div class="nethorMobileAppBrand" aria-label="Nethor">
+      <img src="assets/nethor-mark.svg" alt="" width="34" height="34">
+      <div>
+        <strong>Nethor</strong>
+        <span>Application mobile</span>
+      </div>
+    </div>
+    <div class="nethorMobileAppTools" data-mobile-app-tools aria-hidden="true"></div>
+  </header>
+
+  <main id="mobile-view" class="nethorMobileView" data-mobile-view-host tabindex="-1">
+    <section class="nethorMobileBootstrap" data-mobile-bootstrap>
+      <div class="nethorMobileBootstrapMark" aria-hidden="true">N</div>
+      <strong>Conteneur mobile prêt</strong>
+      <span>Les vues seront branchées progressivement sans interrompre l’application actuelle.</span>
+    </section>
+  </main>
+
+  <nav id="mobile-nav" class="nethorMobileAppNav" data-mobile-nav-host aria-label="Navigation principale">
+    <a data-mobile-destination="home" data-legacy-href="home.html" href="home.html" aria-label="Accueil">
+      <span aria-hidden="true">⌂</span><small>Accueil</small>
+    </a>
+    <a data-mobile-destination="planning" data-legacy-href="planning.html" href="planning.html" aria-label="Planning">
+      <span aria-hidden="true">▦</span><small>Planning</small>
+    </a>
+    <a data-mobile-destination="chat" data-legacy-href="chat.html" href="chat.html" aria-label="Chat">
+      <span aria-hidden="true">◌</span><small>Chat</small>
+    </a>
+    <a data-mobile-destination="notifications" data-legacy-href="notifications.html" href="notifications.html" aria-label="Notifications">
+      <span aria-hidden="true">♢</span><small>Notifications</small>
+    </a>
+    <a data-mobile-destination="user-menu" data-legacy-href="user-menu.html" href="user-menu.html" aria-label="Menu utilisateur">
+      <span aria-hidden="true">☰</span><small>Menu</small>
+    </a>
+  </nav>
+</div>
+<script src="ui/mobile/mobile-app.js?v=1"></script>
+</body>
+</html>
