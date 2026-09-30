@@ -124,7 +124,14 @@ async function unmountActive(nextView){
 }
 function fallback(view,options={}){
   const id=normalizeView(view);
-  const target=legacyUrl(id,options.params);
+  let target=legacyUrl(id,options.params);
+  if(registered(id)){
+    try{
+      const legacy=new URL(target,location.href);
+      legacy.searchParams.set('nethor_legacy','1');
+      target=legacy.pathname.split('/').pop()+legacy.search+legacy.hash
+    }catch(_){}
+  }
   const parentView=current();
   emit('nethor:mobile-route-fallback',{view:id,target,reason:options.reason||'view-not-migrated'});
   if(options.navigate===false)return target;
@@ -141,7 +148,7 @@ async function mount(view,options={}){
   if(!host)setHost();
   if(!host)return fallback(id,{reason:'missing-view-host'});
   const token=++activeMountToken;
-  if(activeView!==id)await unmountActive(id);
+  if(activeDefinition&&(activeView!==id||options.remount===true))await unmountActive(id);
   if(token!==activeMountToken)return false;
   activeView=id;
   activeDefinition=definition;
@@ -171,17 +178,20 @@ async function open(view,options={}){
   const id=normalizeView(view);
   if(!route(id)&&!registered(id))return fallback('home',{reason:'unknown-route',params:options.params});
   if(!registered(id))return fallback(id,{reason:'view-not-migrated',params:options.params});
-  if(id===current()&&activeView===id&&options.force!==true){
+  const target=shellUrl(id,options.params);
+  const currentUrl=(location.pathname.split('/').pop()||'mobile.html')+location.search+location.hash;
+  const sameView=id===current()&&activeView===id;
+  const routeChanged=target!==currentUrl;
+  if(sameView&&options.force!==true&&!routeChanged){
     try{host?.scrollTo?.({top:0,behavior:'smooth'})}catch(_){if(host)host.scrollTop=0}
     emit('nethor:mobile-route-repeat',{view:id});
     return true
   }
-  const target=shellUrl(id,options.params);
   if(options.history!=='none'){
     const method=options.replace?'replaceState':'pushState';
     history[method](stateFor(id,options.state),'',target)
   }
-  return mount(id,{source:options.source||'open'})
+  return mount(id,{source:options.source||'open',remount:sameView&&routeChanged})
 }
 async function replace(view,options={}){
   return open(view,Object.assign({},options,{replace:true}))
@@ -223,7 +233,7 @@ async function handlePopState(){
     fallback(id,{reason:'popstate-unmigrated'});
     return
   }
-  await mount(id,{source:'popstate'})
+  await mount(id,{source:'popstate',remount:activeView===id})
 }
 async function start(options={}){
   if(booted)return true;
