@@ -1,0 +1,45 @@
+.nethorMobileView[data-mobile-view="user-menu"]{padding:0;background:#f2f4f7}
+.nethorUserMenuView{width:100%;min-height:100%;padding:18px 14px 28px;color:#1d2127}
+.nethorUserMenuView .nettoMobileUserMenu{display:block;width:min(100%,720px);margin:0 auto}
+.nethorUserMenuView .nettoMobileMenuHeader{display:flex;align-items:center;min-height:58px;margin:0 4px 12px}
+.nethorUserMenuView .nettoMobileMenuHeader h2{margin:0;font-size:34px;line-height:1;letter-spacing:-1px;font-weight:950;color:#171a1f}
+.nethorUserMenuView .nettoMobileMenuCard{overflow:hidden;margin:0 0 14px;border:1px solid #e4e7eb;border-radius:22px;background:#fff;box-shadow:0 8px 26px rgba(15,23,42,.045)}
+.nethorUserMenuView .nettoMobileMenuCard button{font:inherit}
+.nethorUserMenuView .nettoMobileProfileMain,.nethorUserMenuView .nettoMobileMenuRow{width:100%;min-height:66px;border:0;background:transparent;color:#1d2127;padding:9px 14px;display:grid;grid-template-columns:48px minmax(0,1fr) 20px;align-items:center;gap:12px;text-align:left;cursor:pointer;touch-action:manipulation}
+.nethorUserMenuView .nettoMobileProfileMain{min-height:88px;grid-template-columns:58px minmax(0,1fr) 20px}
+.nethorUserMenuView .nettoMobileMenuRow+.nettoMobileMenuRow,.nethorUserMenuView .nettoMobileProfileMain+.nettoMobileMenuRow{border-top:1px solid #eceef1}
+.nethorUserMenuView .nettoMobileProfileAvatar{position:relative;width:58px;height:58px;border-radius:18px;font-size:16px;display:grid;place-items:center;background:#ff5a2a center/cover no-repeat;color:#fff;font-weight:950;isolation:isolate}
+.nethorUserMenuView .nettoMobileProfileAvatar:after{content:"";position:absolute;inset:-4px;z-index:2;background:center/contain no-repeat;pointer-events:none}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="admin"]:after{background-image:url("../../../assets/avatar-frame-admin.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="responsable"]:after{background-image:url("../../../assets/avatar-frame-responsable.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="point_vente"]:after{background-image:url("../../../assets/avatar-frame-point-vente.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="employe"]:after{background-image:url("../../../assets/avatar-frame-employe.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="lecture"]:after{background-image:url("../../../assets/avatar-frame-lecture.svg")}
+.nethorUserMenuView .nettoMobileProfileCopy,.nethorUserMenuView .nettoMobileMenuCopy{display:block;min-width:0}
+.nethorUserMenuView .nettoMobileProfileCopy strong{display:block;font-size:17px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nethorUserMenuView .nettoMobileProfileCopy small{display:block;margin-top:5px;color:#7b818a;font-size:11px;font-weight:750;line-height:1.25}
+.nethorUserMenuView .nettoMobileMenuCopy strong{display:block;font-size:14px;font-weight:850;line-height:1.2}
+.nethorUserMenuView .nettoMobileMenuCopy small{display:block;margin-top:3px;color:#8a9098;font-size:9px;font-weight:700;line-height:1.25}
+.nethorUserMenuView .nettoMobileMenuIcon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#fff2ec;color:#ef5a2f}
+.nethorUserMenuView .nettoMobileMenuIcon svg{width:23px;height:23px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.nethorUserMenuView .nettoMobileMenuChevron{color:#838991;font-size:31px;font-weight:400;line-height:1;transform:translateY(-1px)}
+.nethorUserMenuView .nettoMobileMenuRow:disabled{opacity:.58;cursor:wait}.nethorUserMenuView .nettoMobileMenuRow:disabled .nettoMobileMenuChevron{visibility:hidden}
+.nethorUserMenuView .nettoMobileMenuRow:active,.nethorUserMenuView .nettoMobileProfileMain:active{background:#f7f8fa}
+.nethorUserMenuView .nettoMobileMenuDanger .nettoMobileMenuIcon{background:#fff0ee;color:#d93f32}
+.nethorUserMenuView .nettoMobileMenuDanger .nettoMobileMenuCopy strong{color:#c9362d}
+.nethorUserMenuLoading{min-height:60dvh;display:grid;place-items:center;align-content:center;gap:12px;color:#7b818a;font-size:12px}
+.nethorUserMenuLoading span{width:28px;height:28px;border:3px solid #dde1e6;border-top-color:#ef5a2f;border-radius:50%;animation:nethorMenuSpin .8s linear infinite}
+.nethorMenuError{padding:30px;text-align:center;color:#8a9098}
+@keyframes nethorMenuSpin{to{transform:rotate(360deg)}}
+:root[data-theme="dark"] .nethorMobileView[data-mobile-view="user-menu"]{background:#171a1e}
+:root[data-theme="dark"] .nethorUserMenuView{color:#f0ece7}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuHeader h2{color:#f4f1ed}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuCard{background:#22262b;border-color:#343940;box-shadow:0 12px 34px rgba(0,0,0,.16)}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileProfileMain,:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuRow{color:#f0ece7}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuRow+.nettoMobileMenuRow,:root[data-theme="dark"] .nethorUserMenuView .nettoMobileProfileMain+.nettoMobileMenuRow{border-color:#343940}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileProfileCopy small,:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuCopy small{color:#aaa49e}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuIcon{background:#382821;color:#ff8f68}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuChevron{color:#777e86}
+:root[data-theme="dark"] .nethorUserMenuView .nettoMobileMenuRow:active,:root[data-theme="dark"] .nethorUserMenuView .nettoMobileProfileMain:active{background:#292e34}
+@media(max-width:380px){.nethorUserMenuView{padding-left:10px;padding-right:10px}.nethorUserMenuView .nettoMobileMenuHeader h2{font-size:31px}.nethorUserMenuView .nettoMobileProfileMain,.nethorUserMenuView .nettoMobileMenuRow{padding-left:11px;padding-right:11px;gap:10px}.nethorUserMenuView .nettoMobileMenuCopy strong{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.nethorUserMenuLoading span{animation:none}}
