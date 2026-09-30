@@ -1,11 +1,11 @@
 {
-  "version": 243,
-  "label": "v1.43.6",
-  "important": true,
+  "version": 244,
+  "label": "v1.43.7",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Performance Mobile — phase 1",
-  "message": "Les pages internes Nethor s’ouvrent désormais depuis le cache local puis se mettent à jour en arrière-plan. Connexion, Maintenance et Réparation restent sur une stratégie réseau stricte. Les services non essentiels du profil démarrent après le premier affichage, le cache du profil reste prioritaire, et profile-ui utilise désormais une seule ressource versionnée.",
-  "published_at": "2026-09-30T16:52:00.000+02:00",
+  "title": "Contrôle de personnalisation de l’accueil",
+  "message": "L’administrateur peut désormais afficher ou masquer, pour les utilisateurs, le bloc « Menus de l’accueil » de Menu utilisateur → Personnalisation. Le réglage est centralisé dans Gestion → Éditeur du portail → Pages & menus. Les préférences déjà enregistrées sont conservées lorsque le bloc est masqué, et l’administrateur garde toujours accès à son propre réglage.",
+  "published_at": "2026-09-30T17:01:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
