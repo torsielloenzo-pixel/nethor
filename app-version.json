@@ -1,11 +1,11 @@
 {
-  "version": 257,
-  "label": "v1.43.20",
+  "version": 258,
+  "label": "v1.43.21",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Performance Mobile — phase 7",
-  "message": "Le travail non essentiel au premier affichage est maintenant différé. Gestion charge les données d’onglets uniquement quand ils sont ouverts, Comptes ne charge plus journaux et statistiques au démarrage hors vue Journal, Accueil reporte l’avatar distant et les statistiques administrateur après le premier rendu, et profile-ui regroupe les scans d’accessibilité DOM au lieu de retraiter chaque insertion immédiatement.",
+  "title": "Performance Mobile — phase 8",
+  "message": "Fin du cycle d’optimisation mobile. Le précache initial du Service Worker est réduit de 89 à 38 ressources essentielles, les écrans secondaires sont désormais mis en cache à l’usage, et toutes les pages actives utilisent la même révision profile-ui v208 afin d’éviter les collisions de cache entre écrans.",
   "published_at": "2026-09-30T18:49:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
