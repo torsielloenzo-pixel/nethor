@@ -336,6 +336,90 @@ function hasSubrolePermission(moduleId,minimum='view'){
   const actual=permission(moduleId);
   return (LEVELS[actual]||0)>=(LEVELS[minimum]||1)
 }
+async function setThemePreference(theme){
+  theme=theme==='dark'?'dark':'light';
+  document.documentElement.dataset.theme=theme;
+  try{localStorage.setItem('nettoTheme',theme)}catch(_){}
+  if(!state.profile)return theme;
+  const current=state.profile.ui_preferences&&typeof state.profile.ui_preferences==='object'&&!Array.isArray(state.profile.ui_preferences)?state.profile.ui_preferences:{};
+  const prefs={...current,theme};
+  state.profile={...state.profile,ui_preferences:prefs};
+  emit('core');
+  if(client&&state.session){
+    const {error}=await client.from('profiles').update({ui_preferences:prefs}).eq('id',state.session.user.id);
+    if(error)console.warn('[Nethor MobileServices] theme preference',error)
+  }
+  return theme
+}
+async function deleteNotification(id){
+  if(!client||!state.session||!id)return false;
+  const {error}=await client.from('planning_notifications')
+    .delete()
+    .eq('id',id)
+    .eq('user_id',state.session.user.id);
+  if(error)throw error;
+  state.notifications=state.notifications.filter(item=>String(item.id)!==String(id));
+  state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0);
+  emit('notifications');
+  return true
+}
+async function deleteAllNotifications(){
+  if(!client||!state.session||!state.notifications.length)return false;
+  const ids=state.notifications.map(item=>item.id).filter(Boolean);
+  if(!ids.length)return false;
+  const {error}=await client.from('planning_notifications')
+    .delete()
+    .eq('user_id',state.session.user.id)
+    .in('id',ids);
+  if(error)throw error;
+  state.notifications=[];
+  state.unread=0;
+  emit('notifications');
+  return true
+}
+function activeServiceWorkerVersion(){
+  return new Promise(resolve=>{
+    try{
+      const controller=navigator.serviceWorker?.controller;
+      if(!controller||typeof MessageChannel==='undefined'){resolve(0);return}
+      const channel=new MessageChannel();
+      const timer=setTimeout(()=>resolve(0),900);
+      channel.port1.onmessage=event=>{clearTimeout(timer);resolve(Number(event?.data?.version)||0)};
+      controller.postMessage({type:'GET_VERSION'},[channel.port2])
+    }catch(_){resolve(0)}
+  })
+}
+async function checkForUpdates({interactive=true}={}){
+  let manifest=null;
+  try{
+    const response=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    manifest=await response.json()
+  }catch(error){
+    if(interactive)alert('Impossible de vérifier les mises à jour pour le moment.');
+    return{available:false,error}
+  }
+  const current=await activeServiceWorkerVersion();
+  const available=Number(manifest?.version||0)>Number(current||0);
+  if(!interactive)return{available,current,manifest};
+  if(!available){
+    alert('Nethor est à jour'+(manifest?.label?' · '+manifest.label:'')+'.');
+    return{available,current,manifest}
+  }
+  const accepted=confirm('Une mise à jour de Nethor est disponible'+(manifest?.label?' ('+manifest.label+')':'')+'.\n\nL’installer maintenant ?');
+  if(!accepted)return{available,current,manifest,accepted:false};
+  try{
+    const registration=await navigator.serviceWorker?.getRegistration?.();
+    await registration?.update?.();
+    const worker=registration?.waiting||registration?.installing||registration?.active||navigator.serviceWorker?.controller;
+    worker?.postMessage?.({type:'PURGE_CACHES_AND_SKIP_WAITING'});
+    let reloaded=false;
+    const reload=()=>{if(reloaded)return;reloaded=true;location.reload()};
+    navigator.serviceWorker?.addEventListener?.('controllerchange',reload,{once:true});
+    setTimeout(reload,1200);
+  }catch(_){location.reload()}
+  return{available,current,manifest,accepted:true}
+}
 async function markNotificationRead(id){
   if(!client||!state.session||!id)return false;
   const {error}=await client.from('planning_notifications')
@@ -384,6 +468,10 @@ const api={
   snapshot,
   permission,
   hasSubrolePermission,
+  setThemePreference,
+  deleteNotification,
+  deleteAllNotifications,
+  checkForUpdates,
   markNotificationRead,
   markAllNotificationsRead,
   signOut,
