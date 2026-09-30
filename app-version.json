@@ -1,11 +1,11 @@
 {
-  "version": 256,
-  "label": "v1.43.19",
+  "version": 257,
+  "label": "v1.43.20",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Performance Mobile — phase 6",
-  "message": "Les pages Accueil, Gestion et Comptes ne transportent plus leurs gros blocs CSS et JavaScript directement dans le HTML. Leur logique et leurs styles sont maintenant séparés en runtimes dédiés, mis en cache indépendamment par le Service Worker. Les documents HTML deviennent beaucoup plus légers à analyser sans modifier les fonctions métier ni la séparation Desktop/Mobile.",
+  "title": "Performance Mobile — phase 7",
+  "message": "Le travail non essentiel au premier affichage est maintenant différé. Gestion charge les données d’onglets uniquement quand ils sont ouverts, Comptes ne charge plus journaux et statistiques au démarrage hors vue Journal, Accueil reporte l’avatar distant et les statistiques administrateur après le premier rendu, et profile-ui regroupe les scans d’accessibilité DOM au lieu de retraiter chaque insertion immédiatement.",
   "published_at": "2026-09-30T18:49:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
