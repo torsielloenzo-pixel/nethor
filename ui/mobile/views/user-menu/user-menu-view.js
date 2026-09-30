@@ -40,7 +40,11 @@ const state={host:null,mounted:false,unsubscribe:null};
 
 function services(){return window.NethorMobileServices||window.MobileServices||null}
 function router(){return window.NethorMobileRouter||window.MobileRouter||null}
-function iconFor(id){return ICONS[id]||ICONS.default}
+function iconFor(id){
+ const cfg=services()?.siteConfig||{},page=cfg?.pages?.[id]||{},override=page?.platform_overrides?.mobile||{},url=String(override.image_url||'').trim();
+ if(url)return '<img src="'+String(url).replace(/"/g,'&quot;')+'" alt="" style="display:block;width:100%;height:100%;object-fit:contain">';
+ return ICONS[id]||ICONS.default
+}
 function roleLabel(role){return({admin:'Administrateur','role_point-de-vente':'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'})[role]||String(role||'Compte')}
 function roleKeys(cfg){
  const custom=cfg?.role_definitions&&typeof cfg.role_definitions==='object'?Object.keys(cfg.role_definitions):[];
@@ -48,11 +52,12 @@ function roleKeys(cfg){
 }
 function moduleFromConfig(base,cfg){
  const page=cfg?.pages?.[base.id]&&typeof cfg.pages[base.id]==='object'?cfg.pages[base.id]:{};
+ const mobile=page?.platform_overrides?.mobile&&typeof page.platform_overrides.mobile==='object'?page.platform_overrides.mobile:{};
  return{
   ...base,
-  label:String(page.nav_label||page.label||base.label),
-  subtitle:String(page.subtitle||base.subtitle||''),
-  url:String(page.url||base.url),
+  label:String(mobile.nav_label||mobile.label||page.nav_label||page.label||base.label),
+  subtitle:String(mobile.subtitle||page.subtitle||base.subtitle||''),
+  url:String(mobile.url||page.url||base.url),
   userMenu:typeof page.user_menu==='boolean'?page.user_menu:base.userMenu,
   defaultUser:typeof page.default_user==='boolean'?page.default_user:base.defaultUser,
   configuredRoles:Array.isArray(page.roles)?page.roles:null
