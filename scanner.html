@@ -68,6 +68,14 @@ body.scannerResultOpen #reader{visibility:hidden!important;opacity:0!important;p
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.fact{padding:9px 10px;border:1px solid #eceff2;border-radius:11px;background:#f9fafb;min-width:0}.fact.wide{grid-column:1/-1}.fact span{display:block;color:#9299a2;font-size:7.5px;font-weight:850;text-transform:uppercase;letter-spacing:.45px}.fact strong{display:block;margin-top:3px;font-size:10.5px;overflow-wrap:anywhere}
 .resultActions{display:grid;grid-template-columns:1fr 1.15fr;gap:8px;margin-top:12px}.resultActions .secondary{background:#eff1f3;color:#30363d}.resultActions .primary{background:var(--grad);color:#fff}
 .notFoundBox{padding:16px;border:1px dashed #efb8a7;border-radius:14px;background:#fff7f3}.notFoundBox strong{display:block;font-size:14px}.notFoundBox p{margin:5px 0 0;color:#8f6e63;font-size:9.5px;line-height:1.45}
+.hypothesisIntro{margin:0 0 10px;color:#69727d;font-size:10px;line-height:1.45}
+.hypothesisList{display:grid;gap:8px}
+.hypothesisRow{width:100%;border:1px solid #e4e8ec;border-radius:14px;background:#f9fafb;color:var(--ink);padding:10px;display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left}
+.hypothesisRow:active{transform:scale(.99)}
+.hypothesisPhoto{width:48px;height:48px;border-radius:11px;background:#eef1f3;overflow:hidden;display:grid;place-items:center;font-size:20px}.hypothesisPhoto img{width:100%;height:100%;object-fit:cover}
+.hypothesisCopy{min-width:0}.hypothesisCopy strong{display:block;font-size:12px;line-height:1.15}.hypothesisCopy small{display:block;margin-top:3px;color:#818a95;font-size:8.5px;line-height:1.3}.hypothesisScore{min-width:48px;text-align:center;padding:6px 7px;border-radius:999px;background:#fff0e9;color:#d95028;font-size:8px;font-weight:950}
+.hypothesisWarning{margin-top:10px;padding:9px 10px;border-radius:11px;background:#fff8e8;color:#8a6920;font-size:8.5px;line-height:1.4}
+:root[data-theme="dark"] .hypothesisRow{background:#20242a;border-color:#343940}:root[data-theme="dark"] .hypothesisPhoto{background:#292e34}:root[data-theme="dark"] .hypothesisCopy small{color:#aab0b8}:root[data-theme="dark"] .hypothesisWarning{background:#302a1d;color:#e4c477}
 .desktopOnly{display:none}
 :root[data-theme="dark"]{color-scheme:dark;--ink:#f2f4f6;--muted:#a8afb8;--line:#30353b;--card:#1b1e22;--bg:#111317}
 :root[data-theme="dark"] .back{background:#202328;border-color:#373c42;color:#f4f5f7}:root[data-theme="dark"] .beta{background:#3a261f;border-color:#613728;color:#ff9b77}:root[data-theme="dark"] .panel{background:#1b1e22;border-color:#30353b}:root[data-theme="dark"] .manual input{background:#20242a;border-color:#383d43;color:#f4f5f7}:root[data-theme="dark"] .manual button{background:#efefef;color:#1d2126}:root[data-theme="dark"] .fact{background:#20242a;border-color:#30353b}:root[data-theme="dark"] .productPhoto{background:#24282d}:root[data-theme="dark"] .resultActions .secondary{background:#282c31;color:#eee}:root[data-theme="dark"] .notFoundBox{background:#2a211e;border-color:#654031}:root[data-theme="dark"] .resultModalCard{background:#1b1e22;border-color:#353a40;box-shadow:0 28px 90px rgba(0,0,0,.62)}:root[data-theme="dark"] .resultModalClose{background:#292d32;color:#f1f3f5}:root[data-theme="dark"] .resultModalTitle small{color:#aaaeb5}:root[data-theme="dark"] .resultModal .resultActions{background:linear-gradient(180deg,rgba(27,30,34,.88),#1b1e22 28%);border-color:#30353a}:root[data-theme="dark"] .cameraPreference{background:#1b2a21;border-color:#2d4937;color:#8bd3a5}:root[data-theme="dark"] .cameraPreferenceIcon{background:#254231;color:#9ee1b5}
@@ -88,7 +96,7 @@ async function waitForSupabase(ms=8000){
  throw new Error('Supabase indisponible')
 }
 const $=id=>document.getElementById(id);
-let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartPromise=null,visibilityStopTimer=null,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false,cameraPermissionState='unknown';
+let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartPromise=null,visibilityStopTimer=null,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false,cameraPermissionState='unknown',assistTimer=null,assistBusy=false,nativeDetectorPromise=null,hypothesisProducts=[];
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
 function cameraPreferenceKey(){return sessionUserId?'nethorScannerCamera:'+sessionUserId:'nethorScannerCamera'}
@@ -185,7 +193,7 @@ function showCameraFallback(message){
 }
 function hideCameraFallback(){$('cameraFallback').classList.remove('show')}
 function normalizeEan(value){return String(value||'').replace(/\D/g,'').slice(0,14)}
-function validEanLength(v){return v.length===8||v.length===12||v.length===13}
+function validEanLength(v){return v.length===8||v.length===12||v.length===13||v.length===14}
 function eanCandidates(v){v=normalizeEan(v);const out=[v];if(v.length<13)out.push(v.padStart(13,'0'));return [...new Set(out.filter(Boolean))]}
 function manualEanCandidates(v){
  v=normalizeEan(v);
@@ -195,7 +203,83 @@ function manualEanCandidates(v){
  if(v.length<13)out.push(v.padStart(13,'0'));
  return [...new Set(out.filter(Boolean))]
 }
+function scannerFormats(){
+ const F=window.Html5QrcodeSupportedFormats||{};
+ return ['EAN_13','EAN_8','UPC_A','ITF','CODE_128'].map(k=>F[k]).filter(v=>v!==undefined&&v!==null)
+}
+async function nativeBarcodeDetector(){
+ if(nativeDetectorPromise)return nativeDetectorPromise;
+ nativeDetectorPromise=(async()=>{
+  if(!('BarcodeDetector'in window))return null;
+  try{
+   const supported=typeof BarcodeDetector.getSupportedFormats==='function'?await BarcodeDetector.getSupportedFormats():[];
+   const wanted=['ean_13','ean_8','upc_a','itf','code_128'].filter(x=>!supported.length||supported.includes(x));
+   if(!wanted.length)return null;
+   return new BarcodeDetector({formats:wanted})
+  }catch(e){console.debug('BarcodeDetector indisponible:',e);return null}
+ })();
+ return nativeDetectorPromise
+}
+function captureVideoFrame(video,maxSide=500){
+ const vw=video?.videoWidth||0,vh=video?.videoHeight||0;if(!vw||!vh)return null;
+ const scale=Math.min(1,maxSide/Math.max(vw,vh)),canvas=document.createElement('canvas');
+ canvas.width=Math.max(2,Math.round(vw*scale));canvas.height=Math.max(2,Math.round(vh*scale));
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(video,0,0,canvas.width,canvas.height);
+ return canvas
+}
+function rotateCapture(source,deg){
+ if(!deg)return source;
+ const swap=deg===90||deg===270,canvas=document.createElement('canvas');
+ canvas.width=swap?source.height:source.width;canvas.height=swap?source.width:source.height;
+ const ctx=canvas.getContext('2d');ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(deg*Math.PI/180);ctx.drawImage(source,-source.width/2,-source.height/2);
+ return canvas
+}
+function enhanceBarcodeCapture(source){
+ const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0);
+ const img=ctx.getImageData(0,0,canvas.width,canvas.height),d=img.data,hist=new Uint32Array(256);let pixels=0;
+ for(let i=0;i<d.length;i+=4){const y=Math.max(0,Math.min(255,Math.round(d[i]*.299+d[i+1]*.587+d[i+2]*.114)));hist[y]++;pixels++}
+ const percentile=p=>{const target=pixels*p;let n=0;for(let i=0;i<256;i++){n+=hist[i];if(n>=target)return i}return p<.5?0:255};
+ const lo=percentile(.04),hi=Math.max(lo+24,percentile(.96)),gain=255/(hi-lo);
+ for(let i=0;i<d.length;i+=4){
+  const y=d[i]*.299+d[i+1]*.587+d[i+2]*.114;
+  const v=Math.max(0,Math.min(255,Math.round((y-lo)*gain)));
+  d[i]=d[i+1]=d[i+2]=v
+ }
+ ctx.putImageData(img,0,0);return canvas
+}
+async function runRobustAssist(){
+ if(assistBusy||!scannerRunning||searchBusy||currentProduct||document.hidden)return;
+ const detector=await nativeBarcodeDetector();if(!detector)return;
+ const video=$('reader')?.querySelector('video'),base=captureVideoFrame(video);if(!base)return;
+ assistBusy=true;
+ try{
+  const normal=[0,90,180,270];
+  for(const deg of normal){
+   const hits=await detector.detect(rotateCapture(base,deg));
+   const hit=(hits||[]).find(x=>normalizeEan(x.rawValue).length>=6);
+   if(hit){await onScanSuccess(hit.rawValue,{source:'native',rotation:deg,enhanced:false});return}
+  }
+  const enhanced=enhanceBarcodeCapture(base);
+  for(const deg of normal){
+   const hits=await detector.detect(rotateCapture(enhanced,deg));
+   const hit=(hits||[]).find(x=>normalizeEan(x.rawValue).length>=6);
+   if(hit){await onScanSuccess(hit.rawValue,{source:'native',rotation:deg,enhanced:true});return}
+  }
+ }catch(e){console.debug('Lecture assistée:',e)}
+ finally{assistBusy=false}
+}
+function startAssistLoop(){
+ stopAssistLoop();
+ assistTimer=setInterval(()=>{runRobustAssist()},1250);
+ setTimeout(()=>{runRobustAssist()},450)
+}
+function stopAssistLoop(){
+ if(assistTimer){clearInterval(assistTimer);assistTimer=null}
+ assistBusy=false
+}
 function safeStop(){
+  stopAssistLoop();
   if(!scanner||(!scannerRunning&&!scannerStarting))return Promise.resolve();
   scannerRunning=false;
   scannerStarting=false;
@@ -281,11 +365,7 @@ async function startCamera(){
     try{
       scannerStarting=true;
       scanner=new Html5Qrcode('reader',{
-        formatsToSupport:[
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.UPC_A
-        ],
+        formatsToSupport:scannerFormats(),
         experimentalFeatures:{useBarCodeDetectorIfSupported:true},
         verbose:false
       });
@@ -308,6 +388,7 @@ async function startCamera(){
       scannerRunning=true;
       setCameraState('Prêt à scanner');
       tuneActiveCamera();
+      startAssistLoop();
       if(!cameraRemembered||permission!=='granted')rememberCameraPermission(true)
     }catch(e){
       scannerStarting=false;
@@ -322,17 +403,18 @@ async function startCamera(){
   return cameraStartPromise
 }
 
-async function onScanSuccess(decodedText){
+async function onScanSuccess(decodedText,meta={}){
   const code=normalizeEan(decodedText),now=Date.now();
-  if(!validEanLength(code)||searchBusy)return;
-  if(code===lastCode&&now-lastCodeAt<1800)return;
+  if(code.length<6||searchBusy)return;
+  if(code===lastCode&&now-lastCodeAt<1500)return;
   lastCode=code;lastCodeAt=now;
-  try{navigator.vibrate?.(55)}catch(_){}
-  setCameraState('Code reconnu');
-  await findProduct(code,true)
+  try{navigator.vibrate?.(45)}catch(_){}
+  setCameraState(validEanLength(code)?'Code reconnu':'Code partiel détecté');
+  if(validEanLength(code))await findProduct(code,true,meta);
+  else await findHypotheses(code,true,meta)
 }
 
-async function findProduct(raw,fromCamera=false){
+async function findProduct(raw,fromCamera=false,meta={}){
   const code=normalizeEan(raw);
   $('eanInput').value=code;
   if(fromCamera&&!validEanLength(code)){
@@ -362,8 +444,10 @@ async function findProduct(raw,fromCamera=false){
   }));
   const product=candidates.map(candidate=>rows.find(p=>String(p.ean||'')===candidate)).find(Boolean)||rows[0]||null;
   if(!product){
+    const proposed=await findHypotheses(code,fromCamera,meta);
+    if(proposed)return;
     await safeStop();
-    renderNotFound(code,'Aucune fiche article ne correspond à cet EAN13.');
+    renderNotFound(code,'Aucune correspondance suffisamment fiable dans les fiches articles.');
     setCameraState('Article introuvable');
     return
   }
@@ -373,7 +457,56 @@ async function findProduct(raw,fromCamera=false){
   setCameraState('Fiche trouvée')
 }
 
-function renderProduct(p){
+async function findHypotheses(raw,fromCamera=false,meta={}){
+ const code=normalizeEan(raw);if(code.length<6||searchBusy)return false;
+ searchBusy=true;setCameraState('Analyse de la meilleure correspondance…');
+ try{
+  const {data,error}=await db.rpc('scan_product_hypotheses',{observed:code,max_results:3});
+  if(error)throw error;
+  const rows=(data||[]).map(p=>({
+   ...p,
+   confidence:Number(p.confidence||0),
+   product_families:p.family_name?{name:p.family_name,slug:p.family_slug}:null,
+   product_categories:p.category_name?{name:p.category_name}:null,
+   product_packagings:p.packaging_name?{name:p.packaging_name}:null
+  }));
+  if(!rows.length)return false;
+  hypothesisProducts=rows;
+  await safeStop();
+  renderHypotheses(code,rows,meta);
+  setCameraState('Correspondance à confirmer');
+  return true
+ }catch(e){console.error('Hypothèses Scanner:',e);return false}
+ finally{searchBusy=false}
+}
+function renderHypotheses(observed,rows,meta={}){
+ document.body.classList.add('scannerResultOpen');
+ const result=$('result');if(!result)return;
+ const best=rows[0],bestPct=Math.round(Number(best.confidence||0)*100);
+ result.className='result show resultModal';
+ result.innerHTML=
+  '<button class="resultModalBackdrop" type="button" aria-label="Fermer" onclick="closeProductModal()"></button>'+
+  '<article class="resultModalCard" role="dialog" aria-modal="true" aria-labelledby="scannerProductTitle">'+
+   '<div class="resultModalTop"><div class="resultModalTitle"><strong id="scannerProductTitle">Correspondance probable</strong><small>Code observé : '+esc(observed)+'</small></div><button class="resultModalClose" type="button" onclick="closeProductModal()" aria-label="Fermer">×</button></div>'+
+   '<p class="hypothesisIntro">Le code n’a pas donné de correspondance exacte. Nethor compare uniquement avec les fiches réellement enregistrées et te propose les correspondances les plus plausibles.</p>'+
+   '<div class="hypothesisList">'+rows.map((p,i)=>{
+    const pct=Math.round(Number(p.confidence||0)*100),path=[p.family_name,p.category_name].filter(Boolean).join(' · ');
+    return '<button class="hypothesisRow" type="button" onclick="chooseHypothesis('+i+')">'+
+      '<span class="hypothesisPhoto">'+(p.photo_url?'<img src="'+esc(p.photo_url)+'" alt="">':'📦')+'</span>'+
+      '<span class="hypothesisCopy"><strong>'+esc(p.name||'Article')+'</strong><small>'+esc(path||'Fiche article')+'<br>EAN '+esc(p.ean||'—')+' · '+esc(p.match_reason||'Correspondance')+'</small></span>'+
+      '<span class="hypothesisScore">'+pct+' %</span>'+
+     '</button>'
+   }).join('')+'</div>'+
+   '<div class="hypothesisWarning">Aucune fiche n’est validée automatiquement sur une hypothèse. Sélectionne uniquement le produit qui correspond réellement à l’article devant toi.</div>'+
+   '<div class="resultActions"><button class="secondary" type="button" onclick="closeProductModal()">Reprendre le scan</button><button class="primary" type="button" onclick="chooseHypothesis(0)">Meilleure hypothèse · '+bestPct+' %</button></div>'+
+  '</article>'
+}
+function chooseHypothesis(index){
+ const p=hypothesisProducts[Number(index)];if(!p)return;
+ currentProduct=p;
+ renderProduct(p,{hypothesis:true,confidence:p.confidence,reason:p.match_reason})
+}
+function renderProduct(p,match={}){
   document.body.classList.add('scannerResultOpen');
   const family=p.product_families?.name||'Non répertorié';
   const category=p.product_categories?.name||'Non répertorié';
@@ -384,8 +517,8 @@ function renderProduct(p){
   result.innerHTML=
     '<button class="resultModalBackdrop" type="button" aria-label="Fermer la fiche" onclick="closeProductModal()"></button>'+
     '<article class="resultModalCard" role="dialog" aria-modal="true" aria-labelledby="scannerProductTitle">'+
-      '<div class="resultModalTop"><div class="resultModalTitle"><strong id="scannerProductTitle">Fiche article</strong><small>EAN13 reconnu par le scanner</small></div><button class="resultModalClose" type="button" onclick="closeProductModal()" aria-label="Fermer">×</button></div>'+
-      '<div class="resultStatus"><span class="resultStatusDot"></span>Fiche article trouvée</div>'+
+      '<div class="resultModalTop"><div class="resultModalTitle"><strong id="scannerProductTitle">Fiche article</strong><small>'+(match.hypothesis?'Fiche sélectionnée depuis une hypothèse':'EAN reconnu par le scanner')+'</small></div><button class="resultModalClose" type="button" onclick="closeProductModal()" aria-label="Fermer">×</button></div>'+
+      '<div class="resultStatus"><span class="resultStatusDot"></span>'+(match.hypothesis?('Hypothèse confirmée · '+Math.round(Number(match.confidence||0)*100)+' %'):'Fiche article trouvée')+'</div>'+
       '<div class="product">'+
         '<div class="productPhoto">'+(p.photo_url?'<img src="'+esc(p.photo_url)+'" alt="">':'📦')+'</div>'+
         '<div class="productCopy"><h3>'+esc(p.name||'Article')+'</h3><div class="path">'+esc(family)+' · '+esc(category)+'</div><span class="statusBadge '+(p.on_sale?'on':'off')+'">'+(p.on_sale?'EN VENTE':'HORS VENTE')+'</span></div>'+
@@ -410,7 +543,7 @@ function renderNotFound(code,message){
 }
 function closeProductModal(){
   const result=$('result');
-  currentProduct=null;
+  currentProduct=null;hypothesisProducts=[];
   document.body.classList.remove('scannerResultOpen');
   if(result){result.className='result';result.innerHTML=''}
   $('eanInput').value='';lastCode='';resetManualInputLock();
@@ -419,7 +552,7 @@ function closeProductModal(){
 }
 function scanAnother(){
   document.body.classList.remove('scannerResultOpen');
-  currentProduct=null;$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';resetManualInputLock();startCamera()
+  currentProduct=null;hypothesisProducts=[];$('result').className='result';$('result').innerHTML='';$('eanInput').value='';lastCode='';resetManualInputLock();startCamera()
 }
 function focusManual(){const input=$('eanInput');if(!input)return;input.removeAttribute('readonly');input.setAttribute('tabindex','0');input.setAttribute('inputmode','numeric');input.focus({preventScroll:true});input.select()}
 function manualSearch(e){e.preventDefault();safeStop().then(()=>findProduct($('eanInput').value,false))}
