@@ -1,11 +1,11 @@
 {
-  "version": 278,
-  "label": "v1.43.41",
+  "version": 279,
+  "label": "v1.43.42",
   "important": false,
-  "clear_cache": true,
+  "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile — navigation 3 colonnes et actions en en-tête",
-  "message": "Notifications et Menu utilisateur quittent la barre de navigation basse et sont déplacés dans l’en-tête Mobile à droite du logo Nethor. La barre basse contient désormais uniquement Accueil, Planning et Chat sur une ligne de trois colonnes équitablement réparties. Les routes, le badge de notifications et les états actifs restent synchronisés avec MobileRouter.",
-  "published_at": "2026-09-30T21:50:12.604Z",
+  "title": "Mobile — nouveau logo Nethor",
+  "message": "Le bandeau Mobile utilise désormais le nouveau logo nethor : « ne » en orange, « thor » en noir en thème clair et en blanc en thème sombre. Les anciens éléments « Nethor » et « Application mobile » ont été retirés sans modifier la navigation.",
+  "published_at": "2026-09-30T21:55:00Z",
   "icon": "assets/app-icon-v63.svg"
 }
