@@ -74,6 +74,12 @@ function emit(type='change',extra={}){
   if(type==='ready'){
     try{window.dispatchEvent(new CustomEvent('nethor:mobile-services-ready',{detail}))}catch(_){}
   }
+  if(type==='ready'||type==='core'){
+    try{window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:state.profile,avatarUrl:state.avatarUrl,siteConfig:state.siteConfig,mobileServices:true}}))}catch(_){}
+  }
+  if(type==='ready'||type==='notifications'){
+    try{window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:[...state.notifications],unread:state.unread,mobileServices:true}}))}catch(_){}
+  }
 }
 function subscribe(fn,{immediate=true}={}){
   if(typeof fn!=='function')return()=>{};
@@ -305,6 +311,9 @@ async function start(){
     startRealtime();
     return snapshot()
   })().catch(error=>{
+    clearChannels();
+    try{authSubscription?.unsubscribe?.()}catch(_){}
+    authSubscription=null;
     state.status='error';
     state.error=error;
     emit('error',{error});
