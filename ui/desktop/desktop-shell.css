@@ -449,3 +449,131 @@ html[data-nethor-platform="desktop"] body.nettoHasMobileBar{padding-bottom:0!imp
     border-radius:8px!important
   }
 }
+
+
+/* Nethor Desktop v4 — correctif mot-symbole complet (override design-v2) */
+@media(min-width:901px){
+  html[data-nethor-platform="desktop"] header .brand{
+    display:flex!important;
+    align-items:center!important;
+    gap:0!important;
+    min-width:max-content!important;
+    overflow:visible!important
+  }
+
+  html[data-nethor-platform="desktop"] header .brandMenuWrap{
+    display:flex!important;
+    align-items:center!important;
+    width:auto!important;
+    min-width:max-content!important;
+    max-width:none!important;
+    overflow:visible!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark,
+  html[data-nethor-platform="desktop"] header .brandMark{
+    position:relative!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    flex:0 0 auto!important;
+    width:max-content!important;
+    min-width:max-content!important;
+    max-width:none!important;
+    height:56px!important;
+    min-height:56px!important;
+    max-height:none!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+    background:none!important;
+    box-shadow:none!important;
+    color:transparent!important;
+    font-size:0!important;
+    line-height:1!important;
+    text-decoration:none!important;
+    white-space:nowrap!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark::before,
+  html[data-nethor-platform="desktop"] header .mark::after,
+  html[data-nethor-platform="desktop"] header .brandMark::before,
+  html[data-nethor-platform="desktop"] header .brandMark::after{
+    position:static!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    display:inline-block!important;
+    visibility:visible!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+    background:none!important;
+    box-shadow:none!important;
+    transform:none!important;
+    opacity:1!important;
+    font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+    font-size:43px!important;
+    font-weight:950!important;
+    font-style:normal!important;
+    line-height:.86!important;
+    letter-spacing:-2.8px!important;
+    text-indent:0!important;
+    text-transform:lowercase!important;
+    text-shadow:none!important;
+    vertical-align:middle!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark::before,
+  html[data-nethor-platform="desktop"] header .brandMark::before{
+    content:"ne"!important;
+    color:#ff5a00!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark::after,
+  html[data-nethor-platform="desktop"] header .brandMark::after{
+    content:"thor"!important;
+    margin-left:-1px!important;
+    color:#2b2b2b!important
+  }
+
+  html[data-theme="dark"][data-nethor-platform="desktop"] header .mark::after,
+  html[data-theme="dark"][data-nethor-platform="desktop"] header .brandMark::after{
+    color:#fff!important
+  }
+
+  html[data-theme="light"][data-nethor-platform="desktop"] header .mark::after,
+  html[data-theme="light"][data-nethor-platform="desktop"] header .brandMark::after{
+    color:#2b2b2b!important
+  }
+
+  html[data-nethor-platform="desktop"] header .brand>.mark+div,
+  html[data-nethor-platform="desktop"] header .brand>.brandMenuWrap+div,
+  html[data-nethor-platform="desktop"] header .top>.mark+strong{
+    display:none!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark:hover,
+  html[data-nethor-platform="desktop"] header .brandMark:hover{
+    opacity:.88!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark:focus-visible,
+  html[data-nethor-platform="desktop"] header .brandMark:focus-visible{
+    outline:2px solid #ff6a2e!important;
+    outline-offset:4px!important;
+    border-radius:8px!important
+  }
+}
