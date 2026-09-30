@@ -170,7 +170,12 @@ function normalize(raw){
  for(const kind of ['mobile','desktop']){
   const current=c.platform_ui[kind]&&typeof c.platform_ui[kind]==='object'?c.platform_ui[kind]:{};
   const asset=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}};
-  c.platform_ui[kind]={header_logo:asset('header_logo'),login_logo:asset('login_logo'),welcome_media:{...asset('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'}}
+  const currentControls=current.controls&&typeof current.controls==='object'?current.controls:{},controls={};
+  for(const key of ['notifications','user_menu','theme','update','logout']){
+   const x=currentControls[key]&&typeof currentControls[key]==='object'?currentControls[key]:{};
+   controls[key]={label:String(x.label||''),subtitle:String(x.subtitle||''),url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}
+  }
+  c.platform_ui[kind]={header_logo:asset('header_logo'),login_logo:asset('login_logo'),welcome_media:{...asset('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'},controls}
  }
  return c
 }
@@ -608,7 +613,12 @@ function ensurePlatformUiConfig(){
  for(const kind of ['mobile','desktop']){
   const current=config.platform_ui[kind]&&typeof config.platform_ui[kind]==='object'?config.platform_ui[kind]:{};
   const clean=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}};
-  config.platform_ui[kind]={header_logo:clean('header_logo'),login_logo:clean('login_logo'),welcome_media:{...clean('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'}}
+  const currentControls=current.controls&&typeof current.controls==='object'?current.controls:{},controls={};
+  for(const key of ['notifications','user_menu','theme','update','logout']){
+   const x=currentControls[key]&&typeof currentControls[key]==='object'?currentControls[key]:{};
+   controls[key]={label:String(x.label||''),subtitle:String(x.subtitle||''),url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}
+  }
+  config.platform_ui[kind]={header_logo:clean('header_logo'),login_logo:clean('login_logo'),welcome_media:{...clean('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'},controls}
  }
  return config.platform_ui
 }
@@ -644,6 +654,78 @@ function platformAssetRow(kind,key,title,description){
   '<input id="platformAssetFile_'+kind+'_'+key+'" type="file" accept="'+platformAssetAccept(key)+'" hidden onchange="uploadPlatformAsset(\''+kind+'\',\''+key+'\',this)">'+
  '</div>'
 }
+
+const PLATFORM_CONTROL_DEFAULTS={
+ notifications:{label:'Notifications',subtitle:'Centre d’activité Nethor',glyph:'🔔'},
+ user_menu:{label:'Menu utilisateur',subtitle:'Profil, préférences et réglages',glyph:'☺'},
+ theme:{label:'Mode sombre',subtitle:'Changer l’apparence',glyph:'◐'},
+ update:{label:'Mise à jour',subtitle:'Rechercher une nouvelle version',glyph:'↓'},
+ logout:{label:'Déconnexion',subtitle:'Quitter la session',glyph:'↪'}
+};
+function platformControlDefs(kind){
+ const keys=kind==='mobile'?['notifications','user_menu','theme','update','logout']:['notifications','user_menu','theme','update','logout'];
+ return keys.map(key=>({key,...PLATFORM_CONTROL_DEFAULTS[key]}))
+}
+function platformControlNode(kind,key){
+ const ui=platformUiNode(kind);ui.controls=ui.controls&&typeof ui.controls==='object'?ui.controls:{};
+ const x=ui.controls[key]&&typeof ui.controls[key]==='object'?ui.controls[key]:{};
+ ui.controls[key]={label:String(x.label||''),subtitle:String(x.subtitle||''),url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')};
+ return ui.controls[key]
+}
+function platformControlValue(kind,key,field){
+ const node=platformControlNode(kind,key),d=PLATFORM_CONTROL_DEFAULTS[key]||{};
+ return String(node[field]||d[field]||'')
+}
+function platformControlIcon(kind,key){
+ const node=platformControlNode(kind,key),d=PLATFORM_CONTROL_DEFAULTS[key]||{},url=String(node.url||'').trim();
+ return url?'<img src="'+attr(url)+'" alt="">':'<span>'+esc(d.glyph||'•')+'</span>'
+}
+function platformControlRow(kind,def){
+ const node=platformControlNode(kind,def.key),custom=!!String(node.url||'').trim();
+ return '<article class="platformControlRow">'+
+  '<div class="platformControlIcon">'+platformControlIcon(kind,def.key)+'</div>'+
+  '<div class="platformControlFields">'+
+   '<div class="field"><label>Libellé</label><input value="'+attr(platformControlValue(kind,def.key,'label'))+'" data-platform-control-kind="'+kind+'" data-platform-control-key="'+def.key+'" data-platform-control-field="label"></div>'+
+   '<div class="field"><label>Sous-texte</label><input value="'+attr(platformControlValue(kind,def.key,'subtitle'))+'" data-platform-control-kind="'+kind+'" data-platform-control-key="'+def.key+'" data-platform-control-field="subtitle"></div>'+
+  '</div>'+
+  '<div class="platformAssetActions"><button class="btn secondaryBtn mini" type="button" onclick="choosePlatformControlAsset(\''+kind+'\',\''+def.key+'\')">Importer</button>'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="downloadPlatformControlAsset(\''+kind+'\',\''+def.key+'\')" '+(custom?'':'disabled')+'>Télécharger</button>'+
+   (custom?'<button class="btn secondaryBtn mini" type="button" onclick="removePlatformControlAsset(\''+kind+'\',\''+def.key+'\')">Retirer le visuel</button>':'')+
+  '</div>'+
+  '<input id="platformControlFile_'+kind+'_'+def.key+'" type="file" accept=".png,.webp,.svg,.ico,.gif,image/png,image/webp,image/svg+xml,image/gif,image/x-icon,image/vnd.microsoft.icon" hidden onchange="uploadPlatformControlAsset(\''+kind+'\',\''+def.key+'\',this)">'+
+ '</article>'
+}
+function renderPlatformControls(kind){
+ return '<section class="platformControlsSection"><div class="platformSubhead"><div><h3>Commandes d’interface</h3><p>Personnalise aussi les commandes de coque : libellé, sous-texte et visuel. Les actions de sécurité restent inchangées.</p></div></div><div class="platformControlList">'+platformControlDefs(kind).map(def=>platformControlRow(kind,def)).join('')+'</div></section>'
+}
+function bindPlatformControlFields(host){
+ host.querySelectorAll('[data-platform-control-kind][data-platform-control-key][data-platform-control-field]').forEach(el=>{
+  el.oninput=()=>{const node=platformControlNode(el.dataset.platformControlKind,el.dataset.platformControlKey);node[el.dataset.platformControlField]=el.value;markDirty()}
+ })
+}
+function choosePlatformControlAsset(kind,key){$('platformControlFile_'+kind+'_'+key)?.click()}
+async function uploadPlatformControlAsset(kind,key,input){
+ const state=$('saveState'),file=input?.files?.[0];if(!file)return;
+ try{
+  const ext=platformAssetExtension(file),allowed=['png','webp','svg','ico','gif'];
+  if(!ext||!allowed.includes(ext))throw new Error('Format refusé. Utilise PNG, WebP, SVG, ICO ou GIF.');
+  if(file.size>5*1024*1024)throw new Error('Visuel trop lourd : 5 Mo maximum.');
+  state.className='saveState';state.textContent='Import commande '+platformLabel(kind)+'…';
+  const storagePath='platform/'+kind+'/controls/'+key+'-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=platformControlNode(kind,key);
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;
+  markDirty();renderPlatformIdentity(kind);state.textContent='Visuel prêt à être enregistré'
+ }catch(e){state.className='saveState err';state.textContent='Erreur visuel : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+function downloadPlatformControlAsset(kind,key){
+ const node=platformControlNode(kind,key),url=String(node.url||'').trim();if(url)downloadAssetUrl(url,node.name||('Nethor-'+kind+'-'+key))
+}
+function removePlatformControlAsset(kind,key){
+ const node=platformControlNode(kind,key);node.url='';node.path='';node.name='';markDirty();renderPlatformIdentity(kind)
+}
+
 function renderPlatformIdentity(kind){
  const host=$('platformIdentity_'+kind);if(!host)return;
  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Chaque ressource peut être différente de l’autre plateforme. Sans fichier personnalisé, Nethor conserve automatiquement son visuel actuel.</p></div></div>'+
@@ -651,8 +733,9 @@ function renderPlatformIdentity(kind){
  platformAssetRow(kind,'header_logo','Logo de l’entête','Logo utilisé dans les en-têtes de l’application sur '+platformLabel(kind)+'.')+
  platformAssetRow(kind,'login_logo','Logo de connexion','Logo affiché sur la page de connexion '+platformLabel(kind)+'.')+
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
- '</div>';
- host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)})
+ '</div>'+renderPlatformControls(kind);
+ host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)});
+ bindPlatformControlFields(host)
 }
 function choosePlatformAsset(kind,key){$('platformAssetFile_'+kind+'_'+key)?.click()}
 function platformAssetExtension(file){
