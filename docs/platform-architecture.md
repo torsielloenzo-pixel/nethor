@@ -1352,3 +1352,90 @@ sont répartis dans les feuilles de plateforme appropriées.
 - Supabase Realtime sur messages, réactions, conversations et participants.
 
 Aucune logique de données n’est dupliquée entre Desktop et Mobile.
+
+
+## Phase 4.14 — Maintenance et Réparation
+
+Les pages techniques de continuité de service sont traitées séparément du shell principal.
+
+### Maintenance : structures dédiées
+
+`maintenance.html` utilise désormais un point de montage neutre :
+
+```html
+<div data-nethor-maintenance-layout></div>
+```
+
+Les structures sont physiquement séparées :
+
+```text
+ui/
+├── desktop/
+│   ├── maintenance-layout.js
+│   └── maintenance-layout.css
+└── mobile/
+    ├── maintenance-layout.js
+    └── maintenance-layout.css
+```
+
+`maintenance-page-layout.js` choisit uniquement le builder correspondant à `NethorPlatform`.
+
+La page Maintenance ne charge pas `profile-ui.js`, `platform-page-layout.js`, `desktop-shell.js` ni `mobile-shell.js`. Elle partage uniquement le résolveur de plateforme, nécessaire pour conserver la même décision Desktop / Mobile que le reste de Nethor.
+
+### Fin du responsive historique de Maintenance
+
+L’ancien bloc :
+
+```css
+@media(max-width:560px) { ... }
+```
+
+a été supprimé de `maintenance.html`.
+
+Les tailles, espacements, safe areas et comportement du bouton de déconnexion appartiennent maintenant directement à la feuille Desktop ou Mobile active.
+
+Réduire une fenêtre Desktop ne peut donc plus transformer Maintenance en présentation Mobile. Une interface Mobile large conserve sa structure Mobile.
+
+### Logique métier conservée
+
+La logique de Maintenance reste unique :
+
+- même session Supabase ;
+- même lecture de `app_settings.site_config` ;
+- même bypass administrateur ;
+- même retour automatique vers Accueil lorsque la maintenance est levée ;
+- même déconnexion de secours.
+
+Le mode `mobile-preview` et un override explicite de plateforme sont conservés lors du retour vers Accueil.
+
+### Réparation : page de récupération autonome
+
+`repair.html` est volontairement exclue du shell principal et du résolveur de plateforme.
+
+Elle ne charge aucun :
+
+- shell Desktop ou Mobile ;
+- `profile-ui.js` ;
+- Supabase ;
+- stylesheet externe ;
+- script externe ;
+- manifest applicatif.
+
+Sa structure, son style et son moteur de nettoyage sont autonomes afin de rester utilisables même lorsqu’un problème vient précisément du shell, d’une dépendance applicative ou d’un ancien cache.
+
+La page :
+
+- désinscrit les Service Workers appartenant au périmètre Nethor ;
+- supprime uniquement les caches `netto-tools-vN` ;
+- réinitialise la résolution de plateforme de session, sans effacer l’override utilisateur ;
+- recharge `home.html` avec un paramètre anti-cache ;
+- conserve `mobile_preview=1` ou `nethor_platform` lorsqu’ils sont explicitement présents.
+
+Le Service Worker v231 traite en plus `repair.html` comme une navigation réseau `no-store` et ne la place pas dans le précache. Une réparation ne doit jamais retomber silencieusement sur le shell principal ou sur une copie de réparation obsolète.
+
+### Invariant
+
+Maintenance suit la plateforme résolue, mais reste hors shell global.
+
+Réparation est une route de secours encore plus basse dans la pile : elle doit fonctionner sans dépendre de l’architecture qu’elle est susceptible de réparer.
+
