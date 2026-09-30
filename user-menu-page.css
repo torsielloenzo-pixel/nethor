@@ -1,0 +1,15 @@
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f2f4f7;color:#1d2127}
+body{min-height:100dvh;padding:0 0 calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom));overflow-x:hidden}
+.mobileUserMenuPageHost{width:100%;min-height:calc(100dvh - var(--netto-mobile-bar-h,64px) - env(safe-area-inset-bottom));background:#f2f4f7}
+.mobileUserMenuPageHost>.nettoMobileUserMenu{display:block!important;width:min(100%,720px);min-height:100%;margin:0 auto;padding:calc(env(safe-area-inset-top) + 22px) 14px 28px}
+.mobileUserMenuPageHost .nettoMobileMenuHeader{display:flex;align-items:center;min-height:58px;margin:0 4px 12px}
+.mobileUserMenuPageHost .nettoMobileMenuHeader h2{margin:0!important;font-size:34px!important;line-height:1!important;letter-spacing:-1px!important;font-weight:950!important}
+.mobileUserMenuPageHost .nettoMobileProfileMain,
+.mobileUserMenuPageHost .nettoMobileMenuRow{text-decoration:none}
+.mobileUserMenuLoading{min-height:70dvh;display:grid;place-items:center;align-content:center;gap:12px;color:#7b818a;font-size:12px}
+.mobileUserMenuLoading span{width:28px;height:28px;border:3px solid #dde1e6;border-top-color:#ef5a2f;border-radius:50%;animation:nethorMenuSpin .8s linear infinite}
+@keyframes nethorMenuSpin{to{transform:rotate(360deg)}}
+html[data-theme="dark"],html[data-theme="dark"] body,html[data-theme="dark"] .mobileUserMenuPageHost{background:#171a1e;color:#f0ece7}
+html[data-theme="dark"] .mobileUserMenuLoading{color:#aaa49e}
+@media(max-width:380px){.mobileUserMenuPageHost>.nettoMobileUserMenu{padding-left:10px;padding-right:10px}.mobileUserMenuPageHost .nettoMobileMenuHeader h2{font-size:31px!important}}
