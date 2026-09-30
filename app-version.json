@@ -1,11 +1,11 @@
 {
-  "version": 271,
-  "label": "v1.43.34",
+  "version": 272,
+  "label": "v1.43.35",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — Menu & Notifications, phase 5",
-  "message": "Nethor migre Menu utilisateur et Notifications dans le document mobile unique. Les deux écrans s’ouvrent maintenant via MobileRouter sans recharger mobile.html et réutilisent le profil, les permissions, la session et les notifications déjà chargés par MobileServices. Le Menu conserve le thème, la vérification de mise à jour, le signalement et la déconnexion. Notifications conserve recherche, filtre, lecture, ouverture et suppression. Les anciennes pages restent disponibles en secours. Le Service Worker passe en v271.",
-  "published_at": "2026-09-30T20:31:03.262Z",
+  "title": "Architecture mobile — sous-vues utilisateur, phase 6",
+  "message": "Nethor migre Mon profil, Personnalisation, Réglages des notifications et Signaler un problème dans le document mobile unique. Ces quatre sous-vues utilisent désormais MobileRouter et MobileServices sans recréer la session Supabase. Le profil conserve apparence, photo recadrée, mot de passe et personnalisation avancée ; Personnalisation conserve menus/widgets ; les réglages notifications conservent Push et canaux personnels ; le signalement conserve le diagnostic détaillé. Le retour revient directement au Menu utilisateur. Le Service Worker passe en v272.",
+  "published_at": "2026-09-30T20:42:08.279Z",
   "icon": "assets/app-icon-v63.svg"
 }
