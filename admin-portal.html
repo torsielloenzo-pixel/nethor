@@ -919,6 +919,131 @@ function isImportantPortalLog(x){
  if(area==='notifications'&&/^notifications de /.test(title))return false;
  return true
 }
+function isDesktopJournal(){
+ try{
+  if(document.documentElement.dataset.nethorPageLayout==='desktop')return true;
+  const p=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'').toLowerCase();
+  return p==='desktop'
+ }catch(_){return false}
+}
+function logExportRows(){return portalLogs.filter(isImportantPortalLog)}
+function logExportSafeName(value,fallback='journal'){
+ const s=String(value||fallback).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+ return (s||fallback).slice(0,96)
+}
+function logExportVersion(x){
+ const label=String(x?.details?.label||'').trim();
+ if(label)return label;
+ const n=Number(x?.details?.version||0);
+ return n>0?'build-'+n:''
+}
+function logExportFileName(x,index=0){
+ const version=logExportVersion(x),title=logExportSafeName(x?.title||'modification','modification');
+ const lead=version?logExportSafeName(version,'version'):('log-'+String(x?.id||index+1));
+ return 'Nethor-'+lead+'-'+title+'.txt'
+}
+function logExportDetailLines(details){
+ if(!details||typeof details!=='object'||Array.isArray(details))return[];
+ const hidden=new Set(['duplicate','duplicate_of']);
+ return Object.entries(details)
+  .filter(([key,value])=>!hidden.has(key)&&value!==null&&value!==''&&!(Array.isArray(value)&&!value.length))
+  .map(([key,value])=>'- '+(LOG_DETAIL_LABELS[key]||key.replaceAll('_',' '))+' : '+logDetailValue(key,value))
+}
+function portalLogAsText(x){
+ const auto=x?.source==='auto',author=auto?'AUTO':(x?.actor_name||'Administrateur'),version=logExportVersion(x)||'—';
+ const details=logExportDetailLines(x?.details);
+ const date=x?.created_at?new Date(x.created_at).toLocaleString('fr-FR',{dateStyle:'full',timeStyle:'medium'}):'—';
+ const lines=[
+  'NETHOR — JOURNAL DES MODIFICATIONS',
+  '===================================',
+  '',
+  'Version : '+version,
+  'Type : '+(x?.release_type==='maj'?'MAJ':'PATCH'),
+  'Source : '+(auto?'AUTO':'MANUEL'),
+  'Zone : '+(x?.area||'—'),
+  'Date : '+date,
+  'Auteur : '+author,
+  'Identifiant : '+(x?.id??'—'),
+  '',
+  'TITRE',
+  String(x?.title||'Modification'),
+  '',
+  'DESCRIPTION',
+  String(x?.description||''),
+ ];
+ if(details.length)lines.push('','DÉTAILS',...details);
+ lines.push('','---','Export généré depuis Nethor · Journal des modifications');
+ return lines.join('\r\n')
+}
+function saveJournalBlob(blob,name){
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1200)
+}
+function downloadPortalLog(id){
+ if(!isDesktopJournal())return;
+ const x=portalLogs.find(row=>String(row.id)===String(id));if(!x)return;
+ const blob=new Blob(['\ufeff',portalLogAsText(x)],{type:'text/plain;charset=utf-8'});
+ saveJournalBlob(blob,logExportFileName(x))
+}
+let nethorZipCrcTable=null;
+function zipCrc32(bytes){
+ if(!nethorZipCrcTable){
+  nethorZipCrcTable=new Uint32Array(256);
+  for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);nethorZipCrcTable[n]=c>>>0}
+ }
+ let crc=0xffffffff;
+ for(const b of bytes)crc=nethorZipCrcTable[(crc^b)&255]^(crc>>>8);
+ return (crc^0xffffffff)>>>0
+}
+function zipDosDateTime(value){
+ const d=value instanceof Date&&!Number.isNaN(value.getTime())?value:new Date();
+ const year=Math.max(1980,d.getFullYear()),month=d.getMonth()+1,day=d.getDate(),hour=d.getHours(),minute=d.getMinutes(),second=Math.floor(d.getSeconds()/2);
+ return{date:((year-1980)<<9)|(month<<5)|day,time:(hour<<11)|(minute<<5)|second}
+}
+function zipStoreTextFiles(files){
+ const enc=new TextEncoder(),locals=[],centrals=[];let offset=0;
+ files.forEach(file=>{
+  const name=enc.encode(file.name),data=enc.encode(file.text),crc=zipCrc32(data),dt=zipDosDateTime(file.date);
+  const local=new Uint8Array(30+name.length+data.length),lv=new DataView(local.buffer);
+  lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0x0800,true);lv.setUint16(8,0,true);
+  lv.setUint16(10,dt.time,true);lv.setUint16(12,dt.date,true);lv.setUint32(14,crc,true);lv.setUint32(18,data.length,true);lv.setUint32(22,data.length,true);
+  lv.setUint16(26,name.length,true);lv.setUint16(28,0,true);local.set(name,30);local.set(data,30+name.length);
+  locals.push(local);
+  const central=new Uint8Array(46+name.length),cv=new DataView(central.buffer);
+  cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);cv.setUint16(10,0,true);
+  cv.setUint16(12,dt.time,true);cv.setUint16(14,dt.date,true);cv.setUint32(16,crc,true);cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);
+  cv.setUint16(28,name.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);cv.setUint32(42,offset,true);
+  central.set(name,46);centrals.push(central);offset+=local.length
+ });
+ const centralSize=centrals.reduce((n,x)=>n+x.length,0),end=new Uint8Array(22),ev=new DataView(end.buffer);
+ ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+ ev.setUint32(12,centralSize,true);ev.setUint32(16,offset,true);ev.setUint16(20,0,true);
+ return new Blob([...locals,...centrals,end],{type:'application/zip'})
+}
+function downloadAllPortalLogs(){
+ if(!isDesktopJournal())return;
+ const rows=logExportRows();if(!rows.length){alert('Aucune entrée à télécharger.');return}
+ const generated=new Date(),files=[];
+ const summary=[
+  'NETHOR — JOURNAL COMPLET DES MODIFICATIONS',
+  '==========================================',
+  '',
+  'Export : '+generated.toLocaleString('fr-FR'),
+  'Entrées : '+rows.length,
+  '',
+  ...rows.flatMap((x,i)=>[
+   String(i+1).padStart(3,'0')+' · '+(logExportVersion(x)||('Log #'+(x.id??'?')))+' · '+(x.release_type==='maj'?'MAJ':'PATCH')+' · '+String(x.title||'Modification'),
+   '    '+(x.created_at?new Date(x.created_at).toLocaleString('fr-FR'):'')+' · '+(x.source==='auto'?'AUTO':'MANUEL'),
+   ''
+  ])
+ ].join('\r\n');
+ files.push({name:'00-JOURNAL-COMPLET.txt',text:'\ufeff'+summary,date:generated});
+ rows.forEach((x,i)=>files.push({name:String(i+1).padStart(3,'0')+'-'+logExportFileName(x,i),text:'\ufeff'+portalLogAsText(x),date:x.created_at?new Date(x.created_at):generated}));
+ const blob=zipStoreTextFiles(files),stamp=generated.toISOString().slice(0,10);
+ saveJournalBlob(blob,'Nethor-Journal-des-modifications-'+stamp+'.zip')
+}
+
 function renderPortalLogs(){
  const host=$('portalLogs');if(!host)return;
  const important=portalLogs.filter(isImportantPortalLog);
@@ -927,9 +1052,11 @@ function renderPortalLogs(){
  $('logManualCount').textContent=String(important.filter(x=>x.source==='manual').length);
  const rows=important.filter(x=>(logSourceFilter==='all'||x.source===logSourceFilter)&&(logTypeFilter==='all'||x.release_type===logTypeFilter));
  if(!rows.length){host.innerHTML='<div class="logEmpty">Aucune entrée ne correspond à ces filtres.</div>';return}
+ const desktop=isDesktopJournal();
  host.innerHTML=rows.map(x=>{
   const auto=x.source==='auto',author=auto?'AUTO':(x.actor_name||'Administrateur'),letter=auto?'A':String(author||'M').trim().charAt(0).toUpperCase(),version=logVersionLabel(x);
-  return '<article class="logEntry '+(auto?'auto':'manual')+'"><div class="logRail"><span class="logAvatar">'+esc(letter)+'</span></div><div class="logCard"><div class="logTop"><span class="logType '+esc(x.release_type)+'">'+(x.release_type==='maj'?'MAJ':'PATCH')+'</span><span class="logSource '+esc(x.source)+'">'+(auto?'AUTO':'MANUEL')+'</span>'+(x.area?'<span class="logArea">'+esc(x.area)+'</span>':'')+(version?'<span class="logVersion">'+esc(version)+'</span>':'')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.description)+'</p>'+renderLogDetails(x)+'<div class="logMeta"><span>'+logDate(x.created_at)+'</span><span class="logAuthor">'+esc(author)+'</span></div></div></article>'
+  const download=desktop?'<button class="logDownloadBtn" type="button" onclick="downloadPortalLog('+Number(x.id)+')" title="Télécharger cette entrée au format TXT">↓ TXT</button>':'';
+  return '<article class="logEntry '+(auto?'auto':'manual')+'"><div class="logRail"><span class="logAvatar">'+esc(letter)+'</span></div><div class="logCard"><div class="logTop"><span class="logType '+esc(x.release_type)+'">'+(x.release_type==='maj'?'MAJ':'PATCH')+'</span><span class="logSource '+esc(x.source)+'">'+(auto?'AUTO':'MANUEL')+'</span>'+(x.area?'<span class="logArea">'+esc(x.area)+'</span>':'')+(version?'<span class="logVersion">'+esc(version)+'</span>':'')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.description)+'</p>'+renderLogDetails(x)+'<div class="logMeta"><span>'+logDate(x.created_at)+'</span><span class="logMetaActions"><span class="logAuthor">'+esc(author)+'</span>'+download+'</span></div></div></article>'
  }).join('')
 }
 async function loadPortalLogs(){
