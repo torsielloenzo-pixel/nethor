@@ -770,7 +770,7 @@ function ensurePortalPlatformStructure(){
  document.querySelectorAll('.managementActionGrid button[onclick*="showTab(\'mobile\')"]').forEach(btn=>{const s=btn.querySelector('strong');if(s)s.textContent='Mobile';const sm=btn.querySelector('small');if(sm)sm.textContent='Identité, navigation et menus'});
 }
 
-const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-mobile','tab-desktop','tab-blocks','tab-media','tab-notifications']);
+const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-blocks','tab-media','tab-notifications']);
 const MANAGEMENT_PANEL_ICONS={
  'Identité du portail':'◈','Couleurs générales':'◉','Barre de navigation mobile':'▣',
  'Blocs & widgets':'▥','Bibliothèque des logos Nethor':'▧','Envoyer une notification':'↗',
