@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="platform-resolver.js?v=3"></script>
+<script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=1"></script>
 <script>
 (function(){
  if(window.NethorPlatform?.isDesktop?.()){location.replace('home.html');return}
@@ -18,12 +18,10 @@
  document.documentElement.dataset.nethorPageBackHandled='1'
 })();
 </script>
-<link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop">
-<link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=4" media="not all" data-nethor-shell="mobile">
+<script>window.NethorPlatformAssets.style('ui/desktop/desktop-shell.css?v=2','ui/mobile/mobile-shell.css?v=4')</script>
 <link rel="stylesheet" href="user-menu-page.css?v=1">
 <script src="platform-navigation.js?v=1"></script>
-<script src="ui/desktop/desktop-shell.js?v=11"></script>
-<script src="ui/mobile/mobile-shell.js?v=11"></script>
+<script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=11','ui/mobile/mobile-shell.js?v=11')</script>
 <script src="profile-ui.js?v=201" defer></script>
 <script src="user-menu-page.js?v=1" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
