@@ -1,11 +1,11 @@
 {
-  "version": 269,
-  "label": "v1.43.32",
+  "version": 270,
+  "label": "v1.43.33",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — services persistants, phase 3",
-  "message": "Nethor charge désormais dans mobile.html une instance unique des services communs : session Supabase, profil, configuration, sous-rôles et permissions, avatar, préférences de notifications et centre de notifications. Les données restent disponibles pour les futures vues sans recréer le client à chaque navigation. Des abonnements temps réel maintiennent ces informations à jour et le compteur non lu de la barre Mobile est alimenté directement par le service partagé. Le Service Worker passe en v269.",
-  "published_at": "2026-09-30T20:09:23.130Z",
+  "title": "Architecture mobile — Accueil en vue, phase 4",
+  "message": "Accueil devient la première vraie vue montée dans mobile.html. HomeView réutilise désormais la session, le profil, la configuration, les permissions et les notifications déjà chargés par MobileServices, tout en conservant les widgets du tableau de bord, la passation, l’équipe du jour, les accès rapides et le Pilotage magasin. Le routeur conserve maintenant les paramètres lors d’un fallback vers une page non encore migrée, et Stock F&L rejoint la table des destinations Mobile. Le Service Worker passe en v270.",
+  "published_at": "2026-09-30T20:21:08.097Z",
   "icon": "assets/app-icon-v63.svg"
 }
