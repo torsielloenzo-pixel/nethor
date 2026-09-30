@@ -359,3 +359,93 @@ html[data-nethor-platform="desktop"] body.nettoHasMobileBar{padding-bottom:0!imp
      font-size:initial;
    }
  }
+
+
+/* Nethor Desktop v3 — même identité d’en-tête que Mobile */
+@media(min-width:901px){
+  html[data-nethor-platform="desktop"] header .brand{
+    position:relative;
+    gap:0!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark,
+  html[data-nethor-platform="desktop"] header .brandMark{
+    position:relative!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    width:auto!important;
+    min-width:154px!important;
+    height:56px!important;
+    min-height:56px!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    color:transparent!important;
+    font-size:0!important;
+    line-height:1!important;
+    text-decoration:none!important;
+    white-space:nowrap!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark::before,
+  html[data-nethor-platform="desktop"] header .brandMark::before,
+  html[data-nethor-platform="desktop"] header .mark::after,
+  html[data-nethor-platform="desktop"] header .brandMark::after{
+    display:inline-block;
+    font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:43px;
+    font-weight:950;
+    line-height:.86;
+    letter-spacing:-2.8px;
+    text-transform:lowercase;
+    text-shadow:none
+  }
+
+  html[data-nethor-platform="desktop"] header .mark::before,
+  html[data-nethor-platform="desktop"] header .brandMark::before{
+    content:"ne";
+    color:#ff5a00
+  }
+
+  html[data-nethor-platform="desktop"] header .mark::after,
+  html[data-nethor-platform="desktop"] header .brandMark::after{
+    content:"thor";
+    margin-left:-1px;
+    color:#2b2b2b
+  }
+
+  html[data-theme="dark"][data-nethor-platform="desktop"] header .mark::after,
+  html[data-theme="dark"][data-nethor-platform="desktop"] header .brandMark::after{
+    color:#fff
+  }
+
+  /* Les anciens nom/sous-titre laissent place au mot-symbole, comme sur Mobile. */
+  html[data-nethor-platform="desktop"] header .brand>.mark+div,
+  html[data-nethor-platform="desktop"] header .brand>.brandMenuWrap+div,
+  html[data-nethor-platform="desktop"] header .top>.mark+strong{
+    display:none!important
+  }
+
+  html[data-nethor-platform="desktop"] header .brandMenuWrap{
+    display:flex!important;
+    align-items:center!important;
+    min-width:154px!important
+  }
+
+  html[data-nethor-platform="desktop"] header .mark:hover,
+  html[data-nethor-platform="desktop"] header .brandMark:hover{
+    opacity:.88
+  }
+
+  html[data-nethor-platform="desktop"] header .mark:focus-visible,
+  html[data-nethor-platform="desktop"] header .brandMark:focus-visible{
+    outline:2px solid #ff6a2e!important;
+    outline-offset:4px!important;
+    border-radius:8px!important
+  }
+}
