@@ -49,11 +49,6 @@ function addDays(date,days){const x=new Date(date);x.setDate(x.getDate()+days);r
 function startOfWeek(date){const x=new Date(date),n=(x.getDay()+6)%7;x.setHours(0,0,0,0);x.setDate(x.getDate()-n);return x}
 function isoDate(date){const x=new Date(date);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
 function parseDate(value){const [y,m,d]=String(value||'').split('-').map(Number);return new Date(y||2000,(m||1)-1,d||1)}
-function diffDays(fromKey,toKey){
- const [fy,fm,fd]=String(fromKey||'').split('-').map(Number),[ty,tm,td]=String(toKey||'').split('-').map(Number);
- if(!fy||!fm||!fd||!ty||!tm||!td)return 0;
- return Math.round((Date.UTC(ty,tm-1,td)-Date.UTC(fy,fm-1,td?fd:fd))/86400000)
-}
 function dateDiffDays(fromKey,toKey){
  const [fy,fm,fd]=String(fromKey||'').split('-').map(Number),[ty,tm,td]=String(toKey||'').split('-').map(Number);
  if(!fy||!fm||!fd||!ty||!tm||!td)return 0;
@@ -365,7 +360,7 @@ function avatarInitials(name){return String(name||'U').trim().split(/\s+/).slice
 async function paintTeamAvatars(rows){
  for(const row of rows){
   if(!state.mounted)return;
-  const el=state.dashboard?.querySelector('[data-home-team-avatar="'+CSS.escape(row.id)+'"]');if(!el)continue;
+  const el=state.dashboard?.querySelector('[data-home-team-avatar="'+row.id+'"]');if(!el)continue;
   const url=await signedAvatar(row.profile);
   if(url){el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}
  }
