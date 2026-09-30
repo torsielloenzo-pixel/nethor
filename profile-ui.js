@@ -781,7 +781,7 @@ function parseVersionFromLog(row){
 }
 async function latestVersionFromLogs(){
  if(!api.client)return 0;
- const {data,error}=await api.client.from('portal_change_logs').select('release_type,title,description,created_at,details').eq('release_type','maj').order('created_at',{ascending:false}).limit(50);
+ const {data,error}=await api.client.from('portal_change_logs').select('release_type,title,description,created_at,details').eq('source','auto').order('created_at',{ascending:false}).limit(100);
  if(error)throw error;
  let latest=0;
  for(const row of data||[])latest=Math.max(latest,parseVersionFromLog(row));
