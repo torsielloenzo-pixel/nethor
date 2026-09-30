@@ -1,11 +1,11 @@
 {
-  "version": 247,
-  "label": "v1.43.10",
-  "important": true,
+  "version": 248,
+  "label": "v1.43.11",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Performance Mobile — phase 3",
-  "message": "Le runtime commun du profil a été allégé : environ 46 000 caractères de styles ont été sortis du JavaScript, les styles Fiche utilisateur et Mise à jour sont chargés uniquement à la demande, les contrôles de mise à jour et services secondaires démarrent après le premier affichage, et reward-profile est différé. Les pages utilisent profile-ui v204 et le CSS critique profile-ui v2.",
-  "published_at": "2026-09-30T17:34:00.000+02:00",
+  "title": "Journal des modifications synchronisé",
+  "message": "Le Journal des modifications est de nouveau synchronisé avec les versions publiées de Nethor. L’historique automatique manquant depuis v1.79 a été restauré jusqu’à la version actuelle, chaque ouverture du Journal vérifie le manifeste publié et une synchronisation serveur indépendante s’exécute toutes les 5 minutes. Les versions AUTO et PATCH sont désormais toutes prises en compte par le suivi de version.",
+  "published_at": "2026-09-30T17:42:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
