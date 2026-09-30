@@ -120,8 +120,18 @@ function permissionLevel(module){
  if(extra==='view'&&base==='none')return'view';
  return base
 }
+function configuredModule(module){
+ const page=state.config?.pages?.[module.id]&&typeof state.config.pages[module.id]==='object'?state.config.pages[module.id]:{};
+ const mobile=page?.platform_overrides?.mobile&&typeof page.platform_overrides.mobile==='object'?page.platform_overrides.mobile:{};
+ return{...module,
+  label:String(mobile.nav_label||mobile.label||page.nav_label||page.label||module.label),
+  url:String(mobile.url||page.url||module.url),
+  image_url:String(mobile.image_url||'')
+ }
+}
 function allowedModules(){
  return MODULES.filter(module=>permissionLevel(module)!=='none')
+  .map(configuredModule)
   .sort((a,b)=>Number(state.config?.pages?.[a.id]?.order||a.order)-Number(state.config?.pages?.[b.id]?.order||b.order))
 }
 function widgetVisible(id){
@@ -160,6 +170,8 @@ function navigate(raw){
 }
 
 function icon(id){
+ const page=state.config?.pages?.[id]||{},mobile=page?.platform_overrides?.mobile||{},custom=String(mobile.image_url||'').trim();
+ if(custom)return '<img src="'+esc(custom)+'" alt="" style="display:block;width:23px;height:23px;object-fit:contain">';
  const common='viewBox="0 0 24 24" aria-hidden="true" focusable="false"';
  const icons={
   planning:'<svg '+common+'><rect x="4" y="5.5" width="16" height="14" rx="3"/><path d="M8 4v3M16 4v3M4 9.5h16"/><path d="M8 13h3M13 13h3M8 16h3"/></svg>',
