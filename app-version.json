@@ -1,11 +1,11 @@
 {
-  "version": 289,
-  "label": "v1.43.52",
-  "important": false,
+  "version": 290,
+  "label": "v1.44.0",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — logo strictement identique au Mobile",
-  "message": "Le logo Desktop ne repose plus sur des pseudo-éléments. Il utilise désormais le même mot-symbole HTML/CSS que le Mobile, avec exactement la même police, graisse, espacement et couleurs : « ne » orange, « thor » noir en clair et blanc en sombre. Les anciens titres accolés au logo ont été retirés des en-têtes Desktop concernés.",
-  "published_at": "2026-10-01T01:15:00+02:00",
+  "title": "Gestion — Éditeur Mobile / Desktop",
+  "message": "L’Éditeur du portail est restructuré en Mobile et Desktop. Les logos d’entête, de connexion et de bienvenue peuvent être personnalisés séparément, l’écran de bienvenue accepte un logo ou une animation, les menus et boutons disposent de surcharges par plateforme, et la gestion Mobile reflète désormais la coque réelle avec Notifications et Menu dans l’entête et Accueil · Planning · Chat dans la barre basse à 3 colonnes.",
+  "published_at": "2026-10-01T01:30:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
