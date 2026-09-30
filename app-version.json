@@ -1,11 +1,11 @@
 {
-  "version": 254,
-  "label": "v1.43.17",
-  "important": false,
+  "version": 255,
+  "label": "v1.43.18",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Scanner mobile stabilisé",
-  "message": "Le Scanner mobile a été remis en état après correction de sa structure HTML : l’en-tête n’englobe plus la caméra et les blocs suivants. Le titre ne duplique plus « bêta », la caméra reprend toute la largeur prévue, puis l’aide et la recherche manuelle s’affichent à nouveau dans le bon ordre.",
-  "published_at": "2026-09-30T18:15:00.000+02:00",
+  "title": "Performance Mobile — phase 5",
+  "message": "Les dépendances tierces lourdes ne bloquent plus l’ouverture de plusieurs écrans. Scanner charge html5-qrcode uniquement au démarrage de la caméra, Assistant Précommande charge SheetJS uniquement lors de l’analyse d’un fichier, et Supabase est différé sur Scanner, Assistant, Chat et Menu utilisateur. Le Service Worker conserve un cache dédié aux dépendances externes pour accélérer les ouvertures suivantes.",
+  "published_at": "2026-09-30T18:31:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
