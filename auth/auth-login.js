@@ -22,7 +22,7 @@ async function login(e){
  if(pe){await hideProfileLoader(180);return showLogin('Connexion momentanément indisponible. Ta session a bien été créée : recharge la page.')}
  if(!p){await db.auth.signOut({scope:'local'});await hideProfileLoader(180);return showLogin('Compte non autorisé.')}
  try{const {error:loginLogError}=await db.from('login_history').insert({user_id:uid,user_agent:String(navigator.userAgent||'').slice(0,500),source:'app'});if(loginLogError)console.warn('Historique connexion:',loginLogError)}catch(loginLogError){console.warn('Historique connexion:',loginLogError)}
- profile=p;const loaderTxt=$('profileLoaderText');if(loaderTxt)loaderTxt.textContent='Application de ton thème…';await syncProfileTheme(profile,uid);playLoginSound();$('login').classList.add('hidden');$('site').classList.add('hidden');
+ profile=p;const loaderTxt=$('profileLoaderText');if(loaderTxt)loaderTxt.textContent='Application de ton thème…';await syncProfileTheme(profile,uid);await loadAuthBrandingConfig(true);playLoginSound();$('login').classList.add('hidden');$('site').classList.add('hidden');
  await hideProfileLoader(380);await showWelcome();
  const returnTo=safeReturnPath(),normalTarget=returnTo&&p.role==='admin'?returnTo:'home.html',target=await maintenanceTargetForRole(p.role,normalTarget);
  const continueNow=await checkLatestVersionAtLogin(target);if(continueNow)location.href=target
