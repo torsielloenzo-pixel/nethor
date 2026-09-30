@@ -30,7 +30,8 @@ function buildPageLayout(page){
   'admin-portal':{title:'Gestion',subtitle:'Administration Nethor',back:true,chrome:false},
   'fl-assistant':{title:'Assistant Précommande F&L',subtitle:'Analyse dédiée',back:true,chrome:false},
   bakery:{title:'Boulangerie',subtitle:'Stock interne',back:true,chrome:false},
-  rewards:{title:'Défis & Boutique',subtitle:'Missions et récompenses',back:true,chrome:false}
+  rewards:{title:'Défis & Boutique',subtitle:'Missions et récompenses',back:true,chrome:false},
+  chat:{title:'Chat',subtitle:'Messagerie interne',back:true,chrome:false}
  };
  const cfg=pages[id];
  if(!cfg)return null;
