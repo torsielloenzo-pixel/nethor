@@ -2110,3 +2110,52 @@ L'Accueil affiche d'abord les informations locales du profil et un avatar de rep
 Les runtimes Accueil, Comptes et Gestion passent en `v=2`.
 
 Le Service Worker passe en v257 / `netto-tools-v257`. La version applicative associée est `v1.43.20`, avec purge de cache.
+
+
+## Performance Mobile — consolidation finale
+
+La phase Performance Mobile 8 clôt le cycle d'optimisation en réduisant le travail effectué lors de l'installation et en normalisant les versions de ressources communes.
+
+### Précache minimal
+
+Le Service Worker ne précache plus l'ensemble des écrans secondaires.
+
+Le nombre de ressources installées immédiatement passe de 89 à 38.
+
+Le noyau conservé couvre principalement :
+
+- connexion et authentification ;
+- moteur Stock utilisé par `index.html` ;
+- Accueil ;
+- Menu utilisateur Mobile ;
+- résolution de plateforme et navigation ;
+- `profile-ui` commun ;
+- styles globaux essentiels ;
+- manifest et icônes principales.
+
+Les écrans tels que Chat, Planning, Scanner, Assistant Précommande, Récompenses, Gestion, Comptes, Profil, Notifications et autres outils restent servis normalement. Ils utilisent la stratégie statique du Service Worker et entrent dans le cache lorsqu'ils sont réellement ouverts.
+
+### Alignement de profile-ui
+
+Toutes les pages actives qui utilisaient encore `profile-ui.js?v=206` ou `v=207` sont alignées sur `profile-ui.js?v=208`.
+
+Cette normalisation évite qu'un écran puisse conserver une ancienne copie du runtime commun alors qu'un autre écran utilise déjà une version plus récente.
+
+### Résultat du cycle 1 → 8
+
+Le cycle Performance Mobile a successivement traité :
+
+1. séparation et chargement ciblé des ressources par plateforme ;
+2. réduction des ressources de l'autre plateforme ;
+3. allègement du runtime commun ;
+4. modules optionnels chargés à la demande ;
+5. dépendances tierces différées ;
+6. découpage des grosses pages monolithiques ;
+7. réduction du coût d'exécution après ouverture ;
+8. réduction du précache et consolidation des versions.
+
+### Cache
+
+Le Service Worker passe en v258 / `netto-tools-v258`.
+
+La version applicative associée est `v1.43.21`, avec purge de cache afin qu'aucun précache ancien ou runtime `profile-ui` précédent ne reste en circulation.
