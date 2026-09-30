@@ -1891,3 +1891,91 @@ Les six nouveaux scripts du dossier `stock/` sont précachés.
 
 La version applicative associée est `v1.42.0` avec purge de cache.
 
+
+## Phase 4.20 — Extraction Auth / session / mise à jour
+
+La logique d'authentification, de session et de mise à jour n'est plus embarquée dans `index.html`.
+
+### Fichiers extraits
+
+```text
+auth/
+├── auth-session.js
+├── auth-recovery.js
+├── auth-update.js
+└── auth-login.js
+```
+
+### Responsabilités
+
+`auth-session.js`
+- loader de profil ;
+- préférences et thème du profil ;
+- chargement robuste de la fiche utilisateur ;
+- `boot()` ;
+- affichage de connexion ;
+- sons et accueil de session ;
+- helpers de retour sécurisé.
+
+`auth-recovery.js`
+- mot de passe oublié ;
+- cooldown local ;
+- demande de réinitialisation.
+
+`auth-update.js`
+- lecture de version du Service Worker ;
+- détection de version installée ;
+- interface de mise à jour ;
+- purge des caches Nethor ;
+- activation du worker en attente ;
+- redirection forcée après mise à jour.
+
+`auth-login.js`
+- vérification maintenance ;
+- connexion Supabase ;
+- journalisation de connexion ;
+- déconnexion.
+
+### Compatibilité
+
+Les quatre scripts restent des scripts JavaScript classiques, chargés après `stock/stock-runtime.js`.
+
+Ils partagent donc les bindings historiques comme `db`, `profile`, `$`, `canOperateFL` et les helpers Stock sans convertir l'application en modules ES pendant cette phase.
+
+Les 36 fonctions du bloc Auth historique sont toujours présentes, sans doublon.
+
+Une reconstruction des quatre fichiers produit le même code que l'ancien bloc `stock-auth-inline`.
+
+### Ordre de chargement
+
+L'ordre retenu dans `index.html` est :
+
+```text
+stock-runtime
+auth-session
+auth-recovery
+auth-update
+auth-login
+stock-data
+stock-render
+stock-order
+stock-products
+stock-management
+UI partagée
+bootstrap
+```
+
+`boot()` est défini dans `auth-session.js`, mais n'est exécuté qu'une seule fois depuis le bloc de bootstrap final, après le chargement de toutes ses dépendances.
+
+### Taille de index.html
+
+Après la phase 4.20, `index.html` passe d'environ 91 Ko à environ 73 Ko.
+
+### Cache
+
+Le Service Worker passe en v237 / `netto-tools-v237`.
+
+Les quatre fichiers du dossier `auth/` sont précachés.
+
+La version applicative associée est `v1.43.0` avec purge de cache.
+
