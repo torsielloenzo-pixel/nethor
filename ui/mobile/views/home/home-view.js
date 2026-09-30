@@ -451,8 +451,34 @@ async function render(){
   return state.team.find(x=>{const p=norm(x.display_name),pb=p.replace(/\s+[a-z]$/,'');return p===target||pb===target||p===base||pb===base})?.id
  }).filter(Boolean))];
 
- const sections=[],role=roleLabel(state.profile.role),dateText=today.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace('.','');
- if(widgetVisible('welcome'))sections.push('<section class="mhdHero mhdWelcome"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+esc(dateText)+'</span></div><h1>Bonjour '+esc(state.name||role)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
+ const sections=[],role=roleLabel(state.profile.role);
+ const dateText=today.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+ const welcomeName=state.name||role;
+ const todayPersonal=todayModel?dayFacts(todayModel,todayKey,state.name):null;
+ const todayRanges=todayPersonal?.ranges||[];
+ const firstTodayRange=todayRanges[0]||null,lastTodayRange=todayRanges.length?todayRanges[todayRanges.length-1]:null;
+ let welcomeTone=nowHour<12?'morning':nowHour<18?'afternoon':'evening';
+ let welcomeTitle=(nowHour<12?'Bonjour ':nowHour<18?'Bon après-midi ':'Bonsoir ')+welcomeName+' 👋';
+ let welcomeHint='Voici l’essentiel pour aujourd’hui.';
+ if(todayPersonal?.isLeave){
+  welcomeTone='leave';
+  welcomeTitle='Tu es en congé aujourd’hui ☂️';
+  welcomeHint='Profite de ta journée, '+welcomeName+'.'
+ }else if(todayPersonal?.isRest){
+  welcomeTone='rest';
+  welcomeTitle='Bonne journée '+welcomeName+' ☀️';
+  welcomeHint='Tu es en repos aujourd’hui.'
+ }else if(firstTodayRange&&nowHour<firstTodayRange.a){
+  const delta=Math.max(0,Math.round((firstTodayRange.a-nowHour)*60));
+  welcomeHint=delta<=90?'Ta journée commence bientôt.':'Ta prise de poste est prévue aujourd’hui.'
+ }else if(firstTodayRange&&lastTodayRange&&nowHour>=firstTodayRange.a&&nowHour<lastTodayRange.b){
+  welcomeHint=nowHour<14?'Bonne prise de poste !':'Bonne continuation !'
+ }else if(lastTodayRange&&nowHour>=lastTodayRange.b){
+  welcomeHint='Ta journée de travail est terminée.'
+ }else if(nextShift?.dateKey===isoDate(addDays(parseDate(todayKey),1))){
+  welcomeHint='Prochaine prise de poste demain.'
+ }
+ if(widgetVisible('welcome'))sections.push('<section class="mhdHero mhdWelcome '+esc(welcomeTone)+'"><div class="mhdWelcomeCopy"><h1>'+esc(welcomeTitle)+'</h1><span class="mhdWelcomeDate">'+esc(dateText)+'</span><p>'+esc(welcomeHint)+'</p></div></section>');
 
  if(widgetVisible('next_shift')){
   const shiftText=nextShift?.ranges?.length?nextShift.ranges.map(r=>clock(r.a)+' - '+clock(r.b)).join(' • '):'Aucune prise de poste à venir',when=nextShift?dateLabel(nextShift.dateKey,todayKey):'—';
