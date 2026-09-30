@@ -97,7 +97,7 @@ Mobile
 Menu utilisateur -> Mon profil -> Retour -> Menu utilisateur
 ```
 
-Une nouvelle page doit déclarer son parent logique pour chaque plateforme si les comportements diffèrent.
+Sur Desktop, une nouvelle page continue à déclarer son parent logique si nécessaire.\n\nSur Mobile / Vision mobile, le parent statique n’est plus prioritaire : Nethor mémorise d’abord la page ou le menu qui a réellement ouvert l’écran. Les routes de `MOBILE_ROUTES` servent uniquement de repli lorsqu’aucune provenance exploitable n’est disponible.
 
 ## Données
 
