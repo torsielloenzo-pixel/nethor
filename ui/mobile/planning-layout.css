@@ -762,3 +762,329 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .editSave
  z-index:120!important
 }
 body.planningYearOpen .editSaveBar{bottom:8px!important}
+
+
+/* Calendrier annuel Mobile v4 — plein écran réel + thèmes cohérents */
+@media(max-width:900px){
+  body.planningYearOpen .nethorMobileApp{
+    grid-template-rows:minmax(0,1fr)!important;
+  }
+
+  body.planningYearOpen .nethorMobileAppTop,
+  body.planningYearOpen .nethorMobileAppNav{
+    display:none!important;
+    visibility:hidden!important;
+  }
+
+  body.planningYearOpen .nethorMobileView{
+    grid-row:1!important;
+    min-height:100dvh!important;
+    height:100dvh!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#f5f6f8!important;
+  }
+
+  body.planningYearOpen #yearView.yearView{
+    position:fixed!important;
+    inset:0!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#f5f6f8!important;
+    border:0!important;
+    border-radius:0!important;
+    transform:none!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterface{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    overflow:hidden!important;
+    background:#f5f6f8!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterfaceHeader{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:calc(env(safe-area-inset-top) + 8px) 12px 12px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:9px!important;
+    background:#ffffff!important;
+    border-bottom:1px solid #e1e5e9!important;
+    box-shadow:0 5px 18px rgba(18,24,32,.06)!important;
+    box-sizing:border-box!important;
+    z-index:30!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterfaceBrand{
+    position:relative!important;
+    display:block!important;
+    min-height:34px!important;
+    padding:0 42px 0 2px!important;
+  }
+
+  body.planningYearOpen #yearView .yearBackBtn{
+    display:none!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterfaceKicker{
+    display:block!important;
+    margin:0 0 2px!important;
+    font-size:7.5px!important;
+    line-height:1.1!important;
+    letter-spacing:1px!important;
+    color:#e34b27!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterfaceBrand strong{
+    display:block!important;
+    margin:0!important;
+    color:#20252c!important;
+    font-size:17px!important;
+    line-height:1.08!important;
+    letter-spacing:-.25px!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterfaceBrand small{
+    display:block!important;
+    max-width:100%!important;
+    margin-top:3px!important;
+    color:#7b848e!important;
+    font-size:8.5px!important;
+    line-height:1.2!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  body.planningYearOpen #yearView .yearHead{
+    position:static!important;
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:44px minmax(0,1fr) 44px!important;
+    gap:7px!important;
+    align-items:center!important;
+  }
+
+  body.planningYearOpen #yearView .yearHead .yearNavBtn{
+    width:44px!important;
+    min-width:44px!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0!important;
+    border:1px solid #e1e5e9!important;
+    border-radius:12px!important;
+    background:#eef0f3!important;
+    color:#30353b!important;
+    font-size:20px!important;
+    box-shadow:none!important;
+  }
+
+  body.planningYearOpen #yearView .yearHead .yearCurrent{
+    width:100%!important;
+    min-width:0!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0 10px!important;
+    border:1px solid #e1e5e9!important;
+    border-radius:12px!important;
+    background:#eef0f3!important;
+    color:#252a31!important;
+    font-size:15px!important;
+    font-weight:900!important;
+    box-shadow:none!important;
+  }
+
+  body.planningYearOpen #yearView .yearHead .yearTodayBtn{
+    grid-column:1/-1!important;
+    width:100%!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 10px!important;
+    border:1px solid #e1e5e9!important;
+    border-radius:12px!important;
+    background:#eef0f3!important;
+    color:#30353b!important;
+    font-size:10px!important;
+    font-weight:850!important;
+    box-shadow:none!important;
+  }
+
+  body.planningYearOpen #yearView .yearCloseBtn{
+    display:grid!important;
+    position:absolute!important;
+    top:calc(env(safe-area-inset-top) + 8px)!important;
+    right:12px!important;
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+    padding:0!important;
+    place-items:center!important;
+    border:1px solid #e1e5e9!important;
+    border-radius:10px!important;
+    background:#eef0f3!important;
+    color:#30353b!important;
+    font-size:20px!important;
+    line-height:1!important;
+    z-index:40!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterfaceBody{
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    padding:10px 10px calc(18px + env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-y:contain!important;
+    background:#f5f6f8!important;
+    box-sizing:border-box!important;
+  }
+
+  body.planningYearOpen #yearView .yearLegend{
+    margin:0 0 10px!important;
+    padding:9px 10px!important;
+    background:#fff!important;
+    border:1px solid #dfe4e9!important;
+    border-radius:13px!important;
+    color:#737c87!important;
+    box-shadow:0 3px 12px rgba(18,24,32,.035)!important;
+  }
+
+  body.planningYearOpen #yearView .monthCard{
+    background:#fff!important;
+    border-color:#dfe4e9!important;
+    box-shadow:0 4px 14px rgba(18,24,32,.045)!important;
+  }
+
+  body.planningYearOpen #yearView .monthCard h3{
+    color:#20252c!important;
+  }
+
+  body.planningYearOpen #yearView .yearDay{
+    color:#4e5660!important;
+  }
+
+  body.planningYearOpen #yearView .yearDay.weekend:not(.hasData){
+    color:#9aa1aa!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen .nethorMobileView,
+  html[data-theme="dark"] body.planningYearOpen #yearView.yearView,
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearInterface,
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearInterfaceBody{
+    background:#0f1318!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearInterfaceHeader{
+    background:#151a20!important;
+    border-bottom-color:#2d353e!important;
+    box-shadow:0 6px 18px rgba(0,0,0,.24)!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearInterfaceBrand strong{
+    color:#f5f7fa!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearInterfaceBrand small{
+    color:#9fa8b3!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearHead .yearNavBtn,
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearHead .yearCurrent,
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearHead .yearTodayBtn,
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearCloseBtn{
+    background:#252b33!important;
+    border-color:#3a434d!important;
+    color:#f2f4f7!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearLegend{
+    background:#171c22!important;
+    border-color:#303842!important;
+    color:#aeb7c2!important;
+    box-shadow:0 4px 14px rgba(0,0,0,.14)!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .monthCard{
+    background:#171c22!important;
+    border-color:#303842!important;
+    box-shadow:0 5px 16px rgba(0,0,0,.15)!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .monthCard h3{
+    color:#f5f7fa!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .monthWeekdays span{
+    color:#9fa8b3!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearDay{
+    color:#c8cfd7!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .yearDay.weekend:not(.hasData){
+    color:#737d88!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .monthStatus{
+    background:#252b33!important;
+    color:#aeb7c2!important;
+  }
+
+  html[data-theme="dark"] body.planningYearOpen #yearView .monthStatus.hasPlanning{
+    background:#3a261f!important;
+    color:#ff9c77!important;
+  }
+}
+
+@media(max-width:380px){
+  body.planningYearOpen #yearView .yearInterfaceHeader{
+    padding-left:9px!important;
+    padding-right:9px!important;
+  }
+
+  body.planningYearOpen #yearView .yearInterfaceBrand{
+    padding-right:40px!important;
+  }
+
+  body.planningYearOpen #yearView .yearHead{
+    grid-template-columns:40px minmax(0,1fr) 40px!important;
+    gap:6px!important;
+  }
+
+  body.planningYearOpen #yearView .yearHead .yearNavBtn{
+    width:40px!important;
+    min-width:40px!important;
+  }
+
+  body.planningYearOpen #yearView .yearCloseBtn{
+    right:9px!important;
+  }
+}
