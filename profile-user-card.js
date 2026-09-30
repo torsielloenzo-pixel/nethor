@@ -4,7 +4,23 @@ window.NethorProfileFeatures=window.NethorProfileFeatures||{};
 
 let active={user:null,opts:null};
 
-function api(){return window.NettoProfileUI||{}}
+function mobileFallbackApi(){
+ const shared=window.NethorMobileServices||window.MobileServices;
+ if(!shared)return{};
+ return{
+  client:shared.client,
+  session:shared.session,
+  roleLabel(role){return({admin:'Administrateur','role_point-de-vente':'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'})[role]||role||'Compte'},
+  paintAvatar(el,url,name,color,frame){
+   if(!el)return;
+   el.textContent='';el.style.backgroundColor=color||'#ff5a2a';el.style.backgroundImage='';
+   if(url){el.style.backgroundImage='url("'+String(url).replace(/"/g,'%22')+'")';el.style.backgroundSize='cover';el.style.backgroundPosition='center'}
+   else el.textContent=String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')||'U';
+   if(frame)el.dataset.avatarFrame=frame;else delete el.dataset.avatarFrame
+  }
+ }
+}
+function api(){return window.NettoProfileUI||mobileFallbackApi()}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function ensureStyle(){
  if(document.querySelector('link[href*="profile-user-card.css"]'))return;
