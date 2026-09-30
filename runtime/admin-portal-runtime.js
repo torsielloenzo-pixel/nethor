@@ -483,51 +483,48 @@ function collapseAllSystemPages(){
  window.NettoSounds?.play?.('menuClose')
 }
 
-const MOBILE_DEFAULTS=['home','stock','planning','chat','profile'];
-const MOBILE_SHORT={home:'Accueil',stock:'Stock',planning:'Planning',chat:'Équipe',profile:'Profil',scanner:'Scanner',articles:'Articles',notifications:'Notifications',notification_settings:'Alertes',problem_report:'Problème',fl_assistant:'Assistant',rewards:'Défis',bakery:'Boulangerie',accounts:'Comptes',portal_admin:'Gestion',settings:'Réglages'};
+const MOBILE_DEFAULTS=['home','planning','chat'];
+const MOBILE_SHORT={home:'Accueil',planning:'Planning',chat:'Chat',profile:'Menu utilisateur',notifications:'Notifications'};
 function mobileModules(){
- const mods=(window.NettoProfileUI?.modules||[]).filter(m=>!m.custom);
- const eligible=window.NettoProfileUI?.mobileBarEligible;
- return mods.filter(m=>typeof eligible==='function'?eligible(m):moduleMobileBarEligible(m))
+ const allowed=new Set(MOBILE_DEFAULTS);
+ return builtinModules().filter(m=>allowed.has(m.id)&&moduleMobileAvailable(m))
 }
 function ensureMobileBar(){
- const mods=mobileModules(),allowed=new Set(mods.map(m=>m.id)),raw=Array.isArray(config.mobile_bar?.items)?config.mobile_bar.items:[];
- const source=raw.length?raw:MOBILE_DEFAULTS.map(id=>({id,enabled:true,label:MOBILE_SHORT[id]||''}));
- const seen=new Set(),items=[];
- const push=item=>{const id=String(item?.id||'').trim();if(!id||!allowed.has(id)||seen.has(id)||items.length>=5)return;seen.add(id);items.push({id,enabled:item?.enabled!==false,label:String(item?.label||MOBILE_SHORT[id]||'').trim().slice(0,18)})};
- source.forEach(push);
- for(const id of MOBILE_DEFAULTS){if(items.length>=5)break;if(allowed.has(id)&&!seen.has(id))push({id,enabled:false,label:MOBILE_SHORT[id]||''})}
- for(const m of mods){if(items.length>=5)break;if(!seen.has(m.id))push({id:m.id,enabled:false,label:MOBILE_SHORT[m.id]||m.label})}
- config.mobile_bar={enabled:config.mobile_bar?.enabled!==false,items}
-}
-function mobileOptionList(selected){
- const mods=mobileModules();
- return PAGE_GROUP_ORDER.map(group=>{
-  const rows=mods.filter(m=>pageGroup(m)===group);
-  if(!rows.length)return'';
-  return '<optgroup label="'+attr(PAGE_GROUP_LABELS[group])+'">'+rows.map(m=>'<option value="'+attr(m.id)+'" '+(m.id===selected?'selected':'')+'>'+esc(m.label)+(m.platform==='mobile'?' · mobile':'')+'</option>').join('')+'</optgroup>'
- }).join('')
+ const allowed=new Set(MOBILE_DEFAULTS),raw=Array.isArray(config.mobile_bar?.items)?config.mobile_bar.items:[],seen=new Set(),items=[];
+ const push=id=>{
+  id=String(id||'').trim();if(!allowed.has(id)||seen.has(id))return;
+  seen.add(id);const previous=raw.find(x=>String(x?.id||'')===id);
+  items.push({id,enabled:true,label:String(previous?.label||MOBILE_SHORT[id]||'').trim().slice(0,18)})
+ };
+ raw.forEach(x=>push(x?.id));MOBILE_DEFAULTS.forEach(push);
+ config.mobile_bar={enabled:config.mobile_bar?.enabled!==false,items:items.slice(0,3)}
 }
 function renderMobileBar(){
  const host=$('mobileBarEditor');if(!host)return;ensureMobileBar();
- const catalog=mobileModules(),items=config.mobile_bar.items,moduleFor=id=>catalog.find(m=>m.id===id);
- const runtimeItems=typeof window.NettoProfileUI?.mobileBarItems==='function'?window.NettoProfileUI.mobileBarItems(config):items;
- const active=runtimeItems.filter(x=>x.enabled!==false),activeIds=new Set(active.map(x=>x.id)),configuredIds=new Set(items.map(x=>x.id));
- host.innerHTML='<div class="mobileBarTop"><div><strong>Navigation rapide</strong><span>Choisis jusqu’à cinq raccourcis configurables. La liste est synchronisée avec les fonctions réellement disponibles sur mobile.</span></div><label class="adminSwitch"><input id="mobileBarEnabled" type="checkbox" '+(config.mobile_bar.enabled!==false?'checked':'')+'><span></span></label></div>'+
- '<div class="mobileBarPreview">'+(active.length?active.map(x=>{const m=moduleFor(x.id),icon=window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•';return '<div class="mobilePreviewItem" title="'+esc(m?.label||x.id)+'"><span class="mobilePreviewIcon">'+icon+'</span></div>'}).join(''):'<div class="empty">Aucun raccourci actif.</div>')+'</div>'+
- '<div class="mobileInventory"><div class="mobileInventoryHead"><strong>'+catalog.length+' destinations disponibles</strong><span>Catalogue actuel de Nethor</span></div><div class="mobileInventoryChips">'+catalog.map(m=>'<span class="mobileInventoryChip '+(activeIds.has(m.id)?'selected':'')+'"><i>'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'•')+'</i><span>'+esc(m.label)+'</span>'+(m.platform==='mobile'?'<small>Mobile</small>':'')+(m.id==='notifications'&&!configuredIds.has('notifications')?'<small>Auto</small>':'')+'</span>').join('')+'</div></div>'+
- '<div class="mobileBarList">'+items.map((x,i)=>{const m=moduleFor(x.id),icon=window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•';return '<div class="mobileBarRow"><div class="mobileRowIcon">'+icon+'</div><div class="field"><label>Menu</label><select data-mobile-index="'+i+'" data-mobile-key="id">'+mobileOptionList(x.id)+'</select></div><label class="toggleChip"><input type="checkbox" data-mobile-index="'+i+'" data-mobile-key="enabled" '+(x.enabled!==false?'checked':'')+'> Visible</label><div class="mobileBarMove"><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="-1" '+(i===0?'disabled':'')+' aria-label="Monter">↑</button><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="1" '+(i===items.length-1?'disabled':'')+' aria-label="Descendre">↓</button></div></div>'}).join('')+'</div>'+
- '<div class="notifNotice"><b>5 raccourcis configurables maximum.</b> Notifications est désormais sélectionnable. Tant qu’elle n’est pas placée manuellement dans un emplacement, Nethor conserve son ajout automatique afin de ne pas modifier la navigation actuelle des utilisateurs.</div>';
- $('mobileBarEnabled').onchange=e=>{config.mobile_bar.enabled=e.target.checked;markDirty();renderMobileBar();window.NettoSounds?.play?.('switch')};
- host.querySelectorAll('[data-mobile-key]').forEach(el=>el.onchange=el.oninput=()=>{
-  const i=Number(el.dataset.mobileIndex),item=config.mobile_bar.items[i];if(!item)return;
-  if(el.dataset.mobileKey==='id'){
-   const duplicate=config.mobile_bar.items.some((x,j)=>j!==i&&x.id===el.value);
-   if(duplicate){alert('Ce menu est déjà présent dans la barre mobile.');renderMobileBar();return}
-   item.id=el.value;item.label='';markDirty();renderMobileBar()
-  }else if(el.dataset.mobileKey==='enabled'){item.enabled=el.checked;markDirty();renderMobileBar()}
- });
- host.querySelectorAll('[data-mobile-move]').forEach(btn=>btn.onclick=()=>{const i=Number(btn.dataset.mobileMove),j=i+Number(btn.dataset.dir);if(j<0||j>=config.mobile_bar.items.length)return;[config.mobile_bar.items[i],config.mobile_bar.items[j]]=[config.mobile_bar.items[j],config.mobile_bar.items[i]];markDirty();renderMobileBar();window.NettoSounds?.play?.('navigate')})
+ const items=config.mobile_bar.items,moduleFor=id=>builtinModules().find(m=>m.id===id);
+ const navPreview=items.map(x=>{
+  const m=moduleFor(x.id),label=pagePlatformValue(m,'mobile','nav_label')||MOBILE_SHORT[x.id],image=ensurePagePlatformOverride(x.id,'mobile').image_url,icon=image?'<img src="'+attr(image)+'" alt="">':(window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•');
+  return '<div class="mobilePreviewItem actual"><span class="mobilePreviewIcon">'+icon+'</span><small>'+esc(label)+'</small></div>'
+ }).join('');
+ const topIcon=(id,fallback)=>{
+  const o=ensurePagePlatformOverride(id,'mobile'),url=String(o.image_url||'').trim();
+  return url?'<img src="'+attr(url)+'" alt="">':fallback
+ };
+ host.innerHTML=
+ '<div class="mobileBarTop"><div><strong>Coque Mobile actuelle</strong><span>La navigation réelle de Nethor est maintenant composée de 2 actions dans l’entête et de 3 boutons fixes dans la barre basse. L’ancien modèle à 5 raccourcis + Notifications automatiques est retiré.</span></div><label class="adminSwitch" title="Afficher la barre basse"><input id="mobileBarEnabled" type="checkbox" '+(config.mobile_bar.enabled!==false?'checked':'')+'><span></span></label></div>'+
+ '<div class="mobileShellMap"><div class="mobileShellMapHead"><strong>Entête</strong><span>Actions toujours accessibles</span></div><div class="mobileShellTopActions"><div><span>'+topIcon('notifications','◇')+'</span><strong>Notifications</strong><small>Centre d’activité</small></div><div><span>'+topIcon('profile','☺')+'</span><strong>Menu utilisateur</strong><small>Profil & réglages</small></div></div></div>'+
+ '<div class="mobileShellMap"><div class="mobileShellMapHead"><strong>Barre basse · 3 colonnes</strong><span>Ordre réel affiché dans mobile.html</span></div><div class="mobileBarPreview mobileBarPreviewThree">'+navPreview+'</div></div>'+
+ '<div class="mobileBarList">'+items.map((x,i)=>{
+  const m=moduleFor(x.id),label=pagePlatformValue(m,'mobile','nav_label')||MOBILE_SHORT[x.id];
+  return '<div class="mobileBarRow actual"><div class="mobileRowIcon">'+(window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•')+'</div><div class="mobileBarActualCopy"><strong>'+esc(label)+'</strong><small>'+esc(x.id)+' · destination native Mobile</small></div><div class="mobileBarMove"><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="-1" '+(i===0?'disabled':'')+' aria-label="Monter">↑</button><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="1" '+(i===items.length-1?'disabled':'')+' aria-label="Descendre">↓</button></div></div>'
+ }).join('')+'</div>'+
+ '<div class="notifNotice"><b>Personnalisation visuelle :</b> les noms, icônes, images et couleurs de ces boutons se règlent plus bas dans <b>Menus & boutons Mobile</b>. Notifications et Menu utilisateur restent dans l’entête afin de respecter la nouvelle architecture Mobile.</div>';
+ $('mobileBarEnabled').onchange=e=>{config.mobile_bar.enabled=e.target.checked;markDirty();window.NettoSounds?.play?.('switch')};
+ host.querySelectorAll('[data-mobile-move]').forEach(btn=>btn.onclick=()=>{
+  const i=Number(btn.dataset.mobileMove),j=i+Number(btn.dataset.dir);if(j<0||j>=config.mobile_bar.items.length)return;
+  [config.mobile_bar.items[i],config.mobile_bar.items[j]]=[config.mobile_bar.items[j],config.mobile_bar.items[i]];
+  markDirty();renderMobileBar();window.NettoSounds?.play?.('navigate')
+ })
 }
 function mobileUserMenuCatalog(){
  return builtinModules().filter(m=>{
@@ -567,8 +564,8 @@ function ensureMobileUserMenuPanel(){
   panel.id='mobileUserMenuAdminPanel';
   panel.className='panel';
   panel.innerHTML='<div class="toolbar"><div><h2>Menu utilisateur mobile</h2><p>Définis ce que les utilisateurs peuvent voir lorsqu’ils ouvrent leur menu sur mobile. Les rôles et permissions restent prioritaires.</p></div><div class="panelTools"><button class="btn secondaryBtn mini" type="button" onclick="setMobileUserMenuAll(true)">Tout afficher</button><button class="btn secondaryBtn mini" type="button" onclick="setMobileUserMenuAll(false)">Tout masquer</button></div></div><div class="notifNotice"><b>Portée :</b> ce réglage concerne uniquement les comptes utilisateurs sur mobile. Ton menu Administrateur conserve ses accès de gestion. Déconnexion reste toujours disponible.</div><div id="mobileUserMenuEditor" class="managementSettingList"></div>';
-  const first=tab.querySelector(':scope > .panel');
-  if(first)first.insertAdjacentElement('afterend',panel);else tab.appendChild(panel)
+  const barPanel=$('mobileBarEditor')?.closest('.panel');
+  if(barPanel)barPanel.insertAdjacentElement('afterend',panel);else tab.appendChild(panel)
  }
  return $('mobileUserMenuEditor')
 }
@@ -876,7 +873,7 @@ function fillGlobal(){$('brandName').value=config.brand.name;$('brandSubtitle').
 function validateConfig(){
  for(const [id,p] of Object.entries(config.pages)){if(p?.url&&!validUrl(p.url))throw new Error('Destination invalide pour '+(p.label||id))}
  ensureMobileBar();const enabled=config.mobile_bar.items.filter(x=>x.enabled!==false),ids=enabled.map(x=>x.id);
- if(enabled.length>5)throw new Error('La barre mobile est limitée à 5 raccourcis.');
+ if(enabled.length>3)throw new Error('La barre mobile unifiée est limitée à 3 raccourcis.');
  if(new Set(ids).size!==ids.length)throw new Error('Un même menu ne peut apparaître qu’une fois dans la barre mobile.')
 }
 async function saveConfig(){
