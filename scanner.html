@@ -316,9 +316,10 @@ function scannerPageAccess(role,cfg){
 function applyScannerPageConfig(cfg){
   const p=cfg?.pages?.scanner;if(!p||typeof p!=='object')return;
   const title=String(p.nav_label||p.label||'Scanner').trim()||'Scanner';
+  const visibleTitle=title.replace(/\s*\(?b[êe]ta\)?\s*$/i,'').trim()||'Scanner';
   const subtitle=String(p.subtitle||'Scanne un code-barres pour retrouver sa fiche article EAN13.').trim();
   const h1=document.querySelector('.title h1'),sub=document.querySelector('.title p');
-  if(h1)h1.textContent=title;if(sub&&subtitle)sub.textContent=subtitle;
+  if(h1)h1.textContent=visibleTitle;if(sub&&subtitle)sub.textContent=subtitle;
   document.title=title+' · Nethor'
 }
 async function boot(){
