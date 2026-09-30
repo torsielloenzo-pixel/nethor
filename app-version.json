@@ -1,11 +1,11 @@
 {
-  "version": 237,
-  "label": "v1.43.0",
+  "version": 238,
+  "label": "v1.43.1",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.20 — Auth et session externalisés",
-  "message": "L’authentification de index.html est désormais externalisée en quatre scripts classiques : session/profil/boot, récupération de mot de passe, contrôle et activation des mises à jour, puis connexion/déconnexion/maintenance. Les 36 fonctions d’origine sont conservées sans duplication et boot() reste déclenché une seule fois après le chargement des moteurs Auth, Stock et UI partagée.",
-  "published_at": "2026-09-30T07:18:00.000+02:00",
+  "title": "Navigation mobile contextuelle",
+  "message": "Sur mobile uniquement, les boutons Retour reviennent désormais vers la page ou le menu réellement utilisé pour ouvrir l’écran. La provenance de navigation est mémorisée par session, le Menu utilisateur est restauré lorsqu’il est l’origine, les retours évitent les boucles A ↔ B et les anciennes routes fixes ne servent plus que de solution de secours. Le comportement Desktop reste inchangé.",
+  "published_at": "2026-09-30T08:57:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
