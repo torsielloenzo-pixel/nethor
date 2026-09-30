@@ -4,6 +4,11 @@ window.NethorProfileFeatures=window.NethorProfileFeatures||{};
 
 let orientation='portrait',noticeTimer=null,bound=false;
 
+function ensureStyle(){
+ if(document.querySelector('link[href*="profile-mobile-preview.css"]'))return;
+ const link=document.createElement('link');link.rel='stylesheet';link.href='profile-mobile-preview.css?v=1';document.head?.appendChild(link)
+}
+
 function sounds(){return window.NettoSounds}
 function isMobileViewport(){
  try{
@@ -55,6 +60,7 @@ function close(showNotice=true){
  if(hadPreview&&showNotice)notice('Vision mobile désactivée')
 }
 function toggle(){
+ ensureStyle();
  if(isMobileViewport()&&!isPreviewContext()){notice('Visualiseur mobile disponible uniquement sur ordinateur');return}
  const existing=document.getElementById('nettoMobilePreviewOverlay');
  if(existing){close(true);try{sounds()?.play?.('menuClose')}catch(_){};return}
@@ -82,6 +88,7 @@ function toggle(){
  try{sounds()?.play?.('menuOpen')}catch(_){}
 }
 function bind(){
+ ensureStyle();
  if(bound||window.__nettoMobilePreviewGlobalBound)return;
  bound=true;window.__nettoMobilePreviewGlobalBound=true;
  document.addEventListener('click',e=>{
