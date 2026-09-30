@@ -336,6 +336,82 @@ function hasSubrolePermission(moduleId,minimum='view'){
   const actual=permission(moduleId);
   return (LEVELS[actual]||0)>=(LEVELS[minimum]||1)
 }
+async function updateProfile(fields={}){
+  if(!client||!state.session)return false;
+  const allowed={};
+  for(const key of ['profile_color','avatar_path','ui_preferences'])if(Object.prototype.hasOwnProperty.call(fields,key))allowed[key]=fields[key];
+  if(!Object.keys(allowed).length)return false;
+  const {error}=await client.from('profiles').update(allowed).eq('id',state.session.user.id);
+  if(error)throw error;
+  state.profile={...state.profile,...allowed};
+  if(Object.prototype.hasOwnProperty.call(allowed,'avatar_path'))state.avatarUrl=await avatarFor(state.profile);
+  if(Object.prototype.hasOwnProperty.call(allowed,'ui_preferences'))applyProfileTheme();
+  emit('core');
+  return true
+}
+async function savePreferences(prefs){
+  const value=prefs&&typeof prefs==='object'&&!Array.isArray(prefs)?prefs:{};
+  await updateProfile({ui_preferences:value});
+  return value
+}
+async function changePassword(currentPassword,newPassword){
+  if(!client||!state.session)throw new Error('Session indisponible');
+  const email=state.session.user?.email;
+  if(!email)throw new Error('Adresse e-mail indisponible');
+  const verify=await client.auth.signInWithPassword({email,password:currentPassword});
+  if(verify.error)throw new Error('Mot de passe actuel incorrect.');
+  const result=await client.auth.updateUser({password:newPassword});
+  if(result.error)throw result.error;
+  return true
+}
+async function uploadAvatar(file){
+  if(!client||!state.session||!file)throw new Error('Image indisponible');
+  const type=String(file.type||'image/jpeg').toLowerCase();
+  const ext=type.includes('png')?'png':type.includes('webp')?'webp':'jpg';
+  const path=state.session.user.id+'/avatar-'+Date.now()+'.'+ext;
+  const uploaded=await client.storage.from('profile-avatars').upload(path,file,{upsert:false,contentType:type});
+  if(uploaded.error)throw uploaded.error;
+  const old=state.profile?.avatar_path||null;
+  try{await updateProfile({avatar_path:path})}
+  catch(error){await client.storage.from('profile-avatars').remove([path]);throw error}
+  if(old){try{await client.storage.from('profile-avatars').remove([old])}catch(_){}}
+  return state.avatarUrl
+}
+async function removeAvatar(){
+  if(!client||!state.session)return false;
+  const old=state.profile?.avatar_path||null;
+  await updateProfile({avatar_path:null});
+  if(old){try{await client.storage.from('profile-avatars').remove([old])}catch(_){}}
+  return true
+}
+async function notificationRules(){
+  if(!client||!state.session)return[];
+  let {data,error}=await client.rpc('my_notification_channel_preferences');
+  if(error){
+    const legacy=await client.rpc('my_notification_preferences');
+    data=legacy.data;error=legacy.error
+  }
+  if(error)throw error;
+  return Array.isArray(data)?data:[]
+}
+async function setNotificationChannels(ruleKey,{push=false,portal=false}={}){
+  if(!client||!state.session||!ruleKey)return false;
+  const {data,error}=await client.rpc('set_my_notification_channels',{
+    p_rule_key:String(ruleKey),
+    p_push_enabled:!!push,
+    p_portal_enabled:!!portal
+  });
+  if(error||data!==true)throw error||new Error('Enregistrement impossible');
+  await refreshNotificationPreferences();
+  return true
+}
+async function submitProblem(payload){
+  if(!client||!state.session)throw new Error('Session indisponible');
+  const body={...payload,reporter_id:state.session.user.id,reporter_name:state.profile?.display_name||'Utilisateur',reporter_role:state.profile?.role||null};
+  const {error}=await client.from('reported_problems').insert(body);
+  if(error)throw error;
+  return true
+}
 async function setThemePreference(theme){
   theme=theme==='dark'?'dark':'light';
   document.documentElement.dataset.theme=theme;
@@ -472,6 +548,14 @@ const api={
   snapshot,
   permission,
   hasSubrolePermission,
+  updateProfile,
+  savePreferences,
+  changePassword,
+  uploadAvatar,
+  removeAvatar,
+  notificationRules,
+  setNotificationChannels,
+  submitProblem,
   setThemePreference,
   deleteNotification,
   deleteAllNotifications,
