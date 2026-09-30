@@ -14,7 +14,7 @@
 <script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=1"></script>
 <script src="platform-navigation.js?v=1"></script><script>window.NethorPlatformAssets.style('ui/desktop/desktop-shell.css?v=2','ui/mobile/mobile-shell.css?v=4')</script><script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=11','ui/mobile/mobile-shell.js?v=11')</script><script>window.NethorPlatformAssets.script('ui/desktop/tool-pages-layout.js?v=1','ui/mobile/tool-pages-layout.js?v=2')</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
 <style>
 :root{--red:#ff3824;--orange:#ff8128;--ink:#1f2732;--muted:#7d8692;--line:#e3e7eb;--card:#fff;--bg:#f3f5f7;--grad:linear-gradient(135deg,#ff3824,#ff8128)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -169,9 +169,37 @@ function resetManualInputLock(){
 }
 
 
+let qrLibraryPromise=null;
+function loadQrLibrary(){
+  if(window.Html5Qrcode&&window.Html5QrcodeSupportedFormats)return Promise.resolve(true);
+  if(qrLibraryPromise)return qrLibraryPromise;
+  setCameraState('Chargement du scanner…');
+  qrLibraryPromise=new Promise((resolve,reject)=>{
+    const existing=document.querySelector('script[data-nethor-qr-runtime="1"]');
+    const ready=()=>window.Html5Qrcode&&window.Html5QrcodeSupportedFormats?resolve(true):reject(new Error('Module scanner indisponible'));
+    if(existing){
+      existing.addEventListener('load',ready,{once:true});
+      existing.addEventListener('error',()=>reject(new Error('Chargement scanner impossible')),{once:true});
+      return
+    }
+    const script=document.createElement('script');
+    script.src='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+    script.async=true;
+    script.dataset.nethorQrRuntime='1';
+    script.onload=ready;
+    script.onerror=()=>reject(new Error('Chargement scanner impossible'));
+    document.head.appendChild(script)
+  }).catch(err=>{qrLibraryPromise=null;throw err});
+  return qrLibraryPromise
+}
 async function startCamera(){
   if(!isMobileView())return;
   hideCameraFallback();
+  try{await loadQrLibrary()}catch(e){
+    console.warn('Scanner module:',e);
+    showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
+    return
+  }
   if(!window.Html5Qrcode||!window.Html5QrcodeSupportedFormats){
     showCameraFallback('Le module de lecture n’a pas pu être chargé. Tu peux saisir l’EAN13 manuellement.');
     return
