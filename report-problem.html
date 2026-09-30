@@ -102,12 +102,14 @@ function applyProblemPageConfig(){
  document.title='Nethor — '+label
 }
 function returnToMenu(){
+ if(window.NethorNavigation?.isMobileShell?.()&&window.NethorNavigation?.navigateBack){
+  window.NethorNavigation.navigateBack();return
+ }
  const fromUserMenu=new URLSearchParams(location.search).get('from_user_menu')==='1';
  if(fromUserMenu&&window.NethorNavigation?.userMenuReturnUrl){
   location.replace(window.NethorNavigation.userMenuReturnUrl());return
  }
  const u=new URL(sourcePath,location.href);
- if(window.NethorPlatform?.isMobile?.())u.searchParams.set('open_user_menu','1');
  location.replace(u.pathname.split('/').pop()+u.search)
 }
 function updateCount(){const n=$('problemText').value.length;$('problemCount').textContent=n+' / 2000'}
