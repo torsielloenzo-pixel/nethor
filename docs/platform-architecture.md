@@ -1768,7 +1768,7 @@ L’ancien élément `.mobileNavBackdrop`, devenu sans propriétaire fonctionnel
 
 ### Taille de `index.html`
 
-Après extraction et suppression des règles hybrides, `index.html` est ramené à environ 138 Ko, contre environ 188 Ko avant la séparation Stock de la phase 4.16.
+Après extraction et suppression des règles hybrides, `index.html` est ramené à environ 140 Ko, contre environ 188 Ko avant la séparation Stock de la phase 4.16.
 
 ### Cache
 
