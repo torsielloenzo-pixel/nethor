@@ -8,11 +8,11 @@ const MODULES=Object.freeze([
  {id:'scanner',label:'Scanner',url:'scanner.html',roles:null,order:40},
  {id:'articles',label:'Fiches articles',url:'articles.html',roles:null,order:50},
  {id:'notifications',label:'Notifications',url:'notifications.html',roles:null,order:60},
- {id:'fl-assistant',label:'Assistant Précommande',url:'fl-assistant.html',roles:['admin','responsable'],order:70},
+ {id:'fl_assistant',label:'Assistant Précommande',url:'fl-assistant.html',roles:['admin','responsable'],order:70},
  {id:'bakery',label:'Boulangerie',url:'bakery.html',roles:['admin'],order:80},
  {id:'rewards',label:'Défis & Boutique',url:'rewards.html',roles:['admin'],order:90},
  {id:'accounts',label:'Gestion des comptes',url:'accounts.html',roles:['admin'],order:100},
- {id:'admin-portal',label:'Gestion',url:'admin-portal.html',roles:['admin'],order:110}
+ {id:'portal_admin',label:'Gestion',url:'admin-portal.html',roles:['admin'],order:110}
 ]);
 const LEVELS=Object.freeze({none:0,view:1,operate:2,manage:3});
 const IMPORTANT_KINDS=new Set(['manual_edit','import_new','import_replace','admin_message','maintenance','app_update','absence_decision']);
