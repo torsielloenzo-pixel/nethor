@@ -1,0 +1,27 @@
+/* Phase 4.17 — Dialogues Stock Desktop */
+html[data-nethor-platform="desktop"] .stockDesktopDialog{
+ width:min(94vw,520px)!important;max-width:520px!important;max-height:min(88vh,820px)!important;
+ margin:auto!important;padding:0!important;border:0!important;border-radius:24px!important;
+ background:transparent!important;overflow:visible!important;box-shadow:0 24px 80px rgba(0,0,0,.28)!important
+}
+html[data-nethor-platform="desktop"] .stockDesktopDialog::backdrop{background:rgba(23,23,25,.45);backdrop-filter:blur(5px)}
+html[data-nethor-platform="desktop"] .stockDesktopDialog .stockDesktopModal{
+ width:100%;max-height:88vh;overflow:auto;padding:22px;border:1px solid #e6e6e9;border-radius:24px;background:#fff;
+ box-shadow:none
+}
+html[data-nethor-platform="desktop"] #suggestDialog.stockDesktopDialog,
+html[data-nethor-platform="desktop"] #cartDialog.stockDesktopDialog{width:min(90vw,560px)!important;max-width:560px!important}
+html[data-nethor-platform="desktop"] #suggestDialog .stockDesktopModal,
+html[data-nethor-platform="desktop"] #cartDialog .stockDesktopModal{
+ max-height:min(80vh,720px)!important;display:flex;flex-direction:column;overflow:hidden;padding:20px 20px 0
+}
+html[data-nethor-platform="desktop"] #suggestList,
+html[data-nethor-platform="desktop"] #cartList{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+html[data-nethor-platform="desktop"] #suggestDialog .actions,
+html[data-nethor-platform="desktop"] #cartDialog .actions{
+ flex:none;position:sticky;bottom:0;margin:0 -20px;padding:18px 20px 16px;background:linear-gradient(transparent,#fff 25%);z-index:4
+}
+html[data-nethor-platform="desktop"] #cartDialog .cartFooter{flex:none}
+:root[data-theme="dark"][data-nethor-platform="desktop"] .stockDesktopDialog .stockDesktopModal{background:#272b31;border-color:#434a54;color:#eef1f4}
+:root[data-theme="dark"][data-nethor-platform="desktop"] #suggestDialog .actions,
+:root[data-theme="dark"][data-nethor-platform="desktop"] #cartDialog .actions{background:linear-gradient(transparent,#272b31 25%)}
