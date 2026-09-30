@@ -2035,3 +2035,16 @@ Modules optionnels :
 Le Service Worker ne précache pas ces modules. Ils utilisent la stratégie statique habituelle et entrent dans le cache lors de leur première utilisation.
 
 Le runtime commun `profile-ui.js` est passé d'environ 130k caractères après la phase 3 à environ 99k caractères après la phase 4. Le CSS critique `profile-ui.css` ne contient plus les styles de la Vision mobile Desktop.
+
+
+## Performance Mobile — dépendances tierces
+
+Depuis la phase Performance Mobile 5, les bibliothèques externes lourdes ne sont plus systématiquement dans le chemin critique.
+
+- Supabase dispose d'un cache de dépendances externe dédié dans le Service Worker et est préchargé une fois pour les ouvertures suivantes.
+- Scanner charge `html5-qrcode` uniquement lorsque la caméra doit réellement démarrer.
+- Assistant Précommande charge SheetJS/XLSX uniquement lorsqu'un fichier doit être analysé.
+- Scanner et Assistant attendent Supabase de manière asynchrone après le rendu du shell.
+- Chat et Menu utilisateur utilisent également Supabase en `defer`.
+
+Les dépendances externes QR et XLSX entrent dans le cache dédié à leur première utilisation ; elles ne sont pas préchargées lors de l'installation initiale.
