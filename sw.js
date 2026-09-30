@@ -1,5 +1,5 @@
-const APP_VERSION=254;
-const CACHE='netto-tools-v254';
+const APP_VERSION=255;
+const CACHE='netto-tools-v255';
 const DEPENDENCY_CACHE='nethor-deps-v1';
 const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
 const EXTERNAL_RUNTIME_DEPS=new Set([
