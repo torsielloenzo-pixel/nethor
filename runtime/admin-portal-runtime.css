@@ -244,3 +244,27 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
 :root[data-theme="dark"] .mobileShellTopActions>div>span{background:#303842}
 :root[data-theme="dark"] .mobileShellMapHead strong,:root[data-theme="dark"] .mobileBarActualCopy strong{color:#f0f2f4}
 :root[data-theme="dark"] .mobileShellMapHead span,:root[data-theme="dark"] .mobileShellTopActions small,:root[data-theme="dark"] .mobileBarActualCopy small,:root[data-theme="dark"] .mobilePreviewItem.actual small{color:#a4acb5}
+
+
+/* Platform controls */
+.platformControlsSection{margin-top:18px;padding-top:16px;border-top:1px solid #e5e8ec}
+.platformSubhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.platformSubhead h3{margin:0;font-size:14px;color:#242a31}
+.platformSubhead p{margin:4px 0 0;font-size:9px;line-height:1.45;color:#818891}
+.platformControlList{display:grid;gap:8px}
+.platformControlRow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid #e4e8ec;border-radius:14px;background:#fafbfc}
+.platformControlIcon{width:48px;height:48px;display:grid;place-items:center;overflow:hidden;border:1px solid #e1e5e9;border-radius:12px;background:#fff;font-size:20px}
+.platformControlIcon img{display:block;width:100%;height:100%;object-fit:contain;padding:6px}
+.platformControlFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.platformControlFields .field{margin:0}
+:root[data-theme="dark"] .platformControlsSection{border-color:#333c45}
+:root[data-theme="dark"] .platformSubhead h3{color:#f1f3f5}
+:root[data-theme="dark"] .platformSubhead p{color:#a6aeb7}
+:root[data-theme="dark"] .platformControlRow{background:#1f252b;border-color:#353e47}
+:root[data-theme="dark"] .platformControlIcon{background:#282f36;border-color:#3a444f}
+@media(max-width:720px){
+ .platformControlRow{grid-template-columns:44px minmax(0,1fr)}
+ .platformControlIcon{width:44px;height:44px}
+ .platformControlFields{grid-template-columns:minmax(0,1fr)}
+ .platformControlRow>.platformAssetActions{grid-column:1/-1}
+}
