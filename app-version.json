@@ -1,11 +1,11 @@
 {
-  "version": 240,
-  "label": "v1.43.3",
+  "version": 241,
+  "label": "v1.43.4",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Navigation mobile unifiée",
-  "message": "Le Menu utilisateur mobile est désormais une vraie page Nethor, conservée au même emplacement dans la barre inférieure. Toutes les navigations mobiles de la barre et du menu enregistrent leur origine réelle, et les boutons Retour des pages concernées reviennent vers cette origine. Les anciens mécanismes open_user_menu/from_user_menu ont été retirés. Chat conserve son retour interne vers les discussions et Maintenance son retour vers la connexion. Desktop reste inchangé.",
-  "published_at": "2026-09-30T09:42:00.000+02:00",
+  "title": "Dépôt central de problèmes",
+  "message": "La page Signaler un problème devient un dépôt central : l’utilisateur peut choisir la page concernée, tandis que Nethor conserve séparément la page réelle depuis laquelle le formulaire a été ouvert pour le diagnostic. Gestion → Problèmes signalés ajoute aussi un filtre par page concernée.",
+  "published_at": "2026-09-30T13:58:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
