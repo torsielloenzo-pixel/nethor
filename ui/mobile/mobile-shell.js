@@ -23,6 +23,7 @@ function buildUserMenu(ctx){
  const {
   name='Utilisateur',role='',settingsModule,
   primary=[],admin=[],extra=[],notificationSettings=null,problemReport=null,problemUrl='',
+  profileVisible=true,settingsVisible=true,themeVisible=true,updateVisible=true,
   iconFor
  }=ctx||{};
  const primaryRows=primary.map(m=>row(m,iconFor)).join('');
@@ -34,17 +35,17 @@ function buildUserMenu(ctx){
  const logoutIcon='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><path d="M14 8l4 4-4 4M18 12H9"/></svg>';
  return '<div class="nettoMobileUserMenu" aria-label="Menu utilisateur">'+
   '<div class="nettoMobileMenuHeader"><h2>Menu</h2></div>'+
-  '<section class="nettoMobileMenuCard nettoMobileProfileCard">'+
-   '<button class="nettoMobileProfileMain nettoMobileMenuLink" type="button" data-url="profile.html"><span id="nettoMobileMenuAvatar" class="nettoTopAvatar nettoMobileProfileAvatar">U</span><span class="nettoMobileProfileCopy"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
-   '<button class="nettoMobileMenuRow nettoMobileMenuLink" type="button" data-url="'+esc(settingsModule?.url||'settings.html')+'"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileProfileIcon+'</span><span class="nettoMobileMenuCopy"><strong>'+esc(settingsModule?.label||'Personnalisation')+'</strong><small>'+esc(settingsModule?.subtitle||'Accueil, raccourcis et apparence')+'</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
-  '</section>'+
+  ((profileVisible||settingsVisible)?'<section class="nettoMobileMenuCard nettoMobileProfileCard">'+
+   (profileVisible?'<button class="nettoMobileProfileMain nettoMobileMenuLink" type="button" data-url="profile.html"><span id="nettoMobileMenuAvatar" class="nettoTopAvatar nettoMobileProfileAvatar">U</span><span class="nettoMobileProfileCopy"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>':'')+
+   (settingsVisible?'<button class="nettoMobileMenuRow nettoMobileMenuLink" type="button" data-url="'+esc(settingsModule?.url||'settings.html')+'"><span class="nettoMobileMenuIcon" aria-hidden="true">'+mobileProfileIcon+'</span><span class="nettoMobileMenuCopy"><strong>'+esc(settingsModule?.label||'Personnalisation')+'</strong><small>'+esc(settingsModule?.subtitle||'Accueil, raccourcis et apparence')+'</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>':'')+
+  '</section>':'')+
   (primaryRows?'<section class="nettoMobileMenuCard">'+primaryRows+'</section>':'')+
   ((notificationSettings||adminRows)?'<section class="nettoMobileMenuCard">'+
     (notificationSettings?row(notificationSettings,iconFor):'')+adminRows+'</section>':'')+
   (extraRows?'<section class="nettoMobileMenuCard">'+extraRows+'</section>':'')+
   '<section class="nettoMobileMenuCard nettoMobileMenuUtilityCard">'+
-   '<button id="nettoMobileThemeBtn" class="nettoMobileMenuRow" type="button"><span class="nettoMobileMenuIcon nettoThemeIconSvg" aria-hidden="true">'+themeIcon+'</span><span class="nettoMobileMenuCopy"><strong class="nettoThemeLabel">Mode sombre</strong><small>Changer l’apparence</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
-   '<button id="nettoMobileUpdateBtn" class="nettoMobileMenuRow" type="button"><span class="nettoMobileMenuIcon" aria-hidden="true">'+updateIcon+'</span><span class="nettoMobileMenuCopy"><strong>Mise à jour</strong><small>Rechercher une nouvelle version</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
+   (themeVisible?'<button id="nettoMobileThemeBtn" class="nettoMobileMenuRow" type="button"><span class="nettoMobileMenuIcon nettoThemeIconSvg" aria-hidden="true">'+themeIcon+'</span><span class="nettoMobileMenuCopy"><strong class="nettoThemeLabel">Mode sombre</strong><small>Changer l’apparence</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>':'')+
+   (updateVisible?'<button id="nettoMobileUpdateBtn" class="nettoMobileMenuRow" type="button"><span class="nettoMobileMenuIcon" aria-hidden="true">'+updateIcon+'</span><span class="nettoMobileMenuCopy"><strong>Mise à jour</strong><small>Rechercher une nouvelle version</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>':'')+
    (problemReport?row(problemReport,iconFor,problemUrl):'')+
    '<button id="nettoMobileLogoutBtn" class="nettoMobileMenuRow nettoMobileMenuDanger" type="button"><span class="nettoMobileMenuIcon" aria-hidden="true">'+logoutIcon+'</span><span class="nettoMobileMenuCopy"><strong>Déconnexion</strong><small>Quitter la session</small></span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'+
   '</section>'+
