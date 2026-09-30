@@ -269,8 +269,8 @@ function recordAssistSuccess(meta={}){
  }catch(_){}
 }
 function assistRotationOrder(){
- const p=readAssistProfile(),base=[0,180,90,270];
- return base.sort((a,b)=>(Number(p.rotations[String(b)]||0)-Number(p.rotations[String(a)]||0))||base.indexOf(a)-base.indexOf(b))
+ const p=readAssistProfile(),base=[0,180,90,270],priority={0:0,180:1,90:2,270:3};
+ return base.sort((a,b)=>(Number(p.rotations[String(b)]||0)-Number(p.rotations[String(a)]||0))||(priority[a]-priority[b]))
 }
 async function detectAssistSet(detector,source,enhanced){
  for(const deg of assistRotationOrder()){
