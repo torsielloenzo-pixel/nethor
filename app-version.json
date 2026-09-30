@@ -1,11 +1,11 @@
 {
-  "version": 248,
-  "label": "v1.43.11",
+  "version": 249,
+  "label": "v1.43.12",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Journal des modifications synchronisé",
-  "message": "Le Journal des modifications est de nouveau synchronisé avec les versions publiées de Nethor. L’historique automatique manquant depuis v1.79 a été restauré jusqu’à la version actuelle, chaque ouverture du Journal vérifie le manifeste publié et une synchronisation serveur indépendante s’exécute toutes les 5 minutes. Les versions AUTO et PATCH sont désormais toutes prises en compte par le suivi de version.",
-  "published_at": "2026-09-30T17:42:00.000+02:00",
+  "title": "Export du Journal Desktop",
+  "message": "Le Journal des modifications sur Desktop devient téléchargeable. Chaque entrée dispose d’un export TXT individuel et le bouton « Tous (.zip) » génère un pack contenant un fichier TXT par modification ainsi qu’un journal complet récapitulatif. Cette fonction est limitée à Gestion sur Desktop.",
+  "published_at": "2026-09-30T17:56:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
