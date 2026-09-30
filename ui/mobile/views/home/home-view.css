@@ -9,22 +9,44 @@
 .homeMobileDashboard{display:block;width:100%;max-width:100%;min-width:0}
   .mhdStack{display:grid;gap:10px}
   .mhdHero{
-    position:relative;overflow:hidden;border-radius:21px;padding:17px 16px 18px;
-    color:#fff;background:
-      radial-gradient(circle at 94% 86%,#ff5a2a66 0 17%,transparent 18%),
-      radial-gradient(circle at 82% 110%,#ff321f88 0 26%,transparent 27%),
-      linear-gradient(135deg,#1c2025 0%,#252a30 62%,#4c3127 100%);
-    box-shadow:0 9px 25px #11182718
+    position:relative;overflow:hidden;min-height:108px;border-radius:20px;padding:16px 17px 15px;
+    color:#1d252e;background:
+      radial-gradient(circle at 104% 116%,#ff6a3d 0 24%,transparent 25%),
+      radial-gradient(circle at 92% 110%,#ffb18e 0 21%,transparent 22%),
+      linear-gradient(135deg,#ffffff 0%,#fbfcfd 72%,#fff4ee 100%);
+    border:1px solid #dde2e7;box-shadow:0 7px 22px #1822300a
   }
-  .mhdHeroTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
-  .mhdPill{
-    display:inline-flex;align-items:center;gap:6px;min-height:27px;padding:0 10px;border-radius:999px;
-    border:1px solid #ffffff18;background:#ffffff0d;color:#f7ddd4;font-size:8px;font-weight:900;letter-spacing:.45px
+  .mhdHero:before{
+    content:"";position:absolute;right:-36px;bottom:-58px;width:145px;height:145px;border-radius:50%;
+    background:#ff5a2a26;pointer-events:none
   }
-  .mhdPill i{width:8px;height:8px;border-radius:50%;background:#ff5b2a;box-shadow:0 0 0 4px #ff5b2a1f}
-  .mhdDatePill{color:#f2f4f7;letter-spacing:0;font-size:8px}
-  .mhdHero h1{margin:0;font-size:25px;line-height:1.04;letter-spacing:-.75px;color:#fff!important}
-  .mhdHero p{margin:7px 0 0;color:#c6cad0;font-size:11px;line-height:1.4}
+  .mhdHero:after{
+    content:"";position:absolute;right:38px;bottom:-74px;width:118px;height:118px;border-radius:50%;
+    background:#ff7a3a12;pointer-events:none
+  }
+  .mhdWelcomeCopy{position:relative;z-index:1;max-width:82%}
+  .mhdHero h1{margin:0;color:#171d24!important;font-size:25px;line-height:1.05;letter-spacing:-.75px;font-weight:950}
+  .mhdWelcomeDate{display:block;margin-top:7px;color:#7d8793;font-size:9.5px;font-weight:750;text-transform:none}
+  .mhdHero p{margin:5px 0 0;color:#606b77;font-size:10.5px;line-height:1.35;font-weight:650}
+  .mhdWelcome.evening:before{background:#7768ff1e}
+  .mhdWelcome.evening:after{background:#a899ff14}
+  .mhdWelcome.leave:before{background:#45b96f1c}
+  .mhdWelcome.leave:after{background:#8bd6a514}
+  .mhdWelcome.rest:before{background:#f7c84c24}
+  .mhdWelcome.rest:after{background:#ffd97816}
+  :root[data-theme="dark"] .mhdHero{
+    color:#f5f6f7;background:
+      radial-gradient(circle at 104% 116%,#ff5b2a 0 24%,transparent 25%),
+      radial-gradient(circle at 92% 110%,#7c2d20 0 21%,transparent 22%),
+      linear-gradient(135deg,#1d2228 0%,#242a31 72%,#30221e 100%);
+    border-color:#343940;box-shadow:0 9px 26px #0000002a
+  }
+  :root[data-theme="dark"] .mhdHero h1{color:#fff!important}
+  :root[data-theme="dark"] .mhdWelcomeDate{color:#aeb5be}
+  :root[data-theme="dark"] .mhdHero p{color:#c2c7cd}
+  :root[data-theme="dark"] .mhdWelcome.evening:before{background:#5d4fbb38}
+  :root[data-theme="dark"] .mhdWelcome.leave:before{background:#246d4338}
+  :root[data-theme="dark"] .mhdWelcome.rest:before{background:#80661f38}
   .mhdCard{
     background:#fff;border:1px solid #dde2e7;border-radius:18px;
     box-shadow:0 7px 22px #1822300a;overflow:hidden;color:#1d252e
@@ -148,7 +170,7 @@
   .mhdEmpty{padding:10px 2px;color:#8a9199;font-size:9px;line-height:1.4}
 
 @media(max-width:380px){
-  .mhdHero h1{font-size:22px}.mhdHero{padding:15px 13px}.mhdPill{padding:0 8px}
+  .mhdHero h1{font-size:22px}.mhdHero{min-height:100px;padding:14px 13px}.mhdWelcomeCopy{max-width:86%}.mhdWelcomeDate{font-size:9px}.mhdHero p{font-size:10px}
   .mhdStats{gap:6px}.mhdStat{min-height:124px;padding:10px 9px}.mhdStatHead{gap:5px;font-size:8.3px}.mhdStatHead .mhdMiniIcon{width:26px;height:26px}.mhdStatHead .mhdMiniIcon svg{width:16px;height:16px}.mhdStat strong{font-size:15px}
   .mhdQuickGrid{gap:5px}.mhdQuick{min-height:88px;padding:7px 6px}.mhdQuick strong{font-size:8px}
 }
