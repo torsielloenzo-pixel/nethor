@@ -1,11 +1,11 @@
 {
-  "version": 258,
-  "label": "v1.43.21",
-  "important": true,
+  "version": 259,
+  "label": "v1.43.22",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Performance Mobile — phase 8",
-  "message": "Fin du cycle d’optimisation mobile. Le précache initial du Service Worker est réduit de 89 à 38 ressources essentielles, les écrans secondaires sont désormais mis en cache à l’usage, et toutes les pages actives utilisent la même révision profile-ui v208 afin d’éviter les collisions de cache entre écrans.",
-  "published_at": "2026-09-30T18:49:00.000+02:00",
+  "title": "Scanner relié au référentiel articles",
+  "message": "Le Scanner interroge désormais le référentiel des fiches articles via une recherche serveur dédiée. Les utilisateurs autorisés à utiliser Scanner peuvent retrouver un produit même si la page Fiches articles leur est masquée, sans élargir leur accès direct à la base complète. Le problème qui empêchait notamment les nouveaux produits d’Épicerie d’être trouvés est corrigé.",
+  "published_at": "2026-09-30T19:38:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
