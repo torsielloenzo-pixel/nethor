@@ -662,27 +662,8 @@ input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
 :root[data-theme="dark"] .profileLoaderText span{color:#aeb5bd}
 :root[data-theme="dark"] .profileLoaderLine{background:#3b4148}
 @media(prefers-reduced-motion:reduce){.profileLoader,.profileLoaderCard{transition:none}.profileLoaderLine i{animation:none;width:100%}}
-/* Fruits & Légumes mobile — navigation et lisibilité */
-.flMobileTop{display:none}
+/* Fruits & Légumes mobile — adaptations internes du contenu métier */
 @media(max-width:700px){
-  #site>main{
-    padding:calc(env(safe-area-inset-top) + 10px) 10px calc(84px + env(safe-area-inset-bottom))!important;
-    max-width:100%!important;overflow-x:hidden!important
-  }
-  .flMobileTop{
-    display:flex;align-items:center;gap:11px;margin:0 2px 14px;
-    min-width:0
-  }
-  .flMobileBack{
-    width:42px;height:42px;min-width:42px;border:1px solid #e4e7eb;border-radius:14px;
-    background:#fff;color:#1c2025;display:grid;place-items:center;font-size:24px;font-weight:700;
-    box-shadow:0 3px 12px #00000008
-  }
-  .flMobileTitle{min-width:0}
-  .flMobileTitle h1{
-    margin:0;font-size:26px;line-height:1.05;letter-spacing:-.7px;font-weight:900;color:#1c2025
-  }
-  .flMobileTitle p{margin:4px 0 0;color:#7b828b;font-size:9.5px;font-weight:650}
   .stockWorkspace{gap:11px!important;margin-bottom:13px!important;min-width:0}
   .stockModeNav{
     position:sticky!important;top:max(6px,env(safe-area-inset-top))!important;
@@ -804,9 +785,6 @@ input:focus,textarea:focus,select:focus,.search:focus,.searchBox input:focus{
   .quickControls button:not(.quickZero){width:38px!important;min-width:38px!important;height:40px!important}
   .quickControls .quickZero{min-width:62px!important;max-width:72px!important;font-size:7px!important}
 }
-:root[data-theme="dark"] .flMobileBack{background:#22252a;color:#f1eeea;border-color:#343940}
-:root[data-theme="dark"] .flMobileTitle h1{color:#f1eeea}
-:root[data-theme="dark"] .flMobileTitle p{color:#aaa59f}
 </style>
 <link rel="stylesheet" href="ui/desktop/stock-layout.css?v=1" media="not all" data-nethor-shell="desktop"><link rel="stylesheet" href="ui/mobile/stock-layout.css?v=1" media="not all" data-nethor-shell="mobile">
 </head><body><div class="mobileNavBackdrop" onclick="closeNMenu()"></div>
