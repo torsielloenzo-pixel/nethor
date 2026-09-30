@@ -1,11 +1,11 @@
 {
-  "version": 262,
-  "label": "v1.43.25",
+  "version": 263,
+  "label": "v1.43.26",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Scanner assisté — analyse robuste et hypothèses contrôlées",
-  "message": "Le Scanner mobile dispose maintenant d’une analyse renforcée : lecture EAN/GTIN dans les quatre sens (0°, 90°, 180°, 270°), seconde passe native sur image renforcée en contraste, adaptation locale de l’ordre des rotations selon les succès précédents et prise en charge des formats EAN-8, EAN-13, UPC-A, ITF et Code 128 numériques. En cas de lecture imparfaite, Nethor compare les chiffres observés aux fiches réellement enregistrées et propose jusqu’à trois correspondances avec un score de concordance. Aucune hypothèse n’est validée automatiquement.",
-  "published_at": "2026-09-30T18:22:10.382536Z",
+  "title": "Scanner vertical — décodeur de secours indépendant",
+  "message": "La lecture verticale ne dépend plus uniquement du moteur natif BarcodeDetector. Nethor charge désormais un décodeur ZXing de secours, pré-caché pour le terrain, et lui soumet les images de la caméra tournées à 0°, 90°, 180° et 270°, avec une seconde passe en contraste renforcé. La boucle d’assistance passe à environ 850 ms pour réduire le temps de détection des codes verticaux sans monopoliser la caméra.",
+  "published_at": "2026-09-30T18:38:55.704659Z",
   "icon": "assets/app-icon-v63.svg"
 }
