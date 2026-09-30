@@ -730,7 +730,7 @@ function changeTheme(){
  saveThemePreference(next).catch(()=>{});
  updateThemeText()
 }
-function updateThemeText(){const dark=currentTheme()==='dark';document.querySelectorAll('.nettoThemeLabel').forEach(x=>x.textContent=dark?'Mode clair':'Mode sombre');document.querySelectorAll('.nettoThemeIcon').forEach(x=>x.textContent=dark?'☀':'☾')}
+function updateThemeText(){const dark=currentTheme()==='dark';document.querySelectorAll('.nettoThemeLabel').forEach(x=>{if(!x.hasAttribute('data-static-theme-label'))x.textContent=dark?'Mode clair':'Mode sombre'});document.querySelectorAll('.nettoThemeIcon').forEach(x=>{if(!x.hasAttribute('data-static-theme-icon'))x.textContent=dark?'☀':'☾'})}
 function bindHomeMark(){
  document.querySelectorAll('.mark,.brandMark,.nMenuBtn,.brandMenuBtn').forEach(b=>{if((b.textContent||'').trim()!=='N')return;b.removeAttribute('onclick');b.removeAttribute('aria-expanded');b.setAttribute('aria-label','Retour à l’accueil');b.onclick=e=>{e.preventDefault();e.stopPropagation();location.href='home.html'}})
  document.querySelectorAll('#nMenu,.brandMenu').forEach(x=>x.classList.add('hidden'))
@@ -770,6 +770,40 @@ async function showUpdateAvailable(reg,forcedVersion=0,force=false){
  const feature=await loadUpdateFeature();return feature.showAvailable(reg,forcedVersion,force)
 }
 
+
+function platformControls(config=api?.siteConfig,kind=isMobileViewport()?'mobile':'desktop'){
+ const controls=config?.platform_ui?.[kind]?.controls;
+ return controls&&typeof controls==='object'?controls:{}
+}
+function configuredControl(controls,key,defaults={}){
+ const x=controls?.[key]&&typeof controls[key]==='object'?controls[key]:{};
+ return{...defaults,...x,label:String(x.label||defaults.label||''),subtitle:String(x.subtitle||defaults.subtitle||''),url:String(x.url||'')}
+}
+function replaceControlIcon(container,url,cls='nettoConfiguredControlIcon'){
+ if(!container||!url)return;
+ const svg=container.querySelector(':scope > svg');
+ if(svg)svg.remove();
+ let img=container.querySelector(':scope > img.'+cls);
+ if(!img){img=document.createElement('img');img.className=cls;img.alt='';img.draggable=false;container.insertBefore(img,container.firstChild)}
+ img.src=url;img.style.width='22px';img.style.height='22px';img.style.objectFit='contain'
+}
+function applyDesktopChromeControls(wrap,controls){
+ if(!wrap)return;
+ const notifications=configuredControl(controls,'notifications',{label:'Notifications',subtitle:'Centre d’activité Nethor'});
+ const update=configuredControl(controls,'update',{label:'Mise à jour',subtitle:'Rechercher une nouvelle version'});
+ const userMenu=configuredControl(controls,'user_menu',{label:'Menu utilisateur',subtitle:'Profil, préférences et réglages'});
+ const bell=wrap.querySelector('#nettoBellBtn');
+ if(bell){bell.setAttribute('aria-label',notifications.label);bell.title=notifications.subtitle||notifications.label;if(notifications.url)replaceControlIcon(bell,notifications.url)}
+ const notifTitle=wrap.querySelector('.nettoNotifTitle');
+ if(notifTitle){const strong=notifTitle.querySelector('strong'),small=notifTitle.querySelector('small');if(strong)strong.textContent=notifications.label;if(small)small.textContent=notifications.subtitle}
+ const updateBtn=wrap.querySelector('#nettoUpdateCheckBtn');
+ if(updateBtn){updateBtn.setAttribute('aria-label',update.label);updateBtn.title=update.subtitle||update.label;if(update.url)replaceControlIcon(updateBtn,update.url);const label=updateBtn.querySelector('.nettoUpdateLabel');if(label)label.textContent=update.label}
+ const userBtn=wrap.querySelector('#nettoUserBtn');
+ if(userBtn){userBtn.setAttribute('aria-label',userMenu.label);userBtn.title=userMenu.subtitle||userMenu.label}
+ const avatar=wrap.querySelector('#nettoTopAvatar');
+ if(avatar&&userMenu.url){avatar.classList.add('hasPhoto');avatar.style.backgroundImage='url("'+userMenu.url.replace(/"/g,'%22')+'")';avatar.style.backgroundSize='contain';avatar.style.backgroundPosition='center';avatar.style.backgroundRepeat='no-repeat';avatar.textContent=''}
+}
+
 function buildGlobalHeader(){
  const previous=document.getElementById('nettoGlobalTools');if(previous)previous.remove();bindHomeMark();
  const top=findHeaderTop();if(!top||!api.profile)return;
@@ -793,8 +827,9 @@ function buildGlobalHeader(){
  const mobileProblemSource=(location.pathname.split('/').pop()||'home.html')+(location.search||'');
  const mobileProblemUrl=problemReport?(()=>{try{const u=new URL(problemReport.url||'report-problem.html',location.href);u.searchParams.set('from',mobileProblemSource);return u.pathname.split('/').pop()+u.search}catch(_){return 'report-problem.html?from='+encodeURIComponent(mobileProblemSource)}})():'';
  const mobileUserMenuHtml='';
+ const desktopControls=platformControls(api.siteConfig,'desktop');
  const desktopUserMenuHtml=!mobileShell?(window.NethorDesktopShell?.buildUserMenu?.({
-  name,role,shortcuts,settingsUrl:'settings.html'
+  name,role,shortcuts,settingsUrl:settingsModule.url||'settings.html',settingsModule,settingsIcon:moduleIcon(settingsModule),controls:desktopControls
  })||''):'';
  const wrap=document.createElement('div');wrap.id='nettoGlobalTools';wrap.className='nettoGlobalTools';
  const adminLoginTool=p.role==='admin'?'<div class="nettoLoginWrap"><button id="nettoLoginBtn" class="nettoBellBtn nettoLoginBtn" aria-label="Historique des connexions" aria-expanded="false" title="Connexions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.41 3.3 1.9-1 1.73L11 13.59V7h2Z"/></svg></button><div id="nettoLoginDrop" class="nettoDrop nettoLoginDrop hidden"><div class="nettoNotifHead"><div class="nettoLoginHeadTitle"><strong>Connexions</strong><small>Qui s’est connecté et à quelle heure</small></div><div class="nettoNotifHeadActions"><button id="nettoLoginDeleteAll">Tout supprimer</button></div></div><div id="nettoLoginList" class="nettoLoginList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div>':'';
@@ -802,7 +837,9 @@ function buildGlobalHeader(){
  const desktopMobileTool=!inMobilePreview&&!isMobileViewport()?'<div class="nettoMobilePreviewWrap"><button type="button" id="nettoMobilePreviewBtn" class="nettoBellBtn nettoMobilePreviewBtn" aria-label="Vision mobile" aria-pressed="false" title="Vision mobile"><svg class="nettoMobileIconNormal" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg><svg class="nettoMobileIconActive" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="nettoMobileIconGradient" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#ff2f1f"/><stop offset="1" stop-color="#ff8500"/></linearGradient></defs><path fill="url(#nettoMobileIconGradient)" d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg></button></div>':'';
  wrap.innerHTML='<button id="nettoDropBackdrop" class="nettoDropBackdrop" type="button" aria-label="Fermer le menu"></button>'+adminLoginTool+desktopMobileTool+'<div class="nettoUpdateWrap"><button id="nettoUpdateCheckBtn" class="nettoBellBtn nettoUpdateCheckBtn" aria-label="Rechercher une mise à jour" title="Mise à jour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3a1 1 0 1 1 2 0v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V3Zm-6 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/></svg><span class="nettoUpdateLabel">MAJ</span></button></div><div class="nettoBellWrap"><button id="nettoBellBtn" class="nettoBellBtn" aria-label="Notifications" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.55 2.55 0 0 0 2.45-1.85h-4.9A2.55 2.55 0 0 0 12 22Zm7-5.1-1.75-2.05V9.5A5.26 5.26 0 0 0 13 4.34V3a1 1 0 1 0-2 0v1.34A5.26 5.26 0 0 0 6.75 9.5v5.35L5 16.9V18h14v-1.1Z"/></svg><b id="nettoNotifBadge" class="nettoNotifBadge hidden">0</b></button><div id="nettoNotifDrop" class="nettoDrop nettoNotifDrop hidden"><span class="nettoNotifSheetHandle"></span><div class="nettoNotifHead"><div class="nettoNotifTitle"><span class="nettoNotifTitleIcon">🔔</span><span><strong>Notifications</strong><small>Centre d’activité Nethor</small></span></div><div class="nettoNotifHeadActions"><button id="nettoMarkRead">✓ Tout lire</button><button id="nettoDeleteAll" class="danger">⌫ Effacer</button></div><div class="nettoNotifMoreWrap"><button id="nettoNotifMoreBtn" class="nettoNotifMoreBtn" type="button" aria-label="Actions des notifications" title="Actions">•••</button><div id="nettoNotifMoreMenu" class="nettoNotifMoreMenu hidden"><button id="nettoNotifMoreRead" type="button">✓ Tout marquer comme lu</button><button id="nettoNotifMoreDelete" class="danger" type="button">Supprimer toutes les notifications</button></div></div></div><div class="nettoNotifTabs"><button id="nettoNotifTabAll" class="nettoNotifTab common active" type="button" data-notif-tab="all"><span class="nettoNotifTabIcon">●</span><span><strong>Tout</strong><small>Toutes les notifications</small></span><b id="nettoNotifAllCount">0</b></button><button id="nettoNotifTabUnread" class="nettoNotifTab important" type="button" data-notif-tab="unread"><span class="nettoNotifTabIcon">●</span><span><strong>Non lu</strong><small>À consulter</small></span><b id="nettoNotifUnreadCount">0</b></button></div><div id="nettoNotifList" class="nettoNotifList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div><div class="nettoUserWrap"><button id="nettoUserBtn" class="nettoUserBtn" aria-expanded="false"><span id="nettoTopAvatar" class="nettoTopAvatar">U</span><span class="nettoUserText"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoChevron">⌄</span></button><div id="nettoUserDrop" class="nettoDrop hidden">'+desktopUserMenuHtml+mobileUserMenuHtml+'</div></div>';
  top.appendChild(wrap);
- paint(document.getElementById('nettoTopAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMobileMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);updateThemeText();
+ paint(document.getElementById('nettoTopAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMobileMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);
+ if(!mobileShell)applyDesktopChromeControls(wrap,desktopControls);
+ updateThemeText();
  wrap.querySelectorAll('.nettoNavBtn[data-url],.nettoMobileMenuLink[data-url]').forEach(b=>b.onclick=()=>{
   let targetUrl=b.dataset.url;
   if(mobileDropMode()&&b.classList.contains('nettoMobileMenuLink')){
