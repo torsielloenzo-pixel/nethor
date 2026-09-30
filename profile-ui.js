@@ -445,30 +445,28 @@ function userMenuChildUrl(raw){
  return window.NethorNavigation?.userMenuChildUrl?.(raw)||raw||'home.html'
 }
 function userMenuReturnUrl(){
- return window.NethorNavigation?.userMenuReturnUrl?.()||'home.html?open_user_menu=1'
+ return window.NethorNavigation?.userMenuReturnUrl?.()||'user-menu.html'
 }
 function tryOpenRequestedUserMenu(){
  if(new URLSearchParams(location.search).get('open_user_menu')!=='1'||!mobileDropMode())return false;
- const target=document.getElementById('nettoUserDrop');
- if(!target)return false;
- if(target.classList.contains('hidden'))toggleDrop('user',true);
- else{
-  document.documentElement.classList.add('nettoMobileUserMenuOpen');
-  syncMobileDropState(true);
-  syncMobileQuickBarActive('profile')
- }
- if(target.classList.contains('hidden'))return false;
+ const target=userMenuReturnUrl();
  window.__nettoOpenUserMenuHandled=true;
- try{const u=new URL(location.href);u.searchParams.delete('open_user_menu');history.replaceState({},'',u)}catch(_){}
+ if(samePageDestination(target)){
+  try{const u=new URL(location.href);u.searchParams.delete('open_user_menu');history.replaceState({},'',u)}catch(_){}
+  return false
+ }
+ location.replace(target);
  return true
 }
 function backToUserMenu(){
  sounds.play('navigate');
- location.href=window.NethorNavigation?.backTarget?.()||(mobileDropMode()?userMenuReturnUrl():'home.html')
+ if(window.NethorNavigation?.navigateBack)return window.NethorNavigation.navigateBack();
+ location.href=mobileDropMode()?userMenuReturnUrl():'home.html'
 }
 function mobileBarActive(module){
  try{
   const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
+  if(current==='user-menu.html'&&module?.id==='profile')return true;
   if(current==='notification-settings.html'&&module?.id==='profile')return true;
   return samePageDestination(module?.url||'home.html')
  }catch(_){return false}
@@ -482,8 +480,9 @@ function syncMobileQuickBarActive(preferredId=''){
  if(!active){
   const current=(location.pathname.split('/').pop()||'home.html').toLowerCase();
   active=items.find(x=>{
+   if(current==='user-menu.html'&&x.dataset.mobileId==='profile')return true;
    if(current==='notification-settings.html'&&x.dataset.mobileId==='profile')return true;
-   return x.dataset.mobileAction!=='user-menu'&&samePageDestination(x.getAttribute('href')||'home.html')
+   return samePageDestination(x.getAttribute('href')||'home.html')
   })||null
  }
  items.forEach(item=>{
@@ -509,8 +508,8 @@ function renderMobileQuickBar(){
  let nav=old;
  if(!nav){nav=document.createElement('nav');nav.id='nettoMobileQuickBar';nav.className='nettoMobileQuickBar';nav.setAttribute('aria-label','Navigation rapide');document.body.appendChild(nav)}
  nav.style.setProperty('--netto-mobile-count',String(items.length));
- nav.innerHTML=window.NethorMobileShell?.buildQuickBar?.(items,mobileNavIcon)||items.map(({item,module})=>{const isUserMenu=module.id==='profile',label=isUserMenu?'Menu utilisateur':(item.label||module.label||'Menu'),badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';if(isUserMenu)return '<button type="button" class="nettoMobileQuickItem" data-mobile-id="profile" data-mobile-action="user-menu" aria-label="Menu utilisateur" title="Menu utilisateur"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span></button>';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
- warmMobileRoutes(items.filter(({module})=>module?.id!=='profile').map(({module})=>module?.url||'').filter(Boolean));
+ nav.innerHTML=window.NethorMobileShell?.buildQuickBar?.(items,mobileNavIcon)||items.map(({item,module})=>{const isUserMenu=module.id==='profile',label=isUserMenu?'Menu utilisateur':(item.label||module.label||'Menu'),badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';if(isUserMenu)return '<a class="nettoMobileQuickItem" data-mobile-id="profile" href="user-menu.html" aria-label="Menu utilisateur" title="Menu utilisateur"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span></a>';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
+ warmMobileRoutes(items.map(({module})=>module?.id==='profile'?'user-menu.html':module?.url||'').filter(Boolean));
  syncMobileQuickBarActive();
  nav.querySelectorAll('.nettoMobileQuickItem').forEach(a=>{
   const activate=()=>syncMobileQuickBarActive(a.dataset.mobileId||'');
@@ -1159,12 +1158,7 @@ function buildGlobalHeader(){
  const settingsModule=NAV_MODULES.find(m=>m.id==='settings')||{label:'Personnalisation',subtitle:'Accueil, raccourcis et apparence',url:'settings.html'};
  const mobileProblemSource=(location.pathname.split('/').pop()||'home.html')+(location.search||'');
  const mobileProblemUrl=problemReport?(()=>{try{const u=new URL(problemReport.url||'report-problem.html',location.href);u.searchParams.set('from',mobileProblemSource);return u.pathname.split('/').pop()+u.search}catch(_){return 'report-problem.html?from='+encodeURIComponent(mobileProblemSource)}})():'';
- const mobileUserMenuHtml=mobileShell?(window.NethorMobileShell?.buildUserMenu?.({
-  name,role,settingsModule,
-  primary:mobilePrimary,admin:mobileAdmin,extra:mobileExtra,
-  notificationSettings,problemReport,problemUrl:mobileProblemUrl,
-  iconFor:mobileNavIcon
- })||''):'';
+ const mobileUserMenuHtml='';
  const desktopUserMenuHtml=!mobileShell?(window.NethorDesktopShell?.buildUserMenu?.({
   name,role,shortcuts,settingsUrl:'settings.html'
  })||''):'';
@@ -1191,7 +1185,7 @@ function buildGlobalHeader(){
  const logoutAction=async()=>{sounds.play('logout');await new Promise(r=>setTimeout(r,390));await recordChatPresence('end');await detachPushBeforeLogout();await api.client.auth.signOut({scope:'local'});location.href='index.html'};
  document.getElementById('nettoLogoutBtn')?.addEventListener('click',logoutAction);
  const mobileLogoutBtn=document.getElementById('nettoMobileLogoutBtn');if(mobileLogoutBtn)mobileLogoutBtn.onclick=logoutAction;
- document.getElementById('nettoUserBtn').onclick=e=>{e.stopPropagation();toggleDrop('user')};document.querySelectorAll('[data-notif-tab]').forEach(b=>b.onclick=e=>{e.stopPropagation();setNotificationTab(b.dataset.notifTab)});
+ document.getElementById('nettoUserBtn').onclick=e=>{e.stopPropagation();if(mobileDropMode()){openMobileUserMenu();return}toggleDrop('user')};document.querySelectorAll('[data-notif-tab]').forEach(b=>b.onclick=e=>{e.stopPropagation();setNotificationTab(b.dataset.notifTab)});
  const loginBtn=document.getElementById('nettoLoginBtn');if(loginBtn)loginBtn.onclick=e=>{e.stopPropagation();toggleDrop('logins')};
  const mobilePreviewBtn=document.getElementById('nettoMobilePreviewBtn');if(mobilePreviewBtn)mobilePreviewBtn.dataset.mobilePreviewReady='1'
  const loginDeleteAll=document.getElementById('nettoLoginDeleteAll');if(loginDeleteAll)loginDeleteAll.onclick=e=>{e.stopPropagation();sounds.play('warning');deleteAllLoginHistory()};
@@ -1374,13 +1368,11 @@ function syncMobileDropState(open){
 }
 function openMobileUserMenu(){
  if(!mobileDropMode())return;
- rememberUserMenuParent();
- const target=document.getElementById('nettoUserDrop');
- if(!target)return;
- if(target.classList.contains('hidden')){toggleDrop('user',true);return}
- document.documentElement.classList.add('nettoMobileUserMenuOpen');
- syncMobileDropState(true);
- syncMobileQuickBarActive('profile')
+ sounds.play('navigate');
+ const target=userMenuReturnUrl();
+ if(samePageDestination(target)){syncMobileQuickBarActive('profile');return}
+ if(window.NethorNavigation?.navigate)return window.NethorNavigation.navigate(target);
+ location.href=target
 }
 function toggleDrop(which,silent=false){
  const n=document.getElementById('nettoNotifDrop'),u=document.getElementById('nettoUserDrop'),l=document.getElementById('nettoLoginDrop'),nb=document.getElementById('nettoBellBtn'),ub=document.getElementById('nettoUserBtn'),lb=document.getElementById('nettoLoginBtn');
@@ -1648,6 +1640,7 @@ function backFallback(){
 }
 function goBack(){
  sounds.play('navigate');
+ if(window.NethorNavigation?.navigateBack)return window.NethorNavigation.navigateBack();
  location.href=backFallback()
 }
 function addBackButton(){
@@ -1672,7 +1665,7 @@ async function rememberSiteBase(){
   await api.client.from('app_settings').upsert({key:'site_base_url',value:{url:base},updated_at:new Date().toISOString(),updated_by:api.session.user.id},{onConflict:'key'});
  }catch(e){console.warn('Enregistrement URL portail:',e)}
 }
-function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','scanner.html':'Scanner (bêta)','notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','report-problem.html':'Signaler un problème','fl-assistant.html':'Assistant Précommande','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Gestion','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','maintenance.html':'Maintenance'};return map[p]||document.title||'Portail'}
+function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','scanner.html':'Scanner (bêta)','notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','report-problem.html':'Signaler un problème','fl-assistant.html':'Assistant Précommande','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Gestion','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','maintenance.html':'Maintenance','user-menu.html':'Menu utilisateur'};return map[p]||document.title||'Portail'}
 async function logPageView(){if(!api.client||!api.session)return;try{await api.client.rpc('audit_page_view',{p_area:pageArea(),p_path:(location.pathname||'')+(location.search||''),p_title:document.title||pageArea()})}catch(e){console.warn('Journal consultation:',e)}}
 function globalCacheKey(){return api.session?.user?.id?'nettoGlobalUI:'+api.session.user.id:null}
 function globalCacheAge(){
