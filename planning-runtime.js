@@ -77,11 +77,30 @@ function initials(n){return String(n||'?').trim().split(/\s+/).slice(0,2).map(x=
 function planningProfileFor(name){const n=norm(name),base=n.replace(/\s+[a-z]$/,'');return teamProfiles.find(p=>norm(p.display_name)===n)||teamProfiles.find(p=>norm(p.display_name)===base)||null}
 function canOpenPlanningUserCard(){return role==='admin'||role==='role_point-de-vente'}
 function identityAvatarHtml(p,name,cls='planningIdentityAvatar'){const color=p?.profile_color||'#ff5a2a',photo=p?.avatar_url,frame=p?.avatar_frame||'',clickable=canOpenPlanningUserCard()&&!!p?.id,tag=clickable?'button':'span',attrs=clickable?' type="button" class="'+cls+(photo?' hasPhoto':'')+' planningAvatarButton" data-planning-user-id="'+esc(p.id)+'" aria-label="Ouvrir la fiche de '+esc(name)+'"':' class="'+cls+(photo?' hasPhoto':'')+'"';return '<'+tag+attrs+' '+(frame?'data-avatar-frame="'+esc(frame)+'" ':'')+'style="background:'+(photo?'url(&quot;'+esc(photo)+'&quot;) center/cover no-repeat':esc(color))+'">'+(photo?'':esc(initials(name)))+'</'+tag+'>'}
-function openPlanningUserCard(userId){
+async function planningUserCardFeature(){
+ if(window.NettoProfileUI?.openUserCard)return{open:(user,opts)=>window.NettoProfileUI.openUserCard(user,opts)};
+ if(window.NethorProfileFeatures?.userCard)return window.NethorProfileFeatures.userCard;
+ return new Promise((resolve,reject)=>{
+  const existing=document.querySelector('script[data-planning-user-card]');
+  const done=()=>window.NethorProfileFeatures?.userCard?resolve(window.NethorProfileFeatures.userCard):reject(new Error('Fiche utilisateur indisponible'));
+  if(existing){existing.addEventListener('load',done,{once:true});existing.addEventListener('error',()=>reject(new Error('Fiche utilisateur indisponible')),{once:true});return}
+  const s=document.createElement('script');s.src='profile-user-card.js?v=2';s.async=true;s.dataset.planningUserCard='1';s.onload=done;s.onerror=()=>reject(new Error('Fiche utilisateur indisponible');document.head.appendChild(s)
+ })
+}
+async function openPlanningUserCard(userId){
  if(!canOpenPlanningUserCard())return;
  const p=teamProfiles.find(x=>x.id===userId);if(!p)return showToast('Fiche utilisateur indisponible');
- if(!window.NettoProfileUI?.openUserCard)return showToast('Fiche utilisateur indisponible');
- window.NettoProfileUI.openUserCard(p,{messageUrl:'chat.html?user='+encodeURIComponent(p.id)})
+ try{
+  const feature=await planningUserCardFeature();
+  feature.open(p,{
+   messageUrl:'chat.html?user='+encodeURIComponent(p.id),
+   onMessage:user=>{
+    const mobileRouter=window.NethorMobileRouter||window.MobileRouter;
+    if(mobileRouter?.open)mobileRouter.open('chat',{params:{user:user.id},source:'planning-user-card'});
+    else location.href='chat.html?user='+encodeURIComponent(user.id)
+   }
+  })
+ }catch(_){showToast('Fiche utilisateur indisponible')}
 }
 document.addEventListener('click',e=>{const avatar=e.target.closest('[data-planning-user-id]');if(!avatar)return;e.preventDefault();e.stopPropagation();openPlanningUserCard(avatar.dataset.planningUserId)});
 function identityHtml(name){const p=planningProfileFor(name),label=p?.display_name||name;return '<div class="planningIdentity">'+identityAvatarHtml(p,label)+'<span class="planningIdentityText"><strong>'+esc(label)+'</strong></span></div>'}
