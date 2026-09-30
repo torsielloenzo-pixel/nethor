@@ -46,11 +46,11 @@ const ALLOWED_MIME=new Set([
 ]);
 function initials(name){return String(name||'?').trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')||'?'}
 function member(id){return state.members.find(x=>x.id===id)||null}
-function roleLabel(role){return window.NettoProfileUI?.roleLabel?.(role)||({admin:'Administrateur',point_vente:'Point de vente',surface_vente:'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'}[role]||role||'Utilisateur')}
+function roleLabel(role){return window.NettoProfileUI?.roleLabel?.(role)||({admin:'Administrateur','role_point-de-vente':'Point de vente',point_vente:'Point de vente',surface_vente:'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'}[role]||role||'Utilisateur')}
 function chatRoleKey(m){
  const raw=String(m?.role||'').trim().toLowerCase(),label=String(roleLabel(m?.role)||'').trim().toLowerCase();
  if(raw==='admin'||label.includes('administrateur'))return'admin';
- if(raw==='point_vente'||raw==='surface_vente'||label.includes('point de vente')||label.includes('surface de vente'))return'point-vente';
+ if(raw==='role_point-de-vente'||raw==='point_vente'||raw==='surface_vente'||label.includes('point de vente')||label.includes('surface de vente'))return'point-vente';
  if(raw==='responsable'||label.includes('responsable'))return'responsable';
  if(raw==='lecture'||label.includes('lecture seule'))return'lecture';
  return'employe'
