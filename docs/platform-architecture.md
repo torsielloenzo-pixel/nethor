@@ -2075,3 +2075,38 @@ Le code métier n'est pas supprimé : il est déplacé sans réécriture fonctio
 Les nouveaux runtimes et feuilles sont précachés par le Service Worker. Ils peuvent donc être réutilisés indépendamment du document HTML lors des ouvertures suivantes.
 
 Le Service Worker passe en v256 / `netto-tools-v256` et la version applicative associée est `v1.43.19`, avec purge de cache.
+
+
+## Performance Mobile — coût d’exécution après ouverture
+
+Depuis la phase Performance Mobile 7, plusieurs traitements non indispensables au premier rendu sont retardés ou chargés à la demande.
+
+### profile-ui
+
+L'observateur d'accessibilité ne rescane plus immédiatement chaque nœud ajouté au DOM. Les nœuds sont regroupés puis traités après la frame courante, idéalement pendant une période idle du navigateur.
+
+### Gestion
+
+Les données propres aux onglets lourds ne sont plus chargées systématiquement pendant le bootstrap :
+
+- Notifications : chargées à l'ouverture de l'onglet ;
+- Problèmes : chargés à l'ouverture de l'onglet ;
+- Journal : chargé à l'ouverture de l'onglet ;
+- Articles : chargés à l'ouverture de l'onglet ;
+- Vue d'ensemble : chargée uniquement lorsque cette vue est active.
+
+Cela évite plusieurs requêtes Supabase et rendus DOM quand l'administrateur ouvre directement une autre section.
+
+### Comptes
+
+La vue Comptes ne charge plus automatiquement les 500 entrées du journal ni les statistiques de consultation. Ces données ne sont chargées que lorsque l'onglet Journal est demandé.
+
+### Accueil
+
+L'Accueil affiche d'abord les informations locales du profil et un avatar de repli. La création de l'URL signée de l'avatar distant est différée après le premier rendu. Les statistiques de consultation réservées à l'administrateur Desktop sont également différées.
+
+### Cache
+
+Les runtimes Accueil, Comptes et Gestion passent en `v=2`.
+
+Le Service Worker passe en v257 / `netto-tools-v257`. La version applicative associée est `v1.43.20`, avec purge de cache.
