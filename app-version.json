@@ -1,11 +1,11 @@
 {
-  "version": 234,
-  "label": "v1.40.0",
+  "version": 235,
+  "label": "v1.41.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.17 — Modales Stock Desktop / Mobile",
-  "message": "Les sept dialogues du module Stock F&L sont désormais construits séparément pour Desktop et Mobile : réinitialisation du stock, ajout produit, fiche article, suggestions, panier, gestion produits et options. Suggestions et Panier deviennent de vraies vues plein écran sur Mobile, sans breakpoint de plateforme. Les fonctions métier, IDs, données Supabase et logique de panier/suggestions restent partagés.",
-  "published_at": "2026-09-30T06:28:00.000+02:00",
+  "title": "Phase 4.18 — Nettoyage responsive Stock",
+  "message": "Le nettoyage final de l’ancien responsive hybride du Stock F&L est terminé. index.html ne contient plus aucune media query basée sur la largeur : les adaptations Desktop et Mobile ont été déplacées dans leurs feuilles de plateforme, les anciens basculements brandMenu/nMenu ont été supprimés et le vieux backdrop Mobile retiré. Les media queries restantes dans index.html concernent uniquement le survol et la réduction des animations, jamais l’identité de plateforme.",
+  "published_at": "2026-09-30T06:48:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
