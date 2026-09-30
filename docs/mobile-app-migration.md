@@ -1313,6 +1313,275 @@ Il charge le même `chat-v2.js` en mode historique et continue à créer son cli
 
 Aucune redirection forcée de `chat.html` vers la SPA n'est activée.
 
-## Prochaine phase
+## Phase 9 — QA globale et cutover Mobile
 
-La prochaine étape logique est un **cutover / QA global du shell Mobile** : vérifier les cinq destinations principales, les retours navigateur, portrait/paysage, PWA, clavier, cache, deep-links, sessions et fallback avant de convertir progressivement les anciennes URLs en redirections de compatibilité.
+La phase 9 transforme le shell SPA en entrée Mobile principale pour toutes les vues déjà migrées.
+
+### Pages concernées par le cutover
+
+Sur Mobile et Mobile Preview, les anciennes URLs suivantes basculent maintenant vers `mobile.html` :
+
+```text
+home.html                    → mobile.html?view=home
+planning.html                → mobile.html?view=planning
+chat.html                    → mobile.html?view=chat
+notifications.html           → mobile.html?view=notifications
+user-menu.html               → mobile.html?view=user-menu
+profile.html                 → mobile.html?view=profile
+settings.html                → mobile.html?view=settings
+notification-settings.html   → mobile.html?view=notification-settings
+report-problem.html          → mobile.html?view=report-problem
+```
+
+Desktop n'est pas concerné.
+
+### Conservation des deep-links
+
+Les paramètres métier sont transférés vers le shell.
+
+Exemples :
+
+```text
+planning.html?week=2026-10-05&day=2026-10-06&focus=leave
+→
+mobile.html?view=planning&week=2026-10-05&day=2026-10-06&focus=leave
+```
+
+```text
+chat.html?c=<conversation>
+→
+mobile.html?view=chat&c=<conversation>
+```
+
+```text
+chat.html?user=<user>
+→
+mobile.html?view=chat&user=<user>
+```
+
+Les paramètres temporaires historiques comme `open_user_menu`, `from_user_menu` et `_nethor_update` ne sont pas propagés.
+
+### Fallback explicite
+
+Un fallback vers une page historique utilise maintenant :
+
+```text
+?nethor_legacy=1
+```
+
+Ce marqueur empêche la page legacy de repartir immédiatement vers `mobile.html`.
+
+Exemple :
+
+```text
+mobile.html?view=planning
+        ↓ erreur de montage
+planning.html?nethor_legacy=1
+```
+
+Cela élimine le risque de boucle SPA → legacy → SPA.
+
+### Routeur — deep-link sur la même vue
+
+Le routeur distingue maintenant :
+
+```text
+même vue + même URL
+même vue + paramètres différents
+```
+
+Cas 1 :
+
+```text
+Planning → Planning
+```
+
+sans changement de paramètres :
+
+- pas de remount ;
+- retour en haut uniquement.
+
+Cas 2 :
+
+```text
+Planning semaine A
+→ Planning semaine B
+```
+
+ou :
+
+```text
+Chat liste
+→ Chat conversation
+```
+
+avec paramètres différents :
+
+- nouvelle URL ;
+- `unmount()` ;
+- remontage propre de la même vue ;
+- prise en compte des nouveaux paramètres.
+
+### Historique navigateur
+
+Un `popstate` qui reste sur la même vue mais change ses paramètres force désormais un remount propre.
+
+Cela évite de conserver :
+
+- une mauvaise semaine Planning ;
+- une mauvaise conversation Chat ;
+- un ancien focus ;
+- un état DOM incohérent.
+
+### Clavier et viewport
+
+Le shell Mobile centralise désormais :
+
+```text
+nettoKeyboardOpen
+orientation
+display mode
+online/offline
+visualViewport
+```
+
+Lorsqu'un champ texte prend le focus :
+
+- la navigation basse est retirée temporairement ;
+- la hauteur du shell suit le viewport visuel ;
+- le clavier ne recouvre plus la zone utile ;
+- Chat conserve son composeur dans l'espace visible.
+
+Cette logique bénéficie aussi à :
+
+- Profil ;
+- Personnalisation ;
+- Signaler un problème ;
+- recherches ;
+- futurs formulaires SPA.
+
+### Orientation
+
+Le shell expose maintenant :
+
+```text
+data-orientation="portrait"
+data-orientation="landscape"
+```
+
+et se resynchronise lors de :
+
+- `resize` ;
+- `orientationchange` ;
+- changement du `visualViewport`.
+
+### PWA
+
+Le shell détecte maintenant :
+
+```text
+browser
+standalone
+```
+
+via :
+
+```text
+display-mode: standalone
+navigator.standalone
+```
+
+L'état est stocké sur le shell avec `data-display-mode`.
+
+### Réseau
+
+L'état :
+
+```text
+online
+offline
+```
+
+est également centralisé.
+
+Le shell ajoute un indicateur textuel « Hors ligne » dans son sous-titre lorsqu'aucun réseau n'est disponible.
+
+### Service Worker
+
+Le Service Worker passe en :
+
+```text
+v275
+```
+
+Les pages de cutover deviennent `network-first` :
+
+- Accueil ;
+- Planning ;
+- Chat ;
+- Notifications ;
+- Menu utilisateur ;
+- Profil ;
+- Personnalisation ;
+- Réglages notifications ;
+- Signaler un problème.
+
+Cela évite qu'une ancienne version HTML provenant du cache empêche le cutover.
+
+Ces pages restent en parallèle précachées comme fallback legacy.
+
+### Versions d'architecture
+
+La phase 9 utilise :
+
+```text
+platform-navigation.js?v=4
+mobile-router.js?v=3
+mobile-app.js?v=9
+mobile-app.css?v=9
+Service Worker v275
+```
+
+Le Service Worker ne précache plus les anciennes versions concurrentes de `platform-navigation.js`.
+
+### Compatibilité
+
+La séparation reste :
+
+```text
+Desktop
+→ pages HTML classiques
+
+Mobile
+→ mobile.html + MobileRouter
+
+Fallback
+→ ancienne page HTML + nethor_legacy=1
+```
+
+Aucune page Desktop n'est redirigée vers la SPA.
+
+### QA de phase 9
+
+Les contrôles statiques couvrent :
+
+- syntaxe du routeur ;
+- syntaxe de la navigation plateforme ;
+- syntaxe du shell Mobile ;
+- enregistrement des vues principales ;
+- enregistrement des sous-vues ;
+- conservation des deep-links ;
+- fallback legacy ;
+- navigation même-vue avec nouveaux paramètres ;
+- `popstate` même-vue ;
+- clavier ;
+- orientation ;
+- mode standalone ;
+- réseau ;
+- cache Service Worker ;
+- cohérence des versions ;
+- absence de redirection Mobile codée en dur dans les pages Desktop/fallback.
+
+## Suite logique
+
+Après cette phase de cutover, les prochaines évolutions peuvent reprendre **vue par vue** pour les outils secondaires encore en fallback — Stock F&L, Scanner, Fiches articles, Assistant Précommande, Boulangerie, Gestion, Comptes, Maintenance, etc. — sans remettre en cause le shell principal désormais stabilisé.
