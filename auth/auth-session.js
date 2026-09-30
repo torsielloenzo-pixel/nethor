@@ -1,5 +1,47 @@
 /* Nethor Auth — session, profil et boot, Phase 4.20 */
-let profileLoaderShownAt=0;
+let profileLoaderShownAt=0,authSiteConfig={};
+
+function authPlatformKind(){
+ try{return (window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform)==='desktop'?'desktop':'mobile'}catch(_){return'mobile'}
+}
+function authPlatformUi(){
+ const kind=authPlatformKind(),root=authSiteConfig?.platform_ui?.[kind];
+ return root&&typeof root==='object'?root:{}
+}
+function applyAuthBranding(){
+ const kind=authPlatformKind(),ui=authPlatformUi(),brand=authSiteConfig?.brand||{};
+ const fallback=kind==='mobile'?'assets/app-icon-mobile-v73.svg?v=73':'assets/app-icon-v63.svg';
+ const logo=String(ui?.login_logo?.url||'').trim()||fallback;
+ document.querySelectorAll('.authMobileLogo,.authDesktopLogo').forEach(img=>{if(img&&img.getAttribute('src')!==logo)img.src=logo});
+ const name=String(brand.name||'Nethor').trim()||'Nethor',sub=String(brand.subtitle||'Portail opérationnel interne').trim()||'Portail opérationnel interne';
+ document.querySelectorAll('.authMobileBrandCopy strong,.authDesktopName').forEach(el=>el.textContent=name);
+ document.querySelectorAll('.authMobileBrandCopy span,.authDesktopSub').forEach(el=>el.textContent=sub)
+}
+async function loadAuthBrandingConfig(force=false){
+ if(!force&&authSiteConfig&&Object.keys(authSiteConfig).length){applyAuthBranding();return authSiteConfig}
+ try{
+  const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
+  if(error)throw error;authSiteConfig=data?.value&&typeof data.value==='object'?data.value:{}
+ }catch(e){console.warn('Identité de connexion Nethor:',e);authSiteConfig=authSiteConfig||{}}
+ applyAuthBranding();return authSiteConfig
+}
+function ensureWelcomeMediaStyle(){
+ if(document.getElementById('nethorWelcomeMediaStyle'))return;
+ const s=document.createElement('style');s.id='nethorWelcomeMediaStyle';
+ s.textContent='.welcomeMark.hasWelcomeMedia{width:min(42vw,150px)!important;height:min(42vw,150px)!important;padding:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}.welcomeMark.hasWelcomeMedia img,.welcomeMark.hasWelcomeMedia video{display:block;width:100%;height:100%;object-fit:contain;border:0}.welcomeMark.hasWelcomeMedia video{pointer-events:none}';
+ document.head?.appendChild(s)
+}
+function applyWelcomeBranding(){
+ const mark=document.querySelector('#welcomeToast .welcomeMark'),sub=document.querySelector('#welcomeToast .welcomeSub');if(!mark)return;
+ const ui=authPlatformUi(),media=ui?.welcome_media||{},url=String(media.url||'').trim();
+ const brand=authSiteConfig?.brand||{};if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
+ if(!url){mark.classList.remove('hasWelcomeMedia');mark.innerHTML='N';return}
+ ensureWelcomeMediaStyle();mark.classList.add('hasWelcomeMedia');
+ if(media.type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url)){
+  mark.innerHTML='<video src="'+String(url).replace(/"/g,'&quot;')+'" autoplay muted loop playsinline preload="auto"></video>'
+ }else mark.innerHTML='<img src="'+String(url).replace(/"/g,'&quot;')+'" alt="" draggable="false">'
+}
+
 function showProfileLoader(message='Application de tes préférences…'){const el=$('profileLoader'),txt=$('profileLoaderText');if(!el)return;if(txt)txt.textContent=message;profileLoaderShownAt=performance.now();el.classList.add('show')}
 async function hideProfileLoader(minMs=320){const el=$('profileLoader');if(!el)return;const elapsed=performance.now()-profileLoaderShownAt;if(elapsed<minMs)await new Promise(r=>setTimeout(r,minMs-elapsed));el.classList.remove('show');await new Promise(r=>setTimeout(r,245))}
 function profilePrefs(p){return p?.ui_preferences&&typeof p.ui_preferences==='object'&&!Array.isArray(p.ui_preferences)?p.ui_preferences:{}}
@@ -24,6 +66,7 @@ async function loadSessionProfile(uid,fields='display_name,role,ui_preferences')
  return{data:null,error:lastError}
 }
 async function boot(){
+ await loadAuthBrandingConfig();
  const forceLogin=new URLSearchParams(location.search).get('logout')==='1'||sessionStorage.getItem('nettoForceLogin')==='1';
  if(forceLogin){
   try{sessionStorage.removeItem('nettoForceLogin')}catch(_){}
@@ -44,9 +87,9 @@ async function boot(){
 }
 function playLoginSound(){window.NettoSounds?.play?.('loginSuccess')}
 function playLogoutSound(){window.NettoSounds?.play?.('logout')}
-function showWelcome(){return new Promise(resolve=>{const t=$('welcomeToast'),name=profile?.display_name||profile?.email?.split('@')[0]||'utilisateur';$('welcomeText').textContent='Bienvenue '+name+' 👋';requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(resolve,450)},1900)})}
+function showWelcome(){return new Promise(resolve=>{const t=$('welcomeToast'),name=profile?.display_name||profile?.email?.split('@')[0]||'utilisateur';applyWelcomeBranding();$('welcomeText').textContent='Bienvenue '+name+' 👋';requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(resolve,450)},1900)})}
 
 function loginDenied(msg='Email ou mot de passe incorrect.'){const card=document.querySelector('.loginCard'),err=$('loginError');err.textContent=msg;err.classList.remove('loginErrorPulse');card?.classList.remove('loginDenied');void card?.offsetWidth;void err.offsetWidth;card?.classList.add('loginDenied');err.classList.add('loginErrorPulse');window.NettoSounds?.play?.('error');setTimeout(()=>card?.classList.remove('loginDenied'),520)}
 function safeReturnPath(){const raw=new URLSearchParams(location.search).get('return')||'';if(!raw||raw.includes('://')||raw.startsWith('//'))return'';return /^accounts\.html(?:\?|$)/.test(raw)?raw:''}
-function showLogin(msg=''){$('profileLoader')?.classList.remove('show');$('site').classList.add('hidden');$('login').classList.remove('hidden');$('loginError').textContent='';if(msg)setTimeout(()=>loginDenied(msg),30)}
+function showLogin(msg=''){applyAuthBranding();$('profileLoader')?.classList.remove('show');$('site').classList.add('hidden');$('login').classList.remove('hidden');$('loginError').textContent='';if(msg)setTimeout(()=>loginDenied(msg),30)}
 function togglePassword(){const p=$('password');p.type=p.type==='password'?'text':'password';window.NettoSounds?.play?.('switch')}
