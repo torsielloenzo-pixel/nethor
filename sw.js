@@ -2,12 +2,13 @@ const APP_VERSION=259;
 const CACHE='netto-tools-v259';
 const DEPENDENCY_CACHE='nethor-deps-v1';
 const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
+const HTML5_QRCODE_UMD='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
 const EXTERNAL_RUNTIME_DEPS=new Set([
  SUPABASE_UMD,
- 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
+ HTML5_QRCODE_UMD,
  'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js'
 ]);
-const EXTERNAL_PRECACHE=[SUPABASE_UMD];
+const EXTERNAL_PRECACHE=[SUPABASE_UMD,HTML5_QRCODE_UMD];
 const INSTALL_CORE=["./","./index.html","./auth/auth-session.js?v=1","./auth/auth-recovery.js?v=1","./auth/auth-update.js?v=1","./auth/auth-login.js?v=1","./stock/stock-runtime.js?v=1","./stock/stock-data.js?v=1","./stock/stock-render.js?v=1","./stock/stock-order.js?v=1","./stock/stock-products.js?v=1","./stock/stock-management.js?v=1","./stock-page-layout.js?v=1","./stock-modals-layout.js?v=1","./login-page-layout.js?v=1","./home.html","./runtime/home-base.css?v=1","./runtime/home-passation.css?v=1","./runtime/home-runtime.js?v=2","./user-menu.html","./user-menu-page.css?v=1","./user-menu-page.js?v=2","./manifest.webmanifest","./app-version.json","./platform-resolver.js?v=3","./platform-assets.js?v=1","./platform-navigation.js?v=1","./platform-page-layout.js?v=12","./profile-ui.css?v=3","./profile-ui.js?v=208","./design-v2.css?v=3","./design-v3.css?v=3","./design-v4.css?v=9","./operations-widget.css?v=2","./operations-widget.js?v=2","./assets/nethor-mark.svg","./assets/app-icon-v63.svg","./assets/app-icon-mobile-v71.svg?v=72"];
 self.addEventListener('install',e=>{e.waitUntil((async()=>{
  const cache=await caches.open(CACHE);
