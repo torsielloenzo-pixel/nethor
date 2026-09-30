@@ -30,7 +30,17 @@ function ensurePrefs(v){const p=v&&typeof v==='object'?JSON.parse(JSON.stringify
 function waitUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI?.profile||n++>80){clearInterval(t);resolve()}},50)})}
 function modules(){return window.NettoProfileUI?.modules||[]}
 function prefProfile(){return {...profile,ui_preferences:prefs}}
-function available(area){return modules().filter(m=>window.NettoProfileUI?.canAccess?.(m,profile,window.NettoProfileUI?.siteConfig)&&(area==='home'?m.home:m.userMenu))}
+function settingsIsMobile(){
+ try{return window.NethorPlatform?.isMobile?.()===true||['mobile','mobile-preview'].includes(String(document.documentElement.dataset.nethorPlatform||''))}catch(_){return false}
+}
+function mobileUserMenuPersonalizationAllowed(m){
+ if(!m||m.id==='settings')return false;
+ if(profile?.role==='admin'||!settingsIsMobile())return m.userMenu===true;
+ const items=window.NettoProfileUI?.siteConfig?.mobile_user_menu?.items;
+ const explicit=items&&typeof items==='object'?items[m.id]:undefined;
+ return typeof explicit==='boolean'?explicit:m.userMenu===true
+}
+function available(area){return modules().filter(m=>window.NettoProfileUI?.canAccess?.(m,profile,window.NettoProfileUI?.siteConfig)&&(area==='home'?m.home:mobileUserMenuPersonalizationAllowed(m)))}
 function visible(area,m){const v=prefs?.[area]?.[m.id];if(typeof v==='boolean')return v;return area==='home'?m.defaultHome!==false:m.defaultUser!==false}
 function icon(m){return m.asset?'<img src="'+esc(m.asset)+'" alt="">':esc(m.icon||'•')}
 function renderArea(area,id){const host=$(id),list=available(area);if(!list.length){host.innerHTML='<div class="empty">Aucun espace configurable pour ce rôle.</div>';return}host.innerHTML=list.map(m=>'<label class="item"><span class="icon">'+icon(m)+'</span><span class="info"><strong>'+esc(area==='home'?(m.homeLabel||m.label):m.label)+'</strong><span>'+esc(m.subtitle||m.description||'')+'</span></span><span class="toggle"><input type="checkbox" data-area="'+area+'" data-id="'+esc(m.id)+'" '+(visible(area,m)?'checked':'')+'> Visible</span></label>').join('');host.querySelectorAll('input[data-id]').forEach(x=>x.onchange=()=>{prefs[x.dataset.area][x.dataset.id]=x.checked;markDirty()})}
