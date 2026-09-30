@@ -3,7 +3,7 @@
 function header(){
  return `<header class="stockMobileChrome" data-nethor-stock-chrome="mobile">
   <div class="stockMobileTop">
-   <button class="stockMobileBack" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():location.href='home.html'" aria-label="Retour">‹</button>
+   <button class="stockMobileBack" type="button" onclick="window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():location.href='user-menu.html'" aria-label="Retour">‹</button>
    <div class="stockMobileTitle"><div class="title">Fruits &amp; Légumes</div><div class="subtitle">Stock, consultation et commandes</div></div>
   </div>
   <div id="who" class="stockMobileWho">Chargement…</div>
