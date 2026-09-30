@@ -610,6 +610,214 @@ Elles ne détruisent jamais :
 
 Aucune redirection forcée de ces anciennes URLs vers la SPA n'est encore activée.
 
+## Phase 6 — Sous-vues du Menu utilisateur
+
+La phase 6 migre dans `mobile.html` :
+
+```text
+profile
+settings
+notification-settings
+report-problem
+```
+
+### Mon profil
+
+`ProfileView` réutilise directement `NethorMobileServices`.
+
+Fonctions conservées :
+
+- identité et rôle ;
+- couleur du profil ;
+- thème clair/sombre ;
+- photo de profil ;
+- recadrage avant envoi ;
+- suppression de la photo ;
+- changement de mot de passe avec vérification du mot de passe actuel ;
+- personnalisation avancée administrateur via le catalogue de récompenses ;
+- sons d'interface lorsque `NettoSounds` est disponible ;
+- accès au centre Notifications.
+
+La photo utilise toujours le bucket `profile-avatars`.
+
+Le remplacement de photo :
+
+```text
+recadrage
+   ↓
+upload nouveau fichier
+   ↓
+profiles.avatar_path
+   ↓
+suppression ancien fichier
+```
+
+est maintenant porté par le client Supabase partagé.
+
+### Personnalisation
+
+`SettingsView` conserve :
+
+- choix clair/sombre ;
+- visibilité des menus de l'accueil ;
+- visibilité des widgets de l'accueil ;
+- visibilité des raccourcis du Menu utilisateur ;
+- Tout afficher / Tout masquer ;
+- Réinitialiser ;
+- Enregistrer.
+
+Les préférences restent stockées dans :
+
+```text
+profiles.ui_preferences
+├── home
+├── home_widgets
+├── user_menu
+└── theme
+```
+
+Les droits continuent à tenir compte de :
+
+- rôle ;
+- sous-rôles ;
+- `site_config.pages` ;
+- `role_permissions` ;
+- `mobile_user_menu.items` ;
+- configuration des widgets.
+
+### Réglages des notifications
+
+`NotificationSettingsView` conserve deux niveaux.
+
+#### Push appareil
+
+- état de compatibilité ;
+- cas iPhone non installé ;
+- contrôle administrateur ;
+- autorisation navigateur ;
+- abonnement Push ;
+- désabonnement Push ;
+- synchronisation avec la fonction `planning-push`.
+
+#### Canaux personnels
+
+La vue utilise :
+
+```text
+my_notification_channel_preferences
+set_my_notification_channels
+```
+
+et permet toujours :
+
+- Aucun ;
+- Portail ;
+- Push ;
+- Les deux.
+
+Les restrictions globales administrateur restent prioritaires.
+
+### Signaler un problème
+
+`ReportProblemView` conserve :
+
+- la page concernée détectée ou choisie manuellement ;
+- la description ;
+- le contrôle de longueur ;
+- la version Nethor ;
+- le contexte Service Worker / cache ;
+- appareil et OS ;
+- navigateur ;
+- dimensions d'affichage ;
+- informations réseau disponibles ;
+- langue / fuseau ;
+- informations d'interaction disponibles.
+
+Le signalement reste enregistré dans :
+
+```text
+reported_problems
+```
+
+avec :
+
+- compte ;
+- rôle ;
+- source ;
+- version ;
+- user-agent ;
+- diagnostic structuré.
+
+### Services partagés ajoutés
+
+`NethorMobileServices` expose maintenant :
+
+```js
+updateProfile(fields)
+savePreferences(prefs)
+changePassword(currentPassword, newPassword)
+uploadAvatar(file)
+removeAvatar()
+notificationRules()
+setNotificationChannels(ruleKey, channels)
+submitProblem(payload)
+```
+
+Aucune de ces quatre vues ne crée son propre client Supabase.
+
+### Retour vers Menu utilisateur
+
+Les quatre sous-vues utilisent une navigation interne vers :
+
+```text
+mobile.html?view=user-menu
+```
+
+Le document n'est pas rechargé.
+
+Le retour n'utilise plus les anciennes règles Desktop de type :
+
+```text
+profile.html → home.html
+```
+
+dans le nouveau shell Mobile.
+
+### Cycle de vie
+
+Chaque sous-vue possède :
+
+```js
+mount()
+unmount()
+render()
+```
+
+Les listeners locaux sont retirés à la sortie.
+
+Les ressources globales suivantes restent intactes :
+
+- session Auth ;
+- client Supabase ;
+- profil partagé ;
+- permissions ;
+- configuration ;
+- notifications ;
+- canaux temps réel de `MobileServices`.
+
+### Compatibilité
+
+Les anciennes pages restent disponibles :
+
+- `profile.html` ;
+- `settings.html` ;
+- `notification-settings.html` ;
+- `report-problem.html`.
+
+Elles ne sont pas encore redirigées automatiquement vers le shell SPA.
+
+Desktop continue donc à utiliser son architecture de pages actuelle.
+
 ## Prochaine phase
 
-La phase 6 pourra migrer les **sous-vues du Menu utilisateur** — notamment Mon profil, Personnalisation, Réglages des notifications et Signaler un problème — avant d'aborder Planning et Chat.
+La phase 7 pourra attaquer **Planning**, qui devient la première vue métier lourde à migrer. Elle devra préserver son état, ses calculs, son scroll, ses paramètres `week/day/focus`, ses widgets et ses outils d'administration sans réinitialiser le shell Mobile.
