@@ -54,16 +54,26 @@ async function staticFromCache(request){
  if(cached)return cached;
  return (await fetchAndStore(request))||Response.error()
 }
+const STRICT_NAVIGATION_FILES=new Set(['index.html','maintenance.html','repair.html']);
+function navigationFile(url){
+ const path=String(url?.pathname||'');
+ return (path.split('/').pop()||'index.html').toLowerCase()
+}
 self.addEventListener('fetch',e=>{
  const u=new URL(e.request.url);
  if(e.request.method!=='GET'||u.origin!==location.origin)return;
- if(e.request.mode==='navigate'&&u.pathname.endsWith('/repair.html')){
-  e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>Response.error()));
-  return;
- }
  if(e.request.mode==='navigate'){
-  const fallback=u.pathname.endsWith('/settings.html')?'./settings.html':'./home.html';
-  e.respondWith(navigationNetworkFirst(e.request,fallback));
+  const file=navigationFile(u);
+  if(file==='repair.html'){
+   e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>Response.error()));
+   return;
+  }
+  const fallback=file==='settings.html'?'./settings.html':'./home.html';
+  if(STRICT_NAVIGATION_FILES.has(file)){
+   e.respondWith(navigationNetworkFirst(e.request,fallback));
+   return;
+  }
+  e.respondWith(navigationFromCache(e.request,fallback));
   return;
  }
  if(u.pathname.endsWith('/app-version.json')){
