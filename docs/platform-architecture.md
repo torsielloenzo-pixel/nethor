@@ -2048,3 +2048,30 @@ Depuis la phase Performance Mobile 5, les bibliothèques externes lourdes ne son
 - Chat et Menu utilisateur utilisent également Supabase en `defer`.
 
 Les dépendances externes QR et XLSX entrent dans le cache dédié à leur première utilisation ; elles ne sont pas préchargées lors de l'installation initiale.
+
+
+## Performance Mobile — découpage des pages monolithiques
+
+Depuis la phase Performance Mobile 6, les trois pages encore les plus monolithiques ne transportent plus leur gros runtime directement dans le document HTML.
+
+### Pages traitées
+
+- `admin-portal.html` : logique extraite vers `runtime/admin-portal-runtime.js` et styles vers `runtime/admin-portal-runtime.css` ;
+- `home.html` : logique extraite vers `runtime/home-runtime.js`, styles principaux vers `runtime/home-base.css` et styles de passation vers `runtime/home-passation.css` ;
+- `accounts.html` : logique extraite vers `runtime/accounts-runtime.js` et styles vers `runtime/accounts-runtime.css`.
+
+### Effet sur le HTML
+
+Les documents passent approximativement :
+
+- Gestion : 170 Ko → 2,2 Ko ;
+- Accueil : 92 Ko → 2,4 Ko ;
+- Comptes : 77 Ko → 6 Ko.
+
+Le code métier n'est pas supprimé : il est déplacé sans réécriture fonctionnelle vers des ressources externes classiques chargées au même emplacement logique.
+
+### Cache
+
+Les nouveaux runtimes et feuilles sont précachés par le Service Worker. Ils peuvent donc être réutilisés indépendamment du document HTML lors des ouvertures suivantes.
+
+Le Service Worker passe en v256 / `netto-tools-v256` et la version applicative associée est `v1.43.19`, avec purge de cache.
