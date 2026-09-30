@@ -1516,3 +1516,104 @@ Le Service Worker v232 précache les nouveaux builders, feuilles de plateforme e
 
 La version applicative associée est `v1.38.0` avec purge de cache demandée afin qu’aucun ancien CSS Login ne reste en concurrence avec les nouvelles structures.
 
+
+## Phase 4.16 — Stock Fruits & Légumes Desktop / Mobile
+
+La structure principale du module Stock F&L de `index.html` est désormais séparée par plateforme.
+
+### Frontière de séparation
+
+Le moteur métier reste partagé.
+
+La séparation porte sur :
+
+- l’en-tête de page ;
+- l’identité visuelle du module ;
+- le bouton de retour Mobile ;
+- la zone d’identité Desktop ;
+- la navigation des quatre modes Stock / Consulter / Commande / Gestion.
+
+Le contenu métier situé après cette navigation reste commun :
+
+- `stockModeIntro` ;
+- recherche ;
+- catégories rapides ;
+- options d’affichage ;
+- dashboard Commande ;
+- dashboard Gestion ;
+- rendu principal `#app`.
+
+Cette frontière évite de dupliquer les fonctions Supabase et les états Stock.
+
+### Point de montage neutre
+
+`index.html` ne contient plus l’ancien header hybride ni `.flMobileTop`.
+
+Il expose désormais :
+
+```html
+<div data-nethor-stock-header></div>
+...
+<div data-nethor-stock-mode-nav></div>
+```
+
+`stock-page-layout.js` sélectionne ensuite un seul builder à partir de `NethorPlatform`.
+
+### Structures dédiées
+
+```text
+ui/
+├── desktop/
+│   ├── stock-layout.js
+│   └── stock-layout.css
+└── mobile/
+    ├── stock-layout.js
+    └── stock-layout.css
+```
+
+Desktop monte son en-tête complet, son identité Stock F&L et sa navigation large.
+
+Mobile monte directement un chrome compact avec retour, titre et navigation tactile. Le header Desktop et son menu historique n’existent pas dans le DOM Mobile.
+
+### Contrat fonctionnel commun
+
+Les deux builders exposent uniquement les IDs nécessaires au moteur existant, notamment :
+
+- `who` ;
+- `suggestBtn` ;
+- `cartBtn` ;
+- `cartCount` ;
+- `manageBtn`.
+
+Un seul builder est monté à l’exécution ; ces IDs restent donc uniques dans le DOM actif.
+
+Les fonctions métier restent communes, notamment :
+
+- `boot()` ;
+- `setStockMode()` ;
+- `applyStockModeUI()` ;
+- `loadProducts()` ;
+- `render()` ;
+- panier et suggestions ;
+- permissions Stock ;
+- chargement des catégories et conditionnements.
+
+### Suppression des sélecteurs de plateforme historiques
+
+La phase retire :
+
+- l’ancien header Stock commun ;
+- le bloc DOM `.flMobileTop` ;
+- `stock-mobile-toolbar-fix` ;
+- `flDesktopZoom` et son `@media (min-width:781px)`.
+
+Les anciennes règles Desktop de lisibilité ont été transférées vers `ui/desktop/stock-layout.css` sans media query. Elles s’appliquent donc parce que la plateforme résolue est Desktop, et non parce que la fenêtre dépasse une largeur donnée.
+
+Les règles responsive restantes dans `index.html` sont considérées comme des adaptations internes du contenu métier Mobile ou de composants partagés. Elles ne choisissent plus la structure Desktop/Mobile du Stock.
+
+### Cache
+
+Le Service Worker v233 précache le routeur Stock et les quatre fichiers de layout dédiés.
+
+La version applicative associée est `v1.39.0`, avec purge de cache demandée pour éviter qu’un ancien header hybride ou un ancien CSS de plateforme reste actif.
+
