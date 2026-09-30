@@ -165,6 +165,11 @@ async function open(view,options={}){
   const id=normalizeView(view);
   if(!route(id)&&!registered(id))return fallback('home',{reason:'unknown-route'});
   if(!registered(id))return fallback(id,{reason:'view-not-migrated'});
+  if(id===current()&&activeView===id&&options.force!==true){
+    try{host?.scrollTo?.({top:0,behavior:'smooth'})}catch(_){if(host)host.scrollTop=0}
+    emit('nethor:mobile-route-repeat',{view:id});
+    return true
+  }
   const target=shellUrl(id,options.params);
   if(options.history!=='none'){
     const method=options.replace?'replaceState':'pushState';
