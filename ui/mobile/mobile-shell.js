@@ -15,7 +15,7 @@ function buildQuickBar(items,iconFor){
   const isUserMenu=module.id==='profile';
   const label=isUserMenu?'Menu utilisateur':(item.label||module.label||'Menu');
   const badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';
-  if(isUserMenu)return '<button type="button" class="nettoMobileQuickItem" data-mobile-id="profile" data-mobile-action="user-menu" aria-label="Menu utilisateur" title="Menu utilisateur"><span class="nettoMobileQuickIcon" aria-hidden="true">'+iconFor(module.id)+'</span></button>';
+  if(isUserMenu)return '<a class="nettoMobileQuickItem" data-mobile-id="profile" href="user-menu.html" aria-label="Menu utilisateur" title="Menu utilisateur"><span class="nettoMobileQuickIcon" aria-hidden="true">'+iconFor(module.id)+'</span></a>';
   return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+iconFor(module.id)+'</span>'+badge+'</a>'
  }).join('')
 }
@@ -55,7 +55,7 @@ function buildPageLayout(page){
  if(!['home','profile','planning','settings','notification-settings','report-problem','notifications','scanner','articles','accounts','admin-portal','fl-assistant','bakery','rewards','chat'].includes(id))return null;
  if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'mobile',handlesBack:true,header:'',lead:''};
  const lead=id==='profile'
-  ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'home.html\'" aria-label="Retour">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
+  ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'user-menu.html\'" aria-label="Retour">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
   :'';
  const ownChrome=id==='report-problem'||id==='scanner'||id==='articles'||id==='accounts'||id==='admin-portal'||id==='fl-assistant'||id==='bakery'||id==='rewards'||id==='chat';
  return {
