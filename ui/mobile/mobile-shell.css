@@ -69,7 +69,7 @@ html[data-nethor-platform="mobile-preview"] .nettoMobileQuickItem{
    }
    .nettoMobileQuickItem:active{transform:scale(.94)}
    .nettoMobileQuickItem.active:before{
-     content:"";position:absolute;top:-4px;left:50%;width:34px;height:3px;border-radius:0 0 6px 6px;
+     content:"";position:absolute;top:0;left:50%;width:34px;height:3px;border-radius:0 0 6px 6px;
      transform:translateX(-50%);background:linear-gradient(90deg,#f23b27,#f47c20)
    }
    .nettoMobileQuickIcon{
