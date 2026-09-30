@@ -755,3 +755,10 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] #mobileSc
 @media(max-width:760px){.coverageModeDock,.coverageOverlay{display:none!important}}
 
 
+
+/* Mobile visual QA — planning edit actions stay above the bottom navigation. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] .editSaveBar{
+ bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 8px)!important;
+ z-index:120!important
+}
+body.planningYearOpen .editSaveBar{bottom:8px!important}
