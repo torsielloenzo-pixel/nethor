@@ -884,7 +884,6 @@ function updateThemeText(){const dark=currentTheme()==='dark';document.querySele
 function bindHomeMark(){
  document.querySelectorAll('.mark,.brandMark,.nMenuBtn,.brandMenuBtn').forEach(b=>{if((b.textContent||'').trim()!=='N')return;b.removeAttribute('onclick');b.removeAttribute('aria-expanded');b.setAttribute('aria-label','Retour à l’accueil');b.onclick=e=>{e.preventDefault();e.stopPropagation();location.href='home.html'}})
  document.querySelectorAll('#nMenu,.brandMenu').forEach(x=>x.classList.add('hidden'))
- document.body.classList.remove('mobileNavOpen')
 }
 function findHeaderTop(){return document.querySelector('[data-nethor-global-tools-host]')||document.querySelector('#site header .top')||document.querySelector('header .top')}
 async function detachPushBeforeLogout(){
