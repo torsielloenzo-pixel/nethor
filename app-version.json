@@ -1,11 +1,11 @@
 {
-  "version": 255,
-  "label": "v1.43.18",
+  "version": 256,
+  "label": "v1.43.19",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Performance Mobile — phase 5",
-  "message": "Les dépendances tierces lourdes ne bloquent plus l’ouverture de plusieurs écrans. Scanner charge html5-qrcode uniquement au démarrage de la caméra, Assistant Précommande charge SheetJS uniquement lors de l’analyse d’un fichier, et Supabase est différé sur Scanner, Assistant, Chat et Menu utilisateur. Le Service Worker conserve un cache dédié aux dépendances externes pour accélérer les ouvertures suivantes.",
-  "published_at": "2026-09-30T18:31:00.000+02:00",
+  "title": "Performance Mobile — phase 6",
+  "message": "Les pages Accueil, Gestion et Comptes ne transportent plus leurs gros blocs CSS et JavaScript directement dans le HTML. Leur logique et leurs styles sont maintenant séparés en runtimes dédiés, mis en cache indépendamment par le Service Worker. Les documents HTML deviennent beaucoup plus légers à analyser sans modifier les fonctions métier ni la séparation Desktop/Mobile.",
+  "published_at": "2026-09-30T18:49:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
