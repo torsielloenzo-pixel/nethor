@@ -149,7 +149,13 @@ async function markRead(id){
 }
 function safeNavigate(raw){
  if(!raw)return;
- try{const u=new URL(raw,location.href);if(u.origin===location.origin){if(u.pathname.includes('/stock-fl/'))u.pathname=u.pathname.replace('/stock-fl/','/nethor/');location.assign(u.href)}}catch(_){}
+ try{
+  const u=new URL(raw,location.href);
+  if(u.origin!==location.origin)return;
+  if(u.pathname.includes('/stock-fl/'))u.pathname=u.pathname.replace('/stock-fl/','/nethor/');
+  if(window.NethorNavigation?.navigate){window.NethorNavigation.navigate(u.href);return}
+  location.assign(u.href)
+ }catch(_){}
 }
 async function openRow(row){
  const id=Number(row.dataset.id);if(id)await markRead(id);
