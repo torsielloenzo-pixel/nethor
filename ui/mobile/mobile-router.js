@@ -76,7 +76,7 @@ function shellUrl(view=current(),extra){
   }
   return u.pathname.split('/').pop()+u.search+u.hash
 }
-function legacyUrl(view=current()){
+function legacyUrl(view=current(),extra){
   const item=route(view);
   if(!item?.legacy)return'home.html';
   const base=new URL(item.legacy,location.href);
@@ -85,6 +85,12 @@ function legacyUrl(view=current()){
     if(key==='view'||key==='mobile_preview'||key==='nethor_platform')return;
     if(!base.searchParams.has(key))base.searchParams.set(key,value)
   });
+  if(extra&&typeof extra==='object'){
+    Object.entries(extra).forEach(([key,value])=>{
+      if(value===undefined||value===null||value==='')base.searchParams.delete(key);
+      else base.searchParams.set(key,String(value))
+    })
+  }
   if(platform()==='mobile-preview'||source.get('mobile_preview')==='1')base.searchParams.set('mobile_preview','1');
   const forced=source.get('nethor_platform');
   if(forced==='mobile')base.searchParams.set('nethor_platform','mobile');
@@ -118,7 +124,7 @@ async function unmountActive(nextView){
 }
 function fallback(view,options={}){
   const id=normalizeView(view);
-  const target=legacyUrl(id);
+  const target=legacyUrl(id,options.params);
   const parentView=current();
   emit('nethor:mobile-route-fallback',{view:id,target,reason:options.reason||'view-not-migrated'});
   if(options.navigate===false)return target;
@@ -163,8 +169,8 @@ async function mount(view,options={}){
 }
 async function open(view,options={}){
   const id=normalizeView(view);
-  if(!route(id)&&!registered(id))return fallback('home',{reason:'unknown-route'});
-  if(!registered(id))return fallback(id,{reason:'view-not-migrated'});
+  if(!route(id)&&!registered(id))return fallback('home',{reason:'unknown-route',params:options.params});
+  if(!registered(id))return fallback(id,{reason:'view-not-migrated',params:options.params});
   if(id===current()&&activeView===id&&options.force!==true){
     try{host?.scrollTo?.({top:0,behavior:'smooth'})}catch(_){if(host)host.scrollTop=0}
     emit('nethor:mobile-route-repeat',{view:id});
