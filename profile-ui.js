@@ -1266,7 +1266,22 @@ function runAfterFirstPaint(task){
   else setTimeout(run,40)
  }))
 }
-async function init(){addStyle();addLayoutHardening();promotePlatformShellStyles();syncGlobalDesignAsset();syncAppIconLinks();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{if(!isMobileViewport())void bindMobilePreviewGlobal();void setupAppUpdates();void logPageView();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();void loadNotificationPreferences().then(()=>{startNotificationsRealtime();return loadNotifications()}).catch(()=>{})});let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
-runAfterFirstPaint(()=>{if(document.querySelector('script[src*="reward-profile.js"]'))return;const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript)});
+function scheduleNetworkTask(delay,task){
+ setTimeout(()=>{
+  const run=()=>{try{task()}catch(e){console.warn('Tâche réseau différée Nethor:',e)}};
+  if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:Math.max(500,delay+500)});
+  else run()
+ },Math.max(0,Number(delay)||0))
+}
+async function init(){addStyle();addLayoutHardening();promotePlatformShellStyles();syncGlobalDesignAsset();syncAppIconLinks();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{
+ if(!isMobileViewport())scheduleNetworkTask(450,()=>void bindMobilePreviewGlobal());
+ scheduleNetworkTask(80,startPresence);
+ scheduleNetworkTask(220,()=>{startProfileRealtime();startAccessRealtime()});
+ scheduleNetworkTask(380,()=>{void loadNotificationPreferences().then(()=>{startNotificationsRealtime();return loadNotifications()}).catch(()=>{})});
+ scheduleNetworkTask(700,startChatPresenceHistory);
+ scheduleNetworkTask(950,()=>void logPageView());
+ scheduleNetworkTask(1200,()=>void setupAppUpdates())
+});let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
+runAfterFirstPaint(()=>scheduleNetworkTask(850,()=>{if(document.querySelector('script[src*="reward-profile.js"]'))return;const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript)}));
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
