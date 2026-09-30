@@ -10,11 +10,11 @@
 .nethorUserMenuView .nettoMobileMenuRow+.nettoMobileMenuRow,.nethorUserMenuView .nettoMobileProfileMain+.nettoMobileMenuRow{border-top:1px solid #eceef1}
 .nethorUserMenuView .nettoMobileProfileAvatar{position:relative;width:58px;height:58px;border-radius:18px;font-size:16px;display:grid;place-items:center;background:#ff5a2a center/cover no-repeat;color:#fff;font-weight:950;isolation:isolate}
 .nethorUserMenuView .nettoMobileProfileAvatar:after{content:"";position:absolute;inset:-4px;z-index:2;background:center/contain no-repeat;pointer-events:none}
-.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="admin"]:after{background-image:url("../../../assets/avatar-frame-admin.svg")}
-.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="responsable"]:after{background-image:url("../../../assets/avatar-frame-responsable.svg")}
-.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="point_vente"]:after{background-image:url("../../../assets/avatar-frame-point-vente.svg")}
-.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="employe"]:after{background-image:url("../../../assets/avatar-frame-employe.svg")}
-.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="lecture"]:after{background-image:url("../../../assets/avatar-frame-lecture.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="admin"]:after{background-image:url("../../../../assets/avatar-frame-admin.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="responsable"]:after{background-image:url("../../../../assets/avatar-frame-responsable.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="point_vente"]:after{background-image:url("../../../../assets/avatar-frame-point-vente.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="employe"]:after{background-image:url("../../../../assets/avatar-frame-employe.svg")}
+.nethorUserMenuView .nettoMobileProfileAvatar[data-avatar-frame="lecture"]:after{background-image:url("../../../../assets/avatar-frame-lecture.svg")}
 .nethorUserMenuView .nettoMobileProfileCopy,.nethorUserMenuView .nettoMobileMenuCopy{display:block;min-width:0}
 .nethorUserMenuView .nettoMobileProfileCopy strong{display:block;font-size:17px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nethorUserMenuView .nettoMobileProfileCopy small{display:block;margin-top:5px;color:#7b818a;font-size:11px;font-weight:750;line-height:1.25}
