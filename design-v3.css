@@ -243,19 +243,8 @@ body:has(.pages) main{width:min(94vw,1180px)!important;max-width:1180px!importan
 .helloMeta span{display:inline-flex;align-items:center;min-height:27px;padding:5px 9px;border:1px solid rgba(255,255,255,.11);border-radius:999px;background:rgba(255,255,255,.065);color:rgba(255,255,255,.77);font-size:8px;font-weight:800;letter-spacing:.25px}
 .articlesCard .icon{font-size:21px!important;color:#ed4d28!important;background:var(--ops-grad-soft)!important}
 .loading,.empty{border:1px dashed #dfe3e8!important;background:rgba(255,255,255,.7)!important;border-radius:14px!important;color:#8a9099!important}
-.loginWrap{background:radial-gradient(circle at 7% 8%,rgba(255,45,32,.09),transparent 26rem),radial-gradient(circle at 95% 92%,rgba(255,138,0,.08),transparent 28rem),#f4f6f8!important}
-.loginShell{max-width:980px!important;border-radius:28px!important;overflow:hidden!important;border:1px solid #e4e7eb!important;box-shadow:0 30px 90px rgba(20,24,32,.16)!important}
-.loginVisual{background:linear-gradient(135deg,#17191e 0%,#24272e 58%,#443329 100%)!important;position:relative!important}
-.loginVisual:before{content:""!important;position:absolute!important;inset:auto -80px -110px auto!important;width:330px!important;height:330px!important;border-radius:50%!important;background:radial-gradient(circle,rgba(255,111,36,.34),rgba(255,111,36,.04) 62%,transparent 68%)!important;transform:none!important}
-.loginVisual:after{content:""!important;position:absolute!important;left:42%!important;top:-35%!important;width:120px!important;height:170%!important;background:linear-gradient(90deg,transparent,rgba(255,255,255,.045),transparent)!important;transform:skewX(-18deg)!important}
-.loginMark{background:var(--ops-grad)!important;color:#fff!important}
-.loginNetto{color:#fff!important;font-weight:950!important}
-.loginSub,.loginIntro span{color:rgba(255,255,255,.62)!important}
-.loginIntro strong{color:#fff!important;font-size:20px!important;line-height:1.15!important}
-.loginArt span{background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.09)!important;color:#fff!important}
-.loginCard{background:#fff!important}.loginHello{color:#ef4b27!important;font-size:9px!important;font-weight:900!important;letter-spacing:1px!important;text-transform:uppercase!important}.loginCard h1{font-weight:950!important}.loginFoot{color:#9a9ea6!important}
 :root[data-theme="dark"] .loading,:root[data-theme="dark"] .empty{background:#181c22!important;border-color:#303640!important}
-@media(max-width:700px){.helloMeta{margin-top:13px}.helloMeta span{font-size:7.5px;min-height:24px}.loginShell{border-radius:22px!important}.loginVisual{padding-bottom:22px!important}}
+@media(max-width:700px){.helloMeta{margin-top:13px}.helloMeta span{font-size:7.5px;min-height:24px}}
 
 
 /* =========================================================
