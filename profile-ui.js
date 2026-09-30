@@ -586,7 +586,9 @@ function initials(n){return String(n||'U').trim().split(/\s+/).slice(0,2).map(x=
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function roleLabel(r){return roleDefinition(r)?.label||ROLE[r]||r||'Compte'}
 let activeUserCard={user:null,opts:null};
-function ensureUserCardStyle(){addStyle()}
+function ensureUserCardStyle(){
+ addStyle();ensureProfileStylesheet('nettoUserCardStylesheet','profile-user-card.css?v=1','profile-user-card.css')
+}
 function userPresenceHistoryLabel(value){
  if(!value)return'Hors ligne';
  const d=new Date(value);if(Number.isNaN(d.getTime()))return'Hors ligne';
@@ -654,9 +656,12 @@ function applyHeaderLogo(config={}){
 }
 applyHeaderLogo();
 
+function ensureProfileStylesheet(id,href,match){
+ if(document.getElementById(id)||(match&&document.querySelector('link[href*="'+match+'"]')))return;
+ const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head?.appendChild(link)
+}
 function addStyle(){
- if(document.querySelector('link[href*="profile-ui.css"]')||document.getElementById('nettoProfileUIStyle'))return;
- const link=document.createElement('link');link.id='nettoProfileUIStyle';link.rel='stylesheet';link.href='profile-ui.css?v=1';document.head?.appendChild(link)
+ ensureProfileStylesheet('nettoProfileUIStyle','profile-ui.css?v=2','profile-ui.css')
 }
 function paint(el,url,name,color,frame){if(!el)return;el.style.setProperty('--profile-accent',color||'#ff5a2a');setAvatarFrame(el,frame);if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else{el.classList.remove('hasPhoto');el.style.backgroundImage='';el.textContent=initials(name)}}
 function makeButton(icon,title,sub,url,cls=''){return '<button class="nettoNavBtn '+cls+'" data-url="'+esc(url||'')+'"><span>'+icon+'</span><span><strong>'+esc(title)+'</strong><small>'+esc(sub||'')+'</small></span></button>'}
@@ -1523,7 +1528,9 @@ function saveGlobalCache(){try{const k=globalCacheKey();if(k&&api.profile)localS
 async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;api.profile=p;api.siteConfig=sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{};api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
 let updateRegistration=null;
-function ensureUpdateStyles(){addStyle()}
+function ensureUpdateStyles(){
+ addStyle();ensureProfileStylesheet('nettoUpdateStylesheet','profile-update.css?v=1','profile-update.css')
+}
 function syncGlobalDesignAsset(){
  document.querySelectorAll('link[rel="stylesheet"]').forEach(link=>{
   const href=link.getAttribute('href')||'';
@@ -1540,7 +1547,7 @@ function syncAppIconLinks(){
  let appName=document.querySelector('meta[name="application-name"]');if(!appName){appName=document.createElement('meta');appName.name='application-name';document.head.appendChild(appName)}appName.content='Nethor';
  let tile=document.querySelector('meta[name="msapplication-TileColor"]');if(!tile){tile=document.createElement('meta');tile.name='msapplication-TileColor';document.head.appendChild(tile)}tile.content='#202631';
 }
-function ensureUpdateCenterStyles(){addStyle()}
+function ensureUpdateCenterStyles(){ensureUpdateStyles()}
 function workerVersion(worker){
  return new Promise(resolve=>{
   if(!worker){resolve(null);return}
