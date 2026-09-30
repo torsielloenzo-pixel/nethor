@@ -671,9 +671,14 @@ function addDesktopNethorMarkStyle(){
 function applyHeaderLogo(config={}){
  const platformKey=isMobileViewport()?'mobile':'desktop';
  const platformUrl=String(config?.platform_ui?.[platformKey]?.header_logo?.url||'').trim();
- const url=platformUrl||String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
+ const globalUrl=String(config?.brand?.header_logo_url||'').trim(),url=platformUrl||globalUrl||'assets/nethor-mark.svg';
  document.documentElement.style.setProperty('--nethor-header-logo','url('+JSON.stringify(url)+')');
- addDesktopNethorMarkStyle()
+ addDesktopNethorMarkStyle();
+ let s=document.getElementById('nethorPlatformHeaderAssetStyle');if(!s){s=document.createElement('style');s.id='nethorPlatformHeaderAssetStyle';document.head?.appendChild(s)}
+ const custom=!!platformUrl;
+ if(!custom){s.textContent='';return}
+ if(platformKey==='mobile')s.textContent='.nethorMobileAppBrand .nethorMobileWordmark{display:block!important;width:132px!important;height:38px!important;font-size:0!important;letter-spacing:0!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorMobileAppBrand .nethorMobileWordmark>*{display:none!important}';
+ else s.textContent='.nethorDesktopBrandButton{min-width:128px!important;min-height:40px!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorDesktopBrandButton .nethorDesktopWordmark{visibility:hidden!important}';
 }
 applyHeaderLogo();
 
