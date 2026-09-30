@@ -19,7 +19,7 @@
     return;
   }
   document.documentElement.dataset.nethorMobileApp='1';
-  document.documentElement.dataset.nethorMobileAppPhase='5';
+  document.documentElement.dataset.nethorMobileAppPhase='6';
 })();
 </script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -27,11 +27,15 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
-<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=5">
+<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=6">
 <link rel="stylesheet" href="operations-widget.css?v=2">
 <link rel="stylesheet" href="ui/mobile/views/home/home-view.css?v=1">
 <link rel="stylesheet" href="ui/mobile/views/notifications/notifications-view.css?v=1">
 <link rel="stylesheet" href="ui/mobile/views/user-menu/user-menu-view.css?v=1">
+<link rel="stylesheet" href="ui/mobile/views/profile/profile-view.css?v=1">
+<link rel="stylesheet" href="ui/mobile/views/settings/settings-view.css?v=1">
+<link rel="stylesheet" href="ui/mobile/views/notification-settings/notification-settings-view.css?v=1">
+<link rel="stylesheet" href="ui/mobile/views/report-problem/report-problem-view.css?v=1">
 </head>
 <body>
 <div id="nethorMobileApp" class="nethorMobileApp" data-mobile-app-shell>
@@ -50,7 +54,7 @@
     <section class="nethorMobileBootstrap" data-mobile-bootstrap>
       <div class="nethorMobileBootstrapMark" aria-hidden="true">N</div>
       <strong>Conteneur mobile prêt</strong>
-      <span>Accueil, Notifications et Menu utilisateur sont maintenant montés dans le shell Mobile.</span>
+      <span>Accueil, Notifications, Menu utilisateur et ses sous-vues sont maintenant montés dans le shell Mobile.</span>
     </section>
   </main>
 
@@ -73,13 +77,17 @@
   </nav>
 </div>
 <script src="platform-navigation.js?v=3"></script>
-<script src="ui/mobile/mobile-services.js?v=2"></script>
+<script src="ui/mobile/mobile-services.js?v=3"></script>
 <script src="ui/mobile/mobile-router.js?v=2"></script>
 <script src="ui/mobile/mobile-shell.js?v=12"></script>
 <script src="operations-widget.js?v=3"></script>
 <script src="ui/mobile/views/home/home-view.js?v=1"></script>
 <script src="ui/mobile/views/notifications/notifications-view.js?v=1"></script>
 <script src="ui/mobile/views/user-menu/user-menu-view.js?v=1"></script>
-<script src="ui/mobile/mobile-app.js?v=5"></script>
+<script src="ui/mobile/views/profile/profile-view.js?v=1"></script>
+<script src="ui/mobile/views/settings/settings-view.js?v=1"></script>
+<script src="ui/mobile/views/notification-settings/notification-settings-view.js?v=1"></script>
+<script src="ui/mobile/views/report-problem/report-problem-view.js?v=1"></script>
+<script src="ui/mobile/mobile-app.js?v=6"></script>
 </body>
 </html>
