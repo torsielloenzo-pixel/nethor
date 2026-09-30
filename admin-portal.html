@@ -1021,27 +1021,47 @@ function zipStoreTextFiles(files){
  ev.setUint32(12,centralSize,true);ev.setUint32(16,offset,true);ev.setUint16(20,0,true);
  return new Blob([...locals,...centrals,end],{type:'application/zip'})
 }
-function downloadAllPortalLogs(){
+async function fetchAllPortalLogsForExport(){
+ const all=[],step=1000,fields='id,source,release_type,title,description,area,actor_name,created_at,details';
+ for(let from=0;;from+=step){
+  const {data,error}=await db.from('portal_change_logs').select(fields).order('created_at',{ascending:false}).range(from,from+step-1);
+  if(error)throw error;
+  const batch=data||[];all.push(...batch);
+  if(batch.length<step)break
+ }
+ return all.filter(isImportantPortalLog)
+}
+async function downloadAllPortalLogs(){
  if(!isDesktopJournal())return;
- const rows=logExportRows();if(!rows.length){alert('Aucune entrée à télécharger.');return}
- const generated=new Date(),files=[];
- const summary=[
-  'NETHOR — JOURNAL COMPLET DES MODIFICATIONS',
-  '==========================================',
-  '',
-  'Export : '+generated.toLocaleString('fr-FR'),
-  'Entrées : '+rows.length,
-  '',
-  ...rows.flatMap((x,i)=>[
-   String(i+1).padStart(3,'0')+' · '+(logExportVersion(x)||('Log #'+(x.id??'?')))+' · '+(x.release_type==='maj'?'MAJ':'PATCH')+' · '+String(x.title||'Modification'),
-   '    '+(x.created_at?new Date(x.created_at).toLocaleString('fr-FR'):'')+' · '+(x.source==='auto'?'AUTO':'MANUEL'),
-   ''
-  ])
- ].join('\r\n');
- files.push({name:'00-JOURNAL-COMPLET.txt',text:'\ufeff'+summary,date:generated});
- rows.forEach((x,i)=>files.push({name:String(i+1).padStart(3,'0')+'-'+logExportFileName(x,i),text:'\ufeff'+portalLogAsText(x),date:x.created_at?new Date(x.created_at):generated}));
- const blob=zipStoreTextFiles(files),stamp=generated.toISOString().slice(0,10);
- saveJournalBlob(blob,'Nethor-Journal-des-modifications-'+stamp+'.zip')
+ const button=$('downloadAllLogsBtn'),original=button?.textContent||'↓ Tous (.zip)';
+ if(button){button.disabled=true;button.textContent='Préparation…'}
+ try{
+  const rows=await fetchAllPortalLogsForExport();
+  if(!rows.length){alert('Aucune entrée à télécharger.');return}
+  const generated=new Date(),files=[];
+  const summary=[
+   'NETHOR — JOURNAL COMPLET DES MODIFICATIONS',
+   '==========================================',
+   '',
+   'Export : '+generated.toLocaleString('fr-FR'),
+   'Entrées : '+rows.length,
+   '',
+   ...rows.flatMap((x,i)=>[
+    String(i+1).padStart(3,'0')+' · '+(logExportVersion(x)||('Log #'+(x.id??'?')))+' · '+(x.release_type==='maj'?'MAJ':'PATCH')+' · '+String(x.title||'Modification'),
+    '    '+(x.created_at?new Date(x.created_at).toLocaleString('fr-FR'):'')+' · '+(x.source==='auto'?'AUTO':'MANUEL'),
+    ''
+   ])
+  ].join('\r\n');
+  files.push({name:'00-JOURNAL-COMPLET.txt',text:'\ufeff'+summary,date:generated});
+  rows.forEach((x,i)=>files.push({name:String(i+1).padStart(3,'0')+'-'+logExportFileName(x,i),text:'\ufeff'+portalLogAsText(x),date:x.created_at?new Date(x.created_at):generated}));
+  const blob=zipStoreTextFiles(files),stamp=generated.toISOString().slice(0,10);
+  saveJournalBlob(blob,'Nethor-Journal-des-modifications-'+stamp+'.zip')
+ }catch(e){
+  console.error('Export journal complet:',e);
+  alert('Impossible de préparer le pack du journal.')
+ }finally{
+  if(button){button.disabled=false;button.textContent=original}
+ }
 }
 
 function renderPortalLogs(){
