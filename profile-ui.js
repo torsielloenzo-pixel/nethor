@@ -128,6 +128,35 @@ function enableStableMobileNavigation(){
 }
 enableStableMobileNavigation();
 
+function captureMobileNavigationPerf(){
+ if(!isMobileViewport()||!window.performance?.getEntriesByType)return;
+ const record=()=>{
+  try{
+   const nav=performance.getEntriesByType('navigation')?.[0];if(!nav)return;
+   const item={
+    at:new Date().toISOString(),
+    page:(location.pathname.split('/').pop()||'home.html').toLowerCase(),
+    type:String(nav.type||'navigate'),
+    ttfb:Math.max(0,Math.round(nav.responseStart-nav.requestStart)),
+    dom:Math.max(0,Math.round(nav.domContentLoadedEventEnd-nav.startTime)),
+    load:Math.max(0,Math.round(nav.loadEventEnd-nav.startTime)),
+    transfer:Number(nav.transferSize||0),
+    sw:Number(nav.workerStart||0)>0
+   };
+   const key='nethorMobilePerfV1',list=JSON.parse(localStorage.getItem(key)||'[]');
+   list.push(item);localStorage.setItem(key,JSON.stringify(list.slice(-30)));
+   window.NethorPerf=Object.freeze({
+    last:()=>item,
+    history:()=>{try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(_){return[]}},
+    clear:()=>{try{localStorage.removeItem(key)}catch(_){}}
+   })
+  }catch(_){}
+ };
+ if(document.readyState==='complete')setTimeout(record,0);
+ else window.addEventListener('load',()=>setTimeout(record,0),{once:true})
+}
+captureMobileNavigationPerf();
+
 const warmedMobileRoutes=new Set();
 function warmMobileRoutes(urls=[]){
  if(!isMobileViewport()||!document.head)return;
@@ -1974,7 +2003,7 @@ function runAfterFirstPaint(task){
   else setTimeout(run,40)
  }))
 }
-async function init(){addStyle();addLayoutHardening();promotePlatformShellStyles();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{void logPageView();void loadNotificationPreferences().then(()=>loadNotifications()).catch(()=>{});startNotificationsRealtime();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime()});let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
+async function init(){addStyle();addLayoutHardening();promotePlatformShellStyles();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});setupAppUpdates();enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{void logPageView();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();void loadNotificationPreferences().then(()=>{startNotificationsRealtime();return loadNotifications()}).catch(()=>{})});let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
 const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
