@@ -1989,3 +1989,19 @@ Les quatre fichiers du dossier `auth/` sont précachés.
 
 La version applicative associée est `v1.43.0` avec purge de cache.
 
+
+
+## Performance Mobile — chargement conditionnel
+
+Depuis la phase Performance Mobile 2, les pages hybrides ne déclarent plus simultanément leurs ressources Desktop et Mobile.
+
+Le fichier `platform-resolver.js` détermine d'abord la plateforme, puis `platform-assets.js` injecte uniquement les CSS et JavaScript correspondant à la plateforme active, au même emplacement logique que les anciennes paires de ressources.
+
+Règles :
+- Mobile / Vision mobile : seuls les fichiers `ui/mobile/*` sont chargés ;
+- Desktop : seuls les fichiers `ui/desktop/*` sont chargés ;
+- les feuilles Mobile spécifiques à une page utilisent `NethorPlatformAssets.mobileStyle()` ;
+- `user-menu.html` ne charge aucun asset Desktop car cette route est réservée au Mobile ;
+- les ressources `ui/desktop/*` et `ui/mobile/*` ne font plus partie du précache global du Service Worker. Elles entrent dans le cache à l'usage via la stratégie statique existante.
+
+Cette séparation évite le téléchargement et l'analyse du code de l'autre plateforme tout en conservant une base de données et une logique métier communes.
