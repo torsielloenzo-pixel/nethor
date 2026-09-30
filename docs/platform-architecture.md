@@ -1439,3 +1439,80 @@ Maintenance suit la plateforme résolue, mais reste hors shell global.
 
 Réparation est une route de secours encore plus basse dans la pile : elle doit fonctionner sans dépendre de l’architecture qu’elle est susceptible de réparer.
 
+
+## Phase 4.15 — Connexion Desktop / Mobile
+
+L’écran d’authentification de `index.html` rejoint l’architecture de plateforme séparée.
+
+### Point de montage neutre
+
+Le HTML partagé ne contient plus simultanément la composition Desktop et sa transformation Mobile.
+
+Il expose uniquement :
+
+```html
+<div data-nethor-login-layout></div>
+```
+
+`login-page-layout.js` monte ensuite une seule structure selon `NethorPlatform`.
+
+### Structures dédiées
+
+```text
+ui/
+├── desktop/
+│   ├── login-layout.js
+│   └── login-layout.css
+└── mobile/
+    ├── login-layout.js
+    └── login-layout.css
+```
+
+Desktop construit une composition d’authentification en deux panneaux : identité Nethor / contexte à gauche, formulaire de connexion à droite.
+
+Mobile construit une vue verticale propre : identité compacte, introduction Mobile et formulaire tactile.
+
+Les deux builders conservent les mêmes IDs fonctionnels nécessaires au moteur existant :
+
+- `login`
+- `email`
+- `password`
+- `loginError`
+
+La classe fonctionnelle `loginCard` est également conservée pour l’animation de refus de connexion.
+
+### Fin du responsive de plateforme pour l’authentification
+
+L’ancien `@media(max-width:650px)` de `index.html` qui transformait le shell de connexion Desktop en présentation Mobile a été supprimé.
+
+Les anciennes règles Login présentes dans `design-v2.css` et `design-v3.css`, notamment l’ajustement à 700 px, ont également été retirées.
+
+Les nouvelles feuilles `ui/desktop/login-layout.css` et `ui/mobile/login-layout.css` ne contiennent aucun media query : une fenêtre Desktop réduite garde sa structure Desktop et une interface Mobile large garde sa structure Mobile.
+
+Les breakpoints encore présents dans `index.html` concernent le module métier Stock F&L et ses adaptations internes ; ils ne choisissent plus l’écran d’authentification.
+
+### Moteur d’authentification inchangé
+
+La phase ne duplique ni ne remplace :
+
+- `boot()` ;
+- `db.auth.getSession()` ;
+- `db.auth.signInWithPassword()` ;
+- la résolution d’identifiant vers l’adresse locale d’authentification ;
+- le chargement du profil et des permissions ;
+- le journal de connexion ;
+- la vérification Maintenance ;
+- le mot de passe oublié ;
+- le loader de profil ;
+- le toast de bienvenue ;
+- la vérification de version ;
+- la purge de cache et l’activation forcée du Service Worker.
+
+Le dialogue Mot de passe oublié, le loader et les écrans de mise à jour restent des composants fonctionnels communs aux deux plateformes.
+
+### Cache
+
+Le Service Worker v232 précache les nouveaux builders, feuilles de plateforme et `login-page-layout.js`.
+
+La version applicative associée est `v1.38.0` avec purge de cache demandée afin qu’aucun ancien CSS Login ne reste en concurrence avec les nouvelles structures.
+
