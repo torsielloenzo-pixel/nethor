@@ -248,23 +248,51 @@ function enhanceBarcodeCapture(source){
  }
  ctx.putImageData(img,0,0);return canvas
 }
+function assistProfileKey(){return sessionUserId?'nethorScannerAssist:'+sessionUserId:'nethorScannerAssist'}
+function readAssistProfile(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(assistProfileKey())||'{}');
+  return{
+   rotations:raw.rotations&&typeof raw.rotations==='object'?raw.rotations:{},
+   enhanced:Number(raw.enhanced||0),
+   normal:Number(raw.normal||0)
+  }
+ }catch(_){return{rotations:{},enhanced:0,normal:0}}
+}
+function recordAssistSuccess(meta={}){
+ if(meta.source!=='native')return;
+ try{
+  const p=readAssistProfile(),key=String(Number(meta.rotation)||0);
+  p.rotations[key]=Number(p.rotations[key]||0)+1;
+  if(meta.enhanced)p.enhanced++;else p.normal++;
+  localStorage.setItem(assistProfileKey(),JSON.stringify(p))
+ }catch(_){}
+}
+function assistRotationOrder(){
+ const p=readAssistProfile(),base=[0,180,90,270];
+ return base.sort((a,b)=>(Number(p.rotations[String(b)]||0)-Number(p.rotations[String(a)]||0))||base.indexOf(a)-base.indexOf(b))
+}
+async function detectAssistSet(detector,source,enhanced){
+ for(const deg of assistRotationOrder()){
+  const hits=await detector.detect(rotateCapture(source,deg));
+  const hit=(hits||[]).find(x=>normalizeEan(x.rawValue).length>=6);
+  if(hit){await onScanSuccess(hit.rawValue,{source:'native',rotation:deg,enhanced});return true}
+ }
+ return false
+}
 async function runRobustAssist(){
  if(assistBusy||!scannerRunning||searchBusy||currentProduct||document.hidden)return;
  const detector=await nativeBarcodeDetector();if(!detector)return;
  const video=$('reader')?.querySelector('video'),base=captureVideoFrame(video);if(!base)return;
  assistBusy=true;
  try{
-  const normal=[0,90,180,270];
-  for(const deg of normal){
-   const hits=await detector.detect(rotateCapture(base,deg));
-   const hit=(hits||[]).find(x=>normalizeEan(x.rawValue).length>=6);
-   if(hit){await onScanSuccess(hit.rawValue,{source:'native',rotation:deg,enhanced:false});return}
-  }
-  const enhanced=enhanceBarcodeCapture(base);
-  for(const deg of normal){
-   const hits=await detector.detect(rotateCapture(enhanced,deg));
-   const hit=(hits||[]).find(x=>normalizeEan(x.rawValue).length>=6);
-   if(hit){await onScanSuccess(hit.rawValue,{source:'native',rotation:deg,enhanced:true});return}
+  const p=readAssistProfile(),preferEnhanced=p.enhanced>p.normal+1;
+  if(preferEnhanced){
+   if(await detectAssistSet(detector,enhanceBarcodeCapture(base),true))return;
+   if(await detectAssistSet(detector,base,false))return
+  }else{
+   if(await detectAssistSet(detector,base,false))return;
+   if(await detectAssistSet(detector,enhanceBarcodeCapture(base),true))return
   }
  }catch(e){console.debug('Lecture assistée:',e)}
  finally{assistBusy=false}
@@ -418,7 +446,7 @@ async function findProduct(raw,fromCamera=false,meta={}){
   const code=normalizeEan(raw);
   $('eanInput').value=code;
   if(fromCamera&&!validEanLength(code)){
-    renderNotFound(code,'Le code-barres doit contenir 8, 12 ou 13 chiffres.');
+    renderNotFound(code,'Le code-barres doit contenir 8, 12, 13 ou 14 chiffres.');
     return
   }
   if(!fromCamera&&!code){
@@ -452,6 +480,7 @@ async function findProduct(raw,fromCamera=false,meta={}){
     return
   }
   currentProduct=product;
+  recordAssistSuccess(meta);
   await safeStop();
   renderProduct(product);
   setCameraState('Fiche trouvée')
@@ -494,11 +523,11 @@ function renderHypotheses(observed,rows,meta={}){
     return '<button class="hypothesisRow" type="button" onclick="chooseHypothesis('+i+')">'+
       '<span class="hypothesisPhoto">'+(p.photo_url?'<img src="'+esc(p.photo_url)+'" alt="">':'📦')+'</span>'+
       '<span class="hypothesisCopy"><strong>'+esc(p.name||'Article')+'</strong><small>'+esc(path||'Fiche article')+'<br>EAN '+esc(p.ean||'—')+' · '+esc(p.match_reason||'Correspondance')+'</small></span>'+
-      '<span class="hypothesisScore">'+pct+' %</span>'+
+      '<span class="hypothesisScore">Score '+pct+' %</span>'+
      '</button>'
    }).join('')+'</div>'+
    '<div class="hypothesisWarning">Aucune fiche n’est validée automatiquement sur une hypothèse. Sélectionne uniquement le produit qui correspond réellement à l’article devant toi.</div>'+
-   '<div class="resultActions"><button class="secondary" type="button" onclick="closeProductModal()">Reprendre le scan</button><button class="primary" type="button" onclick="chooseHypothesis(0)">Meilleure hypothèse · '+bestPct+' %</button></div>'+
+   '<div class="resultActions"><button class="secondary" type="button" onclick="closeProductModal()">Reprendre le scan</button><button class="primary" type="button" onclick="chooseHypothesis(0)">Meilleure hypothèse · score '+bestPct+' %</button></div>'+
   '</article>'
 }
 function chooseHypothesis(index){
