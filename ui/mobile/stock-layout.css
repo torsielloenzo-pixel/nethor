@@ -1,0 +1,59 @@
+/* Phase 4.16 — Stock F&L Mobile */
+html[data-nethor-platform="mobile"] #site,
+html[data-nethor-platform="mobile-preview"] #site{position:relative;min-height:100dvh;isolation:isolate}
+html[data-nethor-platform="mobile"] .stockMobileChrome,
+html[data-nethor-platform="mobile-preview"] .stockMobileChrome{
+ position:relative!important;top:auto!important;height:auto!important;min-height:0!important;
+ padding:calc(env(safe-area-inset-top) + 10px) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left))!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important
+}
+html[data-nethor-platform="mobile"] .stockMobileChrome:after,
+html[data-nethor-platform="mobile-preview"] .stockMobileChrome:after{display:none!important}
+html[data-nethor-platform="mobile"] .stockMobileTop,
+html[data-nethor-platform="mobile-preview"] .stockMobileTop{display:flex;align-items:center;gap:11px;min-width:0}
+html[data-nethor-platform="mobile"] .stockMobileBack,
+html[data-nethor-platform="mobile-preview"] .stockMobileBack{
+ width:42px;height:42px;min-width:42px;border:1px solid #e0e4e9;border-radius:14px;background:#fff;color:#1c2025;
+ display:grid;place-items:center;font-size:24px;font-weight:750;box-shadow:0 3px 12px rgba(0,0,0,.05);touch-action:manipulation
+}
+html[data-nethor-platform="mobile"] .stockMobileTitle,
+html[data-nethor-platform="mobile-preview"] .stockMobileTitle{min-width:0}
+html[data-nethor-platform="mobile"] .stockMobileTitle .title,
+html[data-nethor-platform="mobile-preview"] .stockMobileTitle .title{font-size:26px!important;line-height:1.05!important;letter-spacing:-.7px!important;font-weight:900!important;color:#1c2025!important}
+html[data-nethor-platform="mobile"] .stockMobileTitle .subtitle,
+html[data-nethor-platform="mobile-preview"] .stockMobileTitle .subtitle{margin-top:4px!important;color:#7b828b!important;font-size:9.5px!important;font-weight:650!important}
+html[data-nethor-platform="mobile"] .stockMobileTitle .subtitle:before,
+html[data-nethor-platform="mobile-preview"] .stockMobileTitle .subtitle:before{display:none!important}
+html[data-nethor-platform="mobile"] .stockMobileWho,
+html[data-nethor-platform="mobile-preview"] .stockMobileWho,
+html[data-nethor-platform="mobile"] .stockMobileFunctionalBridge,
+html[data-nethor-platform="mobile-preview"] .stockMobileFunctionalBridge{display:none!important}
+html[data-nethor-platform="mobile"] #site>main,
+html[data-nethor-platform="mobile-preview"] #site>main{
+ width:100%!important;max-width:none!important;margin:0!important;
+ padding:4px max(10px,env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))!important;
+ overflow-x:hidden!important
+}
+html[data-nethor-platform="mobile"] .stockWorkspace,
+html[data-nethor-platform="mobile-preview"] .stockWorkspace{gap:11px!important;margin-bottom:13px!important;min-width:0}
+html[data-nethor-platform="mobile"] .stockMobileModeNav,
+html[data-nethor-platform="mobile-preview"] .stockMobileModeNav{
+ position:sticky!important;top:max(6px,env(safe-area-inset-top))!important;
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ gap:5px!important;padding:5px!important;border-radius:15px!important;z-index:80!important
+}
+html[data-nethor-platform="mobile"] .stockMobileModeNav .stockModeBtn,
+html[data-nethor-platform="mobile-preview"] .stockMobileModeNav .stockModeBtn{
+ min-width:0!important;min-height:44px!important;padding:7px 4px!important;border-radius:11px!important;
+ display:flex!important;flex-direction:column!important;gap:3px!important;font-size:9px!important;line-height:1.05!important
+}
+html[data-nethor-platform="mobile"] .stockMobileModeNav .stockModeBtn>span,
+html[data-nethor-platform="mobile-preview"] .stockMobileModeNav .stockModeBtn>span{font-size:15px!important;line-height:1}
+html[data-nethor-platform="mobile"] .stockMobileModeNav .stockModeBtn>b,
+html[data-nethor-platform="mobile-preview"] .stockMobileModeNav .stockModeBtn>b{font:inherit;min-width:0;overflow:hidden;text-overflow:ellipsis}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .stockMobileBack,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .stockMobileBack{background:#22252a;color:#f1eeea;border-color:#343940}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .stockMobileTitle .title,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .stockMobileTitle .title{color:#f1eeea!important}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .stockMobileTitle .subtitle,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .stockMobileTitle .subtitle{color:#aaa59f!important}
