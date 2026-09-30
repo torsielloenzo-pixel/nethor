@@ -1,11 +1,11 @@
 {
-  "version": 260,
-  "label": "v1.43.23",
+  "version": 261,
+  "label": "v1.43.24",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Scanner mobile accéléré",
-  "message": "Le Scanner mobile mémorise désormais l’autorisation caméra dans le stockage local et dans les préférences utilisateur cachées, évite les démarrages concurrents pouvant redemander l’accès, vérifie l’état de permission quand le navigateur le permet et reprend plus proprement après une mise en arrière-plan. La lecture a été accélérée avec 24 analyses par seconde, une zone de lecture plus large, l’utilisation du BarcodeDetector natif lorsqu’il est disponible, l’autofocus/exposition continus quand l’appareil les supporte et le préchargement du moteur html5-qrcode.",
-  "published_at": "2026-09-30T17:54:57.571898Z",
+  "title": "Scanner mobile — fiche prioritaire et lecture multi-orientation",
+  "message": "Lorsqu’un EAN est trouvé, la fiche article passe désormais au-dessus de toutes les couches caméra : vidéo, cadre de scan et indicateurs sont masqués tant que la fiche est ouverte. La zone de détection devient carrée afin de mieux accepter les codes horizontaux et verticaux, tout en laissant le décodeur traiter les codes retournés lorsque le moteur le supporte.",
+  "published_at": "2026-09-30T17:58:00.000Z",
   "icon": "assets/app-icon-v63.svg"
 }
