@@ -47,6 +47,77 @@ En `mobile-preview`, le paramètre `mobile_preview=1` est conservé.
 
 Le Service Worker précache le nouveau document et ses ressources dédiées. `mobile.html` est traité comme une navigation stricte afin que sa structure soit récupérée en priorité depuis le réseau lorsque celui-ci est disponible.
 
+## Phase 2 — Routeur interne
+
+La phase 2 introduit `ui/mobile/mobile-router.js`.
+
+### Responsabilités
+
+`MobileRouter` gère désormais :
+
+- `history.pushState()` pour les vues migrées ;
+- `history.replaceState()` pour l'état initial et les remplacements ;
+- `popstate` pour Retour / Avant du navigateur ;
+- les deep-links `mobile.html?view=...` ;
+- le montage `mount()` et démontage `unmount()` des futures vues ;
+- le retour en haut lorsqu'un onglet déjà actif est sélectionné ;
+- le fallback automatique vers les pages HTML historiques lorsqu'une vue n'est pas encore migrée.
+
+### Source de vérité navigation
+
+Les correspondances entre identifiants de vues Mobile et anciennes pages HTML sont centralisées dans `platform-navigation.js` via :
+
+- `mobileViewTarget(view)` ;
+- `mobileViewTable()`.
+
+Le routeur ne maintient donc pas sa propre table concurrente de destinations.
+
+### Mode hybride
+
+Tant qu'une vue n'est pas enregistrée :
+
+```text
+MobileRouter.open("planning")
+        ↓
+vue Planning non migrée
+        ↓
+planning.html
+```
+
+Lorsqu'une vue sera enregistrée :
+
+```text
+MobileRouter.open("planning")
+        ↓
+history.pushState()
+        ↓
+PlanningView.mount(#mobile-view)
+```
+
+Ainsi la migration peut se faire page par page.
+
+### Deep-links
+
+Un lien de type :
+
+```text
+mobile.html?view=planning
+```
+
+est reconnu par le routeur. Si Planning n'est pas encore migré, il ouvre `planning.html`. Une fois la vue migrée, ce même lien restera dans `mobile.html` et montera la vue correspondante.
+
+Les paramètres `mobile_preview=1` et `nethor_platform=mobile` restent conservés. Les autres paramètres de requête sont transmis au fallback historique lorsqu'ils sont pertinents.
+
+### Historique
+
+Deux vues migrées successives restent dans le même document et utilisent l'historique navigateur. Retour / Avant déclenchent `popstate` et remontent la vue précédente/suivante sans recharger le document.
+
+Un second appui sur l'onglet déjà actif ne crée pas une nouvelle entrée d'historique.
+
+### Sécurité de migration
+
+La phase 2 ne redirige toujours pas les anciennes pages Mobile vers `mobile.html`. Le système actuel reste donc utilisable pendant la migration.
+
 ## Prochaine phase
 
-La phase 2 introduira `MobileRouter` dans le shell, avec `history.pushState()`, `popstate`, gestion des deep-links et fallback vers `platform-navigation.js`. Aucune vue métier ne doit être migrée avant que ce routeur soit stable.
+La phase 3 pourra charger les services communs du shell Mobile une seule fois (session, profil, permissions, configuration et services partagés), sans encore migrer tout le contenu métier.
