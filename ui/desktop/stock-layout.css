@@ -79,3 +79,11 @@ html[data-nethor-platform="desktop"] .infoBtn{width:33px!important;height:33px!i
 html[data-nethor-platform="desktop"] .counter{grid-template-columns:48px 1fr 48px!important;gap:8px!important}
 html[data-nethor-platform="desktop"] .counter button{height:46px!important;border-radius:12px!important;font-size:27px!important}
 html[data-nethor-platform="desktop"] .qty{font-size:24px!important}
+
+
+/* Migrated from index.html — Phase 4.18 */
+@media(min-width:900px){main{margin-top:12px;padding-left:22px;padding-right:22px}.category{border-radius:20px}}
+
+
+/* Migrated from index.html — Phase 4.18 */
+@media(min-width:900px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
