@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#171717"><script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(e){}})();</script>
 <title>Nethor</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><link rel="preconnect" href="https://cdn.sheetjs.com" crossorigin><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
 <script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=1"></script><script>window.NethorPlatformAssets.style('ui/desktop/desktop-shell.css?v=2','ui/mobile/mobile-shell.css?v=4')</script><script src="platform-navigation.js?v=1"></script><script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=11','ui/mobile/mobile-shell.js?v=11')</script><script>window.NethorPlatformAssets.script('ui/desktop/department-pages-layout.js?v=1','ui/mobile/department-pages-layout.js?v=1')</script><link rel="stylesheet" href="profile-ui.css?v=3"><script src="profile-ui.js?v=207"></script>
 <link rel="stylesheet" href="design-v3.css?v=3"><link rel="stylesheet" href="design-v4.css?v=9">
 <style>
@@ -42,7 +42,29 @@ function fmtBytes(n){n=Number(n)||0;if(n<1024)return n+' o';if(n<1048576)return 
 function classify(name,headers=[]){const s=(name+' '+headers.join(' ')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');if(/vente|ca |quantite vend|ticket|sortie/.test(s))return'ventes';if(/casse|don|perte|jet|too.?good/.test(s))return'casse_dons';if(/commande|reception|livraison/.test(s))return'commandes';if(/stock|inventaire/.test(s))return'stock';if(/ean|article|referentiel|produit/.test(s))return'referentiel';return'autre'}
 function detectDates(rows){let dates=[];for(const row of rows.slice(0,500)){for(const v of Object.values(row||{})){let d=null;if(v instanceof Date)d=v;else if(typeof v==='string'&&/^\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}/.test(v)){const p=v.match(/\d+/g);if(p){let y=Number(p[2]);if(y<100)y+=2000;d=new Date(y,Number(p[1])-1,Number(p[0]))}}if(d&&!isNaN(d)&&d.getFullYear()>2020&&d.getFullYear()<2100)dates.push(d)}}if(!dates.length)return[null,null];dates.sort((a,b)=>a-b);const f=d=>fDate(d);return[f(dates[0]),f(dates[dates.length-1])]}
 function fDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-async function inspectFile(file){const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array',cellDates:true}),sheetNames=wb.SheetNames||[];let total=0,headers=[],sample=[];for(const sn of sheetNames.slice(0,12)){const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:null});total+=rows.length;if(!headers.length&&rows[0])headers=Object.keys(rows[0]);sample.push(...rows.slice(0,60))}const period=detectDates(sample);return{sheetNames,rowCount:total,headers:headers.slice(0,80),periodStart:period[0],periodEnd:period[1],category:classify(file.name,headers)}}
+let xlsxRuntimePromise=null;
+function loadXlsxRuntime(){
+ if(window.XLSX)return Promise.resolve(window.XLSX);
+ if(xlsxRuntimePromise)return xlsxRuntimePromise;
+ xlsxRuntimePromise=new Promise((resolve,reject)=>{
+  const existing=document.querySelector('script[data-nethor-xlsx-runtime="1"]');
+  const ready=()=>window.XLSX?resolve(window.XLSX):reject(new Error('Lecteur Excel indisponible'));
+  if(existing){
+   existing.addEventListener('load',ready,{once:true});
+   existing.addEventListener('error',()=>reject(new Error('Chargement Excel impossible')),{once:true});
+   return
+  }
+  const script=document.createElement('script');
+  script.src='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+  script.async=true;
+  script.dataset.nethorXlsxRuntime='1';
+  script.onload=ready;
+  script.onerror=()=>reject(new Error('Chargement Excel impossible'));
+  document.head.appendChild(script)
+ }).catch(err=>{xlsxRuntimePromise=null;throw err});
+ return xlsxRuntimePromise
+}
+async function inspectFile(file){const XLSX=await loadXlsxRuntime(),buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array',cellDates:true}),sheetNames=wb.SheetNames||[];let total=0,headers=[],sample=[];for(const sn of sheetNames.slice(0,12)){const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:null});total+=rows.length;if(!headers.length&&rows[0])headers=Object.keys(rows[0]);sample.push(...rows.slice(0,60))}const period=detectDates(sample);return{sheetNames,rowCount:total,headers:headers.slice(0,80),periodStart:period[0],periodEnd:period[1],category:classify(file.name,headers)}}
 async function uploadOne(file){if(file.size>15728640)throw new Error(file.name+' dépasse 15 Mo.');const info=await inspectFile(file),path=session.user.id+'/'+Date.now()+'-'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const up=await db.storage.from('fl-analysis').upload(path,file,{upsert:false,contentType:file.type||undefined});if(up.error)throw up.error;const ins=await db.from('fl_analysis_files').insert({uploaded_by:session.user.id,file_name:file.name,storage_path:path,mime_type:file.type||null,file_size:file.size,category:info.category,sheet_names:info.sheetNames,row_count:info.rowCount,columns:info.headers,period_start:info.periodStart,period_end:info.periodEnd,summary:{detected_category:info.category}});if(ins.error){await db.storage.from('fl-analysis').remove([path]);throw ins.error}}
 let fileUploadBusy=false;
 async function handleFiles(list){
