@@ -123,7 +123,8 @@ function permissionDenied(error){
  return name==='notallowederror'||name==='permissiondeniederror'||msg.includes('permission denied')||msg.includes('not allowed')
 }
 function goBack(){
-  location.href=window.NethorNavigation?.backTarget?.()||'home.html'
+  if(window.NethorNavigation?.navigateBack)return window.NethorNavigation.navigateBack();
+  location.href='user-menu.html'
 }
 function isMobileView(){return window.NethorPlatform?.isMobile?.()??new URLSearchParams(location.search).get('mobile_preview')==='1'}
 function setCameraState(text){const el=$('cameraStateText');if(el)el.textContent=text}
