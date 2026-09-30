@@ -420,3 +420,33 @@
 
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .chatMobileUtilityHost{display:none!important}
 html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .chatDetailsPane{display:none!important}
+
+
+/* Mobile visual QA — menus and sheets must never sit behind the bottom navigation. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .chatMenu{
+ left:max(10px,env(safe-area-inset-left))!important;
+ right:max(10px,env(safe-area-inset-right))!important;
+ top:auto!important;
+ bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 10px)!important;
+ width:auto!important;max-width:none!important;
+ max-height:min(68dvh,calc(100dvh - var(--netto-mobile-bar-h,64px) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 28px))!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;
+ border-radius:22px!important;
+ z-index:7300!important;
+ box-shadow:0 -18px 58px rgba(15,23,42,.24)!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .chatMenuTitle{
+ position:sticky;top:0;z-index:2;background:inherit;padding-top:10px!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .chatMenuItem{
+ min-height:54px!important;padding:9px 10px!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .modalBackdrop,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .conversationActionBackdrop{
+ padding-bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 8px)!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .modalCard,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .conversationActionSheet{
+ max-height:calc(100dvh - var(--netto-mobile-bar-h,64px) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px)!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important
+}
