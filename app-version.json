@@ -1,11 +1,11 @@
 {
-  "version": 231,
-  "label": "v1.37.0",
+  "version": 232,
+  "label": "v1.38.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.14 — Maintenance & Réparation",
-  "message": "Maintenance possède désormais des structures Desktop et Mobile distinctes choisies par le résolveur de plateforme, sans breakpoint de plateforme historique. La page Réparation reste volontairement autonome : aucun shell, aucun profil, aucun Supabase ni résolveur, avec purge ciblée du cache Nethor et rechargement réseau forcé.",
-  "published_at": "2026-09-30T05:34:00.000+02:00",
+  "title": "Phase 4.15 — Connexion Desktop / Mobile",
+  "message": "L’écran de connexion possède désormais deux structures physiques distinctes. Desktop conserve une composition en deux panneaux ; Mobile utilise une vue applicative verticale dédiée. Le choix de l’interface dépend exclusivement de NethorPlatform, sans breakpoint de largeur pour construire ou transformer l’authentification. Le moteur Supabase, la récupération de session, le mot de passe oublié et le système de mise à jour restent communs.",
+  "published_at": "2026-09-30T05:52:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
