@@ -342,6 +342,8 @@ function normalize(raw){
  delete c.customMenus;
  c.personalization=c.personalization&&typeof c.personalization==='object'?c.personalization:{};
  c.personalization.home_menus_enabled=c.personalization.home_menus_enabled!==false;
+ c.mobile_user_menu=c.mobile_user_menu&&typeof c.mobile_user_menu==='object'?c.mobile_user_menu:{};
+ c.mobile_user_menu.items=c.mobile_user_menu.items&&typeof c.mobile_user_menu.items==='object'?c.mobile_user_menu.items:{};
  c.mobile_bar=c.mobile_bar&&typeof c.mobile_bar==='object'?c.mobile_bar:{enabled:true,items:[]};
  return c
 }
@@ -698,6 +700,77 @@ function renderMobileBar(){
  });
  host.querySelectorAll('[data-mobile-move]').forEach(btn=>btn.onclick=()=>{const i=Number(btn.dataset.mobileMove),j=i+Number(btn.dataset.dir);if(j<0||j>=config.mobile_bar.items.length)return;[config.mobile_bar.items[i],config.mobile_bar.items[j]]=[config.mobile_bar.items[j],config.mobile_bar.items[i]];markDirty();renderMobileBar();window.NettoSounds?.play?.('navigate')})
 }
+function mobileUserMenuCatalog(){
+ return builtinModules().filter(m=>{
+  if(!m||['profile','settings'].includes(m.id)||!moduleMobileAvailable(m))return false;
+  const roles=maxRoles(m);
+  return roles.some(r=>r!=='admin')
+ }).sort((a,b)=>(Number(config.pages?.[a.id]?.order)||999)-(Number(config.pages?.[b.id]?.order)||999)||String(a.label).localeCompare(String(b.label),'fr'))
+}
+function mobileUserMenuDefault(id,module=null){
+ if(['profile','settings','theme','update','logout'].includes(id))return true;
+ return module?.userMenu===true
+}
+function ensureMobileUserMenu(){
+ config.mobile_user_menu=config.mobile_user_menu&&typeof config.mobile_user_menu==='object'?config.mobile_user_menu:{};
+ const items=config.mobile_user_menu.items=config.mobile_user_menu.items&&typeof config.mobile_user_menu.items==='object'?config.mobile_user_menu.items:{};
+ const byId=new Map(builtinModules().map(m=>[m.id,m]));
+ for(const id of ['profile','settings','theme','update']){
+  if(typeof items[id]!=='boolean')items[id]=mobileUserMenuDefault(id,byId.get(id))
+ }
+ for(const m of mobileUserMenuCatalog()){
+  if(typeof items[m.id]!=='boolean')items[m.id]=mobileUserMenuDefault(m.id,m)
+ }
+ items.logout=true;
+ return items
+}
+function mobileUserMenuIcon(id,module=null){
+ if(id==='theme')return'☾';
+ if(id==='update')return'↻';
+ if(id==='logout')return'↪';
+ return window.NettoProfileUI?.mobileNavIcon?.(module?.id||id)||'•'
+}
+function ensureMobileUserMenuPanel(){
+ const tab=$('tab-mobile');if(!tab)return null;
+ let panel=$('mobileUserMenuAdminPanel');
+ if(!panel){
+  panel=document.createElement('div');
+  panel.id='mobileUserMenuAdminPanel';
+  panel.className='panel';
+  panel.innerHTML='<div class="toolbar"><div><h2>Menu utilisateur mobile</h2><p>Définis ce que les utilisateurs peuvent voir lorsqu’ils ouvrent leur menu sur mobile. Les rôles et permissions restent prioritaires.</p></div><div class="panelTools"><button class="btn secondaryBtn mini" type="button" onclick="setMobileUserMenuAll(true)">Tout afficher</button><button class="btn secondaryBtn mini" type="button" onclick="setMobileUserMenuAll(false)">Tout masquer</button></div></div><div class="notifNotice"><b>Portée :</b> ce réglage concerne uniquement les comptes utilisateurs sur mobile. Ton menu Administrateur conserve ses accès de gestion. Déconnexion reste toujours disponible.</div><div id="mobileUserMenuEditor" class="managementSettingList"></div>';
+  const first=tab.querySelector(':scope > .panel');
+  if(first)first.insertAdjacentElement('afterend',panel);else tab.appendChild(panel)
+ }
+ return $('mobileUserMenuEditor')
+}
+function mobileUserMenuAdminRow(id,label,description,module=null,locked=false){
+ const items=ensureMobileUserMenu(),enabled=locked?true:items[id]!==false;
+ return '<div class="managementSettingRow"><div class="managementSettingIcon" aria-hidden="true">'+mobileUserMenuIcon(id,module)+'</div><div class="managementSettingText"><strong>'+esc(label)+'</strong><span>'+esc(description)+'</span>'+(module?'<small class="managementSettingStatus">Page : '+esc(module.id)+' · accès selon rôle et permissions.</small>':'')+'</div><div class="managementSettingControl"><span class="managementSettingState '+(enabled?'active':'')+'">'+(enabled?'Visible':'Masqué')+'</span><label class="adminSwitch" title="'+(locked?'Toujours visible':'Afficher ou masquer dans le menu utilisateur mobile')+'"><input type="checkbox" data-mobile-user-menu="'+attr(id)+'" '+(enabled?'checked':'')+' '+(locked?'disabled':'')+'><span></span></label></div></div>'
+}
+function renderMobileUserMenu(){
+ const host=ensureMobileUserMenuPanel();if(!host)return;
+ ensureMobileUserMenu();
+ const catalog=mobileUserMenuCatalog(),profileModule=builtinModules().find(m=>m.id==='profile'),settingsModule=builtinModules().find(m=>m.id==='settings');
+ const rows=[
+  mobileUserMenuAdminRow('profile','Mon profil','Accès au profil personnel, à l’avatar et aux réglages du compte.',profileModule),
+  mobileUserMenuAdminRow('settings','Personnalisation','Accès aux préférences personnelles de l’utilisateur.',settingsModule),
+  ...catalog.map(m=>mobileUserMenuAdminRow(m.id,m.label||m.id,m.subtitle||m.description||'Page Nethor.',m)),
+  mobileUserMenuAdminRow('theme','Mode clair / sombre','Permet à l’utilisateur de changer l’apparence de son interface.'),
+  mobileUserMenuAdminRow('update','Mise à jour','Permet de rechercher et appliquer la dernière version de Nethor.'),
+  mobileUserMenuAdminRow('logout','Déconnexion','Toujours disponible pour permettre de quitter la session.',null,true)
+ ];
+ host.innerHTML=rows.join('');
+ host.querySelectorAll('[data-mobile-user-menu]:not(:disabled)').forEach(input=>input.onchange=()=>{
+  ensureMobileUserMenu()[input.dataset.mobileUserMenu]=input.checked;
+  markDirty();renderMobileUserMenu();window.NettoSounds?.play?.('switch')
+ });
+ enhanceCompactPortal()
+}
+function setMobileUserMenuAll(value){
+ const items=ensureMobileUserMenu();
+ for(const id of Object.keys(items))if(id!=='logout')items[id]=!!value;
+ items.logout=true;markDirty();renderMobileUserMenu();window.NettoSounds?.play?.('switch')
+}
 function toggleModuleBody(id,event){
  if(event?.target?.closest('button,a,input,label,select,textarea'))return;
  const body=$('moduleBody_'+id),card=$('moduleCard_'+id);if(!body)return;
@@ -814,10 +887,10 @@ function validateConfig(){
 }
 async function saveConfig(){
  const state=$('saveState');state.className='saveState';state.textContent='Enregistrement…';
- try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
+ try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
 }
 async function reloadConfig(){if(dirty&&!confirm('Annuler les modifications non enregistrées ?'))return;await loadConfig();window.NettoSounds?.play?.('confirm')}
-async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});ensurePages();ensureMobileBar();fillGlobal();renderSystem();renderMobileBar();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
+async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
 
 
 function logDate(value){const d=new Date(value);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
