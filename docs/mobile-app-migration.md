@@ -244,6 +244,175 @@ Les pages HTML historiques restent autonomes pendant cette phase. Elles continue
 
 Le partage persistant s'applique uniquement aux futures vues montées dans `mobile.html`.
 
+## Phase 4 — Accueil devient une vraie vue
+
+La phase 4 migre Accueil dans le document Mobile unique.
+
+### Fichiers
+
+```text
+ui/mobile/views/home/
+├── home-view.js
+└── home-view.css
+```
+
+`HomeView` est enregistré auprès de `MobileRouter` sous l'identifiant `home`.
+
+À l'ouverture de :
+
+```text
+mobile.html
+```
+
+le routeur normalise maintenant l'URL vers :
+
+```text
+mobile.html?view=home
+```
+
+puis monte réellement Accueil dans :
+
+```text
+#mobile-view
+```
+
+sans changer de document.
+
+### Cycle de vie
+
+La vue expose :
+
+```js
+HomeView.mount(host)
+HomeView.unmount()
+```
+
+`mount()` :
+
+- attend `NethorMobileServices.ready()` ;
+- réutilise le client Supabase déjà ouvert par le shell ;
+- charge uniquement les données métier nécessaires à Accueil ;
+- attache les abonnements temps réel propres à Accueil ;
+- monte le widget Pilotage magasin si l'utilisateur y a accès.
+
+`unmount()` :
+
+- annule les abonnements propres à Accueil ;
+- retire les listeners DOM ;
+- démonte le widget Pilotage magasin ;
+- libère le contenu de la vue ;
+- ne détruit pas la session, le profil ni le client Supabase partagé.
+
+### Données réutilisées depuis le shell
+
+Accueil ne recrée plus :
+
+- la session ;
+- le profil ;
+- `site_config` ;
+- les permissions de sous-rôles ;
+- la liste globale des notifications.
+
+Ces données proviennent directement de `NethorMobileServices`.
+
+Accueil charge uniquement ses données spécifiques :
+
+- semaines de planning ;
+- équipe ;
+- catalogue et tâches de passation ;
+- affectations et validations des tâches ;
+- données du widget Pilotage magasin.
+
+### Fonctions Accueil conservées
+
+La nouvelle vue conserve les blocs Mobile déjà présents :
+
+- bienvenue ;
+- prochaine prise de poste ;
+- heures de la semaine ;
+- congés ;
+- prochain repos ;
+- passation matin → après-midi ;
+- informations importantes ;
+- équipe du jour ;
+- accès rapides ;
+- widget Pilotage magasin.
+
+Les actions de passation restent disponibles pour les rôles concernés :
+
+- préparer/publier les missions ;
+- sélectionner l'équipe d'après-midi ;
+- ajouter une mission ponctuelle ;
+- valider une tâche ;
+- supprimer ou réinitialiser la passation selon les droits existants.
+
+### Navigation interne
+
+Les boutons d'Accueil ne font plus directement dépendre l'application de `location.href`.
+
+La vue traduit l'ancienne URL vers l'identifiant Mobile correspondant, puis appelle `MobileRouter.open()`.
+
+Exemple :
+
+```text
+Accueil
+  ↓
+Planning du 02/10
+  ↓
+MobileRouter.open("planning", {
+  week: ...,
+  day: ...
+})
+```
+
+Comme Planning n'est pas encore migré, le routeur utilise actuellement :
+
+```text
+planning.html?week=...&day=...
+```
+
+sans perdre les paramètres.
+
+Une fois Planning migré, le même appel restera dans `mobile.html`.
+
+### Correction du routeur
+
+Le fallback du routeur conserve désormais les paramètres de vue lors de la transition vers une page historique.
+
+Cette correction est nécessaire pour :
+
+- les semaines et jours du Planning ;
+- les focus congés/repos ;
+- les futurs deep-links de Chat et autres outils.
+
+### Stock F&L
+
+La table de navigation Mobile contient maintenant aussi :
+
+```text
+stock → index.html
+```
+
+ce qui permet aux accès rapides d'Accueil d'utiliser le même mécanisme hybride que les autres pages.
+
+### Pilotage magasin
+
+`operations-widget.js` expose désormais également :
+
+```js
+NethorOperationsWidget.unmount()
+```
+
+afin de nettoyer son DOM et ses états lorsqu'Accueil est démonté.
+
+### Compatibilité
+
+`home.html` reste disponible.
+
+Il n'est pas encore redirigé automatiquement vers `mobile.html`, ce qui garde un chemin de secours pendant la migration.
+
+Desktop continue d'utiliser `home.html` et son architecture existante.
+
 ## Prochaine phase
 
-La phase 4 pourra migrer **Accueil** en première vraie vue `mount()/unmount()` utilisant directement `NethorMobileServices`, sans recréer session, profil ou permissions.
+La phase 5 pourra migrer **Menu utilisateur et Notifications** dans le shell Mobile. Ce sont les prochaines vues les moins risquées avant Planning et Chat.
