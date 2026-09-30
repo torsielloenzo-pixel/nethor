@@ -4,6 +4,7 @@
 const root=document.querySelector('[data-mobile-app-shell]');
 const viewHost=document.querySelector('[data-mobile-view-host]');
 const navHost=document.querySelector('[data-mobile-nav-host]');
+const notificationBadge=document.querySelector('[data-mobile-notification-badge]');
 if(!root||!viewHost||!navHost)return;
 
 function platform(){
@@ -15,6 +16,7 @@ function isMobile(){
   return kind==='mobile'||kind==='mobile-preview'
 }
 function router(){return window.NethorMobileRouter||window.MobileRouter||null}
+function services(){return window.NethorMobileServices||window.MobileServices||null}
 function legacyUrl(raw){
   const url=new URL(raw||'home.html',location.href);
   if(platform()==='mobile-preview')url.searchParams.set('mobile_preview','1');
@@ -42,10 +44,47 @@ function syncActive(view=requestedView()){
     else link.removeAttribute('aria-current')
   })
 }
+function syncNotificationBadge(value){
+  if(!notificationBadge)return;
+  const unread=Math.max(0,Number(value)||0);
+  notificationBadge.textContent=unread>99?'99+':String(unread);
+  notificationBadge.hidden=unread<1;
+  const item=notificationBadge.closest('[data-mobile-destination="notifications"]');
+  if(item){
+    const label=unread?('Notifications, '+unread+' non lue'+(unread>1?'s':'')):'Notifications';
+    item.setAttribute('aria-label',label);
+    item.title=label
+  }
+}
+function onServiceEvent(detail){
+  const status=String(detail?.status||services()?.status||'');
+  if(status)root.dataset.services=status;
+  syncNotificationBadge(detail?.unread??services()?.unread??0)
+}
 function onRouteEvent(event){
   const view=String(event?.detail?.view||requestedView());
   syncActive(view);
   root.dataset.mobileView=view
+}
+async function bootServices(){
+  const shared=services();
+  if(!shared){
+    root.dataset.services='missing';
+    return null
+  }
+  root.dataset.services='starting';
+  const unsubscribe=shared.subscribe?.(onServiceEvent);
+  if(typeof unsubscribe==='function')root.__nethorServicesUnsubscribe=unsubscribe;
+  try{
+    const value=await shared.start();
+    root.dataset.services=shared.status||'ready';
+    syncNotificationBadge(shared.unread);
+    return value
+  }catch(error){
+    console.error('[Nethor MobileApp] services',error);
+    root.dataset.services='error';
+    return null
+  }
 }
 async function boot(){
   if(!isMobile()){
@@ -66,25 +105,33 @@ async function boot(){
   syncActive();
   root.dataset.router='ready';
   root.dataset.ready='1';
+
+  const serviceState=await bootServices();
+  if(services()?.status==='signed-out')return;
+
   await mobileRouter.start({host:viewHost,nav:navHost});
   syncLegacyLinks();
   syncActive();
+  syncNotificationBadge(services()?.unread||0);
   window.dispatchEvent(new CustomEvent('nethor:mobile-app-ready',{detail:{
-    phase:2,
+    phase:3,
     view:requestedView(),
     platform:platform(),
     router:true,
+    services:services()?.isReady===true,
+    serviceState,
     registered:mobileRouter.registeredViews?.()||[]
   }}))
 }
 
 window.NethorMobileApp=Object.freeze({
-  phase:2,
+  phase:3,
   platform,
   isMobile,
   requestedView,
   legacyUrl,
   router,
+  services,
   root:()=>root,
   viewHost:()=>viewHost,
   navHost:()=>navHost
