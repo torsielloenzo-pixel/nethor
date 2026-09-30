@@ -223,7 +223,27 @@
  .mhdTasks .mhdCustomTask,.mhdTasks .mhdTaskAudience{padding:10px}.mhdTasks .mhdTaskFieldLabel{font-size:7.5px}.mhdTasks .mhdTaskInput{height:38px;font-size:9px}.mhdTasks .mhdTaskAudienceHead strong{font-size:9.5px}.mhdTasks .mhdTaskAudienceHead small{font-size:7.5px}.mhdTasks .mhdTaskAssigneeChip{font-size:8px}
  .mhdTasks .mhdTaskComposerActions{align-items:flex-end}.mhdTasks .mhdTaskComposerActions span{max-width:55%;font-size:7.5px}.mhdTasks .mhdTaskPublishBtn{min-height:36px;padding:0 11px;font-size:8.5px}
  .mhdTasks .mhdTaskPublishedCopy strong{font-size:9.5px}.mhdTasks .mhdTaskPublishedCopy small,.mhdTasks .mhdTaskPublishedCopy em{font-size:7.5px}.mhdTasks .mhdTaskValidation{min-width:38px;font-size:7.5px}.mhdTasks .mhdTaskDelete{width:27px;height:27px}
- .mhdTasks .mhdTaskUserProgress{font-size:7.5px}.mhdTasks .mhdTaskEmptyState strong{font-size:10px}.mhdTasks .mhdTaskEmptyState span{font-size:8px}
+ .mhdTasks .mhdTaskUserProgress{font-size:7.5px}
+ .mhdTasks .mhdTaskEmptyState{
+   display:flex;
+   align-items:baseline;
+   flex-wrap:wrap;
+   gap:4px 8px;
+   margin-top:6px;
+   line-height:1.35
+ }
+ .mhdTasks .mhdTaskEmptyState strong{
+   flex:none;
+   font-size:10px;
+   line-height:1.3
+ }
+ .mhdTasks .mhdTaskEmptyState span{
+   min-width:0;
+   font-size:8px;
+   line-height:1.4;
+   color:#69737e
+ }
+ :root[data-theme="dark"] .mhdTasks .mhdTaskEmptyState span{color:#aeb7c2}
 
 
  .mhdTasks .mhdTaskEditorTop{display:grid;grid-template-columns:1fr}.mhdTasks .mhdTaskHeaderActions{justify-content:flex-end}.mhdTasks .mhdTaskHandoff{display:grid}.mhdTasks .mhdTaskOverview{grid-template-columns:repeat(3,minmax(0,1fr))}
