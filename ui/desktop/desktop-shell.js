@@ -14,7 +14,7 @@ function buildUserMenu(ctx){
   '<div class="nettoUserHead"><span id="nettoMenuAvatar" class="nettoTopAvatar">U</span><span><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span></div>'+
   navButton(settingsIcon,settingsModule?.label||'Personnalisation',settingsModule?.subtitle||'Mon accueil et mes raccourcis',settingsModule?.url||settingsUrl)+
   (shortcuts?'<div class="nettoMenuSection">Raccourcis</div>'+shortcuts:'')+
-  '<button id="nettoThemeBtn" class="nettoNavBtn"><span class="nettoThemeIcon">'+icon(theme,'☾')+'</span><span><strong class="nettoThemeLabel" '+(themeCustom?'data-static-theme-label="1"':'')+'>'+esc(theme.label)+'</strong><small>'+esc(theme.subtitle)+'</small></span></button>'+
+  '<button id="nettoThemeBtn" class="nettoNavBtn"><span class="nettoThemeIcon" '+(theme.url?'data-static-theme-icon="1"':'')+'>'+icon(theme,'☾')+'</span><span><strong class="nettoThemeLabel" '+(themeCustom?'data-static-theme-label="1"':'')+'>'+esc(theme.label)+'</strong><small>'+esc(theme.subtitle)+'</small></span></button>'+
   '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>'+icon(logout,'↪')+'</span><span><strong>'+esc(logout.label)+'</strong><small>'+esc(logout.subtitle)+'</small></span></button>'+
  '</div>'
 }
