@@ -553,7 +553,7 @@ function renderMobileQuickBar(){
  document.body.classList.add('nettoHasMobileBar');
  if(!window.__nettoOpenUserMenuHandled)setTimeout(tryOpenRequestedUserMenu,0)
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,logout:logoutFromNethor,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,logout:logoutFromNethor,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),closeDrops,checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -585,64 +585,35 @@ document.addEventListener('pointerdown',()=>sounds.unlock(),{once:true,capture:t
 function initials(n){return String(n||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function roleLabel(r){return roleDefinition(r)?.label||ROLE[r]||r||'Compte'}
-let activeUserCard={user:null,opts:null};
-function ensureUserCardStyle(){
- addStyle();ensureProfileStylesheet('nettoUserCardStylesheet','profile-user-card.css?v=1','profile-user-card.css')
+window.NethorProfileFeatures=window.NethorProfileFeatures||{};
+const profileFeaturePromises=new Map();
+function loadProfileFeature(name,url){
+ const ready=window.NethorProfileFeatures?.[name];if(ready)return Promise.resolve(ready);
+ if(profileFeaturePromises.has(name))return profileFeaturePromises.get(name);
+ const promise=new Promise((resolve,reject)=>{
+  const existing=document.querySelector('script[data-nethor-profile-feature="'+name+'"]');
+  const done=()=>{
+   const feature=window.NethorProfileFeatures?.[name];
+   if(feature)resolve(feature);else reject(new Error('Module Nethor non initialisé : '+name))
+  };
+  if(existing){existing.addEventListener('load',done,{once:true});existing.addEventListener('error',()=>reject(new Error('Chargement impossible : '+url)),{once:true});return}
+  const s=document.createElement('script');s.src=url;s.async=true;s.dataset.nethorProfileFeature=name;
+  s.onload=done;s.onerror=()=>reject(new Error('Chargement impossible : '+url));document.head.appendChild(s)
+ });
+ profileFeaturePromises.set(name,promise);
+ promise.catch(()=>profileFeaturePromises.delete(name));
+ return promise
 }
-function userPresenceHistoryLabel(value){
- if(!value)return'Hors ligne';
- const d=new Date(value);if(Number.isNaN(d.getTime()))return'Hors ligne';
- const now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
- const time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
- if(d.toDateString()===now.toDateString())return'En ligne aujourd’hui à '+time;
- if(d.toDateString()===y.toDateString())return'En ligne hier à '+time;
- return'En ligne le '+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' à '+time
-}
-async function userPresenceLabel(userId){
- if(!userId)return'Hors ligne';
- if(api.onlineIds?.has?.(userId))return'En ligne';
- try{
-  const {data,error}=await api.client.from('chat_presence_history').select('last_seen_at').eq('user_id',userId).maybeSingle();
-  if(!error&&data?.last_seen_at)return userPresenceHistoryLabel(data.last_seen_at)
- }catch(_){}
- return'Hors ligne'
-}
-function closeUserCard(){
- const bg=document.getElementById('nettoUserCardBackdrop');bg?.classList.add('hidden');
- activeUserCard={user:null,opts:null}
-}
-async function refreshActiveUserCardPresence(){
- const user=activeUserCard.user,opts=activeUserCard.opts;if(!user)return;
- const value=typeof opts?.presenceLabel==='function'?opts.presenceLabel(user):opts?.presenceLabel;
- const label=value||await userPresenceLabel(user.id);
- if(activeUserCard.user?.id!==user.id)return;
- const strong=document.getElementById('nettoUserCardPresenceValue'),dot=document.getElementById('nettoUserCardPresenceDot');
- if(strong)strong.lastChild.textContent=label;
- if(dot)dot.classList.toggle('online',api.onlineIds?.has?.(user.id)||/^En ligne$/.test(label))
-}
-function openUserCard(user,opts={}){
+async function openUserCard(user,opts={}){
  if(!user?.id)return;
- ensureUserCardStyle();
- let bg=document.getElementById('nettoUserCardBackdrop');
- if(!bg){
-  bg=document.createElement('div');bg.id='nettoUserCardBackdrop';bg.className='nettoUserCardBackdrop hidden';
-  bg.innerHTML='<section class="nettoUserCard" role="dialog" aria-modal="true" aria-labelledby="nettoUserCardName"><button class="nettoUserCardClose" type="button" aria-label="Fermer">×</button><div class="nettoUserCardKicker">Fiche utilisateur</div><div id="nettoUserCardContent"></div></section>';
-  document.body.appendChild(bg);
-  bg.querySelector('.nettoUserCardClose').addEventListener('click',closeUserCard);
-  bg.addEventListener('click',e=>{if(e.target===bg)closeUserCard()})
- }
- const name=user.display_name||user.name||'Utilisateur',self=user.id===api.session?.user?.id,box=document.getElementById('nettoUserCardContent');
- activeUserCard={user,opts};
- box.innerHTML='<div class="nettoUserCardHero"><div id="nettoUserCardAvatar" class="nettoUserCardAvatar"></div><div><h3 id="nettoUserCardName">'+esc(name)+'</h3></div></div>'+
- '<div class="nettoUserCardFields"><div class="nettoUserCardField"><small>Rôle</small><strong>'+esc(roleLabel(user.role))+'</strong></div><div class="nettoUserCardField"><small>Présence</small><strong id="nettoUserCardPresenceValue"><i id="nettoUserCardPresenceDot" class="nettoUserPresenceDot"></i><span>Chargement…</span></strong></div></div>'+
- '<button id="nettoUserCardMessage" class="nettoUserCardMessage" type="button" '+(self?'disabled aria-disabled="true" title="Votre propre profil"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3l4-3h9a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>Envoyer un message</button>';
- const avatar=document.getElementById('nettoUserCardAvatar');paint(avatar,user.avatar_url||user.avatarUrl||null,name,user.profile_color,user.avatar_frame);
- const message=document.getElementById('nettoUserCardMessage');
- if(message&&!self)message.onclick=()=>{closeUserCard();if(typeof opts.onMessage==='function')opts.onMessage(user);else location.href=opts.messageUrl||('chat.html?user='+encodeURIComponent(user.id))};
- bg.classList.remove('hidden');refreshActiveUserCardPresence()
+ const feature=await loadProfileFeature('userCard','profile-user-card.js?v=1');
+ return feature.open(user,opts)
 }
-window.addEventListener('netto:presence',()=>{if(activeUserCard.user)refreshActiveUserCardPresence()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeUserCard.user)closeUserCard()});
+function closeUserCard(){return window.NethorProfileFeatures?.userCard?.close?.()}
+async function userPresenceLabel(userId){
+ const feature=await loadProfileFeature('userCard','profile-user-card.js?v=1');
+ return feature.presenceLabel(userId)
+}
 
 function addDesktopNethorMarkStyle(){
  let s=document.getElementById('nethorDesktopMarkStyle');
@@ -1039,132 +1010,24 @@ function buildGlobalHeader(){
  if(!api.globalListenersBound){document.addEventListener('click',e=>{if(!e.target.closest('#nettoGlobalTools'))closeDrops()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrops()});api.globalListenersBound=true}
  if(!window.__nettoOpenUserMenuHandled)tryOpenRequestedUserMenu();
 }
-function bindMobilePreviewGlobal(){
- if(window.__nettoMobilePreviewGlobalBound)return;
- window.__nettoMobilePreviewGlobalBound=true;
- document.addEventListener('click',e=>{
-  const btn=e.target&&e.target.closest?e.target.closest('#nettoMobilePreviewBtn'):null;
-  if(!btn)return;
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-  try{toggleMobilePreview()}catch(err){console.error('Vision mobile:',err);mobilePreviewNotice('Vision mobile : '+String(err&&err.message?err.message:err))}
- },true);
- document.addEventListener('keydown',e=>{
-  if(e.key!=='Enter'&&e.key!==' ')return;
-  const btn=e.target&&e.target.closest?e.target.closest('#nettoMobilePreviewBtn'):null;
-  if(!btn)return;
-  e.preventDefault();e.stopPropagation();
-  try{toggleMobilePreview()}catch(err){console.error('Vision mobile:',err);mobilePreviewNotice('Vision mobile : '+String(err&&err.message?err.message:err))}
- },true)
+async function bindMobilePreviewGlobal(){
+ if(isMobileViewport())return;
+ try{const feature=await loadProfileFeature('mobilePreview','profile-mobile-preview.js?v=1');feature.bind()}
+ catch(e){console.warn('Vision mobile:',e)}
 }
-function mobilePreviewUrl(){
- var u=new window.URL(window.location.href);
- u.searchParams.set('mobile_preview','1');
- u.searchParams.set('_mobile_ts',String(Date.now()));
- return u.toString()
-}
-function setMobilePreviewButton(active){
- var on=!!active,btn=document.getElementById('nettoMobilePreviewBtn'),root=document.documentElement;
- if(on)root.setAttribute('data-mobile-preview-active','1');else root.removeAttribute('data-mobile-preview-active');
- if(!btn)return;
- btn.classList.toggle('active',on);
- btn.setAttribute('aria-pressed',on?'true':'false');
- btn.setAttribute('aria-label',on?'Quitter la vision mobile':'Vision mobile');
- btn.title=on?'Quitter la vision mobile':'Vision mobile'
+async function toggleMobilePreview(){
+ const feature=await loadProfileFeature('mobilePreview','profile-mobile-preview.js?v=1');
+ return feature.toggle()
 }
 let mobilePreviewNoticeTimer=null;
 function mobilePreviewNotice(message){
- var old=document.getElementById('nettoMobilePreviewNotice');if(old&&old.parentNode)old.parentNode.removeChild(old);
- clearTimeout(mobilePreviewNoticeTimer);
- var notice=document.createElement('div');
- notice.id='nettoMobilePreviewNotice';notice.className='nettoMobilePreviewNotice';
- var dot=document.createElement('i'),label=document.createElement('span');
- label.textContent=String(message||'');
- notice.appendChild(dot);notice.appendChild(label);
- document.body.appendChild(notice);
- window.requestAnimationFrame(function(){notice.classList.add('show')});
- mobilePreviewNoticeTimer=setTimeout(function(){notice.classList.remove('show');setTimeout(function(){if(notice.parentNode)notice.parentNode.removeChild(notice)},220)},2200)
-}
-let mobilePreviewOrientation='portrait';
-function setMobilePreviewOrientation(orientation,announce=false){
- var mode=orientation==='landscape'?'landscape':'portrait';
- mobilePreviewOrientation=mode;
- var device=document.getElementById('nettoMobilePreviewDevice');
- var state=document.getElementById('nettoMobilePreviewState');
- var rotate=document.getElementById('nettoMobilePreviewRotate');
- if(device)device.dataset.orientation=mode;
- if(state)state.textContent='Aperçu mobile · '+(mode==='landscape'?'Paysage':'Portrait');
- if(rotate){
-  var next=mode==='landscape'?'portrait':'landscape';
-  rotate.setAttribute('aria-label',next==='landscape'?'Passer en paysage':'Passer en portrait');
-  rotate.title=next==='landscape'?'Passer en paysage':'Passer en portrait';
-  rotate.setAttribute('aria-pressed',mode==='landscape'?'true':'false')
- }
- if(announce)mobilePreviewNotice(mode==='landscape'?'Aperçu mobile en paysage':'Aperçu mobile en portrait')
-}
-function rotateMobilePreview(){
- setMobilePreviewOrientation(mobilePreviewOrientation==='landscape'?'portrait':'landscape',true);
- try{sounds.play('switch')}catch(_){}
-}
-function closeMobilePreview(showNotice=true){
- var overlay=document.getElementById('nettoMobilePreviewOverlay'),hadPreview=!!overlay;
- if(overlay&&overlay.parentNode)overlay.parentNode.removeChild(overlay);
- setMobilePreviewButton(false);
- if(document.body)document.body.style.removeProperty('overflow');
- if(hadPreview&&showNotice)mobilePreviewNotice('Vision mobile désactivée')
-}
-function toggleMobilePreview(){
- if(isMobileViewport()&&!isMobilePreviewContext()){mobilePreviewNotice('Visualiseur mobile disponible uniquement sur ordinateur');return}
- var existing=document.getElementById('nettoMobilePreviewOverlay');
- if(existing){closeMobilePreview(true);try{sounds.play('menuClose')}catch(_){};return}
- closeDrops();
- var overlay=document.createElement('div');
- overlay.id='nettoMobilePreviewOverlay';overlay.className='nettoMobilePreviewOverlay';
- overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Aperçu mobile');
- overlay.style.position='fixed';overlay.style.left='0';overlay.style.top='0';overlay.style.right='0';overlay.style.bottom='0';
- overlay.style.zIndex='2147483000';overlay.style.background='rgba(16,18,20,.84)';overlay.style.display='flex';
- overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.padding='24px';
-
- var device=document.createElement('div');
- device.id='nettoMobilePreviewDevice';device.className='nettoMobilePreviewDevice';device.dataset.orientation='portrait';
-
- device.style.background='#0d0f11';device.style.border='7px solid #292d31';device.style.borderRadius='38px';
- device.style.boxShadow='0 30px 100px rgba(0,0,0,.7)';device.style.padding='10px';device.style.display='flex';device.style.flexDirection='column';
-
- var bar=document.createElement('div');
- bar.style.height='32px';bar.style.display='flex';bar.style.alignItems='center';bar.style.justifyContent='center';bar.style.position='relative';bar.style.flex='none';bar.style.color='#e7eaed';
-
- var state=document.createElement('span');
- state.id='nettoMobilePreviewState';state.textContent='Aperçu mobile · Portrait';state.style.position='absolute';state.style.left='3px';state.style.fontSize='8px';state.style.fontWeight='850';
-
- var notch=document.createElement('span');
- notch.style.width='92px';notch.style.height='19px';notch.style.borderRadius='999px';notch.style.background='#060708';
-
- var rotate=document.createElement('button');
- rotate.id='nettoMobilePreviewRotate';rotate.className='nettoMobilePreviewRotate';rotate.type='button';
- rotate.setAttribute('aria-label','Passer en paysage');rotate.setAttribute('aria-pressed','false');rotate.title='Passer en paysage';
- rotate.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M3 8 7 4"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="m21 16-4 4"/><rect x="7" y="6" width="10" height="12" rx="2"/></svg>';
-
- var close=document.createElement('button');
- close.type='button';close.setAttribute('aria-label','Fermer');close.textContent='×';
- close.style.position='absolute';close.style.right='0';close.style.top='0';close.style.width='28px';close.style.height='28px';
- close.style.border='0';close.style.borderRadius='9px';close.style.background='#34393e';close.style.color='#fff';close.style.cursor='pointer';close.style.fontSize='18px';
-
- var frame=document.createElement('iframe');
- frame.className='nettoMobilePreviewFrame';frame.title='Vision mobile Nethor';frame.src=mobilePreviewUrl();
- frame.style.width='100%';frame.style.height='100%';frame.style.border='0';frame.style.borderRadius='25px';frame.style.background='#fff';frame.style.flex='1';
-
- rotate.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();rotateMobilePreview()});
- close.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();closeMobilePreview(true)});
- overlay.addEventListener('click',function(e){if(e.target===overlay)closeMobilePreview(true)});
-
- bar.appendChild(state);bar.appendChild(notch);bar.appendChild(rotate);bar.appendChild(close);
- device.appendChild(bar);device.appendChild(frame);overlay.appendChild(device);
- document.body.appendChild(overlay);
- document.body.style.overflow='hidden';
- setMobilePreviewOrientation('portrait',false);
- setMobilePreviewButton(true);
- mobilePreviewNotice('Vision mobile activée');
- try{sounds.play('menuOpen')}catch(_){}
+ const feature=window.NethorProfileFeatures?.mobilePreview;
+ if(feature?.notice)return feature.notice(message);
+ const old=document.getElementById('nettoMobilePreviewNotice');old?.remove();clearTimeout(mobilePreviewNoticeTimer);
+ const notice=document.createElement('div');notice.id='nettoMobilePreviewNotice';notice.className='nettoMobilePreviewNotice';
+ const dot=document.createElement('i'),label=document.createElement('span');label.textContent=String(message||'');
+ notice.append(dot,label);document.body.appendChild(notice);requestAnimationFrame(()=>notice.classList.add('show'));
+ mobilePreviewNoticeTimer=setTimeout(()=>{notice.classList.remove('show');setTimeout(()=>notice.remove(),220)},2200)
 }
 const mobileDropPortalState=new Map();
 function mobileDropMode(){return isMobileViewport()}
@@ -1775,7 +1638,7 @@ function runAfterFirstPaint(task){
   else setTimeout(run,40)
  }))
 }
-async function init(){addStyle();addLayoutHardening();promotePlatformShellStyles();syncGlobalDesignAsset();syncAppIconLinks();bindMobilePreviewGlobal();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{void setupAppUpdates();void logPageView();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();void loadNotificationPreferences().then(()=>{startNotificationsRealtime();return loadNotifications()}).catch(()=>{})});let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
+async function init(){addStyle();addLayoutHardening();promotePlatformShellStyles();syncGlobalDesignAsset();syncAppIconLinks();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{if(!isMobileViewport())void bindMobilePreviewGlobal();void setupAppUpdates();void logPageView();startPresence();startChatPresenceHistory();startProfileRealtime();startAccessRealtime();void loadNotificationPreferences().then(()=>{startNotificationsRealtime();return loadNotifications()}).catch(()=>{})});let lastFocusReload=0;const reload=()=>{const now=Date.now();if(now-lastFocusReload<15000)return;lastFocusReload=now;loadNotificationPreferences().then(()=>loadNotifications())};window.addEventListener('focus',reload);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reload()})}
 runAfterFirstPaint(()=>{if(document.querySelector('script[src*="reward-profile.js"]'))return;const rewardScript=document.createElement('script');rewardScript.src='reward-profile.js?v=2';rewardScript.defer=true;document.head.appendChild(rewardScript)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
