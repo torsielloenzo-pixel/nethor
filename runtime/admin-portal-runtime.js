@@ -69,7 +69,9 @@ function showTab(name,btn,opts={}){
  document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));
  activateManagementNav(btn);
  const noSticky=['overview','accounts','articles','media','notifications','problems','logs'];
- document.querySelector('.stickySave')?.classList.toggle('hidden',noSticky.includes(name));
+ const hideSave=noSticky.includes(name);
+ document.querySelector('.stickySave')?.classList.toggle('hidden',hideSave);
+ document.querySelector('.adminPortalMobileSave')?.classList.toggle('hidden',hideSave);
  try{localStorage.setItem('nettoManagementTab',name)}catch(_){}
  const u=new URL(location.href);u.searchParams.set('tab',name);
  if(name==='accounts')u.searchParams.set('sub',accountSubview);else u.searchParams.delete('sub');
