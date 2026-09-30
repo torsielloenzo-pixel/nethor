@@ -1,11 +1,11 @@
 {
-  "version": 281,
-  "label": "v1.43.44",
+  "version": 282,
+  "label": "v1.43.45",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Planning Mobile — mode sombre plus lisible",
-  "message": "Amélioration ciblée du Planning Mobile en thème sombre : fond et cartes mieux séparés, noms et titres plus contrastés, blocs Matin et Après-midi avec texte sombre dédié, bordures plus nettes et navigation du Planning harmonisée. Aucun changement du thème clair ni de la logique du planning.",
-  "published_at": "2026-10-01T00:10:00+02:00",
+  "title": "Accueil Mobile — bienvenue et prise de poste liées",
+  "message": "Le message de bienvenue suit désormais un vrai cycle journée : Bonjour de 05h à 11h59, Bon après-midi de 12h à 17h59 et Bonsoir de 18h à 04h59. Le bloc de bienvenue et la prise de poste sont maintenant visuellement réunis dans une seule carte, comme sur la maquette validée.",
+  "published_at": "2026-10-01T00:15:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
