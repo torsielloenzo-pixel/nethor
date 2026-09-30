@@ -1,11 +1,11 @@
 {
-  "version": 265,
-  "label": "v1.43.28",
+  "version": 266,
+  "label": "v1.43.29",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Correctif caméra iOS — ouverture et permission persistante",
-  "message": "Le Scanner mobile n’impose plus de contraintes vidéo avancées au moment d’ouvrir la caméra : elles sont appliquées seulement après acquisition du flux. Nethor libère explicitement les anciennes pistes vidéo, effectue jusqu’à trois tentatives temporisées en cas de caméra encore occupée par son propre flux, et ne bloque plus l’ouverture sur l’état parfois imprécis de l’API Permissions de Safari. L’autorisation acceptée reste enregistrée localement et dans les préférences utilisateur cachées ; elle n’est effacée qu’après un véritable refus navigateur.",
-  "published_at": "2026-09-30T19:09:59.560792Z",
+  "title": "Navigation mobile — premier appui fiable et pages préchauffées",
+  "message": "La barre mobile ne sélectionne plus visuellement un onglet dès le pointerdown avant que la navigation soit réellement déclenchée. Sur tactile, l’ouverture est maintenant lancée au pointerup avec verrou anti-double déclenchement, état de transition visible et secours automatique si la navigation ne part pas. Les pages de la barre sont préchauffées dans le Service Worker afin d’accélérer l’enchaînement entre Accueil, Planning, Chat, Notifications et Menu utilisateur. L’état actif est resynchronisé au retour iOS/PWA et un second appui sur l’onglet courant remonte simplement en haut de page.",
+  "published_at": "2026-09-30T19:20:00.000Z",
   "icon": "assets/app-icon-v63.svg"
 }
