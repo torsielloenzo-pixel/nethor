@@ -1091,6 +1091,228 @@ La page n'est pas redirigée de force vers la SPA.
 
 Elle sert donc encore de chemin de secours et partage désormais le même moteur que la vue Mobile.
 
+## Phase 8 — Chat
+
+La phase 8 migre Chat dans `mobile.html` tout en conservant `chat.html` comme fallback autonome.
+
+### Architecture
+
+Le moteur existant `chat-v2.js` est désormais compatible avec deux modes :
+
+```text
+chat.html
+   ↓
+chat-v2.js
+   ↓
+client Supabase autonome
+
+mobile.html
+   ↓
+ChatView
+   ↓
+chat-v2.js
+   ↓
+NethorMobileServices.client
+```
+
+Il n'existe donc pas deux implémentations de la messagerie.
+
+### Vue Mobile
+
+La nouvelle vue est :
+
+```text
+ui/mobile/views/chat/chat-view.js
+ui/mobile/views/chat/chat-view.css
+```
+
+Elle est enregistrée sous :
+
+```text
+chat
+```
+
+### Chargement à la demande
+
+Chat n'alourdit pas le démarrage du shell.
+
+Au premier accès :
+
+```text
+Chat
+ ↓
+chat-layout.js
+ ↓
+chat-v2.css + chat-layout.css
+ ↓
+chat-v2.js
+ ↓
+ChatRuntime.mount()
+```
+
+Les scripts restent ensuite en mémoire.
+
+Les feuilles de style Chat sont retirées lors de `unmount()` pour éviter que les anciennes règles globales de la page Chat n'interfèrent avec les autres vues.
+
+### Client partagé
+
+En SPA, Chat réutilise :
+
+```js
+NethorMobileServices.client
+NethorMobileServices.session
+NethorMobileServices.profile
+NethorMobileServices.siteConfig
+NethorMobileServices.subrolePermissions
+```
+
+La permission Chat reste calculée à partir de :
+
+- activation de la page ;
+- rôle ;
+- `pages.chat.roles` ;
+- `role_permissions.chat` ;
+- sous-rôles.
+
+### Fonctionnalités conservées
+
+La migration conserve notamment :
+
+- canal Général ;
+- conversations privées ;
+- groupes ;
+- création de groupe ;
+- ajout/retrait de membres ;
+- rôles affichés dans Général ;
+- présence en ligne ;
+- historique de dernière présence ;
+- non lus ;
+- filtres ;
+- archives personnelles ;
+- archives administrateur ;
+- sourdine ;
+- réactions ;
+- réponses ;
+- modification/suppression de messages ;
+- pièces jointes ;
+- images ;
+- vidéos ;
+- documents ;
+- audios ;
+- messages vocaux ;
+- lecture et vitesse des vocaux ;
+- waveform ;
+- recherche dans les discussions ;
+- recherche dans une conversation ;
+- typing en temps réel ;
+- accusés de lecture ;
+- fiches utilisateur ;
+- gestion des groupes.
+
+### Realtime
+
+Le runtime conserve trois canaux métier :
+
+```text
+dataChannel
+memberChannel
+typingChannel
+```
+
+En SPA, il ajoute également son canal Presence sur le topic partagé :
+
+```text
+team-presence
+```
+
+Il utilise toujours le même client Supabase que le shell.
+
+Lors de `unmount()`, Chat retire explicitement :
+
+- le canal typing ;
+- le canal données ;
+- le canal profils/membres ;
+- le canal presence ;
+- les timers typing ;
+- le timer de présence ;
+- les médias en lecture ou enregistrement.
+
+La méthode utilisée reste `removeChannel()`, conformément au cycle Realtime Supabase.
+
+### Presence
+
+En SPA, Chat ne dépend plus de `NettoProfileUI` pour savoir qui est en ligne.
+
+Il rejoint lui-même `team-presence` avec le client partagé, puis synchronise la liste des utilisateurs connectés.
+
+Il continue également à appeler :
+
+```text
+chat_presence_ping
+```
+
+afin de maintenir l'historique de présence.
+
+### Deep-links
+
+Les liens suivants restent pris en charge :
+
+```text
+mobile.html?view=chat&c=<conversation>
+mobile.html?view=chat&user=<user>
+```
+
+Le second crée ou restaure la conversation directe correspondante.
+
+Lorsqu'une conversation est ouverte, l'URL SPA devient :
+
+```text
+mobile.html?view=chat&c=<conversation>
+```
+
+Fermer la conversation retire uniquement `c`.
+
+Le document `mobile.html` n'est pas rechargé.
+
+### Scroll
+
+`ChatView` mémorise :
+
+- la position de la liste des discussions ;
+- la position des messages.
+
+Lors d'un retour sur la même route, ces positions peuvent être restaurées après le remontage.
+
+### Clavier Mobile
+
+L'ancien Chat utilisait un document plein écran indépendant.
+
+Dans la SPA, Chat est maintenant contenu dans la ligne centrale du shell :
+
+```text
+Header Nethor
+Chat
+Navigation basse
+```
+
+Lorsqu'une conversation est ouverte, l'entête général du shell peut être masqué visuellement par le mode conversation.
+
+Lorsque le clavier est ouvert, la navigation basse peut être masquée afin de laisser le composeur au-dessus du clavier sans déplacer la barre du contact.
+
+### Fiches utilisateurs
+
+Les fiches utilisateurs restent accessibles.
+
+Si `NettoProfileUI` est absent dans le shell SPA, Chat charge le composant partagé `profile-user-card.js`, lequel peut maintenant utiliser `MobileServices`.
+
+### Fallback
+
+`chat.html` reste disponible et autonome.
+
+Il charge le même `chat-v2.js` en mode historique et continue à créer son client Supabase lorsqu'il n'est pas dans `mobile.html`.
+
+Aucune redirection forcée de `chat.html` vers la SPA n'est activée.
+
 ## Prochaine phase
 
-La phase 8 pourra migrer **Chat** dans le document Mobile unique, avec conservation des canaux, messages, présence, pièces jointes, rôles, scroll et conversations directes.
+La prochaine étape logique est un **cutover / QA global du shell Mobile** : vérifier les cinq destinations principales, les retours navigateur, portrait/paysage, PWA, clavier, cache, deep-links, sessions et fallback avant de convertir progressivement les anciennes URLs en redirections de compatibilité.
