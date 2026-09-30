@@ -514,24 +514,18 @@ function renderMobileQuickBar(){
  nav.querySelectorAll('.nettoMobileQuickItem').forEach(a=>{
   const activate=()=>syncMobileQuickBarActive(a.dataset.mobileId||'');
   a.addEventListener('pointerdown',()=>{
-   if(mobileDropMode()&&a.dataset.mobileId!=='profile')closeDrops();
+   if(mobileDropMode())closeDrops();
    activate()
   },{passive:true});
   a.addEventListener('click',e=>{
-   if(a.dataset.mobileAction==='user-menu'&&mobileDropMode()){
-    e.preventDefault();e.stopPropagation();
-    openMobileUserMenu();return
-   }
    if(mobileDropMode())closeDrops();
    activate();
-   if(mobileDropMode()&&a.matches('a[href]')&&samePageDestination(a.getAttribute('href'))){
-    e.preventDefault();e.stopPropagation();return
-   }
-  });
-  if(a.dataset.mobileAction==='user-menu')a.addEventListener('dblclick',e=>{
-   if(!mobileDropMode())return;
+   if(!mobileDropMode()||!a.matches('a[href]'))return;
+   const target=a.getAttribute('href')||'';
    e.preventDefault();e.stopPropagation();
-   openMobileUserMenu()
+   if(!target||samePageDestination(target))return;
+   if(window.NethorNavigation?.navigate){window.NethorNavigation.navigate(target);return}
+   location.href=target
   })
  });
  updateMobileNotificationBadge();
