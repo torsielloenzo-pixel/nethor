@@ -78,7 +78,7 @@ function applyConfiguredLink(link,id,config,{top=false,userMenu=false}={}){
  const iconContainer=id==='notifications'&&top?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');
  setChromeIcon(iconContainer,override.image_url);
  const accent=safeHex(override.color);if(accent)link.style.setProperty('--nethor-mobile-item-accent',accent);else link.style.removeProperty('--nethor-mobile-item-accent');
- if(top){link.setAttribute('aria-label',label);link.title=label}
+ if(top){link.dataset.configuredLabel=label;link.setAttribute('aria-label',label);link.title=label}
  else{const small=link.querySelector('small');if(small)small.textContent=label;link.setAttribute('aria-label',label)}
 }
 function applyConfiguredChrome(config={}){
@@ -125,7 +125,8 @@ function syncNotificationBadge(value){
   notificationBadge.hidden=unread<1;
   const item=notificationBadge.closest('[data-mobile-destination="notifications"]');
   if(item){
-    const label=unread?('Notifications, '+unread+' non lue'+(unread>1?'s':'')):'Notifications';
+    const base=String(item.dataset.configuredLabel||'Notifications');
+    const label=unread?(base+', '+unread+' non lue'+(unread>1?'s':'')):base;
     item.setAttribute('aria-label',label);
     item.title=label
   }
