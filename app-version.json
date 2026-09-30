@@ -1,11 +1,11 @@
 {
-  "version": 272,
-  "label": "v1.43.35",
+  "version": 273,
+  "label": "v1.43.36",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — sous-vues utilisateur, phase 6",
-  "message": "Nethor migre Mon profil, Personnalisation, Réglages des notifications et Signaler un problème dans le document mobile unique. Ces quatre sous-vues utilisent désormais MobileRouter et MobileServices sans recréer la session Supabase. Le profil conserve apparence, photo recadrée, mot de passe et personnalisation avancée ; Personnalisation conserve menus/widgets ; les réglages notifications conservent Push et canaux personnels ; le signalement conserve le diagnostic détaillé. Le retour revient directement au Menu utilisateur. Le Service Worker passe en v272.",
-  "published_at": "2026-09-30T20:42:08.279Z",
+  "title": "Architecture mobile — Planning routé, phase 7",
+  "message": "Planning devient une vraie vue de mobile.html. Le moteur métier historique est désormais partagé entre planning.html et la SPA via planning-runtime.js, avec le même Agenda, les mêmes calculs, imports, modifications, anomalies, couverture, statistiques et indisponibilités/congés. Les deep-links week/day/focus restent compatibles, le scroll est restauré au retour, les scripts Planning sont chargés à la demande et la SPA réutilise le client Supabase de MobileServices. planning.html reste disponible comme fallback. Le Service Worker passe en v273.",
+  "published_at": "2026-09-30T20:58:23.309Z",
   "icon": "assets/app-icon-v63.svg"
 }
