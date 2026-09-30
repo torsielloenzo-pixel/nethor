@@ -5,13 +5,17 @@ function navButton(icon,title,sub,url,cls=''){
  return '<button class="nettoNavBtn '+cls+'" data-url="'+esc(url||'')+'"><span>'+icon+'</span><span><strong>'+esc(title)+'</strong><small>'+esc(sub||'')+'</small></span></button>'
 }
 function buildUserMenu(ctx){
- const {name='Utilisateur',role='',shortcuts='',settingsUrl='settings.html'}=ctx||{};
+ const {name='Utilisateur',role='',shortcuts='',settingsUrl='settings.html',settingsModule=null,settingsIcon='⚙',controls={}}=ctx||{};
+ const control=(key,defaults)=>{const x=controls?.[key]&&typeof controls[key]==='object'?controls[key]:{};return{...defaults,...x,label:String(x.label||defaults.label),subtitle:String(x.subtitle||defaults.subtitle),url:String(x.url||'')}};
+ const icon=(node,fallback)=>node.url?'<img src="'+esc(node.url)+'" alt="" style="display:block;width:22px;height:22px;object-fit:contain">':fallback;
+ const theme=control('theme',{label:'Mode sombre',subtitle:'Changer l’apparence'}),logout=control('logout',{label:'Déconnexion',subtitle:'Quitter la session'});
+ const themeCustom=!!String(controls?.theme?.label||'').trim();
  return '<div class="nettoUserDesktopMenu">'+
   '<div class="nettoUserHead"><span id="nettoMenuAvatar" class="nettoTopAvatar">U</span><span><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span></div>'+
-  navButton('⚙','Personnalisation','Mon accueil et mes raccourcis',settingsUrl)+
+  navButton(settingsIcon,settingsModule?.label||'Personnalisation',settingsModule?.subtitle||'Mon accueil et mes raccourcis',settingsModule?.url||settingsUrl)+
   (shortcuts?'<div class="nettoMenuSection">Raccourcis</div>'+shortcuts:'')+
-  '<button id="nettoThemeBtn" class="nettoNavBtn"><span class="nettoThemeIcon">☾</span><span><strong class="nettoThemeLabel">Mode sombre</strong><small>Changer l’apparence</small></span></button>'+
-  '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>↪</span><span><strong>Déconnexion</strong><small>Quitter la session</small></span></button>'+
+  '<button id="nettoThemeBtn" class="nettoNavBtn"><span class="nettoThemeIcon">'+icon(theme,'☾')+'</span><span><strong class="nettoThemeLabel" '+(themeCustom?'data-static-theme-label="1"':'')+'>'+esc(theme.label)+'</strong><small>'+esc(theme.subtitle)+'</small></span></button>'+
+  '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>'+icon(logout,'↪')+'</span><span><strong>'+esc(logout.label)+'</strong><small>'+esc(logout.subtitle)+'</small></span></button>'+
  '</div>'
 }
 function buildPageLayout(page){
