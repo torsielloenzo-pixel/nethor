@@ -1,0 +1,80 @@
+/* Phase 4.15 — Connexion Mobile */
+html[data-nethor-platform="mobile"] .authMobileRoot,
+html[data-nethor-platform="mobile-preview"] .authMobileRoot{
+ position:fixed;inset:0;z-index:2000;display:block;overflow-y:auto;overscroll-behavior:contain;
+ padding:calc(env(safe-area-inset-top) + 18px) max(16px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 18px) max(16px,env(safe-area-inset-left));
+ background:radial-gradient(circle at 18% 0%,rgba(255,65,34,.10),transparent 18rem),linear-gradient(180deg,#f5f6f8 0%,#eef1f4 100%)
+}
+html[data-nethor-platform="mobile"] .authMobileRoot.hidden,
+html[data-nethor-platform="mobile-preview"] .authMobileRoot.hidden{display:none!important}
+html[data-nethor-platform="mobile"] .authMobileShell,
+html[data-nethor-platform="mobile-preview"] .authMobileShell{
+ width:100%;max-width:430px;min-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 36px);
+ margin:0 auto;display:flex;flex-direction:column
+}
+html[data-nethor-platform="mobile"] .authMobileBrand,
+html[data-nethor-platform="mobile-preview"] .authMobileBrand{display:flex;align-items:center;gap:11px;padding:4px 2px 20px}
+html[data-nethor-platform="mobile"] .authMobileLogo,
+html[data-nethor-platform="mobile-preview"] .authMobileLogo{width:48px;height:48px;border-radius:14px;box-shadow:0 8px 22px rgba(18,24,32,.16)}
+html[data-nethor-platform="mobile"] .authMobileBrandCopy,
+html[data-nethor-platform="mobile-preview"] .authMobileBrandCopy{display:flex;min-width:0;flex-direction:column;gap:3px}
+html[data-nethor-platform="mobile"] .authMobileBrandCopy strong,
+html[data-nethor-platform="mobile-preview"] .authMobileBrandCopy strong{font-size:20px;line-height:1;font-weight:950;letter-spacing:-.5px;color:#1c2025!important}
+html[data-nethor-platform="mobile"] .authMobileBrandCopy span,
+html[data-nethor-platform="mobile-preview"] .authMobileBrandCopy span{color:#777f88;font-size:9.5px;font-weight:700}
+html[data-nethor-platform="mobile"] .authMobileIntro,
+html[data-nethor-platform="mobile-preview"] .authMobileIntro{padding:20px 20px 15px;border-radius:22px 22px 0 0;background:linear-gradient(135deg,#17191e 0%,#282b31 62%,#49352b 100%);color:#fff}
+html[data-nethor-platform="mobile"] .authMobileIntro span,
+html[data-nethor-platform="mobile-preview"] .authMobileIntro span{display:block;color:#ff8a57;font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+html[data-nethor-platform="mobile"] .authMobileIntro strong,
+html[data-nethor-platform="mobile-preview"] .authMobileIntro strong{display:block;margin-top:5px;color:#fff!important;font-size:29px;line-height:1.05;letter-spacing:-.9px}
+html[data-nethor-platform="mobile"] .authMobileIntro p,
+html[data-nethor-platform="mobile-preview"] .authMobileIntro p{margin:7px 0 0;max-width:330px;color:rgba(255,255,255,.65);font-size:11.5px;line-height:1.45}
+html[data-nethor-platform="mobile"] .authMobileForm.loginCard,
+html[data-nethor-platform="mobile-preview"] .authMobileForm.loginCard{
+ width:100%;padding:22px 20px 20px;border:1px solid #e1e5e9;border-top:0;border-radius:0 0 22px 22px;
+ background:#fff!important;color:#171717;box-shadow:0 18px 55px rgba(24,34,53,.10);animation:none
+}
+html[data-nethor-platform="mobile"] .authMobileForm .field,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .field{margin:13px 0}
+html[data-nethor-platform="mobile"] .authMobileForm .field label,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .field label{display:block;margin-bottom:6px;color:#60656c;font-size:11px!important;font-weight:800}
+html[data-nethor-platform="mobile"] .authMobileForm input,
+html[data-nethor-platform="mobile-preview"] .authMobileForm input{
+ width:100%;height:50px;min-height:50px;padding:12px;border:1px solid #dde1e6!important;border-radius:13px!important;
+ background:#f6f7f9!important;color:#171717!important;font-size:16px!important
+}
+html[data-nethor-platform="mobile"] .authMobileForm input:focus,
+html[data-nethor-platform="mobile-preview"] .authMobileForm input:focus{outline:0;border-color:#f06b43!important;box-shadow:0 0 0 4px rgba(239,102,57,.10)!important;background:#fff!important}
+html[data-nethor-platform="mobile"] .authMobileForm .passwordWrap,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .passwordWrap{position:relative}
+html[data-nethor-platform="mobile"] .authMobileForm .passwordWrap input,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .passwordWrap input{padding-right:52px}
+html[data-nethor-platform="mobile"] .authMobileForm .eyeBtn,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .eyeBtn{position:absolute;right:7px;top:7px;width:36px;height:36px;border-radius:11px;background:#e9edf1;color:#60666e;touch-action:manipulation}
+html[data-nethor-platform="mobile"] .authMobileForm .loginHelp,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .loginHelp{display:flex;justify-content:flex-end;margin-top:-3px}
+html[data-nethor-platform="mobile"] .authMobileForm .forgotBtn,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .forgotBtn{min-height:34px;border:0;background:transparent;color:#d94a2a;font-size:10px;font-weight:850;padding:6px 0;touch-action:manipulation}
+html[data-nethor-platform="mobile"] .authMobileSubmit,
+html[data-nethor-platform="mobile-preview"] .authMobileSubmit{width:100%;min-height:50px!important;margin-top:10px;padding:0 16px!important;display:flex;align-items:center;justify-content:space-between;font-size:12px!important}
+html[data-nethor-platform="mobile"] .authMobileSubmit span,
+html[data-nethor-platform="mobile-preview"] .authMobileSubmit span{font-size:20px}
+html[data-nethor-platform="mobile"] .authMobileForm .error,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .error{min-height:18px;margin-top:10px;color:#b0000d;font-size:11px}
+html[data-nethor-platform="mobile"] .authMobileForm .loginFoot,
+html[data-nethor-platform="mobile-preview"] .authMobileForm .loginFoot{text-align:center;margin-top:16px;color:#969ca4!important;font-size:9.5px}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .authMobileRoot,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .authMobileRoot{background:radial-gradient(circle at 18% 0%,rgba(255,65,34,.08),transparent 18rem),#111214}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .authMobileBrandCopy strong,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .authMobileBrandCopy strong{color:#f4f1ee!important}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .authMobileBrandCopy span,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .authMobileBrandCopy span{color:#aaa5a0}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .authMobileForm.loginCard,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .authMobileForm.loginCard{background:#1b1d20!important;color:#f4f1ee;border-color:#34383e;box-shadow:0 18px 55px rgba(0,0,0,.28)}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .authMobileForm .field label,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .authMobileForm .field label{color:#c0bbb6}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .authMobileForm input,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .authMobileForm input{background:#24272b!important;color:#f4f1ee!important;border-color:#3a3e43!important}
+:root[data-theme="dark"][data-nethor-platform="mobile"] .authMobileForm .eyeBtn,
+:root[data-theme="dark"][data-nethor-platform="mobile-preview"] .authMobileForm .eyeBtn{background:#2c3035;color:#ddd8d3}
