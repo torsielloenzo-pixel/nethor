@@ -135,7 +135,7 @@ function problemUrl(module){
 }
 function syncThemeText(){
  const label=state.host?.querySelector('.nettoThemeLabel');
- if(label)label.textContent=document.documentElement.dataset.theme==='dark'?'Mode clair':'Mode sombre'
+ if(label&&!label.hasAttribute('data-static-theme-label'))label.textContent=document.documentElement.dataset.theme==='dark'?'Mode clair':'Mode sombre'
 }
 async function toggleTheme(button){
  if(button)button.disabled=true;
@@ -180,6 +180,7 @@ function render(){
   settingsVisible:menuSetting(profile,cfg,'settings',true),
   themeVisible:menuSetting(profile,cfg,'theme',true),
   updateVisible:menuSetting(profile,cfg,'update',true),
+  controls:cfg?.platform_ui?.mobile?.controls||{},
   iconFor
  })+'</div>';
  paintAvatar(state.host.querySelector('#nettoMobileMenuAvatar'),profile,shared.avatarUrl);
