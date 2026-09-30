@@ -325,27 +325,29 @@ function roleKeys(config=api?.siteConfig){const defs=config?.role_definitions&&t
 function roleDefinition(key,config=api?.siteConfig){return config?.role_definitions?.[key]||null}
 function cleanColor(v,fallback=''){const s=String(v||'').trim();return /^#[0-9a-f]{6}$/i.test(s)?s:fallback}
 function rebuildModules(config={}){
- const pages=config?.pages&&typeof config.pages==='object'?config.pages:{};
+ const pages=config?.pages&&typeof config.pages==='object'?config.pages:{},platformKey=isMobileViewport()?'mobile':'desktop';
  const base=BASE_MODULES.map(m=>{
   const p=pages[m.id]&&typeof pages[m.id]==='object'?pages[m.id]:{};
-  const overrideImage=String(p.image_url||'').trim();
+  const po=p.platform_overrides?.[platformKey]&&typeof p.platform_overrides[platformKey]==='object'?p.platform_overrides[platformKey]:{};
+  const platformImage=String(po.image_url||'').trim(),overrideImage=platformImage||String(p.image_url||'').trim();
   const out={...m,
    baseUrl:m.url,
-   label:String(p.nav_label||p.label||m.label),
-   homeLabel:String(p.label||m.homeLabel||m.label),
-   subtitle:String(p.subtitle||m.subtitle||''),
-   description:String(p.description||m.description||''),
-   url:String(p.url||m.url||''),
-   icon:String(p.icon||m.icon||'•'),
+   label:String(po.nav_label||po.label||p.nav_label||p.label||m.label),
+   homeLabel:String(po.label||p.label||m.homeLabel||m.label),
+   subtitle:String(po.subtitle||p.subtitle||m.subtitle||''),
+   description:String(po.description||p.description||m.description||''),
+   url:String(po.url||p.url||m.url||''),
+   icon:String(po.icon||p.icon||m.icon||'•'),
    asset:overrideImage||m.asset,
+   platformAssetOverride:platformImage,
    home:typeof p.home==='boolean'?p.home:m.home,
    userMenu:typeof p.user_menu==='boolean'?p.user_menu:m.userMenu,
    defaultHome:typeof p.default_home==='boolean'?p.default_home:m.defaultHome,
    defaultUser:typeof p.default_user==='boolean'?p.default_user:m.defaultUser,
-   kicker:String(p.kicker||m.kicker||'OUTIL'),
-   action:String(p.action||m.action||'Ouvrir'),
-   menuColor:cleanColor(p.color,''),
-   menuAccent:cleanColor(p.accent,''),
+   kicker:String(po.kicker||p.kicker||m.kicker||'OUTIL'),
+   action:String(po.action||p.action||m.action||'Ouvrir'),
+   menuColor:cleanColor(po.color,cleanColor(p.color,'')),
+   menuAccent:cleanColor(po.accent,cleanColor(p.accent,'')),
    configuredRoles:Array.isArray(p.roles)?p.roles.filter(r=>roleKeys(config).includes(r)):null
   };
   return out
@@ -432,7 +434,11 @@ const MOBILE_NAV_ICONS=Object.freeze({
  fl_assistant:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h14v14H5z"/><path d="M8 9h8M8 12h5M8 15h7"/></svg>',
  default:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="5" width="5" height="5" rx="1.2"/><rect x="14" y="5" width="5" height="5" rx="1.2"/><rect x="5" y="14" width="5" height="5" rx="1.2"/><rect x="14" y="14" width="5" height="5" rx="1.2"/></svg>'
 });
-function mobileNavIcon(id){return MOBILE_NAV_ICONS[id]||MOBILE_NAV_ICONS.default}
+function mobileNavIcon(id){
+ const module=NAV_MODULES.find(m=>m.id===id),custom=String(module?.platformAssetOverride||'').trim();
+ if(custom)return '<img src="'+esc(custom)+'" alt="" style="display:block;width:100%;height:100%;object-fit:contain">';
+ return MOBILE_NAV_ICONS[id]||MOBILE_NAV_ICONS.default
+}
 function mobileModuleForId(id){return NAV_MODULES.find(m=>m.id===id)}
 function mobileBarEligible(module){
  if(!module||module.custom)return false;
@@ -663,7 +669,9 @@ function addDesktopNethorMarkStyle(){
  s.textContent='header .mark,header .brandMark,header .nMenuBtn,header .brandMenuBtn{background-color:transparent!important;background-image:var(--nethor-header-logo,url("assets/nethor-mark.svg"))!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;color:transparent!important;font-size:0!important;box-shadow:none!important;border-radius:0!important}'
 }
 function applyHeaderLogo(config={}){
- const url=String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
+ const platformKey=isMobileViewport()?'mobile':'desktop';
+ const platformUrl=String(config?.platform_ui?.[platformKey]?.header_logo?.url||'').trim();
+ const url=platformUrl||String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
  document.documentElement.style.setProperty('--nethor-header-logo','url('+JSON.stringify(url)+')');
  addDesktopNethorMarkStyle()
 }
