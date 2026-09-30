@@ -1,11 +1,11 @@
 {
-  "version": 270,
-  "label": "v1.43.33",
+  "version": 271,
+  "label": "v1.43.34",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — Accueil en vue, phase 4",
-  "message": "Accueil devient la première vraie vue montée dans mobile.html. HomeView réutilise désormais la session, le profil, la configuration, les permissions et les notifications déjà chargés par MobileServices, tout en conservant les widgets du tableau de bord, la passation, l’équipe du jour, les accès rapides et le Pilotage magasin. Le routeur conserve maintenant les paramètres lors d’un fallback vers une page non encore migrée, et Stock F&L rejoint la table des destinations Mobile. Le Service Worker passe en v270.",
-  "published_at": "2026-09-30T20:21:08.097Z",
+  "title": "Architecture mobile — Menu & Notifications, phase 5",
+  "message": "Nethor migre Menu utilisateur et Notifications dans le document mobile unique. Les deux écrans s’ouvrent maintenant via MobileRouter sans recharger mobile.html et réutilisent le profil, les permissions, la session et les notifications déjà chargés par MobileServices. Le Menu conserve le thème, la vérification de mise à jour, le signalement et la déconnexion. Notifications conserve recherche, filtre, lecture, ouverture et suppression. Les anciennes pages restent disponibles en secours. Le Service Worker passe en v271.",
+  "published_at": "2026-09-30T20:31:03.262Z",
   "icon": "assets/app-icon-v63.svg"
 }
