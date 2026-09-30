@@ -1,16 +1,41 @@
 (function(){
 'use strict';
 const prefValue=p=>p?.ui_preferences?.planning_view==='agenda'?'agenda':'classic';
+function mobilePlanningIsForced(){
+ try{
+  if(typeof profilePlatformKind==='function')return profilePlatformKind()==='mobile';
+  if(window.NethorPlatform?.isMobile?.())return true;
+  const kind=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase();
+  return kind==='mobile'||kind==='mobile-preview'
+ }catch(_){return false}
+}
 function profilePage(){
  const theme=document.getElementById('themeSelect');if(!theme||document.getElementById('planningViewSelect'))return false;
  const field=theme.closest('.field');if(!field)return false;
- const wrap=document.createElement('div');wrap.className='field';wrap.innerHTML='<label for="planningViewSelect">Affichage du planning</label><select id="planningViewSelect"><option value="classic">Classique</option><option value="agenda">Agenda</option></select><span class="fieldHelp">Choisit la vue ouverte par défaut dans Planning. Les deux vues utilisent exactement le même import Excel.</span>';
+ const mobileForced=mobilePlanningIsForced();
+ const wrap=document.createElement('div');wrap.className='field'+(mobileForced?' planningViewForced':'');wrap.innerHTML='<label for="planningViewSelect">Affichage du planning</label><select id="planningViewSelect"><option value="classic">Classique</option><option value="agenda">Agenda</option></select><span class="fieldHelp">'+(mobileForced?'Sur mobile, l’affichage Agenda est imposé.':'Choisit la vue ouverte par défaut dans Planning. Les deux vues utilisent exactement le même import Excel.')+'</span>';
  field.insertAdjacentElement('afterend',wrap);
- try{wrap.querySelector('select').value=prefValue(typeof profile!=='undefined'?profile:null)}catch(_){}
  const select=wrap.querySelector('select');
- const sync=()=>{try{if(typeof profile!=='undefined'&&profile){const p=profile.ui_preferences&&typeof profile.ui_preferences==='object'?profile.ui_preferences:{};profile.ui_preferences={...p,planning_view:select.value}}}catch(_){}};
+ if(mobileForced){
+  select.value='agenda';
+  select.disabled=true;
+  select.setAttribute('aria-disabled','true');
+  select.title='Agenda est imposé sur mobile';
+ }else{
+  try{select.value=prefValue(typeof profile!=='undefined'?profile:null)}catch(_){}
+ }
+ const sync=()=>{
+  if(mobileForced){select.value='agenda';return}
+  try{if(typeof profile!=='undefined'&&profile){const p=profile.ui_preferences&&typeof profile.ui_preferences==='object'?profile.ui_preferences:{};profile.ui_preferences={...p,planning_view:select.value}}}catch(_){}
+ };
  select.addEventListener('change',sync);
- (async()=>{try{if(typeof db==='undefined'||!db)return;const s=(await db.auth.getSession()).data?.session;if(!s)return;const {data}=await db.from('profiles').select('ui_preferences').eq('id',s.user.id).maybeSingle();select.value=prefValue(data||{});sync()}catch(e){console.warn('Chargement préférence planning',e)}})();
+ (async()=>{try{
+  if(mobileForced){select.value='agenda';return}
+  if(typeof db==='undefined'||!db)return;
+  const s=(await db.auth.getSession()).data?.session;if(!s)return;
+  const {data}=await db.from('profiles').select('ui_preferences').eq('id',s.user.id).maybeSingle();
+  select.value=prefValue(data||{});sync()
+ }catch(e){console.warn('Chargement préférence planning',e)}})();
  try{
   if(typeof saveProfile==='function'&&!saveProfile.__planningPrefHook){const base=saveProfile;const hooked=async function(){sync();return base.apply(this,arguments)};hooked.__planningPrefHook=true;saveProfile=hooked}
  }catch(e){console.warn('Planning preference profile hook',e)}
