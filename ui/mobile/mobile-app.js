@@ -114,7 +114,7 @@ async function boot(){
   syncActive();
   syncNotificationBadge(services()?.unread||0);
   window.dispatchEvent(new CustomEvent('nethor:mobile-app-ready',{detail:{
-    phase:5,
+    phase:6,
     view:requestedView(),
     platform:platform(),
     router:true,
@@ -125,7 +125,7 @@ async function boot(){
 }
 
 window.NethorMobileApp=Object.freeze({
-  phase:5,
+  phase:6,
   platform,
   isMobile,
   requestedView,
