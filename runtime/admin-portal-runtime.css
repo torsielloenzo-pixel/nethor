@@ -219,3 +219,28 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  .platformImageEditor>.platformAssetActions{grid-column:1/-1}
  .platformColorRow{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* Mobile shell admin map */
+.mobileShellMap{margin-top:11px;padding:11px;border:1px solid #e4e8ec;border-radius:15px;background:#fafbfc}
+.mobileShellMapHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.mobileShellMapHead strong{font-size:11px;color:#272d34}
+.mobileShellMapHead span{font-size:8.5px;color:#9299a1}
+.mobileShellTopActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mobileShellTopActions>div{display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:8px;align-items:center;padding:9px;border:1px solid #e7eaee;border-radius:12px;background:#fff}
+.mobileShellTopActions>div>span{grid-row:1/3;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#f0f2f4;font-size:16px;overflow:hidden}
+.mobileShellTopActions>div>span img{width:100%;height:100%;object-fit:contain}
+.mobileShellTopActions strong{font-size:9.5px}
+.mobileShellTopActions small{font-size:8px;color:#8a9199}
+.mobileBarPreviewThree{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.mobilePreviewItem.actual{display:grid;justify-items:center;gap:4px;min-width:0}
+.mobilePreviewItem.actual small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;color:#6f7780}
+.mobilePreviewItem.actual img,.mobileBarRow.actual .mobileRowIcon img{width:100%;height:100%;object-fit:contain}
+.mobileBarActualCopy{min-width:0;flex:1}
+.mobileBarActualCopy strong{display:block;font-size:10.5px;color:#242a31}
+.mobileBarActualCopy small{display:block;margin-top:2px;font-size:8px;color:#8d949c}
+:root[data-theme="dark"] .mobileShellMap{background:#1f252b;border-color:#353e47}
+:root[data-theme="dark"] .mobileShellTopActions>div{background:#242a31;border-color:#39424c}
+:root[data-theme="dark"] .mobileShellTopActions>div>span{background:#303842}
+:root[data-theme="dark"] .mobileShellMapHead strong,:root[data-theme="dark"] .mobileBarActualCopy strong{color:#f0f2f4}
+:root[data-theme="dark"] .mobileShellMapHead span,:root[data-theme="dark"] .mobileShellTopActions small,:root[data-theme="dark"] .mobileBarActualCopy small,:root[data-theme="dark"] .mobilePreviewItem.actual small{color:#a4acb5}
