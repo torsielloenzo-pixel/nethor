@@ -414,7 +414,7 @@ function moduleVisible(area,module,profile,config=api?.siteConfig){
 }
 function visibleModules(area,profile,config=api?.siteConfig){return NAV_MODULES.filter(m=>moduleVisible(area,m,profile,config))}
 function moduleIcon(module){return module?.asset?'<img src="'+esc(module.asset)+'" alt="">':esc(module?.icon||'•')}
-const DEFAULT_MOBILE_BAR_IDS=Object.freeze(['home','stock','planning','chat','profile']);
+const DEFAULT_MOBILE_BAR_IDS=Object.freeze(['home','planning','chat']);
 const MOBILE_NAV_ICONS=Object.freeze({
  home:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5"/><path d="M6.5 9.5V20h11V9.5"/></svg>',
  stock:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 8.5h15l-1.4 10H5.9l-1.4-10Z"/><path d="M7 8.5 9 5.5h6l2 3"/><path d="M8 12h8"/></svg>',
@@ -450,24 +450,20 @@ function mobileBarEligible(module){
 function mobileBarItems(config=api?.siteConfig){
  const raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[];
  const source=raw.length?raw:DEFAULT_MOBILE_BAR_IDS.map(id=>({id,enabled:true,label:''}));
- const seen=new Set(),out=[];
+ const allowed=new Set(DEFAULT_MOBILE_BAR_IDS),seen=new Set(),out=[];
  for(const item of source){
   const id=String(item?.id||'').trim();
-  if(!id||seen.has(id))continue;
+  if(!id||!allowed.has(id)||seen.has(id))continue;
   const module=NAV_MODULES.find(m=>m.id===id);
   if(!mobileBarEligible(module))continue;
-  seen.add(id);
-  out.push({id,enabled:item?.enabled!==false,label:String(item?.label||'').trim().slice(0,18)});
-  if(out.length>=5)break;
+  seen.add(id);out.push({id,enabled:item?.enabled!==false,label:String(item?.label||'').trim().slice(0,18)});
+  if(out.length>=3)break
  }
- if(!out.some(x=>x.id==='notifications')){
-  const notifications={id:'notifications',enabled:true,label:''};
-  const chatIndex=out.findIndex(x=>x.id==='chat'),profileIndex=out.findIndex(x=>x.id==='profile');
-  if(chatIndex>=0)out.splice(chatIndex+1,0,notifications);
-  else if(profileIndex>=0)out.splice(profileIndex,0,notifications);
-  else out.push(notifications)
+ for(const id of DEFAULT_MOBILE_BAR_IDS){
+  if(out.length>=3||seen.has(id))continue;
+  const module=NAV_MODULES.find(m=>m.id===id);if(module&&mobileBarEligible(module)){seen.add(id);out.push({id,enabled:true,label:''})}
  }
- return out.slice(0,6)
+ return out.slice(0,3)
 }
 function samePageDestination(url){
  try{
