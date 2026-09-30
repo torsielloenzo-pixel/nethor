@@ -616,8 +616,8 @@ function platformUiNode(kind){ensurePlatformUiConfig();return config.platform_ui
 function platformLabel(kind){return kind==='desktop'?'Desktop':'Mobile'}
 function platformDefaultAsset(kind,key){
  if(key==='header_logo')return String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
- if(key==='login_logo')return kind==='mobile'?'assets/app-icon-mobile-v73.svg?v=73':'assets/app-icon-v63.svg';
- return kind==='mobile'?'assets/app-icon-mobile-v73.svg?v=73':'assets/app-icon-v63.svg'
+ if(key==='login_logo')return kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
+ return 'assets/nethor-mark.svg'
 }
 function platformAssetNode(kind,key){const node=platformUiNode(kind);return node[key]}
 function platformAssetUrl(kind,key){return String(platformAssetNode(kind,key)?.url||'').trim()||platformDefaultAsset(kind,key)}
@@ -757,12 +757,19 @@ function ensurePortalPlatformStructure(){
  if(mobileTab){
   if(!$('platformIdentity_mobile')){const p=document.createElement('div');p.id='platformIdentity_mobile';p.className='panel platformIdentityPanel';mobileTab.prepend(p)}
   if(!$('platformComponents_mobile')){const p=document.createElement('div');p.id='platformComponents_mobile';p.className='panel platformComponentsPanel';mobileTab.appendChild(p)}
-  const bar=mobileTab.querySelector('.panel:not(.platformIdentityPanel):not(.platformComponentsPanel):not(#mobileUserMenuAdminPanel) .toolbar h2');if(bar)bar.textContent='Barre de navigation mobile actuelle'
+  const barPanel=$('mobileBarEditor')?.closest('.panel'),bar=barPanel?.querySelector('.toolbar h2'),barDesc=barPanel?.querySelector('.toolbar p');
+  if(bar)bar.textContent='Barre de navigation mobile actuelle';
+  if(barDesc)barDesc.textContent='Coque Mobile unifiée : Notifications et Menu utilisateur dans l’entête, puis Accueil · Planning · Chat dans une barre basse de 3 colonnes.'
  }
  if(!$('tab-desktop')){
   const section=document.createElement('section');section.id='tab-desktop';section.className='section';
   section.innerHTML='<div id="platformIdentity_desktop" class="panel platformIdentityPanel"></div><div id="platformComponents_desktop" class="panel platformComponentsPanel"></div>';
   const before=$('tab-blocks');before?.parentNode?.insertBefore(section,before)
+ }
+ const actionGrid=document.querySelector('#tab-overview .managementActionGrid'),mobileAction=actionGrid?.querySelector('button[onclick*="showTab(\'mobile\')"]');
+ if(actionGrid&&mobileAction&&!actionGrid.querySelector('[data-generated-tab="desktop"]')){
+  const btn=document.createElement('button');btn.className=mobileAction.className;btn.type='button';btn.dataset.generatedTab='desktop';btn.setAttribute('onclick',"showTab('desktop')");
+  btn.innerHTML='<span>▣</span><strong>Desktop</strong><small>Identité, menus et boutons</small>';mobileAction.insertAdjacentElement('afterend',btn)
  }
  document.querySelectorAll('.managementActionGrid button[onclick*="showTab(\'mobile\')"]').forEach(btn=>{const s=btn.querySelector('strong');if(s)s.textContent='Mobile';const sm=btn.querySelector('small');if(sm)sm.textContent='Identité, navigation et menus'});
 }
