@@ -1,11 +1,11 @@
 {
-  "version": 274,
-  "label": "v1.43.37",
-  "important": false,
+  "version": 275,
+  "label": "v1.43.38",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — Chat routé, phase 8",
-  "message": "Chat devient une vraie vue de mobile.html. Le moteur chat-v2.js est désormais partagé entre chat.html et la SPA, avec conservation du canal Général, conversations privées, groupes, présence, typing, non-lus, archives, réactions, réponses, pièces jointes et messages vocaux. En SPA, Chat réutilise le client Supabase de MobileServices, nettoie ses canaux Realtime à la sortie et conserve les deep-links c/user sans recharger le document. chat.html reste disponible comme fallback. Le Service Worker passe en v274.",
-  "published_at": "2026-09-30T21:11:11.510Z",
+  "title": "Architecture mobile — cutover SPA et QA globale, phase 9",
+  "message": "Le shell Mobile unifié devient l’entrée principale des pages déjà migrées. Les anciennes URLs Accueil, Planning, Chat, Notifications, Menu utilisateur, Profil, Personnalisation, Réglages notifications et Signaler un problème basculent vers mobile.html sur Mobile uniquement, avec conservation des deep-links. Un mode de secours nethor_legacy=1 empêche toute boucle de fallback. Le routeur gère désormais correctement les changements de paramètres sur une vue déjà ouverte et les remounts popstate. Le shell centralise aussi clavier, viewport visuel, orientation, mode PWA et état réseau. Les anciennes pages restent disponibles comme fallback et Desktop reste multipage. Le Service Worker passe en v275.",
+  "published_at": "2026-09-30T21:23:43.480Z",
   "icon": "assets/app-icon-v63.svg"
 }
