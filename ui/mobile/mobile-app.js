@@ -4,8 +4,9 @@
 const root=document.querySelector('[data-mobile-app-shell]');
 const viewHost=document.querySelector('[data-mobile-view-host]');
 const navHost=document.querySelector('[data-mobile-nav-host]');
+const toolHost=document.querySelector('[data-mobile-app-tools]');
 const notificationBadge=document.querySelector('[data-mobile-notification-badge]');
-if(!root||!viewHost||!navHost)return;
+if(!root||!viewHost||!navHost||!toolHost)return;
 
 function platform(){
   try{return String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase()}
@@ -51,16 +52,21 @@ function enforceShellGeometry(){
   setTimeout(repair,120);
 }
 
+function navigationLinks(){
+  return [...navHost.querySelectorAll('[data-mobile-destination]'),...toolHost.querySelectorAll('[data-mobile-destination]')]
+}
 function syncLegacyLinks(){
-  navHost.querySelectorAll('[data-mobile-destination]').forEach(link=>{
+  navigationLinks().forEach(link=>{
     const id=link.getAttribute('data-mobile-destination')||'home';
     const target=router()?.legacyUrl?.(id);
     link.href=target||legacyUrl(link.getAttribute('data-legacy-href')||'home.html')
   })
 }
 function syncActive(view=requestedView()){
-  navHost.querySelectorAll('[data-mobile-destination]').forEach(link=>{
-    const active=link.getAttribute('data-mobile-destination')===view;
+  const menuViews=new Set(['user-menu','profile','settings','notification-settings','report-problem']);
+  navigationLinks().forEach(link=>{
+    const id=link.getAttribute('data-mobile-destination')||'';
+    const active=id===view||(id==='user-menu'&&menuViews.has(view));
     if(active)link.setAttribute('aria-current','page');
     else link.removeAttribute('aria-current')
   })
@@ -180,7 +186,7 @@ async function boot(){
   const serviceState=await bootServices();
   if(services()?.status==='signed-out')return;
 
-  await mobileRouter.start({host:viewHost,nav:navHost});
+  await mobileRouter.start({host:viewHost,nav:[navHost,toolHost]});
   syncLegacyLinks();
   syncActive();
   syncNotificationBadge(services()?.unread||0);
@@ -205,7 +211,8 @@ window.NethorMobileApp=Object.freeze({
   services,
   root:()=>root,
   viewHost:()=>viewHost,
-  navHost:()=>navHost
+  navHost:()=>navHost,
+  toolHost:()=>toolHost
 });
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
