@@ -11,58 +11,31 @@
 <link rel="manifest" href="manifest.webmanifest?v=56">
 <link rel="icon" href="assets/app-icon-v63.svg?v=56" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
-<style>
-:root{--bg:#252a31;--bg2:#1f242a;--text:#f7f8fa;--muted:#9ba1ab;--orange:#ff7a24;--red:#ff321f}
-*{box-sizing:border-box}
-html{width:100%;max-width:100%;overflow-x:hidden;touch-action:pan-x pan-y;overscroll-behavior:none;-webkit-text-size-adjust:100%}
-body{width:100%;max-width:100%;overflow-x:hidden}
-html,body{min-height:100%;margin:0}
-body{min-height:100vh;min-height:100dvh;display:grid;place-items:center;background:
-radial-gradient(circle at 50% 42%,#333941 0,#2b3037 35%,var(--bg) 64%,var(--bg2) 100%);
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);overflow:hidden}
-.maintenance{width:min(92vw,520px);display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px 24px}
-.logo{width:128px;height:128px;display:block;filter:drop-shadow(0 18px 28px #00000032)}
-h1{font-size:58px;line-height:1;margin:20px 0 8px;font-weight:900;letter-spacing:-2.6px}
-.subtitle{margin:0;color:var(--muted);font-size:17px;font-weight:650;letter-spacing:7px;text-transform:uppercase}
-.status{margin-top:30px;min-height:58px;padding:0 23px;display:inline-flex;align-items:center;gap:13px;border-radius:999px;background:linear-gradient(135deg,var(--red),var(--orange));box-shadow:0 14px 34px #ff4f2635;color:#fff;font-size:18px;font-weight:850}
-.gear{width:27px;height:27px;display:grid;place-items:center;font-size:27px;line-height:1;transform-origin:50% 50%;animation:gearClockwise 5s linear infinite}
-@keyframes gearClockwise{to{transform:rotate(360deg)}}
-.glow{position:fixed;width:340px;height:340px;border-radius:50%;background:#ff5a2a08;filter:blur(24px);pointer-events:none}
-.maintenanceLogout{
- position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));z-index:4;
- transform:translateX(-50%);min-width:205px;min-height:48px;padding:0 18px;
- border:1px solid #ffffff1f;border-radius:15px;background:#ffffff0d;color:#e9ebee;
- display:inline-flex;align-items:center;justify-content:center;gap:10px;
- font:inherit;font-size:13px;font-weight:800;letter-spacing:.1px;cursor:pointer;
- backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
- box-shadow:0 10px 30px #00000020;transition:background .16s ease,border-color .16s ease,transform .16s ease,opacity .16s ease
-}
-.maintenanceLogout:hover{background:#ffffff16;border-color:#ffffff32;transform:translateX(-50%) translateY(-1px)}
-.maintenanceLogout:active{transform:translateX(-50%) scale(.98)}
-.maintenanceLogout:disabled,.maintenanceLogout.busy{opacity:.55;cursor:wait;pointer-events:none}
-.maintenanceLogout svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.maintenanceLogout span{white-space:nowrap}
-@media(max-width:560px){.maintenance{padding:24px 18px 92px}.logo{width:104px;height:104px}h1{font-size:45px}.subtitle{font-size:13px;letter-spacing:5px}.status{min-height:52px;padding:0 18px;font-size:16px}.gear{font-size:24px}.maintenanceLogout{bottom:calc(16px + env(safe-area-inset-bottom));min-width:190px;min-height:46px;font-size:12px}}
-</style>
+<style>html,body{min-height:100%;margin:0;background:#252a31}body{min-height:100vh;min-height:100dvh} [data-nethor-maintenance-layout]{min-height:100dvh}</style>
+<script src="platform-resolver.js?v=3"></script>
+<link rel="stylesheet" href="ui/desktop/maintenance-layout.css?v=1" media="not all" data-nethor-shell="desktop">
+<link rel="stylesheet" href="ui/mobile/maintenance-layout.css?v=1" media="not all" data-nethor-shell="mobile">
 </head>
 <body>
-<div class="glow" aria-hidden="true"></div>
-<main class="maintenance" aria-live="polite">
- <img class="logo" src="assets/app-icon-v63.svg?v=56" alt="Nethor">
- <h1>Nethor</h1>
- <p class="subtitle">Portail interne</p>
- <div class="status"><span class="gear" aria-hidden="true">⚙</span><span>Maintenance en cours</span></div>
-</main>
-<a id="maintenanceLogout" class="maintenanceLogout" href="https://nethor.fr/index.html?logout=1&v=115" aria-label="Se déconnecter et revenir à la connexion">
- <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
- <span>Retour à la connexion</span>
-</a>
+<div data-nethor-maintenance-layout></div>
+<noscript><div style="min-height:100dvh;display:grid;place-items:center;color:#fff;font:700 16px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Maintenance Nethor en cours</div></noscript>
+<script src="ui/desktop/maintenance-layout.js?v=1"></script>
+<script src="ui/mobile/maintenance-layout.js?v=1"></script>
+<script src="maintenance-page-layout.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script>
 const URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const db=supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let checking=false,leaving=false;
+function homeTarget(){
+ try{
+  if(window.NethorPlatform?.isPreview?.())return 'home.html?mobile_preview=1';
+  const forced=new URLSearchParams(location.search).get('nethor_platform');
+  if(forced==='desktop'||forced==='mobile')return 'home.html?nethor_platform='+forced
+ }catch(_){}
+ return 'home.html'
+}
 async function maintenanceState(){
  if(checking||leaving)return;checking=true;
  try{
@@ -81,8 +54,8 @@ async function maintenanceState(){
   }
   if(!session){location.replace('https://nethor.fr/index.html?logout=1&v=115');return}
   const {data:profile}=await db.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-  if(profile?.role==='admin'){location.replace('home.html');return}
-  if(!enabled)location.replace('home.html')
+  if(profile?.role==='admin'){location.replace(homeTarget());return}
+  if(!enabled)location.replace(homeTarget())
  }catch(e){console.warn('Maintenance:',e)}
  finally{checking=false}
 }
@@ -94,7 +67,6 @@ async function leaveMaintenanceToLogin(event){
  const btn=document.getElementById('maintenanceLogout');
  if(btn){btn.classList.add('busy');btn.setAttribute('aria-disabled','true');const label=btn.querySelector('span');if(label)label.textContent='Déconnexion…'}
  try{sessionStorage.setItem('nettoForceLogin','1')}catch(_){}
- // Secours indépendant de Supabase : la navigation est forcée même si signOut se bloque.
  const fallback=setTimeout(()=>{location.href=target},900);
  try{
   await Promise.race([
@@ -116,7 +88,7 @@ async function leaveMaintenanceToLogin(event){
  location.replace(target);
  return false
 }
-document.getElementById('maintenanceLogout').addEventListener('click',leaveMaintenanceToLogin);
+document.getElementById('maintenanceLogout')?.addEventListener('click',leaveMaintenanceToLogin);
 maintenanceState();
 setInterval(maintenanceState,15000);
 window.addEventListener('focus',maintenanceState);
