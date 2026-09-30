@@ -10,7 +10,7 @@ function authPlatformUi(){
 }
 function applyAuthBranding(){
  const kind=authPlatformKind(),ui=authPlatformUi(),brand=authSiteConfig?.brand||{};
- const fallback=kind==='mobile'?'assets/app-icon-mobile-v73.svg?v=73':'assets/app-icon-v63.svg';
+ const fallback=kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
  const logo=String(ui?.login_logo?.url||'').trim()||fallback;
  document.querySelectorAll('.authMobileLogo,.authDesktopLogo').forEach(img=>{if(img&&img.getAttribute('src')!==logo)img.src=logo});
  const name=String(brand.name||'Nethor').trim()||'Nethor',sub=String(brand.subtitle||'Portail opérationnel interne').trim()||'Portail opérationnel interne';
