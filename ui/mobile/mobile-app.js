@@ -72,13 +72,14 @@ function setChromeIcon(container,url){
 }
 function applyConfiguredLink(link,id,config,{top=false,userMenu=false}={}){
  if(!link)return;
- const {page,override}=mobilePageConfig(config,id);
- const labelOverride=String(override.nav_label||override.label||'').trim();
+ const {page,override}=mobilePageConfig(config,id),controls=config?.platform_ui?.mobile?.controls||{};
+ const controlKey=top?(userMenu?'user_menu':id==='notifications'?'notifications':''):'',control=controlKey&&controls?.[controlKey]&&typeof controls[controlKey]==='object'?controls[controlKey]:{};
+ const labelOverride=String(control.label||override.nav_label||override.label||'').trim();
  const label=labelOverride||(userMenu?'Menu utilisateur':String(page.nav_label||page.label||link.querySelector('small')?.textContent||id).trim());
  const iconContainer=id==='notifications'&&top?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');
- setChromeIcon(iconContainer,override.image_url);
+ setChromeIcon(iconContainer,String(control.url||override.image_url||''));
  const accent=safeHex(override.color);if(accent)link.style.setProperty('--nethor-mobile-item-accent',accent);else link.style.removeProperty('--nethor-mobile-item-accent');
- if(top){link.dataset.configuredLabel=label;link.setAttribute('aria-label',label);link.title=label}
+ if(top){link.dataset.configuredLabel=label;link.setAttribute('aria-label',label);link.title=String(control.subtitle||label)}
  else{const small=link.querySelector('small');if(small)small.textContent=label;link.setAttribute('aria-label',label)}
 }
 function applyConfiguredChrome(config={}){
