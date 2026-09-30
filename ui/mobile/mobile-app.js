@@ -66,6 +66,54 @@ function onRouteEvent(event){
   syncActive(view);
   root.dataset.mobileView=view
 }
+function editableTarget(el){
+  if(!el||el.disabled||el.readOnly)return false;
+  if(el.matches?.('textarea,[contenteditable="true"]'))return true;
+  if(!el.matches?.('input'))return false;
+  return !['button','checkbox','radio','range','color','file','submit','reset','hidden'].includes(String(el.type||'text').toLowerCase())
+}
+function syncEnvironmentState(){
+  const rootEl=document.documentElement;
+  const vv=window.visualViewport;
+  const active=document.activeElement;
+  const focused=editableTarget(active);
+  const obscured=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;
+  const keyboard=focused&&(obscured>70||rootEl.classList.contains('nettoKeyboardFocus'));
+  rootEl.classList.toggle('nettoKeyboardOpen',keyboard);
+  root.dataset.keyboard=keyboard?'open':'closed';
+  root.dataset.orientation=window.matchMedia?.('(orientation: landscape)')?.matches?'landscape':'portrait';
+  const standalone=window.matchMedia?.('(display-mode: standalone)')?.matches||navigator.standalone===true;
+  root.dataset.displayMode=standalone?'standalone':'browser';
+  root.dataset.online=navigator.onLine===false?'0':'1';
+  if(vv){
+    rootEl.style.setProperty('--nethor-visual-viewport-height',Math.round(vv.height)+'px');
+    rootEl.style.setProperty('--nethor-visual-viewport-top',Math.round(vv.offsetTop||0)+'px')
+  }
+}
+function bindEnvironmentState(){
+  let raf=0;
+  const sync=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(syncEnvironmentState)};
+  window.addEventListener('resize',sync,{passive:true});
+  window.addEventListener('orientationchange',sync,{passive:true});
+  window.addEventListener('online',sync,{passive:true});
+  window.addEventListener('offline',sync,{passive:true});
+  window.visualViewport?.addEventListener('resize',sync,{passive:true});
+  window.visualViewport?.addEventListener('scroll',sync,{passive:true});
+  document.addEventListener('focusin',event=>{
+    if(editableTarget(event.target)){
+      document.documentElement.classList.add('nettoKeyboardFocus');
+      sync()
+    }
+  },true);
+  document.addEventListener('focusout',()=>{
+    setTimeout(()=>{
+      if(!editableTarget(document.activeElement))document.documentElement.classList.remove('nettoKeyboardFocus');
+      sync()
+    },40)
+  },true);
+  sync()
+}
+
 async function bootServices(){
   const shared=services();
   if(!shared){
@@ -103,6 +151,7 @@ async function boot(){
   window.addEventListener('nethor:mobile-route-idle',onRouteEvent);
   syncLegacyLinks();
   syncActive();
+  bindEnvironmentState();
   root.dataset.router='ready';
   root.dataset.ready='1';
 
@@ -114,7 +163,7 @@ async function boot(){
   syncActive();
   syncNotificationBadge(services()?.unread||0);
   window.dispatchEvent(new CustomEvent('nethor:mobile-app-ready',{detail:{
-    phase:8,
+    phase:9,
     view:requestedView(),
     platform:platform(),
     router:true,
@@ -125,7 +174,7 @@ async function boot(){
 }
 
 window.NethorMobileApp=Object.freeze({
-  phase:8,
+  phase:9,
   platform,
   isMobile,
   requestedView,
