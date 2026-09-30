@@ -1,11 +1,11 @@
 {
-  "version": 273,
-  "label": "v1.43.36",
+  "version": 274,
+  "label": "v1.43.37",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — Planning routé, phase 7",
-  "message": "Planning devient une vraie vue de mobile.html. Le moteur métier historique est désormais partagé entre planning.html et la SPA via planning-runtime.js, avec le même Agenda, les mêmes calculs, imports, modifications, anomalies, couverture, statistiques et indisponibilités/congés. Les deep-links week/day/focus restent compatibles, le scroll est restauré au retour, les scripts Planning sont chargés à la demande et la SPA réutilise le client Supabase de MobileServices. planning.html reste disponible comme fallback. Le Service Worker passe en v273.",
-  "published_at": "2026-09-30T20:58:23.309Z",
+  "title": "Architecture mobile — Chat routé, phase 8",
+  "message": "Chat devient une vraie vue de mobile.html. Le moteur chat-v2.js est désormais partagé entre chat.html et la SPA, avec conservation du canal Général, conversations privées, groupes, présence, typing, non-lus, archives, réactions, réponses, pièces jointes et messages vocaux. En SPA, Chat réutilise le client Supabase de MobileServices, nettoie ses canaux Realtime à la sortie et conserve les deep-links c/user sans recharger le document. chat.html reste disponible comme fallback. Le Service Worker passe en v274.",
+  "published_at": "2026-09-30T21:11:11.510Z",
   "icon": "assets/app-icon-v63.svg"
 }
