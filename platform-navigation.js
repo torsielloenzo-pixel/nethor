@@ -43,6 +43,18 @@ const MOBILE_VIEW_TARGETS=Object.freeze({
  rewards:'rewards.html'
 });
 
+const MOBILE_SPA_CUTOVER=Object.freeze({
+ 'home.html':'home',
+ 'planning.html':'planning',
+ 'chat.html':'chat',
+ 'notifications.html':'notifications',
+ 'user-menu.html':'user-menu',
+ 'profile.html':'profile',
+ 'settings.html':'settings',
+ 'notification-settings.html':'notification-settings',
+ 'report-problem.html':'report-problem'
+});
+
 const MOBILE_ROUTES=Object.freeze({
  'user-menu.html':{type:'url',value:'home.html'},
  'profile.html':{type:'url',value:'user-menu.html'},
@@ -239,6 +251,28 @@ function mobileViewTarget(view){
 }
 function mobileViewTable(){return MOBILE_VIEW_TARGETS}
 
+function mobileSpaCutoverTarget(raw=location.href){
+ if(!isMobileShell())return'';
+ const source=localUrl(raw),file=pageFile(source.href),view=MOBILE_SPA_CUTOVER[file];
+ if(!view||source.searchParams.get('nethor_legacy')==='1')return'';
+ const target=new URL('mobile.html',location.href);
+ target.searchParams.set('view',view);
+ source.searchParams.forEach((value,key)=>{
+  if(['view','nethor_legacy','open_user_menu','from_user_menu','_nethor_update'].includes(key))return;
+  target.searchParams.append(key,value)
+ });
+ if(window.NethorPlatform?.isPreview?.())target.searchParams.set('mobile_preview','1');
+ return relative(target)
+}
+function applyMobileSpaCutover(){
+ const target=mobileSpaCutoverTarget();
+ if(!target)return false;
+ const current=relative(localUrl(location.href));
+ if(target===current)return false;
+ location.replace(target);
+ return true
+}
+
 window.NethorNavigation=Object.freeze({
  platform,
  isMobileShell,
@@ -257,6 +291,8 @@ window.NethorNavigation=Object.freeze({
  userMenuChildUrl,
  userMenuReturnUrl
 });
+
+if(applyMobileSpaCutover())return;
 
 document.addEventListener('click',captureClickParent,true);
 captureReferrerParent();
