@@ -442,6 +442,17 @@ function boot(){
  }
  setLayout('classic',false);
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-window.NethorPlanningAgenda={setLayout,setMobileMode,render:renderAgenda,get layout(){return layout},get mobileMode(){return mobileMode}};
+function mount(){
+ booted=false;restFocusRevealed=false;boot();return true
+}
+function unmount(){
+ booted=false;restFocusRevealed=false;layout='classic';mobileMode='day';
+ document.getElementById('planningCenteredLayoutRuntime')?.remove();
+ document.body.classList.remove('agendaLayout','mobileAgendaForced');
+ return true
+}
+if(document.documentElement.dataset.nethorMobileApp!=='1'){
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot()
+}
+window.NethorPlanningAgenda={mount,unmount,setLayout,setMobileMode,render:renderAgenda,get layout(){return layout},get mobileMode(){return mobileMode}};
 })();
