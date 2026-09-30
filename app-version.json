@@ -1,11 +1,11 @@
 {
-  "version": 229,
-  "label": "v1.35.0",
+  "version": 230,
+  "label": "v1.36.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Phase 4.12 — Défis & Boutique",
-  "message": "Défis & Boutique possède désormais des structures Desktop et Mobile distinctes. Desktop conserve son header et son hero complet ; Mobile utilise un top dédié et un hero compact. Les anciens breakpoints 850/560 px ont quitté rewards.css et rewards.js reste un moteur métier unique, sans décision de plateforme par largeur.",
-  "published_at": "2026-09-30T00:53:39.000+02:00",
+  "title": "Phase 4.13 — Chat Desktop / Mobile",
+  "message": "Le Chat possède désormais des structures Desktop et Mobile distinctes. Desktop monte la liste, la conversation et le panneau d’informations ; Mobile monte uniquement la liste et la conversation. Le choix de plateforme ne dépend plus de nethorPhoneDevice, innerWidth ou resize, et les anciens media queries 780/781 px ont quitté le CSS partagé.",
+  "published_at": "2026-09-30T05:22:09.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
