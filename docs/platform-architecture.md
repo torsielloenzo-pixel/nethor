@@ -1778,3 +1778,116 @@ Le Service Worker passe en v235 / `netto-tools-v235`.
 
 Les URLs CSS Stock dédiées passent en `v=2` afin d’éviter la réutilisation d’une ancienne réponse HTTP ou Service Worker après le déplacement des règles.
 
+
+## Phase 4.19 — Extraction du moteur JavaScript Stock
+
+Le moteur métier Stock F&L n'est plus embarqué dans un bloc JavaScript monolithique de `index.html`.
+
+### Fichiers extraits
+
+```text
+stock/
+├── stock-runtime.js
+├── stock-data.js
+├── stock-render.js
+├── stock-order.js
+├── stock-products.js
+└── stock-management.js
+```
+
+### Responsabilités
+
+`stock-runtime.js`
+- client Supabase de la page Stock ;
+- état partagé ;
+- helpers DOM ;
+- cache Stock ;
+- familles, catégories et conditionnements.
+
+`stock-data.js`
+- chargement des produits ;
+- recherche ;
+- filtre de catégories ;
+- visibilité des produits ;
+- options de consultation.
+
+`stock-render.js`
+- modes Stock / Consulter / Commande / Gestion ;
+- rendu Stock express ;
+- rendu Consultation ;
+- dashboards ;
+- modification des quantités ;
+- réinitialisation du Stock.
+
+`stock-order.js`
+- ordre logique des produits ;
+- saisonnalité ;
+- paramètres de commande ;
+- moteur de suggestions ;
+- panier de commande.
+
+`stock-products.js`
+- fiche article ;
+- édition produit ;
+- ajout produit ;
+- EAN13 ;
+- photo et paramètres de commande.
+
+`stock-management.js`
+- familles ;
+- catégories ;
+- conditionnements ;
+- ordre des produits ;
+- suppression et administration du catalogue.
+
+### Compatibilité avec le moteur historique
+
+Les scripts restent des scripts JavaScript classiques chargés séquentiellement.
+
+Ce choix est volontaire : les bindings globaux historiques restent disponibles entre fichiers sans imposer une migration immédiate vers ES modules.
+
+Les 127 fonctions présentes avant la phase sont toujours présentes après extraction, sans doublon.
+
+Une reconstruction du moteur avec les six fichiers, le bloc Auth conservé et le bloc UI partagé correspond au code historique, à l'exception volontaire du déplacement du bootstrap.
+
+### Bootstrap
+
+Avant la phase, le moteur exécutait :
+
+```js
+db.auth.onAuthStateChange(...);
+boot();
+```
+
+avant la fin du bloc monolithique, en bénéficiant du hoisting des déclarations de fonctions.
+
+Après extraction, `boot()` est exécuté uniquement une fois que les six scripts Stock et les fonctions UI partagées ont été chargés.
+
+Cela évite qu'un démarrage Auth appelle une fonction Stock qui n'existe pas encore.
+
+### Ce qui reste volontairement dans index.html
+
+La logique Auth/session/update reste inline pour la phase 4.20 :
+
+- profil et préférences ;
+- session Supabase ;
+- connexion/déconnexion ;
+- mot de passe oublié ;
+- contrôle de version ;
+- activation de mise à jour ;
+- maintenance.
+
+Les helpers UI généraux de cette page restent également inline pour l'instant.
+
+### Taille
+
+Après extraction, `index.html` passe d'environ 140 Ko à environ 91 Ko.
+
+### Cache
+
+Le Service Worker passe en v236 / `netto-tools-v236`.
+
+Les six nouveaux scripts du dossier `stock/` sont précachés.
+
+La version applicative associée est `v1.42.0` avec purge de cache.
+
