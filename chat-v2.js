@@ -3,7 +3,7 @@ function chatDesktopMode(){return !CHAT_SPA_MODE&&(window.NethorPlatform?.curren
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 let db=CHAT_SPA_MODE?null:supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let chatRuntimeActive=false,chatPresenceListener=null,chatFocusListener=null,chatOwnPresenceChannel=null;
+let chatRuntimeActive=false,chatPresenceListener=null,chatFocusListener=null,chatOwnPresenceChannel=null,chatPresenceTimer=null;
 function chatSharedServices(){return CHAT_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
 function chatPermissionFromShared(profile,config){
  const role=profile?.role||'',page=config?.pages?.chat||{},levels={none:0,view:1,operate:2,manage:3};
@@ -102,6 +102,10 @@ function syncOwnPresence(){
  Object.values(presence||{}).flat().forEach(x=>{if(x?.user_id)ids.add(x.user_id)});
  syncPresence([...ids])
 }
+async function chatPresencePing(){
+ if(!db||!state.session)return;
+ try{await db.rpc('chat_presence_ping',{p_event:'heartbeat'})}catch(_){}
+}
 function startPresence(){
  if(CHAT_SPA_MODE){
   if(chatOwnPresenceChannel||!db||!state.session)return;
@@ -110,6 +114,8 @@ function startPresence(){
    .on('presence',{event:'join'},syncOwnPresence)
    .on('presence',{event:'leave'},syncOwnPresence)
    .subscribe(async status=>{if(status==='SUBSCRIBED'){await chatOwnPresenceChannel.track({user_id:state.session.user.id,display_name:state.profile?.display_name||'Utilisateur',page:'chat',online_at:new Date().toISOString()});syncOwnPresence()}});
+  void chatPresencePing();
+  if(!chatPresenceTimer)chatPresenceTimer=setInterval(()=>{if(!document.hidden)void chatPresencePing()},30000);
   return
  }
  syncPresence();
@@ -835,6 +841,7 @@ async function unmountChatRuntime(){
  }
  if(chatOwnPresenceChannel&&db){try{await db.removeChannel(chatOwnPresenceChannel)}catch(_){}}
  chatOwnPresenceChannel=null;
+ if(chatPresenceTimer){clearInterval(chatPresenceTimer);chatPresenceTimer=null}
  if(chatPresenceListener){window.removeEventListener('netto:presence',chatPresenceListener);chatPresenceListener=null}
  document.body.classList.remove('mobileConversationOpen');
  document.documentElement.classList.remove('nettoKeyboardOpen');
