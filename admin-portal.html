@@ -340,6 +340,8 @@ function normalize(raw){
  c.pages=c.pages&&typeof c.pages==='object'?c.pages:{};
  Object.keys(c.pages).filter(k=>k.startsWith('custom_')).forEach(k=>delete c.pages[k]);
  delete c.customMenus;
+ c.personalization=c.personalization&&typeof c.personalization==='object'?c.personalization:{};
+ c.personalization.home_menus_enabled=c.personalization.home_menus_enabled!==false;
  c.mobile_bar=c.mobile_bar&&typeof c.mobile_bar==='object'?c.mobile_bar:{enabled:true,items:[]};
  return c
 }
@@ -557,8 +559,35 @@ function renderOperationsWidgetEditor(){
   const node=ensureOperationsWidgetConfig();node.sections[el.dataset.operationsSection]=el.checked;markDirty()
  })
 }
+function ensurePersonalizationConfig(){
+ config.personalization=config.personalization&&typeof config.personalization==='object'?config.personalization:{};
+ if(typeof config.personalization.home_menus_enabled!=='boolean')config.personalization.home_menus_enabled=true;
+ return config.personalization
+}
+function renderHomeMenuPersonalizationControl(){
+ const panel=document.querySelector('#tab-system .pagesEditorPanel');if(!panel)return;
+ let host=$('homeMenuPersonalizationControl');
+ if(!host){
+  host=document.createElement('div');
+  host.id='homeMenuPersonalizationControl';
+  host.className='managementSettingList';
+  host.style.margin='12px 0 14px';
+  const anchor=panel.querySelector('.pagesEditorHead');
+  if(anchor)anchor.insertAdjacentElement('afterend',host);else panel.prepend(host)
+ }
+ const prefs=ensurePersonalizationConfig(),enabled=prefs.home_menus_enabled!==false;
+ host.innerHTML='<div class="managementSettingRow"><div class="managementSettingIcon" aria-hidden="true">⌂</div><div class="managementSettingText"><strong>Personnalisation des menus de l’accueil</strong><span>Autorise les utilisateurs à afficher ou masquer leurs cartes depuis Menu utilisateur → Personnalisation. Les préférences déjà enregistrées sont conservées si cette option est masquée.</span><small class="managementSettingStatus"><b>Administrateur :</b> l’accès reste toujours disponible pour ton propre compte.</small></div><div class="managementSettingControl"><span id="homeMenusPersonalizationState" class="managementSettingState '+(enabled?'active':'')+'">'+(enabled?'Visible':'Masqué')+'</span><label class="adminSwitch" title="Afficher ou masquer Menus de l’accueil pour les utilisateurs"><input id="homeMenusPersonalizationEnabled" type="checkbox" '+(enabled?'checked':'')+'><span></span></label></div></div>';
+ const input=$('homeMenusPersonalizationEnabled');
+ if(input)input.onchange=()=>{
+  ensurePersonalizationConfig().home_menus_enabled=input.checked;
+  const state=$('homeMenusPersonalizationState');
+  if(state){state.textContent=input.checked?'Visible':'Masqué';state.classList.toggle('active',input.checked)}
+  markDirty();window.NettoSounds?.play?.('switch')
+ }
+}
 function renderSystem(){
  ensurePages();
+ renderHomeMenuPersonalizationControl();
  const host=$('systemModules'),mods=builtinModules();
  if(!host)return;
  renderOperationsWidgetEditor();
