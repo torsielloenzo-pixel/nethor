@@ -60,7 +60,7 @@ const icons={
  security:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="10" width="13" height="10" rx="2.5"/><path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"/><path d="M12 14v2.5"/></svg>'
 };
 
-function backToUserMenu(){if(window.NettoProfileUI?.backToUserMenu)return window.NettoProfileUI.backToUserMenu();location.href='home.html?open_user_menu=1'}
+function backToUserMenu(){if(window.NethorNavigation?.navigateBack)return window.NethorNavigation.navigateBack();if(window.NettoProfileUI?.backToUserMenu)return window.NettoProfileUI.backToUserMenu();location.href='user-menu.html'}
 function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1}
 function isStandalone(){return window.matchMedia?.('(display-mode: standalone)')?.matches===true||navigator.standalone===true}
 function pushSupported(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window}
