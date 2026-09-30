@@ -1,11 +1,11 @@
 {
-  "version": 290,
+  "version": 291,
   "label": "v1.44.0",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
   "title": "Gestion — Éditeur Mobile / Desktop",
-  "message": "L’Éditeur du portail est restructuré en Mobile et Desktop. Les logos d’entête, de connexion et de bienvenue peuvent être personnalisés séparément, l’écran de bienvenue accepte un logo ou une animation, les menus et boutons disposent de surcharges par plateforme, et la gestion Mobile reflète désormais la coque réelle avec Notifications et Menu dans l’entête et Accueil · Planning · Chat dans la barre basse à 3 colonnes.",
+  "message": "Refonte de l’Éditeur du portail : catégories Mobile et Desktop séparées, logos d’entête et de connexion indépendants, écran Bienvenue configurable avec logo ou animation, menus et boutons personnalisables par plateforme avec import/téléchargement, et gestion Mobile alignée sur la coque réelle (Notifications + Menu utilisateur en entête, Accueil · Planning · Chat en barre basse 3 colonnes). Les vues Menu utilisateur et Accès rapides lisent désormais les réglages Mobile.",
   "published_at": "2026-10-01T01:30:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
