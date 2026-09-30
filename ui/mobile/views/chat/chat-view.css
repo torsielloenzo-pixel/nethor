@@ -1,0 +1,20 @@
+.nethorMobileView[data-mobile-view="chat"]{padding:0;background:#f0f2f5;overflow:hidden}
+.nethorChatView{width:100%;height:100%;min-height:0;overflow:hidden}
+.nethorChatView .chatMobileLayout{width:100%;height:100%;min-height:0}
+.nethorChatView .chatApp{top:0!important;bottom:0!important;height:100%!important}
+.nethorChatView .conversationListPane{padding-top:0!important}
+.nethorChatView .conversationPane{padding-top:0!important}
+.nethorChatView .modalBackdrop,.nethorChatView .conversationActionBackdrop,.nethorChatView .imageLightbox{z-index:2147482500!important}
+body.mobileConversationOpen .nethorMobileAppTop{display:none!important}
+body.mobileConversationOpen .nethorMobileAppNav{display:grid!important}
+html.nettoKeyboardOpen body.mobileConversationOpen .nethorMobileAppNav{display:none!important}
+body.mobileConversationOpen #mobile-view{overflow:hidden!important}
+.nethorChatViewLoading,.nethorChatViewError{min-height:65dvh;display:grid;place-items:center;align-content:center;gap:10px;padding:24px;text-align:center;color:#7d848d}
+.nethorChatViewLoading span{width:31px;height:31px;border:3px solid #dde1e6;border-top-color:#ef5a2f;border-radius:50%;animation:nethorChatSpin .8s linear infinite}
+.nethorChatViewLoading strong,.nethorChatViewError strong{color:#25292e;font-size:15px}
+.nethorChatViewLoading small,.nethorChatViewError span{max-width:320px;font-size:9.5px;line-height:1.45}
+.nethorChatViewError button{min-height:40px;border:0;border-radius:11px;padding:8px 12px;background:#ef5a2f;color:#fff;font-weight:850}
+:root[data-theme="dark"] .nethorMobileView[data-mobile-view="chat"]{background:#141619}
+:root[data-theme="dark"] .nethorChatViewLoading strong,:root[data-theme="dark"] .nethorChatViewError strong{color:#f0ece7}
+@keyframes nethorChatSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.nethorChatViewLoading span{animation:none}}
