@@ -1,11 +1,11 @@
 {
-  "version": 242,
-  "label": "v1.43.5",
+  "version": 243,
+  "label": "v1.43.6",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Correctifs visuels Mobile",
-  "message": "Correction des défauts d’affichage Mobile : Notifications retrouve un en-tête clair et un défilement normal, ses menus ne sont plus coupés, les menus et feuilles du Chat restent au-dessus de la barre basse, l’indicateur actif de navigation est réaligné, et les actions fixes de Personnalisation et du Planning restent accessibles. Les styles plein écran du Scanner sont désormais strictement isolés au Scanner.",
-  "published_at": "2026-09-30T14:08:00.000+02:00",
+  "title": "Performance Mobile — phase 1",
+  "message": "Les pages internes Nethor s’ouvrent désormais depuis le cache local puis se mettent à jour en arrière-plan. Connexion, Maintenance et Réparation restent sur une stratégie réseau stricte. Les services non essentiels du profil démarrent après le premier affichage, le cache du profil reste prioritaire, et profile-ui utilise désormais une seule ressource versionnée.",
+  "published_at": "2026-09-30T16:52:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
