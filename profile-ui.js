@@ -161,6 +161,7 @@ const warmedMobileRoutes=new Set();
 function warmMobileRoutes(urls=[]){
  if(!isMobileViewport()||!document.head)return;
  const run=()=>{
+  const toWarm=[];
   for(const raw of urls){
    try{
     const u=new URL(raw||'',location.href);
@@ -169,16 +170,19 @@ function warmMobileRoutes(urls=[]){
     if(u.pathname===location.pathname&&u.search===location.search)continue;
     const key=u.pathname+u.search;
     if(warmedMobileRoutes.has(key))continue;
-    warmedMobileRoutes.add(key);
+    warmedMobileRoutes.add(key);toWarm.push(u.href);
     const link=document.createElement('link');
     link.rel='prefetch';link.href=u.href;
     link.dataset.nettoWarmRoute='1';
     document.head.appendChild(link)
    }catch(_){}
   }
+  if(toWarm.length){
+   try{navigator.serviceWorker?.controller?.postMessage?.({type:'WARM_NAVIGATION_ROUTES',urls:toWarm.slice(0,8)})}catch(_){}
+  }
  };
- if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:900});
- else setTimeout(run,120)
+ if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:650});
+ else setTimeout(run,80)
 }
 
 /* Mobile keyboard: global state only. Chat owns its own visual viewport sizing. */
@@ -532,21 +536,59 @@ function renderMobileQuickBar(){
  nav.innerHTML=window.NethorMobileShell?.buildQuickBar?.(items,mobileNavIcon)||items.map(({item,module})=>{const isUserMenu=module.id==='profile',label=isUserMenu?'Menu utilisateur':(item.label||module.label||'Menu'),badge=module.id==='notifications'?'<b class="nettoMobileNotifBadge hidden" aria-label="Notifications non lues">0</b>':'';if(isUserMenu)return '<a class="nettoMobileQuickItem" data-mobile-id="profile" href="user-menu.html" aria-label="Menu utilisateur" title="Menu utilisateur"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span></a>';return '<a class="nettoMobileQuickItem" data-mobile-id="'+esc(module.id)+'" href="'+esc(module.url||'home.html')+'" aria-label="'+esc(label)+'" title="'+esc(label)+'"><span class="nettoMobileQuickIcon" aria-hidden="true">'+mobileNavIcon(module.id)+'</span>'+badge+'</a>'}).join('');
  warmMobileRoutes(items.map(({module})=>module?.id==='profile'?'user-menu.html':module?.url||'').filter(Boolean));
  syncMobileQuickBarActive();
+ const clearQuickNavVisual=()=>{
+  nav.querySelectorAll('.nettoMobileQuickItem').forEach(x=>x.classList.remove('pressed','navigating'))
+ };
+ let quickNavBusy=false,lastPointerNavigationAt=0;
+ const navigateQuickItem=(a,e)=>{
+  if(!a?.matches?.('a[href]'))return;
+  const target=a.getAttribute('href')||'',id=a.dataset.mobileId||'';
+  e?.preventDefault?.();e?.stopPropagation?.();
+  if(!target)return;
+  if(mobileDropMode())closeDrops();
+  if(samePageDestination(target)){
+   clearQuickNavVisual();
+   syncMobileQuickBarActive(id);
+   try{window.scrollTo({top:0,left:0,behavior:'smooth'})}catch(_){try{window.scrollTo(0,0)}catch(__){}}
+   try{window.dispatchEvent(new CustomEvent('nethor:mobile-tab-reselect',{detail:{id,target}}))}catch(_){}
+   return
+  }
+  if(quickNavBusy)return;
+  quickNavBusy=true;clearQuickNavVisual();
+  a.classList.add('navigating');syncMobileQuickBarActive(id);
+  document.documentElement.classList.add('nettoMobileNavigating');
+  try{sessionStorage.setItem('nethorMobilePendingTabV1',JSON.stringify({id,target,at:Date.now()}))}catch(_){}
+  try{sounds.play('navigate')}catch(_){}
+  let attempted=false;
+  const go=()=>{
+   if(attempted)return;attempted=true;
+   try{
+    if(window.NethorNavigation?.navigate){window.NethorNavigation.navigate(target);return}
+   }catch(_){}
+   try{location.assign(target)}catch(_){location.href=target}
+  };
+  requestAnimationFrame(go);
+  setTimeout(()=>{
+   if(document.visibilityState==='visible'&&!samePageDestination(target)){
+    try{location.assign(target)}catch(_){location.href=target}
+   }
+  },320)
+ };
  nav.querySelectorAll('.nettoMobileQuickItem').forEach(a=>{
-  const activate=()=>syncMobileQuickBarActive(a.dataset.mobileId||'');
   a.addEventListener('pointerdown',()=>{
-   if(mobileDropMode())closeDrops();
-   activate()
+   clearQuickNavVisual();a.classList.add('pressed')
   },{passive:true});
+  a.addEventListener('pointercancel',()=>a.classList.remove('pressed'),{passive:true});
+  a.addEventListener('pointerup',e=>{
+   a.classList.remove('pressed');
+   if(e.pointerType==='touch'||e.pointerType==='pen'){
+    lastPointerNavigationAt=Date.now();
+    navigateQuickItem(a,e)
+   }
+  });
   a.addEventListener('click',e=>{
-   if(mobileDropMode())closeDrops();
-   activate();
-   if(!mobileDropMode()||!a.matches('a[href]'))return;
-   const target=a.getAttribute('href')||'';
-   e.preventDefault();e.stopPropagation();
-   if(!target||samePageDestination(target))return;
-   if(window.NethorNavigation?.navigate){window.NethorNavigation.navigate(target);return}
-   location.href=target
+   if(Date.now()-lastPointerNavigationAt<700){e.preventDefault();e.stopPropagation();return}
+   navigateQuickItem(a,e)
   })
  });
  updateMobileNotificationBadge();
@@ -879,7 +921,12 @@ function resetMobileNavigationState(){
 if(!window.__nettoMobileNavLifecycleBound){
  window.__nettoMobileNavLifecycleBound=true;
  window.addEventListener('pagehide',resetMobileNavigationState,{capture:true});
- window.addEventListener('pageshow',()=>resetMobileNavigationState(),{capture:true});
+ window.addEventListener('pageshow',()=>{
+  document.documentElement.classList.remove('nettoMobileNavigating');
+  try{sessionStorage.removeItem('nethorMobilePendingTabV1')}catch(_){}
+  resetMobileNavigationState();
+  requestAnimationFrame(()=>syncMobileQuickBarActive())
+ },{capture:true});
  window.addEventListener('orientationchange',()=>setTimeout(()=>{if(!document.documentElement.classList.contains('nettoMobileUserMenuOpen'))resetMobileNavigationState()},80),{passive:true})
 }
 function loginDate(v){const d=new Date(v);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
