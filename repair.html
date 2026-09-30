@@ -1,21 +1,82 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Réparation Nethor</title>
-<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f6f8;color:#1d232b;margin:0;min-height:100vh;display:grid;place-items:center}.card{width:min(90vw,430px);background:#fff;border:1px solid #e2e6ea;border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 55px #18223518}.mark{width:52px;height:52px;border-radius:15px;margin:auto;background:linear-gradient(135deg,#ff3421,#ff8500);color:#fff;display:grid;place-items:center;font-size:27px;font-weight:900}.spin{margin:18px auto 0;width:28px;height:28px;border:3px solid #eee;border-top-color:#ef522b;border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}small{color:#7b838c}</style></head>
-<body><div class="card"><div class="mark">N</div><h1>Réparation Nethor</h1><p id="state">Nettoyage de l’ancien cache…</p><small>La page d’accueil va se rouvrir automatiquement.</small><div class="spin"></div></div>
+<html lang="fr" data-nethor-repair="standalone">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f6f8">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<title>Réparation Nethor</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#f5f6f8;color:#1d232b}
+body{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.card{width:min(430px,100%);background:#fff;border:1px solid #e2e6ea;border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 55px #18223518}
+.mark{width:52px;height:52px;border-radius:15px;margin:auto;background:linear-gradient(135deg,#ff3421,#ff8500);color:#fff;display:grid;place-items:center;font-size:27px;font-weight:900}
+h1{margin:16px 0 8px;font-size:26px;line-height:1.1;letter-spacing:-.5px}
+p{margin:0;font-size:15px;line-height:1.45}
+small{display:block;margin-top:8px;color:#7b838c;line-height:1.4}
+.spin{margin:18px auto 0;width:28px;height:28px;border:3px solid #eee;border-top-color:#ef522b;border-radius:50%;animation:repairSpin .8s linear infinite}
+@keyframes repairSpin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<main class="card" role="status" aria-live="polite">
+ <div class="mark" aria-hidden="true">N</div>
+ <h1>Réparation Nethor</h1>
+ <p id="state">Nettoyage du cache Nethor…</p>
+ <small id="detail">Cette page fonctionne sans le shell, sans Supabase et sans résolveur de plateforme.</small>
+ <div class="spin" aria-hidden="true"></div>
+</main>
 <script>
 (async()=>{
  const state=document.getElementById('state');
- try{
-  if('serviceWorker' in navigator){
+ const detail=document.getElementById('detail');
+ const appRoot=new URL('./',location.href);
+ let workersRemoved=0,cachesRemoved=0;
+ const errors=[];
+ if('serviceWorker' in navigator){
+  try{
    const regs=await navigator.serviceWorker.getRegistrations();
-   await Promise.all(regs.map(r=>r.unregister().catch(()=>false)))
-  }
-  if('caches' in window){
+   const owned=regs.filter(reg=>{
+    try{
+     const scope=new URL(reg.scope);
+     return scope.origin===appRoot.origin&&(scope.pathname===appRoot.pathname||scope.pathname.startsWith(appRoot.pathname))
+    }catch(_){return false}
+   });
+   const results=await Promise.allSettled(owned.map(reg=>reg.unregister()));
+   workersRemoved=results.filter(x=>x.status==='fulfilled'&&x.value===true).length;
+   if(results.some(x=>x.status==='rejected'))errors.push('service worker')
+  }catch(e){errors.push('service worker')}
+ }
+ if('caches' in window){
+  try{
    const keys=await caches.keys();
-   await Promise.all(keys.filter(k=>/^netto-tools-v\d+$/.test(k)).map(k=>caches.delete(k)))
-  }
-  state.textContent='Cache réparé · rechargement de v1.20.0…';
- }catch(e){state.textContent='Nettoyage partiel · rechargement…'}
- setTimeout(()=>location.replace('home.html?cache_repaired=1'),500)
+   const nethorKeys=keys.filter(k=>/^netto-tools-v\d+$/.test(String(k)));
+   const results=await Promise.allSettled(nethorKeys.map(k=>caches.delete(k)));
+   cachesRemoved=results.filter(x=>x.status==='fulfilled'&&x.value===true).length;
+   if(results.some(x=>x.status==='rejected'))errors.push('cache')
+  }catch(e){errors.push('cache')}
+ }
+ try{sessionStorage.removeItem('nethorPlatformResolvedV1')}catch(_){}
+ if(errors.length){
+  state.textContent='Nettoyage partiel · rechargement de Nethor…';
+  detail.textContent='Certains éléments n’ont pas pu être supprimés automatiquement. Le rechargement réseau va tout de même être tenté.'
+ }else{
+  state.textContent='Réparation terminée · rechargement de Nethor…';
+  detail.textContent=(workersRemoved||cachesRemoved)?`${workersRemoved} service worker(s) et ${cachesRemoved} cache(s) nettoyé(s).`:'Aucun cache Nethor obsolète n’a été détecté.'
+ }
+ const target=new URL('home.html',location.href);
+ target.searchParams.set('cache_repaired','1');
+ target.searchParams.set('repair_reload',String(Date.now()));
+ try{
+  const p=new URLSearchParams(location.search);
+  if(p.get('mobile_preview')==='1')target.searchParams.set('mobile_preview','1');
+  const forced=p.get('nethor_platform');
+  if(forced==='desktop'||forced==='mobile')target.searchParams.set('nethor_platform',forced)
+ }catch(_){}
+ setTimeout(()=>location.replace(target.href),650)
 })();
-</script></body></html>
+</script>
+</body>
+</html>
