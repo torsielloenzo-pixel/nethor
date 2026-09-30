@@ -118,6 +118,132 @@ Un second appui sur l'onglet déjà actif ne crée pas une nouvelle entrée d'hi
 
 La phase 2 ne redirige toujours pas les anciennes pages Mobile vers `mobile.html`. Le système actuel reste donc utilisable pendant la migration.
 
+## Phase 3 — Services communs persistants
+
+La phase 3 introduit `ui/mobile/mobile-services.js`.
+
+### Principe
+
+Le shell Mobile charge désormais une seule instance Supabase pendant toute la durée de vie de `mobile.html`.
+
+Les futures vues ne devront plus recréer à chaque ouverture :
+
+- le client Supabase ;
+- la session Auth ;
+- le profil utilisateur ;
+- `app_settings.site_config` ;
+- les permissions issues de `my_subrole_permissions` ;
+- les clés de sous-rôles ;
+- les préférences de notifications ;
+- la liste et le compteur de notifications.
+
+### API
+
+Le service est exposé via :
+
+```js
+window.NethorMobileServices
+window.MobileServices
+```
+
+Les principaux points d'accès sont :
+
+```js
+await NethorMobileServices.ready()
+NethorMobileServices.snapshot()
+NethorMobileServices.client
+NethorMobileServices.session
+NethorMobileServices.profile
+NethorMobileServices.siteConfig
+NethorMobileServices.subrolePermissions
+NethorMobileServices.notifications
+NethorMobileServices.unread
+```
+
+Les vues peuvent aussi s'abonner aux changements sans recréer de connexion :
+
+```js
+const unsubscribe = NethorMobileServices.subscribe(state => {
+  // mettre à jour la vue
+})
+```
+
+### Données chargées
+
+L'initialisation commune reprend les mêmes sources déjà utilisées par Nethor :
+
+- `profiles` ;
+- `app_settings` avec la clé `site_config` ;
+- RPC `my_subrole_permissions` ;
+- RPC `my_subrole_keys` ;
+- RPC `my_notification_channel_preferences` avec fallback vers `my_notification_preferences` ;
+- table `planning_notifications`.
+
+L'avatar est signé une fois depuis `profile-avatars` lors du chargement du profil.
+
+### Temps réel
+
+Le shell conserve des abonnements persistants pour :
+
+- le profil courant ;
+- la configuration globale ;
+- les notifications du compte ;
+- les sous-rôles et permissions ;
+- les préférences et règles de notifications.
+
+Ces événements actualisent le service partagé au lieu de réinitialiser toute l'application.
+
+### Compatibilité événements
+
+Pour faciliter la migration des composants existants, le service republie également les événements historiques :
+
+- `netto:profile` ;
+- `netto:notifications`.
+
+Ils portent la marque `mobileServices: true`.
+
+### Notifications
+
+Le compteur non lu de la barre Mobile est désormais piloté par `MobileServices.unread`.
+
+Il reste actif tant que le document Mobile reste ouvert et se met à jour lors des changements reçus en temps réel.
+
+### Authentification
+
+Si aucune session n'est disponible, `mobile.html` renvoie vers `index.html`.
+
+Les paramètres de plateforme utiles sont conservés pour :
+
+- `mobile-preview` ;
+- `nethor_platform=mobile`.
+
+Un changement Auth `SIGNED_OUT` nettoie les canaux persistants avant le retour vers la connexion.
+
+### Garantie d'instance unique
+
+`start()` est idempotent.
+
+Plusieurs appels à :
+
+```js
+NethorMobileServices.start()
+```
+
+réutilisent la même promesse d'initialisation et le même client Supabase.
+
+Un test simulé de phase 3 vérifie qu'après deux `start()` et un `refresh()` :
+
+- un seul client Supabase a été créé ;
+- un seul listener Auth a été installé ;
+- les canaux temps réel restent attachés au même client ;
+- les données communes sont réutilisées.
+
+### Sécurité de migration
+
+Les pages HTML historiques restent autonomes pendant cette phase. Elles continuent d'utiliser leur propre runtime lorsqu'elles sont ouvertes par le fallback du routeur.
+
+Le partage persistant s'applique uniquement aux futures vues montées dans `mobile.html`.
+
 ## Prochaine phase
 
-La phase 3 pourra charger les services communs du shell Mobile une seule fois (session, profil, permissions, configuration et services partagés), sans encore migrer tout le contenu métier.
+La phase 4 pourra migrer **Accueil** en première vraie vue `mount()/unmount()` utilisant directement `NethorMobileServices`, sans recréer session, profil ou permissions.
