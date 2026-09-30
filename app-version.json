@@ -1,11 +1,11 @@
 {
-  "version": 250,
-  "label": "v1.43.13",
-  "important": false,
+  "version": 251,
+  "label": "v1.43.14",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Téléchargement complet du Journal Desktop",
-  "message": "Le Journal des modifications Desktop permet désormais de télécharger chaque entrée individuellement en TXT et de récupérer « Tous » les logs dans un pack ZIP. Le pack interroge l’historique complet de la base, inclut un TXT par entrée et un fichier 00-JOURNAL-COMPLET.txt récapitulatif. Aucun contrôle de téléchargement n’est ajouté sur Mobile.",
-  "published_at": "2026-09-30T18:04:00.000+02:00",
+  "title": "Performance Mobile — phase 4",
+  "message": "profile-ui a été découpé en modules optionnels. La Fiche utilisateur, la Vision mobile Desktop et le Centre de mise à jour sont désormais chargés uniquement lorsqu’ils sont utilisés. Sur mobile, la Vision mobile Desktop n’est plus téléchargée du tout. Le runtime commun est passé d’environ 130 ko à environ 99 ko, et les styles de Vision mobile ont quitté le CSS critique.",
+  "published_at": "2026-09-30T18:12:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
