@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Nethor">
 <script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=1"></script>
 <script src="platform-navigation.js?v=1"></script><script>window.NethorPlatformAssets.style('ui/desktop/desktop-shell.css?v=2','ui/mobile/mobile-shell.css?v=4')</script><script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=11','ui/mobile/mobile-shell.js?v=11')</script><script>window.NethorPlatformAssets.script('ui/desktop/tool-pages-layout.js?v=1','ui/mobile/tool-pages-layout.js?v=2')</script>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js" defer></script>
 
 <style>
 :root{--red:#ff3824;--orange:#ff8128;--ink:#1f2732;--muted:#7d8692;--line:#e3e7eb;--card:#fff;--bg:#f3f5f7;--grad:linear-gradient(135deg,#ff3824,#ff8128)}
@@ -74,7 +74,15 @@ button,input{font:inherit}button{cursor:pointer}
 <body><div data-nethor-platform-header></div><div data-nethor-platform-lead></div><div data-nethor-tool-page-layout></div><script src="platform-page-layout.js?v=12"></script>
 <script>
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let db=null;
+async function waitForSupabase(ms=8000){
+ const started=Date.now();
+ while(Date.now()-started<ms){
+  if(window.supabase?.createClient)return window.supabase;
+  await new Promise(r=>setTimeout(r,40))
+ }
+ throw new Error('Supabase indisponible')
+}
 const $=id=>document.getElementById(id);
 let scanner=null,scannerRunning=false,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
@@ -351,6 +359,8 @@ function applyScannerPageConfig(cfg){
   document.title=title+' · Nethor'
 }
 async function boot(){
+  await waitForSupabase();
+  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const {data:{session}}=await db.auth.getSession();
   if(!session)return location.replace('index.html');
   const [{data:profile},{data:setting}]=await Promise.all([
