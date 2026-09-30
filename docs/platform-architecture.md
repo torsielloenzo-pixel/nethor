@@ -94,7 +94,7 @@ Desktop
 Mon profil -> Retour -> Accueil
 
 Mobile
-Menu utilisateur -> Mon profil -> Retour -> Menu utilisateur
+Menu utilisateur (user-menu.html) -> Mon profil -> Retour -> user-menu.html
 ```
 
 Sur Desktop, une nouvelle page continue à déclarer son parent logique si nécessaire.\n\nSur Mobile / Vision mobile, le parent statique n’est plus prioritaire : Nethor mémorise d’abord la page ou le menu qui a réellement ouvert l’écran. Les routes de `MOBILE_ROUTES` servent uniquement de repli lorsqu’aucune provenance exploitable n’est disponible.
@@ -130,6 +130,16 @@ Tester chaque modification d'interface sur :
 - Vision mobile depuis Desktop
 
 Toute régression où un redimensionnement desktop active une fonction mobile doit être considérée comme un bug de plateforme.
+
+## Navigation mobile — menu utilisateur routé
+
+Depuis v1.43.2, le Menu utilisateur Mobile n'est plus un overlay sans URL. Il est une vraie page `user-menu.html`, affichée depuis le même bouton de la barre mobile.
+
+Cette page réutilise les mêmes permissions, rôles, raccourcis et composants que l'ancien menu, mais participe désormais à la navigation comme n'importe quelle autre page. Lorsqu'elle ouvre Mon profil, Personnalisation, Scanner, Gestion ou un autre outil, `platform-navigation.js` enregistre `user-menu.html` comme provenance réelle.
+
+Les paramètres historiques `open_user_menu` et `from_user_menu` ne doivent plus être utilisés pour les nouveaux parcours. Ils ne subsistent que comme compatibilité transitoire avec d'anciennes URL.
+
+Desktop conserve son menu utilisateur déroulant : `user-menu.html` est réservé aux contextes `mobile` et `mobile-preview`.
 
 ## Navigation par plateforme
 
