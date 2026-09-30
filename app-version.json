@@ -1,11 +1,11 @@
 {
-  "version": 246,
-  "label": "v1.43.9",
-  "important": false,
+  "version": 247,
+  "label": "v1.43.10",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Gestion du menu utilisateur mobile",
-  "message": "L’administrateur dispose désormais d’un gestionnaire dédié du menu utilisateur mobile dans Gestion → Éditeur du portail → Navigation mobile. Il peut autoriser ou masquer Mon profil, Personnalisation, les pages et outils accessibles aux utilisateurs, le changement de thème et la recherche de mise à jour. Les rôles, permissions et préférences personnelles restent prioritaires, l’administrateur conserve son propre menu complet et Déconnexion reste toujours disponible.",
-  "published_at": "2026-09-30T17:20:00.000+02:00",
+  "title": "Performance Mobile — phase 3",
+  "message": "Le runtime commun du profil a été allégé : environ 46 000 caractères de styles ont été sortis du JavaScript, les styles Fiche utilisateur et Mise à jour sont chargés uniquement à la demande, les contrôles de mise à jour et services secondaires démarrent après le premier affichage, et reward-profile est différé. Les pages utilisent profile-ui v204 et le CSS critique profile-ui v2.",
+  "published_at": "2026-09-30T17:34:00.000+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
