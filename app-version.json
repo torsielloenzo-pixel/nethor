@@ -1,11 +1,11 @@
 {
-  "version": 286,
-  "label": "v1.43.49",
+  "version": 287,
+  "label": "v1.43.50",
   "important": false,
-  "clear_cache": false,
+  "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — nouvel en-tête Nethor",
-  "message": "Le Desktop reprend désormais l’identité de l’en-tête Mobile : mot-symbole « nethor » avec « ne » orange et « thor » noir en thème clair / blanc en thème sombre. Les anciens blocs logo N + titre/sous-titre sont masqués dans les en-têtes Desktop concernés, tout en conservant les actions, retours et outils existants.",
-  "published_at": "2026-10-01T00:58:00+02:00",
+  "title": "Mobile — nouveau signet Nethor",
+  "message": "Le signet de l’application mobile passe au carré orange avec le « n » blanc. Le logo et l’identité visuelle affichés dans l’interface restent inchangés.",
+  "published_at": "2026-10-01T01:00:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
