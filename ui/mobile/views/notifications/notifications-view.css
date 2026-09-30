@@ -1,0 +1,54 @@
+.nethorMobileView[data-mobile-view="notifications"]{padding:0;background:#f3f4f6}
+.nethorNotificationsView{--np-bg:#f3f4f6;--np-surface:#fff;--np-text:#17191c;--np-muted:#777f88;--np-line:#e5e8ec;--np-accent:#f15a2b;--np-accent-soft:#fff1eb;--np-unread:#fff3ee;width:min(100%,820px);min-height:100%;margin:0 auto;padding:14px 12px 24px;color:var(--np-text)}
+.nethorNotificationsView *{box-sizing:border-box}
+.nethorNotificationsView .npMobileHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 2px 12px}
+.nethorNotificationsView .npMobileTitle h1{margin:0;font-size:28px;line-height:1;font-weight:950;letter-spacing:-.7px}
+.nethorNotificationsView .npMobileTitle p{margin:5px 0 0;color:var(--np-muted);font-size:10px}
+.nethorNotificationsView .npFilterTools{display:flex;align-items:center;justify-content:flex-end;gap:7px;position:relative;margin-left:auto}
+.nethorNotificationsView .npCircleBtn{width:42px;height:42px;border:0;border-radius:50%;display:grid;place-items:center;background:#eef0f3;color:#2c3035;cursor:pointer}
+.nethorNotificationsView .npCircleBtn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.nethorNotificationsView .npCircleBtn.more{font-size:22px;font-weight:950;line-height:1}
+.nethorNotificationsView .npTopMenu{position:absolute;right:0;top:49px;width:min(270px,calc(100vw - 22px));padding:7px;border:1px solid var(--np-line);border-radius:15px;background:var(--np-surface);box-shadow:0 18px 50px #1118272b;z-index:50}
+.nethorNotificationsView .hidden{display:none!important}
+.nethorNotificationsView .npTopMenu button{width:100%;min-height:44px;border:0;background:transparent;border-radius:10px;padding:9px 10px;text-align:left;font-size:11px;font-weight:800;color:inherit}
+.nethorNotificationsView .npTopMenu button:hover{background:#f3f4f6}
+.nethorNotificationsView .npTopMenu button.danger{color:#b62e25}
+.nethorNotificationsView .npSearchWrap{display:none;margin:0 0 10px}
+.nethorNotificationsView .npSearchWrap.open{display:block}
+.nethorNotificationsView .npSearch{width:100%;height:46px;border:1px solid var(--np-line);border-radius:15px;background:var(--np-surface);color:inherit;padding:0 14px;font-size:16px;outline:none}
+.nethorNotificationsView .npSearch:focus{border-color:#ff9b7c;box-shadow:0 0 0 3px #f15a2b15}
+.nethorNotificationsView .npFilterLine{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 8px}
+.nethorNotificationsView .npFilterLine strong{font-size:13px}
+.nethorNotificationsView .npFilterState{min-height:36px;border:0;border-radius:999px;background:#e9ecf0;padding:6px 11px;font-size:9px;font-weight:900;color:#59616b}
+.nethorNotificationsView .npFilterState.active{background:var(--np-accent-soft);color:#c74722}
+.nethorNotificationsView .npList{display:grid;gap:8px;background:transparent;border:0;padding:0 0 10px}
+.nethorNotificationsView .npGroup{padding:14px 3px 1px;font-size:13px;font-weight:950;color:#25292e}
+.nethorNotificationsView .npRow{position:relative;display:grid;grid-template-columns:56px minmax(0,1fr) 42px;gap:10px;align-items:center;min-width:0;min-height:78px;padding:11px 8px 11px 12px;border:1px solid var(--np-line);border-radius:17px;background:var(--np-surface);box-shadow:0 4px 14px rgba(17,24,39,.055);cursor:pointer;text-align:left;overflow:visible}
+.nethorNotificationsView .npRow.unread{background:var(--np-unread)}
+.nethorNotificationsView .npIcon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#2c3137,#171a1e);box-shadow:0 5px 14px #11182714}
+.nethorNotificationsView .npIcon span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ff4327,#ff861f);font-size:17px;box-shadow:0 4px 10px #ff5a2a35}
+.nethorNotificationsView .npRowText{min-width:0;overflow:hidden}
+.nethorNotificationsView .npSentence{font-size:12.5px;line-height:1.42;color:#353a40;overflow-wrap:anywhere}
+.nethorNotificationsView .npSentence b{font-size:13px;font-weight:950;color:#16191d}
+.nethorNotificationsView .npMeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}
+.nethorNotificationsView .npCategory{font-size:8.5px;font-weight:850;color:#8a9098}
+.nethorNotificationsView .npAge{font-size:9px;font-weight:850;color:#9a9fa6}
+.nethorNotificationsView .npRow.unread .npAge{color:#dd552c}
+.nethorNotificationsView .npUnreadDot{width:7px;height:7px;border-radius:50%;background:var(--np-accent);display:inline-block}
+.nethorNotificationsView .npRowMore{width:42px;height:42px;border:0;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;font-size:22px;font-weight:950;color:#555d66;cursor:pointer}
+.nethorNotificationsView .npRowMore:hover{background:#eceff2}
+.nethorNotificationsView .npRowMenu{position:absolute;right:10px;top:48px;z-index:25;width:205px;padding:6px;border:1px solid var(--np-line);border-radius:13px;background:var(--np-surface);box-shadow:0 14px 38px #1118272b}
+.nethorNotificationsView .npRowMenu button{width:100%;min-height:42px;border:0;border-radius:9px;background:transparent;padding:8px 9px;text-align:left;font-size:10px;font-weight:800;color:inherit}
+.nethorNotificationsView .npRowMenu button:hover{background:#f3f4f6}
+.nethorNotificationsView .npRowMenu button.danger{color:#bc3528}
+.nethorNotificationsView .npEmpty{min-height:360px;display:grid;place-items:center;text-align:center;padding:34px 22px;color:#858c95}
+.nethorNotificationsView .npEmptyIcon{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#eef0f3;font-size:29px;margin:0 auto 12px}
+.nethorNotificationsView .npEmpty strong{display:block;font-size:16px;color:#363b41}
+.nethorNotificationsView .npEmpty span{display:block;margin-top:5px;font-size:11px;line-height:1.45}
+:root[data-theme="dark"] .nethorMobileView[data-mobile-view="notifications"]{background:#181b1f}
+:root[data-theme="dark"] .nethorNotificationsView{--np-bg:#181b1f;--np-surface:#22262b;--np-text:#f1eee9;--np-muted:#a9a49f;--np-line:#373d44;--np-unread:#362720;--np-accent-soft:#3a2923}
+:root[data-theme="dark"] .nethorNotificationsView .npCircleBtn,:root[data-theme="dark"] .nethorNotificationsView .npFilterState,:root[data-theme="dark"] .nethorNotificationsView .npEmptyIcon{background:#30353b;color:#eeeae5}
+:root[data-theme="dark"] .nethorNotificationsView .npSentence{color:#c8c3bd}
+:root[data-theme="dark"] .nethorNotificationsView .npSentence b,:root[data-theme="dark"] .nethorNotificationsView .npGroup,:root[data-theme="dark"] .nethorNotificationsView .npEmpty strong{color:#f0ece7}
+:root[data-theme="dark"] .nethorNotificationsView .npRowMore:hover,:root[data-theme="dark"] .nethorNotificationsView .npTopMenu button:hover,:root[data-theme="dark"] .nethorNotificationsView .npRowMenu button:hover{background:#30353b}
+@media(max-width:420px){.nethorNotificationsView{padding-left:10px;padding-right:10px}.nethorNotificationsView .npMobileTitle h1{font-size:26px}.nethorNotificationsView .npCircleBtn{width:40px;height:40px}.nethorNotificationsView .npRow{grid-template-columns:52px minmax(0,1fr) 40px;padding-left:10px}.nethorNotificationsView .npIcon{width:50px;height:50px}}
