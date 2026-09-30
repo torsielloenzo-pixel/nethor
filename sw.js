@@ -176,6 +176,19 @@ self.addEventListener('message',e=>{
  }
  if(type==='PURGE_CACHES'){e.waitUntil(purgeNethorCaches());return}
  if(type==='SKIP_WAITING'){self.skipWaiting();return}
+ if(type==='WARM_NAVIGATION_ROUTES'){
+  const urls=Array.isArray(e.data?.urls)?e.data.urls.slice(0,8):[];
+  e.waitUntil(Promise.all(urls.map(async raw=>{
+   try{
+    const u=new URL(raw,self.registration.scope);
+    if(u.origin!==self.location.origin)return;
+    const req=new Request(u.href,{method:'GET',credentials:'same-origin'});
+    const key=cleanNavigationRequest(req);
+    await fetchAndStore(req,key)
+   }catch(_){}
+  })));
+  return
+ }
  if(type==='GET_VERSION'&&e.ports&&e.ports[0])e.ports[0].postMessage({version:APP_VERSION,cache:CACHE});
 });
 
