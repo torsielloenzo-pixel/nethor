@@ -119,11 +119,12 @@ async function unmountActive(nextView){
 function fallback(view,options={}){
   const id=normalizeView(view);
   const target=legacyUrl(id);
+  const parentView=current();
   emit('nethor:mobile-route-fallback',{view:id,target,reason:options.reason||'view-not-migrated'});
   if(options.navigate===false)return target;
-  try{
-    if(window.NethorNavigation?.navigate)return window.NethorNavigation.navigate(target)
-  }catch(_){}
+  if(parentView!==id){
+    try{window.NethorNavigation?.rememberMobileParent?.(target,shellUrl(parentView))}catch(_){}
+  }
   location.href=target;
   return target
 }
@@ -220,11 +221,12 @@ async function start(options={}){
   setHost(options.host);
   bindNavigation(options.nav);
   window.addEventListener('popstate',handlePopState);
+  const explicit=hasExplicitView();
   const id=current();
   const initialState=stateFor(id,{initial:true});
-  history.replaceState(initialState,'',hasExplicitView()?location.href:shellUrl(id));
+  history.replaceState(initialState,'',explicit?location.href:shellUrl(id));
   if(registered(id))await mount(id,{source:'boot'});
-  else if(hasExplicitView())fallback(id,{reason:'deep-link-unmigrated'});
+  else if(explicit)fallback(id,{reason:'deep-link-unmigrated'});
   else emit('nethor:mobile-route-idle',{view:id,reason:'no-migrated-default-view'});
   emit('nethor:mobile-router-ready',{view:id,registered:Array.from(views.keys()),platform:platform()});
   return true
