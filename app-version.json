@@ -1,11 +1,11 @@
 {
-  "version": 285,
-  "label": "v1.43.48",
+  "version": 286,
+  "label": "v1.43.49",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Gestion Admin — affichage Mobile corrigé",
-  "message": "Refonte corrective de Gestion sur mobile administrateur : navigation sans débordement, en-tête et tableau de bord plus compacts, formulaires et éditeurs en une colonne, cartes/pages adaptées aux petits écrans, iframe Comptes redimensionnée, tableaux défilables, sauvegarde au-dessus de la barre mobile et thème sombre harmonisé.",
-  "published_at": "2026-10-01T00:35:00+02:00",
+  "title": "Desktop — nouvel en-tête Nethor",
+  "message": "Le Desktop reprend désormais l’identité de l’en-tête Mobile : mot-symbole « nethor » avec « ne » orange et « thor » noir en thème clair / blanc en thème sombre. Les anciens blocs logo N + titre/sous-titre sont masqués dans les en-têtes Desktop concernés, tout en conservant les actions, retours et outils existants.",
+  "published_at": "2026-10-01T00:58:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
