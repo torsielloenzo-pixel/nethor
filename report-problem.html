@@ -19,7 +19,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--rp-bg);color:var(--rp-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body{position:fixed;inset:0;touch-action:pan-x pan-y}
-button,textarea{font:inherit}
+button,textarea,select{font:inherit}
 button{touch-action:manipulation}
 .rpShell{height:100dvh;max-height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;padding:calc(env(safe-area-inset-top) + 10px) 11px calc(env(safe-area-inset-bottom) + 10px)}
 .rpTop{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-height:48px;padding:0 1px 10px}
@@ -34,6 +34,12 @@ button{touch-action:manipulation}
 .rpIntro strong{display:block;font-size:17px;line-height:1.15}.rpIntro p{margin:4px 0 0;color:var(--rp-muted);font-size:10px;line-height:1.4}
 .rpContext{margin:13px 0 11px;padding:9px 11px;border:1px solid var(--rp-line);border-radius:12px;background:#f8f9fa;display:flex;align-items:center;gap:8px;min-height:38px;flex:none}
 .rpContext span{font-size:9px;color:var(--rp-muted)}.rpContext b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.rpContextPicker{display:grid;grid-template-columns:104px minmax(0,1fr);gap:5px 10px;align-items:center}
+.rpContextPicker>label{font-size:9px;color:var(--rp-muted);font-weight:800}
+.rpSourceSelectWrap{position:relative;min-width:0}
+.rpSourceSelect{width:100%;height:32px;appearance:none;-webkit-appearance:none;border:0;outline:0;background:transparent;color:var(--rp-text);padding:0 28px 0 0;font-size:10px;font-weight:900;white-space:nowrap;text-overflow:ellipsis}
+.rpSourceChevron{position:absolute;right:1px;top:50%;transform:translateY(-54%);pointer-events:none;color:var(--rp-muted);font-size:18px;line-height:1}
+.rpContextPicker>small{grid-column:1/-1;color:var(--rp-muted);font-size:7.7px;line-height:1.35}
 .rpLabel{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:10px;font-weight:900;flex:none}.rpCount{font-size:8.5px;color:var(--rp-muted);font-weight:750}
 .rpText{display:block;width:100%;min-width:0;min-height:116px;flex:1;resize:none;border:1px solid #d9dde2;border-radius:15px;background:#fff;color:var(--rp-text);padding:13px 14px;outline:none;font-size:16px;line-height:1.45;overscroll-behavior:contain}
 .rpText:focus{border-color:#ff9b79;box-shadow:0 0 0 3px #ff5a2a14}
@@ -45,8 +51,8 @@ button{touch-action:manipulation}
 .rpSuccess{height:100%;display:grid;place-items:center;text-align:center;padding:24px}.rpSuccessBox{max-width:330px}.rpSuccessIcon{width:58px;height:58px;margin:0 auto 15px;border-radius:18px;background:#e7f7ed;color:#21804a;display:grid;place-items:center;font-size:28px;font-weight:950}.rpSuccess h2{margin:0;font-size:21px}.rpSuccess p{margin:8px 0 18px;color:var(--rp-muted);font-size:11px;line-height:1.5}.rpReturn{min-height:44px;border:1px solid var(--rp-line);border-radius:13px;background:var(--rp-card);color:var(--rp-text);padding:0 16px;font-weight:850;cursor:pointer}
 .hidden{display:none!important}
 :root[data-theme="dark"]{--rp-bg:#17191d;--rp-card:#22252a;--rp-text:#f2efeb;--rp-muted:#aaa59f;--rp-line:#353a41;--rp-soft:#392821}
-:root[data-theme="dark"] .rpContext{background:#1c1f23}:root[data-theme="dark"] .rpText{background:#1b1e22;border-color:#3b4047;color:#f2efeb}:root[data-theme="dark"] .rpCancel,:root[data-theme="dark"] .rpReturn{background:#25292e}
-@media(max-height:540px){.rpShell{padding-top:calc(env(safe-area-inset-top) + 5px);padding-bottom:calc(env(safe-area-inset-bottom) + 5px)}.rpTop{min-height:42px;padding-bottom:6px}.rpCard{padding:11px;border-radius:18px}.rpIntro{grid-template-columns:36px minmax(0,1fr);gap:8px}.rpIcon{width:36px;height:36px;border-radius:11px}.rpIntro strong{font-size:15px}.rpIntro p{display:none}.rpContext{margin:8px 0 7px;padding:6px 9px;min-height:30px}.rpText{min-height:72px;padding:10px 12px}.rpHelp{margin:5px 2px 6px}.rpSend{min-height:42px}}
+:root[data-theme="dark"] .rpContext{background:#1c1f23}:root[data-theme="dark"] .rpSourceSelect{color:#f2efeb}:root[data-theme="dark"] .rpText{background:#1b1e22;border-color:#3b4047;color:#f2efeb}:root[data-theme="dark"] .rpCancel,:root[data-theme="dark"] .rpReturn{background:#25292e}
+@media(max-height:540px){.rpShell{padding-top:calc(env(safe-area-inset-top) + 5px);padding-bottom:calc(env(safe-area-inset-bottom) + 5px)}.rpTop{min-height:42px;padding-bottom:6px}.rpCard{padding:11px;border-radius:18px}.rpIntro{grid-template-columns:36px minmax(0,1fr);gap:8px}.rpIcon{width:36px;height:36px;border-radius:11px}.rpIntro strong{font-size:15px}.rpIntro p{display:none}.rpContext{margin:8px 0 7px;padding:6px 9px;min-height:30px}.rpContextPicker>small{display:none}.rpSourceSelect{height:26px}.rpText{min-height:72px;padding:10px 12px}.rpHelp{margin:5px 2px 6px}.rpSend{min-height:42px}}
 </style>
 </head>
 <body><div data-nethor-platform-header></div><div data-nethor-platform-lead></div><div data-nethor-user-page-layout></div><script src="platform-page-layout.js?v=12"></script>
@@ -66,8 +72,10 @@ function safeSource(){
   return file+(u.search||'')
  }catch(_){return'home.html'}
 }
-const sourcePath=safeSource();
+const launchSourcePath=safeSource();
+let selectedSourcePath=launchSourcePath,sourceManuallyChanged=false;
 const pageNames={
+ 'general':'Nethor / Général',
  'home.html':'Accueil','index.html':'Stock Fruits & Légumes','planning.html':'Planning','chat.html':'Chat',
  'profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation',
  'notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','scanner.html':'Scanner (bêta)',
@@ -81,9 +89,52 @@ const pageIdByFile={
  'fl-assistant.html':'fl_assistant','maintenance.html':'maintenance','rewards.html':'rewards','accounts.html':'accounts',
  'admin-portal.html':'portal_admin'
 };
-function sourceTitle(){
- const file=sourcePath.split('?')[0],id=pageIdByFile[file],p=id?siteConfig?.pages?.[id]:null;
+function sourceFile(raw=selectedSourcePath){return String(raw||'general').split('?')[0]||'general'}
+function sourceTitle(raw=selectedSourcePath){
+ const file=sourceFile(raw),id=pageIdByFile[file],p=id?siteConfig?.pages?.[id]:null;
  return String(p?.nav_label||p?.label||pageNames[file]||file||'Nethor')
+}
+function pageSelectable(file){
+ if(file==='general'||file==='user-menu.html'||file==='report-problem.html')return true;
+ const id=pageIdByFile[file],cfg=id?siteConfig?.pages?.[id]:null,role=profile?.role||'';
+ if(cfg?.enabled===false&&file!==sourceFile(launchSourcePath))return false;
+ const explicit=id?siteConfig?.role_permissions?.[id]?.[role]:null;
+ if(['none','view','operate','manage'].includes(explicit))return explicit!=='none'||file===sourceFile(launchSourcePath);
+ if(Array.isArray(cfg?.roles))return cfg.roles.includes(role)||file===sourceFile(launchSourcePath);
+ const restricted={
+  'fl-assistant.html':['admin','responsable'],
+  'bakery.html':['admin'],
+  'rewards.html':['admin'],
+  'accounts.html':['admin'],
+  'admin-portal.html':['admin'],
+  'maintenance.html':['admin']
+ };
+ const roles=restricted[file];
+ return !roles||roles.includes(role)||file===sourceFile(launchSourcePath)
+}
+function sourceOptions(){
+ const order=[
+  'general','home.html','user-menu.html','profile.html','settings.html',
+  'planning.html','index.html','articles.html','chat.html','scanner.html',
+  'notifications.html','notification-settings.html','report-problem.html',
+  'fl-assistant.html','bakery.html','rewards.html','admin-portal.html','accounts.html','maintenance.html'
+ ];
+ return order.filter(pageSelectable)
+}
+function populateSourceSelect(){
+ const select=$('sourceSelect');if(!select)return;
+ const launchFile=sourceFile(launchSourcePath),options=sourceOptions();
+ select.innerHTML=options.map(file=>'<option value="'+file.replace(/"/g,'&quot;')+'">'+sourceTitle(file).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))+'</option>').join('');
+ const initial=options.includes(launchFile)?launchFile:'general';
+ select.value=initial;
+ selectedSourcePath=initial===launchFile?launchSourcePath:initial;
+ const hint=$('sourceHint');
+ if(hint)hint.textContent=initial===launchFile&&launchFile!=='general'?'Détectée automatiquement. Tu peux choisir une autre page.':'Choisis la page ou l’espace concerné par le problème.';
+ select.addEventListener('change',()=>{
+  sourceManuallyChanged=true;
+  selectedSourcePath=select.value||'general';
+  if(hint)hint.textContent='Page sélectionnée : '+sourceTitle(selectedSourcePath)+'.'
+ })
 }
 function problemPageAllowed(role){
  const p=siteConfig?.pages?.problem_report||{};
@@ -105,7 +156,7 @@ function returnToMenu(){
  if(window.NethorNavigation?.isMobileShell?.()&&window.NethorNavigation?.navigateBack){
   window.NethorNavigation.navigateBack();return
  }
- const u=new URL(sourcePath,location.href);
+ const u=new URL(launchSourcePath,location.href);
  location.replace(u.pathname.split('/').pop()+u.search)
 }
 function updateCount(){const n=$('problemText').value.length;$('problemCount').textContent=n+' / 2000'}
@@ -189,11 +240,14 @@ async function collectDiagnostics(){
  let theme=null;try{theme=localStorage.getItem('nettoTheme')||null}catch(_){}
  const browser=parseBrowser(ua);
  return {
-  schema_version:1,
+  schema_version:2,
   captured_at:new Date().toISOString(),
   source:{
-   path:sourcePath,
-   title:sourceTitle(),
+   path:selectedSourcePath,
+   title:sourceTitle(selectedSourcePath),
+   report_origin_path:launchSourcePath,
+   report_origin_title:sourceTitle(launchSourcePath),
+   manually_selected:sourceManuallyChanged,
    referrer:sameOriginPath(document.referrer)
   },
   app:{
@@ -285,8 +339,8 @@ async function sendReport(){
    reporter_name:profile?.display_name||'Utilisateur',
    reporter_role:profile?.role||null,
    description,
-   source_path:sourcePath.slice(0,500),
-   source_title:sourceTitle().slice(0,160),
+   source_path:selectedSourcePath.slice(0,500),
+   source_title:sourceTitle(selectedSourcePath).slice(0,160),
    user_agent:String(navigator.userAgent||'').slice(0,800),
    app_version:appVersion?String(appVersion).slice(0,80):null,
    diagnostics
@@ -319,7 +373,7 @@ async function init(){
  profile=data||null;siteConfig=setting?.value&&typeof setting.value==='object'?setting.value:{};appVersionInfo=versionInfo;
  if(!profile||!problemPageAllowed(profile.role)){location.replace('home.html');return}
  applyProblemPageConfig();
- $('sourceLabel').textContent=sourceTitle()
+ populateSourceSelect()
 }
 init().catch(e=>{console.error(e);state('Impossible de préparer le formulaire.','err')});
 </script>
