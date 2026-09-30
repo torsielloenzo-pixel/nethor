@@ -1,3 +1,5 @@
+(function(){
+'use strict';
 const CHAT_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
 function chatDesktopMode(){return !CHAT_SPA_MODE&&(window.NethorPlatform?.current?.()==='desktop'||document.documentElement.dataset.nethorPlatform==='desktop')}
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
@@ -922,5 +924,9 @@ async function unmountChatRuntime(){
  },true)
 })();
 
+Object.assign(window,{actionSheetArchive,actionSheetHide,actionSheetInfo,cancelComposeMode,cancelConversationLongPress,cancelImageLongPress,clearAttachment,closeAddMembersModal,closeChatArchives,closeContactCard,closeConversationActions,closeConversationInfo,closeDiscussionMenu,closeImage,closeMobileConversation,closeNewChat,composerInput,conversationContextMenu,conversationRowClick,createGroup,cycleVoiceSpeed,deleteConversation,deleteConversationFromMenu,deleteMessage,desktopArchiveActive,downloadCurrentImage,editMessage,endImageLongPress,handleKey,leaveGroup,leaveGroupFromMenu,markAllRead,openAddMembersFromConversation,openAttachmentBrowser,openChatArchives,openContactCard,openConversationInfo,openConversationInfoFromManageMenu,openConversationParticipants,openDirect,openHeaderConversationActions,openImage,openNewChat,openReactionPicker,pickReaction,refreshChat,renderAddMembersList,renderNewChatMembers,replyToMessage,restoreAdminArchivedConversation,restorePersonalArchivedConversation,saveAddedMembers,saveGroupInfo,scrollToMessage,searchConversations,searchMessages,seekVoiceMessage,selectAttachment,sendMessage,setConversationListFilter,setMuted,setNewChatMode,startConversationLongPress,startImageLongPress,toggleAddMemberSelection,toggleConversationMenu,toggleDiscussionMenu,toggleGroupMember,toggleMessageActions,toggleMessageSearch,toggleReaction,toggleRecording,toggleUnreadOnly,toggleVoicePlayback});
+
 if(!CHAT_SPA_MODE)boot().catch(e=>console.error('[Nethor Chat] boot',e));
 window.NethorChatRuntime=Object.freeze({mount:boot,unmount:unmountChatRuntime,get active(){return chatRuntimeActive},get activeConversationId(){return state.activeId}});
+
+})();
