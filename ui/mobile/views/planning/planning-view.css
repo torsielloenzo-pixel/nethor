@@ -1,0 +1,17 @@
+.nethorMobileView[data-mobile-view="planning"]{padding:0;background:#f7f8fa;overscroll-behavior-y:contain}
+.nethorPlanningView{width:100%;min-height:100%;overflow:hidden}
+.nethorPlanningView #planningApp{width:100%;max-width:none;margin:0;padding:8px 10px 18px!important;overflow-x:hidden}
+.nethorPlanningView #weekView{min-width:0}
+.nethorPlanningView .mobilePlanningActionsDock{margin-right:0}
+.nethorPlanningView .yearView{z-index:2147483000!important}
+body.planningYearOpen .nethorMobileAppTop,body.planningYearOpen .nethorMobileAppNav{visibility:hidden}
+.nethorPlanningViewLoading,.nethorPlanningViewError{min-height:65dvh;display:grid;place-items:center;align-content:center;gap:10px;padding:24px;text-align:center;color:#7d848d}
+.nethorPlanningViewLoading span{width:31px;height:31px;border:3px solid #dde1e6;border-top-color:#ef5a2f;border-radius:50%;animation:nethorPlanningSpin .8s linear infinite}
+.nethorPlanningViewLoading strong,.nethorPlanningViewError strong{color:#25292e;font-size:15px}
+.nethorPlanningViewLoading small,.nethorPlanningViewError span{max-width:320px;font-size:9.5px;line-height:1.45}
+.nethorPlanningViewError button{min-height:40px;border:0;border-radius:11px;padding:8px 12px;background:#ef5a2f;color:#fff;font-weight:850}
+:root[data-theme="dark"] .nethorMobileView[data-mobile-view="planning"]{background:#15181b}
+:root[data-theme="dark"] .nethorPlanningViewLoading strong,:root[data-theme="dark"] .nethorPlanningViewError strong{color:#f0ece7}
+@keyframes nethorPlanningSpin{to{transform:rotate(360deg)}}
+@media(orientation:landscape) and (max-height:520px){.nethorPlanningView #planningApp{padding-top:5px!important}}
+@media(prefers-reduced-motion:reduce){.nethorPlanningViewLoading span{animation:none}}
