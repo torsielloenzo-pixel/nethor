@@ -4,7 +4,10 @@
 const host=document.getElementById('mobileUserMenuPageHost');
 
 function isMobile(){
- try{return window.NethorPlatform?.isMobile?.()===true}catch(_){return false}
+ try{
+  const kind=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'');
+  return kind==='mobile'||kind==='mobile-preview'
+ }catch(_){return false}
 }
 function sourceUrl(raw){
  try{
