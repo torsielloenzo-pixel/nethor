@@ -1,11 +1,11 @@
 {
-  "version": 276,
-  "label": "v1.43.39",
-  "important": true,
+  "version": 277,
+  "label": "v1.43.40",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Correctif Mobile — barre de navigation",
-  "message": "Correction d’un bug d’affichage iOS où la barre de navigation basse pouvait s’étirer sur presque toute la hauteur de l’écran et masquer l’en-tête ainsi que le contenu. Le shell verrouille désormais explicitement ses trois zones (en-tête, contenu, navigation), impose une hauteur maximale à la barre basse et ajoute une auto-correction si Safari calcule une géométrie anormale. Le Service Worker passe en v276 et force le chargement des nouveaux assets Mobile.",
-  "published_at": "2026-09-30T21:32:29.889Z",
+  "title": "Mobile — icônes de navigation restaurées",
+  "message": "Restauration des pictogrammes SVG historiques de la barre Mobile : Accueil, Planning, Chat, Notifications et Menu/profil. Aucun changement de navigation ni d’architecture.",
+  "published_at": "2026-09-30T21:41:30.292Z",
   "icon": "assets/app-icon-v63.svg"
 }
