@@ -222,5 +222,11 @@ api.mount=async function(context){
  let host=document.getElementById('operationsHubWidget');if(!host){host=document.createElement('section');host.id='operationsHubWidget';stack.appendChild(host)}
  api.host=host;api.state.active=cfg().default_section;renderShell();await loadData(false)
 };
+api.unmount=async function(){
+ try{document.getElementById('operationsHubDialog')?.remove()}catch(_){}
+ try{api.host?.remove()}catch(_){}
+ api.host=null;api.ctx=null;api.state.orders=[];api.state.deliveries=[];api.state.flashes=[];api.state.active=null;api.state.loading=false;
+ return true
+};
 window.NethorOperationsWidget=api;
 })();
