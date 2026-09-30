@@ -1,0 +1,1390 @@
+const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let ROLES=['admin','responsable','employe','lecture'];const ROLE_LABEL={admin:'Administrateur',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'};
+function roleName(r){return config?.role_definitions?.[r]?.label||ROLE_LABEL[r]||r||'Compte'}
+let session=null,profile=null,config={},dirty=false,notificationUsers=[],notificationRules=[],portalLogs=[],reportedProblems=[],logSourceFilter='all',logTypeFilter='all',problemStatusFilter='all',problemPageFilter='all',problemSearchFilter='',accountSubview='accounts';
+let managementArticles=[],managementFamilies=[],managementCategories=[],managementArticleSort={key:null,direction:'asc'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const attr=esc;
+function clone(v){return JSON.parse(JSON.stringify(v||{}))}
+function validColor(v,f='#ff2f1f'){return /^#[0-9a-f]{6}$/i.test(String(v||''))?v:f}
+function validUrl(v){const s=String(v||'').trim();return !s||(!/^\s*(javascript|data|vbscript):/i.test(s)&&(/^(https?:\/\/|\.\/|\.\.\/|[a-zA-Z0-9_./?=&%-]+$)/.test(s)))}
+function markDirty(){dirty=true;$('saveState').textContent='Modifications non enregistrées';$('saveState').className='saveState'}
+const MANAGEMENT_META={
+ overview:{group:'Gestion',title:'Tableau de bord',description:'Vue d’ensemble de l’administration Nethor et accès aux principales zones de gestion.'},
+ general:{group:'Éditeur du portail',title:'Identité & apparence',description:'Configure le nom, le logo et les couleurs communes de Nethor.'},
+ system:{group:'Éditeur du portail',title:'Pages & menus',description:'Organise les pages, leur visibilité, leurs libellés et leurs accès.'},
+ mobile:{group:'Éditeur du portail',title:'Navigation mobile',description:'Configure les raccourcis affichés dans la barre de navigation mobile.'},
+ blocks:{group:'Éditeur du portail',title:'Blocs & widgets',description:'Règle les composants fonctionnels et widgets indépendamment des pages.'},
+ articles:{group:'Contenus',title:'Fiches articles',description:'Administre le référentiel produits, les familles, catégories et EAN13.'},
+ media:{group:'Éditeur du portail',title:'Médias & logos',description:'Consulte et télécharge les ressources visuelles officielles utilisées par Nethor.'},
+ notifications:{group:'Communication',title:'Notifications',description:'Gère les envois, les règles globales et les autorisations de notification.'},
+ problems:{group:'Communication',title:'Problèmes signalés',description:'Consulte, diagnostique et traite les problèmes remontés par les utilisateurs.'},
+ maintenance:{group:'Système',title:'Maintenance',description:'Contrôle la disponibilité du portail pour les utilisateurs.'},
+ logs:{group:'Système',title:'Journal des modifications',description:'Retrouve les mises à jour, patchs et modifications appliquées au portail.'}
+};
+const ACCOUNT_META={
+ accounts:{title:'Comptes',description:'Création, profils et accès des utilisateurs.'},
+ roles:{title:'Rôles & permissions',description:'Niveaux d’accès, permissions, sous-rôles et droits fonctionnels.'},
+ logs:{title:'Activité utilisateurs',description:'Consultations, connexions et actions enregistrées pour les comptes.'}
+};
+function toggleManagementNavGroup(key,button){
+ const group=document.querySelector('.managementNavGroup[data-nav-group="'+CSS.escape(key)+'"]');if(!group)return;
+ const opening=!group.classList.contains('open');
+ document.querySelectorAll('.managementNavGroup').forEach(g=>{if(g!==group)g.classList.remove('open');g.querySelector('.managementNavParent')?.setAttribute('aria-expanded',g===group&&opening?'true':'false')});
+ group.classList.toggle('open',opening);button?.setAttribute('aria-expanded',opening?'true':'false');
+ if(opening)window.NettoSounds?.play?.('menuOpen');else window.NettoSounds?.play?.('menuClose')
+}
+function managementButtonFor(name){
+ if(name==='accounts')return document.querySelector('[data-tab="accounts"][data-account-view="'+CSS.escape(accountSubview)+'"]');
+ return document.querySelector('.managementSide [data-tab="'+CSS.escape(name)+'"]')
+}
+function activateManagementNav(btn){
+ document.querySelectorAll('.managementSide [data-tab]').forEach(x=>x.classList.toggle('active',x===btn));
+ document.querySelectorAll('.managementNavDirect[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));
+ const activeGroup=btn?.closest?.('.managementNavGroup')||null;
+ document.querySelectorAll('.managementNavGroup').forEach(group=>{
+  const active=group===activeGroup;group.classList.toggle('activeGroup',active);
+  if(active){group.classList.add('open');group.querySelector('.managementNavParent')?.setAttribute('aria-expanded','true')}
+  else{group.classList.remove('open');group.querySelector('.managementNavParent')?.setAttribute('aria-expanded','false')}
+ })
+}
+function updateManagementHero(name){
+ let meta;
+ if(name==='accounts'){
+  const a=ACCOUNT_META[accountSubview]||ACCOUNT_META.accounts;
+  meta={group:'Utilisateurs',title:a.title,description:a.description}
+ }else meta=MANAGEMENT_META[name]||MANAGEMENT_META.overview;
+ if($('managementBreadcrumb'))$('managementBreadcrumb').innerHTML='Gestion <span>›</span> '+esc(meta.group)+(meta.title!==meta.group?' <span>›</span> '+esc(meta.title):'');
+ if($('managementHeroTitle'))$('managementHeroTitle').textContent=meta.title;
+ if($('managementHeroText'))$('managementHeroText').textContent=meta.description
+}
+function showTab(name,btn,opts={}){
+ const aliases={pages:'system',identity:'general',navigation:'mobile',widgets:'blocks'};
+ name=aliases[name]||name;
+ const valid=['overview','general','system','mobile','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
+ if(!valid.includes(name))name='overview';
+ btn=btn||managementButtonFor(name);
+ document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));
+ activateManagementNav(btn);
+ const noSticky=['overview','accounts','articles','media','notifications','problems','logs'];
+ document.querySelector('.stickySave')?.classList.toggle('hidden',noSticky.includes(name));
+ try{localStorage.setItem('nettoManagementTab',name)}catch(_){}
+ const u=new URL(location.href);u.searchParams.set('tab',name);
+ if(name==='accounts')u.searchParams.set('sub',accountSubview);else u.searchParams.delete('sub');
+ history.replaceState({},'',u);
+ updateManagementHero(name);
+ if(name==='overview')loadManagementOverview().catch(()=>{});
+ if(name==='articles')loadManagementArticles().catch(()=>{});
+ if(name==='problems')loadReportedProblems().catch(()=>{});
+ if(name==='logs')loadPortalLogs().catch(()=>{});
+ enhanceCompactPortal();
+ if(opts.sound!==false)window.NettoSounds?.play?.('menuOpen')
+}
+function setAccountsFrame(view,force=false){
+ accountSubview=['accounts','roles','logs'].includes(view)?view:'accounts';
+ const meta=ACCOUNT_META[accountSubview]||ACCOUNT_META.accounts;
+ if($('managementAccountsTitle'))$('managementAccountsTitle').textContent=meta.title;
+ if($('managementAccountsIntro'))$('managementAccountsIntro').textContent=meta.description;
+ const frame=$('managementAccountsFrame');if(!frame)return;
+ const target=new URL('accounts.html',location.href);target.searchParams.set('embedded','1');target.searchParams.set('nav','external');target.searchParams.set('tab',accountSubview);
+ if(force||!frame.src||new URL(frame.src,location.href).searchParams.get('tab')!==accountSubview)frame.src=target.pathname.split('/').pop()+target.search
+}
+function showAccountsView(view,btn,opts={}){
+ accountSubview=['accounts','roles','logs'].includes(view)?view:'accounts';
+ try{localStorage.setItem('nettoManagementAccountsView',accountSubview)}catch(_){}
+ setAccountsFrame(accountSubview);
+ btn=btn||managementButtonFor('accounts');
+ showTab('accounts',btn,opts)
+}
+function filterManagementNav(value){
+ const q=String(value||'').trim().toLocaleLowerCase('fr');
+ const directs=[...document.querySelectorAll('.managementSide>.managementNavDirect')];
+ const groups=[...document.querySelectorAll('.managementNavGroup')];
+ directs.forEach(btn=>{btn.style.display=!q||btn.textContent.toLocaleLowerCase('fr').includes(q)?'':'none'});
+ groups.forEach(group=>{
+  const parent=group.querySelector('.managementNavParent'),children=[...group.querySelectorAll('.managementNavChild')];
+  const parentMatch=!q||parent?.textContent.toLocaleLowerCase('fr').includes(q);
+  const childMatches=children.map(x=>!q||x.textContent.toLocaleLowerCase('fr').includes(q));
+  const visible=parentMatch||childMatches.some(Boolean);
+  group.style.display=visible?'':'none';
+  children.forEach((child,i)=>child.style.display=(!q||parentMatch||childMatches[i])?'':'none');
+  if(q&&visible){group.classList.add('open');parent?.setAttribute('aria-expanded','true')}
+  else if(!q){const active=group.classList.contains('activeGroup');group.classList.toggle('open',active);parent?.setAttribute('aria-expanded',active?'true':'false')}
+ })
+}
+function reloadAccountsFrame(){setAccountsFrame(accountSubview,true)}
+window.addEventListener('message',event=>{
+ const frame=$('managementAccountsFrame');
+ if(event.origin!==location.origin||!frame||event.source!==frame.contentWindow)return;
+ const data=event.data;if(!data||data.type!=='nethor-accounts-tab'||!['accounts','roles','logs'].includes(data.tab))return;
+ accountSubview=data.tab;
+ try{localStorage.setItem('nettoManagementAccountsView',accountSubview)}catch(_){}
+ const meta=ACCOUNT_META[accountSubview]||ACCOUNT_META.accounts;
+ if($('managementAccountsTitle'))$('managementAccountsTitle').textContent=meta.title;
+ if($('managementAccountsIntro'))$('managementAccountsIntro').textContent=meta.description;
+ if($('tab-accounts')?.classList.contains('active')){
+  activateManagementNav(managementButtonFor('accounts'));updateManagementHero('accounts');
+  const u=new URL(location.href);u.searchParams.set('tab','accounts');u.searchParams.set('sub',accountSubview);history.replaceState({},'',u)
+ }
+});
+function managementInitials(name){return String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
+async function loadManagementOverview(){
+ const usersBox=$('managementUsersPreview'),logsBox=$('managementLogsPreview');
+ try{
+  const since=new Date(Date.now()-7*86400000).toISOString();
+  const [usersRes,logsRes,updatesRes,problemsRes]=await Promise.all([
+   db.from('profiles').select('id,display_name,role',{count:'exact'}).limit(4),
+   db.from('portal_change_logs').select('id,title,description,area,created_at').order('created_at',{ascending:false}).limit(4),
+   db.from('portal_change_logs').select('id',{count:'exact',head:true}).gte('created_at',since),
+   db.from('reported_problems').select('id',{count:'exact',head:true}).neq('status','resolved')
+  ]);
+  if($('managementPages'))$('managementPages').textContent=String(builtinModules().length);
+  if($('managementAccounts'))$('managementAccounts').textContent=String(usersRes.count??usersRes.data?.length??0);
+  if($('managementProblems'))$('managementProblems').textContent=String(problemsRes.count??0);
+  if($('managementUpdates'))$('managementUpdates').textContent=String(updatesRes.count??0);
+  if(usersBox)usersBox.innerHTML=(usersRes.data||[]).map(u=>'<div class="managementPreviewRow"><span class="managementPreviewAvatar">'+esc(managementInitials(u.display_name))+'</span><div><strong>'+esc(u.display_name||'Utilisateur')+'</strong><small>'+esc(roleName(u.role))+'</small></div><time>›</time></div>').join('')||'<div class="managementEmpty">Aucun compte.</div>';
+  if(logsBox)logsBox.innerHTML=(logsRes.data||[]).map(x=>'<div class="managementPreviewRow"><span class="managementPreviewAvatar">A</span><div><strong>'+esc(x.title||'Modification')+'</strong><small>'+esc(x.area||x.description||'Nethor')+'</small></div><time>'+new Date(x.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</time></div>').join('')||'<div class="managementEmpty">Aucune modification récente.</div>'
+ }catch(e){console.warn('Vue Gestion:',e);if(usersBox)usersBox.innerHTML='<div class="managementEmpty">Comptes indisponibles.</div>';if(logsBox)logsBox.innerHTML='<div class="managementEmpty">Journal indisponible.</div>'}
+}
+function normalize(raw){
+ const c=raw&&typeof raw==='object'?clone(raw):{};
+ c.brand={name:c.brand?.name||'Nethor',subtitle:c.brand?.subtitle||'Espace outils',header_logo_url:String(c.brand?.header_logo_url||''),header_logo_path:String(c.brand?.header_logo_path||''),header_logo_name:String(c.brand?.header_logo_name||'')};
+ c.home={eyebrow:c.home?.eyebrow||'Espace de travail',intro:c.home?.intro||'Choisis l’espace que tu veux ouvrir.'};
+ c.theme={primary:validColor(c.theme?.primary,'#ff2f1f'),secondary:validColor(c.theme?.secondary,'#ff8500'),ink:validColor(c.theme?.ink,'#182235')};
+ c.maintenance={enabled:c.maintenance?.enabled===true};
+ c.pages=c.pages&&typeof c.pages==='object'?c.pages:{};
+ Object.keys(c.pages).filter(k=>k.startsWith('custom_')).forEach(k=>delete c.pages[k]);
+ delete c.customMenus;
+ c.personalization=c.personalization&&typeof c.personalization==='object'?c.personalization:{};
+ c.personalization.home_menus_enabled=c.personalization.home_menus_enabled!==false;
+ c.mobile_user_menu=c.mobile_user_menu&&typeof c.mobile_user_menu==='object'?c.mobile_user_menu:{};
+ c.mobile_user_menu.items=c.mobile_user_menu.items&&typeof c.mobile_user_menu.items==='object'?c.mobile_user_menu.items:{};
+ c.mobile_bar=c.mobile_bar&&typeof c.mobile_bar==='object'?c.mobile_bar:{enabled:true,items:[]};
+ return c
+}
+function waitProfileUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI||n++>100){clearInterval(t);resolve()}},50)})}
+async function ensureAdminGlobalTools(){
+ const ui=window.NettoProfileUI;if(!ui)return false;
+ try{
+  if(!ui.profile)await ui.refresh?.();
+  ui.rebuildGlobalHeader?.();
+  if(!document.getElementById('nettoGlobalTools')){
+   await ui.refresh?.();
+   ui.rebuildGlobalHeader?.()
+  }
+  return !!document.getElementById('nettoGlobalTools')
+ }catch(e){console.warn('Restauration barre administrateur:',e);return false}
+}
+function builtinModules(){return (window.NettoProfileUI?.modules||[]).filter(m=>!m.custom)}
+function maxRoles(m){return window.NettoProfileUI?.maxRoles?.(m)||ROLES}
+function defaultPage(m,index){return{
+ enabled:m.enabled!==false,
+ label:m.homeLabel||m.label,
+ nav_label:m.label,
+ subtitle:m.subtitle||'',
+ description:m.description||'',
+ url:m.url||'',
+ order:index+1,
+ roles:[...maxRoles(m)],
+ home:!!m.home,
+ user_menu:!!m.userMenu,
+ default_home:m.defaultHome!==false,
+ default_user:m.defaultUser!==false,
+ kicker:m.kicker||'OUTIL',
+ action:m.action||'Ouvrir',
+ icon:m.icon||'',
+ image_url:m.asset||'',
+ image_path:'',
+ color:m.menuColor||config.theme.primary,
+ accent:m.menuAccent||config.theme.secondary
+}}
+function ensurePages(){
+ builtinModules().forEach((m,i)=>{
+  const d=defaultPage(m,i),p=config.pages[m.id]&&typeof config.pages[m.id]==='object'?config.pages[m.id]:{};
+  config.pages[m.id]={...d,...p};
+  if(m.rolesLocked)config.pages[m.id].roles=[...maxRoles(m)];
+  else config.pages[m.id].roles=Array.isArray(config.pages[m.id].roles)?config.pages[m.id].roles.filter(r=>maxRoles(m).includes(r)):[...maxRoles(m)];
+  if(m.enabledLocked)config.pages[m.id].enabled=true;
+  if(m.placementLocked){
+   config.pages[m.id].home=false;config.pages[m.id].user_menu=false;
+   config.pages[m.id].default_home=false;config.pages[m.id].default_user=false
+  }
+ })
+}
+function field(label,value,key,id,cls=''){return '<div class="field '+cls+'"><label>'+esc(label)+'</label><input value="'+attr(value)+'" data-page="'+attr(id)+'" data-key="'+attr(key)+'"></div>'}
+function effectivePageRole(m,p,r){
+ const explicit=config?.role_permissions?.[m.id]?.[r];
+ if(['none','view','operate','manage'].includes(explicit))return explicit!=='none';
+ return (p.roles||[]).includes(r)
+}
+function rolePicker(m,p){
+ const max=maxRoles(m),fixed=m.rolesLocked===true;
+ return '<div class="roles">'+ROLES.map(r=>{
+  const allowed=max.includes(r),checked=allowed&&effectivePageRole(m,p,r);
+  return '<label class="role '+(!allowed?'disabled':'')+'"><input type="checkbox" data-role-page="'+attr(m.id)+'" data-role="'+attr(r)+'" '+(checked?'checked':'')+' '+((!allowed||fixed)?'disabled':'')+'> '+esc(roleName(r))+'</label>'
+ }).join('')+'</div>'
+}
+function visualHtml(url,icon){return url?'<img src="'+attr(url)+'" alt="">':esc(icon||'•')}
+const PAGE_GROUP_LABELS={principal:'Pages principales',terrain:'Outils terrain',communication:'Communication',administration:'Administration',systeme:'Système'};
+const PAGE_GROUP_ORDER=['principal','terrain','communication','administration','systeme'];
+const PAGE_FEATURES={
+ home:['Widgets d’accueil','Planning du jour','Accès rapides','Tâches du jour'],
+ profile:['Photo & avatar','Cadres d’avatar','Apparence','Préférences utilisateur','Réglages notifications'],
+ stock:['Stock Fruits & Légumes','Consultation','Fiches produit','Suggestions de commande','Panier de commande'],
+ planning:['Vues Jour / Semaine / Année','Import planning Excel','Couverture magasin','Mes statistiques','Détection d’anomalies','Indisponibilités / Congés','Tâches du jour'],
+ chat:['Canal Général','Conversations','Pièces jointes','Présence équipe','Rôles affichés'],
+ scanner:['Lecture EAN8 / EAN13 / UPC-A','Recherche manuelle EAN13','Ouverture fiche article'],
+ articles:['Création & modification','Familles','Catégories','Conditionnements','EAN13','Statut produit'],
+ notifications:['Centre d’activité','Notifications portail','Suivi lu / non lu','Badge non lu','Destination de barre mobile'],
+ notification_settings:['Préférences de notifications','Canal portail','Push mobile','Types de notifications'],
+ problem_report:['Signalement de problème','Contexte page & appareil','Envoi vers l’administration'],
+ fl_assistant:['Imports XLS / XLSX / CSV','Ventes','Stock','Casse & dons','Commandes précédentes','Référentiel EAN13'],
+ rewards:['Défis','Boutique','Jetons','Équipements de profil'],
+ bakery:['Stock Boulangerie','Consultation','Gestion articles','Catégories','EAN13'],
+ accounts:['Comptes','Rôles & permissions','Sous-rôles internes','Widgets','Journal d’activité','Réinitialisation mot de passe'],
+ portal_admin:['Tableau de bord','Utilisateurs','Contenus','Éditeur du portail','Communication','Système','Pages & menus','Disponibilité mobile / desktop','Blocs & widgets','Navigation mobile','Catalogue des destinations mobiles','Problèmes signalés','Journal','Aperçu mobile'],
+ settings:['Accueil personnalisé','Raccourcis','Apparence'],
+ maintenance:['Mode maintenance','Redirection utilisateurs']
+};
+function pageGroup(m){return PAGE_GROUP_LABELS[m?.group]?m.group:'principal'}
+function pagePlatformLabel(m){return m?.platform==='mobile'?'Mobile uniquement':m?.platform==='desktop'?'Desktop uniquement':m?.platform==='system'?'Système':'Mobile + desktop'}
+function moduleMobileAvailable(m){return !!m&&m.navigation!==false&&m.platform!=='desktop'&&m.platform!=='system'}
+function moduleDesktopAvailable(m){return !!m&&m.navigation!==false&&m.platform!=='mobile'&&m.platform!=='system'}
+function moduleMobileBarEligible(m){const fn=window.NettoProfileUI?.mobileBarEligible;return typeof fn==='function'?fn(m):moduleMobileAvailable(m)&&m.mobileBar!==false}
+function moduleBadgesHtml(m,p){
+ const deviceBadge=m.platform==='mobile'?'<span class="moduleBadge mobile">Mobile uniquement</span>':m.platform==='desktop'?'<span class="moduleBadge desktop">Desktop uniquement</span>':m.platform==='system'?'<span class="moduleBadge system">Système</span>':'<span class="moduleBadge devices">Mobile + desktop</span>';
+ const badges=[
+  '<span class="moduleBadge '+(p.enabled!==false?'on':'off')+'">'+(p.enabled!==false?'Actif':'Inactif')+'</span>',
+  deviceBadge,
+  moduleMobileBarEligible(m)?'<span class="moduleBadge mobilebar">Barre mobile</span>':'',
+  p.home?'<span class="moduleBadge">Accueil</span>':'',
+  p.user_menu?'<span class="moduleBadge">Menu utilisateur</span>':'',
+  (m.rolesLocked||m.enabledLocked||m.placementLocked)?'<span class="moduleBadge protected">Protégée</span>':''
+ ];
+ return badges.filter(Boolean).join('')
+}
+function pageProtectionText(m){
+ const rows=[];
+ if(m.enabledLocked)rows.push('activation protégée');
+ if(m.rolesLocked)rows.push('rôles protégés');
+ if(m.placementLocked)rows.push('emplacements de navigation protégés');
+ return rows.length?'Cette page possède des garde-fous techniques : '+rows.join(', ')+'. Les autres éléments restent modifiables.':''
+}
+function systemFilterMatch(m,p,filter){
+ if(filter==='active')return p.enabled!==false;
+ if(filter==='home')return p.home===true;
+ if(filter==='user_menu')return p.user_menu===true;
+ if(filter==='mobile_available')return moduleMobileAvailable(m);
+ if(filter==='desktop_available')return moduleDesktopAvailable(m);
+ if(filter==='mobile_bar')return moduleMobileBarEligible(m);
+ if(filter==='mobile_only')return m?.platform==='mobile';
+ if(filter==='desktop_only')return m?.platform==='desktop';
+ if(PAGE_GROUP_LABELS[filter])return pageGroup(m)===filter;
+ return true
+}
+function refreshSystemStats(mods=builtinModules()){
+ const pages=mods.map(m=>config.pages[m.id]||{});
+ if($('systemPageTotal'))$('systemPageTotal').textContent=String(mods.length);
+ if($('systemPageActive'))$('systemPageActive').textContent=String(pages.filter(p=>p.enabled!==false).length);
+ if($('systemPageMobile'))$('systemPageMobile').textContent=String(mods.filter(moduleMobileAvailable).length);
+ if($('systemPageDesktop'))$('systemPageDesktop').textContent=String(mods.filter(moduleDesktopAvailable).length);
+ if($('systemPageHome'))$('systemPageHome').textContent=String(pages.filter(p=>p.home===true).length);
+ if($('systemPageUserMenu'))$('systemPageUserMenu').textContent=String(pages.filter(p=>p.user_menu===true).length)
+}
+function systemModuleCard(m,index){
+ const p=config.pages[m.id],protection=pageProtectionText(m);
+ const enabledDisabled=m.enabledLocked?'disabled':'',placementDisabled=m.placementLocked?'disabled':'';
+ return '<article class="moduleCard" id="moduleCard_'+attr(m.id)+'">'+
+  '<div class="moduleHead" onclick="toggleModuleBody(\''+attr(m.id)+'\',event)">'+
+   '<div class="moduleVisual">'+visualHtml(p.image_url||m.asset,p.icon||m.icon)+'</div>'+
+   '<div class="moduleHeadInfo"><strong class="moduleDisplayName">'+esc(p.label||m.label)+'</strong><span class="moduleHeadMeta">'+esc(m.id)+' · '+esc(p.url||m.url||'')+' · '+esc((p.roles||[]).map(r=>roleName(r)).join(', ')||'Aucun rôle')+'</span><div class="moduleHeadBadges">'+moduleBadgesHtml(m,p)+'</div></div>'+
+   '<div class="moduleHeadActions"><button type="button" class="moduleHeadAction" onclick="openSystemPage(\''+attr(m.id)+'\',event)">Ouvrir</button><button type="button" class="moduleHeadAction" onclick="resetSystemPage(\''+attr(m.id)+'\',event)">Réinitialiser</button></div>'+
+   '<span class="moduleChevron">⌄</span>'+
+  '</div>'+
+  '<div class="moduleBody collapsed" id="moduleBody_'+attr(m.id)+'">'+
+   '<div class="moduleTech"><div><small>Identifiant technique · '+esc(pagePlatformLabel(m))+'</small><code>'+esc(m.id)+' · '+esc(m.url||'')+'</code></div><a href="'+attr(p.url||m.url||'#')+'" target="_blank" rel="noopener">Tester la page ↗</a></div>'+
+   ((PAGE_FEATURES[m.id]||[]).length?'<div class="moduleFeatures"><small>Fonctionnalités liées</small><div>'+(PAGE_FEATURES[m.id]||[]).map(x=>'<span>'+esc(x)+'</span>').join('')+'</div></div>':'')+
+   '<div class="moduleGrid">'+
+    field('Nom sur l’accueil',p.label,'label',m.id)+
+    field('Nom dans la navigation',p.nav_label,'nav_label',m.id)+
+    field('Sous-titre',p.subtitle,'subtitle',m.id,'span2')+
+    field('Description',p.description,'description',m.id,'span2')+
+    field('Destination',p.url,'url',m.id,'span2')+
+    field('Petit titre',p.kicker,'kicker',m.id)+
+    field('Texte du bouton',p.action,'action',m.id)+
+    field('Icône / emoji',p.icon,'icon',m.id)+
+    field('Ordre',p.order,'order',m.id)+
+    '<div class="field span2"><label>Image du menu</label><div class="assetLine"><div class="assetPreview">'+visualHtml(p.image_url,p.icon)+'</div><input type="text" value="'+attr(p.image_url||'')+'" data-page="'+attr(m.id)+'" data-key="image_url" placeholder="URL ou chemin image"><button class="btn secondaryBtn mini" type="button" onclick="choosePageImage(\''+attr(m.id)+'\')">Importer</button>'+(p.image_url?'<a class="btn secondaryBtn mini" href="'+attr(p.image_url)+'" download>Télécharger</a>':'')+'<input id="pageFile_'+attr(m.id)+'" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="uploadPageImage(\''+attr(m.id)+'\',this)"></div></div>'+
+    '<div class="field"><label>Couleur</label><input type="color" value="'+attr(validColor(p.color,config.theme.primary))+'" data-page="'+attr(m.id)+'" data-key="color"></div>'+
+    '<div class="field"><label>Accent</label><input type="color" value="'+attr(validColor(p.accent,config.theme.secondary))+'" data-page="'+attr(m.id)+'" data-key="accent"></div>'+
+   '</div>'+
+   '<div class="toggleRow">'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="enabled" '+(p.enabled!==false?'checked':'')+' '+enabledDisabled+'> Page active</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="home" '+(p.home?'checked':'')+' '+placementDisabled+'> Afficher sur l’accueil</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="user_menu" '+(p.user_menu?'checked':'')+' '+placementDisabled+'> Menu utilisateur</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_home" '+(p.default_home?'checked':'')+' '+placementDisabled+'> Accueil par défaut</label>'+
+    '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_user" '+(p.default_user?'checked':'')+' '+placementDisabled+'> Menu par défaut</label>'+
+   '</div>'+
+   '<div class="moduleRoleTitle">Rôles autorisés</div>'+rolePicker(m,p)+
+   (protection?'<div class="moduleProtection">'+esc(protection)+'</div>':'')+
+  '</div>'+
+ '</article>'
+}
+
+function ensureOperationsWidgetConfig(){
+ config.home_widgets=config.home_widgets&&typeof config.home_widgets==='object'?config.home_widgets:{};
+ const current=config.home_widgets.operations_hub&&typeof config.home_widgets.operations_hub==='object'?config.home_widgets.operations_hub:{};
+ const defaults={
+  enabled:true,label:'Pilotage magasin',subtitle:'Relève, service, commandes, livraisons et Flash magasin',
+  density:'compact',max_items:3,show_counters:true,default_section:'handover',
+  sections:{handover:true,service:true,orders:true,deliveries:true,flashes:true},roles:{},subroles:{}
+ };
+ const node=config.home_widgets.operations_hub={...defaults,...current};
+ node.sections={...defaults.sections,...(current.sections&&typeof current.sections==='object'?current.sections:{})};
+ node.roles=current.roles&&typeof current.roles==='object'?current.roles:{admin:true,'role_point-de-vente':false,responsable:false,employe:false,lecture:false};
+ node.subroles=current.subroles&&typeof current.subroles==='object'?current.subroles:{};
+ node.density=node.density==='detailed'?'detailed':'compact';
+ node.max_items=Math.min(8,Math.max(1,Number(node.max_items)||3));
+ if(!['handover','service','orders','deliveries','flashes'].includes(node.default_section))node.default_section='handover';
+ return node
+}
+function renderOperationsWidgetEditor(){
+ const host=$('operationsWidgetEditor');if(!host)return;
+ const w=ensureOperationsWidgetConfig(),sectionLabel={handover:'Relève',service:'Mon service',orders:'Commandes',deliveries:'Livraisons',flashes:'Flash magasin'};
+ host.innerHTML='<div class="operationsWidgetAdminCard">'+
+  '<div class="operationsWidgetAdminSummary"><div><strong>'+esc(w.label)+'</strong><small>'+esc(w.subtitle)+'</small></div><label class="toggleChip"><input type="checkbox" data-operations-widget="enabled" '+(w.enabled!==false?'checked':'')+'> Widget actif</label></div>'+
+  '<div class="operationsWidgetAdminGrid">'+
+   '<div class="field"><label>Titre du widget</label><input maxlength="80" value="'+attr(w.label)+'" data-operations-widget="label"></div>'+
+   '<div class="field"><label>Affichage</label><select data-operations-widget="density"><option value="compact" '+(w.density==='compact'?'selected':'')+'>Compact</option><option value="detailed" '+(w.density==='detailed'?'selected':'')+'>Détaillé</option></select></div>'+
+   '<div class="field full"><label>Sous-titre</label><input maxlength="180" value="'+attr(w.subtitle)+'" data-operations-widget="subtitle"></div>'+
+   '<div class="field"><label>Éléments maximum par section</label><input type="number" min="1" max="8" value="'+attr(w.max_items)+'" data-operations-widget="max_items"></div>'+
+   '<div class="field"><label>Section ouverte par défaut</label><select data-operations-widget="default_section">'+Object.entries(sectionLabel).map(([k,v])=>'<option value="'+k+'" '+(w.default_section===k?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select></div>'+
+  '</div>'+
+  '<div class="operationsWidgetAdminToggles">'+
+   Object.entries(sectionLabel).map(([k,v])=>'<label class="operationsWidgetToggle"><span><strong>'+esc(v)+'</strong><small>Afficher cette partie du widget.</small></span><input type="checkbox" data-operations-section="'+k+'" '+(w.sections[k]!==false?'checked':'')+'></label>').join('')+
+   '<label class="operationsWidgetToggle"><span><strong>Compteurs</strong><small>Afficher le nombre d’éléments sur les onglets.</small></span><input type="checkbox" data-operations-widget="show_counters" '+(w.show_counters!==false?'checked':'')+'></label>'+
+  '</div>'+
+  '<div class="operationsWidgetAdminNote"><b>Droits :</b> ce bloc règle uniquement le contenu et l’apparence. La visibilité Administrateur / Responsable / Employé / Lecture seule reste centralisée dans <b>Comptes & rôles → Rôles & permissions → Widgets de l’accueil</b>.</div>'+
+ '</div>';
+ host.querySelectorAll('[data-operations-widget]').forEach(el=>el.oninput=el.onchange=()=>{
+  const key=el.dataset.operationsWidget,node=ensureOperationsWidgetConfig();
+  let value=el.type==='checkbox'?el.checked:el.value;
+  if(key==='max_items')value=Math.min(8,Math.max(1,Number(value)||3));
+  node[key]=value;markDirty()
+ });
+ host.querySelectorAll('[data-operations-section]').forEach(el=>el.onchange=()=>{
+  const node=ensureOperationsWidgetConfig();node.sections[el.dataset.operationsSection]=el.checked;markDirty()
+ })
+}
+function ensurePersonalizationConfig(){
+ config.personalization=config.personalization&&typeof config.personalization==='object'?config.personalization:{};
+ if(typeof config.personalization.home_menus_enabled!=='boolean')config.personalization.home_menus_enabled=true;
+ return config.personalization
+}
+function renderHomeMenuPersonalizationControl(){
+ const panel=document.querySelector('#tab-system .pagesEditorPanel');if(!panel)return;
+ let host=$('homeMenuPersonalizationControl');
+ if(!host){
+  host=document.createElement('div');
+  host.id='homeMenuPersonalizationControl';
+  host.className='managementSettingList';
+  host.style.margin='12px 0 14px';
+  const anchor=panel.querySelector('.pagesEditorHead');
+  if(anchor)anchor.insertAdjacentElement('afterend',host);else panel.prepend(host)
+ }
+ const prefs=ensurePersonalizationConfig(),enabled=prefs.home_menus_enabled!==false;
+ host.innerHTML='<div class="managementSettingRow"><div class="managementSettingIcon" aria-hidden="true">⌂</div><div class="managementSettingText"><strong>Personnalisation des menus de l’accueil</strong><span>Autorise les utilisateurs à afficher ou masquer leurs cartes depuis Menu utilisateur → Personnalisation. Les préférences déjà enregistrées sont conservées si cette option est masquée.</span><small class="managementSettingStatus"><b>Administrateur :</b> l’accès reste toujours disponible pour ton propre compte.</small></div><div class="managementSettingControl"><span id="homeMenusPersonalizationState" class="managementSettingState '+(enabled?'active':'')+'">'+(enabled?'Visible':'Masqué')+'</span><label class="adminSwitch" title="Afficher ou masquer Menus de l’accueil pour les utilisateurs"><input id="homeMenusPersonalizationEnabled" type="checkbox" '+(enabled?'checked':'')+'><span></span></label></div></div>';
+ const input=$('homeMenusPersonalizationEnabled');
+ if(input)input.onchange=()=>{
+  ensurePersonalizationConfig().home_menus_enabled=input.checked;
+  const state=$('homeMenusPersonalizationState');
+  if(state){state.textContent=input.checked?'Visible':'Masqué';state.classList.toggle('active',input.checked)}
+  markDirty();window.NettoSounds?.play?.('switch')
+ }
+}
+function renderSystem(){
+ ensurePages();
+ renderHomeMenuPersonalizationControl();
+ const host=$('systemModules'),mods=builtinModules();
+ if(!host)return;
+ renderOperationsWidgetEditor();
+ refreshSystemStats(mods);
+ const q=String($('systemPageSearch')?.value||'').trim().toLocaleLowerCase('fr');
+ const filter=String($('systemPageFilter')?.value||'all');
+ const indexed=mods.map((m,index)=>({m,index,p:config.pages[m.id]})).filter(({m,p})=>{
+  if(!systemFilterMatch(m,p,filter))return false;
+  if(!q)return true;
+  return [m.id,m.label,m.homeLabel,m.subtitle,m.url,PAGE_GROUP_LABELS[pageGroup(m)],...(PAGE_FEATURES[m.id]||[]),p.label,p.nav_label,p.subtitle,p.description,p.url].some(v=>String(v||'').toLocaleLowerCase('fr').includes(q))
+ });
+ if(!indexed.length){host.innerHTML='<div class="moduleEmpty">Aucune page ne correspond à cette recherche.</div>';return}
+ host.innerHTML=PAGE_GROUP_ORDER.map(group=>{
+  const rows=indexed.filter(x=>pageGroup(x.m)===group).sort((a,b)=>(Number(a.p.order)||999)-(Number(b.p.order)||999)||a.index-b.index);
+  if(!rows.length)return'';
+  return '<section class="moduleGroup"><div class="moduleGroupHead"><strong>'+esc(PAGE_GROUP_LABELS[group])+'</strong><span>'+rows.length+' page'+(rows.length>1?'s':'')+'</span></div>'+rows.map(x=>systemModuleCard(x.m,x.index)).join('')+'</section>'
+ }).join('');
+ bindPageInputs()
+}
+function refreshModuleCardSummary(id){
+ const m=builtinModules().find(x=>x.id===id),p=config.pages[id],card=$('moduleCard_'+id);if(!m||!p||!card)return;
+ const name=card.querySelector('.moduleDisplayName'),meta=card.querySelector('.moduleHeadMeta'),badges=card.querySelector('.moduleHeadBadges');
+ if(name)name.textContent=p.label||m.label;
+ if(meta)meta.textContent=m.id+' · '+(p.url||m.url||'')+' · '+((p.roles||[]).map(r=>roleName(r)).join(', ')||'Aucun rôle');
+ if(badges)badges.innerHTML=moduleBadgesHtml(m,p);
+ refreshSystemStats()
+}
+function bindPageInputs(){
+ document.querySelectorAll('[data-page][data-key]').forEach(el=>{
+  el.oninput=el.onchange=()=>{
+   const p=config.pages[el.dataset.page];if(!p)return;
+   let v=el.type==='checkbox'?el.checked:el.value;
+   if(el.dataset.key==='order')v=Math.max(1,Number(v)||1);
+   p[el.dataset.key]=v;markDirty();refreshModuleCardSummary(el.dataset.page)
+  }
+ });
+ document.querySelectorAll('[data-role-page]:not(:disabled)').forEach(el=>el.onchange=()=>{
+  const id=el.dataset.rolePage,role=el.dataset.role,p=config.pages[id];if(!p)return;
+  p.roles=[...document.querySelectorAll('[data-role-page="'+CSS.escape(id)+'"]:checked')].map(x=>x.dataset.role);
+  config.role_permissions=config.role_permissions&&typeof config.role_permissions==='object'?config.role_permissions:{};
+  config.role_permissions[id]=config.role_permissions[id]&&typeof config.role_permissions[id]==='object'?config.role_permissions[id]:{};
+  const previous=config.role_permissions[id][role];
+  config.role_permissions[id][role]=el.checked?(previous&&previous!=='none'?previous:(role==='admin'?'manage':'view')):'none';
+  markDirty();refreshModuleCardSummary(id)
+ })
+}
+function openSystemPage(id,event){
+ event?.preventDefault?.();event?.stopPropagation?.();
+ const m=builtinModules().find(x=>x.id===id),p=config.pages[id];const url=String(p?.url||m?.url||'').trim();
+ if(!url||!validUrl(url))return alert('La destination de cette page est invalide.');
+ window.open(new URL(url,location.href).href,'_blank','noopener')
+}
+function resetSystemPage(id,event){
+ event?.preventDefault?.();event?.stopPropagation?.();
+ const mods=builtinModules(),index=mods.findIndex(x=>x.id===id),m=mods[index];if(!m)return;
+ if(!confirm('Réinitialiser les réglages de « '+(config.pages[id]?.label||m.label)+' » ?'))return;
+ config.pages[id]=defaultPage(m,Math.max(0,index));ensurePages();markDirty();renderSystem();window.NettoSounds?.play?.('confirm')
+}
+function collapseAllSystemPages(){
+ document.querySelectorAll('#systemModules .moduleBody').forEach(x=>x.classList.add('collapsed'));
+ document.querySelectorAll('#systemModules .moduleCard').forEach(x=>x.classList.remove('open'));
+ window.NettoSounds?.play?.('menuClose')
+}
+
+const MOBILE_DEFAULTS=['home','stock','planning','chat','profile'];
+const MOBILE_SHORT={home:'Accueil',stock:'Stock',planning:'Planning',chat:'Équipe',profile:'Profil',scanner:'Scanner',articles:'Articles',notifications:'Notifications',notification_settings:'Alertes',problem_report:'Problème',fl_assistant:'Assistant',rewards:'Défis',bakery:'Boulangerie',accounts:'Comptes',portal_admin:'Gestion',settings:'Réglages'};
+function mobileModules(){
+ const mods=(window.NettoProfileUI?.modules||[]).filter(m=>!m.custom);
+ const eligible=window.NettoProfileUI?.mobileBarEligible;
+ return mods.filter(m=>typeof eligible==='function'?eligible(m):moduleMobileBarEligible(m))
+}
+function ensureMobileBar(){
+ const mods=mobileModules(),allowed=new Set(mods.map(m=>m.id)),raw=Array.isArray(config.mobile_bar?.items)?config.mobile_bar.items:[];
+ const source=raw.length?raw:MOBILE_DEFAULTS.map(id=>({id,enabled:true,label:MOBILE_SHORT[id]||''}));
+ const seen=new Set(),items=[];
+ const push=item=>{const id=String(item?.id||'').trim();if(!id||!allowed.has(id)||seen.has(id)||items.length>=5)return;seen.add(id);items.push({id,enabled:item?.enabled!==false,label:String(item?.label||MOBILE_SHORT[id]||'').trim().slice(0,18)})};
+ source.forEach(push);
+ for(const id of MOBILE_DEFAULTS){if(items.length>=5)break;if(allowed.has(id)&&!seen.has(id))push({id,enabled:false,label:MOBILE_SHORT[id]||''})}
+ for(const m of mods){if(items.length>=5)break;if(!seen.has(m.id))push({id:m.id,enabled:false,label:MOBILE_SHORT[m.id]||m.label})}
+ config.mobile_bar={enabled:config.mobile_bar?.enabled!==false,items}
+}
+function mobileOptionList(selected){
+ const mods=mobileModules();
+ return PAGE_GROUP_ORDER.map(group=>{
+  const rows=mods.filter(m=>pageGroup(m)===group);
+  if(!rows.length)return'';
+  return '<optgroup label="'+attr(PAGE_GROUP_LABELS[group])+'">'+rows.map(m=>'<option value="'+attr(m.id)+'" '+(m.id===selected?'selected':'')+'>'+esc(m.label)+(m.platform==='mobile'?' · mobile':'')+'</option>').join('')+'</optgroup>'
+ }).join('')
+}
+function renderMobileBar(){
+ const host=$('mobileBarEditor');if(!host)return;ensureMobileBar();
+ const catalog=mobileModules(),items=config.mobile_bar.items,moduleFor=id=>catalog.find(m=>m.id===id);
+ const runtimeItems=typeof window.NettoProfileUI?.mobileBarItems==='function'?window.NettoProfileUI.mobileBarItems(config):items;
+ const active=runtimeItems.filter(x=>x.enabled!==false),activeIds=new Set(active.map(x=>x.id)),configuredIds=new Set(items.map(x=>x.id));
+ host.innerHTML='<div class="mobileBarTop"><div><strong>Navigation rapide</strong><span>Choisis jusqu’à cinq raccourcis configurables. La liste est synchronisée avec les fonctions réellement disponibles sur mobile.</span></div><label class="adminSwitch"><input id="mobileBarEnabled" type="checkbox" '+(config.mobile_bar.enabled!==false?'checked':'')+'><span></span></label></div>'+
+ '<div class="mobileBarPreview">'+(active.length?active.map(x=>{const m=moduleFor(x.id),icon=window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•';return '<div class="mobilePreviewItem" title="'+esc(m?.label||x.id)+'"><span class="mobilePreviewIcon">'+icon+'</span></div>'}).join(''):'<div class="empty">Aucun raccourci actif.</div>')+'</div>'+
+ '<div class="mobileInventory"><div class="mobileInventoryHead"><strong>'+catalog.length+' destinations disponibles</strong><span>Catalogue actuel de Nethor</span></div><div class="mobileInventoryChips">'+catalog.map(m=>'<span class="mobileInventoryChip '+(activeIds.has(m.id)?'selected':'')+'"><i>'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'•')+'</i><span>'+esc(m.label)+'</span>'+(m.platform==='mobile'?'<small>Mobile</small>':'')+(m.id==='notifications'&&!configuredIds.has('notifications')?'<small>Auto</small>':'')+'</span>').join('')+'</div></div>'+
+ '<div class="mobileBarList">'+items.map((x,i)=>{const m=moduleFor(x.id),icon=window.NettoProfileUI?.mobileNavIcon?.(x.id)||'•';return '<div class="mobileBarRow"><div class="mobileRowIcon">'+icon+'</div><div class="field"><label>Menu</label><select data-mobile-index="'+i+'" data-mobile-key="id">'+mobileOptionList(x.id)+'</select></div><label class="toggleChip"><input type="checkbox" data-mobile-index="'+i+'" data-mobile-key="enabled" '+(x.enabled!==false?'checked':'')+'> Visible</label><div class="mobileBarMove"><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="-1" '+(i===0?'disabled':'')+' aria-label="Monter">↑</button><button type="button" class="btn secondaryBtn mini" data-mobile-move="'+i+'" data-dir="1" '+(i===items.length-1?'disabled':'')+' aria-label="Descendre">↓</button></div></div>'}).join('')+'</div>'+
+ '<div class="notifNotice"><b>5 raccourcis configurables maximum.</b> Notifications est désormais sélectionnable. Tant qu’elle n’est pas placée manuellement dans un emplacement, Nethor conserve son ajout automatique afin de ne pas modifier la navigation actuelle des utilisateurs.</div>';
+ $('mobileBarEnabled').onchange=e=>{config.mobile_bar.enabled=e.target.checked;markDirty();renderMobileBar();window.NettoSounds?.play?.('switch')};
+ host.querySelectorAll('[data-mobile-key]').forEach(el=>el.onchange=el.oninput=()=>{
+  const i=Number(el.dataset.mobileIndex),item=config.mobile_bar.items[i];if(!item)return;
+  if(el.dataset.mobileKey==='id'){
+   const duplicate=config.mobile_bar.items.some((x,j)=>j!==i&&x.id===el.value);
+   if(duplicate){alert('Ce menu est déjà présent dans la barre mobile.');renderMobileBar();return}
+   item.id=el.value;item.label='';markDirty();renderMobileBar()
+  }else if(el.dataset.mobileKey==='enabled'){item.enabled=el.checked;markDirty();renderMobileBar()}
+ });
+ host.querySelectorAll('[data-mobile-move]').forEach(btn=>btn.onclick=()=>{const i=Number(btn.dataset.mobileMove),j=i+Number(btn.dataset.dir);if(j<0||j>=config.mobile_bar.items.length)return;[config.mobile_bar.items[i],config.mobile_bar.items[j]]=[config.mobile_bar.items[j],config.mobile_bar.items[i]];markDirty();renderMobileBar();window.NettoSounds?.play?.('navigate')})
+}
+function mobileUserMenuCatalog(){
+ return builtinModules().filter(m=>{
+  if(!m||['profile','settings'].includes(m.id)||!moduleMobileAvailable(m))return false;
+  const roles=maxRoles(m);
+  return roles.some(r=>r!=='admin')
+ }).sort((a,b)=>(Number(config.pages?.[a.id]?.order)||999)-(Number(config.pages?.[b.id]?.order)||999)||String(a.label).localeCompare(String(b.label),'fr'))
+}
+function mobileUserMenuDefault(id,module=null){
+ if(['profile','settings','theme','update','logout'].includes(id))return true;
+ return module?.userMenu===true
+}
+function ensureMobileUserMenu(){
+ config.mobile_user_menu=config.mobile_user_menu&&typeof config.mobile_user_menu==='object'?config.mobile_user_menu:{};
+ const items=config.mobile_user_menu.items=config.mobile_user_menu.items&&typeof config.mobile_user_menu.items==='object'?config.mobile_user_menu.items:{};
+ const byId=new Map(builtinModules().map(m=>[m.id,m]));
+ for(const id of ['profile','settings','theme','update']){
+  if(typeof items[id]!=='boolean')items[id]=mobileUserMenuDefault(id,byId.get(id))
+ }
+ for(const m of mobileUserMenuCatalog()){
+  if(typeof items[m.id]!=='boolean')items[m.id]=mobileUserMenuDefault(m.id,m)
+ }
+ items.logout=true;
+ return items
+}
+function mobileUserMenuIcon(id,module=null){
+ if(id==='theme')return'☾';
+ if(id==='update')return'↻';
+ if(id==='logout')return'↪';
+ return window.NettoProfileUI?.mobileNavIcon?.(module?.id||id)||'•'
+}
+function ensureMobileUserMenuPanel(){
+ const tab=$('tab-mobile');if(!tab)return null;
+ let panel=$('mobileUserMenuAdminPanel');
+ if(!panel){
+  panel=document.createElement('div');
+  panel.id='mobileUserMenuAdminPanel';
+  panel.className='panel';
+  panel.innerHTML='<div class="toolbar"><div><h2>Menu utilisateur mobile</h2><p>Définis ce que les utilisateurs peuvent voir lorsqu’ils ouvrent leur menu sur mobile. Les rôles et permissions restent prioritaires.</p></div><div class="panelTools"><button class="btn secondaryBtn mini" type="button" onclick="setMobileUserMenuAll(true)">Tout afficher</button><button class="btn secondaryBtn mini" type="button" onclick="setMobileUserMenuAll(false)">Tout masquer</button></div></div><div class="notifNotice"><b>Portée :</b> ce réglage concerne uniquement les comptes utilisateurs sur mobile. Ton menu Administrateur conserve ses accès de gestion. Déconnexion reste toujours disponible.</div><div id="mobileUserMenuEditor" class="managementSettingList"></div>';
+  const first=tab.querySelector(':scope > .panel');
+  if(first)first.insertAdjacentElement('afterend',panel);else tab.appendChild(panel)
+ }
+ return $('mobileUserMenuEditor')
+}
+function mobileUserMenuAdminRow(id,label,description,module=null,locked=false){
+ const items=ensureMobileUserMenu(),enabled=locked?true:items[id]!==false;
+ return '<div class="managementSettingRow"><div class="managementSettingIcon" aria-hidden="true">'+mobileUserMenuIcon(id,module)+'</div><div class="managementSettingText"><strong>'+esc(label)+'</strong><span>'+esc(description)+'</span>'+(module?'<small class="managementSettingStatus">Page : '+esc(module.id)+' · accès selon rôle et permissions.</small>':'')+'</div><div class="managementSettingControl"><span class="managementSettingState '+(enabled?'active':'')+'">'+(enabled?'Visible':'Masqué')+'</span><label class="adminSwitch" title="'+(locked?'Toujours visible':'Afficher ou masquer dans le menu utilisateur mobile')+'"><input type="checkbox" data-mobile-user-menu="'+attr(id)+'" '+(enabled?'checked':'')+' '+(locked?'disabled':'')+'><span></span></label></div></div>'
+}
+function renderMobileUserMenu(){
+ const host=ensureMobileUserMenuPanel();if(!host)return;
+ ensureMobileUserMenu();
+ const catalog=mobileUserMenuCatalog(),profileModule=builtinModules().find(m=>m.id==='profile'),settingsModule=builtinModules().find(m=>m.id==='settings');
+ const rows=[
+  mobileUserMenuAdminRow('profile','Mon profil','Accès au profil personnel, à l’avatar et aux réglages du compte.',profileModule),
+  mobileUserMenuAdminRow('settings','Personnalisation','Accès aux préférences personnelles de l’utilisateur.',settingsModule),
+  ...catalog.map(m=>mobileUserMenuAdminRow(m.id,m.label||m.id,m.subtitle||m.description||'Page Nethor.',m)),
+  mobileUserMenuAdminRow('theme','Mode clair / sombre','Permet à l’utilisateur de changer l’apparence de son interface.'),
+  mobileUserMenuAdminRow('update','Mise à jour','Permet de rechercher et appliquer la dernière version de Nethor.'),
+  mobileUserMenuAdminRow('logout','Déconnexion','Toujours disponible pour permettre de quitter la session.',null,true)
+ ];
+ host.innerHTML=rows.join('');
+ host.querySelectorAll('[data-mobile-user-menu]:not(:disabled)').forEach(input=>input.onchange=()=>{
+  ensureMobileUserMenu()[input.dataset.mobileUserMenu]=input.checked;
+  markDirty();renderMobileUserMenu();window.NettoSounds?.play?.('switch')
+ });
+ enhanceCompactPortal()
+}
+function setMobileUserMenuAll(value){
+ const items=ensureMobileUserMenu();
+ for(const id of Object.keys(items))if(id!=='logout')items[id]=!!value;
+ items.logout=true;markDirty();renderMobileUserMenu();window.NettoSounds?.play?.('switch')
+}
+function toggleModuleBody(id,event){
+ if(event?.target?.closest('button,a,input,label,select,textarea'))return;
+ const body=$('moduleBody_'+id),card=$('moduleCard_'+id);if(!body)return;
+ const opening=body.classList.contains('collapsed');body.classList.toggle('collapsed',!opening);card?.classList.toggle('open',opening);window.NettoSounds?.play?.(opening?'menuOpen':'menuClose')
+}
+const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-mobile','tab-blocks','tab-media','tab-notifications']);
+const MANAGEMENT_PANEL_ICONS={
+ 'Identité du portail':'◈','Couleurs générales':'◉','Barre de navigation mobile':'▣',
+ 'Blocs & widgets':'▥','Bibliothèque des logos Nethor':'▧','Envoyer une notification':'↗',
+ 'Notifications existantes':'♢','Autorisation par utilisateur':'♙'
+};
+function managementPanelIcon(title){return MANAGEMENT_PANEL_ICONS[String(title||'').trim()]||'•'}
+function enhanceCompactPortal(){
+ document.querySelectorAll('.workspace .section').forEach(section=>{
+  section.classList.toggle('managementSettingsSection',MANAGEMENT_COMPACT_SECTIONS.has(section.id)||section.id==='tab-maintenance')
+ });
+ document.querySelectorAll('.workspace .section .panel').forEach((panel,index)=>{
+  const section=panel.closest('.section');
+  if(!section||!MANAGEMENT_COMPACT_SECTIONS.has(section.id))return;
+  if(panel.dataset.compactReady==='1')return;
+  panel.dataset.compactReady='1';panel.classList.add('compactPanel','managementSettingPanel');
+  let head=panel.querySelector(':scope > .toolbar'),title=panel.querySelector(':scope > h2'),intro=panel.querySelector(':scope > .panelIntro'),txt=null;
+  if(head){
+   head.classList.add('compactPanelHead','managementSettingHead');
+   txt=head.firstElementChild;
+   if(txt)txt.classList.add('compactPanelHeadText','managementSettingHeadText');
+  }else if(title){
+   head=document.createElement('div');head.className='compactPanelHead managementSettingHead';
+   txt=document.createElement('div');txt.className='compactPanelHeadText managementSettingHeadText';txt.appendChild(title);if(intro)txt.appendChild(intro);
+   head.appendChild(txt);panel.insertBefore(head,panel.firstChild)
+  }else return;
+  const titleText=txt?.querySelector('h2')?.textContent||title?.textContent||'Réglage';
+  const icon=document.createElement('span');icon.className='managementSettingHeadIcon';icon.setAttribute('aria-hidden','true');icon.textContent=managementPanelIcon(titleText);
+  head.insertBefore(icon,txt);
+  const chev=document.createElement('span');chev.className='compactPanelChevron managementSettingChevron';chev.textContent='⌄';chev.setAttribute('aria-hidden','true');head.appendChild(chev);
+  head.setAttribute('role','button');head.setAttribute('tabindex','0');head.setAttribute('aria-expanded','false');
+  const body=document.createElement('div');body.className='compactPanelBody managementSettingBody';
+  [...panel.children].filter(x=>x!==head).forEach(x=>body.appendChild(x));panel.appendChild(body);
+  const toggle=()=>{
+   const opening=!panel.classList.contains('open');panel.classList.toggle('open',opening);head.setAttribute('aria-expanded',opening?'true':'false');
+   window.NettoSounds?.play?.(opening?'menuOpen':'menuClose')
+  };
+  head.addEventListener('click',e=>{if(e.target.closest('button,a,input,label,select,textarea'))return;toggle()});
+  head.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('button,a,input,label,select,textarea')){e.preventDefault();toggle()}})
+ })
+}
+function choosePageImage(id){$('pageFile_'+id)?.click()}
+async function uploadAsset(file,prefix){
+ if(!file)return null;if(file.size>5*1024*1024)throw new Error('Image trop lourde : 5 Mo maximum.');
+ const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const path='menus/'+prefix+'-'+Date.now()+'.'+ext;
+ const {error}=await db.storage.from('portal-assets').upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;
+ const {data}=db.storage.from('portal-assets').getPublicUrl(path);return{path,url:data?.publicUrl||''}
+}
+async function uploadPageImage(id,input){const state=$('saveState');try{state.textContent='Import de l’image…';const r=await uploadAsset(input.files?.[0],'page-'+id);if(!r)return;config.pages[id].image_path=r.path;config.pages[id].image_url=r.url;renderSystem();markDirty()}catch(e){state.className='saveState err';state.textContent='Erreur image : '+e.message}finally{input.value=''}}
+function chooseHeaderLogo(){$('headerLogoFile')?.click()}
+function headerLogoExtension(file){
+ const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
+ return ['png','webp','svg','ico'].includes(ext)?ext:''
+}
+function renderHeaderLogoAsset(){
+ const preview=$('headerLogoPreview'),download=$('headerLogoDownload'),remove=$('headerLogoRemove'),name=$('headerLogoFileName'),url=String(config?.brand?.header_logo_url||'').trim();
+ if(preview)preview.innerHTML=url?'<img src="'+attr(url)+'" alt="Logo des en-têtes">':'<span class="headerLogoFallback">N</span>';
+ download?.classList.toggle('hidden',!url);remove?.classList.toggle('hidden',!url);
+ if(name)name.textContent=url?(config.brand.header_logo_name||'Logo personnalisé'):'Logo Nethor par défaut'
+}
+async function uploadHeaderLogo(input){
+ const state=$('saveState'),file=input?.files?.[0];
+ try{
+  if(!file)return;
+  const ext=headerLogoExtension(file);
+  if(!ext)throw new Error('Format refusé. Utilise PNG, WebP, SVG ou ICO pour conserver la transparence.');
+  if(file.size>5*1024*1024)throw new Error('Logo trop lourd : 5 Mo maximum.');
+  const allowedMime=['image/png','image/webp','image/svg+xml','image/x-icon','image/vnd.microsoft.icon',''];
+  if(!allowedMime.includes(file.type))throw new Error('Format non compatible avec un logo transparent.');
+  state.className='saveState';state.textContent='Import du logo…';
+  const path='brand/header-logo-'+Date.now()+'.'+ext;
+  const contentType=file.type||({png:'image/png',webp:'image/webp',svg:'image/svg+xml',ico:'image/x-icon'}[ext]);
+  const {error}=await db.storage.from('portal-assets').upload(path,file,{upsert:false,contentType});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(path);
+  config.brand.header_logo_path=path;config.brand.header_logo_url=data?.publicUrl||'';config.brand.header_logo_name=file.name;
+  renderHeaderLogoAsset();paintGlobal();markDirty();
+  state.className='saveState';state.textContent='Logo prêt à être enregistré'
+ }catch(e){state.className='saveState err';state.textContent='Erreur logo : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+async function downloadHeaderLogo(){
+ const url=String(config?.brand?.header_logo_url||'').trim();if(!url)return;
+ const fallbackName=config.brand.header_logo_name||('Nethor-logo-entete.'+(url.split('.').pop()?.split('?')[0]||'png'));
+ try{
+  const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('Téléchargement impossible');
+  const blob=await r.blob(),href=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=href;link.download=fallbackName;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),1200)
+ }catch(_){
+  const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener';link.download=fallbackName;document.body.appendChild(link);link.click();link.remove()
+ }
+}
+function removeHeaderLogo(){
+ if(!config?.brand)return;
+ config.brand.header_logo_url='';config.brand.header_logo_path='';config.brand.header_logo_name='';
+ renderHeaderLogoAsset();paintGlobal();markDirty();$('saveState').textContent='Logo retiré — enregistrer pour confirmer'
+}
+function bindGlobal(){
+ ['brandName','brandSubtitle','homeEyebrow','homeIntro','primaryColor','secondaryColor','inkColor'].forEach(id=>$(id).addEventListener('input',()=>{collectGlobal();paintGlobal();markDirty()}));$('maintenanceEnabled').addEventListener('change',()=>{collectGlobal();paintGlobal();markDirty();window.NettoSounds?.play?.('switch')})
+}
+function collectGlobal(){config.brand.name=$('brandName').value.trim()||'Nethor';config.brand.subtitle=$('brandSubtitle').value.trim();config.home.eyebrow=$('homeEyebrow').value.trim();config.home.intro=$('homeIntro').value.trim();config.theme.primary=$('primaryColor').value;config.theme.secondary=$('secondaryColor').value;config.theme.ink=$('inkColor').value;config.maintenance={enabled:!!$('maintenanceEnabled').checked}}
+function paintGlobal(){document.documentElement.style.setProperty('--primary',config.theme.primary);document.documentElement.style.setProperty('--secondary',config.theme.secondary);document.documentElement.style.setProperty('--ink',config.theme.ink);$('previewName').textContent=config.brand.name;$('previewSubtitle').textContent=config.brand.subtitle;$('primaryHex').textContent=config.theme.primary;$('secondaryHex').textContent=config.theme.secondary;$('inkHex').textContent=config.theme.ink;const pm=$('previewMark'),logo=String(config.brand.header_logo_url||'').trim();if(pm){pm.classList.toggle('hasHeaderLogo',!!logo);pm.textContent=logo?'':'N';if(logo){pm.style.background='';pm.style.backgroundImage='url('+JSON.stringify(logo)+')'}else{pm.style.backgroundImage='';pm.style.background='linear-gradient(135deg,'+config.theme.primary+','+config.theme.secondary+')'}}renderHeaderLogoAsset();const enabled=!!config.maintenance?.enabled,mn=$('maintenanceNotice'),ml=$('maintenanceStateLabel');if(mn){mn.classList.toggle('active',enabled);mn.innerHTML=enabled?'<b>Maintenance activée.</b> Les utilisateurs non administrateurs sont redirigés vers la page de maintenance.':'<b>Maintenance désactivée.</b> Le portail reste accessible normalement.'}if(ml){ml.textContent=enabled?'Activée':'Désactivée';ml.classList.toggle('active',enabled)}}
+function fillGlobal(){$('brandName').value=config.brand.name;$('brandSubtitle').value=config.brand.subtitle;$('homeEyebrow').value=config.home.eyebrow;$('homeIntro').value=config.home.intro;$('primaryColor').value=config.theme.primary;$('secondaryColor').value=config.theme.secondary;$('inkColor').value=config.theme.ink;$('maintenanceEnabled').checked=!!config.maintenance?.enabled;paintGlobal()}
+function validateConfig(){
+ for(const [id,p] of Object.entries(config.pages)){if(p?.url&&!validUrl(p.url))throw new Error('Destination invalide pour '+(p.label||id))}
+ ensureMobileBar();const enabled=config.mobile_bar.items.filter(x=>x.enabled!==false),ids=enabled.map(x=>x.id);
+ if(enabled.length>5)throw new Error('La barre mobile est limitée à 5 raccourcis.');
+ if(new Set(ids).size!==ids.length)throw new Error('Un même menu ne peut apparaître qu’une fois dans la barre mobile.')
+}
+async function saveConfig(){
+ const state=$('saveState');state.className='saveState';state.textContent='Enregistrement…';
+ try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
+}
+async function reloadConfig(){if(dirty&&!confirm('Annuler les modifications non enregistrées ?'))return;await loadConfig();window.NettoSounds?.play?.('confirm')}
+async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
+
+
+function logDate(value){const d=new Date(value);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+const LOG_DETAIL_LABELS={changed_fields:'Éléments modifiés',page_id:'Page',menu_id:'Menu',section:'Section',commits:'Références Git',commit:'Référence Git',pwa_cache:'Cache PWA',cache:'Cache',profile_ui:'Interface globale',scope:'Portée',messages:'Messages',logos:'Logos',fallback:'Icône de secours',colors:'Couleurs',icon_pack:'Pack d’icônes',seeded_rows:'Entrées initiales',mobile_preview:'Aperçu mobile',login_log_delete:'Suppression des connexions'};
+const LOG_FIELD_LABELS={label:'Nom',nav_label:'Navigation',subtitle:'Sous-titre',description:'Description',roles:'Rôles',image_path:'Image',image_url:'Image',icon:'Icône',color:'Couleur',accent:'Accent',contract_hours:'Heures contrat',home:'Accueil',user_menu:'Menu utilisateur',enabled:'Activation',url:'Destination',kicker:'Petit titre',action:'Action',default_home:'Accueil par défaut',default_user:'Menu utilisateur par défaut',items:'Contenu'};
+function logDetailValue(key,value){
+ if(key==='changed_fields'&&Array.isArray(value))return value.map(v=>LOG_FIELD_LABELS[v]||v).join(', ');
+ if(Array.isArray(value))return value.map(v=>typeof v==='object'?JSON.stringify(v):String(v)).join(' · ');
+ if(value&&typeof value==='object')return Object.entries(value).map(([k,v])=>(LOG_FIELD_LABELS[k]||k)+' : '+String(v)).join(' · ');
+ if(typeof value==='boolean')return value?'Oui':'Non';
+ return String(value??'')
+}
+function renderLogDetails(x){
+ const d=x?.details;if(!d||typeof d!=='object'||Array.isArray(d))return'';
+ const hidden=new Set(['version','label','importance','duplicate','duplicate_of','backfilled','target_user_id']);
+ const entries=Object.entries(d).filter(([key,value])=>!hidden.has(key)&&value!==null&&value!==''&&!(Array.isArray(value)&&!value.length));
+ if(!entries.length)return'';
+ return '<details class="logDetails"><summary>Détails de la modification</summary><div class="logDetailsGrid">'+entries.map(([key,value])=>'<div class="logDetailKey">'+esc(LOG_DETAIL_LABELS[key]||key.replaceAll('_',' '))+'</div><div class="logDetailValue">'+esc(logDetailValue(key,value))+'</div>').join('')+'</div></details>'
+}
+function logVersionLabel(x){return String(x?.details?.label||'').trim()}
+function isImportantPortalLog(x){
+ if(!x)return false;
+ if(x.details?.duplicate===true||x.details?.importance==='low')return false;
+ if(x.source==='auto')return true;
+ const title=String(x.title||'').toLowerCase(),area=String(x.area||'').toLowerCase();
+ if(area==='notifications'&&/^notifications de /.test(title))return false;
+ return true
+}
+function isDesktopJournal(){
+ try{
+  if(document.documentElement.dataset.nethorPageLayout==='desktop')return true;
+  const p=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'').toLowerCase();
+  return p==='desktop'
+ }catch(_){return false}
+}
+function logExportRows(){return portalLogs.filter(isImportantPortalLog)}
+function logExportSafeName(value,fallback='journal'){
+ const s=String(value||fallback).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+ return (s||fallback).slice(0,96)
+}
+function logExportVersion(x){
+ const label=String(x?.details?.label||'').trim();
+ if(label)return label;
+ const n=Number(x?.details?.version||0);
+ return n>0?'build-'+n:''
+}
+function logExportFileName(x,index=0){
+ const version=logExportVersion(x),title=logExportSafeName(x?.title||'modification','modification');
+ const lead=version?logExportSafeName(version,'version'):('log-'+String(x?.id||index+1));
+ return 'Nethor-'+lead+'-'+title+'.txt'
+}
+function logExportDetailLines(details){
+ if(!details||typeof details!=='object'||Array.isArray(details))return[];
+ const hidden=new Set(['duplicate','duplicate_of']);
+ return Object.entries(details)
+  .filter(([key,value])=>!hidden.has(key)&&value!==null&&value!==''&&!(Array.isArray(value)&&!value.length))
+  .map(([key,value])=>'- '+(LOG_DETAIL_LABELS[key]||key.replaceAll('_',' '))+' : '+logDetailValue(key,value))
+}
+function portalLogAsText(x){
+ const auto=x?.source==='auto',author=auto?'AUTO':(x?.actor_name||'Administrateur'),version=logExportVersion(x)||'—';
+ const details=logExportDetailLines(x?.details);
+ const date=x?.created_at?new Date(x.created_at).toLocaleString('fr-FR',{dateStyle:'full',timeStyle:'medium'}):'—';
+ const lines=[
+  'NETHOR — JOURNAL DES MODIFICATIONS',
+  '===================================',
+  '',
+  'Version : '+version,
+  'Type : '+(x?.release_type==='maj'?'MAJ':'PATCH'),
+  'Source : '+(auto?'AUTO':'MANUEL'),
+  'Zone : '+(x?.area||'—'),
+  'Date : '+date,
+  'Auteur : '+author,
+  'Identifiant : '+(x?.id??'—'),
+  '',
+  'TITRE',
+  String(x?.title||'Modification'),
+  '',
+  'DESCRIPTION',
+  String(x?.description||''),
+ ];
+ if(details.length)lines.push('','DÉTAILS',...details);
+ lines.push('','---','Export généré depuis Nethor · Journal des modifications');
+ return lines.join('\r\n')
+}
+function saveJournalBlob(blob,name){
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1200)
+}
+function downloadPortalLog(id){
+ if(!isDesktopJournal())return;
+ const x=portalLogs.find(row=>String(row.id)===String(id));if(!x)return;
+ const blob=new Blob(['\ufeff',portalLogAsText(x)],{type:'text/plain;charset=utf-8'});
+ saveJournalBlob(blob,logExportFileName(x))
+}
+let nethorZipCrcTable=null;
+function zipCrc32(bytes){
+ if(!nethorZipCrcTable){
+  nethorZipCrcTable=new Uint32Array(256);
+  for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);nethorZipCrcTable[n]=c>>>0}
+ }
+ let crc=0xffffffff;
+ for(const b of bytes)crc=nethorZipCrcTable[(crc^b)&255]^(crc>>>8);
+ return (crc^0xffffffff)>>>0
+}
+function zipDosDateTime(value){
+ const d=value instanceof Date&&!Number.isNaN(value.getTime())?value:new Date();
+ const year=Math.max(1980,d.getFullYear()),month=d.getMonth()+1,day=d.getDate(),hour=d.getHours(),minute=d.getMinutes(),second=Math.floor(d.getSeconds()/2);
+ return{date:((year-1980)<<9)|(month<<5)|day,time:(hour<<11)|(minute<<5)|second}
+}
+function zipStoreTextFiles(files){
+ const enc=new TextEncoder(),locals=[],centrals=[];let offset=0;
+ files.forEach(file=>{
+  const name=enc.encode(file.name),data=enc.encode(file.text),crc=zipCrc32(data),dt=zipDosDateTime(file.date);
+  const local=new Uint8Array(30+name.length+data.length),lv=new DataView(local.buffer);
+  lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0x0800,true);lv.setUint16(8,0,true);
+  lv.setUint16(10,dt.time,true);lv.setUint16(12,dt.date,true);lv.setUint32(14,crc,true);lv.setUint32(18,data.length,true);lv.setUint32(22,data.length,true);
+  lv.setUint16(26,name.length,true);lv.setUint16(28,0,true);local.set(name,30);local.set(data,30+name.length);
+  locals.push(local);
+  const central=new Uint8Array(46+name.length),cv=new DataView(central.buffer);
+  cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);cv.setUint16(10,0,true);
+  cv.setUint16(12,dt.time,true);cv.setUint16(14,dt.date,true);cv.setUint32(16,crc,true);cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);
+  cv.setUint16(28,name.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);cv.setUint32(42,offset,true);
+  central.set(name,46);centrals.push(central);offset+=local.length
+ });
+ const centralSize=centrals.reduce((n,x)=>n+x.length,0),end=new Uint8Array(22),ev=new DataView(end.buffer);
+ ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+ ev.setUint32(12,centralSize,true);ev.setUint32(16,offset,true);ev.setUint16(20,0,true);
+ return new Blob([...locals,...centrals,end],{type:'application/zip'})
+}
+async function fetchAllPortalLogsForExport(){
+ const all=[],step=1000,fields='id,source,release_type,title,description,area,actor_name,created_at,details';
+ for(let from=0;;from+=step){
+  const {data,error}=await db.from('portal_change_logs').select(fields).order('created_at',{ascending:false}).range(from,from+step-1);
+  if(error)throw error;
+  const batch=data||[];all.push(...batch);
+  if(batch.length<step)break
+ }
+ return all.filter(isImportantPortalLog)
+}
+async function downloadAllPortalLogs(){
+ if(!isDesktopJournal())return;
+ const button=$('downloadAllLogsBtn'),original=button?.textContent||'↓ Tous (.zip)';
+ if(button){button.disabled=true;button.textContent='Préparation…'}
+ try{
+  const rows=await fetchAllPortalLogsForExport();
+  if(!rows.length){alert('Aucune entrée à télécharger.');return}
+  const generated=new Date(),files=[];
+  const summary=[
+   'NETHOR — JOURNAL COMPLET DES MODIFICATIONS',
+   '==========================================',
+   '',
+   'Export : '+generated.toLocaleString('fr-FR'),
+   'Entrées : '+rows.length,
+   '',
+   ...rows.flatMap((x,i)=>[
+    String(i+1).padStart(3,'0')+' · '+(logExportVersion(x)||('Log #'+(x.id??'?')))+' · '+(x.release_type==='maj'?'MAJ':'PATCH')+' · '+String(x.title||'Modification'),
+    '    '+(x.created_at?new Date(x.created_at).toLocaleString('fr-FR'):'')+' · '+(x.source==='auto'?'AUTO':'MANUEL'),
+    ''
+   ])
+  ].join('\r\n');
+  files.push({name:'00-JOURNAL-COMPLET.txt',text:'\ufeff'+summary,date:generated});
+  rows.forEach((x,i)=>files.push({name:String(i+1).padStart(3,'0')+'-'+logExportFileName(x,i),text:'\ufeff'+portalLogAsText(x),date:x.created_at?new Date(x.created_at):generated}));
+  const blob=zipStoreTextFiles(files),stamp=generated.toISOString().slice(0,10);
+  saveJournalBlob(blob,'Nethor-Journal-des-modifications-'+stamp+'.zip')
+ }catch(e){
+  console.error('Export journal complet:',e);
+  alert('Impossible de préparer le pack du journal.')
+ }finally{
+  if(button){button.disabled=false;button.textContent=original}
+ }
+}
+
+function renderPortalLogs(){
+ const host=$('portalLogs');if(!host)return;
+ const important=portalLogs.filter(isImportantPortalLog);
+ $('logTotalCount').textContent=String(important.length);
+ $('logAutoCount').textContent=String(important.filter(x=>x.source==='auto').length);
+ $('logManualCount').textContent=String(important.filter(x=>x.source==='manual').length);
+ const rows=important.filter(x=>(logSourceFilter==='all'||x.source===logSourceFilter)&&(logTypeFilter==='all'||x.release_type===logTypeFilter));
+ if(!rows.length){host.innerHTML='<div class="logEmpty">Aucune entrée ne correspond à ces filtres.</div>';return}
+ const desktop=isDesktopJournal();
+ host.innerHTML=rows.map(x=>{
+  const auto=x.source==='auto',author=auto?'AUTO':(x.actor_name||'Administrateur'),letter=auto?'A':String(author||'M').trim().charAt(0).toUpperCase(),version=logVersionLabel(x);
+  const download=desktop?'<button class="logDownloadBtn" type="button" onclick="downloadPortalLog('+Number(x.id)+')" title="Télécharger cette entrée au format TXT">↓ TXT</button>':'';
+  return '<article class="logEntry '+(auto?'auto':'manual')+'"><div class="logRail"><span class="logAvatar">'+esc(letter)+'</span></div><div class="logCard"><div class="logTop"><span class="logType '+esc(x.release_type)+'">'+(x.release_type==='maj'?'MAJ':'PATCH')+'</span><span class="logSource '+esc(x.source)+'">'+(auto?'AUTO':'MANUEL')+'</span>'+(x.area?'<span class="logArea">'+esc(x.area)+'</span>':'')+(version?'<span class="logVersion">'+esc(version)+'</span>':'')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.description)+'</p>'+renderLogDetails(x)+'<div class="logMeta"><span>'+logDate(x.created_at)+'</span><span class="logMetaActions"><span class="logAuthor">'+esc(author)+'</span>'+download+'</span></div></div></article>'
+ }).join('')
+}
+async function loadPortalLogs(){
+ const host=$('portalLogs');if(!host)return;
+ host.innerHTML='<div class="logEmpty">Synchronisation du journal…</div>';
+ try{
+  const syncRes=await db.rpc('sync_nethor_release_manifest');
+  if(syncRes?.error)console.warn('Synchronisation version publiée:',syncRes.error);
+  const {data,error}=await db.from('portal_change_logs').select('id,source,release_type,title,description,area,actor_name,created_at,details').order('created_at',{ascending:false}).limit(250);
+  if(error)throw error;portalLogs=data||[];renderPortalLogs()
+ }catch(e){console.error('Logs portail:',e);host.innerHTML='<div class="logEmpty">Impossible de charger le journal des modifications.</div>'}
+}
+function setLogSource(value,btn){logSourceFilter=value;document.querySelectorAll('[data-log-source]').forEach(x=>x.classList.toggle('active',x===btn));renderPortalLogs()}
+function setLogType(value,btn){logTypeFilter=value;document.querySelectorAll('[data-log-type]').forEach(x=>x.classList.toggle('active',x===btn));renderPortalLogs()}
+async function writeManualLog(type,title,description,area,details={}){
+ try{
+  await db.from('portal_change_logs').insert({source:'manual',release_type:type,title,description,area,actor_id:session.user.id,actor_name:profile?.display_name||'Administrateur',details})
+ }catch(e){console.warn('Écriture log manuel:',e)}
+}
+
+function problemStatusLabel(status){return status==='resolved'?'Résolu':status==='in_progress'?'En cours':'Nouveau'}
+function problemLegacyDeviceLabel(ua){
+ const s=String(ua||'');
+ if(/iPhone|iPod/i.test(s))return'iPhone';
+ if(/iPad/i.test(s))return'iPad';
+ if(/Android/i.test(s))return'Android';
+ if(/Windows/i.test(s))return'Windows';
+ if(/Macintosh|Mac OS X/i.test(s))return'Mac';
+ return'Appareil'
+}
+function problemDiag(row){const d=row?.diagnostics;return d&&typeof d==='object'&&!Array.isArray(d)?d:{}}
+function problemTextValue(v,fallback='Non disponible'){return v===null||v===undefined||v===''?fallback:String(v)}
+function problemBool(v){return v===true?'Oui':v===false?'Non':'Non disponible'}
+function problemDeviceSummary(row){
+ const d=problemDiag(row),device=d.device||{},browser=d.browser||{};
+ const kind=device.kind||problemLegacyDeviceLabel(row?.user_agent),model=device.model?(' · '+device.model):'',os=device.os?(' · '+device.os):'',b=browser.name?(' · '+browser.name+(browser.version?' '+browser.version:'')):'';
+ return kind+model+os+b
+}
+function problemDiagItem(label,value,wide=false){
+ return '<div class="problemDiagItem '+(wide?'problemDiagWide':'')+'"><span>'+esc(label)+'</span><b>'+esc(problemTextValue(value))+'</b></div>'
+}
+function problemDiagnosticHtml(row){
+ const d=problemDiag(row),app=d.app||{},device=d.device||{},browser=d.browser||{},display=d.display||{},network=d.network||{},locale=d.locale||{},interaction=d.interaction||{},source=d.source||{};
+ const screenSize=display.screen_width&&display.screen_height?display.screen_width+' × '+display.screen_height+' px':'Non disponible';
+ const viewport=display.viewport_width&&display.viewport_height?display.viewport_width+' × '+display.viewport_height+' px':'Non disponible';
+ const visual=display.visual_viewport_width&&display.visual_viewport_height?display.visual_viewport_width+' × '+display.visual_viewport_height+' px'+(display.visual_viewport_scale?' · zoom '+display.visual_viewport_scale:''):'Non disponible';
+ const orientation=[display.orientation_type,display.orientation_angle!==null&&display.orientation_angle!==undefined?display.orientation_angle+'°':''].filter(Boolean).join(' · ');
+ const net=[network.effective_type,network.downlink_mbps!==null&&network.downlink_mbps!==undefined?network.downlink_mbps+' Mb/s':'',network.rtt_ms!==null&&network.rtt_ms!==undefined?network.rtt_ms+' ms':''].filter(Boolean).join(' · ');
+ const sw=app.service_worker_controlled?'Actif'+(app.service_worker_state?' · '+app.service_worker_state:''):'Non contrôlé';
+ const caches=Array.isArray(app.cache_names)&&app.cache_names.length?app.cache_names.join(', '):'Non disponible';
+ const ua=browser.user_agent||row.user_agent||'',origin=source.report_origin_path||null;
+ return '<details class="problemDiagnostic"><summary>Diagnostic technique détaillé</summary><div class="problemDiagGrid">'+
+  problemDiagItem('Page concernée',source.path||row.source_path)+
+  (origin&&origin!==(source.path||row.source_path)?problemDiagItem('Formulaire ouvert depuis',origin):'')+
+  problemDiagItem('Référent',source.referrer)+
+  problemDiagItem('Version Nethor',row.app_version||app.label||(app.version!=null?'v'+app.version:null))+
+  problemDiagItem('Mode d’utilisation',app.display_mode)+
+  problemDiagItem('Type d’appareil',device.kind||problemLegacyDeviceLabel(row.user_agent))+
+  problemDiagItem('Modèle exact',device.model||'Non exposé par le navigateur')+
+  problemDiagItem('Système',device.os)+
+  problemDiagItem('Plateforme',device.platform)+
+  problemDiagItem('Navigateur',browser.name?browser.name+(browser.version?' '+browser.version:''):null)+
+  problemDiagItem('Architecture',[device.architecture,device.bitness].filter(Boolean).join(' · '))+
+  problemDiagItem('Écran',screenSize)+
+  problemDiagItem('Viewport',viewport)+
+  problemDiagItem('Viewport visuel',visual)+
+  problemDiagItem('Orientation',orientation)+
+  problemDiagItem('Densité pixels',display.pixel_ratio)+
+  problemDiagItem('Points tactiles',device.max_touch_points)+
+  problemDiagItem('Mémoire appareil',device.device_memory_gb!=null?device.device_memory_gb+' Go':null)+
+  problemDiagItem('Processeurs logiques',device.logical_processors)+
+  problemDiagItem('Connexion',net||null)+
+  problemDiagItem('En ligne',problemBool(network.online))+
+  problemDiagItem('Économie de données',problemBool(network.save_data))+
+  problemDiagItem('Langue',locale.language)+
+  problemDiagItem('Fuseau horaire',locale.timezone)+
+  problemDiagItem('Service Worker',sw)+
+  problemDiagItem('Cache Nethor',caches,true)+
+  problemDiagItem('Interface tactile',problemBool(interaction.pointer_coarse))+
+  problemDiagItem('Mode sombre système',problemBool(interaction.color_scheme_dark))+
+  problemDiagItem('User-Agent',ua,true)+
+  '</div></details>'
+}
+function problemSourceKey(row){
+ return String(row?.source_path||row?.source_title||'general').split('?')[0]||'general'
+}
+function problemSourceLabel(row){
+ return String(row?.source_title||row?.source_path||'Nethor')
+}
+function renderProblemPageFilter(){
+ const select=$('problemPageFilter');if(!select)return;
+ const pages=new Map();
+ reportedProblems.forEach(row=>{
+  const key=problemSourceKey(row),label=problemSourceLabel(row);
+  if(!pages.has(key))pages.set(key,label)
+ });
+ const current=problemPageFilter;
+ select.innerHTML='<option value="all">Toutes les pages</option>'+[...pages.entries()].sort((a,b)=>a[1].localeCompare(b[1],'fr')).map(([key,label])=>'<option value="'+attr(key)+'">'+esc(label)+'</option>').join('');
+ select.value=pages.has(current)?current:'all';
+ if(select.value!==current)problemPageFilter='all'
+}
+function renderReportedProblems(){
+ const host=$('reportedProblems');if(!host)return;
+ renderProblemPageFilter();
+ $('problemTotalCount').textContent=String(reportedProblems.length);
+ $('problemNewCount').textContent=String(reportedProblems.filter(x=>x.status==='new').length);
+ $('problemProgressCount').textContent=String(reportedProblems.filter(x=>x.status==='in_progress').length);
+ $('problemResolvedCount').textContent=String(reportedProblems.filter(x=>x.status==='resolved').length);
+ const openCount=reportedProblems.filter(x=>x.status!=='resolved').length,badge=$('problemReportBadge');
+ if(badge){badge.textContent=String(openCount);badge.classList.toggle('hidden',openCount<1)}
+ const q=problemSearchFilter.trim().toLocaleLowerCase('fr');
+ const rows=reportedProblems.filter(x=>{
+  if(problemStatusFilter!=='all'&&x.status!==problemStatusFilter)return false;
+  if(problemPageFilter!=='all'&&problemSourceKey(x)!==problemPageFilter)return false;
+  if(!q)return true;
+  const d=problemDiag(x);
+  return [x.reporter_name,x.reporter_role,x.description,x.source_title,x.source_path,x.app_version,problemDeviceSummary(x),d?.device?.model,d?.device?.os,d?.browser?.name].some(v=>String(v||'').toLocaleLowerCase('fr').includes(q))
+ });
+ if(!rows.length){host.innerHTML='<div class="problemEmpty">Aucun problème ne correspond à ce filtre.</div>';return}
+ host.innerHTML=rows.map(x=>{
+  const status=x.status||'new',source=x.source_title||x.source_path||'Nethor',role=roleName(x.reporter_role),device=problemDeviceSummary(x),d=problemDiag(x),mode=d?.app?.display_mode||'Mode non disponible';
+  const resolved=x.resolved_at?'<span class="problemResolvedInfo">Résolu le '+esc(logDate(x.resolved_at))+'</span>':'';
+  return '<article class="problemCard"><div class="problemHead"><div class="problemIdentity"><strong>'+esc(x.reporter_name||'Utilisateur')+'</strong><small>'+esc(role)+' · '+esc(logDate(x.created_at))+' · #'+Number(x.id)+'</small></div><select class="problemStatusSelect" aria-label="État du signalement" onchange="updateReportedProblemStatus('+Number(x.id)+',this.value,this)"><option value="new" '+(status==='new'?'selected':'')+'>Nouveau</option><option value="in_progress" '+(status==='in_progress'?'selected':'')+'>En cours</option><option value="resolved" '+(status==='resolved'?'selected':'')+'>Résolu</option></select></div><div class="problemDescription">'+esc(x.description||'')+'</div><div class="problemMeta"><span><i class="problemStatusDot '+esc(status)+'"></i>'+esc(problemStatusLabel(status))+'</span><span>Page : '+esc(source)+'</span><span>'+esc(x.app_version||d?.app?.label||'Version inconnue')+'</span><span>'+esc(device)+'</span><span>'+esc(mode)+'</span></div>'+problemDiagnosticHtml(x)+'<div class="problemAdminBox"><label for="problem-note-'+Number(x.id)+'">Note administrateur</label><textarea class="problemAdminNote" id="problem-note-'+Number(x.id)+'" maxlength="2000" placeholder="Cause probable, test effectué, correctif appliqué…">'+esc(x.admin_note||'')+'</textarea><div class="problemActions"><button class="problemAction primary" type="button" onclick="saveReportedProblemNote('+Number(x.id)+',this)">Enregistrer la note</button><button class="problemAction" type="button" onclick="copyProblemDiagnostic('+Number(x.id)+',this)">Copier le diagnostic</button>'+resolved+'</div></div></article>'
+ }).join('')
+}
+async function loadReportedProblems(){
+ const host=$('reportedProblems');if(!host)return;
+ host.innerHTML='<div class="problemEmpty">Chargement des signalements…</div>';
+ try{
+  const {data,error}=await db.from('reported_problems').select('id,reporter_id,reporter_name,reporter_role,description,source_path,source_title,user_agent,app_version,diagnostics,status,admin_note,resolved_by,created_at,updated_at,resolved_at').order('created_at',{ascending:false}).limit(250);
+  if(error)throw error;reportedProblems=data||[];renderReportedProblems()
+ }catch(e){console.error('Problèmes signalés:',e);host.innerHTML='<div class="problemEmpty">Impossible de charger les problèmes signalés.</div>'}
+}
+function setProblemFilter(value,btn){
+ problemStatusFilter=['new','in_progress','resolved'].includes(value)?value:'all';
+ document.querySelectorAll('[data-problem-status]').forEach(x=>x.classList.toggle('active',x===btn));
+ renderReportedProblems()
+}
+function setProblemPageFilter(value){problemPageFilter=String(value||'all')||'all';renderReportedProblems()}
+function setProblemSearch(value){problemSearchFilter=String(value||'');renderReportedProblems()}
+async function updateReportedProblemStatus(id,status,input){
+ if(!['new','in_progress','resolved'].includes(status))return;
+ const row=reportedProblems.find(x=>Number(x.id)===Number(id));if(!row)return;
+ const previous=row.status;if(input)input.disabled=true;
+ try{
+  const now=new Date().toISOString(),patch={status,updated_at:now,resolved_at:status==='resolved'?now:null,resolved_by:status==='resolved'?session.user.id:null};
+  const {error}=await db.from('reported_problems').update(patch).eq('id',id);if(error)throw error;
+  row.status=status;row.updated_at=now;row.resolved_at=patch.resolved_at;row.resolved_by=patch.resolved_by;renderReportedProblems();window.NettoSounds?.play?.('switch')
+ }catch(e){console.error('Mise à jour signalement:',e);row.status=previous;renderReportedProblems();alert('Impossible de modifier l’état de ce signalement.')}
+ finally{if(input)input.disabled=false}
+}
+async function saveReportedProblemNote(id,button){
+ const row=reportedProblems.find(x=>Number(x.id)===Number(id)),field=$('problem-note-'+id);if(!row||!field)return;
+ const note=String(field.value||'').trim().slice(0,2000),old=button?.textContent;if(button){button.disabled=true;button.textContent='Enregistrement…'}
+ try{
+  const now=new Date().toISOString(),{error}=await db.from('reported_problems').update({admin_note:note||null,updated_at:now}).eq('id',id);if(error)throw error;
+  row.admin_note=note||null;row.updated_at=now;if(button)button.textContent='✓ Note enregistrée';window.NettoSounds?.play?.('success')
+ }catch(e){console.error('Note signalement:',e);if(button)button.textContent='Erreur';window.NettoSounds?.play?.('error')}
+ finally{if(button)setTimeout(()=>{button.disabled=false;button.textContent=old||'Enregistrer la note'},900)}
+}
+function problemDiagnosticText(row){
+ const d=problemDiag(row),app=d.app||{},device=d.device||{},browser=d.browser||{},display=d.display||{},network=d.network||{},locale=d.locale||{},source=d.source||{};
+ const line=(label,value)=>label+' : '+problemTextValue(value);
+ return [
+  'Signalement Nethor #'+row.id,
+  line('Utilisateur',(row.reporter_name||'Utilisateur')+' ('+roleName(row.reporter_role)+')'),
+  line('Date',logDate(row.created_at)),
+  line('Statut',problemStatusLabel(row.status)),
+  line('Page concernée',row.source_title||source.title||row.source_path),
+  line('Chemin concerné',source.path||row.source_path),
+  line('Formulaire ouvert depuis',source.report_origin_path&&source.report_origin_path!==(source.path||row.source_path)?source.report_origin_path:null),
+  line('Version Nethor',row.app_version||app.label||(app.version!=null?'v'+app.version:null)),
+  '',
+  'Description :',
+  row.description||'',
+  '',
+  line('Type appareil',device.kind||problemLegacyDeviceLabel(row.user_agent)),
+  line('Modèle exact',device.model||'Non exposé par le navigateur'),
+  line('Système',device.os),
+  line('Plateforme',device.platform),
+  line('Navigateur',browser.name?browser.name+(browser.version?' '+browser.version:''):null),
+  line('Mode Web/PWA',app.display_mode),
+  line('Écran',display.screen_width&&display.screen_height?display.screen_width+' x '+display.screen_height+' px':null),
+  line('Viewport',display.viewport_width&&display.viewport_height?display.viewport_width+' x '+display.viewport_height+' px':null),
+  line('Orientation',[display.orientation_type,display.orientation_angle!==null&&display.orientation_angle!==undefined?display.orientation_angle+'°':''].filter(Boolean).join(' · ')),
+  line('Densité pixels',display.pixel_ratio),
+  line('Points tactiles',device.max_touch_points),
+  line('Mémoire appareil',device.device_memory_gb!=null?device.device_memory_gb+' Go':null),
+  line('Processeurs logiques',device.logical_processors),
+  line('Connexion',[network.effective_type,network.downlink_mbps!=null?network.downlink_mbps+' Mb/s':'',network.rtt_ms!=null?network.rtt_ms+' ms':''].filter(Boolean).join(' · ')),
+  line('En ligne',problemBool(network.online)),
+  line('Fuseau horaire',locale.timezone),
+  line('Service Worker',app.service_worker_controlled?'Actif':'Non contrôlé'),
+  line('Caches Nethor',Array.isArray(app.cache_names)&&app.cache_names.length?app.cache_names.join(', '):null),
+  line('User-Agent',browser.user_agent||row.user_agent),
+  '',
+  'Note administrateur :',
+  row.admin_note||'Aucune'
+ ].join('\n')
+}
+async function copyProblemDiagnostic(id,button){
+ const row=reportedProblems.find(x=>Number(x.id)===Number(id));if(!row)return;
+ const textValue=problemDiagnosticText(row),old=button?.textContent;
+ try{
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(textValue);
+  else{
+   const ta=document.createElement('textarea');ta.value=textValue;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()
+  }
+  if(button)button.textContent='✓ Diagnostic copié';window.NettoSounds?.play?.('success')
+ }catch(e){console.error('Copie diagnostic:',e);if(button)button.textContent='Copie impossible'}
+ finally{if(button)setTimeout(()=>button.textContent=old||'Copier le diagnostic',1000)}
+}
+
+function notificationRole(role){return roleName(role)}
+function renderNotificationAdmin(){
+ const usersHost=$('notificationUsers'),recipientsHost=$('notificationRecipients');
+ if(!notificationUsers.length){
+  if(usersHost)usersHost.innerHTML='<div class="empty">Aucun utilisateur trouvé.</div>';
+  if(recipientsHost)recipientsHost.innerHTML='<div class="empty">Aucun destinataire disponible.</div>';
+  return
+ }
+ if(usersHost)usersHost.innerHTML=notificationUsers.map(u=>'<div class="notifUser"><div class="notifUserName"><strong>'+esc(u.display_name||'Utilisateur')+'</strong><span>'+esc(notificationRole(u.role))+'</span></div><span class="deviceBadge '+(u.devices>0?'on':'')+'">'+(u.devices>0?u.devices+' appareil'+(u.devices>1?'s':'')+' Push':'Aucun appareil Push')+'</span><label class="adminSwitch" title="'+(u.enabled?'Notifications autorisées':'Notifications bloquées')+'"><input type="checkbox" '+(u.enabled?'checked':'')+' onchange="setUserNotifications(\''+attr(u.id)+'\',this.checked,this)"><span></span></label></div>').join('');
+ if(recipientsHost)recipientsHost.innerHTML=notificationUsers.map(u=>'<label class="recipient"><input type="checkbox" data-notif-recipient="'+attr(u.id)+'" '+(u.enabled?'':'disabled')+'><span><strong>'+esc(u.display_name||'Utilisateur')+'</strong><small>'+esc(notificationRole(u.role))+' · '+(u.devices||0)+' appareil'+((u.devices||0)>1?'s':'')+' Push</small></span>'+(u.enabled?'':'<span class="blocked">Bloqué</span>')+'</label>').join('')
+}
+function notificationRuleBadge(r){
+ const portal=r.portal_enabled!==false,push=r.push_allowed!==false&&r.push_enabled!==false;
+ if(portal&&push)return'<span class="ruleBadge">Push + portail</span>';
+ if(portal)return'<span class="ruleBadge appOnly">Portail uniquement</span>';
+ if(push)return'<span class="ruleBadge pushOnly">Push uniquement</span>';
+ return'<span class="ruleBadge off">Désactivée</span>'
+}
+function notificationRuleMode(r){
+ const portal=r.portal_enabled!==false,push=r.push_allowed!==false&&r.push_enabled!==false;
+ if(portal&&push)return'both';
+ if(portal)return'portal';
+ if(push)return'push';
+ return'off'
+}
+function notificationModeControl(r){
+ const current=notificationRuleMode(r),pushAvailable=r.push_allowed!==false;
+ const options=pushAvailable?[['off','Aucun'],['portal','Portail'],['push','Push'],['both','Les deux']]:[['off','Aucun'],['portal','Portail']];
+ return '<div class="notificationModeControl '+(pushAvailable?'':'two')+'" role="group" aria-label="Diffusion de '+attr(r.label)+'">'+options.map(([mode,label])=>'<button type="button" class="notificationModeOption '+(current===mode?'active':'')+'" data-mode="'+mode+'" aria-pressed="'+(current===mode?'true':'false')+'" onclick="setNotificationRuleMode(\''+attr(r.rule_key)+'\',\''+mode+'\',this)">'+label+'</button>').join('')+'</div>'
+}
+function renderNotificationRules(){
+ const host=$('notificationRules');if(!host)return;
+ if(!notificationRules.length){host.innerHTML='<div class="empty">Aucune règle disponible.</div>';return}
+ host.innerHTML=notificationRules.map(r=>
+  '<div class="notificationRule"><div><strong>'+esc(r.label)+notificationRuleBadge(r)+'</strong><p>'+esc(r.description||'')+'</p><small>Déclenchement : '+esc(r.trigger_text||'Non renseigné')+'</small></div>'+notificationModeControl(r)+'</div>'
+ ).join('')
+}
+async function loadNotificationAdmin(){
+ const usersHost=$('notificationUsers'),recipientsHost=$('notificationRecipients'),rulesHost=$('notificationRules');
+ if(usersHost)usersHost.innerHTML='<div class="empty">Chargement des utilisateurs…</div>';
+ if(recipientsHost)recipientsHost.innerHTML='<div class="empty">Chargement…</div>';
+ if(rulesHost)rulesHost.innerHTML='<div class="empty">Chargement des règles…</div>';
+ try{
+  const [usersRes,rulesRes]=await Promise.all([db.rpc('admin_notification_users'),db.rpc('admin_notification_rules')]);
+  if(usersRes.error)throw usersRes.error;if(rulesRes.error)throw rulesRes.error;
+  notificationUsers=Array.isArray(usersRes.data)?usersRes.data:[];
+  notificationRules=Array.isArray(rulesRes.data)?rulesRes.data:[];
+  renderNotificationAdmin();renderNotificationRules()
+ }catch(e){
+  console.error('Chargement notifications admin:',e);
+  if(usersHost)usersHost.innerHTML='<div class="empty">Impossible de charger les réglages de notifications.<br><small>'+esc(e?.message||'Erreur inconnue')+'</small></div>';
+  if(recipientsHost)recipientsHost.innerHTML='<div class="empty">Impossible de charger les destinataires.</div>';
+  if(rulesHost)rulesHost.innerHTML='<div class="empty">Impossible de charger les règles globales.</div>'
+ }
+}
+async function setNotificationRuleMode(ruleKey,mode,button){
+ const row=notificationRules.find(x=>x.rule_key===ruleKey);if(!row)return;
+ const pushAllowed=row.push_allowed!==false;
+ const portal=mode==='portal'||mode==='both';
+ const push=pushAllowed&&(mode==='push'||mode==='both');
+ if(!pushAllowed&&(mode==='push'||mode==='both'))return;
+ const group=button?.closest('.notificationModeControl');
+ group?.querySelectorAll('button').forEach(x=>x.disabled=true);
+ try{
+  const {data,error}=await db.rpc('admin_set_notification_channels',{p_rule_key:ruleKey,p_portal_enabled:portal,p_push_enabled:push});
+  if(error||data!==true)throw error||new Error('Mise à jour refusée');
+  row.portal_enabled=portal;row.push_enabled=push;row.enabled=portal||push;
+  renderNotificationRules();window.NettoSounds?.play?.('switch')
+ }catch(e){
+  console.error(e);renderNotificationRules();
+  alert('Impossible de modifier la diffusion de cette notification.')
+ }
+}
+async function setNotificationRule(ruleKey,enabled,input){
+ input.disabled=true;
+ try{
+  const {data,error}=await db.rpc('admin_set_notification_rule',{p_rule_key:ruleKey,p_enabled:enabled});
+  if(error||data!==true)throw error||new Error('Mise à jour refusée');
+  const row=notificationRules.find(x=>x.rule_key===ruleKey);if(row)row.enabled=enabled;
+  renderNotificationRules();window.NettoSounds?.play?.('switch')
+ }catch(e){console.error(e);input.checked=!enabled;alert('Impossible de modifier cette règle de notification.')}
+ finally{input.disabled=false}
+}
+async function setUserNotifications(userId,enabled,input){
+ input.disabled=true;
+ try{
+  const {data,error}=await db.rpc('admin_set_notification_control',{target_user:userId,new_enabled:enabled});
+  if(error||data!==true)throw error||new Error('Mise à jour refusée');
+  const u=notificationUsers.find(x=>x.id===userId);if(u)u.enabled=enabled;
+  renderNotificationAdmin();window.NettoSounds?.play?.('switch');if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()
+ }catch(e){console.error(e);input.checked=!enabled;alert('Impossible de modifier les notifications de cet utilisateur.')}
+ finally{input.disabled=false}
+}
+function selectRecipients(mode){
+ document.querySelectorAll('[data-notif-recipient]').forEach(x=>{if(x.disabled)return;x.checked=mode==='all'||(mode==='me'&&x.dataset.notifRecipient===session?.user?.id)});
+}
+function applyNotificationPreset(){
+ const kind=$('notificationKind')?.value||'admin_message';
+ const presets={
+  manual_edit:{title:'Planning modifié',target:'planning.html',hint:'Utilise le type “Planning modifié”. Il suit les préférences “Modifications planning” et peut être envoyé en Push.'},
+  app_update:{title:'Nouvelle version de Nethor',target:'home.html',hint:'Annonce de mise à jour dans le portail uniquement. Conformément au réglage Nethor, aucune notification Push système n’est envoyée pour une mise à jour.'},
+  admin_message:{title:'Information Nethor',target:'home.html',hint:'Message d’information Nethor envoyé manuellement. Les préférences utilisateur et les règles globales sont respectées.'},
+  maintenance:{title:'Maintenance Nethor',target:'maintenance.html',hint:'Annonce liée à une maintenance. Elle respecte la règle globale Maintenance et les préférences de chaque utilisateur.'}
+ };
+ const p=presets[kind]||presets.admin_message;
+ if($('notificationTitle'))$('notificationTitle').value=p.title;
+ if($('notificationTarget'))$('notificationTarget').value=p.target;
+ if($('notificationPresetHint'))$('notificationPresetHint').textContent=p.hint;
+ previewAdminNotification()
+}
+function previewAdminNotification(){
+ const title=$('notificationTitle')?.value.trim()||'Notification',message=$('notificationMessage')?.value.trim()||'Ton message apparaîtra ici.';
+ if($('notificationPreviewTitle'))$('notificationPreviewTitle').textContent=title;
+ if($('notificationPreviewMessage'))$('notificationPreviewMessage').textContent=message
+}
+async function sendAdminNotification(){
+ const ids=[...document.querySelectorAll('[data-notif-recipient]:checked')].map(x=>x.dataset.notifRecipient),kind=$('notificationKind')?.value||'admin_message',title=$('notificationTitle').value.trim(),message=$('notificationMessage').value.trim(),target=$('notificationTarget').value.trim()||'home.html',btn=$('sendNotificationBtn'),state=$('notificationSendResult');
+ state.className='sendResult';state.textContent='';
+ if(!ids.length){state.className='sendResult err';state.textContent='Sélectionne au moins un destinataire.';return}
+ if(!title||!message){state.className='sendResult err';state.textContent='Renseigne un titre et un message.';return}
+ btn.disabled=true;state.textContent='Envoi en cours…';
+ try{
+  const {data,error}=await db.functions.invoke('planning-push',{body:{action:'admin-message',user_ids:ids,kind,title,message,target_url:target}});
+  if(error||!data?.ok)throw error||new Error(data?.error||'Envoi impossible');
+  const internal=Number(data?.internal||0),blocked=Number(data?.blocked||0),sent=Number(data?.push?.sent||0),failed=Number(data?.push?.failed||0),removed=Number(data?.push?.removed||0);
+  state.className='sendResult ok';
+  state.textContent='✓ '+internal+' notification'+(internal>1?'s':'')+' créée'+(internal>1?'s':'')+' dans le portail'+(kind==='app_update'?' · Push désactivé pour les mises à jour':' · '+sent+' Push envoyé'+(sent>1?'s':''))+(blocked?' · '+blocked+' compte'+(blocked>1?'s':'')+' exclu'+(blocked>1?'s':''):'')+(failed?' · '+failed+' échec'+(failed>1?'s':''):'')+(removed?' · '+removed+' appareil'+(removed>1?'s':'')+' expiré'+(removed>1?'s':'')+' retiré'+(removed>1?'s':''):'');
+  window.NettoSounds?.play?.('success');await loadNotificationAdmin()
+ }catch(e){
+  console.error('Envoi notification admin:',e);
+  state.className='sendResult err';
+  state.textContent='Erreur pendant l’envoi : '+(e?.context?.body?.error||e?.message||'erreur inconnue');
+  window.NettoSounds?.play?.('error')
+ }
+ finally{btn.disabled=false}
+}
+
+
+function normalizeManagementEan13(value){
+ const digits=String(value||'').replace(/\D/g,'');
+ if(!digits)return'';
+ return digits.length<=13?digits.padStart(13,'0'):digits
+}
+function managementCategoryOptions(familyId,selectedId){
+ const rows=managementCategories.filter(x=>String(x.family_id)===String(familyId||''));
+ return '<option value="">Non répertorié</option>'+rows.map(x=>'<option value="'+attr(x.id)+'" '+(String(x.id)===String(selectedId||'')?'selected':'')+'>'+esc(x.name)+'</option>').join('')
+}
+async function loadManagementArticles(){
+ const body=$('managementArticlesRows');if(body)body.innerHTML='<tr><td colspan="6" class="articleAdminEmpty">Chargement des fiches articles…</td></tr>';
+ try{
+  const [productsRes,familiesRes,categoriesRes]=await Promise.all([
+   db.from('products').select('id,name,family_id,category_id,ean,on_sale,active').eq('active',true).order('name'),
+   db.from('product_families').select('id,name,position').order('position').order('name'),
+   db.from('product_categories').select('id,family_id,name,position').order('position').order('name')
+  ]);
+  if(productsRes.error)throw productsRes.error;if(familiesRes.error)throw familiesRes.error;if(categoriesRes.error)throw categoriesRes.error;
+  managementArticles=productsRes.data||[];managementFamilies=familiesRes.data||[];managementCategories=categoriesRes.data||[];
+  renderManagementArticles()
+ }catch(e){
+  console.error('Gestion fiches articles:',e);
+  if(body)body.innerHTML='<tr><td colspan="6" class="articleAdminEmpty">Impossible de charger les fiches articles.</td></tr>'
+ }
+}
+function syncManagementArticleDrafts(){
+ document.querySelectorAll('#managementArticlesRows tr[data-article-id]').forEach(tr=>{
+  const id=tr.dataset.articleId,row=managementArticles.find(x=>x.id===id);if(!row)return;
+  const familyRaw=$('ma-family-'+id)?.value||'',categoryRaw=$('ma-category-'+id)?.value||'';
+  row.name=String($('ma-name-'+id)?.value??row.name??'');
+  row.family_id=familyRaw?Number(familyRaw):null;
+  row.category_id=categoryRaw?Number(categoryRaw):null;
+  row.ean=String($('ma-ean-'+id)?.value??row.ean??'').replace(/\D/g,'');
+  row.on_sale=$('ma-status-'+id)?.value==='true'
+ })
+}
+function compareManagementText(a,b){return String(a||'').localeCompare(String(b||''),'fr',{sensitivity:'base',numeric:true})}
+function compareManagementEan(a,b){
+ const av=String(a||'').replace(/\D/g,''),bv=String(b||'').replace(/\D/g,'');
+ if(!av&&!bv)return 0;if(!av)return 1;if(!bv)return-1;
+ if(av.length!==bv.length)return av.length-bv.length;
+ return av.localeCompare(bv)
+}
+function sortManagementArticleRows(rows,familyName,categoryName){
+ const key=managementArticleSort.key;if(!key)return rows;
+ const dir=managementArticleSort.direction==='desc'?-1:1;
+ return rows.map((row,index)=>({row,index})).sort((a,b)=>{
+  const x=a.row,y=b.row;let cmp=0;
+  if(key==='name')cmp=compareManagementText(x.name,y.name);
+  else if(key==='family'){
+   cmp=compareManagementText(familyName(x.family_id)||'Non répertorié',familyName(y.family_id)||'Non répertorié');
+   if(!cmp)cmp=compareManagementText(categoryName(x.category_id)||'Non répertorié',categoryName(y.category_id)||'Non répertorié')
+  }else if(key==='category'){
+   cmp=compareManagementText(categoryName(x.category_id)||'Non répertorié',categoryName(y.category_id)||'Non répertorié');
+   if(!cmp)cmp=compareManagementText(familyName(x.family_id)||'Non répertorié',familyName(y.family_id)||'Non répertorié')
+  }else if(key==='ean'){
+   const xe=String(x.ean||'').replace(/\D/g,''),ye=String(y.ean||'').replace(/\D/g,'');
+   if(!xe||!ye){
+    if(!xe&&!ye)cmp=0;
+    else return !xe?1:-1
+   }else cmp=compareManagementEan(xe,ye)
+  }else if(key==='status')cmp=Number(x.on_sale!==false)-Number(y.on_sale!==false);
+  if(!cmp)cmp=compareManagementText(x.name,y.name);
+  return cmp*dir||a.index-b.index
+ }).map(x=>x.row)
+}
+function updateManagementArticleSortHeaders(){
+ document.querySelectorAll('.articleSortButton').forEach(btn=>{
+  const active=btn.dataset.articleSort===managementArticleSort.key;
+  btn.classList.toggle('active',active);
+  const arrow=btn.querySelector('.articleSortArrow');
+  if(arrow)arrow.textContent=active?(managementArticleSort.direction==='asc'?'↑':'↓'):'↓';
+  btn.setAttribute('aria-pressed',active?'true':'false');
+  btn.title=active?(managementArticleSort.direction==='asc'?'Ordre actuel — cliquer pour inverser':'Ordre inversé — cliquer pour inverser'):'Cliquer pour trier'
+ })
+}
+function setManagementArticleSort(key){
+ syncManagementArticleDrafts();
+ if(managementArticleSort.key===key)managementArticleSort.direction=managementArticleSort.direction==='asc'?'desc':'asc';
+ else managementArticleSort={key,direction:'asc'};
+ renderManagementArticles()
+}
+function renderManagementArticles(){
+ const body=$('managementArticlesRows');if(!body)return;
+ const q=String($('managementArticleSearch')?.value||'').trim().toLocaleLowerCase('fr');
+ const familyName=id=>managementFamilies.find(x=>String(x.id)===String(id))?.name||'';
+ const categoryName=id=>managementCategories.find(x=>String(x.id)===String(id))?.name||'';
+ let rows=managementArticles.filter(p=>!q||[p.name,p.ean,familyName(p.family_id),categoryName(p.category_id)].some(v=>String(v||'').toLocaleLowerCase('fr').includes(q)));
+ rows=sortManagementArticleRows(rows,familyName,categoryName);
+ $('managementArticleCount').textContent=rows.length;
+ if(!rows.length){body.innerHTML='<tr><td colspan="6" class="articleAdminEmpty">Aucune fiche article ne correspond à cette recherche.</td></tr>';updateManagementArticleSortHeaders();return}
+ body.innerHTML=rows.map(p=>{
+  const ean=String(p.ean||''),eanValid=!ean||/^\d{13}$/.test(ean);
+  return '<tr data-article-id="'+attr(p.id)+'">'+
+   '<td><input class="articleName" id="ma-name-'+attr(p.id)+'" value="'+attr(p.name||'')+'" aria-label="Nom"></td>'+
+   '<td><select id="ma-family-'+attr(p.id)+'" onchange="managementArticleFamilyChanged(\''+attr(p.id)+'\')"><option value="">Non répertorié</option>'+managementFamilies.map(f=>'<option value="'+attr(f.id)+'" '+(String(f.id)===String(p.family_id||'')?'selected':'')+'>'+esc(f.name)+'</option>').join('')+'</select></td>'+
+   '<td><select id="ma-category-'+attr(p.id)+'">'+managementCategoryOptions(p.family_id,p.category_id)+'</select></td>'+
+   '<td><input class="articleEan '+(eanValid?'':'invalid')+'" id="ma-ean-'+attr(p.id)+'" inputmode="numeric" maxlength="14" value="'+attr(ean)+'" aria-label="EAN13">'+(!eanValid?'<small class="articleAdminIssue">Valeur actuelle non EAN13</small>':'')+'</td>'+
+   '<td><select id="ma-status-'+attr(p.id)+'"><option value="true" '+(p.on_sale!==false?'selected':'')+'>Actif</option><option value="false" '+(p.on_sale===false?'selected':'')+'>Inactif</option></select></td>'+
+   '<td><button class="articleAdminSave" id="ma-save-'+attr(p.id)+'" type="button" onclick="saveManagementArticle(\''+attr(p.id)+'\')">Enregistrer</button></td>'+
+  '</tr>'
+ }).join('');
+ updateManagementArticleSortHeaders()
+}
+function managementArticleFamilyChanged(id){
+ const family=$('ma-family-'+id)?.value||'',category=$('ma-category-'+id);if(category)category.innerHTML=managementCategoryOptions(family,'')
+}
+async function saveManagementArticle(id){
+ const row=managementArticles.find(x=>x.id===id);if(!row)return;
+ const btn=$('ma-save-'+id),name=String($('ma-name-'+id)?.value||'').trim(),familyRaw=$('ma-family-'+id)?.value||'',categoryRaw=$('ma-category-'+id)?.value||'',eanRaw=String($('ma-ean-'+id)?.value||'').replace(/\D/g,''),onSale=$('ma-status-'+id)?.value==='true';
+ if(!name){alert('Le nom de la fiche article est obligatoire.');return}
+ if(eanRaw.length>13){alert('L’EAN13 doit contenir exactement 13 chiffres maximum avant normalisation. Cette valeur à 14 chiffres doit être corrigée manuellement.');return}
+ const ean=eanRaw?eanRaw.padStart(13,'0'):null;
+ btn.disabled=true;btn.textContent='Enregistrement…';
+ try{
+  const payload={name,family_id:familyRaw?Number(familyRaw):null,category_id:categoryRaw?Number(categoryRaw):null,ean,on_sale:onSale};
+  const {error}=await db.from('products').update(payload).eq('id',id);
+  if(error){if(error.code==='23505')throw new Error('Cet EAN13 est déjà utilisé par une autre fiche.');throw error}
+  Object.assign(row,payload);
+  const input=$('ma-ean-'+id);if(input){input.value=ean||'';input.classList.remove('invalid')}
+  row.ean=ean;btn.textContent='✓ Enregistré';window.NettoSounds?.play?.('success');
+  setTimeout(()=>{if(btn){btn.textContent='Enregistrer';btn.disabled=false}},900)
+ }catch(e){
+  console.error('Enregistrement fiche article:',e);btn.disabled=false;btn.textContent='Enregistrer';window.NettoSounds?.play?.('error');alert('Enregistrement impossible : '+(e?.message||'erreur inconnue'))
+ }
+}
+
+async function boot(){
+ const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
+ const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;
+ await waitProfileUI();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];bindGlobal();await loadConfig();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();loadNotificationAdmin();loadReportedProblems().catch(()=>{});enhanceCompactPortal();
+ const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoManagementTab')||'overview';
+ const validTabs=['overview','general','system','mobile','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
+ const tab=validTabs.includes(saved)?saved:'overview';
+ const requestedAccountView=qs.get('sub')||localStorage.getItem('nettoManagementAccountsView')||'accounts';
+ accountSubview=['accounts','roles','logs'].includes(requestedAccountView)?requestedAccountView:'accounts';
+ if(tab==='accounts')showAccountsView(accountSubview,managementButtonFor('accounts'),{sound:false});
+ else showTab(tab,managementButtonFor(tab),{sound:false});
+ loadManagementOverview().catch(()=>{});
+ if(tab==='articles')loadManagementArticles();if(tab==='notifications')loadNotificationAdmin();if(tab==='problems')loadReportedProblems();if(tab==='logs')loadPortalLogs()
+}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+boot();
