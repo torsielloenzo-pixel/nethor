@@ -6,7 +6,7 @@ function header(){
    <div class="stockDesktopIdentity">
     <div class="brand">
      <div class="brandMenuWrap">
-      <button id="brandMenuBtn" class="brandMark brandMenuBtn" type="button" onclick="location.href='home.html'" aria-label="Retour à l’accueil">N</button>
+      <button id="brandMenuBtn" class="brandMenuBtn nethorDesktopBrandButton" type="button" onclick="location.href='home.html'" aria-label="Accueil Nethor"><span class="nethorDesktopWordmark" aria-hidden="true"><span class="nethorDesktopWordmarkNe">ne</span><span class="nethorDesktopWordmarkThor">thor</span></span></button>
       <div id="brandMenu" class="brandMenu hidden">
        <div class="brandMenuTitle">Navigation</div>
        <button onclick="goBrand('home.html')"><span>⌂</span><div><strong>Accueil</strong><small>Choisir un outil</small></div></button>
@@ -21,7 +21,6 @@ function header(){
        <button class="brandLogout" onclick="logoutFromBrand()"><span>↪</span><div><strong>Déconnexion</strong><small>Quitter la session</small></div></button>
       </div>
      </div>
-     <div><div class="title">Stock F&amp;L</div><div class="subtitle">Pilotage opérationnel</div></div>
     </div>
     <div id="who" class="small">Chargement…</div>
    </div>
