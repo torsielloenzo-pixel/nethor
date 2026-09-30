@@ -6,6 +6,10 @@ const viewHost=document.querySelector('[data-mobile-view-host]');
 const navHost=document.querySelector('[data-mobile-nav-host]');
 const toolHost=document.querySelector('[data-mobile-app-tools]');
 const notificationBadge=document.querySelector('[data-mobile-notification-badge]');
+const mobileWordmark=document.querySelector('.nethorMobileWordmark');
+const defaultWordmarkHtml=mobileWordmark?.innerHTML||'';
+const chromeDefaults=new WeakMap();
+[...navHost?.querySelectorAll('[data-mobile-destination]')||[],...toolHost?.querySelectorAll('[data-mobile-destination]')||[]].forEach(link=>{const icon=link.getAttribute('data-mobile-destination')==='notifications'?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');if(icon)chromeDefaults.set(icon,icon.innerHTML)});
 if(!root||!viewHost||!navHost||!toolHost)return;
 
 function platform(){
@@ -52,6 +56,49 @@ function enforceShellGeometry(){
   setTimeout(repair,120);
 }
 
+
+function safeHex(value){return /^#[0-9a-f]{6}$/i.test(String(value||''))?String(value):''}
+function mobilePageConfig(config,id){
+ const p=config?.pages?.[id]&&typeof config.pages[id]==='object'?config.pages[id]:{};
+ const o=p.platform_overrides?.mobile&&typeof p.platform_overrides.mobile==='object'?p.platform_overrides.mobile:{};
+ return {page:p,override:o}
+}
+function setChromeIcon(container,url){
+ if(!container)return;
+ const custom=String(url||'').trim();
+ if(!custom){const original=chromeDefaults.get(container);if(original!==undefined&&container.innerHTML!==original)container.innerHTML=original;return}
+ container.innerHTML='';
+ const img=document.createElement('img');img.src=custom;img.alt='';img.draggable=false;img.className='nethorMobileConfiguredIcon';container.appendChild(img)
+}
+function applyConfiguredLink(link,id,config,{top=false,userMenu=false}={}){
+ if(!link)return;
+ const {page,override}=mobilePageConfig(config,id);
+ const labelOverride=String(override.nav_label||override.label||'').trim();
+ const label=labelOverride||(userMenu?'Menu utilisateur':String(page.nav_label||page.label||link.querySelector('small')?.textContent||id).trim());
+ const iconContainer=id==='notifications'&&top?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');
+ setChromeIcon(iconContainer,override.image_url);
+ const accent=safeHex(override.color);if(accent)link.style.setProperty('--nethor-mobile-item-accent',accent);else link.style.removeProperty('--nethor-mobile-item-accent');
+ if(top){link.setAttribute('aria-label',label);link.title=label}
+ else{const small=link.querySelector('small');if(small)small.textContent=label;link.setAttribute('aria-label',label)}
+}
+function applyConfiguredChrome(config={}){
+ const mobileUi=config?.platform_ui?.mobile||{},headerUrl=String(mobileUi?.header_logo?.url||config?.brand?.header_logo_url||'').trim();
+ if(mobileWordmark){
+  if(headerUrl){
+   mobileWordmark.innerHTML='';const img=document.createElement('img');img.src=headerUrl;img.alt='';img.draggable=false;img.className='nethorMobileConfiguredBrand';mobileWordmark.appendChild(img);mobileWordmark.classList.add('configured')
+  }else{if(mobileWordmark.innerHTML!==defaultWordmarkHtml)mobileWordmark.innerHTML=defaultWordmarkHtml;mobileWordmark.classList.remove('configured')}
+ }
+ const allowed=['home','planning','chat'],raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[],order=[],seen=new Set();
+ raw.forEach(item=>{const id=String(item?.id||'');if(allowed.includes(id)&&!seen.has(id)){seen.add(id);order.push(id)}});
+ allowed.forEach(id=>{if(!seen.has(id))order.push(id)});
+ order.slice(0,3).forEach(id=>{const link=navHost.querySelector('[data-mobile-destination="'+id+'"]');if(link)navHost.appendChild(link)});
+ root.classList.toggle('nethorMobileNavDisabled',config?.mobile_bar?.enabled===false);
+ navHost.setAttribute('aria-hidden',config?.mobile_bar?.enabled===false?'true':'false');
+ allowed.forEach(id=>applyConfiguredLink(navHost.querySelector('[data-mobile-destination="'+id+'"]'),id,config));
+ applyConfiguredLink(toolHost.querySelector('[data-mobile-destination="notifications"]'),'notifications',config,{top:true});
+ applyConfiguredLink(toolHost.querySelector('[data-mobile-destination="user-menu"]'),'profile',config,{top:true,userMenu:true})
+}
+
 function navigationLinks(){
   return [...navHost.querySelectorAll('[data-mobile-destination]'),...toolHost.querySelectorAll('[data-mobile-destination]')]
 }
@@ -86,6 +133,7 @@ function syncNotificationBadge(value){
 function onServiceEvent(detail){
   const status=String(detail?.status||services()?.status||'');
   if(status)root.dataset.services=status;
+  applyConfiguredChrome(detail?.siteConfig||services()?.siteConfig||{});
   syncNotificationBadge(detail?.unread??services()?.unread??0)
 }
 function onRouteEvent(event){
@@ -153,6 +201,7 @@ async function bootServices(){
   try{
     const value=await shared.start();
     root.dataset.services=shared.status||'ready';
+    applyConfiguredChrome(shared.siteConfig||value?.siteConfig||{});
     syncNotificationBadge(shared.unread);
     return value
   }catch(error){
@@ -187,6 +236,7 @@ async function boot(){
   if(services()?.status==='signed-out')return;
 
   await mobileRouter.start({host:viewHost,nav:[navHost,toolHost]});
+  applyConfiguredChrome(services()?.siteConfig||{});
   syncLegacyLinks();
   syncActive();
   syncNotificationBadge(services()?.unread||0);
