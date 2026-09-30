@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f2f4f7">
+<title>Nethor — Menu</title>
+<script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="platform-resolver.js?v=3"></script>
+<script>
+(function(){
+ if(window.NethorPlatform?.isDesktop?.()){location.replace('home.html');return}
+ document.documentElement.dataset.nethorPageLayout='mobile';
+ document.documentElement.dataset.nethorPageId='user-menu';
+ document.documentElement.dataset.nethorPageBackHandled='1'
+})();
+</script>
+<link rel="stylesheet" href="ui/desktop/desktop-shell.css?v=2" media="not all" data-nethor-shell="desktop">
+<link rel="stylesheet" href="ui/mobile/mobile-shell.css?v=4" media="not all" data-nethor-shell="mobile">
+<link rel="stylesheet" href="user-menu-page.css?v=1">
+<script src="platform-navigation.js?v=1"></script>
+<script src="ui/desktop/desktop-shell.js?v=11"></script>
+<script src="ui/mobile/mobile-shell.js?v=11"></script>
+<script src="profile-ui.js?v=200" defer></script>
+<script src="user-menu-page.js?v=1" defer></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
+</head>
+<body>
+<main id="mobileUserMenuPageHost" class="mobileUserMenuPageHost" aria-live="polite">
+ <div class="mobileUserMenuLoading"><span></span><strong>Chargement du menu…</strong></div>
+</main>
+</body>
+</html>
