@@ -1,11 +1,11 @@
 {
-  "version": 275,
-  "label": "v1.43.38",
+  "version": 276,
+  "label": "v1.43.39",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Architecture mobile — cutover SPA et QA globale, phase 9",
-  "message": "Le shell Mobile unifié devient l’entrée principale des pages déjà migrées. Les anciennes URLs Accueil, Planning, Chat, Notifications, Menu utilisateur, Profil, Personnalisation, Réglages notifications et Signaler un problème basculent vers mobile.html sur Mobile uniquement, avec conservation des deep-links. Un mode de secours nethor_legacy=1 empêche toute boucle de fallback. Le routeur gère désormais correctement les changements de paramètres sur une vue déjà ouverte et les remounts popstate. Le shell centralise aussi clavier, viewport visuel, orientation, mode PWA et état réseau. Les anciennes pages restent disponibles comme fallback et Desktop reste multipage. Le Service Worker passe en v275.",
-  "published_at": "2026-09-30T21:23:43.480Z",
+  "title": "Correctif Mobile — barre de navigation",
+  "message": "Correction d’un bug d’affichage iOS où la barre de navigation basse pouvait s’étirer sur presque toute la hauteur de l’écran et masquer l’en-tête ainsi que le contenu. Le shell verrouille désormais explicitement ses trois zones (en-tête, contenu, navigation), impose une hauteur maximale à la barre basse et ajoute une auto-correction si Safari calcule une géométrie anormale. Le Service Worker passe en v276 et force le chargement des nouveaux assets Mobile.",
+  "published_at": "2026-09-30T21:32:29.889Z",
   "icon": "assets/app-icon-v63.svg"
 }
