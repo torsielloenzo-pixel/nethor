@@ -5,7 +5,17 @@ const api=window.NettoProfileUI||{},sounds=window.NettoSounds||{play(){}};
 const APP_RELEASE=210;
 const APP_RELEASE_LABEL='v1.20.5';
 const APP_ICON='assets/app-icon-v63.svg';
+const APP_MOBILE_ICON='assets/app-icon-mobile-v71.svg';
 const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL]]);
+function syncAppIconLinks(){
+ const version=Number(localStorage.getItem('nettoAppVersion')||0)||APP_RELEASE;
+ document.querySelectorAll('link[rel="icon"],link[rel="shortcut icon"],link[rel="apple-touch-icon"]').forEach(x=>x.remove());
+ const href=APP_ICON+'?v='+version;
+ const icon=document.createElement('link');icon.rel='icon';icon.type='image/svg+xml';icon.href=href;icon.sizes='any';document.head.appendChild(icon);
+ const shortcut=document.createElement('link');shortcut.rel='shortcut icon';shortcut.type='image/svg+xml';shortcut.href=href;document.head.appendChild(shortcut);
+ const apple=document.createElement('link');apple.rel='apple-touch-icon';apple.href=APP_MOBILE_ICON+'?v='+version;document.head.appendChild(apple);
+ let manifest=document.querySelector('link[rel="manifest"]');if(!manifest){manifest=document.createElement('link');manifest.rel='manifest';document.head.appendChild(manifest)}manifest.href='manifest.webmanifest?v='+version
+}
 let updateRegistration=null;
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
