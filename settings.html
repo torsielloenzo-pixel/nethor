@@ -65,11 +65,30 @@ function setHomeWidgets(value){HOME_WIDGETS.filter(x=>homeWidgetAllowed(x.id)).f
 function applyLocalTheme(theme){theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=theme;try{localStorage.setItem('nettoTheme',theme)}catch(_){};const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==='dark'?'#17191d':'#ffffff'}
 function renderThemeChoice(){const t=prefs.theme==='dark'?'dark':'light';$('themeLight')?.classList.toggle('active',t==='light');$('themeDark')?.classList.toggle('active',t==='dark')}
 function chooseTheme(theme){prefs.theme=theme==='dark'?'dark':'light';applyLocalTheme(prefs.theme);renderThemeChoice();markDirty();window.NettoSounds?.play?.('switch')}
-function render(){renderThemeChoice();renderArea('home','homeEditor');renderHomeWidgets();renderArea('user_menu','userEditor')}
+function homeMenusEditorAllowed(){
+ if(profile?.role==='admin')return true;
+ const cfg=window.NettoProfileUI?.siteConfig;
+ return cfg?.personalization?.home_menus_enabled!==false
+}
+function applyPersonalizationVisibility(){
+ const allowed=homeMenusEditorAllowed(),panel=$('homeEditor')?.closest('.panel');
+ if(panel)panel.classList.toggle('hidden',!allowed);
+ return allowed
+}
+function render(){
+ renderThemeChoice();
+ if(applyPersonalizationVisibility())renderArea('home','homeEditor');
+ else if($('homeEditor'))$('homeEditor').innerHTML='';
+ renderHomeWidgets();
+ renderArea('user_menu','userEditor')
+}
 function markDirty(){$('saveState').textContent='Modifications non enregistrées';$('saveState').className='saveState'}
-function setArea(area,value){available(area).forEach(m=>prefs[area][m.id]=value);render();markDirty()}
+function setArea(area,value){
+ if(area==='home'&&!homeMenusEditorAllowed())return;
+ available(area).forEach(m=>prefs[area][m.id]=value);render();markDirty()
+}
 async function savePersonal(){const b=$('saveBtn');b.disabled=true;$('saveState').textContent='Enregistrement…';const {error}=await db.from('profiles').update({ui_preferences:prefs}).eq('id',session.user.id);if(error){$('saveState').className='saveState err';$('saveState').textContent='Erreur : '+error.message;window.NettoSounds?.play?.('error')}else{profile.ui_preferences=JSON.parse(JSON.stringify(prefs));$('saveState').className='saveState ok';$('saveState').textContent='✓ Personnalisation enregistrée';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.()}b.disabled=false}
-async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;prefs={home:{},home_widgets:{},user_menu:{},theme:document.documentElement.dataset.theme==='dark'?'dark':'light'};render();await savePersonal()}
+async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;const keepHome=homeMenusEditorAllowed()?{}:JSON.parse(JSON.stringify(prefs.home||{}));prefs={home:keepHome,home_widgets:{},user_menu:{},theme:document.documentElement.dataset.theme==='dark'?'dark':'light'};render();await savePersonal()}
 async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');const [{data:p,error},subRes]=await Promise.all([db.from('profiles').select('display_name,role,ui_preferences').eq('id',s.user.id).maybeSingle(),Promise.resolve(db.rpc('my_subrole_keys')).catch(()=>({data:[]}))]);if(error||!p)return location.replace('index.html');profile=p;subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean);prefs=ensurePrefs(p.ui_preferences);applyLocalTheme(prefs.theme);$('roleBadge').textContent=window.NettoProfileUI?.roleLabel?.(p.role)||ROLE_LABEL[p.role]||p.role;if(p.role==='admin')$('adminShortcut').classList.remove('hidden');await waitUI();render();$('saveState').textContent='À jour'}
 boot();
 </script>
