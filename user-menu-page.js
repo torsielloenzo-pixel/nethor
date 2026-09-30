@@ -27,6 +27,7 @@ function navigate(raw){
 async function logout(){
  const api=window.NettoProfileUI,button=document.getElementById('nettoMobileLogoutBtn');
  if(button)button.disabled=true;
+ if(api?.logout){await api.logout();return}
  try{window.NettoSounds?.play?.('logout')}catch(_){}
  try{await api?.client?.auth?.signOut?.({scope:'local'})}catch(_){}
  location.replace('index.html')
