@@ -295,3 +295,122 @@
     border-color:#32363b!important
   }
 }
+
+
+/* Planning Mobile — lisibilité renforcée du mode sombre v2 */
+@media(max-width:760px){
+  html[data-theme="dark"] .nethorMobileView[data-mobile-view="planning"]{
+    background:#0f1318!important;
+    color:#f5f7fa!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaHeader h2,
+  html[data-theme="dark"] body.agendaLayout .mobileAgendaContentTitle{
+    color:#f5f7fa!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaHeader p{
+    color:#9fa9b5!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaPersonalBlock,
+  html[data-theme="dark"] body.agendaLayout .agendaGlobalBlock{
+    background:#171c22!important;
+    border-color:#303842!important;
+    box-shadow:0 7px 22px rgba(0,0,0,.22)!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayList.hasCurrentUser .agendaPersonalBlock .agendaDayCardMe{
+    background:#1b2128!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayCard,
+  html[data-theme="dark"] body.agendaLayout .agendaDayCardCoworker{
+    background:#171c22!important;
+    border-color:#303842!important;
+    color:#f5f7fa!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaGlobalBlock .agendaDayCard + .agendaDayCard{
+    border-top-color:#303842!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayPerson>strong{
+    color:#f5f7fa!important;
+    font-weight:850!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayPerson .planningIdentityAvatar{
+    box-shadow:0 0 0 1px rgba(255,255,255,.08),0 4px 12px rgba(0,0,0,.18)!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayShift{
+    border:1px solid rgba(15,23,42,.10)!important;
+    box-shadow:0 2px 8px rgba(0,0,0,.08)!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayShift[data-color="g"]{
+    background:#bfe8ce!important;
+    color:#173627!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayShift[data-color="b"]{
+    background:#c8daf5!important;
+    color:#1c3558!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayShift[data-color="w"]{
+    background:#30363e!important;
+    border-color:#414953!important;
+    color:#f1f4f7!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayShift strong{
+    color:inherit!important;
+    font-weight:900!important;
+    text-shadow:none!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayShift small{
+    color:inherit!important;
+    opacity:.76!important;
+    font-weight:800!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayStatusRest{
+    background:#242a31!important;
+    border-color:#3a424c!important;
+    color:#dde3ea!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaDayStatusLeave{
+    background:#4a4018!important;
+    border-color:#75652a!important;
+    color:#ffe778!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .agendaSectionGap{
+    background:#0f1318!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .mobilePlanningSelectorArrow,
+  html[data-theme="dark"] body.agendaLayout .mobilePlanningSelectBtn{
+    background:#171c22!important;
+    border-color:#303842!important;
+    color:#f4f6f8!important;
+    box-shadow:0 2px 9px rgba(0,0,0,.16)!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .mobilePlanningPrimaryNav{
+    background:#0b0f13!important;
+    border:1px solid #262d35!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .mobileAgendaModeBtn{
+    color:#aeb7c2!important
+  }
+
+  html[data-theme="dark"] body.agendaLayout .mobileAgendaModeBtn.active{
+    color:#fff!important
+  }
+}
