@@ -108,7 +108,7 @@ function render(){
   notificationSettings,
   problemReport,
   problemUrl,
-  profileVisible:mobileMenuItemSetting(api,p,'profile',true),
+  profileVisible:mobileMenuItemSetting(api,p,'profile',true)&&(p.role==='admin'||p?.ui_preferences?.user_menu?.profile!==false),
   settingsVisible:mobileMenuItemSetting(api,p,'settings',true),
   themeVisible:mobileMenuItemSetting(api,p,'theme',true),
   updateVisible:mobileMenuItemSetting(api,p,'update',true),
