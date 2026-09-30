@@ -998,9 +998,6 @@ table:not(.xlsTable) td{
   html.nettoMobileDropOpen header{z-index:4300!important}
   html.nettoMobileDropOpen .nettoGlobalTools{z-index:5100!important}
 
-  body.mobileNavOpen header{z-index:4300!important}
-  body.mobileNavOpen .mobileNavBackdrop{z-index:4700!important}
-  body.mobileNavOpen #nMenu{z-index:5000!important}
 
   /* Le menu utilisateur de l'accueil reste un menu, pas une couche système. */
   .userMenuWrap{z-index:auto!important}
