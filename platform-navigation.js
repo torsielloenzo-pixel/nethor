@@ -25,6 +25,7 @@ const DESKTOP_ROUTES=Object.freeze({
 
 const MOBILE_VIEW_TARGETS=Object.freeze({
  home:'home.html',
+ stock:'index.html',
  planning:'planning.html',
  chat:'chat.html',
  notifications:'notifications.html',
