@@ -12,15 +12,13 @@
 <link rel="icon" href="assets/app-icon-v63.svg?v=56" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v71.svg?v=72">
 <style>html,body{min-height:100%;margin:0;background:#252a31}body{min-height:100vh;min-height:100dvh} [data-nethor-maintenance-layout]{min-height:100dvh}</style>
-<script src="platform-resolver.js?v=3"></script>
-<link rel="stylesheet" href="ui/desktop/maintenance-layout.css?v=1" media="not all" data-nethor-shell="desktop">
-<link rel="stylesheet" href="ui/mobile/maintenance-layout.css?v=1" media="not all" data-nethor-shell="mobile">
+<script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=1"></script>
+<script>window.NethorPlatformAssets.style('ui/desktop/maintenance-layout.css?v=1','ui/mobile/maintenance-layout.css?v=1')</script>
 </head>
 <body>
 <div data-nethor-maintenance-layout></div>
 <noscript><div style="min-height:100dvh;display:grid;place-items:center;color:#fff;font:700 16px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Maintenance Nethor en cours</div></noscript>
-<script src="ui/desktop/maintenance-layout.js?v=1"></script>
-<script src="ui/mobile/maintenance-layout.js?v=1"></script>
+<script>window.NethorPlatformAssets.script('ui/desktop/maintenance-layout.js?v=1','ui/mobile/maintenance-layout.js?v=1')</script>
 <script src="maintenance-page-layout.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script>
