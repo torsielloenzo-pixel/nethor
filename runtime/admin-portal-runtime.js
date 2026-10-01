@@ -934,8 +934,111 @@ function resetPlatformPage(kind,id){
  if(!confirm('Réinitialiser les réglages '+platformLabel(kind)+' de cette page ?'))return;
  const p=config.pages[id];if(!p)return;p.platform_overrides=p.platform_overrides||{};p.platform_overrides[kind]={};markDirty();renderPlatformComponents(kind);window.NettoSounds?.play?.('confirm')
 }
+const SOUND_ADMIN_DEFS=[
+ {key:'loginSuccess',label:'Connexion',description:'Joué lorsque l’authentification réussit.',group:'primary'},
+ {key:'welcome',label:'Bienvenue utilisateur',description:'Joué pendant l’écran de bienvenue après connexion.',group:'primary'},
+ {key:'logout',label:'Déconnexion',description:'Joué juste avant de fermer la session.',group:'primary'},
+ {key:'update',label:'Mise à jour',description:'Confirmation sonore liée aux mises à jour.',group:'interface'},
+ {key:'tap',label:'Appui / tap',description:'Retour sonore court pour une interaction simple.',group:'interface'},
+ {key:'menuOpen',label:'Ouverture de menu',description:'Ouverture d’un menu ou d’un panneau.',group:'interface'},
+ {key:'menuClose',label:'Fermeture de menu',description:'Fermeture d’un menu ou d’un panneau.',group:'interface'},
+ {key:'navigate',label:'Navigation',description:'Navigation entre deux vues ou retour.',group:'interface'},
+ {key:'switch',label:'Interrupteur',description:'Activation ou désactivation d’une option.',group:'interface'},
+ {key:'confirm',label:'Confirmation',description:'Validation d’une action.',group:'interface'},
+ {key:'success',label:'Succès',description:'Action terminée avec succès.',group:'interface'},
+ {key:'error',label:'Erreur',description:'Erreur ou action refusée.',group:'interface'},
+ {key:'warning',label:'Avertissement',description:'Alerte nécessitant l’attention.',group:'interface'},
+ {key:'notification',label:'Notification',description:'Réception ou affichage d’une notification.',group:'interface'},
+ {key:'message',label:'Message',description:'Événement lié au Chat ou à un message.',group:'interface'},
+ {key:'delete',label:'Suppression',description:'Suppression ou action destructive.',group:'interface'}
+];
+const SOUND_ADMIN_DEFAULT_ENABLED=Object.freeze({loginSuccess:true,logout:true,update:true,welcome:false});
+function ensureSoundConfig(){
+ config.sounds=config.sounds&&typeof config.sounds==='object'?config.sounds:{};
+ config.sounds.items=config.sounds.items&&typeof config.sounds.items==='object'?config.sounds.items:{};
+ for(const def of SOUND_ADMIN_DEFS){
+  const raw=config.sounds.items[def.key]&&typeof config.sounds.items[def.key]==='object'?config.sounds.items[def.key]:{};
+  const volume=Number(raw.volume);
+  config.sounds.items[def.key]={
+   enabled:typeof raw.enabled==='boolean'?raw.enabled:!!SOUND_ADMIN_DEFAULT_ENABLED[def.key],
+   volume:Number.isFinite(volume)?Math.max(0,Math.min(1,volume)):1,
+   url:String(raw.url||''),
+   path:String(raw.path||''),
+   name:String(raw.name||'')
+  }
+ }
+ return config.sounds
+}
+function portalSoundNode(key){ensureSoundConfig();return config.sounds.items[key]||null}
+function portalSoundDef(key){return SOUND_ADMIN_DEFS.find(x=>x.key===key)||null}
+function soundStatusText(node){return String(node?.url||'').trim()?(node.name||'Fichier audio personnalisé'):'Son Nethor par défaut'}
+function soundCard(def){
+ const node=portalSoundNode(def.key),custom=!!String(node?.url||'').trim(),volume=Math.round((node?.volume??1)*100);
+ return '<article class="soundEditorCard '+(def.group==='primary'?'primary':'')+'" data-sound-key="'+attr(def.key)+'">'+
+  '<div class="soundEditorIcon" aria-hidden="true">'+(def.key==='loginSuccess'?'↗':def.key==='welcome'?'♪':def.key==='logout'?'↘':'♫')+'</div>'+
+  '<div class="soundEditorCopy"><div class="soundEditorTitle"><strong>'+esc(def.label)+'</strong><span class="soundSourceBadge '+(custom?'custom':'')+'">'+esc(custom?'Personnalisé':'Nethor')+'</span></div><span>'+esc(def.description)+'</span><small>'+esc(soundStatusText(node))+'</small></div>'+
+  '<div class="soundEditorSettings">'+
+   '<label class="soundEnabledControl"><span>Actif</span><span class="adminSwitch"><input type="checkbox" data-sound-enabled="'+attr(def.key)+'" '+(node.enabled?'checked':'')+'><span></span></span></label>'+
+   '<label class="soundVolumeControl"><span>Volume <b data-sound-volume-label="'+attr(def.key)+'">'+volume+' %</b></span><input type="range" min="0" max="100" step="1" value="'+volume+'" data-sound-volume="'+attr(def.key)+'"></label>'+
+  '</div>'+
+  '<div class="soundEditorActions">'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="previewPortalSound(\''+def.key+'\')">▶ Écouter</button>'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="choosePortalSound(\''+def.key+'\')">Importer</button>'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="downloadPortalSound(\''+def.key+'\')">Télécharger</button>'+
+   (custom?'<button class="btn secondaryBtn mini" type="button" onclick="resetPortalSound(\''+def.key+'\')">Réinitialiser</button>':'')+
+  '</div>'+
+  '<input id="portalSoundFile_'+attr(def.key)+'" type="file" accept=".mp3,.wav,.ogg,.m4a,.aac,.webm,.mp4,audio/mpeg,audio/wav,audio/x-wav,audio/ogg,audio/mp4,audio/aac,audio/webm" hidden onchange="uploadPortalSound(\''+def.key+'\',this)">'+
+ '</article>'
+}
+function renderSoundEditor(){
+ const host=$('soundEditorPanel');if(!host)return;
+ ensureSoundConfig();
+ const primary=SOUND_ADMIN_DEFS.filter(x=>x.group==='primary'),others=SOUND_ADMIN_DEFS.filter(x=>x.group!=='primary');
+ host.innerHTML='<div class="toolbar soundEditorHead"><div><h2>Sons & audio</h2><p>Personnalise les sons de Nethor. Les réglages globaux définis ici sont ensuite modulés par le volume et l’activation audio propres à chaque utilisateur.</p></div></div>'+
+  '<div class="soundEditorNotice"><b>Formats :</b> MP3, WAV, OGG, M4A/AAC, WebM ou MP4 audio · 8 Mo maximum. Le bouton Télécharger exporte le fichier personnalisé ou génère le son Nethor d’origine en WAV.</div>'+
+  '<section class="soundEditorGroup"><div class="platformSubhead"><div><h3>Session & bienvenue</h3><p>Les trois moments principaux demandés : connexion, écran de bienvenue et déconnexion.</p></div></div><div class="soundEditorGrid primary">'+primary.map(soundCard).join('')+'</div></section>'+
+  '<section class="soundEditorGroup"><div class="platformSubhead"><div><h3>Sons d’interface</h3><p>Tous les sons déjà définis dans le moteur Nethor. Les sons qui n’étaient pas actifs restent désactivés par défaut jusqu’à ce que tu les actives.</p></div></div><div class="soundEditorGrid">'+others.map(soundCard).join('')+'</div></section>';
+ host.querySelectorAll('[data-sound-enabled]').forEach(input=>input.onchange=()=>{const node=portalSoundNode(input.dataset.soundEnabled);node.enabled=input.checked;markDirty();window.NettoSounds?.preview?.(input.dataset.soundEnabled,node)});
+ host.querySelectorAll('[data-sound-volume]').forEach(input=>input.oninput=()=>{const key=input.dataset.soundVolume,node=portalSoundNode(key),value=Math.max(0,Math.min(100,Number(input.value)||0));node.volume=value/100;const label=host.querySelector('[data-sound-volume-label="'+CSS.escape(key)+'"]');if(label)label.textContent=Math.round(value)+' %';markDirty()})
+}
+function choosePortalSound(key){$('portalSoundFile_'+key)?.click()}
+function portalSoundExtension(file){
+ const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
+ return ['mp3','wav','ogg','m4a','aac','webm','mp4'].includes(ext)?ext:''
+}
+async function uploadPortalSound(key,input){
+ const state=$('saveState'),file=input?.files?.[0],def=portalSoundDef(key);if(!file||!def)return;
+ try{
+  const ext=portalSoundExtension(file);if(!ext)throw new Error('Format audio non compatible.');
+  if(file.size>8*1024*1024)throw new Error('Fichier audio trop lourd : 8 Mo maximum.');
+  state.className='saveState';state.textContent='Import du son « '+def.label+' »…';
+  const contentType=file.type||({mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg',m4a:'audio/mp4',aac:'audio/aac',webm:'audio/webm',mp4:'audio/mp4'}[ext]);
+  const storagePath='audio/'+key+'-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=portalSoundNode(key);
+  node.url=data?.publicUrl||'';node.path=storagePath;node.name=file.name;node.enabled=true;
+  markDirty();renderSoundEditor();window.NettoSounds?.preview?.(key,node);state.textContent='Son prêt à être enregistré'
+ }catch(e){state.className='saveState err';state.textContent='Erreur audio : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+function previewPortalSound(key){
+ const node=portalSoundNode(key);window.NettoSounds?.unlock?.();window.NettoSounds?.preview?.(key,node)
+}
+async function downloadPortalSound(key){
+ const node=portalSoundNode(key),def=portalSoundDef(key);if(!node||!def)return;
+ const url=String(node.url||'').trim();
+ if(url){downloadAssetUrl(url,node.name||('Nethor-'+key));return}
+ try{await window.NettoSounds?.downloadDefault?.(key,'Nethor-'+key+'.wav')}
+ catch(e){const state=$('saveState');state.className='saveState err';state.textContent='Export audio impossible : '+(e?.message||e)}
+}
+function resetPortalSound(key){
+ const def=portalSoundDef(key);if(!def)return;
+ config.sounds.items[key]={enabled:!!SOUND_ADMIN_DEFAULT_ENABLED[key],volume:1,url:'',path:'',name:''};
+ markDirty();renderSoundEditor();$('saveState').textContent='Son « '+def.label+' » réinitialisé — enregistrer pour confirmer'
+}
+
 function renderPlatformEditors(){
- ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop')
+ ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
 }
 function ensurePortalPlatformStructure(){
  const nav=document.querySelector('.managementNavGroup[data-nav-group="portal"] .managementNavChildren');
