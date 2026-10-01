@@ -1,11 +1,11 @@
 {
-  "version": 292,
-  "label": "v1.44.0",
-  "important": true,
+  "version": 293,
+  "label": "v1.44.1",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Gestion — personnalisation Mobile / Desktop complète",
-  "message": "L’Éditeur du portail sépare désormais Mobile et Desktop et reflète la coque réelle. Logos d’entête et de connexion, média de bienvenue (logo ou animation), menus, boutons, couleurs, destinations et commandes d’interface sont personnalisables par plateforme avec import, téléchargement et réinitialisation. Les commandes Notifications, Menu utilisateur, Thème, Mise à jour et Déconnexion peuvent aussi recevoir leurs propres libellés, sous-textes et visuels sans modifier leur action.",
-  "published_at": "2026-10-01T01:30:00+02:00",
+  "title": "Gestion — logos clair/sombre & icônes système",
+  "message": "L’éditeur Mobile / Desktop propose désormais une version Thème clair et Thème sombre pour les logos d’entête, de connexion et de bienvenue. Mobile permet aussi de choisir l’icône Safari / écran d’accueil. Desktop permet de personnaliser le favicon de l’onglet, avec variante claire/sombre, ainsi que l’icône du raccourci bureau / application installée.",
+  "published_at": "2026-10-01T02:20:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
