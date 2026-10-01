@@ -361,7 +361,7 @@ function applyPortalTheme(config={}){
  root.style.setProperty('--netto-red',primary);root.style.setProperty('--netto-red-2',primary);
  root.style.setProperty('--netto-orange',secondary);root.style.setProperty('--netto-ink',ink);
  root.style.setProperty('--red',primary);root.style.setProperty('--red2',primary);root.style.setProperty('--orange',secondary);
- root.style.setProperty('--netto-gradient','linear-gradient(135deg,'+primary+' 0%,'+primary+' 44%,'+secondary+' 100%)');applyHeaderLogo(config);applySiteIcons(config)
+ root.style.setProperty('--netto-gradient','linear-gradient(135deg,'+primary+' 0%,'+primary+' 44%,'+secondary+' 100%)');applyHeaderLogo(config);applySiteIcons(config);window.NettoSounds?.configure?.(config)
 }
 function moduleMaxRoles(module,config=api?.siteConfig){return Array.isArray(module?.roles)?module.roles.filter(r=>roleKeys(config).includes(r)):roleKeys(config)}
 function configuredRoles(module,config=api?.siteConfig){
@@ -610,6 +610,7 @@ const SOUND_DEFS={
  success:[[392,0,.20,.12,'sine'],[493.88,.085,.25,.14,'sine'],[659.25,.19,.34,.13,'sine']],
  update:[[392,0,.20,.12,'sine'],[493.88,.085,.25,.14,'sine'],[659.25,.19,.34,.13,'sine']],
  loginSuccess:[[329.63,0,.29,.11,'sine'],[415.3,.085,.33,.13,'sine'],[493.88,.18,.39,.14,'sine'],[659.25,.30,.50,.11,'sine']],
+ welcome:[[293.66,0,.19,.095,'sine'],[392,.105,.24,.11,'sine'],[493.88,.22,.34,.10,'sine']],
  error:[[245,0,.11,.105,'square',218],[196,.115,.18,.095,'square',174]],
  warning:[[392,0,.10,.11,'triangle'],[392,.15,.12,.10,'triangle']],
  notification:[[783.99,0,.13,.105,'sine'],[1046.5,.105,.27,.09,'sine']],
@@ -617,12 +618,77 @@ const SOUND_DEFS={
  delete:[[370,0,.11,.11,'triangle',300],[246.94,.09,.21,.10,'sine',220]],
  logout:[[587.33,0,.19,.11,'sine'],[493.88,.085,.23,.12,'sine'],[392,.18,.31,.11,'sine'],[293.66,.29,.40,.08,'sine']]
 };
-let soundCtx=null;
+const SOUND_DEFAULT_ENABLED=Object.freeze({loginSuccess:true,logout:true,update:true,welcome:false});
+let soundCtx=null,soundSiteConfig={};
 function soundEnabled(){try{return localStorage.getItem('nettoSoundEnabled')!=='0'}catch(_){return true}}
 function soundVolume(){try{const raw=localStorage.getItem('nettoSoundVolume');if(raw===null)return .72;const v=Number(raw);return Number.isFinite(v)&&v>=0&&v<=1?v:.72}catch(_){return .72}}
 function unlockSound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;soundCtx=soundCtx||new A();if(soundCtx.state==='suspended')soundCtx.resume().catch(()=>{});return soundCtx}catch(_){return null}}
-function playSound(name='tap'){if(!soundEnabled())return;if(!['loginSuccess','logout','update'].includes(name))return;const def=SOUND_DEFS[name],a=unlockSound();if(!a)return;const run=()=>{try{const now=a.currentTime,master=a.createGain(),filter=a.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(name==='error'?1350:name==='logout'?1750:2400,now);master.gain.setValueAtTime(Math.max(.0001,soundVolume()*.46),now);master.gain.exponentialRampToValueAtTime(.0001,now+Math.max(...def.map(t=>(t[1]||0)+(t[2]||.1)))+.08);filter.connect(master);master.connect(a.destination);def.forEach(t=>{const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,o=a.createOscillator(),g=a.createGain(),st=now+delay;o.type=type;o.frequency.setValueAtTime(freq,st);if(endFreq&&endFreq>0)o.frequency.exponentialRampToValueAtTime(endFreq,st+dur);g.gain.setValueAtTime(.0001,st);g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),st+Math.min(.035,dur*.3));g.gain.exponentialRampToValueAtTime(.0001,st+dur);o.connect(g);g.connect(filter);o.start(st);o.stop(st+dur+.025)})}catch(_){}};if(a.state==='suspended')a.resume().then(run).catch(()=>{});else run()}
-const sounds={play:playSound,unlock:unlockSound,names:Object.freeze(Object.keys(SOUND_DEFS)),isEnabled:soundEnabled,getVolume:soundVolume,setEnabled(v){try{localStorage.setItem('nettoSoundEnabled',v?'1':'0')}catch(_){};window.dispatchEvent(new Event('netto:sound-settings'))},setVolume(v){const n=Math.max(0,Math.min(1,Number(v)||0));try{localStorage.setItem('nettoSoundVolume',String(n))}catch(_){};window.dispatchEvent(new Event('netto:sound-settings'))}};
+function soundConfigNode(name,source=soundSiteConfig){
+ const raw=source?.sounds?.items?.[name]&&typeof source.sounds.items[name]==='object'?source.sounds.items[name]:{};
+ const volume=Number(raw.volume);
+ return{
+  enabled:typeof raw.enabled==='boolean'?raw.enabled:!!SOUND_DEFAULT_ENABLED[name],
+  volume:Number.isFinite(volume)?Math.max(0,Math.min(1,volume)):1,
+  url:String(raw.url||'').trim(),
+  name:String(raw.name||'')
+ }
+}
+function soundFilterFrequency(name){return name==='error'?1350:name==='logout'?1750:2400}
+function playSynthSound(name,node,force=false){
+ const def=SOUND_DEFS[name],a=unlockSound();if(!def||!a)return false;
+ const run=()=>{try{
+  const now=a.currentTime,master=a.createGain(),filter=a.createBiquadFilter(),level=Math.max(.0001,soundVolume()*.46*(node?.volume??1));
+  filter.type='lowpass';filter.frequency.setValueAtTime(soundFilterFrequency(name),now);
+  master.gain.setValueAtTime(level,now);
+  master.gain.exponentialRampToValueAtTime(.0001,now+Math.max(...def.map(t=>(t[1]||0)+(t[2]||.1)))+.08);
+  filter.connect(master);master.connect(a.destination);
+  def.forEach(t=>{const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,o=a.createOscillator(),g=a.createGain(),st=now+delay;o.type=type;o.frequency.setValueAtTime(freq,st);if(endFreq&&endFreq>0)o.frequency.exponentialRampToValueAtTime(endFreq,st+dur);g.gain.setValueAtTime(.0001,st);g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),st+Math.min(.035,dur*.3));g.gain.exponentialRampToValueAtTime(.0001,st+dur);o.connect(g);g.connect(filter);o.start(st);o.stop(st+dur+.025)})
+ }catch(_){}};if(a.state==='suspended')a.resume().then(run).catch(()=>{});else run();return true
+}
+function playCustomSound(name,node){
+ try{
+  const audio=new Audio(node.url);audio.preload='auto';audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)));
+  const p=audio.play();if(p?.catch)p.catch(()=>playSynthSound(name,node,true));return true
+ }catch(_){return playSynthSound(name,node,true)}
+}
+function playSound(name='tap'){
+ if(!soundEnabled()||!SOUND_DEFS[name])return false;
+ const node=soundConfigNode(name);if(!node.enabled)return false;
+ return node.url?playCustomSound(name,node):playSynthSound(name,node)
+}
+function previewSound(name,nodeOverride=null){
+ if(!SOUND_DEFS[name])return false;
+ const base=soundConfigNode(name),node={...base,...(nodeOverride&&typeof nodeOverride==='object'?nodeOverride:{})};
+ node.volume=Number.isFinite(Number(node.volume))?Math.max(0,Math.min(1,Number(node.volume))):1;
+ return node.url?playCustomSound(name,node):playSynthSound(name,node,true)
+}
+function encodeSoundWav(buffer){
+ const channels=buffer.numberOfChannels,frames=buffer.length,rate=buffer.sampleRate,bytesPerSample=2,blockAlign=channels*bytesPerSample,out=new ArrayBuffer(44+frames*blockAlign),view=new DataView(out);
+ const str=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i))};
+ str(0,'RIFF');view.setUint32(4,36+frames*blockAlign,true);str(8,'WAVE');str(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,rate,true);view.setUint32(28,rate*blockAlign,true);view.setUint16(32,blockAlign,true);view.setUint16(34,16,true);str(36,'data');view.setUint32(40,frames*blockAlign,true);
+ let offset=44;for(let i=0;i<frames;i++)for(let ch=0;ch<channels;ch++){const v=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]||0));view.setInt16(offset,v<0?v*0x8000:v*0x7fff,true);offset+=2}
+ return new Blob([out],{type:'audio/wav'})
+}
+async function renderDefaultSoundWav(name){
+ const def=SOUND_DEFS[name];if(!def)throw new Error('Son Nethor inconnu');
+ const Offline=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!Offline)throw new Error('Export audio non pris en charge par ce navigateur');
+ const duration=Math.max(...def.map(t=>(t[1]||0)+(t[2]||.1)))+.15,rate=44100,ctx=new Offline(1,Math.ceil(duration*rate),rate),master=ctx.createGain(),filter=ctx.createBiquadFilter();
+ filter.type='lowpass';filter.frequency.setValueAtTime(soundFilterFrequency(name),0);master.gain.setValueAtTime(.46,0);master.gain.exponentialRampToValueAtTime(.0001,duration-.03);filter.connect(master);master.connect(ctx.destination);
+ def.forEach(t=>{const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,o=ctx.createOscillator(),g=ctx.createGain(),st=delay;o.type=type;o.frequency.setValueAtTime(freq,st);if(endFreq&&endFreq>0)o.frequency.exponentialRampToValueAtTime(endFreq,st+dur);g.gain.setValueAtTime(.0001,st);g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),st+Math.min(.035,dur*.3));g.gain.exponentialRampToValueAtTime(.0001,st+dur);o.connect(g);g.connect(filter);o.start(st);o.stop(st+dur+.025)});
+ return encodeSoundWav(await ctx.startRendering())
+}
+async function downloadDefaultSound(name,fileName){
+ const blob=await renderDefaultSoundWav(name),href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download=fileName||('Nethor-'+name+'.wav');document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1400)
+}
+const sounds={
+ play:playSound,preview:previewSound,unlock:unlockSound,names:Object.freeze(Object.keys(SOUND_DEFS)),
+ configure(config){soundSiteConfig=config&&typeof config==='object'?config:{};return soundSiteConfig},
+ config:name=>soundConfigNode(name),
+ downloadDefault:downloadDefaultSound,
+ isEnabled:soundEnabled,getVolume:soundVolume,
+ setEnabled(v){try{localStorage.setItem('nettoSoundEnabled',v?'1':'0')}catch(_){};window.dispatchEvent(new Event('netto:sound-settings'))},
+ setVolume(v){const n=Math.max(0,Math.min(1,Number(v)||0));try{localStorage.setItem('nettoSoundVolume',String(n))}catch(_){};window.dispatchEvent(new Event('netto:sound-settings'))}
+};
 window.NettoSounds=sounds;
 document.addEventListener('pointerdown',()=>sounds.unlock(),{once:true,capture:true});
 
