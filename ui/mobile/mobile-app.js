@@ -326,12 +326,42 @@ function editableTarget(el){
   if(!el.matches?.('input'))return false;
   return !['button','checkbox','radio','range','color','file','submit','reset','hidden'].includes(String(el.type||'text').toLowerCase())
 }
+function focusedScrollContainer(el){
+  let node=el?.parentElement||null;
+  while(node&&node!==viewHost){
+    try{
+      const style=getComputedStyle(node),overflow=style.overflowY;
+      if(/auto|scroll/.test(overflow)&&node.scrollHeight>node.clientHeight+2)return node
+    }catch(_){}
+    node=node.parentElement
+  }
+  return viewHost
+}
+function keepFocusedEditableVisible(){
+  const active=document.activeElement;
+  if(!editableTarget(active)||!viewHost.contains(active))return;
+  /* Le Chat possède son propre gestionnaire de viewport et de suivi du dernier message. */
+  if(root.dataset.mobileView==='chat'&&active.id==='message')return;
+  const vv=window.visualViewport,viewportTop=Math.max(0,Math.round(vv?.offsetTop||0));
+  const viewportHeight=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
+  const viewportBottom=viewportTop+viewportHeight;
+  const headerBottom=Math.max(viewportTop,Math.round(headerHost.getBoundingClientRect().bottom||0));
+  const safeTop=headerBottom+10,safeBottom=viewportBottom-12,rect=active.getBoundingClientRect();
+  if(rect.bottom<=safeBottom&&rect.top>=safeTop)return;
+  const scroller=focusedScrollContainer(active);
+  if(!scroller)return;
+  const delta=rect.bottom>safeBottom?rect.bottom-safeBottom+14:rect.top<safeTop?rect.top-safeTop-14:0;
+  if(delta)scroller.scrollTop+=delta
+}
 function syncEnvironmentState(){
   const rootEl=document.documentElement;
   const vv=window.visualViewport;
   const active=document.activeElement;
   const focused=editableTarget(active);
-  const obscured=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;
+  const viewportTop=Math.max(0,Math.round(vv?.offsetTop||0));
+  const viewportHeight=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||0));
+  const layoutHeight=Math.max(window.innerHeight||0,document.documentElement.clientHeight||0,viewportTop+viewportHeight);
+  const obscured=Math.max(0,layoutHeight-(viewportTop+viewportHeight));
   const keyboard=focused&&(obscured>70||rootEl.classList.contains('nettoKeyboardFocus'));
   rootEl.classList.toggle('nettoKeyboardOpen',keyboard);
   root.dataset.keyboard=keyboard?'open':'closed';
@@ -339,31 +369,46 @@ function syncEnvironmentState(){
   const standalone=window.matchMedia?.('(display-mode: standalone)')?.matches||navigator.standalone===true;
   root.dataset.displayMode=standalone?'standalone':'browser';
   root.dataset.online=navigator.onLine===false?'0':'1';
+  root.dataset.viewportScale=String(Number(vv?.scale||1).toFixed(3));
   if(vv){
-    rootEl.style.setProperty('--nethor-visual-viewport-height',Math.round(vv.height)+'px');
-    rootEl.style.setProperty('--nethor-visual-viewport-top',Math.round(vv.offsetTop||0)+'px')
+    rootEl.style.setProperty('--nethor-visual-viewport-height',viewportHeight+'px');
+    rootEl.style.setProperty('--nethor-visual-viewport-top',viewportTop+'px')
+  }else{
+    rootEl.style.setProperty('--nethor-visual-viewport-height',viewportHeight+'px');
+    rootEl.style.setProperty('--nethor-visual-viewport-top','0px')
   }
+  if(keyboard)requestAnimationFrame(keepFocusedEditableVisible)
 }
 function bindEnvironmentState(){
-  let raf=0;
+  let raf=0,revealTimers=[];
+  const clearRevealTimers=()=>{revealTimers.forEach(clearTimeout);revealTimers=[]};
+  const scheduleReveal=()=>{
+    clearRevealTimers();
+    keepFocusedEditableVisible();
+    [60,160,320].forEach(delay=>revealTimers.push(setTimeout(keepFocusedEditableVisible,delay)))
+  };
   const sync=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(syncEnvironmentState)};
   window.addEventListener('resize',sync,{passive:true});
-  window.addEventListener('orientationchange',sync,{passive:true});
+  window.addEventListener('orientationchange',()=>{sync();scheduleReveal()},{passive:true});
   window.addEventListener('online',sync,{passive:true});
   window.addEventListener('offline',sync,{passive:true});
-  window.visualViewport?.addEventListener('resize',sync,{passive:true});
-  window.visualViewport?.addEventListener('scroll',sync,{passive:true});
+  window.visualViewport?.addEventListener('resize',()=>{sync();scheduleReveal()},{passive:true});
+  window.visualViewport?.addEventListener('scroll',()=>{sync();scheduleReveal()},{passive:true});
   document.addEventListener('focusin',event=>{
     if(editableTarget(event.target)){
       document.documentElement.classList.add('nettoKeyboardFocus');
-      sync()
+      sync();
+      scheduleReveal()
     }
   },true);
   document.addEventListener('focusout',()=>{
     setTimeout(()=>{
-      if(!editableTarget(document.activeElement))document.documentElement.classList.remove('nettoKeyboardFocus');
+      if(!editableTarget(document.activeElement)){
+        document.documentElement.classList.remove('nettoKeyboardFocus');
+        clearRevealTimers()
+      }
       sync()
-    },40)
+    },60)
   },true);
   sync()
 }
