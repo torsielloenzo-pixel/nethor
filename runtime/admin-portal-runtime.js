@@ -169,7 +169,7 @@ function normalize(raw){
  c.platform_ui=c.platform_ui&&typeof c.platform_ui==='object'?c.platform_ui:{};
  for(const kind of ['mobile','desktop']){
   const current=c.platform_ui[kind]&&typeof c.platform_ui[kind]==='object'?c.platform_ui[kind]:{};
-  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}};
+  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||''),tag:String(x.tag||'')}};
   const themedAsset=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{},legacy=cleanAsset(x),light=cleanAsset(x.light),dark=cleanAsset(x.dark);return{light:light.url||light.path||light.name?light:legacy,dark}};
   const simpleAsset=key=>cleanAsset(current[key]);
   const currentControls=current.controls&&typeof current.controls==='object'?current.controls:{},controls={};
@@ -664,14 +664,24 @@ function platformAssetUrl(kind,key,theme='light'){
  return String(variant.url||((theme==='dark')?light.url:'')||node.url||'').trim()||platformDefaultAsset(kind,key)
 }
 function platformAssetIsVideo(url){return /\.(mp4|webm)(?:$|\?)/i.test(String(url||''))}
+function platformAssetIsScript(url){return /\.js(?:$|\?)/i.test(String(url||''))}
+function platformWelcomeAnimationHost(url,theme='light',tag='',name='Utilisateur'){
+ const q=new URLSearchParams({src:String(url||''),theme:theme==='dark'?'dark':'light',mode:'media',name:String(name||'Utilisateur')});
+ if(tag)q.set('tag',String(tag));
+ return 'welcome-animation-host.html?'+q.toString()
+}
 function platformAssetPreview(kind,key,theme){
- const asset=platformAssetNode(kind,key)||{},url=platformAssetUrl(kind,key,theme),isWelcome=key==='welcome_media';
+ const asset=platformAssetNode(kind,key)||{},url=platformAssetUrl(kind,key,theme),isWelcome=key==='welcome_media',variant=platformAssetVariantNode(kind,key,theme);
+ if(isWelcome&&asset.type==='animation'&&platformAssetIsScript(url)){
+  const host=platformWelcomeAnimationHost(url,theme,variant?.tag||'','Utilisateur');
+  return '<iframe class="platformWelcomeAnimationFrame" src="'+attr(host)+'" title="Aperçu de l’animation de bienvenue" sandbox="allow-scripts" loading="lazy"></iframe>'
+ }
  if(isWelcome&&asset.type==='animation'&&platformAssetIsVideo(url))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
  return '<img src="'+attr(url)+'" alt="">'
 }
 function platformAssetAccept(key){
  return key==='welcome_media'
-  ?'.png,.webp,.svg,.gif,.mp4,.webm,image/png,image/webp,image/svg+xml,image/gif,video/mp4,video/webm'
+  ?'.js,.png,.webp,.svg,.gif,.mp4,.webm,application/javascript,text/javascript,image/png,image/webp,image/svg+xml,image/gif,video/mp4,video/webm'
   :'.png,.webp,.svg,.ico,image/png,image/webp,image/svg+xml,image/x-icon,image/vnd.microsoft.icon'
 }
 function platformThemeVariant(kind,key,theme){
@@ -691,7 +701,7 @@ function platformAssetRow(kind,key,title,description){
  const asset=platformAssetNode(kind,key)||{},welcome=key==='welcome_media';
  return '<div class="platformAssetRow themed">'+
   '<div class="platformAssetCopy"><strong>'+esc(title)+'</strong><span>'+esc(description)+'</span>'+
-   (welcome?'<label class="platformMediaMode">Type <select data-platform-welcome-mode="'+attr(kind)+'"><option value="image" '+(asset.type!=='animation'?'selected':'')+'>Logo / image</option><option value="animation" '+(asset.type==='animation'?'selected':'')+'>Animation</option></select></label>':'')+
+   (welcome?'<label class="platformMediaMode">Type <select data-platform-welcome-mode="'+attr(kind)+'"><option value="image" '+(asset.type!=='animation'?'selected':'')+'>Logo / image</option><option value="animation" '+(asset.type==='animation'?'selected':'')+'>Animation</option></select></label><small class="platformMediaHint">Animation : fichier .js autonome Nethor, GIF, MP4 ou WebM.</small>':'')+
   '</div>'+
   '<div class="platformThemeVariants">'+platformThemeVariant(kind,key,'light')+platformThemeVariant(kind,key,'dark')+'</div>'+
  '</div>'
@@ -802,22 +812,33 @@ function renderPlatformIdentity(kind){
 function choosePlatformAsset(kind,key,theme){$('platformAssetFile_'+kind+'_'+key+'_'+(theme==='dark'?'dark':'light'))?.click()}
 function platformAssetExtension(file){
  const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
- return ['png','webp','svg','ico','gif','mp4','webm'].includes(ext)?ext:''
+ return ['js','png','webp','svg','ico','gif','mp4','webm'].includes(ext)?ext:''
+}
+async function inspectPlatformWelcomeScript(file){
+ const source=await file.text();
+ if(!/customElements\.define\s*\(/.test(source))throw new Error('Animation JS invalide : aucun Web Component détecté.');
+ const match=source.match(/const\s+TAG\s*=\s*["'`]([a-z][a-z0-9.-]*-[a-z0-9.-]+)["'`]/i);
+ const tag=String(match?.[1]||'').toLowerCase();
+ if(!tag)throw new Error('Animation JS incompatible : balise Nethor introuvable.');
+ if(!/window\.NethorWelcome(?:\d+|Animation)\s*=/.test(source))throw new Error('Animation JS incompatible avec le lecteur Nethor.');
+ return{tag}
 }
 async function uploadPlatformAsset(kind,key,theme,input){
  const file=input?.files?.[0],state=$('saveState');if(!file)return;
  theme=theme==='dark'?'dark':'light';
  try{
   const ext=platformAssetExtension(file),welcome=key==='welcome_media';
-  const allowed=welcome?['png','webp','svg','gif','mp4','webm']:['png','webp','svg','ico'];
+  const allowed=welcome?['js','png','webp','svg','gif','mp4','webm']:['png','webp','svg','ico'];
   if(!ext||!allowed.includes(ext))throw new Error('Format non compatible avec cet emplacement.');
   const limit=welcome?12*1024*1024:5*1024*1024;if(file.size>limit)throw new Error('Fichier trop lourd : '+(welcome?'12':'5')+' Mo maximum.');
+  const scriptMeta=welcome&&ext==='js'?await inspectPlatformWelcomeScript(file):null;
   state.className='saveState';state.textContent='Import '+platformLabel(kind)+' · '+(theme==='dark'?'sombre':'clair')+'…';
   const storagePath='platform/'+kind+'/'+key+'/'+theme+'-'+Date.now()+'.'+ext;
-  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const contentType=ext==='js'?'application/javascript':(file.type||undefined);
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType});if(error)throw error;
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=platformAssetVariantNode(kind,key,theme);
-  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;
-  if(welcome&&['gif','mp4','webm'].includes(ext))platformAssetNode(kind,key).type='animation';
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag=scriptMeta?.tag||'';
+  if(welcome&&['js','gif','mp4','webm'].includes(ext))platformAssetNode(kind,key).type='animation';
   markDirty();renderPlatformIdentity(kind);state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur média : '+(e?.message||e)}
  finally{if(input)input.value=''}
@@ -833,7 +854,7 @@ function downloadPlatformAsset(kind,key,theme='light'){
  const node=platformAssetVariantNode(kind,key,theme),url=platformAssetUrl(kind,key,theme),name=node?.name||('Nethor-'+kind+'-'+key+'-'+theme+'.svg');downloadAssetUrl(url,name)
 }
 function removePlatformAsset(kind,key,theme='light'){
- const node=platformAssetVariantNode(kind,key,theme);node.url='';node.path='';node.name='';markDirty();renderPlatformIdentity(kind)
+ const node=platformAssetVariantNode(kind,key,theme);node.url='';node.path='';node.name='';node.tag='';markDirty();renderPlatformIdentity(kind)
 }
 function choosePlatformSimpleAsset(kind,key){$('platformSimpleAssetFile_'+kind+'_'+key)?.click()}
 async function uploadPlatformSimpleAsset(kind,key,input){
