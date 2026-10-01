@@ -1,11 +1,11 @@
 {
-  "version": 295,
-  "label": "v1.44.3",
+  "version": 296,
+  "label": "v1.44.4",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — affichage du logo d’entête réparé",
-  "message": "Correction définitive du logo d’entête Desktop personnalisé. La règle CSS active du mot-symbole n’écrase plus background-image ; les pages Desktop chargent désormais desktop-shell.css v6 et le cache application passe en v295.",
-  "published_at": "2026-10-01T02:45:00+02:00",
+  "title": "Mobile — écran de bienvenue au lancement",
+  "message": "À l’ouverture de Nethor sur Mobile, la session active affiche désormais l’écran « Bienvenue utilisateur » avant l’Accueil. Le prénom, le thème et le média configuré dans Gestion > Éditeur du portail > Après connexion · Bienvenue utilisateur sont réutilisés, sans rejouer l’écran lors de la navigation entre les vues SPA.",
+  "published_at": "2026-10-01T02:59:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
