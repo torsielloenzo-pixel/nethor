@@ -27,7 +27,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v73.svg?v=73">
-<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=15">
+<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=16">
 <link rel="stylesheet" href="operations-widget.css?v=2">
 <link rel="stylesheet" href="ui/mobile/views/home/home-view.css?v=4">
 <link rel="stylesheet" href="ui/mobile/views/notifications/notifications-view.css?v=1">
@@ -40,16 +40,21 @@
 <body>
 <div id="nethorMobileApp" class="nethorMobileApp" data-mobile-app-shell>
   <header class="nethorMobileAppTop" data-mobile-app-header>
-    <div class="nethorMobileAppBrand" aria-label="Nethor">
-      <span class="nethorMobileWordmark" aria-hidden="true"><span class="nethorMobileWordmarkNe">ne</span><span class="nethorMobileWordmarkThor">thor</span></span>
-      <span class="nethorMobileAppStatus" aria-live="polite"></span>
+    <div class="nethorMobileAppBrandCluster">
+      <a class="nethorMobileTopAction nethorMobileMenuAction" data-mobile-destination="user-menu" data-legacy-href="user-menu.html" href="user-menu.html" aria-label="Menu utilisateur" title="Menu utilisateur">
+        <span class="nethorMobileMenuGlyph" aria-hidden="true">≡</span>
+      </a>
+      <div class="nethorMobileAppBrand" aria-label="Nethor">
+        <span class="nethorMobileWordmark" aria-hidden="true"><span class="nethorMobileWordmarkNe">ne</span><span class="nethorMobileWordmarkThor">thor</span></span>
+        <span class="nethorMobileAppStatus" aria-live="polite"></span>
+      </div>
     </div>
     <div class="nethorMobileAppTools" data-mobile-app-tools aria-label="Actions rapides">
       <a class="nethorMobileTopAction" data-mobile-destination="notifications" data-legacy-href="notifications.html" href="notifications.html" aria-label="Notifications" title="Notifications">
         <span class="nethorMobileNavIconWrap" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="none"><path d="M12 21a2.4 2.4 0 0 0 2.3-1.7H9.7A2.4 2.4 0 0 0 12 21Z"/><path d="M18.2 16.5H5.8l1.5-2V9.7a4.7 4.7 0 0 1 9.4 0v4.8l1.5 2Z"/><path d="M12 3.3V2"/></svg></span><b class="nethorMobileNotifBadge" data-mobile-notification-badge hidden>0</b></span>
       </a>
-      <a class="nethorMobileTopAction" data-mobile-destination="user-menu" data-legacy-href="user-menu.html" href="user-menu.html" aria-label="Menu utilisateur" title="Menu utilisateur">
-        <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.25"/><path d="M5.5 18.5c1.4-3 4-4.5 6.5-4.5s5.1 1.5 6.5 4.5"/></svg></span>
+      <a class="nethorMobileTopAction nethorMobileProfileAction" data-mobile-destination="profile" data-legacy-href="profile.html" href="profile.html" aria-label="Mon profil" title="Mon profil">
+        <span class="nethorMobileHeaderAvatar" data-mobile-profile-avatar aria-hidden="true">U</span>
       </a>
     </div>
   </header>
@@ -81,13 +86,13 @@
 <script src="operations-widget.js?v=3"></script>
 <script src="ui/mobile/views/home/home-view.js?v=4"></script>
 <script src="ui/mobile/views/notifications/notifications-view.js?v=1"></script>
-<script src="ui/mobile/views/user-menu/user-menu-view.js?v=3"></script>
+<script src="ui/mobile/views/user-menu/user-menu-view.js?v=4"></script>
 <script src="ui/mobile/views/profile/profile-view.js?v=1"></script>
 <script src="ui/mobile/views/settings/settings-view.js?v=1"></script>
 <script src="ui/mobile/views/notification-settings/notification-settings-view.js?v=1"></script>
 <script src="ui/mobile/views/report-problem/report-problem-view.js?v=1"></script>
 <script src="ui/mobile/views/planning/planning-view.js?v=3"></script>
 <script src="ui/mobile/views/chat/chat-view.js?v=1"></script>
-<script src="ui/mobile/mobile-app.js?v=16"></script>
+<script src="ui/mobile/mobile-app.js?v=17"></script>
 </body>
 </html>
