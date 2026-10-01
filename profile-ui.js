@@ -690,8 +690,7 @@ function iconMime(url){
  if(s.endsWith('.png'))return'image/png';if(s.endsWith('.webp'))return'image/webp';if(s.endsWith('.ico'))return'image/x-icon';return'image/svg+xml'
 }
 function setHeadAssetLink(rel,href,id){
- let link=id?document.getElementById(id):null;
- if(!link)link=[...document.querySelectorAll('link[rel="'+rel+'"]')][0]||null;
+ let link=id?document.getElementById(id):[...document.querySelectorAll('link[rel="'+rel+'"]')][0]||null;
  if(!link){link=document.createElement('link');link.rel=rel;if(id)link.id=id;document.head?.appendChild(link)}
  if(!link.dataset.nethorDefaultHref)link.dataset.nethorDefaultHref=link.getAttribute('href')||'';
  const next=String(href||link.dataset.nethorDefaultHref||'').trim();if(next)link.href=next;
