@@ -152,3 +152,12 @@ html[data-theme="dark"] .nethorMobileLaunchWelcomeStatus{color:#85878d}
 @media (prefers-reduced-motion:reduce){
   .nethorMobileLaunchWelcome,.nethorMobileLaunchWelcomeMark,.nethorMobileLaunchWelcomeSub{transition:none!important}
 }
+
+
+/* Le splash de bienvenue ne se rejoue jamais pendant la même ouverture de l'application. */
+html[data-nethor-launch-splash="skip"] .nethorMobileLaunchWelcome{
+  display:none!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important
+}
