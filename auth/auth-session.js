@@ -58,7 +58,7 @@ async function loadAuthBrandingConfig(force=false){
   const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
   if(error)throw error;authSiteConfig=data?.value&&typeof data.value==='object'?data.value:{}
  }catch(e){console.warn('Identité de connexion Nethor:',e);authSiteConfig=authSiteConfig||{}}
- applyAuthBranding();return authSiteConfig
+ applyAuthBranding();window.NettoSounds?.configure?.(authSiteConfig);return authSiteConfig
 }
 function ensureWelcomeMediaStyle(){
  if(document.getElementById('nethorWelcomeMediaStyle'))return;
@@ -137,7 +137,7 @@ async function boot(){
 }
 function playLoginSound(){window.NettoSounds?.play?.('loginSuccess')}
 function playLogoutSound(){window.NettoSounds?.play?.('logout')}
-function showWelcome(){return new Promise(resolve=>{const t=$('welcomeToast'),name=profile?.display_name||profile?.email?.split('@')[0]||'utilisateur';applyWelcomeBranding();$('welcomeText').textContent='Bienvenue '+name+' 👋';requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(resolve,450)},1900)})}
+function showWelcome(){return new Promise(resolve=>{const t=$('welcomeToast'),name=profile?.display_name||profile?.email?.split('@')[0]||'utilisateur';applyWelcomeBranding();window.NettoSounds?.play?.('welcome');$('welcomeText').textContent='Bienvenue '+name+' 👋';requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(resolve,450)},1900)})}
 
 function loginDenied(msg='Email ou mot de passe incorrect.'){const card=document.querySelector('.loginCard'),err=$('loginError');err.textContent=msg;err.classList.remove('loginErrorPulse');card?.classList.remove('loginDenied');void card?.offsetWidth;void err.offsetWidth;card?.classList.add('loginDenied');err.classList.add('loginErrorPulse');window.NettoSounds?.play?.('error');setTimeout(()=>card?.classList.remove('loginDenied'),520)}
 function safeReturnPath(){const raw=new URLSearchParams(location.search).get('return')||'';if(!raw||raw.includes('://')||raw.startsWith('//'))return'';return /^accounts\.html(?:\?|$)/.test(raw)?raw:''}
