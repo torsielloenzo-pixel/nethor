@@ -1,11 +1,11 @@
 {
-  "version": 296,
-  "label": "v1.44.4",
+  "version": 297,
+  "label": "v1.44.5",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Bienvenue — correction du lecteur d’animation",
-  "message": "Correction du lecteur des animations JavaScript de bienvenue : détection directe du Web Component, conservation du tag importé et chargement réseau prioritaire du lecteur pour éviter une ancienne version en cache.",
-  "published_at": "2026-10-02T00:18:00+02:00",
+  "title": "Gestion — Sons & audio",
+  "message": "Ajout d’un éditeur sonore complet dans Gestion. Connexion, Bienvenue utilisateur et Déconnexion sont gérés séparément, avec activation, volume, écoute, import, téléchargement et réinitialisation. Tous les sons d’interface déjà définis dans Nethor sont également listés et personnalisables. Les sons Nethor d’origine peuvent être exportés en WAV.",
+  "published_at": "2026-10-02T00:32:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
