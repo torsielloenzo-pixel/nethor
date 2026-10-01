@@ -1048,6 +1048,11 @@ function ensurePortalPlatformStructure(){
   const btn=document.createElement('button');btn.className='managementNavChild';btn.dataset.tab='desktop';btn.type='button';btn.textContent='Desktop';btn.setAttribute('onclick',"showTab('desktop',this)");
   mobileBtn?.insertAdjacentElement('afterend',btn)
  }
+ const desktopBtn=nav?.querySelector('[data-tab="desktop"]');
+ if(nav&&!nav.querySelector('[data-tab="sounds"]')){
+  const btn=document.createElement('button');btn.className='managementNavChild';btn.dataset.tab='sounds';btn.type='button';btn.textContent='Sons & audio';btn.setAttribute('onclick',"showTab('sounds',this)");
+  desktopBtn?.insertAdjacentElement('afterend',btn)
+ }
  const mobileTab=$('tab-mobile');
  if(mobileTab){
   if(!$('platformIdentity_mobile')){const p=document.createElement('div');p.id='platformIdentity_mobile';p.className='panel platformIdentityPanel';mobileTab.prepend(p)}
@@ -1061,10 +1066,20 @@ function ensurePortalPlatformStructure(){
   section.innerHTML='<div id="platformIdentity_desktop" class="panel platformIdentityPanel"></div><div id="platformComponents_desktop" class="panel platformComponentsPanel"></div>';
   const before=$('tab-blocks');before?.parentNode?.insertBefore(section,before)
  }
+ if(!$('tab-sounds')){
+  const section=document.createElement('section');section.id='tab-sounds';section.className='section';
+  section.innerHTML='<div id="soundEditorPanel" class="panel soundEditorPanel"></div>';
+  const before=$('tab-blocks');before?.parentNode?.insertBefore(section,before)
+ }
  const actionGrid=document.querySelector('#tab-overview .managementActionGrid'),mobileAction=actionGrid?.querySelector('button[onclick*="showTab(\'mobile\')"]');
  if(actionGrid&&mobileAction&&!actionGrid.querySelector('[data-generated-tab="desktop"]')){
   const btn=document.createElement('button');btn.className=mobileAction.className;btn.type='button';btn.dataset.generatedTab='desktop';btn.setAttribute('onclick',"showTab('desktop')");
   btn.innerHTML='<span>▣</span><strong>Desktop</strong><small>Identité, menus et boutons</small>';mobileAction.insertAdjacentElement('afterend',btn)
+ }
+ const desktopAction=actionGrid?.querySelector('[data-generated-tab="desktop"]');
+ if(actionGrid&&desktopAction&&!actionGrid.querySelector('[data-generated-tab="sounds"]')){
+  const btn=document.createElement('button');btn.className=desktopAction.className;btn.type='button';btn.dataset.generatedTab='sounds';btn.setAttribute('onclick',"showTab('sounds')");
+  btn.innerHTML='<span>♫</span><strong>Sons & audio</strong><small>Connexion, bienvenue et interface</small>';desktopAction.insertAdjacentElement('afterend',btn)
  }
  document.querySelectorAll('.managementActionGrid button[onclick*="showTab(\'mobile\')"]').forEach(btn=>{const s=btn.querySelector('strong');if(s)s.textContent='Mobile';const sm=btn.querySelector('small');if(sm)sm.textContent='Identité, navigation et menus'});
 }
