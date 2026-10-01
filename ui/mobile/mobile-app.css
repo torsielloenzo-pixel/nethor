@@ -61,10 +61,26 @@ html[data-theme="dark"] .nethorMobileTopAction>.nethorMobileHeaderAvatar{border-
 .nethorMobileApp[data-services="starting"] .nethorMobileAppStatus:after{content:" · Connexion…"}
 .nethorMobileApp[data-services="error"] .nethorMobileAppStatus:after{content:" · Données indisponibles"}
 
-/* Phase 9 — viewport/clavier partagé par toutes les vues SPA. */
-html.nettoKeyboardOpen .nethorMobileApp{height:var(--nethor-visual-viewport-height,100dvh)}
-html.nettoKeyboardOpen .nethorMobileAppNav{display:none!important}
-html.nettoKeyboardOpen .nethorMobileView{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+/* Phase 9 — viewport/clavier partagé par toutes les vues SPA.
+   iOS peut déplacer le visual viewport quand un champ prend le focus.
+   Le shell suit donc la zone réellement visible au lieu de laisser Safari
+   pousser l'entête hors écran. */
+html[data-nethor-mobile-app="1"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+html[data-nethor-mobile-app="1"] select,
+html[data-nethor-mobile-app="1"] textarea,
+html[data-nethor-mobile-app="1"] [contenteditable="true"]{font-size:16px!important}
+html.nettoKeyboardOpen,html.nettoKeyboardOpen body{overflow:hidden!important;overscroll-behavior:none}
+html.nettoKeyboardOpen .nethorMobileApp{
+  position:fixed!important;left:0!important;right:0!important;bottom:auto!important;
+  top:var(--nethor-visual-viewport-top,0px)!important;
+  width:100%!important;
+  height:var(--nethor-visual-viewport-height,100dvh)!important;
+  min-height:0!important;max-height:var(--nethor-visual-viewport-height,100dvh)!important;
+  grid-template-rows:max-content minmax(0,1fr) 0!important
+}
+html.nettoKeyboardOpen .nethorMobileApp.nethorShellGeometryRepair{grid-template-rows:max-content minmax(0,1fr) 0!important}
+html.nettoKeyboardOpen .nethorMobileAppNav{display:none!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;border:0!important}
+html.nettoKeyboardOpen .nethorMobileView{min-height:0!important;padding-bottom:max(8px,env(safe-area-inset-bottom));scroll-padding-top:12px;scroll-padding-bottom:16px}
 .nethorMobileApp[data-online="0"] .nethorMobileAppStatus:after{content:" · Hors ligne";font-weight:800}
 
 /* iOS/Safari safety: never let the bottom navigation consume the content row. */
