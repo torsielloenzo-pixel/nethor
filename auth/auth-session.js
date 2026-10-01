@@ -53,7 +53,7 @@ function applyAuthBranding(){
  applyAuthHeadIcons()
 }
 async function loadAuthBrandingConfig(force=false){
- if(!force&&authSiteConfig&&Object.keys(authSiteConfig).length){applyAuthBranding();return authSiteConfig}
+ if(!force&&authSiteConfig&&Object.keys(authSiteConfig).length){applyAuthBranding();window.NettoSounds?.configure?.(authSiteConfig);return authSiteConfig}
  try{
   const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
   if(error)throw error;authSiteConfig=data?.value&&typeof data.value==='object'?data.value:{}
