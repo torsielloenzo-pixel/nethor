@@ -30,7 +30,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
  }
  function apiTag(){
   if(requestedTag&&customElements.get(requestedTag))return requestedTag;
-  for(const key of Object.keys(window)){
+  /* Les 10 animations Nethor autonomes utilisent nethor-welcome-01…10.
+     On interroge directement le registre Custom Elements : c'est plus fiable
+     que l'énumération de window dans un iframe sandboxé. */
+  for(let i=1;i<=99;i++){
+   const tag='nethor-welcome-'+String(i).padStart(2,'0');
+   if(customElements.get(tag))return tag
+  }
+  for(const key of Object.getOwnPropertyNames(window)){
    if(!/^NethorWelcome(?:\d+|Animation)$/.test(key))continue;
    const tag=String(window[key]?.tag||'').toLowerCase();
    if(tag&&customElements.get(tag))return tag
