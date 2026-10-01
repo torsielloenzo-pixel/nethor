@@ -1,11 +1,11 @@
 {
-  "version": 294,
-  "label": "v1.44.2",
+  "version": 295,
+  "label": "v1.44.3",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — correction du logo d’entête personnalisé",
-  "message": "Le logo d’entête Desktop importé depuis Gestion est désormais visible. Une ancienne règle CSS de la coque Desktop forçait un fond transparent et masquait l’image personnalisée. Le correctif conserve le fond transparent sans supprimer l’image du logo, et force le rechargement de la feuille Desktop.",
-  "published_at": "2026-10-01T02:35:00+02:00",
+  "title": "Gestion — logo de connexion réaligné",
+  "message": "Le réglage « Logo de connexion » Desktop est réaligné sur l’icône réellement utilisée par index.html. La personnalisation erronée a été réinitialisée : sans fichier personnalisé, la page de connexion reprend l’icône Nethor officielle (carré sombre avec N dégradé), en clair comme en sombre. L’éditeur précise désormais que ce réglage concerne l’icône affichée à gauche du nom Nethor.",
+  "published_at": "2026-10-01T02:40:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
