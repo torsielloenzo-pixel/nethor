@@ -803,7 +803,7 @@ function renderPlatformIdentity(kind){
  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent maintenant d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
  '<div class="platformAssetList">'+
  platformAssetRow(kind,'header_logo','Logo de l’entête','Logo utilisé dans les en-têtes de l’application sur '+platformLabel(kind)+'.')+
- platformAssetRow(kind,'login_logo','Logo de connexion','Logo affiché sur la page de connexion '+platformLabel(kind)+'.')+
+ platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion '+platformLabel(kind)+'. Sans fichier personnalisé, Nethor utilise automatiquement son icône officielle de connexion.')+
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
  host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)});
