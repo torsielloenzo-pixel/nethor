@@ -9,6 +9,14 @@ async function maintenanceTargetForRole(role,normalTarget){
  return normalTarget
 }
 
+function consumeMobileLaunchWelcomeWithLogin(){
+ try{
+  if(typeof authPlatformKind==='function'&&authPlatformKind()==='mobile'){
+   sessionStorage.setItem('nethorMobileLaunchShownV1','1')
+  }
+ }catch(_){}
+}
+
 async function login(e){
  e.preventDefault();window.NettoSounds?.unlock?.();$('loginError').textContent='';
  try{sessionStorage.removeItem('nettoForceLogin')}catch(_){}
@@ -24,6 +32,9 @@ async function login(e){
  try{const {error:loginLogError}=await db.from('login_history').insert({user_id:uid,user_agent:String(navigator.userAgent||'').slice(0,500),source:'app'});if(loginLogError)console.warn('Historique connexion:',loginLogError)}catch(loginLogError){console.warn('Historique connexion:',loginLogError)}
  profile=p;const loaderTxt=$('profileLoaderText');if(loaderTxt)loaderTxt.textContent='Application de ton thème…';await syncProfileTheme(profile,uid);await loadAuthBrandingConfig(true);playLoginSound();$('login').classList.add('hidden');$('site').classList.add('hidden');
  await hideProfileLoader(380);await showWelcome();
+ /* Sur mobile, l'animation de connexion tient lieu de bienvenue pour cette session.
+    Le splash de lancement de mobile.html ne doit donc pas être rejoué juste après. */
+ consumeMobileLaunchWelcomeWithLogin();
  const returnTo=safeReturnPath(),normalTarget=returnTo&&p.role==='admin'?returnTo:'home.html',target=await maintenanceTargetForRole(p.role,normalTarget);
  const continueNow=await checkLatestVersionAtLogin(target);if(continueNow)location.href=target
 }
