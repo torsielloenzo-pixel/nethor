@@ -23,21 +23,46 @@
 })();
 </script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v73.svg?v=73">
 <link rel="stylesheet" href="ui/mobile/mobile-app.css?v=16">
-<link rel="stylesheet" href="operations-widget.css?v=2">
-<link rel="stylesheet" href="ui/mobile/views/home/home-view.css?v=4">
-<link rel="stylesheet" href="ui/mobile/views/notifications/notifications-view.css?v=1">
-<link rel="stylesheet" href="ui/mobile/views/user-menu/user-menu-view.css?v=1">
-<link rel="stylesheet" href="ui/mobile/views/profile/profile-view.css?v=1">
-<link rel="stylesheet" href="ui/mobile/views/settings/settings-view.css?v=1">
-<link rel="stylesheet" href="ui/mobile/views/notification-settings/notification-settings-view.css?v=1">
-<link rel="stylesheet" href="ui/mobile/views/report-problem/report-problem-view.css?v=1">
+<link rel="stylesheet" href="operations-widget.css?v=2" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/home/home-view.css?v=4" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/notifications/notifications-view.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/user-menu/user-menu-view.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/profile/profile-view.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/settings/settings-view.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/notification-settings/notification-settings-view.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/report-problem/report-problem-view.css?v=1" media="print" onload="this.media='all'">
 </head>
 <body>
+<section class="nethorMobileLaunchWelcome show" data-mobile-launch-welcome aria-live="polite" aria-hidden="false">
+  <div class="nethorMobileLaunchWelcomeInner">
+    <div class="nethorMobileLaunchWelcomeMark" data-mobile-launch-welcome-mark aria-hidden="true">N</div>
+    <strong class="nethorMobileLaunchWelcomeText" data-mobile-launch-welcome-text>Bienvenue</strong>
+    <span class="nethorMobileLaunchWelcomeSub" data-mobile-launch-welcome-sub>Nethor</span>
+    <small class="nethorMobileLaunchWelcomeStatus" data-mobile-launch-welcome-status>Préparation de ton espace…</small>
+  </div>
+</section>
+<script>
+(function(){
+ try{
+  var raw=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),cfg=raw&&raw.config||{},brand=cfg.brand||{},mobile=cfg.platform_ui&&cfg.platform_ui.mobile||{},media=mobile.welcome_media||{},theme=document.documentElement.dataset.theme==='dark'?'dark':'light',variant=media[theme]&&media[theme].url?media[theme]:(theme==='dark'&&media.light&&media.light.url?media.light:media),url=String(variant&&variant.url||'').trim(),tag=String(variant&&variant.tag||''),mark=document.querySelector('[data-mobile-launch-welcome-mark]'),sub=document.querySelector('[data-mobile-launch-welcome-sub]');
+  if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
+  if(!mark||!url)return;
+  var type=String(media.type||'image'),sig=type+'|'+url+'|'+tag+'|'+theme,safe=url.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  mark.dataset.mediaSignature=sig;mark.classList.add('hasMedia');
+  if(type==='animation'&&/\.js(?:$|\?)/i.test(url)){
+   var q=new URLSearchParams({src:url,theme:theme,mode:'media',name:'Utilisateur'});if(tag)q.set('tag',tag);
+   mark.innerHTML='<iframe src="welcome-animation-host.html?'+String(q).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="Animation Nethor" sandbox="allow-scripts" tabindex="-1"></iframe>'
+  }else if(type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url))mark.innerHTML='<video src="'+safe+'" autoplay muted loop playsinline preload="auto"></video>';
+  else mark.innerHTML='<img src="'+safe+'" alt="" draggable="false">'
+ }catch(_){}
+})();
+</script>
 <div id="nethorMobileApp" class="nethorMobileApp" data-mobile-app-shell>
   <header class="nethorMobileAppTop" data-mobile-app-header>
     <div class="nethorMobileAppBrandCluster">
@@ -80,7 +105,7 @@
   </nav>
 </div>
 <script src="platform-navigation.js?v=4"></script>
-<script src="ui/mobile/mobile-services.js?v=3"></script>
+<script src="ui/mobile/mobile-services.js?v=4"></script>
 <script src="ui/mobile/mobile-router.js?v=4"></script>
 <script src="ui/mobile/mobile-shell.js?v=13"></script>
 <script src="operations-widget.js?v=3"></script>
@@ -91,8 +116,8 @@
 <script src="ui/mobile/views/settings/settings-view.js?v=1"></script>
 <script src="ui/mobile/views/notification-settings/notification-settings-view.js?v=1"></script>
 <script src="ui/mobile/views/report-problem/report-problem-view.js?v=1"></script>
-<script src="ui/mobile/views/planning/planning-view.js?v=3"></script>
-<script src="ui/mobile/views/chat/chat-view.js?v=1"></script>
+<script src="ui/mobile/views/planning/planning-view.js?v=4"></script>
+<script src="ui/mobile/views/chat/chat-view.js?v=2"></script>
 <script src="ui/mobile/mobile-app.js?v=17"></script>
 </body>
 </html>
