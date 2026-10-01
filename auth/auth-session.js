@@ -9,10 +9,17 @@ function authPlatformUi(){
  return root&&typeof root==='object'?root:{}
 }
 function authTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
-function authThemedAsset(node,fallback=''){
- if(!node||typeof node!=='object')return fallback;
+function authThemedAssetNode(node){
+ if(!node||typeof node!=='object')return{};
  const theme=authTheme(),variant=node?.[theme],light=node?.light;
- return String(variant?.url||((theme==='dark')?light?.url:'')||node?.url||fallback||'').trim()
+ if(variant&&typeof variant==='object'&&String(variant.url||'').trim())return variant;
+ if(theme==='dark'&&light&&typeof light==='object'&&String(light.url||'').trim())return light;
+ if(String(node.url||'').trim())return node;
+ return{}
+}
+function authThemedAsset(node,fallback=''){
+ const asset=authThemedAssetNode(node);
+ return String(asset?.url||fallback||'').trim()
 }
 function authSimpleAsset(node,fallback=''){return String(node?.url||fallback||'').trim()}
 function authIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
@@ -56,16 +63,24 @@ async function loadAuthBrandingConfig(force=false){
 function ensureWelcomeMediaStyle(){
  if(document.getElementById('nethorWelcomeMediaStyle'))return;
  const s=document.createElement('style');s.id='nethorWelcomeMediaStyle';
- s.textContent='.welcomeMark.hasWelcomeMedia{width:min(42vw,150px)!important;height:min(42vw,150px)!important;padding:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}.welcomeMark.hasWelcomeMedia img,.welcomeMark.hasWelcomeMedia video{display:block;width:100%;height:100%;object-fit:contain;border:0}.welcomeMark.hasWelcomeMedia video{pointer-events:none}';
+ s.textContent='.welcomeMark.hasWelcomeMedia{width:min(42vw,150px)!important;height:min(42vw,150px)!important;padding:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}.welcomeMark.hasWelcomeMedia img,.welcomeMark.hasWelcomeMedia video,.welcomeMark.hasWelcomeMedia iframe{display:block;width:100%;height:100%;object-fit:contain;border:0;background:transparent}.welcomeMark.hasWelcomeMedia video,.welcomeMark.hasWelcomeMedia iframe{pointer-events:none}';
  document.head?.appendChild(s)
+}
+function authWelcomeAnimationHost(url,tag,name){
+ const q=new URLSearchParams({src:String(url||''),theme:authTheme(),mode:'media',name:String(name||'Utilisateur')});
+ if(tag)q.set('tag',String(tag));
+ return 'welcome-animation-host.html?'+q.toString()
 }
 function applyWelcomeBranding(){
  const mark=document.querySelector('#welcomeToast .welcomeMark'),sub=document.querySelector('#welcomeToast .welcomeSub');if(!mark)return;
- const ui=authPlatformUi(),media=ui?.welcome_media||{},url=authThemedAsset(media,'');
+ const ui=authPlatformUi(),media=ui?.welcome_media||{},variant=authThemedAssetNode(media),url=String(variant?.url||'').trim();
  const brand=authSiteConfig?.brand||{};if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
  if(!url){mark.classList.remove('hasWelcomeMedia');mark.innerHTML='N';return}
  ensureWelcomeMediaStyle();mark.classList.add('hasWelcomeMedia');
- if(media.type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url)){
+ if(media.type==='animation'&&/\.js(?:$|\?)/i.test(url)){
+  const userName=profile?.display_name||profile?.email?.split('@')[0]||'Utilisateur',host=authWelcomeAnimationHost(url,variant?.tag||'',userName);
+  mark.innerHTML='<iframe src="'+String(host).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="Animation Nethor" sandbox="allow-scripts" tabindex="-1"></iframe>'
+ }else if(media.type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url)){
   mark.innerHTML='<video src="'+String(url).replace(/"/g,'&quot;')+'" autoplay muted loop playsinline preload="auto"></video>'
  }else mark.innerHTML='<img src="'+String(url).replace(/"/g,'&quot;')+'" alt="" draggable="false">'
 }
