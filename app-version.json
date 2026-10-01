@@ -4,8 +4,8 @@
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Bienvenue — import d’animations JavaScript",
-  "message": "L’Éditeur du portail accepte désormais les animations Nethor autonomes au format .js pour l’écran « Après connexion · Bienvenue utilisateur ». Le fichier est validé à l’import, stocké comme JavaScript, prévisualisé directement dans Gestion puis lu dans un cadre isolé après authentification. Les variantes Thème clair et Thème sombre restent indépendantes.",
-  "published_at": "2026-10-01T02:42:00+02:00",
+  "title": "Desktop — affichage du logo d’entête réparé",
+  "message": "Correction définitive du logo d’entête Desktop personnalisé. La règle CSS active du mot-symbole n’écrase plus background-image ; les pages Desktop chargent désormais desktop-shell.css v6 et le cache application passe en v295.",
+  "published_at": "2026-10-01T02:45:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
