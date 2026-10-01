@@ -717,7 +717,7 @@ function renderPlatformSystemAssets(kind){
  '</div></section>'
 }
 
-const PLATFORM_CONTROL_DEFAULTS=const PLATFORM_CONTROL_DEFAULTS={
+const PLATFORM_CONTROL_DEFAULTS={
  notifications:{label:'Notifications',subtitle:'Centre d’activité Nethor',glyph:'🔔'},
  user_menu:{label:'Menu utilisateur',subtitle:'Profil, préférences et réglages',glyph:'☺'},
  theme:{label:'Mode sombre',subtitle:'Changer l’apparence',glyph:'◐'},
@@ -857,7 +857,7 @@ function downloadPlatformSimpleAsset(kind,key){
 function removePlatformSimpleAsset(kind,key){
  const node=platformSimpleAssetNode(kind,key);node.url='';node.path='';node.name='';markDirty();renderPlatformIdentity(kind)
 }
-function ensurePagePlatformOverride(id,kind){function ensurePagePlatformOverride(id,kind){
+function ensurePagePlatformOverride(id,kind){
  const p=config.pages[id];if(!p)return{};
  p.platform_overrides=p.platform_overrides&&typeof p.platform_overrides==='object'?p.platform_overrides:{};
  p.platform_overrides[kind]=p.platform_overrides[kind]&&typeof p.platform_overrides[kind]==='object'?p.platform_overrides[kind]:{};
