@@ -268,3 +268,29 @@ main{width:min(95vw,1240px);margin:auto;padding:28px 0 90px}.hero{display:flex;j
  .platformControlFields{grid-template-columns:minmax(0,1fr)}
  .platformControlRow>.platformAssetActions{grid-column:1/-1}
 }
+
+
+/* v1.44.1 — variantes clair/sombre + icônes système */
+.platformAssetRow.themed{display:block}
+.platformAssetRow.themed>.platformAssetCopy{margin-bottom:14px}
+.platformThemeVariants{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.platformThemeVariant{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-areas:"head head" "preview actions";align-items:center;gap:10px;padding:12px;border:1px solid var(--line,#e4e7ec);border-radius:16px;background:color-mix(in srgb,var(--panel,#fff) 92%,var(--bg,#f5f6f8))}
+.platformThemeVariantHead{grid-area:head;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.platformThemeVariantHead strong{font-size:13px}
+.platformThemeVariantHead small{font-size:11px;color:var(--muted,#6b7280);text-align:right}
+.platformThemeVariant>.platformAssetPreview{grid-area:preview;width:76px;height:60px;margin:0}
+.platformThemeVariant>.platformAssetActions{grid-area:actions;justify-content:flex-start}
+.platformSystemAssetsSection{margin-top:18px;padding-top:18px;border-top:1px solid var(--line,#e4e7ec)}
+.platformSystemAssetsSection>.platformSubhead{margin-bottom:12px}
+.platformSystemAssetRow{grid-template-columns:76px minmax(0,1fr) auto}
+.platformSystemAssetRow>.platformAssetPreview{width:76px;height:76px}
+.platformSystemAssetRow>.platformAssetPreview img{border-radius:16px}
+html[data-theme="dark"] .platformThemeVariant{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.1)}
+html[data-theme="dark"] .platformSystemAssetsSection{border-color:rgba(255,255,255,.1)}
+@media(max-width:760px){
+ .platformThemeVariants{grid-template-columns:1fr}
+ .platformThemeVariant{grid-template-columns:68px minmax(0,1fr)}
+ .platformThemeVariant>.platformAssetPreview{width:68px;height:56px}
+ .platformSystemAssetRow{grid-template-columns:68px minmax(0,1fr)}
+ .platformSystemAssetRow>.platformAssetActions{grid-column:1/-1}
+}
