@@ -201,7 +201,7 @@ async function refresh(){
   state.status='refreshing';
   emit('refreshing');
   try{
-    await refreshCore({emitChange:false});
+    await refreshCore({emitChange:true});
     const [preferences,notifications]=await Promise.all([
       readNotificationPreferences(),
       readNotifications().catch(error=>{console.warn('[Nethor MobileServices] notifications',error);return state.notifications})
