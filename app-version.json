@@ -1,11 +1,11 @@
 {
-  "version": 298,
-  "label": "v1.44.6",
+  "version": 299,
+  "label": "v1.44.7",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — bienvenue prioritaire et préchargement",
-  "message": "Au lancement Mobile, l’écran « Bienvenue utilisateur » est désormais le premier écran réellement visible. Pendant son animation, Nethor charge en parallèle la session, le profil, les permissions, les notifications et la vue demandée, puis précharge les ressources Planning et Chat. Le raccourci PWA ouvre directement la SPA Mobile pour éviter le détour par home.html. Les changements du menu Mobile publiés juste avant sont conservés.",
-  "published_at": "2026-10-01T03:08:00+02:00",
+  "title": "Mobile — Planning persistant en mémoire",
+  "message": "Le Planning Mobile ne se recharge plus intégralement à chaque retour. Après le premier chargement, la semaine, l’équipe et les indisponibilités restent en mémoire dans la SPA : revenir depuis Accueil ou Chat réaffiche immédiatement les données déjà chargées, sans écran de recherche. Les ressources Planning restent préchargées et désactivées hors vue pour éviter les collisions CSS. Les changements réels de planning, d’indisponibilités ou de profils continuent d’actualiser le cache via le temps réel, et un changement de semaine déclenche toujours la requête nécessaire.",
+  "published_at": "2026-10-01T03:17:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
