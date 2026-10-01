@@ -133,16 +133,21 @@ html[data-theme="dark"] .nethorMobileTopAction[aria-current="page"]{color:var(--
   opacity:0;transform:translateY(5px);transition:opacity .45s ease .16s,transform .45s ease .16s
 }
 .nethorMobileLaunchWelcome.show .nethorMobileLaunchWelcomeSub{opacity:1;transform:none}
+.nethorMobileLaunchWelcomeStatus{
+  margin-top:18px;color:#9a9aa1;font-size:11px;font-weight:700;letter-spacing:.01em;
+  opacity:.72
+}
 html[data-theme="dark"] .nethorMobileLaunchWelcome{
   background:linear-gradient(145deg,#17191c,#111316);color:#f4f4f5
 }
 html[data-theme="dark"] .nethorMobileLaunchWelcomeMark{background:#f4f4f5;color:#171717}
 html[data-theme="dark"] .nethorMobileLaunchWelcomeMark.hasMedia{background:transparent}
 html[data-theme="dark"] .nethorMobileLaunchWelcomeSub{color:#9c9ca3}
+html[data-theme="dark"] .nethorMobileLaunchWelcomeStatus{color:#85878d}
 @media (orientation:landscape) and (max-height:520px){
   .nethorMobileLaunchWelcomeMark{width:68px;height:68px;margin-bottom:14px;border-radius:20px;font-size:32px}
   .nethorMobileLaunchWelcomeMark.hasMedia{width:min(28vw,112px);height:min(28vw,112px)}
-  .nethorMobileLaunchWelcomeText{font-size:30px}.nethorMobileLaunchWelcomeSub{margin-top:6px;font-size:12px}
+  .nethorMobileLaunchWelcomeText{font-size:30px}.nethorMobileLaunchWelcomeSub{margin-top:6px;font-size:12px}.nethorMobileLaunchWelcomeStatus{margin-top:10px;font-size:10px}
 }
 @media (prefers-reduced-motion:reduce){
   .nethorMobileLaunchWelcome,.nethorMobileLaunchWelcomeMark,.nethorMobileLaunchWelcomeSub{transition:none!important}
