@@ -1,11 +1,11 @@
 {
-  "version": 301,
-  "label": "v1.44.9",
+  "version": 296,
+  "label": "v1.44.4",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — bienvenue une seule fois",
-  "message": "L’animation « Bienvenue utilisateur » ne se joue désormais qu’une seule fois lors de l’ouverture de l’application. Le bouton ≡ Menu utilisateur et toutes les actions de l’entête sont interceptés par le routeur SPA et n’entraînent plus de rechargement de mobile.html. Un garde-fou de session empêche également le splash de réapparaître après un rechargement interne accidentel.",
-  "published_at": "2026-10-01T03:23:00+02:00",
+  "title": "Bienvenue — correction du lecteur d’animation",
+  "message": "Correction du lecteur des animations JavaScript de bienvenue : détection directe du Web Component, conservation du tag importé et chargement réseau prioritaire du lecteur pour éviter une ancienne version en cache.",
+  "published_at": "2026-10-02T00:18:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
