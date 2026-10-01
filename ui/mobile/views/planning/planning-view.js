@@ -116,6 +116,10 @@ async function loadAssets(){
  await Promise.all(STYLE_ASSETS.map(ensureStyle));
  for(const src of SCRIPT_ASSETS)await ensureScript(src)
 }
+async function preload(){
+ const [fragment]=await Promise.all([template(),loadAssets()]);
+ return !!fragment
+}
 function errorView(message){
  if(!state.host)return;
  state.host.innerHTML='<div class="nethorPlanningViewError"><strong>Planning indisponible</strong><span>'+String(message||'Impossible de charger le Planning.')+'</span><button type="button" data-planning-fallback>Ouvrir la page de secours</button></div>';
@@ -126,9 +130,10 @@ async function mount(host,ctx={}){
  host.innerHTML='<div class="nethorPlanningViewLoading"><span></span><strong>Chargement du Planning…</strong><small>Préparation de la semaine et de l’équipe.</small></div>';
  setPlatformMarkers();
  try{
+  const preloadPromise=Promise.all([template(),loadAssets()]);
   await services()?.ready?.();
   if(!state.mounted)return false;
-  const [fragment]=await Promise.all([template(),loadAssets()]);
+  const [fragment]=await preloadPromise;
   if(!state.mounted)return false;
   host.innerHTML='<div class="nethorPlanningView"><div id="planningApp">'+fragment+'</div></div>';
   applyMobileLayout();
@@ -162,7 +167,7 @@ async function unmount(){
  return true
 }
 
-const api=Object.freeze({mount,unmount,get mounted(){return state.mounted}});
+const api=Object.freeze({mount,unmount,preload,get mounted(){return state.mounted}});
 window.NethorMobilePlanningView=api;
 router()?.register?.('planning',api);
 })();
