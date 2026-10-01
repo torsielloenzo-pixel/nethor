@@ -12,6 +12,7 @@ const defaultWordmarkHtml=mobileWordmark?.innerHTML||'';
 const chromeDefaults=new WeakMap();
 let configuredSiteConfig={};
 const MOBILE_LAUNCH_CACHE_KEY='nethorMobileLaunchBrandV1';
+const MOBILE_LAUNCH_SESSION_KEY='nethorMobileLaunchShownV1';
 const MOBILE_LAUNCH_MIN_MS=1900;
 [...navHost?.querySelectorAll('[data-mobile-destination]')||[],...headerHost?.querySelectorAll('[data-mobile-destination]')||[]].forEach(link=>{const icon=link.getAttribute('data-mobile-destination')==='notifications'?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');if(icon)chromeDefaults.set(icon,icon.innerHTML)});
 if(!root||!viewHost||!navHost||!toolHost||!headerHost)return;
@@ -178,6 +179,22 @@ function renderMobileLaunchWelcome(state){
  }else mark.innerHTML='<img src="'+safeUrl+'" alt="" draggable="false">';
  return overlay
 }
+function mobileLaunchAlreadyShown(){
+ try{return sessionStorage.getItem(MOBILE_LAUNCH_SESSION_KEY)==='1'}catch(_){return false}
+}
+function markMobileLaunchShown(){
+ try{sessionStorage.setItem(MOBILE_LAUNCH_SESSION_KEY,'1')}catch(_){}
+ try{document.documentElement.dataset.nethorLaunchSplash='skip'}catch(_){}
+}
+function skipMobileLaunchWelcome(){
+ const overlay=document.querySelector('[data-mobile-launch-welcome]');
+ if(overlay){
+  overlay.classList.remove('show','leaving');
+  overlay.setAttribute('aria-hidden','true')
+ }
+ root.inert=false;
+ root.removeAttribute('aria-hidden')
+}
 function prepareMobileLaunchWelcome(){
  const overlay=renderMobileLaunchWelcome({siteConfig:cachedMobileLaunchConfig()});
  root.inert=true;
@@ -201,7 +218,8 @@ async function finishMobileLaunchWelcome(startedAt){
  overlay.setAttribute('aria-hidden','true');
  overlay.classList.remove('leaving');
  root.inert=false;
- root.removeAttribute('aria-hidden')
+ root.removeAttribute('aria-hidden');
+ markMobileLaunchShown()
 }
 function prewarmMobileViews(){
  const tasks=[
@@ -376,13 +394,14 @@ async function boot(){
     location.replace(new URL('home.html',location.href).href);
     return
   }
-  const launchStarted=prepareMobileLaunchWelcome();
+  const launchStarted=mobileLaunchAlreadyShown()?null:prepareMobileLaunchWelcome();
+  if(launchStarted===null)skipMobileLaunchWelcome();
   const mobileRouter=router();
   if(!mobileRouter){
     root.dataset.router='missing';
     syncLegacyLinks();
     syncActive();
-    await finishMobileLaunchWelcome(launchStarted);
+    if(launchStarted!==null)await finishMobileLaunchWelcome(launchStarted);
     return
   }
   window.addEventListener('nethor:mobile-route-change',onRouteEvent);
@@ -396,7 +415,7 @@ async function boot(){
   root.dataset.ready='1';
 
   const servicePromise=bootServices();
-  const routerPromise=mobileRouter.start({host:viewHost,nav:[navHost,toolHost]});
+  const routerPromise=mobileRouter.start({host:viewHost,nav:[navHost,headerHost]});
   requestAnimationFrame(()=>void prewarmMobileViews());
 
   const serviceState=await servicePromise;
@@ -411,7 +430,8 @@ async function boot(){
   syncLegacyLinks();
   syncActive();
   syncNotificationBadge(services()?.unread||0);
-  await finishMobileLaunchWelcome(launchStarted);
+  if(launchStarted!==null)await finishMobileLaunchWelcome(launchStarted);
+  else skipMobileLaunchWelcome();
   window.dispatchEvent(new CustomEvent('nethor:mobile-app-ready',{detail:{
     phase:9,
     view:requestedView(),
