@@ -1868,7 +1868,7 @@ async function boot(){
  const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;
  await waitProfileUI();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];ensurePortalPlatformStructure();bindGlobal();await loadConfig();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();enhanceCompactPortal();
  const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoManagementTab')||'overview';
- const validTabs=['overview','general','system','mobile','desktop','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
+ const validTabs=['overview','general','system','mobile','desktop','sounds','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
  const tab=validTabs.includes(saved)?saved:'overview';
  const requestedAccountView=qs.get('sub')||localStorage.getItem('nettoManagementAccountsView')||'accounts';
  accountSubview=['accounts','roles','logs'].includes(requestedAccountView)?requestedAccountView:'accounts';
