@@ -1,11 +1,11 @@
 {
-  "version": 297,
-  "label": "v1.44.5",
+  "version": 298,
+  "label": "v1.44.6",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — menu ≡ et accès profil par avatar",
-  "message": "Sur Mobile, le Menu utilisateur est désormais accessible par le bouton ≡ placé à gauche du logo Nethor. L’ancien emplacement du Menu utilisateur dans l’entête devient un accès direct à Mon profil, affiché avec la photo ronde de l’utilisateur (ou ses initiales en repli). Mon profil a été retiré du contenu du menu ≡ pour éviter le doublon.",
-  "published_at": "2026-10-01T03:03:00+02:00",
+  "title": "Mobile — bienvenue prioritaire et préchargement",
+  "message": "Au lancement Mobile, l’écran « Bienvenue utilisateur » est désormais le premier écran réellement visible. Pendant son animation, Nethor charge en parallèle la session, le profil, les permissions, les notifications et la vue demandée, puis précharge les ressources Planning et Chat. Le raccourci PWA ouvre directement la SPA Mobile pour éviter le détour par home.html. Les changements du menu Mobile publiés juste avant sont conservés.",
+  "published_at": "2026-10-01T03:08:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
