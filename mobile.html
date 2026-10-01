@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Nethor">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Nethor</title>
-<script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(_){}})();</script>
+<script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(_){}try{document.documentElement.dataset.nethorLaunchSplash=sessionStorage.getItem('nethorMobileLaunchShownV1')==='1'?'skip':'show'}catch(_){document.documentElement.dataset.nethorLaunchSplash='show'}})();</script>
 <script src="platform-resolver.js?v=3"></script>
 <script>
 (function(){
@@ -28,7 +28,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v73.svg?v=73">
-<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=17">
+<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=18">
 <link rel="stylesheet" href="operations-widget.css?v=2" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/home/home-view.css?v=4" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/notifications/notifications-view.css?v=1" media="print" onload="this.media='all'">
@@ -118,6 +118,6 @@
 <script src="ui/mobile/views/report-problem/report-problem-view.js?v=1"></script>
 <script src="ui/mobile/views/planning/planning-view.js?v=5"></script>
 <script src="ui/mobile/views/chat/chat-view.js?v=3"></script>
-<script src="ui/mobile/mobile-app.js?v=17"></script>
+<script src="ui/mobile/mobile-app.js?v=18"></script>
 </body>
 </html>
