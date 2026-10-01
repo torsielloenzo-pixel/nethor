@@ -10,7 +10,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=2',
- 'planning-runtime.js?v=1',
+ 'planning-runtime.js?v=2',
  'planning-agenda-v2.js?v=19'
 ];
 const state={
@@ -33,7 +33,7 @@ function services(){return window.NethorMobileServices||window.MobileServices||n
 function ensureStyle(href){
  return new Promise((resolve,reject)=>{
   const existing=document.querySelector('link[data-nethor-planning-view-asset][href="'+href+'"]');
-  if(existing){resolve(existing);return}
+  if(existing){existing.disabled=false;resolve(existing);return}
   const link=document.createElement('link');
   link.rel='stylesheet';
   link.href=href;
@@ -112,6 +112,9 @@ function cleanupStyles(){
  for(const node of state.styleNodes){try{node.remove()}catch(_){}}
  state.styleNodes=[]
 }
+function suspendStyles(){
+ for(const node of state.styleNodes){try{node.disabled=true}catch(_){}}
+}
 async function loadAssets(){
  await Promise.all(STYLE_ASSETS.map(ensureStyle));
  for(const src of SCRIPT_ASSETS)await ensureScript(src)
@@ -127,7 +130,8 @@ function errorView(message){
 }
 async function mount(host,ctx={}){
  state.host=host;state.mounted=true;state.routeKey=routeKey(ctx.params);
- host.innerHTML='<div class="nethorPlanningViewLoading"><span></span><strong>Chargement du Planning…</strong><small>Préparation de la semaine et de l’équipe.</small></div>';
+ const warm=window.NethorPlanningRuntime?.cached===true&&!!state.template;
+ host.innerHTML=warm?'':'<div class="nethorPlanningViewLoading"><span></span><strong>Chargement du Planning…</strong><small>Préparation de la semaine et de l’équipe.</small></div>';
  setPlatformMarkers();
  try{
   const preloadPromise=Promise.all([template(),loadAssets()]);
@@ -160,7 +164,7 @@ async function unmount(){
  state.mounted=false;
  try{await window.NethorPlanningRuntime?.unmount?.()}catch(error){console.warn('[Nethor PlanningView] runtime unmount',error)}
  try{window.NethorPlanningAgenda?.unmount?.()}catch(error){console.warn('[Nethor PlanningView] agenda unmount',error)}
- cleanupStyles();
+ if(window.NethorPlanningRuntime?.cached===true)suspendStyles();else cleanupStyles();
  restorePlatformMarkers();
  if(state.host)state.host.innerHTML='';
  state.host=null;state.routeKey='';
