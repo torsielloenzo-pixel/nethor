@@ -1,11 +1,11 @@
 {
-  "version": 293,
-  "label": "v1.44.1",
+  "version": 294,
+  "label": "v1.44.2",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Gestion — logos clair/sombre & icônes système",
-  "message": "L’éditeur Mobile / Desktop propose désormais une version Thème clair et Thème sombre pour les logos d’entête, de connexion et de bienvenue. Mobile permet aussi de choisir l’icône Safari / écran d’accueil. Desktop permet de personnaliser le favicon de l’onglet, avec variante claire/sombre, ainsi que l’icône du raccourci bureau / application installée.",
-  "published_at": "2026-10-01T02:20:00+02:00",
+  "title": "Desktop — correction du logo d’entête personnalisé",
+  "message": "Le logo d’entête Desktop importé depuis Gestion est désormais visible. Une ancienne règle CSS de la coque Desktop forçait un fond transparent et masquait l’image personnalisée. Le correctif conserve le fond transparent sans supprimer l’image du logo, et force le rechargement de la feuille Desktop.",
+  "published_at": "2026-10-01T02:35:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
