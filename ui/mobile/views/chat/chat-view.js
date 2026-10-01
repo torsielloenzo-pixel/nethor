@@ -79,6 +79,10 @@ async function loadAssets(){
  await Promise.all(STYLE_ASSETS.map(ensureStyle));
  for(const src of SCRIPT_ASSETS)await ensureScript(src)
 }
+async function preload(){
+ const [modals]=await Promise.all([fragment(),loadAssets()]);
+ return !!modals
+}
 function errorView(message){
  if(!state.host)return;
  state.host.innerHTML='<div class="nethorChatViewError"><strong>Chat indisponible</strong><span>'+String(message||'Impossible de charger la messagerie.')+'</span><button type="button" data-chat-fallback>Ouvrir la page de secours</button></div>';
@@ -97,9 +101,10 @@ async function mount(host){
  host.innerHTML='<div class="nethorChatViewLoading"><span></span><strong>Chargement du Chat…</strong><small>Connexion aux discussions de l’équipe.</small></div>';
  setPlatformMarkers();
  try{
+  const preloadPromise=Promise.all([fragment(),loadAssets()]);
   await services()?.ready?.();
   if(!state.mounted)return false;
-  const [modals]=await Promise.all([fragment(),loadAssets()]);
+  const [modals]=await preloadPromise;
   if(!state.mounted)return false;
   const build=window.NethorMobileChatLayout?.build;
   if(typeof build!=='function')throw new Error('Layout Chat Mobile indisponible');
@@ -129,7 +134,7 @@ async function unmount(){
  return true
 }
 
-const api=Object.freeze({mount,unmount,get mounted(){return state.mounted}});
+const api=Object.freeze({mount,unmount,preload,get mounted(){return state.mounted}});
 window.NethorMobileChatView=api;
 router()?.register?.('chat',api);
 })();
