@@ -296,3 +296,57 @@ html[data-theme="dark"] .platformSystemAssetsSection{border-color:rgba(255,255,2
  .platformSystemAssetRow{grid-template-columns:68px minmax(0,1fr)}
  .platformSystemAssetRow>.platformAssetActions{grid-column:1/-1}
 }
+
+
+/* v1.44.x — éditeur Sons & audio */
+.soundEditorPanel{overflow:visible}
+.soundEditorHead{margin-bottom:12px}
+.soundEditorNotice{margin:0 0 16px;padding:11px 13px;border:1px solid #e5e8ec;border-radius:13px;background:#fafbfc;color:#66707a;font-size:9.5px;line-height:1.5}
+.soundEditorNotice b{color:#242a31}
+.soundEditorGroup{margin-top:18px}
+.soundEditorGroup:first-of-type{margin-top:0}
+.soundEditorGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.soundEditorGrid.primary{grid-template-columns:repeat(3,minmax(0,1fr))}
+.soundEditorCard{display:grid;grid-template-columns:50px minmax(0,1fr);gap:10px;padding:12px;border:1px solid #e4e8ec;border-radius:15px;background:#fafbfc}
+.soundEditorCard.primary{background:linear-gradient(180deg,#fff,#fafbfc)}
+.soundEditorIcon{grid-row:1/3;width:50px;height:50px;display:grid;place-items:center;border:1px solid #e0e5e9;border-radius:13px;background:#fff;font-size:20px;color:#ff5a22}
+.soundEditorCopy{min-width:0}
+.soundEditorTitle{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.soundEditorTitle strong{font-size:11px;color:#252b32}
+.soundEditorCopy>span{display:block;margin-top:3px;font-size:8.5px;line-height:1.4;color:#7c858e}
+.soundEditorCopy>small{display:block;margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;color:#9aa1a8}
+.soundSourceBadge{flex:none;padding:3px 6px;border-radius:999px;background:#eceff2;color:#77808a;font-size:7.5px;font-weight:800}
+.soundSourceBadge.custom{background:#fff0e9;color:#d94b16}
+.soundEditorSettings{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(160px,1fr);gap:12px;align-items:center;padding-top:8px;border-top:1px solid #e9ecef}
+.soundEnabledControl,.soundVolumeControl{display:flex;align-items:center;gap:8px;font-size:8.5px;color:#68727c}
+.soundEnabledControl{justify-content:flex-start}
+.soundVolumeControl{display:grid;grid-template-columns:auto minmax(90px,1fr);gap:8px}
+.soundVolumeControl>span{display:flex;gap:5px;white-space:nowrap}
+.soundVolumeControl b{color:#2b3138}
+.soundVolumeControl input[type="range"]{width:100%;min-height:0!important;padding:0!important}
+.soundEditorActions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.soundEditorActions .btn{white-space:nowrap}
+:root[data-theme="dark"] .soundEditorNotice,
+:root[data-theme="dark"] .soundEditorCard{background:#1f252b;border-color:#353e47;color:#a6aeb7}
+:root[data-theme="dark"] .soundEditorCard.primary{background:linear-gradient(180deg,#242a31,#1f252b)}
+:root[data-theme="dark"] .soundEditorIcon{background:#2a3138;border-color:#3a444f}
+:root[data-theme="dark"] .soundEditorTitle strong,
+:root[data-theme="dark"] .soundEditorNotice b,
+:root[data-theme="dark"] .soundVolumeControl b{color:#f0f2f4}
+:root[data-theme="dark"] .soundEditorCopy>span,
+:root[data-theme="dark"] .soundEnabledControl,
+:root[data-theme="dark"] .soundVolumeControl{color:#a6aeb7}
+:root[data-theme="dark"] .soundSourceBadge{background:#303841;color:#b8c0c8}
+:root[data-theme="dark"] .soundSourceBadge.custom{background:#4a2b20;color:#ffb18d}
+:root[data-theme="dark"] .soundEditorSettings{border-color:#343d46}
+@media(max-width:1000px){
+ .soundEditorGrid.primary{grid-template-columns:1fr}
+ .soundEditorGrid{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+ .soundEditorCard{grid-template-columns:44px minmax(0,1fr)}
+ .soundEditorIcon{width:44px;height:44px}
+ .soundEditorSettings{grid-template-columns:1fr}
+ .soundVolumeControl{grid-template-columns:1fr}
+ .soundEditorActions .btn{flex:1 1 calc(50% - 6px)}
+}
