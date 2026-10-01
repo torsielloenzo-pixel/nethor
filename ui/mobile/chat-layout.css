@@ -32,8 +32,8 @@
 
   body{background:#f0f2f5!important}
 
-  /* Le bandeau global Nethor n'existe pas dans le chat mobile. */
-  header{display:none!important}
+  /* Masquer uniquement l'ancien bandeau de page Chat, jamais l'entête du shell SPA Nethor. */
+  body>header,body>#site>header{display:none!important}
 
   /* Liste des discussions : plein écran, au-dessus de la navigation basse. */
   .chatApp{
