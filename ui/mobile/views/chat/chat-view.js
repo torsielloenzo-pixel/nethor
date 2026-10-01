@@ -3,8 +3,8 @@
 
 const STYLE_ASSETS=[
  'chat-v2.css?v=27',
- 'ui/mobile/chat-layout.css?v=2',
- 'ui/mobile/views/chat/chat-view.css?v=1'
+ 'ui/mobile/chat-layout.css?v=3',
+ 'ui/mobile/views/chat/chat-view.css?v=2'
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/chat-layout.js?v=2',
@@ -79,9 +79,16 @@ async function loadAssets(){
  await Promise.all(STYLE_ASSETS.map(ensureStyle));
  for(const src of SCRIPT_ASSETS)await ensureScript(src)
 }
+async function warmAsset(url){
+ try{
+  const response=await fetch(url,{cache:'force-cache'});
+  return !!response?.ok
+ }catch(_){return false}
+}
 async function preload(){
- const [modals]=await Promise.all([fragment(),loadAssets()]);
- return !!modals
+ const fragmentPromise=fragment();
+ await Promise.allSettled([...STYLE_ASSETS,...SCRIPT_ASSETS].map(warmAsset));
+ try{await fragmentPromise;return true}catch(_){return false}
 }
 function errorView(message){
  if(!state.host)return;
