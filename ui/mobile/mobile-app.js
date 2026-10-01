@@ -5,13 +5,14 @@ const root=document.querySelector('[data-mobile-app-shell]');
 const viewHost=document.querySelector('[data-mobile-view-host]');
 const navHost=document.querySelector('[data-mobile-nav-host]');
 const toolHost=document.querySelector('[data-mobile-app-tools]');
+const headerHost=document.querySelector('[data-mobile-app-header]');
 const notificationBadge=document.querySelector('[data-mobile-notification-badge]');
 const mobileWordmark=document.querySelector('.nethorMobileWordmark');
 const defaultWordmarkHtml=mobileWordmark?.innerHTML||'';
 const chromeDefaults=new WeakMap();
 let configuredSiteConfig={};
-[...navHost?.querySelectorAll('[data-mobile-destination]')||[],...toolHost?.querySelectorAll('[data-mobile-destination]')||[]].forEach(link=>{const icon=link.getAttribute('data-mobile-destination')==='notifications'?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');if(icon)chromeDefaults.set(icon,icon.innerHTML)});
-if(!root||!viewHost||!navHost||!toolHost)return;
+[...navHost?.querySelectorAll('[data-mobile-destination]')||[],...headerHost?.querySelectorAll('[data-mobile-destination]')||[]].forEach(link=>{const icon=link.getAttribute('data-mobile-destination')==='notifications'?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');if(icon)chromeDefaults.set(icon,icon.innerHTML)});
+if(!root||!viewHost||!navHost||!toolHost||!headerHost)return;
 
 function platform(){
   try{return String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase()}
@@ -71,17 +72,40 @@ function setChromeIcon(container,url){
  container.innerHTML='';
  const img=document.createElement('img');img.src=custom;img.alt='';img.draggable=false;img.className='nethorMobileConfiguredIcon';container.appendChild(img)
 }
-function applyConfiguredLink(link,id,config,{top=false,userMenu=false}={}){
+function applyConfiguredLink(link,id,config,{top=false,userMenu=false,fixedIcon=false}={}){
  if(!link)return;
  const {page,override}=mobilePageConfig(config,id),controls=config?.platform_ui?.mobile?.controls||{};
  const controlKey=top?(userMenu?'user_menu':id==='notifications'?'notifications':''):'',control=controlKey&&controls?.[controlKey]&&typeof controls[controlKey]==='object'?controls[controlKey]:{};
  const labelOverride=String(control.label||override.nav_label||override.label||'').trim();
  const label=labelOverride||(userMenu?'Menu utilisateur':String(page.nav_label||page.label||link.querySelector('small')?.textContent||id).trim());
  const iconContainer=id==='notifications'&&top?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');
- setChromeIcon(iconContainer,String(control.url||override.image_url||''));
+ if(!fixedIcon)setChromeIcon(iconContainer,String(control.url||override.image_url||''));
  const accent=safeHex(override.color);if(accent)link.style.setProperty('--nethor-mobile-item-accent',accent);else link.style.removeProperty('--nethor-mobile-item-accent');
  if(top){link.dataset.configuredLabel=label;link.setAttribute('aria-label',label);link.title=String(control.subtitle||label)}
  else{const small=link.querySelector('small');if(small)small.textContent=label;link.setAttribute('aria-label',label)}
+}
+function profileInitials(profile){
+ const name=String(profile?.display_name||'Utilisateur').trim();
+ return name.split(/\s+/).slice(0,2).map(part=>part.charAt(0).toUpperCase()).join('')||'U'
+}
+function syncHeaderProfileAvatar(profile=services()?.profile,url=services()?.avatarUrl){
+ const avatar=headerHost?.querySelector('[data-mobile-profile-avatar]');
+ if(!avatar)return;
+ avatar.textContent=profileInitials(profile);
+ avatar.style.backgroundColor=safeHex(profile?.profile_color)||'#ff5a2a';
+ avatar.style.backgroundImage='';
+ if(url){
+  avatar.style.backgroundImage='url("'+String(url).replace(/"/g,'%22')+'")';
+  avatar.textContent=''
+ }
+}
+function applyProfileShortcut(link,config){
+ if(!link)return;
+ const {page,override}=mobilePageConfig(config,'profile');
+ const label=String(override.nav_label||override.label||page.nav_label||page.label||'Mon profil').trim()||'Mon profil';
+ const accent=safeHex(override.color);if(accent)link.style.setProperty('--nethor-mobile-item-accent',accent);else link.style.removeProperty('--nethor-mobile-item-accent');
+ link.dataset.configuredLabel=label;link.setAttribute('aria-label',label);link.title=label;
+ syncHeaderProfileAvatar()
 }
 function mobileTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
 function mobileThemedAssetNode(node){
@@ -184,7 +208,8 @@ function applyConfiguredChrome(config={}){
  navHost.setAttribute('aria-hidden',config?.mobile_bar?.enabled===false?'true':'false');
  allowed.forEach(id=>applyConfiguredLink(navHost.querySelector('[data-mobile-destination="'+id+'"]'),id,config));
  applyConfiguredLink(toolHost.querySelector('[data-mobile-destination="notifications"]'),'notifications',config,{top:true});
- applyConfiguredLink(toolHost.querySelector('[data-mobile-destination="user-menu"]'),'profile',config,{top:true,userMenu:true});
+ applyConfiguredLink(headerHost.querySelector('[data-mobile-destination="user-menu"]'),'profile',config,{top:true,userMenu:true,fixedIcon:true});
+ applyProfileShortcut(toolHost.querySelector('[data-mobile-destination="profile"]'),config);
  applyMobileSystemIcons(config)
 }
 
@@ -192,7 +217,7 @@ const mobileBrandThemeObserver=typeof MutationObserver!=='undefined'?new Mutatio
 mobileBrandThemeObserver?.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
 function navigationLinks(){
-  return [...navHost.querySelectorAll('[data-mobile-destination]'),...toolHost.querySelectorAll('[data-mobile-destination]')]
+  return [...new Set([...navHost.querySelectorAll('[data-mobile-destination]'),...headerHost.querySelectorAll('[data-mobile-destination]')])]
 }
 function syncLegacyLinks(){
   navigationLinks().forEach(link=>{
@@ -202,7 +227,7 @@ function syncLegacyLinks(){
   })
 }
 function syncActive(view=requestedView()){
-  const menuViews=new Set(['user-menu','profile','settings','notification-settings','report-problem']);
+  const menuViews=new Set(['user-menu','settings','notification-settings','report-problem']);
   navigationLinks().forEach(link=>{
     const id=link.getAttribute('data-mobile-destination')||'';
     const active=id===view||(id==='user-menu'&&menuViews.has(view));
@@ -227,6 +252,7 @@ function onServiceEvent(detail){
   const status=String(detail?.status||services()?.status||'');
   if(status)root.dataset.services=status;
   applyConfiguredChrome(detail?.siteConfig||services()?.siteConfig||{});
+  syncHeaderProfileAvatar(detail?.profile||services()?.profile,detail?.avatarUrl??services()?.avatarUrl);
   syncNotificationBadge(detail?.unread??services()?.unread??0)
 }
 function onRouteEvent(event){
@@ -330,10 +356,11 @@ async function boot(){
   applyConfiguredChrome(services()?.siteConfig||serviceState?.siteConfig||{});
   await showMobileLaunchWelcome(serviceState);
 
-  await mobileRouter.start({host:viewHost,nav:[navHost,toolHost]});
+  await mobileRouter.start({host:viewHost,nav:[navHost,headerHost]});
   applyConfiguredChrome(services()?.siteConfig||{});
   syncLegacyLinks();
   syncActive();
+  syncHeaderProfileAvatar();
   syncNotificationBadge(services()?.unread||0);
   window.dispatchEvent(new CustomEvent('nethor:mobile-app-ready',{detail:{
     phase:9,
