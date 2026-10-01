@@ -8,14 +8,42 @@ function authPlatformUi(){
  const kind=authPlatformKind(),root=authSiteConfig?.platform_ui?.[kind];
  return root&&typeof root==='object'?root:{}
 }
+function authTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
+function authThemedAsset(node,fallback=''){
+ if(!node||typeof node!=='object')return fallback;
+ const theme=authTheme(),variant=node?.[theme],light=node?.light;
+ return String(variant?.url||((theme==='dark')?light?.url:'')||node?.url||fallback||'').trim()
+}
+function authSimpleAsset(node,fallback=''){return String(node?.url||fallback||'').trim()}
+function authIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
+function applyAuthHeadIcons(){
+ const mobile=authSiteConfig?.platform_ui?.mobile||{},desktop=authSiteConfig?.platform_ui?.desktop||{},kind=authPlatformKind();
+ const favicon=authThemedAsset(desktop.browser_icon,'');
+ if(kind==='desktop'&&favicon){
+  let link=document.getElementById('nethorAuthFavicon');if(!link){link=document.createElement('link');link.id='nethorAuthFavicon';link.rel='icon';document.head?.appendChild(link)}link.href=favicon;link.type=authIconMime(favicon)
+ }
+ const apple=authSimpleAsset(mobile.home_screen_icon,'');
+ if(apple){let link=document.getElementById('nethorAuthAppleTouch');if(!link){link=document.createElement('link');link.id='nethorAuthAppleTouch';link.rel='apple-touch-icon';document.head?.appendChild(link)}link.href=apple}
+ const install=kind==='mobile'?apple:authSimpleAsset(desktop.desktop_shortcut_icon,'');
+ const manifest=document.querySelector('link[rel="manifest"]');
+ if(manifest){
+  if(!manifest.dataset.nethorDefaultHref)manifest.dataset.nethorDefaultHref=manifest.getAttribute('href')||'manifest.webmanifest';
+  if(install){
+   const icon=new URL(install,location.href).href,base=new URL('./',location.href).href,start=new URL('home.html',location.href).href;
+   const data={name:'Nethor',short_name:'Nethor',description:'Nethor — planning, stock et outils pratiques pour l’équipe.',start_url:start,scope:base,display:'standalone',background_color:'#f7f8fa',theme_color:'#ff5a2a',orientation:'any',icons:[{src:icon,sizes:'any',type:authIconMime(icon),purpose:'any'}],id:start};
+   manifest.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data))
+  }else manifest.href=manifest.dataset.nethorDefaultHref
+ }
+}
 function applyAuthBranding(){
  const kind=authPlatformKind(),ui=authPlatformUi(),brand=authSiteConfig?.brand||{};
  const fallback=kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
- const logo=String(ui?.login_logo?.url||'').trim()||fallback;
+ const logo=authThemedAsset(ui?.login_logo,fallback);
  document.querySelectorAll('.authMobileLogo,.authDesktopLogo').forEach(img=>{if(img&&img.getAttribute('src')!==logo)img.src=logo});
  const name=String(brand.name||'Nethor').trim()||'Nethor',sub=String(brand.subtitle||'Portail opérationnel interne').trim()||'Portail opérationnel interne';
  document.querySelectorAll('.authMobileBrandCopy strong,.authDesktopName').forEach(el=>el.textContent=name);
- document.querySelectorAll('.authMobileBrandCopy span,.authDesktopSub').forEach(el=>el.textContent=sub)
+ document.querySelectorAll('.authMobileBrandCopy span,.authDesktopSub').forEach(el=>el.textContent=sub);
+ applyAuthHeadIcons()
 }
 async function loadAuthBrandingConfig(force=false){
  if(!force&&authSiteConfig&&Object.keys(authSiteConfig).length){applyAuthBranding();return authSiteConfig}
@@ -33,13 +61,20 @@ function ensureWelcomeMediaStyle(){
 }
 function applyWelcomeBranding(){
  const mark=document.querySelector('#welcomeToast .welcomeMark'),sub=document.querySelector('#welcomeToast .welcomeSub');if(!mark)return;
- const ui=authPlatformUi(),media=ui?.welcome_media||{},url=String(media.url||'').trim();
+ const ui=authPlatformUi(),media=ui?.welcome_media||{},url=authThemedAsset(media,'');
  const brand=authSiteConfig?.brand||{};if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
  if(!url){mark.classList.remove('hasWelcomeMedia');mark.innerHTML='N';return}
  ensureWelcomeMediaStyle();mark.classList.add('hasWelcomeMedia');
  if(media.type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url)){
   mark.innerHTML='<video src="'+String(url).replace(/"/g,'&quot;')+'" autoplay muted loop playsinline preload="auto"></video>'
  }else mark.innerHTML='<img src="'+String(url).replace(/"/g,'&quot;')+'" alt="" draggable="false">'
+}
+
+let authBrandThemeObserver=null;
+function ensureAuthBrandThemeObserver(){
+ if(authBrandThemeObserver||typeof MutationObserver==='undefined')return;
+ authBrandThemeObserver=new MutationObserver(list=>{if(list.some(x=>x.attributeName==='data-theme'))applyAuthBranding()});
+ authBrandThemeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']})
 }
 
 function showProfileLoader(message='Application de tes préférences…'){const el=$('profileLoader'),txt=$('profileLoaderText');if(!el)return;if(txt)txt.textContent=message;profileLoaderShownAt=performance.now();el.classList.add('show')}
@@ -51,7 +86,7 @@ function rememberProfileTheme(uid,theme){if(theme!=='dark'&&theme!=='light')retu
 function applyCachedProfileTheme(uid){const t=cachedProfileTheme(uid);if(t)applyTheme(t);return t}
 async function syncProfileTheme(p,uid){
  const prefs=profilePrefs(p),stored=prefs.theme==='dark'||prefs.theme==='light'?prefs.theme:null,theme=stored||cachedProfileTheme(uid)||currentTheme();
- applyTheme(theme);rememberProfileTheme(uid,theme);p.ui_preferences={...prefs,theme};
+ applyTheme(theme);rememberProfileTheme(uid,theme);p.ui_preferences={...prefs,theme};applyAuthBranding();
  if(!stored&&uid){const {error}=await db.from('profiles').update({ui_preferences:p.ui_preferences}).eq('id',uid);if(error)console.warn('Initialisation thème profil:',error)}
  return theme
 }
@@ -66,7 +101,7 @@ async function loadSessionProfile(uid,fields='display_name,role,ui_preferences')
  return{data:null,error:lastError}
 }
 async function boot(){
- await loadAuthBrandingConfig();
+ await loadAuthBrandingConfig();ensureAuthBrandThemeObserver();
  const forceLogin=new URLSearchParams(location.search).get('logout')==='1'||sessionStorage.getItem('nettoForceLogin')==='1';
  if(forceLogin){
   try{sessionStorage.removeItem('nettoForceLogin')}catch(_){}
