@@ -9,6 +9,7 @@ const notificationBadge=document.querySelector('[data-mobile-notification-badge]
 const mobileWordmark=document.querySelector('.nethorMobileWordmark');
 const defaultWordmarkHtml=mobileWordmark?.innerHTML||'';
 const chromeDefaults=new WeakMap();
+let configuredSiteConfig={};
 [...navHost?.querySelectorAll('[data-mobile-destination]')||[],...toolHost?.querySelectorAll('[data-mobile-destination]')||[]].forEach(link=>{const icon=link.getAttribute('data-mobile-destination')==='notifications'?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');if(icon)chromeDefaults.set(icon,icon.innerHTML)});
 if(!root||!viewHost||!navHost||!toolHost)return;
 
@@ -82,8 +83,31 @@ function applyConfiguredLink(link,id,config,{top=false,userMenu=false}={}){
  if(top){link.dataset.configuredLabel=label;link.setAttribute('aria-label',label);link.title=String(control.subtitle||label)}
  else{const small=link.querySelector('small');if(small)small.textContent=label;link.setAttribute('aria-label',label)}
 }
+function mobileTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
+function mobileThemedAsset(node,fallback=''){
+ if(!node||typeof node!=='object')return fallback;
+ const theme=mobileTheme(),variant=node?.[theme],light=node?.light;
+ return String(variant?.url||((theme==='dark')?light?.url:'')||node?.url||fallback||'').trim()
+}
+function mobileIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
+function applyMobileSystemIcons(config={}){
+ const mobile=config?.platform_ui?.mobile||{},apple=String(mobile?.home_screen_icon?.url||'').trim();
+ if(apple){
+  let link=document.getElementById('nethorMobileConfiguredAppleTouch');if(!link){link=document.createElement('link');link.id='nethorMobileConfiguredAppleTouch';link.rel='apple-touch-icon';document.head?.appendChild(link)}link.href=apple
+ }
+ const manifest=document.querySelector('link[rel="manifest"]');
+ if(manifest){
+  if(!manifest.dataset.nethorDefaultHref)manifest.dataset.nethorDefaultHref=manifest.getAttribute('href')||'manifest.webmanifest';
+  if(apple){
+   const icon=new URL(apple,location.href).href,base=new URL('./',location.href).href,start=new URL('home.html',location.href).href;
+   const data={name:'Nethor',short_name:'Nethor',description:'Nethor — planning, stock et outils pratiques pour l’équipe.',start_url:start,scope:base,display:'standalone',background_color:'#f7f8fa',theme_color:'#ff5a2a',orientation:'any',icons:[{src:icon,sizes:'any',type:mobileIconMime(icon),purpose:'any'}],id:start};
+   manifest.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data))
+  }else manifest.href=manifest.dataset.nethorDefaultHref
+ }
+}
 function applyConfiguredChrome(config={}){
- const mobileUi=config?.platform_ui?.mobile||{},headerUrl=String(mobileUi?.header_logo?.url||config?.brand?.header_logo_url||'').trim();
+ configuredSiteConfig=config&&typeof config==='object'?config:{};
+ const mobileUi=config?.platform_ui?.mobile||{},headerUrl=mobileThemedAsset(mobileUi?.header_logo,String(config?.brand?.header_logo_url||'').trim());
  if(mobileWordmark){
   if(headerUrl){
    mobileWordmark.innerHTML='';const img=document.createElement('img');img.src=headerUrl;img.alt='';img.draggable=false;img.className='nethorMobileConfiguredBrand';mobileWordmark.appendChild(img);mobileWordmark.classList.add('configured')
@@ -97,8 +121,12 @@ function applyConfiguredChrome(config={}){
  navHost.setAttribute('aria-hidden',config?.mobile_bar?.enabled===false?'true':'false');
  allowed.forEach(id=>applyConfiguredLink(navHost.querySelector('[data-mobile-destination="'+id+'"]'),id,config));
  applyConfiguredLink(toolHost.querySelector('[data-mobile-destination="notifications"]'),'notifications',config,{top:true});
- applyConfiguredLink(toolHost.querySelector('[data-mobile-destination="user-menu"]'),'profile',config,{top:true,userMenu:true})
+ applyConfiguredLink(toolHost.querySelector('[data-mobile-destination="user-menu"]'),'profile',config,{top:true,userMenu:true});
+ applyMobileSystemIcons(config)
 }
+
+const mobileBrandThemeObserver=typeof MutationObserver!=='undefined'?new MutationObserver(list=>{if(list.some(x=>x.attributeName==='data-theme'))applyConfiguredChrome(configuredSiteConfig)}):null;
+mobileBrandThemeObserver?.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
 function navigationLinks(){
   return [...navHost.querySelectorAll('[data-mobile-destination]'),...toolHost.querySelectorAll('[data-mobile-destination]')]
