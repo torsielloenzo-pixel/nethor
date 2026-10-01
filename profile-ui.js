@@ -702,8 +702,8 @@ function applyDynamicManifest(config={}){
  let link=document.querySelector('link[rel="manifest"]');if(!link)return;
  if(!link.dataset.nethorDefaultHref)link.dataset.nethorDefaultHref=link.getAttribute('href')||'manifest.webmanifest';
  if(!custom){link.href=link.dataset.nethorDefaultHref;return}
- const icon=new URL(custom,location.href).href,base=new URL('./',location.href).href,start=new URL('home.html',location.href).href;
- const manifest={name:'Nethor',short_name:'Nethor',description:'Nethor — planning, stock et outils pratiques pour l’équipe.',start_url:start,scope:base,display:'standalone',background_color:'#f7f8fa',theme_color:'#ff5a2a',orientation:'any',icons:[{src:icon,sizes:'any',type:iconMime(icon),purpose:'any'}],id:start};
+ const icon=new URL(custom,location.href).href,base=new URL('./',location.href).href,start=new URL(kind==='mobile'?'mobile.html?view=home':'home.html',location.href).href,appId=new URL('home.html',location.href).href;
+ const manifest={name:'Nethor',short_name:'Nethor',description:'Nethor — planning, stock et outils pratiques pour l’équipe.',start_url:start,scope:base,display:'standalone',background_color:'#f7f8fa',theme_color:'#ff5a2a',orientation:'any',icons:[{src:icon,sizes:'any',type:iconMime(icon),purpose:'any'}],id:appId};
  link.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(manifest))
 }
 function applySiteIcons(config={}){
