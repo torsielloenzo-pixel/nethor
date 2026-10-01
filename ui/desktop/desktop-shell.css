@@ -383,7 +383,7 @@ html[data-nethor-platform="desktop"] body.nettoHasMobileBar{padding-bottom:0!imp
     overflow:visible!important;
     border:0!important;
     border-radius:0!important;
-    background:transparent!important;
+    background-color:transparent!important;
     box-shadow:none!important;
     color:transparent!important;
     font-size:0!important;
