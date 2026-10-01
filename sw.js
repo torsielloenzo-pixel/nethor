@@ -1,5 +1,5 @@
-const APP_VERSION=301;
-const CACHE='netto-tools-v301';
+const APP_VERSION=296;
+const CACHE='netto-tools-v296';
 const DEPENDENCY_CACHE='nethor-deps-v1';
 const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
 const HTML5_QRCODE_UMD='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
@@ -96,7 +96,7 @@ async function externalDependencyFromCache(request){
  }catch(_){return Response.error()}
 }
 
-const STRICT_NAVIGATION_FILES=new Set(['index.html','mobile.html','home.html','planning.html','chat.html','notifications.html','user-menu.html','profile.html','settings.html','notification-settings.html','report-problem.html','maintenance.html','repair.html']);
+const STRICT_NAVIGATION_FILES=new Set(['index.html','mobile.html','home.html','planning.html','chat.html','notifications.html','user-menu.html','profile.html','settings.html','notification-settings.html','report-problem.html','maintenance.html','repair.html','welcome-animation-host.html']);
 function navigationFile(url){
  const path=String(url?.pathname||'');
  return (path.split('/').pop()||'index.html').toLowerCase()
