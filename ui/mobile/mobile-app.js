@@ -11,6 +11,8 @@ const mobileWordmark=document.querySelector('.nethorMobileWordmark');
 const defaultWordmarkHtml=mobileWordmark?.innerHTML||'';
 const chromeDefaults=new WeakMap();
 let configuredSiteConfig={};
+const MOBILE_LAUNCH_CACHE_KEY='nethorMobileLaunchBrandV1';
+const MOBILE_LAUNCH_MIN_MS=1900;
 [...navHost?.querySelectorAll('[data-mobile-destination]')||[],...headerHost?.querySelectorAll('[data-mobile-destination]')||[]].forEach(link=>{const icon=link.getAttribute('data-mobile-destination')==='notifications'?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');if(icon)chromeDefaults.set(icon,icon.innerHTML)});
 if(!root||!viewHost||!navHost||!toolHost||!headerHost)return;
 
@@ -129,45 +131,70 @@ function ensureMobileLaunchWelcome(){
  let overlay=document.querySelector('[data-mobile-launch-welcome]');
  if(overlay)return overlay;
  overlay=document.createElement('section');
- overlay.className='nethorMobileLaunchWelcome';
+ overlay.className='nethorMobileLaunchWelcome show';
  overlay.setAttribute('data-mobile-launch-welcome','');
  overlay.setAttribute('aria-live','polite');
- overlay.setAttribute('aria-hidden','true');
- overlay.innerHTML='<div class="nethorMobileLaunchWelcomeInner"><div class="nethorMobileLaunchWelcomeMark" data-mobile-launch-welcome-mark aria-hidden="true">N</div><strong class="nethorMobileLaunchWelcomeText" data-mobile-launch-welcome-text>Bienvenue</strong><span class="nethorMobileLaunchWelcomeSub" data-mobile-launch-welcome-sub>Nethor</span></div>';
- document.body.appendChild(overlay);
+ overlay.setAttribute('aria-hidden','false');
+ overlay.innerHTML='<div class="nethorMobileLaunchWelcomeInner"><div class="nethorMobileLaunchWelcomeMark" data-mobile-launch-welcome-mark aria-hidden="true">N</div><strong class="nethorMobileLaunchWelcomeText" data-mobile-launch-welcome-text>Bienvenue</strong><span class="nethorMobileLaunchWelcomeSub" data-mobile-launch-welcome-sub>Nethor</span><small class="nethorMobileLaunchWelcomeStatus" data-mobile-launch-welcome-status>Préparation de ton espace…</small></div>';
+ document.body.prepend(overlay);
  return overlay
 }
+function cachedMobileLaunchConfig(){
+ try{
+  const value=JSON.parse(localStorage.getItem(MOBILE_LAUNCH_CACHE_KEY)||'null');
+  return value&&typeof value==='object'&&value.config&&typeof value.config==='object'?value.config:{}
+ }catch(_){return{}}
+}
+function rememberMobileLaunchConfig(config){
+ if(!config||typeof config!=='object')return;
+ const mobile=config?.platform_ui?.mobile||{};
+ const compact={
+  brand:config.brand&&typeof config.brand==='object'?{name:config.brand.name||'',subtitle:config.brand.subtitle||''}:{},
+  platform_ui:{mobile:{welcome_media:mobile.welcome_media&&typeof mobile.welcome_media==='object'?mobile.welcome_media:{}}}
+ };
+ try{localStorage.setItem(MOBILE_LAUNCH_CACHE_KEY,JSON.stringify({config:compact,at:Date.now()}))}catch(_){}
+}
 function renderMobileLaunchWelcome(state){
- const overlay=ensureMobileLaunchWelcome(),profile=state?.profile||services()?.profile||{},config=state?.siteConfig||services()?.siteConfig||{};
- const name=String(profile?.display_name||'Utilisateur').trim()||'Utilisateur';
+ const overlay=ensureMobileLaunchWelcome(),profile=state?.profile||services()?.profile||null,config=state?.siteConfig||services()?.siteConfig||cachedMobileLaunchConfig()||{};
+ const name=String(profile?.display_name||'').trim();
  const brand=config?.brand||{},brandName=String(brand.name||'Nethor').trim()||'Nethor',brandSub=String(brand.subtitle||'Espace outils').trim()||'Espace outils';
  const text=overlay.querySelector('[data-mobile-launch-welcome-text]'),sub=overlay.querySelector('[data-mobile-launch-welcome-sub]'),mark=overlay.querySelector('[data-mobile-launch-welcome-mark]');
- if(text)text.textContent='Bienvenue '+name+' 👋';
+ if(text)text.textContent=name?'Bienvenue '+name+' 👋':'Bienvenue';
  if(sub)sub.textContent=brandName+' · '+brandSub;
  if(!mark)return overlay;
- const media=config?.platform_ui?.mobile?.welcome_media||{},variant=mobileThemedAssetNode(media),url=String(variant?.url||'').trim();
+ const media=config?.platform_ui?.mobile?.welcome_media||{},variant=mobileThemedAssetNode(media),url=String(variant?.url||'').trim(),type=String(media.type||'image'),tag=String(variant?.tag||'');
+ const signature=url?(type+'|'+url+'|'+tag+'|'+mobileTheme()):'fallback|'+mobileTheme();
+ if(mark.dataset.mediaSignature===signature)return overlay;
+ mark.dataset.mediaSignature=signature;
  mark.classList.remove('hasMedia');
  if(!url){mark.innerHTML='N';return overlay}
  mark.classList.add('hasMedia');
  const safeUrl=String(url).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
- if(media.type==='animation'&&/\.js(?:$|\?)/i.test(url)){
-  const host=mobileWelcomeAnimationHost(url,variant?.tag||'',name);
+ if(type==='animation'&&/\.js(?:$|\?)/i.test(url)){
+  const host=mobileWelcomeAnimationHost(url,tag,name||'Utilisateur');
   mark.innerHTML='<iframe src="'+String(host).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="Animation Nethor" sandbox="allow-scripts" tabindex="-1"></iframe>'
- }else if(media.type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url)){
+ }else if(type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url)){
   mark.innerHTML='<video src="'+safeUrl+'" autoplay muted loop playsinline preload="auto"></video>'
  }else mark.innerHTML='<img src="'+safeUrl+'" alt="" draggable="false">';
  return overlay
 }
-async function showMobileLaunchWelcome(state){
- if(platform()!=='mobile'||!state?.session||!state?.profile)return;
- const overlay=renderMobileLaunchWelcome(state);
+function prepareMobileLaunchWelcome(){
+ const overlay=renderMobileLaunchWelcome({siteConfig:cachedMobileLaunchConfig()});
  root.inert=true;
  root.setAttribute('aria-hidden','true');
  overlay.setAttribute('aria-hidden','false');
  overlay.classList.remove('leaving');
- requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('show')));
- const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true;
- await new Promise(resolve=>setTimeout(resolve,reduced?1050:1900));
+ overlay.classList.add('show');
+ const status=overlay.querySelector('[data-mobile-launch-welcome-status]');
+ if(status)status.textContent='Préparation de ton espace…';
+ return performance.now()
+}
+async function finishMobileLaunchWelcome(startedAt){
+ const overlay=ensureMobileLaunchWelcome(),reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true;
+ const minMs=reduced?900:MOBILE_LAUNCH_MIN_MS,elapsed=performance.now()-Number(startedAt||0);
+ if(elapsed<minMs)await new Promise(resolve=>setTimeout(resolve,minMs-elapsed));
+ const status=overlay.querySelector('[data-mobile-launch-welcome-status]');
+ if(status)status.textContent='Prêt';
  overlay.classList.add('leaving');
  overlay.classList.remove('show');
  await new Promise(resolve=>setTimeout(resolve,reduced?20:430));
@@ -176,6 +203,16 @@ async function showMobileLaunchWelcome(state){
  root.inert=false;
  root.removeAttribute('aria-hidden')
 }
+function prewarmMobileViews(){
+ const tasks=[
+  window.NethorMobilePlanningView?.preload?.(),
+  window.NethorMobileChatView?.preload?.()
+ ].filter(Boolean);
+ if(!tasks.length)return Promise.resolve([]);
+ root.dataset.prewarm='running';
+ return Promise.allSettled(tasks).then(results=>{root.dataset.prewarm='ready';return results}).catch(()=>{root.dataset.prewarm='partial';return[]})
+}
+
 function mobileIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
 function applyMobileSystemIcons(config={}){
  const mobile=config?.platform_ui?.mobile||{},apple=String(mobile?.home_screen_icon?.url||'').trim();
@@ -186,8 +223,8 @@ function applyMobileSystemIcons(config={}){
  if(manifest){
   if(!manifest.dataset.nethorDefaultHref)manifest.dataset.nethorDefaultHref=manifest.getAttribute('href')||'manifest.webmanifest';
   if(apple){
-   const icon=new URL(apple,location.href).href,base=new URL('./',location.href).href,start=new URL('home.html',location.href).href;
-   const data={name:'Nethor',short_name:'Nethor',description:'Nethor — planning, stock et outils pratiques pour l’équipe.',start_url:start,scope:base,display:'standalone',background_color:'#f7f8fa',theme_color:'#ff5a2a',orientation:'any',icons:[{src:icon,sizes:'any',type:mobileIconMime(icon),purpose:'any'}],id:start};
+   const icon=new URL(apple,location.href).href,base=new URL('./',location.href).href,start=new URL('mobile.html?view=home',location.href).href,appId=new URL('home.html',location.href).href;
+   const data={name:'Nethor',short_name:'Nethor',description:'Nethor — planning, stock et outils pratiques pour l’équipe.',start_url:start,scope:base,display:'standalone',background_color:'#f7f8fa',theme_color:'#ff5a2a',orientation:'any',icons:[{src:icon,sizes:'any',type:mobileIconMime(icon),purpose:'any'}],id:appId};
    manifest.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data))
   }else manifest.href=manifest.dataset.nethorDefaultHref
  }
@@ -251,8 +288,13 @@ function syncNotificationBadge(value){
 function onServiceEvent(detail){
   const status=String(detail?.status||services()?.status||'');
   if(status)root.dataset.services=status;
-  applyConfiguredChrome(detail?.siteConfig||services()?.siteConfig||{});
-  syncHeaderProfileAvatar(detail?.profile||services()?.profile,detail?.avatarUrl??services()?.avatarUrl);
+  const config=detail?.siteConfig||services()?.siteConfig||{};
+  applyConfiguredChrome(config);
+  if(config&&Object.keys(config).length)rememberMobileLaunchConfig(config);
+  const launch=document.querySelector('[data-mobile-launch-welcome]');
+  if(launch?.classList.contains('show')&&(detail?.profile||services()?.profile)){
+    renderMobileLaunchWelcome({profile:detail?.profile||services()?.profile,siteConfig:config})
+  }
   syncNotificationBadge(detail?.unread??services()?.unread??0)
 }
 function onRouteEvent(event){
@@ -334,11 +376,13 @@ async function boot(){
     location.replace(new URL('home.html',location.href).href);
     return
   }
+  const launchStarted=prepareMobileLaunchWelcome();
   const mobileRouter=router();
   if(!mobileRouter){
     root.dataset.router='missing';
     syncLegacyLinks();
     syncActive();
+    await finishMobileLaunchWelcome(launchStarted);
     return
   }
   window.addEventListener('nethor:mobile-route-change',onRouteEvent);
@@ -351,17 +395,23 @@ async function boot(){
   root.dataset.router='ready';
   root.dataset.ready='1';
 
-  const serviceState=await bootServices();
-  if(services()?.status==='signed-out')return;
-  applyConfiguredChrome(services()?.siteConfig||serviceState?.siteConfig||{});
-  await showMobileLaunchWelcome(serviceState);
+  const servicePromise=bootServices();
+  const routerPromise=mobileRouter.start({host:viewHost,nav:[navHost,toolHost]});
+  requestAnimationFrame(()=>void prewarmMobileViews());
 
-  await mobileRouter.start({host:viewHost,nav:[navHost,headerHost]});
+  const serviceState=await servicePromise;
+  if(services()?.status==='signed-out')return;
+  const liveConfig=services()?.siteConfig||serviceState?.siteConfig||{};
+  if(liveConfig&&Object.keys(liveConfig).length)rememberMobileLaunchConfig(liveConfig);
+  applyConfiguredChrome(liveConfig);
+  renderMobileLaunchWelcome({profile:services()?.profile||serviceState?.profile,siteConfig:liveConfig});
+
+  await routerPromise;
   applyConfiguredChrome(services()?.siteConfig||{});
   syncLegacyLinks();
   syncActive();
-  syncHeaderProfileAvatar();
   syncNotificationBadge(services()?.unread||0);
+  await finishMobileLaunchWelcome(launchStarted);
   window.dispatchEvent(new CustomEvent('nethor:mobile-app-ready',{detail:{
     phase:9,
     view:requestedView(),
