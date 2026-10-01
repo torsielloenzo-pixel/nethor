@@ -1,11 +1,11 @@
 {
-  "version": 300,
-  "label": "v1.44.8",
+  "version": 301,
+  "label": "v1.44.9",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — entête permanente",
-  "message": "Correction de l’entête Mobile qui pouvait disparaître après le préchargement du Chat. Les ressources Chat et Planning sont désormais préchauffées dans le cache sans appliquer leurs styles ni exécuter leurs scripts avant l’ouverture de la vue. Le style Chat ne peut plus masquer l’entête globale, y compris dans une conversation. La persistance du Planning publiée en v1.44.7 est conservée.",
-  "published_at": "2026-10-01T03:20:00+02:00",
+  "title": "Mobile — bienvenue une seule fois",
+  "message": "L’animation « Bienvenue utilisateur » ne se joue désormais qu’une seule fois lors de l’ouverture de l’application. Le bouton ≡ Menu utilisateur et toutes les actions de l’entête sont interceptés par le routeur SPA et n’entraînent plus de rechargement de mobile.html. Un garde-fou de session empêche également le splash de réapparaître après un rechargement interne accidentel.",
+  "published_at": "2026-10-01T03:23:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
