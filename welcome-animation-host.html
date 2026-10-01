@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Animation Nethor</title>
+<style>
+html,body,#root{width:100%;height:100%;margin:0}
+html,body{overflow:hidden;background:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+#root{display:grid;place-items:center}
+#fallback{display:none;width:100%;height:100%;place-items:center;color:#ff7900;font:900 min(40vw,64px)/1 sans-serif}
+#error{display:none;padding:8px;text-align:center;color:#9aa0a8;font:600 10px/1.35 sans-serif}
+</style>
+</head>
+<body>
+<div id="root"></div><div id="fallback">n</div><div id="error"></div>
+<script>
+(function(){
+ const q=new URLSearchParams(location.search),src=q.get('src')||'',requestedTag=(q.get('tag')||'').toLowerCase(),name=q.get('name')||'Utilisateur',theme=q.get('theme')==='dark'?'dark':'light',mode=q.get('mode')==='full'?'full':'media';
+ document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;
+ const root=document.getElementById('root'),fallback=document.getElementById('fallback'),error=document.getElementById('error');
+ function fail(message){root.replaceChildren();fallback.style.display='grid';error.textContent=message||'';error.style.display=message?'block':'none'}
+ function allowed(url){
+  try{
+   const u=new URL(url);
+   return u.protocol==='https:'&&u.hostname==='gioxrpaiwogqqtakjpnv.supabase.co'&&u.pathname.includes('/storage/v1/object/public/portal-assets/')
+  }catch(_){return false}
+ }
+ function apiTag(){
+  if(requestedTag&&customElements.get(requestedTag))return requestedTag;
+  for(const key of Object.keys(window)){
+   if(!/^NethorWelcome(?:\d+|Animation)$/.test(key))continue;
+   const tag=String(window[key]?.tag||'').toLowerCase();
+   if(tag&&customElements.get(tag))return tag
+  }
+  return''
+ }
+ function fit(el){
+  el.style.display='block';el.style.width='100%';el.style.height='100%';el.style.minHeight='0';
+  el.style.setProperty('--bg','transparent');el.style.setProperty('--nethor-bg','transparent');
+  el.style.setProperty('--fg',theme==='dark'?'#f7f7f8':'#171717');el.style.setProperty('--nethor-text',theme==='dark'?'#f7f7f8':'#171717');
+  if(mode!=='media'||!el.shadowRoot)return;
+  const patch=document.createElement('style');
+  patch.textContent=':host{display:block!important;width:100%!important;height:100%!important;min-height:0!important;background:transparent!important}.stage,.nethor-welcome{width:100%!important;height:100%!important;min-height:0!important;padding:0!important;background:transparent!important;overflow:hidden!important}.wrap,.nethor-welcome__inner,.nethor-inner{width:100%!important;height:100%!important;display:grid!important;place-items:center!important}.logo,.logo-box,.nethor-logo,.nethor-logo-box{width:min(78vw,130px)!important;max-width:92%!important;margin:0!important}.copy,.nethor-copy,.controls,.tag{display:none!important}';
+  el.shadowRoot.appendChild(patch)
+ }
+ if(!allowed(src)){fail('Source refusée');return}
+ const script=document.createElement('script');script.src=src;script.async=true;
+ script.onload=function(){
+  const tag=apiTag();if(!tag){fail('Format JS Nethor non reconnu');return}
+  try{const el=document.createElement(tag);el.setAttribute('name',name);root.replaceChildren(el);requestAnimationFrame(()=>fit(el));setTimeout(()=>fit(el),80)}
+  catch(e){fail('Animation indisponible')}
+ };
+ script.onerror=function(){fail('Chargement impossible')};
+ document.head.appendChild(script)
+})();
+</script>
+</body>
+</html>
