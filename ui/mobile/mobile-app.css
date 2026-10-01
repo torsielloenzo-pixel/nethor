@@ -86,3 +86,55 @@ html[data-theme="dark"] .nethorMobileAppNav a[aria-current="page"]{color:var(--n
 html[data-theme="dark"] .nethorMobileTopAction[aria-current="page"]{color:var(--nethor-mobile-item-accent,#fff)}
 .nethorMobileApp.nethorMobileNavDisabled{grid-template-rows:max-content minmax(0,1fr) 0}
 .nethorMobileApp.nethorMobileNavDisabled .nethorMobileAppNav{display:none!important}
+
+
+/* Ouverture Mobile — écran de bienvenue avant le chargement de la SPA. */
+.nethorMobileLaunchWelcome{
+  position:fixed;inset:0;z-index:1000;display:grid;place-items:center;
+  padding:calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+  background:linear-gradient(145deg,#f7f7f8,#eceef0);color:#202024;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .42s ease,visibility 0s linear .42s
+}
+.nethorMobileLaunchWelcome.show{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity .42s ease,visibility 0s
+}
+.nethorMobileLaunchWelcome.leaving{opacity:0}
+.nethorMobileLaunchWelcomeInner{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:0}
+.nethorMobileLaunchWelcomeMark{
+  display:grid;place-items:center;width:86px;height:86px;margin-bottom:22px;border-radius:25px;
+  background:#202024;color:#fff;font-size:40px;font-weight:950;line-height:1;
+  box-shadow:0 16px 42px rgba(0,0,0,.13);
+  transform:scale(.9);transition:transform .5s cubic-bezier(.2,.8,.3,1)
+}
+.nethorMobileLaunchWelcome.show .nethorMobileLaunchWelcomeMark{transform:scale(1)}
+.nethorMobileLaunchWelcomeMark.hasMedia{
+  width:min(44vw,156px);height:min(44vw,156px);padding:0;border-radius:0;
+  background:transparent;box-shadow:none;overflow:visible
+}
+.nethorMobileLaunchWelcomeMark.hasMedia img,
+.nethorMobileLaunchWelcomeMark.hasMedia video,
+.nethorMobileLaunchWelcomeMark.hasMedia iframe{
+  display:block;width:100%;height:100%;object-fit:contain;border:0;background:transparent;pointer-events:none
+}
+.nethorMobileLaunchWelcomeText{font-size:clamp(30px,9vw,46px);font-weight:900;letter-spacing:-1.35px;line-height:1.05}
+.nethorMobileLaunchWelcomeSub{
+  margin-top:9px;color:#888;font-size:14px;font-weight:700;line-height:1.35;
+  opacity:0;transform:translateY(5px);transition:opacity .45s ease .16s,transform .45s ease .16s
+}
+.nethorMobileLaunchWelcome.show .nethorMobileLaunchWelcomeSub{opacity:1;transform:none}
+html[data-theme="dark"] .nethorMobileLaunchWelcome{
+  background:linear-gradient(145deg,#17191c,#111316);color:#f4f4f5
+}
+html[data-theme="dark"] .nethorMobileLaunchWelcomeMark{background:#f4f4f5;color:#171717}
+html[data-theme="dark"] .nethorMobileLaunchWelcomeMark.hasMedia{background:transparent}
+html[data-theme="dark"] .nethorMobileLaunchWelcomeSub{color:#9c9ca3}
+@media (orientation:landscape) and (max-height:520px){
+  .nethorMobileLaunchWelcomeMark{width:68px;height:68px;margin-bottom:14px;border-radius:20px;font-size:32px}
+  .nethorMobileLaunchWelcomeMark.hasMedia{width:min(28vw,112px);height:min(28vw,112px)}
+  .nethorMobileLaunchWelcomeText{font-size:30px}.nethorMobileLaunchWelcomeSub{margin-top:6px;font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .nethorMobileLaunchWelcome,.nethorMobileLaunchWelcomeMark,.nethorMobileLaunchWelcomeSub{transition:none!important}
+}
