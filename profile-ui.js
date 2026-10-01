@@ -361,7 +361,7 @@ function applyPortalTheme(config={}){
  root.style.setProperty('--netto-red',primary);root.style.setProperty('--netto-red-2',primary);
  root.style.setProperty('--netto-orange',secondary);root.style.setProperty('--netto-ink',ink);
  root.style.setProperty('--red',primary);root.style.setProperty('--red2',primary);root.style.setProperty('--orange',secondary);
- root.style.setProperty('--netto-gradient','linear-gradient(135deg,'+primary+' 0%,'+primary+' 44%,'+secondary+' 100%)');applyHeaderLogo(config)
+ root.style.setProperty('--netto-gradient','linear-gradient(135deg,'+primary+' 0%,'+primary+' 44%,'+secondary+' 100%)');applyHeaderLogo(config);applySiteIcons(config)
 }
 function moduleMaxRoles(module,config=api?.siteConfig){return Array.isArray(module?.roles)?module.roles.filter(r=>roleKeys(config).includes(r)):roleKeys(config)}
 function configuredRoles(module,config=api?.siteConfig){
@@ -664,19 +664,60 @@ function addDesktopNethorMarkStyle(){
  if(!s){s=document.createElement('style');s.id='nethorDesktopMarkStyle';document.head?.appendChild(s)}
  s.textContent='header .mark,header .brandMark,header .nMenuBtn,header .brandMenuBtn{background-color:transparent!important;background-image:var(--nethor-header-logo,url("assets/nethor-mark.svg"))!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;color:transparent!important;font-size:0!important;box-shadow:none!important;border-radius:0!important}'
 }
+function themedPlatformAssetUrl(config,kind,key,fallback=''){
+ const node=config?.platform_ui?.[kind]?.[key];if(!node||typeof node!=='object')return fallback;
+ const theme=document.documentElement.dataset.theme==='dark'?'dark':'light',variant=node?.[theme],light=node?.light;
+ return String(variant?.url||((theme==='dark')?light?.url:'')||node?.url||fallback||'').trim()
+}
+function simplePlatformAssetUrl(config,kind,key,fallback=''){
+ const node=config?.platform_ui?.[kind]?.[key];return String(node?.url||fallback||'').trim()
+}
 function applyHeaderLogo(config={}){
  const platformKey=isMobileViewport()?'mobile':'desktop';
- const platformUrl=String(config?.platform_ui?.[platformKey]?.header_logo?.url||'').trim();
- const globalUrl=String(config?.brand?.header_logo_url||'').trim(),url=platformUrl||globalUrl||'assets/nethor-mark.svg';
+ const globalUrl=String(config?.brand?.header_logo_url||'').trim();
+ const platformUrl=themedPlatformAssetUrl(config,platformKey,'header_logo','');
+ const url=platformUrl||globalUrl||'assets/nethor-mark.svg';
  document.documentElement.style.setProperty('--nethor-header-logo','url('+JSON.stringify(url)+')');
  addDesktopNethorMarkStyle();
- let s=document.getElementById('nethorPlatformHeaderAssetStyle');if(!s){s=document.createElement('style');s.id='nethorPlatformHeaderAssetStyle';document.head?.appendChild(s)}
+ let style=document.getElementById('nethorPlatformHeaderAssetStyle');if(!style){style=document.createElement('style');style.id='nethorPlatformHeaderAssetStyle';document.head?.appendChild(style)}
  const custom=!!(platformUrl||globalUrl);
- if(!custom){s.textContent='';return}
- if(platformKey==='mobile')s.textContent='.nethorMobileAppBrand .nethorMobileWordmark{display:block!important;width:132px!important;height:38px!important;font-size:0!important;letter-spacing:0!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorMobileAppBrand .nethorMobileWordmark>*{display:none!important}';
- else s.textContent='.nethorDesktopBrandButton{min-width:128px!important;min-height:40px!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorDesktopBrandButton .nethorDesktopWordmark{visibility:hidden!important}';
+ if(!custom){style.textContent='';return}
+ if(platformKey==='mobile')style.textContent='.nethorMobileAppBrand .nethorMobileWordmark{display:block!important;width:132px!important;height:38px!important;font-size:0!important;letter-spacing:0!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorMobileAppBrand .nethorMobileWordmark>*{display:none!important}';
+ else style.textContent='.nethorDesktopBrandButton{min-width:128px!important;min-height:40px!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}.nethorDesktopBrandButton .nethorDesktopWordmark{visibility:hidden!important}';
+}
+function iconMime(url){
+ const s=String(url||'').split('?')[0].toLowerCase();
+ if(s.endsWith('.png'))return'image/png';if(s.endsWith('.webp'))return'image/webp';if(s.endsWith('.ico'))return'image/x-icon';return'image/svg+xml'
+}
+function setHeadAssetLink(rel,href,id){
+ let link=id?document.getElementById(id):null;
+ if(!link)link=[...document.querySelectorAll('link[rel="'+rel+'"]')][0]||null;
+ if(!link){link=document.createElement('link');link.rel=rel;if(id)link.id=id;document.head?.appendChild(link)}
+ if(!link.dataset.nethorDefaultHref)link.dataset.nethorDefaultHref=link.getAttribute('href')||'';
+ const next=String(href||link.dataset.nethorDefaultHref||'').trim();if(next)link.href=next;
+ return link
+}
+function applyDynamicManifest(config={}){
+ const kind=isMobileViewport()?'mobile':'desktop';
+ const custom=kind==='mobile'?simplePlatformAssetUrl(config,'mobile','home_screen_icon',''):simplePlatformAssetUrl(config,'desktop','desktop_shortcut_icon','');
+ let link=document.querySelector('link[rel="manifest"]');if(!link)return;
+ if(!link.dataset.nethorDefaultHref)link.dataset.nethorDefaultHref=link.getAttribute('href')||'manifest.webmanifest';
+ if(!custom){link.href=link.dataset.nethorDefaultHref;return}
+ const icon=new URL(custom,location.href).href,base=new URL('./',location.href).href,start=new URL('home.html',location.href).href;
+ const manifest={name:'Nethor',short_name:'Nethor',description:'Nethor — planning, stock et outils pratiques pour l’équipe.',start_url:start,scope:base,display:'standalone',background_color:'#f7f8fa',theme_color:'#ff5a2a',orientation:'any',icons:[{src:icon,sizes:'any',type:iconMime(icon),purpose:'any'}],id:start};
+ link.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(manifest))
+}
+function applySiteIcons(config={}){
+ const desktopFavicon=themedPlatformAssetUrl(config,'desktop','browser_icon','');
+ if(!isMobileViewport()&&desktopFavicon){const link=setHeadAssetLink('icon',desktopFavicon,'nethorConfiguredFavicon');link.type=iconMime(desktopFavicon)}
+ else if(!isMobileViewport()){const custom=document.getElementById('nethorConfiguredFavicon');if(custom)custom.remove()}
+ const apple=simplePlatformAssetUrl(config,'mobile','home_screen_icon','');
+ if(apple)setHeadAssetLink('apple-touch-icon',apple,'nethorConfiguredAppleTouchIcon');
+ else document.getElementById('nethorConfiguredAppleTouchIcon')?.remove();
+ applyDynamicManifest(config)
 }
 applyHeaderLogo();
+
 
 function ensureProfileStylesheet(id,href,match){
  if(document.getElementById(id)||(match&&document.querySelector('link[href*="'+match+'"]')))return;
@@ -698,6 +739,7 @@ function localTheme(theme){
  if(typeof window.applyTheme==='function')window.applyTheme(theme);
  else{document.documentElement.dataset.theme=theme;try{localStorage.setItem('nettoTheme',theme)}catch(_){}}
  updateThemeText();
+ try{applyHeaderLogo(api?.siteConfig||{});applySiteIcons(api?.siteConfig||{})}catch(_){}
  return theme
 }
 function preferredTheme(profile=api.profile){return validTheme(preferenceMap(profile)?.theme)}
