@@ -176,7 +176,7 @@ function render(){
   notificationSettings,
   problemReport,
   problemUrl:problemReport?problemUrl(problemReport):'',
-  profileVisible:menuSetting(profile,cfg,'profile',true)&&(profile.role==='admin'||profile?.ui_preferences?.user_menu?.profile!==false),
+  profileVisible:false,
   settingsVisible:menuSetting(profile,cfg,'settings',true),
   themeVisible:menuSetting(profile,cfg,'theme',true),
   updateVisible:menuSetting(profile,cfg,'update',true),
