@@ -2,7 +2,7 @@
   "name": "Nethor",
   "short_name": "Nethor",
   "description": "Nethor — planning, stock et outils pratiques pour l’équipe.",
-  "start_url": "./home.html",
+  "start_url": "./mobile.html?view=home",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7f8fa",
