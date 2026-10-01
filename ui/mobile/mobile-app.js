@@ -84,10 +84,73 @@ function applyConfiguredLink(link,id,config,{top=false,userMenu=false}={}){
  else{const small=link.querySelector('small');if(small)small.textContent=label;link.setAttribute('aria-label',label)}
 }
 function mobileTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
-function mobileThemedAsset(node,fallback=''){
- if(!node||typeof node!=='object')return fallback;
+function mobileThemedAssetNode(node){
+ if(!node||typeof node!=='object')return{};
  const theme=mobileTheme(),variant=node?.[theme],light=node?.light;
- return String(variant?.url||((theme==='dark')?light?.url:'')||node?.url||fallback||'').trim()
+ if(variant&&typeof variant==='object'&&String(variant.url||'').trim())return variant;
+ if(theme==='dark'&&light&&typeof light==='object'&&String(light.url||'').trim())return light;
+ if(String(node.url||'').trim())return node;
+ return{}
+}
+function mobileThemedAsset(node,fallback=''){
+ const asset=mobileThemedAssetNode(node);
+ return String(asset?.url||fallback||'').trim()
+}
+function mobileWelcomeAnimationHost(url,tag,name){
+ const q=new URLSearchParams({src:String(url||''),theme:mobileTheme(),mode:'media',name:String(name||'Utilisateur')});
+ if(tag)q.set('tag',String(tag));
+ return 'welcome-animation-host.html?'+q.toString()
+}
+function ensureMobileLaunchWelcome(){
+ let overlay=document.querySelector('[data-mobile-launch-welcome]');
+ if(overlay)return overlay;
+ overlay=document.createElement('section');
+ overlay.className='nethorMobileLaunchWelcome';
+ overlay.setAttribute('data-mobile-launch-welcome','');
+ overlay.setAttribute('aria-live','polite');
+ overlay.setAttribute('aria-hidden','true');
+ overlay.innerHTML='<div class="nethorMobileLaunchWelcomeInner"><div class="nethorMobileLaunchWelcomeMark" data-mobile-launch-welcome-mark aria-hidden="true">N</div><strong class="nethorMobileLaunchWelcomeText" data-mobile-launch-welcome-text>Bienvenue</strong><span class="nethorMobileLaunchWelcomeSub" data-mobile-launch-welcome-sub>Nethor</span></div>';
+ document.body.appendChild(overlay);
+ return overlay
+}
+function renderMobileLaunchWelcome(state){
+ const overlay=ensureMobileLaunchWelcome(),profile=state?.profile||services()?.profile||{},config=state?.siteConfig||services()?.siteConfig||{};
+ const name=String(profile?.display_name||'Utilisateur').trim()||'Utilisateur';
+ const brand=config?.brand||{},brandName=String(brand.name||'Nethor').trim()||'Nethor',brandSub=String(brand.subtitle||'Espace outils').trim()||'Espace outils';
+ const text=overlay.querySelector('[data-mobile-launch-welcome-text]'),sub=overlay.querySelector('[data-mobile-launch-welcome-sub]'),mark=overlay.querySelector('[data-mobile-launch-welcome-mark]');
+ if(text)text.textContent='Bienvenue '+name+' 👋';
+ if(sub)sub.textContent=brandName+' · '+brandSub;
+ if(!mark)return overlay;
+ const media=config?.platform_ui?.mobile?.welcome_media||{},variant=mobileThemedAssetNode(media),url=String(variant?.url||'').trim();
+ mark.classList.remove('hasMedia');
+ if(!url){mark.innerHTML='N';return overlay}
+ mark.classList.add('hasMedia');
+ const safeUrl=String(url).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+ if(media.type==='animation'&&/\.js(?:$|\?)/i.test(url)){
+  const host=mobileWelcomeAnimationHost(url,variant?.tag||'',name);
+  mark.innerHTML='<iframe src="'+String(host).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="Animation Nethor" sandbox="allow-scripts" tabindex="-1"></iframe>'
+ }else if(media.type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url)){
+  mark.innerHTML='<video src="'+safeUrl+'" autoplay muted loop playsinline preload="auto"></video>'
+ }else mark.innerHTML='<img src="'+safeUrl+'" alt="" draggable="false">';
+ return overlay
+}
+async function showMobileLaunchWelcome(state){
+ if(platform()!=='mobile'||!state?.session||!state?.profile)return;
+ const overlay=renderMobileLaunchWelcome(state);
+ root.inert=true;
+ root.setAttribute('aria-hidden','true');
+ overlay.setAttribute('aria-hidden','false');
+ overlay.classList.remove('leaving');
+ requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('show')));
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true;
+ await new Promise(resolve=>setTimeout(resolve,reduced?1050:1900));
+ overlay.classList.add('leaving');
+ overlay.classList.remove('show');
+ await new Promise(resolve=>setTimeout(resolve,reduced?20:430));
+ overlay.setAttribute('aria-hidden','true');
+ overlay.classList.remove('leaving');
+ root.inert=false;
+ root.removeAttribute('aria-hidden')
 }
 function mobileIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
 function applyMobileSystemIcons(config={}){
@@ -264,6 +327,8 @@ async function boot(){
 
   const serviceState=await bootServices();
   if(services()?.status==='signed-out')return;
+  applyConfiguredChrome(services()?.siteConfig||serviceState?.siteConfig||{});
+  await showMobileLaunchWelcome(serviceState);
 
   await mobileRouter.start({host:viewHost,nav:[navHost,toolHost]});
   applyConfiguredChrome(services()?.siteConfig||{});
