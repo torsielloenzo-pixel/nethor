@@ -6,7 +6,7 @@ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .nethorCh
 .nethorChatView .conversationListPane{padding-top:0!important}
 .nethorChatView .conversationPane{padding-top:0!important}
 .nethorChatView .modalBackdrop,.nethorChatView .conversationActionBackdrop,.nethorChatView .imageLightbox{z-index:2147482500!important}
-body.mobileConversationOpen .nethorMobileAppTop{display:none!important}
+body.mobileConversationOpen .nethorMobileAppTop{display:flex!important;visibility:visible!important}
 body.mobileConversationOpen .nethorMobileAppNav{display:grid!important}
 html.nettoKeyboardOpen body.mobileConversationOpen .nethorMobileAppNav{display:none!important}
 body.mobileConversationOpen #mobile-view{overflow:hidden!important}
