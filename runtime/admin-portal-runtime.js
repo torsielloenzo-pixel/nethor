@@ -17,6 +17,7 @@ const MANAGEMENT_META={
  system:{group:'Éditeur du portail',title:'Pages & menus',description:'Organise les pages, leur visibilité, leurs libellés et leurs accès communs.'},
  mobile:{group:'Éditeur du portail',title:'Mobile',description:'Personnalise l’identité, les menus, les boutons, la barre rapide et le menu utilisateur réellement affichés sur mobile.'},
  desktop:{group:'Éditeur du portail',title:'Desktop',description:'Personnalise l’identité, les menus et les boutons réellement affichés sur ordinateur.'},
+ sounds:{group:'Éditeur du portail',title:'Sons & audio',description:'Gère l’identité sonore de Nethor : connexion, bienvenue, déconnexion et sons d’interface.'},
  blocks:{group:'Éditeur du portail',title:'Blocs & widgets',description:'Règle les composants fonctionnels et widgets indépendamment des pages.'},
  articles:{group:'Contenus',title:'Fiches articles',description:'Administre le référentiel produits, les familles, catégories et EAN13.'},
  media:{group:'Éditeur du portail',title:'Médias & logos',description:'Consulte et télécharge les ressources visuelles officielles utilisées par Nethor.'},
@@ -62,9 +63,9 @@ function updateManagementHero(name){
  if($('managementHeroText'))$('managementHeroText').textContent=meta.description
 }
 function showTab(name,btn,opts={}){
- const aliases={pages:'system',identity:'general',navigation:'mobile',widgets:'blocks',computer:'desktop'};
+ const aliases={pages:'system',identity:'general',navigation:'mobile',widgets:'blocks',computer:'desktop',audio:'sounds'};
  name=aliases[name]||name;
- const valid=['overview','general','system','mobile','desktop','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
+ const valid=['overview','general','system','mobile','desktop','sounds','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
  if(!valid.includes(name))name='overview';
  btn=btn||managementButtonFor(name);
  document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));
@@ -166,6 +167,8 @@ function normalize(raw){
  c.mobile_user_menu=c.mobile_user_menu&&typeof c.mobile_user_menu==='object'?c.mobile_user_menu:{};
  c.mobile_user_menu.items=c.mobile_user_menu.items&&typeof c.mobile_user_menu.items==='object'?c.mobile_user_menu.items:{};
  c.mobile_bar=c.mobile_bar&&typeof c.mobile_bar==='object'?c.mobile_bar:{enabled:true,items:[]};
+ c.sounds=c.sounds&&typeof c.sounds==='object'?c.sounds:{};
+ c.sounds.items=c.sounds.items&&typeof c.sounds.items==='object'?c.sounds.items:{};
  c.platform_ui=c.platform_ui&&typeof c.platform_ui==='object'?c.platform_ui:{};
  for(const kind of ['mobile','desktop']){
   const current=c.platform_ui[kind]&&typeof c.platform_ui[kind]==='object'?c.platform_ui[kind]:{};
