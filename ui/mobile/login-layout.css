@@ -93,7 +93,7 @@ html[data-nethor-platform="mobile-preview"] .authMobileForm .eyeBtn{
 }
 html[data-nethor-platform="mobile"] .authMobileSubmit,
 html[data-nethor-platform="mobile-preview"] .authMobileSubmit{
- width:100%;height:58px!important;min-height:58px!important;margin-top:18px;padding:0 18px!important;display:flex;align-items:center;justify-content:center;gap:14px;
+ position:relative;width:100%;height:58px!important;min-height:58px!important;margin-top:18px;padding:0 18px!important;display:flex;align-items:center;justify-content:center;gap:14px;
  border-radius:18px!important;background:linear-gradient(100deg,#ffad24 0%,#ff6d18 46%,#ff301f 100%)!important;color:#fff!important;
  font-size:16px!important;font-weight:850!important;box-shadow:0 11px 28px rgba(255,76,28,.21)
 }
