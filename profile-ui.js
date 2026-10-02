@@ -796,7 +796,7 @@ function headerAnimationHostUrl(asset,theme){
  const q=new URLSearchParams({src:String(asset?.url||''),theme:theme==='dark'?'dark':'light',mode:'media',name:'Nethor'});
  if(asset?.tag)q.set('tag',String(asset.tag));
  if(asset?.api)q.set('api',String(asset.api));
- return 'welcome-animation-host.html?v=3&'+q.toString()
+ return 'welcome-animation-host.html?v=4&'+q.toString()
 }
 function clearDesktopHeaderAnimation(button){
  if(!button)return;
