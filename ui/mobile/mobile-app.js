@@ -146,12 +146,14 @@ function cachedMobileLaunchConfig(){
   return value&&typeof value==='object'&&value.config&&typeof value.config==='object'?value.config:{}
  }catch(_){return{}}
 }
-function rememberMobileLaunchConfig(config){
+function rememberMobileLaunchConfig(config,profile=services()?.profile){
  if(!config||typeof config!=='object')return;
- const mobile=config?.platform_ui?.mobile||{};
+ const mobile=config?.platform_ui?.mobile||{},prefs=profile?.ui_preferences&&typeof profile.ui_preferences==='object'?profile.ui_preferences:{};
+ const theme=prefs.theme==='dark'||prefs.theme==='light'?prefs.theme:mobileTheme();
  const compact={
   brand:config.brand&&typeof config.brand==='object'?{name:config.brand.name||'',subtitle:config.brand.subtitle||''}:{},
-  platform_ui:{mobile:{welcome_media:mobile.welcome_media&&typeof mobile.welcome_media==='object'?mobile.welcome_media:{}}}
+  platform_ui:{mobile:{welcome_media:mobile.welcome_media&&typeof mobile.welcome_media==='object'?mobile.welcome_media:{}}},
+  launch_theme:theme
  };
  try{localStorage.setItem(MOBILE_LAUNCH_CACHE_KEY,JSON.stringify({config:compact,at:Date.now()}))}catch(_){}
 }
@@ -473,7 +475,7 @@ async function boot(){
   const serviceState=await servicePromise;
   if(services()?.status==='signed-out')return;
   const liveConfig=services()?.siteConfig||serviceState?.siteConfig||{};
-  if(liveConfig&&Object.keys(liveConfig).length)rememberMobileLaunchConfig(liveConfig);
+  if(liveConfig&&Object.keys(liveConfig).length)rememberMobileLaunchConfig(liveConfig,services()?.profile||serviceState?.profile);
   applyConfiguredChrome(liveConfig);
   renderMobileLaunchWelcome({profile:services()?.profile||serviceState?.profile,siteConfig:liveConfig});
 
