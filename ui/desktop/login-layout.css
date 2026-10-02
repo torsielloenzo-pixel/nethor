@@ -1,66 +1,105 @@
-/* Phase 4.15 — Connexion Desktop */
+/* Connexion Nethor — identité retail soft, Desktop
+   Clair/sombre partagent exactement la même géométrie. */
 html[data-nethor-platform="desktop"] .authDesktopRoot{
- position:fixed;inset:0;z-index:2000;display:grid;place-items:center;overflow:auto;
- padding:36px;background:radial-gradient(circle at 7% 8%,rgba(255,45,32,.09),transparent 26rem),radial-gradient(circle at 95% 92%,rgba(255,138,0,.08),transparent 28rem),#f4f6f8
+ --auth-panel:rgba(255,252,247,.88);
+ --auth-field:rgba(255,255,255,.72);
+ --auth-text:#1b1f24;
+ --auth-muted:#70747b;
+ --auth-line:rgba(28,31,37,.11);
+ --auth-icon:#60656c;
+ --auth-feature:rgba(255,255,255,.34);
+ --auth-shadow:0 32px 95px rgba(48,32,20,.20);
+ --auth-scene-tint:rgba(255,249,241,.22);
+ position:fixed;inset:0;z-index:2000;display:grid;place-items:center;overflow:auto;padding:28px;
+ background:#eee9e1;color:var(--auth-text);isolation:isolate
+}
+html[data-nethor-platform="desktop"] .authDesktopRoot::before{
+ content:"";position:fixed;inset:-12px;z-index:-2;background:url("../../assets/fl-background.webp") center center/cover no-repeat;
+ filter:saturate(.92) contrast(.96);transform:scale(1.02)
+}
+html[data-nethor-platform="desktop"] .authDesktopRoot::after{
+ content:"";position:fixed;inset:0;z-index:-1;background:var(--auth-scene-tint);backdrop-filter:blur(2.5px)
 }
 html[data-nethor-platform="desktop"] .authDesktopRoot.hidden{display:none!important}
-html[data-nethor-platform="desktop"] .authDesktopShell{
- width:min(980px,calc(100vw - 72px));min-height:560px;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);
- overflow:hidden;border:1px solid #e4e7eb;border-radius:28px;background:#fff;box-shadow:0 30px 90px rgba(20,24,32,.16)
-}
-html[data-nethor-platform="desktop"] .authDesktopVisual{
- position:relative;min-width:0;padding:38px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;
- background:linear-gradient(135deg,#17191e 0%,#24272e 58%,#443329 100%);color:#fff
-}
-html[data-nethor-platform="desktop"] .authDesktopVisual:before{
- content:"";position:absolute;right:-110px;bottom:-145px;width:390px;height:390px;border-radius:50%;
- background:radial-gradient(circle,rgba(255,111,36,.34),rgba(255,111,36,.04) 62%,transparent 68%);pointer-events:none
-}
-html[data-nethor-platform="desktop"] .authDesktopVisual:after{
- content:"";position:absolute;left:45%;top:-35%;width:120px;height:170%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.045),transparent);
- transform:skewX(-18deg);pointer-events:none
-}
-html[data-nethor-platform="desktop"] .authDesktopBrand,
-html[data-nethor-platform="desktop"] .authDesktopArt,
-html[data-nethor-platform="desktop"] .authDesktopIntro{position:relative;z-index:1}
-html[data-nethor-platform="desktop"] .authDesktopBrand{display:flex;align-items:center;gap:13px}
-html[data-nethor-platform="desktop"] .authDesktopLogo{width:52px;height:52px;border-radius:15px;box-shadow:0 10px 28px rgba(0,0,0,.22)}
-html[data-nethor-platform="desktop"] .authDesktopName{font-size:24px;line-height:1;font-weight:950;letter-spacing:-.6px}
-html[data-nethor-platform="desktop"] .authDesktopSub{margin-top:5px;color:rgba(255,255,255,.62);font-size:11px;font-weight:700}
-html[data-nethor-platform="desktop"] .authDesktopArt{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-html[data-nethor-platform="desktop"] .authDesktopArt span{
- height:78px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.09);border-radius:18px;
- background:rgba(255,255,255,.07);font-size:28px;backdrop-filter:blur(5px)
-}
-html[data-nethor-platform="desktop"] .authDesktopIntro{display:flex;flex-direction:column;gap:8px;max-width:430px}
-html[data-nethor-platform="desktop"] .authDesktopIntro strong{font-size:23px;line-height:1.15;letter-spacing:-.5px;color:#fff!important}
-html[data-nethor-platform="desktop"] .authDesktopIntro span{font-size:13px;line-height:1.5;color:rgba(255,255,255,.62)}
+html[data-nethor-platform="desktop"] .authDesktopShell{width:min(500px,calc(100vw - 56px));margin:auto}
 html[data-nethor-platform="desktop"] .authDesktopForm.loginCard{
- width:100%;align-self:center;padding:56px 46px;background:#fff!important;color:#171717;animation:none
+ width:100%;margin:0;padding:42px 42px 28px;border:1px solid rgba(255,255,255,.40);border-radius:32px;
+ background:var(--auth-panel)!important;color:var(--auth-text)!important;box-shadow:var(--auth-shadow);
+ backdrop-filter:blur(26px) saturate(1.08);-webkit-backdrop-filter:blur(26px) saturate(1.08);animation:none
 }
-html[data-nethor-platform="desktop"] .authDesktopForm h1{margin:6px 0 8px;font-size:34px;line-height:1.05;letter-spacing:-1.15px;font-weight:950;color:#171717!important}
-html[data-nethor-platform="desktop"] .authDesktopEyebrow{color:#ef4b27!important;font-size:9px!important;font-weight:900!important;letter-spacing:1px!important;text-transform:uppercase!important}
-html[data-nethor-platform="desktop"] .authDesktopHint{margin:0 0 30px;color:#777;font-size:13px;line-height:1.5}
-html[data-nethor-platform="desktop"] .authDesktopForm .field{margin:16px 0}
-html[data-nethor-platform="desktop"] .authDesktopForm .field label{display:block;margin-bottom:7px;color:#60656c;font-size:11px;font-weight:800}
-html[data-nethor-platform="desktop"] .authDesktopForm input{
- width:100%;height:50px;padding:12px;border:1px solid #e0e3e7;border-radius:12px;background:#fafbfc!important;color:#171717!important;font-size:14px!important
+html[data-nethor-platform="desktop"] .authDesktopBrand{display:flex;flex-direction:column;align-items:center;text-align:center;margin:0 0 30px}
+html[data-nethor-platform="desktop"] .authDesktopLogo{
+ width:116px;height:116px;border-radius:31px;display:block;object-fit:contain;box-shadow:0 15px 36px rgba(33,25,18,.17)
 }
-html[data-nethor-platform="desktop"] .authDesktopForm input:focus{outline:0;border-color:#f06b43!important;box-shadow:0 0 0 4px rgba(239,102,57,.10)!important;background:#fff!important}
+html[data-nethor-platform="desktop"] .authDesktopName{
+ margin-top:13px;color:var(--auth-text)!important;font-size:45px;line-height:1;font-weight:950;letter-spacing:-2px;text-transform:lowercase
+}
+html[data-nethor-platform="desktop"] .authDesktopSub{display:none}
+
+html[data-nethor-platform="desktop"] .authLoginFields{display:grid;gap:12px}
+html[data-nethor-platform="desktop"] .authDesktopForm .field{position:relative;margin:0}
+html[data-nethor-platform="desktop"] .authFieldLabel{
+ position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important
+}
+html[data-nethor-platform="desktop"] .authFieldIcon{
+ position:absolute;left:17px;top:50%;z-index:2;width:21px;height:21px;transform:translateY(-50%);color:var(--auth-icon);pointer-events:none
+}
+html[data-nethor-platform="desktop"] .authFieldIcon svg,
+html[data-nethor-platform="desktop"] .eyeBtn svg,
+html[data-nethor-platform="desktop"] .authFeature svg{
+ width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round
+}
 html[data-nethor-platform="desktop"] .authDesktopForm .passwordWrap{position:relative}
-html[data-nethor-platform="desktop"] .authDesktopForm .passwordWrap input{padding-right:50px}
-html[data-nethor-platform="desktop"] .authDesktopForm .eyeBtn{position:absolute;right:8px;top:8px;width:34px;height:34px;border-radius:10px;background:#edf0f3;color:#666}
-html[data-nethor-platform="desktop"] .authDesktopForm .loginHelp{display:flex;justify-content:flex-end;margin-top:-5px}
-html[data-nethor-platform="desktop"] .authDesktopForm .forgotBtn{border:0;background:transparent;color:#d94a2a;font-size:10px;font-weight:850;padding:6px 0}
-html[data-nethor-platform="desktop"] .authDesktopSubmit{width:100%;min-height:48px!important;margin-top:12px;padding:0 16px!important;display:flex;align-items:center;justify-content:space-between;font-size:12px!important}
-html[data-nethor-platform="desktop"] .authDesktopSubmit span{font-size:20px}
-html[data-nethor-platform="desktop"] .authDesktopForm .error{min-height:18px;margin-top:10px;color:#b0000d;font-size:12px}
-html[data-nethor-platform="desktop"] .authDesktopForm .loginFoot{text-align:center;margin-top:18px;color:#9a9ea6!important;font-size:10px}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopRoot{background:radial-gradient(circle at 8% 8%,rgba(255,70,35,.08),transparent 27rem),#111214}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopShell{border-color:#35393f;background:#1b1d20;box-shadow:0 30px 90px rgba(0,0,0,.42)}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopForm.loginCard{background:#1b1d20!important;color:#f4f1ee}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopForm h1{color:#f4f1ee!important}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopHint{color:#aaa5a0}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopForm .field label{color:#c0bbb6}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopForm input{background:#24272b!important;color:#f4f1ee!important;border-color:#3a3e43}
-:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopForm .eyeBtn{background:#2c3035;color:#ddd8d3}
+html[data-nethor-platform="desktop"] .authDesktopForm input{
+ width:100%;height:56px;padding:0 50px;border:1px solid var(--auth-line)!important;border-radius:17px!important;
+ background:var(--auth-field)!important;color:var(--auth-text)!important;font-size:14px!important;box-shadow:none!important
+}
+html[data-nethor-platform="desktop"] .authDesktopForm input::placeholder{color:var(--auth-muted);opacity:1}
+html[data-nethor-platform="desktop"] .authDesktopForm input:focus{
+ outline:0;border-color:rgba(255,104,48,.62)!important;box-shadow:0 0 0 4px rgba(255,92,38,.10)!important
+}
+html[data-nethor-platform="desktop"] .authDesktopForm .eyeBtn{
+ position:absolute;right:9px;top:9px;width:38px;height:38px;padding:9px;border-radius:12px;background:transparent;color:var(--auth-icon);display:grid;place-items:center
+}
+html[data-nethor-platform="desktop"] .authDesktopSubmit{
+ position:relative;width:100%;height:56px!important;min-height:56px!important;margin-top:18px;padding:0 18px!important;display:flex;align-items:center;justify-content:center;gap:14px;
+ border-radius:17px!important;background:linear-gradient(100deg,#ffad24 0%,#ff6d18 46%,#ff301f 100%)!important;color:#fff!important;
+ font-size:15px!important;font-weight:850!important;box-shadow:0 11px 28px rgba(255,76,28,.21)
+}
+html[data-nethor-platform="desktop"] .authDesktopSubmit span{position:absolute;right:20px;font-size:23px;font-weight:400}
+html[data-nethor-platform="desktop"] .authDesktopForm .loginHelp{display:flex;justify-content:center;margin-top:12px}
+html[data-nethor-platform="desktop"] .authDesktopForm .forgotBtn{
+ min-height:30px;padding:5px 8px;border:0;background:transparent;color:var(--auth-muted);font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:3px
+}
+html[data-nethor-platform="desktop"] .authDesktopForm .error{min-height:18px;margin:3px 0 0;text-align:center;color:#c6362c;font-size:11px}
+html[data-nethor-platform="desktop"] .authFeatureDivider{height:1px;margin:14px 0 17px;background:var(--auth-line)}
+html[data-nethor-platform="desktop"] .authFeatureGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+html[data-nethor-platform="desktop"] .authFeature{display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--auth-text)}
+html[data-nethor-platform="desktop"] .authFeature>span{
+ width:44px;height:44px;padding:10px;display:grid;place-items:center;border:1px solid var(--auth-line);border-radius:14px;background:var(--auth-feature);color:#ff7428
+}
+html[data-nethor-platform="desktop"] .authFeature small{font-size:10px;font-weight:750}
+html[data-nethor-platform="desktop"] .authDesktopForm .loginFoot{text-align:center;margin-top:16px;color:var(--auth-muted)!important;font-size:8.5px}
+
+:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopRoot{
+ --auth-panel:rgba(31,27,25,.83);
+ --auth-field:rgba(57,50,47,.62);
+ --auth-text:#f7f4f1;
+ --auth-muted:#c0b9b4;
+ --auth-line:rgba(255,255,255,.15);
+ --auth-icon:#e2ddd9;
+ --auth-feature:rgba(255,255,255,.055);
+ --auth-shadow:0 34px 100px rgba(0,0,0,.45);
+ --auth-scene-tint:rgba(12,10,9,.40);
+ background:#151311
+}
+:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopRoot::before{filter:brightness(.58) saturate(.92) contrast(1.04)}
+:root[data-theme="dark"][data-nethor-platform="desktop"] .authDesktopForm.loginCard{border-color:rgba(255,255,255,.13)!important}
+
+@media(max-height:720px){
+ html[data-nethor-platform="desktop"] .authDesktopForm.loginCard{padding-top:28px;padding-bottom:22px}
+ html[data-nethor-platform="desktop"] .authDesktopLogo{width:88px;height:88px;border-radius:25px}
+ html[data-nethor-platform="desktop"] .authDesktopName{font-size:38px;margin-top:9px}
+ html[data-nethor-platform="desktop"] .authDesktopBrand{margin-bottom:22px}
+}
+@media(prefers-reduced-motion:reduce){html[data-nethor-platform="desktop"] .authDesktopRoot::before{transform:none}}
