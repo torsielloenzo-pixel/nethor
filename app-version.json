@@ -1,11 +1,11 @@
 {
-  "version": 311,
-  "label": "v1.44.17",
-  "important": true,
+  "version": 312,
+  "label": "v1.44.18",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — animation de bienvenue corrigée",
-  "message": "Correction de l’affichage des animations de bienvenue sur Mobile. Lorsqu’une animation personnalisée est configurée, elle s’affiche désormais seule : le texte générique « Bienvenue utilisateur », le sous-titre et l’état de chargement ne se superposent plus. Le correctif couvre l’animation après connexion et l’animation d’ouverture de l’application, avec une taille d’affichage adaptée. Le comportement Desktop reste inchangé.",
-  "published_at": "2026-10-03T00:04:00+02:00",
+  "title": "Planning classique — modernisation visuelle",
+  "message": "Modernisation visuelle du planning classique Desktop sans modification de sa structure ni de ses calculs : tableau plus lisible, en-têtes et colonnes fixes modernisés, séparation horaire affinée, lignes employés plus propres, totaux présentés en pastilles, onglets Planning / Couverture / Analyse harmonisés et mode sombre ajusté. Les couleurs métier, les horaires, les imports, les totaux et les interactions restent inchangés.",
+  "published_at": "2026-10-03T00:06:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
