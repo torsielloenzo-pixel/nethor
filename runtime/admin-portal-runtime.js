@@ -810,6 +810,17 @@ function removePlatformControlAsset(kind,key){
  const node=platformControlNode(kind,key);node.url='';node.path='';node.name='';markDirty();renderPlatformIdentity(kind)
 }
 
+function platformHeaderLogoAnimationControl(kind){
+ if(kind!=='desktop')return'';
+ const ui=platformUiNode('desktop'),mode=ui.header_logo_mode==='animation'?'animation':'image';
+ return '<div class="platformHeaderLogoAnimationControl">'+
+  '<div class="platformAssetCopy"><strong>Affichage du logo d’entête</strong><span>En mode Animation, le logo reste fixe au repos et l’animation remplace le logo uniquement lorsque le curseur passe dessus.</span>'+
+   '<label class="platformMediaMode">Type <select data-desktop-header-logo-mode><option value="image" '+(mode==='image'?'selected':'')+'>Logo / image</option><option value="animation" '+(mode==='animation'?'selected':'')+'>Animation au survol</option></select></label>'+
+   (mode==='animation'?'<small class="platformMediaHint">Formats animation : JS autonome Nethor, GIF, MP4 ou WebM. L’animation ne démarre qu’au survol.</small>':'')+
+  '</div>'+
+  (mode==='animation'?'<div class="platformHeaderAnimationAssets"><div class="platformSubhead"><div><h3>Animation au survol</h3><p>Le logo statique ci-dessus reste l’état de repos.</p></div></div><div class="platformThemeVariants">'+platformThemeVariant(kind,'header_logo_animation','light')+platformThemeVariant(kind,'header_logo_animation','dark')+'</div></div>':'')+
+ '</div>'
+}
 function platformHeaderLogoSizeControl(kind){
  if(kind!=='desktop')return'';
  const ui=platformUiNode('desktop'),value=Math.max(60,Math.min(160,Math.round(Number(ui.header_logo_scale)||100)));
@@ -830,7 +841,8 @@ function bindPlatformHeaderLogoSize(host,kind){
   const value=Math.max(60,Math.min(160,Math.round((Number(raw)||100)/5)*5));
   platformUiNode('desktop').header_logo_scale=value;
   range.value=String(value);number.value=String(value);
-  markDirty()
+  markDirty();
+  try{window.NettoProfileUI?.applyHeaderLogo?.(config)}catch(_){}
  };
  range.oninput=()=>apply(range.value);
  number.oninput=()=>apply(number.value);
@@ -841,12 +853,14 @@ function renderPlatformIdentity(kind){
  const host=$('platformIdentity_'+kind);if(!host)return;
  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent maintenant d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
  '<div class="platformAssetList">'+
- platformAssetRow(kind,'header_logo','Logo de l’entête','Logo utilisé dans les en-têtes de l’application sur '+platformLabel(kind)+'.')+
- (kind==='desktop'?platformHeaderLogoSizeControl(kind):'')+
+ platformAssetRow(kind,'header_logo','Logo de l’entête','Logo affiché au repos dans les en-têtes de l’application sur '+platformLabel(kind)+'.')+
+ (kind==='desktop'?platformHeaderLogoAnimationControl(kind)+platformHeaderLogoSizeControl(kind):'')+
  platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion '+platformLabel(kind)+'. Sans fichier personnalisé, Nethor utilise automatiquement son icône officielle de connexion.')+
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
  host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)});
+ const headerMode=host.querySelector('[data-desktop-header-logo-mode]');
+ if(headerMode)headerMode.onchange=()=>{platformUiNode('desktop').header_logo_mode=headerMode.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind);try{window.NettoProfileUI?.applyHeaderLogo?.(config)}catch(_){}};
  bindPlatformControlFields(host);
  bindPlatformHeaderLogoSize(host,kind)
 }
