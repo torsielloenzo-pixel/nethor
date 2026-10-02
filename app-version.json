@@ -1,11 +1,11 @@
 {
-  "version": 306,
-  "label": "v1.44.13",
+  "version": 308,
+  "label": "v1.44.14",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — logo d’entête redimensionnable & animé",
-  "message": "Correction du réglage Taille du logo d’entête Desktop : la valeur agit désormais directement sur l’élément réel et se met à jour en direct dans Gestion. Ajout du mode Logo / image ou Animation au survol, avec variantes clair/sombre. Le logo reste fixe au repos ; l’animation JS, GIF, MP4 ou WebM est créée et lancée uniquement lorsque le curseur passe sur le logo, puis arrêtée et retirée à la sortie.",
-  "published_at": "2026-10-02T23:18:00+02:00",
+  "title": "Desktop — import animation du logo d’entête réparé",
+  "message": "Correction de l’import des animations au survol du logo Desktop. L’éditeur accepte désormais les animations JS Nethor basées sur une API mount()/play() en plus des Web Components, les envoie correctement dans portal-assets et conserve leurs métadonnées. Le choix Logo / image ou Animation au survol est maintenant appliqué immédiatement et prioritaire : le mode image désactive toute animation, tandis que le mode animation remplace le logo uniquement pendant le survol.",
+  "published_at": "2026-10-02T23:37:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
