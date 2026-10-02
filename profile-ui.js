@@ -818,7 +818,8 @@ function bindDesktopHeaderAnimation(button,config){
   }else if(/\.(mp4|webm)(?:$|\?)/i.test(url)){
    const video=document.createElement('video');video.src=url;video.autoplay=true;video.muted=true;video.playsInline=true;video.preload='auto';host.appendChild(video);video.play?.().catch?.(()=>{})
   }else{
-   const img=document.createElement('img');img.src=url;img.alt='';img.draggable=false;host.appendChild(img)
+   const img=document.createElement('img'),animatedUrl=/\.gif(?:$|\?)/i.test(url)?url+(url.includes('?')?'&':'?')+'nethorHover='+Date.now():url;
+   img.src=animatedUrl;img.alt='';img.draggable=false;host.appendChild(img)
   }
   button.appendChild(host);button.classList.add('nethorHeaderAnimating')
  };
