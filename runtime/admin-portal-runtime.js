@@ -1164,7 +1164,25 @@ function portalSoundManagerSync(){
   selection.style.left=left+'%';selection.style.width=(right-left)+'%'
  }
  if(summary)summary.textContent='Lecture : '+soundTimeLabel(state.start)+' → '+soundTimeLabel(state.end)+' · '+soundTimeLabel(state.end-state.start);
- if(durationLabel)durationLabel.textContent='Durée source : '+soundTimeLabel(duration)
+ if(durationLabel)durationLabel.textContent='Durée source : '+soundTimeLabel(duration);
+ state.eq=normalizePortalSoundEq(state.eq);
+ SOUND_EQ_BANDS.forEach(band=>{
+  const input=overlay.querySelector('[data-audio-eq-band="'+band.key+'"]'),label=overlay.querySelector('[data-audio-eq-value="'+band.key+'"]'),value=state.eq[band.key]||0;
+  if(input&&document.activeElement!==input)input.value=String(value);
+  if(label)label.textContent=(value>0?'+':'')+Number(value).toFixed(value%1?1:0)+' dB'
+ });
+ const active=portalSoundEqActive(state.eq),status=overlay.querySelector('[data-audio-eq-status]');
+ if(status)status.textContent=active?'Égalisation personnalisée active':'Courbe neutre · aucun traitement tonal'
+}
+function portalSoundManagerSetEq(band,value){
+ const state=portalSoundManagerState;if(!state||!SOUND_EQ_BANDS.some(x=>x.key===band))return;
+ const n=Number(value);if(!Number.isFinite(n))return;
+ state.eq=normalizePortalSoundEq({...state.eq,[band]:n});
+ portalSoundManagerSync()
+}
+function setManagedPortalEqPreset(name){
+ const state=portalSoundManagerState,preset=SOUND_EQ_PRESETS[name];if(!state||!preset)return;
+ state.eq=normalizePortalSoundEq(preset);portalSoundManagerSync();previewManagedPortalSound()
 }
 function portalSoundManagerSet(which,value){
  const state=portalSoundManagerState;if(!state)return;
@@ -1175,7 +1193,7 @@ function portalSoundManagerSet(which,value){
 function previewManagedPortalSound(){
  const state=portalSoundManagerState;if(!state)return;
  const node=portalSoundNode(state.key);window.NettoSounds?.unlock?.();
- window.NettoSounds?.preview?.(state.key,{...node,trim_start:state.start,trim_end:state.end})
+ window.NettoSounds?.preview?.(state.key,{...node,trim_start:state.start,trim_end:state.end,eq:normalizePortalSoundEq(state.eq)})
 }
 function resetManagedPortalSound(){
  const state=portalSoundManagerState;if(!state)return;
@@ -1186,8 +1204,9 @@ function applyManagedPortalSound(){
  portalSoundManagerClamp(state);
  node.trim_start=Math.max(0,Number(state.start.toFixed(3)));
  node.trim_end=state.end>=state.duration-.002?null:Math.max(node.trim_start+.001,Number(state.end.toFixed(3)));
+ node.eq=normalizePortalSoundEq(state.eq);
  markDirty();closePortalSoundManager();renderSoundEditor();
- $('saveState').textContent='Calage audio modifié — enregistrer pour confirmer'
+ $('saveState').textContent='Réglages audio modifiés — enregistrer pour confirmer'
 }
 function openPortalSoundManager(key){
  const node=portalSoundNode(key),def=portalSoundDef(key);if(!node||!def)return;
