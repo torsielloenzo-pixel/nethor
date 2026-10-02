@@ -153,6 +153,19 @@ html[data-theme="dark"] .nethorMobileTopAction[aria-current="page"]{color:var(--
   margin-top:18px;color:#9a9aa1;font-size:11px;font-weight:700;letter-spacing:.01em;
   opacity:.72
 }
+/* Une animation personnalisée constitue à elle seule l'écran de bienvenue.
+   On masque le texte générique pour éviter le doublon par-dessus l'animation. */
+html[data-nethor-mobile-welcome-mode="animation"] .nethorMobileLaunchWelcomeText,
+html[data-nethor-mobile-welcome-mode="animation"] .nethorMobileLaunchWelcomeSub,
+html[data-nethor-mobile-welcome-mode="animation"] .nethorMobileLaunchWelcomeStatus,
+.nethorMobileLaunchWelcome.nethorMobileWelcomeAnimationOnly .nethorMobileLaunchWelcomeText,
+.nethorMobileLaunchWelcome.nethorMobileWelcomeAnimationOnly .nethorMobileLaunchWelcomeSub,
+.nethorMobileLaunchWelcome.nethorMobileWelcomeAnimationOnly .nethorMobileLaunchWelcomeStatus{
+  display:none!important
+}
+.nethorMobileLaunchWelcome.nethorMobileWelcomeAnimationOnly .nethorMobileLaunchWelcomeMark.hasMedia{
+  width:min(72vw,280px);height:min(72vw,280px);margin-bottom:0
+}
 html[data-theme="dark"] .nethorMobileLaunchWelcome{
   background:linear-gradient(145deg,#17191c,#111316);color:#f4f4f5
 }
