@@ -597,7 +597,7 @@ function renderMobileQuickBar(){
  document.body.classList.add('nettoHasMobileBar');
  if(!window.__nettoOpenUserMenuHandled)setTimeout(tryOpenRequestedUserMenu,0)
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,logout:logoutFromNethor,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,toggleMobilePreview:()=>toggleMobilePreview(),closeDrops,checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,logout:logoutFromNethor,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,applyHeaderLogo,toggleMobilePreview:()=>toggleMobilePreview(),closeDrops,checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -777,14 +777,69 @@ function addDesktopNethorMarkStyle(){
  if(!s){s=document.createElement('style');s.id='nethorDesktopMarkStyle';document.head?.appendChild(s)}
  s.textContent='header .mark,header .brandMark,header .nMenuBtn,header .brandMenuBtn{background-color:transparent!important;background-image:var(--nethor-header-logo,url("assets/nethor-mark.svg"))!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;color:transparent!important;font-size:0!important;box-shadow:none!important;border-radius:0!important}'
 }
-function themedPlatformAssetUrl(config,kind,key,fallback=''){
- const node=config?.platform_ui?.[kind]?.[key];if(!node||typeof node!=='object')return fallback;
+function themedPlatformAsset(config,kind,key){
+ const node=config?.platform_ui?.[kind]?.[key];if(!node||typeof node!=='object')return{};
  const theme=document.documentElement.dataset.theme==='dark'?'dark':'light',variant=node?.[theme],light=node?.light;
- return String(variant?.url||((theme==='dark')?light?.url:'')||node?.url||fallback||'').trim()
+ if(variant&&String(variant.url||'').trim())return variant;
+ if(theme==='dark'&&light&&String(light.url||'').trim())return light;
+ return node
+}
+function themedPlatformAssetUrl(config,kind,key,fallback=''){
+ const asset=themedPlatformAsset(config,kind,key);
+ return String(asset?.url||fallback||'').trim()
 }
 function simplePlatformAssetUrl(config,kind,key,fallback=''){
  const node=config?.platform_ui?.[kind]?.[key],value=String(node?.url||fallback||'').trim();
  return /(?:^|\/)app-icon-mobile-v73\.svg(?:\?|$)/i.test(value)?'assets/app-icon-mobile-v74.svg?v=74':value
+}
+function headerAnimationHostUrl(asset,theme){
+ const q=new URLSearchParams({src:String(asset?.url||''),theme:theme==='dark'?'dark':'light',mode:'media',name:'Nethor'});
+ if(asset?.tag)q.set('tag',String(asset.tag));
+ return 'welcome-animation-host.html?v=2&'+q.toString()
+}
+function clearDesktopHeaderAnimation(button){
+ if(!button)return;
+ button.classList.remove('nethorHeaderAnimating');
+ button.querySelector('[data-nethor-header-animation]')?.remove()
+}
+function bindDesktopHeaderAnimation(button,config){
+ if(!button)return;
+ clearDesktopHeaderAnimation(button);
+ button.onmouseenter=null;button.onmouseleave=null;button.onfocus=null;button.onblur=null;
+ const ui=config?.platform_ui?.desktop||{},enabled=ui.header_logo_mode==='animation';
+ const asset=themedPlatformAsset(config,'desktop','header_logo_animation'),url=String(asset?.url||'').trim();
+ if(!enabled||!url)return;
+ const theme=document.documentElement.dataset.theme==='dark'?'dark':'light';
+ const show=()=>{
+  if(button.querySelector('[data-nethor-header-animation]'))return;
+  const host=document.createElement('span');host.dataset.nethorHeaderAnimation='1';host.className='nethorDesktopHeaderAnimation';
+  if(/\.js(?:$|\?)/i.test(url)){
+   const iframe=document.createElement('iframe');iframe.src=headerAnimationHostUrl(asset,theme);iframe.title='Animation du logo Nethor';iframe.setAttribute('sandbox','allow-scripts');iframe.setAttribute('tabindex','-1');host.appendChild(iframe)
+  }else if(/\.(mp4|webm)(?:$|\?)/i.test(url)){
+   const video=document.createElement('video');video.src=url;video.autoplay=true;video.muted=true;video.playsInline=true;video.preload='auto';host.appendChild(video);video.play?.().catch?.(()=>{})
+  }else{
+   const img=document.createElement('img');img.src=url;img.alt='';img.draggable=false;host.appendChild(img)
+  }
+  button.appendChild(host);button.classList.add('nethorHeaderAnimating')
+ };
+ const hide=()=>clearDesktopHeaderAnimation(button);
+ button.onmouseenter=show;button.onmouseleave=hide;
+ button.onfocus=show;button.onblur=hide
+}
+function applyDesktopHeaderLogoElement(config,url,custom,logoWidth,logoHeight){
+ const button=document.querySelector('html[data-nethor-platform="desktop"] .nethorDesktopBrandButton');
+ if(!button)return;
+ const set=(prop,value)=>button.style.setProperty(prop,value,'important');
+ set('width',logoWidth+'px');set('min-width',logoWidth+'px');set('max-width','none');
+ set('height',logoHeight+'px');set('min-height',logoHeight+'px');set('max-height','none');
+ set('flex','0 0 '+logoWidth+'px');
+ set('position','relative');set('overflow','visible');
+ if(custom){
+  set('background-image','url('+JSON.stringify(url)+')');set('background-repeat','no-repeat');set('background-position','left center');set('background-size','contain')
+ }else{
+  button.style.removeProperty('background-image');button.style.removeProperty('background-repeat');button.style.removeProperty('background-position');button.style.removeProperty('background-size')
+ }
+ bindDesktopHeaderAnimation(button,config)
 }
 function applyHeaderLogo(config={}){
  const platformKey=isMobileViewport()?'mobile':'desktop';
@@ -803,14 +858,21 @@ function applyHeaderLogo(config={}){
  const rawScale=Number(config?.platform_ui?.desktop?.header_logo_scale)||100,scale=Math.max(60,Math.min(160,Math.round(rawScale))),ratio=scale/100;
  const logoWidth=Math.round(128*ratio),logoHeight=Math.round(40*ratio),wordmarkSize=Math.round(35*ratio);
  document.documentElement.style.setProperty('--nethor-desktop-header-logo-scale',String(scale));
+ document.documentElement.style.setProperty('--nethor-desktop-header-logo-width',logoWidth+'px');
+ document.documentElement.style.setProperty('--nethor-desktop-header-logo-height',logoHeight+'px');
  if(!custom){
-  style.textContent='html[data-nethor-platform="desktop"] .nethorDesktopWordmark{font-size:'+wordmarkSize+'px!important}';
+  style.textContent='html[data-nethor-platform="desktop"] .nethorDesktopBrandButton{width:'+logoWidth+'px!important;min-width:'+logoWidth+'px!important;height:'+logoHeight+'px!important;min-height:'+logoHeight+'px!important}html[data-nethor-platform="desktop"] .nethorDesktopWordmark{font-size:'+wordmarkSize+'px!important}';
+  requestAnimationFrame(()=>applyDesktopHeaderLogoElement(config,url,false,logoWidth,logoHeight));
   return
  }
  style.textContent=
-  'html[data-nethor-platform="desktop"] .nethorDesktopBrandButton{width:'+logoWidth+'px!important;min-width:'+logoWidth+'px!important;height:'+logoHeight+'px!important;min-height:'+logoHeight+'px!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}'+
+  'html[data-nethor-platform="desktop"] .nethorDesktopBrandButton{width:'+logoWidth+'px!important;min-width:'+logoWidth+'px!important;height:'+logoHeight+'px!important;min-height:'+logoHeight+'px!important;position:relative!important;overflow:visible!important;background-image:var(--nethor-header-logo)!important;background-repeat:no-repeat!important;background-position:left center!important;background-size:contain!important}'+
   'html[data-nethor-platform="desktop"] .nethorDesktopBrandButton .nethorDesktopWordmark{visibility:hidden!important}'+
+  'html[data-nethor-platform="desktop"] .nethorDesktopBrandButton.nethorHeaderAnimating{background-image:none!important}'+
+  'html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;pointer-events:none!important;overflow:visible!important}'+
+  'html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation iframe,html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation video,html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation img{display:block!important;width:100%!important;height:100%!important;border:0!important;object-fit:contain!important;object-position:left center!important;background:transparent!important}'+
   'html[data-nethor-platform="desktop"] header .mark,html[data-nethor-platform="desktop"] header .brandMark{width:'+logoWidth+'px!important;height:'+logoHeight+'px!important;background-size:contain!important}';
+ requestAnimationFrame(()=>applyDesktopHeaderLogoElement(config,url,true,logoWidth,logoHeight))
 }
 function iconMime(url){
  const s=String(url||'').split('?')[0].toLowerCase();
