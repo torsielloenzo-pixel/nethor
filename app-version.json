@@ -1,11 +1,11 @@
 {
-  "version": 303,
-  "label": "v1.44.10",
-  "important": true,
+  "version": 304,
+  "label": "v1.44.11",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Animations bienvenue — Desktop & ouverture Mobile",
-  "message": "Correction du lecteur d’animations de bienvenue. Desktop force maintenant un vrai replay de l’animation JS et neutralise la règle interne qui pouvait la réduire à un état final fixe. Le splash d’ouverture Mobile utilise le thème Nethor mémorisé dès le premier frame et impose ce thème à l’intérieur de l’animation, indépendamment du thème système.",
-  "published_at": "2026-10-02T22:48:00+02:00",
+  "title": "Sons & audio — calage début / fin",
+  "message": "Ajout du bouton Gérer dans Gestion > Éditeur du portail > Sons & audio. Chaque son peut désormais être calé de façon non destructive avec un point de début et un point de fin, une timeline, une saisie précise en secondes, une lecture de la sélection et une remise à zéro. Le moteur audio respecte ces bornes pour les fichiers importés comme pour les sons Nethor d’origine.",
+  "published_at": "2026-10-02T22:33:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
