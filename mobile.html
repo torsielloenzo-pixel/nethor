@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Nethor">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Nethor</title>
-<script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(_){}try{document.documentElement.dataset.nethorLaunchSplash=sessionStorage.getItem('nethorMobileLaunchShownV1')==='1'?'skip':'show'}catch(_){document.documentElement.dataset.nethorLaunchSplash='show'}})();</script>
+<script>(function(){try{var cached=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),ct=cached&&cached.config&&cached.config.launch_theme,lt=localStorage.getItem('nettoTheme'),sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',t=(ct==='dark'||ct==='light')?ct:((lt==='dark'||lt==='light')?lt:sys);document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(_){}try{document.documentElement.dataset.nethorLaunchSplash=sessionStorage.getItem('nethorMobileLaunchShownV1')==='1'?'skip':'show'}catch(_){document.documentElement.dataset.nethorLaunchSplash='show'}})();</script>
 <script src="platform-resolver.js?v=3"></script>
 <script>
 (function(){
@@ -54,15 +54,6 @@
   if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
   if(!mark||!url)return;
   var type=String(media.type||'image'),sig=type+'|'+url+'|'+tag+'|'+theme,safe=url.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-  /* Le splash sombre attend le thème/profil final avant d'instancier l'animation.
-     Cela évite qu'une animation JS se construise trop tôt avec son fond par défaut. */
-  if(theme==='dark'&&type==='animation'){
-   mark.dataset.bootstrapMedia='1';
-   mark.dataset.mediaSignature='bootstrap-pending|dark';
-   mark.classList.remove('hasMedia');
-   mark.innerHTML='N';
-   return
-  }
   mark.dataset.mediaSignature=sig;mark.dataset.bootstrapMedia='1';mark.classList.add('hasMedia');
   if(type==='animation'&&/\.js(?:$|\?)/i.test(url)){
    var q=new URLSearchParams({src:url,theme:theme,mode:'media',name:'Utilisateur'});if(tag)q.set('tag',tag);
