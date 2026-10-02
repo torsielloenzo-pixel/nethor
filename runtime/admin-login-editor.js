@@ -23,7 +23,8 @@ const LOGIN_DEFAULTS=Object.freeze({
  feature_team:'Équipe',
  background_opacity:100,
  primary_logo_visible:true,
- secondary_logo_visible:true
+ secondary_logo_visible:true,
+ secondary_display:'text'
 });
 function cleanAsset(x){
  x=x&&typeof x==='object'?x:{};
@@ -39,6 +40,7 @@ function cleanTheme(x,fallback){
  const n=Number(x.background_opacity);
  const val=(key)=>x[key]===undefined?String(fallback[key]??LOGIN_DEFAULTS[key]??''):String(x[key]);
  const bool=(key)=>x[key]===undefined?(fallback[key]!==false):(x[key]!==false);
+ const displayRaw=String(x.secondary_display===undefined?(fallback.secondary_display||''):x.secondary_display).toLowerCase();
  return{
   brand_text:val('brand_text'),
   email_placeholder:val('email_placeholder'),
@@ -52,7 +54,8 @@ function cleanTheme(x,fallback){
   feature_team:val('feature_team'),
   background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):Math.max(0,Math.min(100,Number.isFinite(Number(fallback.background_opacity))?Number(fallback.background_opacity):100)),
   primary_logo_visible:bool('primary_logo_visible'),
-  secondary_logo_visible:bool('secondary_logo_visible')
+  secondary_logo_visible:bool('secondary_logo_visible'),
+  secondary_display:displayRaw==='logo'?'logo':displayRaw==='text'?'text':'text'
  }
 }
 function ensureLoginConfigOnPlatform(dst,src){
@@ -62,7 +65,10 @@ function ensureLoginConfigOnPlatform(dst,src){
   dst[key]=cleanThemedAsset(incoming)
  }
  const raw=src.login_settings&&typeof src.login_settings==='object'?src.login_settings:(dst.login_settings||{});
- const light=cleanTheme(raw.light,LOGIN_DEFAULTS),dark=cleanTheme(raw.dark,light);
+ const rawLight=raw.light&&typeof raw.light==='object'?raw.light:{},rawDark=raw.dark&&typeof raw.dark==='object'?raw.dark:{};
+ const light=cleanTheme(rawLight,LOGIN_DEFAULTS),dark=cleanTheme(rawDark,light);
+ if(rawLight.secondary_display===undefined)light.secondary_display=String(dst.login_wordmark?.light?.url||'').trim()?'logo':'text';
+ if(rawDark.secondary_display===undefined)dark.secondary_display=String(dst.login_wordmark?.dark?.url||dst.login_wordmark?.light?.url||'').trim()?'logo':'text';
  dst.login_settings={light,dark};
  return dst
 }
@@ -165,13 +171,24 @@ function assetEditor(kind,key,theme,compact=false){
 function textField(kind,theme,key,label,value){
  return '<label class="loginEditorField"><span>'+esc(label)+'</span><input type="text" value="'+attr(value)+'" data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="'+key+'"></label>'
 }
+function secondaryDisplayControl(kind,theme,value){
+ const mode=value==='logo'?'logo':'text';
+ return '<div class="loginSecondaryDisplayControl"><div><strong>Contenu sous le logo principal</strong><small>Choisis si cette zone affiche le logo importé ou le texte configuré.</small></div>'+
+  '<div class="loginSecondaryDisplayChoice" role="group" aria-label="Affichage sous le logo principal">'+
+   '<label class="'+(mode==='logo'?'active':'')+'"><input type="radio" name="login-secondary-'+kind+'-'+theme+'" value="logo" '+(mode==='logo'?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="secondary_display"><span>Logo</span></label>'+
+   '<label class="'+(mode==='text'?'active':'')+'"><input type="radio" name="login-secondary-'+kind+'-'+theme+'" value="text" '+(mode==='text'?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="secondary_display"><span>Texte</span></label>'+
+  '</div>'+
+ '</div>'
+}
 function preview(kind,theme){
  const s=themeNode(kind,theme),bg=assetUrl(kind,'login_background',theme),logo=assetUrl(kind,'login_logo',theme),wordmark=assetUrl(kind,'login_wordmark',theme);
  return '<div class="loginEditorPreview" style="--login-preview-bg:url('+JSON.stringify(bg)+');--login-preview-opacity:'+(s.background_opacity/100)+'">'+
   '<div class="loginEditorPreviewBg"></div>'+
   '<div class="loginEditorPreviewCard">'+
    '<img class="loginEditorPreviewPrimary" style="visibility:'+(s.primary_logo_visible?'visible':'hidden')+'" src="'+attr(logo)+'" alt="">'+
-   (wordmark?'<img class="loginEditorPreviewWordmark" style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'" src="'+attr(wordmark)+'" alt="">':'<strong style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'">'+esc(s.brand_text)+'</strong>')+
+   (s.secondary_display==='logo'
+      ?'<img class="loginEditorPreviewWordmark" style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'" src="'+attr(wordmark||'')+'" alt="">'
+      :'<strong class="loginEditorPreviewSecondaryText" style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'">'+esc(s.brand_text)+'</strong>')+
    '<div class="loginEditorPreviewField"><span>○</span>'+esc(s.email_placeholder)+'</div>'+
    '<div class="loginEditorPreviewField"><span>□</span>'+esc(s.password_placeholder)+'</div>'+
    '<b>'+esc(s.submit_text)+'</b>'+
@@ -189,7 +206,8 @@ function themeEditor(kind,theme){
    assetEditor(kind,'login_logo',theme)+
    '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.primary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="primary_logo_visible"><span><strong>Logo principal visible</strong><small>Masque le logo sans déplacer les autres éléments.</small></span></label>'+
    assetEditor(kind,'login_wordmark',theme)+
-   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.secondary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="secondary_logo_visible"><span><strong>Logo secondaire / texte visible</strong><small>Masque le wordmark ou le texte sans changer la géométrie.</small></span></label>'+
+   secondaryDisplayControl(kind,theme,s.secondary_display)+
+   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.secondary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="secondary_logo_visible"><span><strong>Élément sous le logo visible</strong><small>Masque le logo secondaire ou le texte sans changer la géométrie.</small></span></label>'+
    assetEditor(kind,'login_background',theme)+
    '<label class="loginOpacityControl"><span>Opacité de l’écran de fond <b data-login-opacity-label="'+kind+'-'+theme+'">'+s.background_opacity+' %</b></span><input type="range" min="0" max="100" step="1" value="'+s.background_opacity+'" data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="background_opacity"></label>'+
   '</div>'+
@@ -229,14 +247,31 @@ function bindEditor(host){
     if(preview){
       if(key==='primary_logo_visible')preview.querySelector('.loginEditorPreviewPrimary')?.style.setProperty('visibility',s[key]?'visible':'hidden');
       if(key==='secondary_logo_visible'){
-        const sec=preview.querySelector('.loginEditorPreviewWordmark')||preview.querySelector('.loginEditorPreviewCard>strong');
+        const sec=preview.querySelector('.loginEditorPreviewWordmark,.loginEditorPreviewSecondaryText');
         sec?.style.setProperty('visibility',s[key]?'visible':'hidden')
+      }
+    }
+   }else if(el.type==='radio'&&key==='secondary_display'){
+    if(!el.checked)return;
+    s[key]=el.value==='logo'?'logo':'text';
+    const group=el.closest('.loginSecondaryDisplayChoice');
+    group?.querySelectorAll('label').forEach(label=>label.classList.toggle('active',label.contains(el)&&el.checked));
+    const themeEl=el.closest('.loginThemeEditor'),previewCard=themeEl?.querySelector('.loginEditorPreviewCard');
+    if(previewCard){
+      const current=previewCard.querySelector('.loginEditorPreviewWordmark,.loginEditorPreviewSecondaryText');
+      const visible=s.secondary_logo_visible?'visible':'hidden';
+      if(s[key]==='logo'){
+        const img=document.createElement('img');img.className='loginEditorPreviewWordmark';img.alt='';img.src=assetUrl(el.dataset.loginKind,'login_wordmark',el.dataset.loginTheme)||'';img.style.visibility=visible;
+        current?.replaceWith(img)
+      }else{
+        const text=document.createElement('strong');text.className='loginEditorPreviewSecondaryText';text.textContent=s.brand_text;text.style.visibility=visible;
+        current?.replaceWith(text)
       }
     }
    }else s[key]=el.value;
    markDirty()
   };
-  el.addEventListener(el.type==='checkbox'?'change':'input',update)
+  el.addEventListener((el.type==='checkbox'||el.type==='radio')?'change':'input',update)
  })
 }
 window.renderLoginScreenEditor=function(){
