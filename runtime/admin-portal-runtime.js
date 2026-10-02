@@ -681,7 +681,7 @@ function platformWelcomeAnimationHost(url,theme='light',tag='',name='Utilisateur
  const q=new URLSearchParams({src:String(url||''),theme:theme==='dark'?'dark':'light',mode:'media',name:String(name||'Utilisateur')});
  if(tag)q.set('tag',String(tag));
  if(api)q.set('api',String(api));
- return 'welcome-animation-host.html?v=3&'+q.toString()
+ return 'welcome-animation-host.html?v=4&'+q.toString()
 }
 function platformAssetPreview(kind,key,theme){
  const asset=platformAssetNode(kind,key)||{},url=platformAssetUrl(kind,key,theme),isWelcome=key==='welcome_media',isHeaderAnimation=key==='header_logo_animation',variant=platformAssetVariantNode(kind,key,theme),animated=isWelcome||isHeaderAnimation;
