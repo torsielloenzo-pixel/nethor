@@ -1,11 +1,11 @@
 {
-  "version": 305,
-  "label": "v1.44.12",
-  "important": false,
+  "version": 306,
+  "label": "v1.44.13",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — taille du logo d’entête",
-  "message": "Ajout dans Gestion > Éditeur du portail > Desktop d’un réglage de taille du logo d’entête. L’échelle est ajustable de 60 % à 160 %, avec saisie précise et remise à 100 %. Le réglage n’affecte que l’entête Desktop et conserve les variantes clair/sombre existantes.",
-  "published_at": "2026-10-02T22:52:00+02:00",
+  "title": "Desktop — logo d’entête redimensionnable & animé",
+  "message": "Correction du réglage Taille du logo d’entête Desktop : la valeur agit désormais directement sur l’élément réel et se met à jour en direct dans Gestion. Ajout du mode Logo / image ou Animation au survol, avec variantes clair/sombre. Le logo reste fixe au repos ; l’animation JS, GIF, MP4 ou WebM est créée et lancée uniquement lorsque le curseur passe sur le logo, puis arrêtée et retirée à la sortie.",
+  "published_at": "2026-10-02T23:18:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
