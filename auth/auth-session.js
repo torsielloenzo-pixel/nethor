@@ -72,7 +72,7 @@ function ensureWelcomeMediaStyle(){
 function authWelcomeAnimationHost(url,tag,name){
  const q=new URLSearchParams({src:String(url||''),theme:authTheme(),mode:'media',name:String(name||'Utilisateur')});
  if(tag)q.set('tag',String(tag));
- return 'welcome-animation-host.html?'+q.toString()
+ return 'welcome-animation-host.html?v=2&'+q.toString()
 }
 function applyWelcomeBranding(){
  const mark=document.querySelector('#welcomeToast .welcomeMark'),sub=document.querySelector('#welcomeToast .welcomeSub');if(!mark)return;
