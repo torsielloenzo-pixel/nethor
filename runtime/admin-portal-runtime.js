@@ -842,7 +842,8 @@ function renderPlatformIdentity(kind){
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
  host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)});
- bindPlatformControlFields(host)
+ bindPlatformControlFields(host);
+ bindPlatformHeaderLogoSize(host,kind)
 }
 function choosePlatformAsset(kind,key,theme){$('platformAssetFile_'+kind+'_'+key+'_'+(theme==='dark'?'dark':'light'))?.click()}
 function platformAssetExtension(file){
