@@ -15,7 +15,7 @@ function cleanTheme(x,fallback){
   brand_text:get('brand_text'),email_placeholder:get('email_placeholder'),password_placeholder:get('password_placeholder'),
   submit_text:get('submit_text'),forgot_text:get('forgot_text'),footer_text:get('footer_text'),
   feature_management:get('feature_management'),feature_planning:get('feature_planning'),feature_stock:get('feature_stock'),feature_team:get('feature_team'),
-  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,n)):Math.max(0,Math.min(100,Number(fallback.background_opacity)||100))
+  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,n)):Math.max(0,Math.min(100,Number.isFinite(Number(fallback.background_opacity))?Number(fallback.background_opacity):100))
  }
 }
 function themed(node,theme,fallback=''){
