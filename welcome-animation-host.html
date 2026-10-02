@@ -95,6 +95,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
  const script=document.createElement('script');script.src=src;script.async=true;
  script.onload=function(){
   try{
+   /* Les animations de bienvenue importées avec un tag explicite doivent garder
+      le lecteur Web Component historique. C'est lui qui applique le cadrage,
+      le thème et masque la copie interne de l'animation. Les API mount()
+      restent disponibles pour les animations d'entête et les scripts sans tag. */
+   const explicitTag=requestedTag&&customElements.get(requestedTag)?requestedTag:'';
+   if(explicitTag){
+    const el=document.createElement(explicitTag);el.setAttribute('name',name);root.replaceChildren(el);
+    requestAnimationFrame(()=>fit(el,{replay:true}));
+    setTimeout(()=>fit(el),80);
+    setTimeout(()=>fit(el),260);
+    return
+   }
+   const explicitApi=requestedApi&&window[requestedApi]&&typeof window[requestedApi].mount==='function'?window[requestedApi]:null;
+   if(explicitApi){
+    const target=document.createElement('div');target.className='apiTarget';target.dataset.nethorApiAnimation='1';
+    root.replaceChildren(target);
+    const instance=explicitApi.mount(target,{cursor:'default'});
+    requestAnimationFrame(()=>{try{instance?.resetImmediate?.();instance?.play?.()}catch(_){}});
+    setTimeout(()=>{try{instance?.recompute?.()}catch(_){}},100);
+    return
+   }
+   const tag=apiTag();
+   if(tag){
+    const el=document.createElement(tag);el.setAttribute('name',name);root.replaceChildren(el);
+    requestAnimationFrame(()=>fit(el,{replay:true}));
+    setTimeout(()=>fit(el),80);
+    setTimeout(()=>fit(el),260);
+    return
+   }
    const api=detectMountApi();
    if(api){
     const target=document.createElement('div');target.className='apiTarget';target.dataset.nethorApiAnimation='1';
@@ -104,11 +133,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     setTimeout(()=>{try{instance?.recompute?.()}catch(_){}},100);
     return
    }
-   const tag=apiTag();if(!tag){fail('Format JS Nethor non reconnu');return}
-   const el=document.createElement(tag);el.setAttribute('name',name);root.replaceChildren(el);
-   requestAnimationFrame(()=>fit(el,{replay:true}));
-   setTimeout(()=>fit(el),80);
-   setTimeout(()=>fit(el),260)
+   fail('Format JS Nethor non reconnu')
   }catch(e){fail('Animation indisponible')}
  };
  script.onerror=function(){fail('Chargement impossible')};
