@@ -680,7 +680,7 @@ function platformAssetIsScript(url){return /\.js(?:$|\?)/i.test(String(url||''))
 function platformWelcomeAnimationHost(url,theme='light',tag='',name='Utilisateur'){
  const q=new URLSearchParams({src:String(url||''),theme:theme==='dark'?'dark':'light',mode:'media',name:String(name||'Utilisateur')});
  if(tag)q.set('tag',String(tag));
- return 'welcome-animation-host.html?'+q.toString()
+ return 'welcome-animation-host.html?v=2&'+q.toString()
 }
 function platformAssetPreview(kind,key,theme){
  const asset=platformAssetNode(kind,key)||{},url=platformAssetUrl(kind,key,theme),isWelcome=key==='welcome_media',isHeaderAnimation=key==='header_logo_animation',variant=platformAssetVariantNode(kind,key,theme),animated=isWelcome||isHeaderAnimation;
@@ -843,7 +843,7 @@ function bindPlatformHeaderLogoSize(host,kind){
   platformUiNode('desktop').header_logo_scale=value;
   range.value=String(value);number.value=String(value);
   markDirty();
-  try{window.NettoProfileUI?.applyHeaderLogo?.(config)}catch(_){}
+  try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}
  };
  range.oninput=()=>apply(range.value);
  number.oninput=()=>apply(number.value);
@@ -861,7 +861,7 @@ function renderPlatformIdentity(kind){
  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
  host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)});
  const headerMode=host.querySelector('[data-desktop-header-logo-mode]');
- if(headerMode)headerMode.onchange=()=>{platformUiNode('desktop').header_logo_mode=headerMode.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind);try{window.NettoProfileUI?.applyHeaderLogo?.(config)}catch(_){}};
+ if(headerMode)headerMode.onchange=()=>{platformUiNode('desktop').header_logo_mode=headerMode.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind);try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}};
  bindPlatformControlFields(host);
  bindPlatformHeaderLogoSize(host,kind)
 }
@@ -896,7 +896,7 @@ async function uploadPlatformAsset(kind,key,theme,input){
   node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag=scriptMeta?.tag||'';
   if(welcome&&['js','gif','mp4','webm'].includes(ext))platformAssetNode(kind,key).type='animation';
   if(headerAnimation&&kind==='desktop')platformUiNode('desktop').header_logo_mode='animation';
-  markDirty();renderPlatformIdentity(kind);try{window.NettoProfileUI?.applyHeaderLogo?.(config)}catch(_){}state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
+  markDirty();renderPlatformIdentity(kind);try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur média : '+(e?.message||e)}
  finally{if(input)input.value=''}
 }
