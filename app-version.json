@@ -1,11 +1,11 @@
 {
   "version": 314,
   "label": "v1.44.20",
-  "important": true,
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — animation de bienvenue restaurée",
-  "message": "Restauration du rendu d’origine des animations de bienvenue Mobile. La configuration enregistrée était intacte : le problème venait du lecteur d’animation partagé, modifié pour accepter les animations d’entête en API mount(). Il pouvait sélectionner ce mode avant le Web Component de bienvenue et contourner son cadrage historique. Le lecteur respecte maintenant d’abord le format explicitement configuré, puis utilise mount() en secours. Le texte, les dimensions et la composition de bienvenue ont également été remis comme avant le contournement temporaire.",
-  "published_at": "2026-10-03T00:18:28+02:00",
+  "title": "Connexion — réglages publics et visibilité des logos",
+  "message": "Correctif de fond de l’écran de connexion : la page peut maintenant lire sa personnalisation avant authentification via une configuration publique limitée. Ajout d’interrupteurs pour afficher ou masquer séparément le logo principal et le logo secondaire, sans déplacer la mise en page.",
+  "published_at": "2026-10-03T00:24:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
