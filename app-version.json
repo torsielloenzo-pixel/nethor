@@ -1,11 +1,11 @@
 {
-  "version": 312,
-  "label": "v1.44.18",
+  "version": 313,
+  "label": "v1.44.19",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Planning classique — modernisation visuelle",
-  "message": "Modernisation visuelle du planning classique Desktop sans modification de sa structure ni de ses calculs : tableau plus lisible, en-têtes et colonnes fixes modernisés, séparation horaire affinée, lignes employés plus propres, totaux présentés en pastilles, onglets Planning / Couverture / Analyse harmonisés et mode sombre ajusté. Les couleurs métier, les horaires, les imports, les totaux et les interactions restent inchangés.",
-  "published_at": "2026-10-03T00:06:00+02:00",
+  "title": "Écran de connexion — personnalisation corrigée",
+  "message": "Correctif de l’écran de connexion : les réglages enregistrés dans Gestion sont désormais appliqués nativement à la connexion Mobile et Desktop (clair/sombre), y compris fond, opacité, logo secondaire, textes et icônes. Nouvelle génération de cache pour éviter l’ancienne interface.",
+  "published_at": "2026-10-03T00:15:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
