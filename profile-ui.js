@@ -1071,7 +1071,16 @@ function buildGlobalHeader(){
  const adminLoginTool=p.role==='admin'?'<div class="nettoLoginWrap"><button id="nettoLoginBtn" class="nettoBellBtn nettoLoginBtn" aria-label="Historique des connexions" aria-expanded="false" title="Connexions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.41 3.3 1.9-1 1.73L11 13.59V7h2Z"/></svg></button><div id="nettoLoginDrop" class="nettoDrop nettoLoginDrop hidden"><div class="nettoNotifHead"><div class="nettoLoginHeadTitle"><strong>Connexions</strong><small>Qui s’est connecté et à quelle heure</small></div><div class="nettoNotifHeadActions"><button id="nettoLoginDeleteAll">Tout supprimer</button></div></div><div id="nettoLoginList" class="nettoLoginList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div>':'';
  const inMobilePreview=new URLSearchParams(location.search).get('mobile_preview')==='1';
  const desktopMobileTool=!inMobilePreview&&!isMobileViewport()?'<div class="nettoMobilePreviewWrap"><button type="button" id="nettoMobilePreviewBtn" class="nettoBellBtn nettoMobilePreviewBtn" aria-label="Vision mobile" aria-pressed="false" title="Vision mobile"><svg class="nettoMobileIconNormal" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg><svg class="nettoMobileIconActive" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="nettoMobileIconGradient" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#ff2f1f"/><stop offset="1" stop-color="#ff8500"/></linearGradient></defs><path fill="url(#nettoMobileIconGradient)" d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg></button></div>':'';
- wrap.innerHTML='<button id="nettoDropBackdrop" class="nettoDropBackdrop" type="button" aria-label="Fermer le menu"></button>'+adminLoginTool+desktopMobileTool+'<div class="nettoUpdateWrap"><button id="nettoUpdateCheckBtn" class="nettoBellBtn nettoUpdateCheckBtn" aria-label="Rechercher une mise à jour" title="Mise à jour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3a1 1 0 1 1 2 0v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V3Zm-6 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/></svg><span class="nettoUpdateLabel">MAJ</span></button></div><div class="nettoBellWrap"><button id="nettoBellBtn" class="nettoBellBtn" aria-label="Notifications" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.55 2.55 0 0 0 2.45-1.85h-4.9A2.55 2.55 0 0 0 12 22Zm7-5.1-1.75-2.05V9.5A5.26 5.26 0 0 0 13 4.34V3a1 1 0 1 0-2 0v1.34A5.26 5.26 0 0 0 6.75 9.5v5.35L5 16.9V18h14v-1.1Z"/></svg><b id="nettoNotifBadge" class="nettoNotifBadge hidden">0</b></button><div id="nettoNotifDrop" class="nettoDrop nettoNotifDrop hidden"><span class="nettoNotifSheetHandle"></span><div class="nettoNotifHead"><div class="nettoNotifTitle"><span class="nettoNotifTitleIcon">🔔</span><span><strong>Notifications</strong><small>Centre d’activité Nethor</small></span></div><div class="nettoNotifHeadActions"><button id="nettoMarkRead">✓ Tout lire</button><button id="nettoDeleteAll" class="danger">⌫ Effacer</button></div><div class="nettoNotifMoreWrap"><button id="nettoNotifMoreBtn" class="nettoNotifMoreBtn" type="button" aria-label="Actions des notifications" title="Actions">•••</button><div id="nettoNotifMoreMenu" class="nettoNotifMoreMenu hidden"><button id="nettoNotifMoreRead" type="button">✓ Tout marquer comme lu</button><button id="nettoNotifMoreDelete" class="danger" type="button">Supprimer toutes les notifications</button></div></div></div><div class="nettoNotifTabs"><button id="nettoNotifTabAll" class="nettoNotifTab common active" type="button" data-notif-tab="all"><span class="nettoNotifTabIcon">●</span><span><strong>Tout</strong><small>Toutes les notifications</small></span><b id="nettoNotifAllCount">0</b></button><button id="nettoNotifTabUnread" class="nettoNotifTab important" type="button" data-notif-tab="unread"><span class="nettoNotifTabIcon">●</span><span><strong>Non lu</strong><small>À consulter</small></span><b id="nettoNotifUnreadCount">0</b></button></div><div id="nettoNotifList" class="nettoNotifList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div><div class="nettoUserWrap"><button id="nettoUserBtn" class="nettoUserBtn" aria-expanded="false"><span id="nettoTopAvatar" class="nettoTopAvatar">U</span><span class="nettoUserText"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoChevron">⌄</span></button><div id="nettoUserDrop" class="nettoDrop hidden">'+desktopUserMenuHtml+mobileUserMenuHtml+'</div></div>';
+ const desktopNotifMode=!mobileShell;
+ const desktopNotifHead=desktopNotifMode?'<div class="nettoNotifHead nettoNotifHeadDesktop"><div class="nettoNotifTitle"><span class="nettoNotifTitleIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.55 2.55 0 0 0 2.45-1.85h-4.9A2.55 2.55 0 0 0 12 22Zm7-5.1-1.75-2.05V9.5A5.26 5.26 0 0 0 13 4.34V3a1 1 0 1 0-2 0v1.34A5.26 5.26 0 0 0 6.75 9.5v5.35L5 16.9V18h14v-1.1Z"/></svg></span><span><strong>Notifications</strong><small id="nettoNotifSummary">0 notification</small></span></div><div class="nettoNotifHeadActions"><button id="nettoMarkRead" type="button">✓ Tout marquer comme lu</button></div><div class="nettoNotifMoreWrap"><button id="nettoNotifMoreBtn" class="nettoNotifMoreBtn" type="button" aria-label="Actions des notifications" title="Actions">•••</button><div id="nettoNotifMoreMenu" class="nettoNotifMoreMenu hidden"><button id="nettoNotifMoreRead" type="button">✓ Tout marquer comme lu</button><button id="nettoNotifMoreDelete" class="danger" type="button">Supprimer toutes les notifications</button></div></div></div>':'<div class="nettoNotifHead"><div class="nettoNotifTitle"><span class="nettoNotifTitleIcon">🔔</span><span><strong>Notifications</strong><small>Centre d’activité Nethor</small></span></div><div class="nettoNotifHeadActions"><button id="nettoMarkRead">✓ Tout lire</button><button id="nettoDeleteAll" class="danger">⌫ Effacer</button></div><div class="nettoNotifMoreWrap"><button id="nettoNotifMoreBtn" class="nettoNotifMoreBtn" type="button" aria-label="Actions des notifications" title="Actions">•••</button><div id="nettoNotifMoreMenu" class="nettoNotifMoreMenu hidden"><button id="nettoNotifMoreRead" type="button">✓ Tout marquer comme lu</button><button id="nettoNotifMoreDelete" class="danger" type="button">Supprimer toutes les notifications</button></div></div></div>';
+ const desktopAllIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>';
+ const desktopUnreadIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/></svg>';
+ const desktopMessagesIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7l-4.5 3v-3H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"/><path d="M8 10h8M8 13h5"/></svg>';
+ const desktopSystemIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>';
+ const desktopNotifTabs=desktopNotifMode?'<div class="nettoNotifTabs nettoNotifTabsDesktop"><button id="nettoNotifTabAll" class="nettoNotifTab common active" type="button" data-notif-tab="all"><span class="nettoNotifTabIcon">'+desktopAllIcon+'</span><span><strong>Toutes</strong></span><b id="nettoNotifAllCount">0</b></button><button id="nettoNotifTabUnread" class="nettoNotifTab important" type="button" data-notif-tab="unread"><span class="nettoNotifTabIcon">'+desktopUnreadIcon+'</span><span><strong>Non lues</strong></span><b id="nettoNotifUnreadCount">0</b></button><button id="nettoNotifTabMessages" class="nettoNotifTab messages" type="button" data-notif-tab="messages"><span class="nettoNotifTabIcon">'+desktopMessagesIcon+'</span><span><strong>Messages</strong></span><b id="nettoNotifMessagesCount">0</b></button><button id="nettoNotifTabSystem" class="nettoNotifTab system" type="button" data-notif-tab="system"><span class="nettoNotifTabIcon">'+desktopSystemIcon+'</span><span><strong>Système</strong></span><b id="nettoNotifSystemCount">0</b></button></div>':'<div class="nettoNotifTabs"><button id="nettoNotifTabAll" class="nettoNotifTab common active" type="button" data-notif-tab="all"><span class="nettoNotifTabIcon">●</span><span><strong>Tout</strong><small>Toutes les notifications</small></span><b id="nettoNotifAllCount">0</b></button><button id="nettoNotifTabUnread" class="nettoNotifTab important" type="button" data-notif-tab="unread"><span class="nettoNotifTabIcon">●</span><span><strong>Non lu</strong><small>À consulter</small></span><b id="nettoNotifUnreadCount">0</b></button></div>';
+ const desktopNotifFooter=desktopNotifMode?'<button id="nettoNotifOpenCenter" class="nettoNotifOpenCenter" type="button"><span class="nettoNotifOpenIcon">⚙</span><strong>Ouvrir toutes les notifications</strong><span aria-hidden="true">›</span></button>':'';
+ const notifDropdownHtml='<div class="nettoBellWrap"><button id="nettoBellBtn" class="nettoBellBtn" aria-label="Notifications" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.55 2.55 0 0 0 2.45-1.85h-4.9A2.55 2.55 0 0 0 12 22Zm7-5.1-1.75-2.05V9.5A5.26 5.26 0 0 0 13 4.34V3a1 1 0 1 0-2 0v1.34A5.26 5.26 0 0 0 6.75 9.5v5.35L5 16.9V18h14v-1.1Z"/></svg><b id="nettoNotifBadge" class="nettoNotifBadge hidden">0</b></button><div id="nettoNotifDrop" class="nettoDrop nettoNotifDrop hidden"><span class="nettoNotifSheetHandle"></span>'+desktopNotifHead+desktopNotifTabs+'<div id="nettoNotifList" class="nettoNotifList"><div class="nettoNotifEmpty">Chargement…</div></div>'+desktopNotifFooter+'</div></div>';
+ wrap.innerHTML='<button id="nettoDropBackdrop" class="nettoDropBackdrop" type="button" aria-label="Fermer le menu"></button>'+adminLoginTool+desktopMobileTool+'<div class="nettoUpdateWrap"><button id="nettoUpdateCheckBtn" class="nettoBellBtn nettoUpdateCheckBtn" aria-label="Rechercher une mise à jour" title="Mise à jour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3a1 1 0 1 1 2 0v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V3Zm-6 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/></svg><span class="nettoUpdateLabel">MAJ</span></button></div>'+notifDropdownHtml+'<div class="nettoUserWrap"><button id="nettoUserBtn" class="nettoUserBtn" aria-expanded="false"><span id="nettoTopAvatar" class="nettoTopAvatar">U</span><span class="nettoUserText"><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span><span class="nettoChevron">⌄</span></button><div id="nettoUserDrop" class="nettoDrop hidden">'+desktopUserMenuHtml+mobileUserMenuHtml+'</div></div>';
  top.appendChild(wrap);
  paint(document.getElementById('nettoTopAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);paint(document.getElementById('nettoMobileMenuAvatar'),api.avatarUrl,name,p.profile_color,p.avatar_frame);
  if(!mobileShell)applyDesktopChromeControls(wrap,desktopControls);
@@ -1103,8 +1112,9 @@ function buildGlobalHeader(){
   document.getElementById('nettoNotifMoreRead')?.addEventListener('click',()=>{notifMoreMenu?.classList.add('hidden');markAllRead()});
   document.getElementById('nettoNotifMoreDelete')?.addEventListener('click',()=>{notifMoreMenu?.classList.add('hidden');deleteAllNotifications()});
  const dropBackdrop=document.getElementById('nettoDropBackdrop');if(dropBackdrop)dropBackdrop.onclick=e=>{e.preventDefault();e.stopPropagation();closeDrops()};
- document.getElementById('nettoMarkRead').onclick=e=>{e.stopPropagation();sounds.play('confirm');markAllRead()};
- document.getElementById('nettoDeleteAll').onclick=e=>{e.stopPropagation();sounds.play('warning');deleteAllNotifications()};
+ document.getElementById('nettoMarkRead')?.addEventListener('click',e=>{e.stopPropagation();sounds.play('confirm');markAllRead()});
+ document.getElementById('nettoDeleteAll')?.addEventListener('click',e=>{e.stopPropagation();sounds.play('warning');deleteAllNotifications()});
+ document.getElementById('nettoNotifOpenCenter')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();sounds.play('navigate');closeDrops();location.href='notifications.html'});
  if(!api.globalListenersBound){document.addEventListener('click',e=>{if(!e.target.closest('#nettoGlobalTools'))closeDrops()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrops()});api.globalListenersBound=true}
  if(!window.__nettoOpenUserMenuHandled)tryOpenRequestedUserMenu();
  try{applyHeaderLogo(api.siteConfig||{})}catch(_){}
@@ -1291,6 +1301,20 @@ function notificationCategory(k){
   absence_decision:'Décision congés'
  })[k]||'Notification'
 }
+function notificationChannelGroup(k){
+ return ['chat_message','chat_direct','chat_group','chat_general'].includes(String(k||''))?'messages':'system'
+}
+function desktopNotificationGlyph(k){
+ const kind=String(k||'');
+ if(['chat_message','chat_direct','chat_group','chat_general'].includes(kind))return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7l-4.5 3v-3H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"/><path d="M8 10h8M8 13h5"/></svg>';
+ if(['manual_edit','import_new','import_replace','reset_day','reset_week'].includes(kind))return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M8 3.5v4M16 3.5v4M4 9.5h16"/><path d="M8 13h3M8 16h6"/></svg>';
+ if(['absence_request','absence_decision'].includes(kind))return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 9.2 17 19 7"/><circle cx="12" cy="12" r="9"/></svg>';
+ if(kind==='app_update')return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M8.5 11.5 12 15l3.5-3.5"/><path d="M5 19h14"/></svg>';
+ if(kind==='maintenance')return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6.5 3-3a5 5 0 0 1-6.3 6.3l-6.5 6.5a2 2 0 1 0 2.8 2.8l6.5-6.5a5 5 0 0 1 6.3-6.3l-3 3"/></svg>';
+ if(kind==='password_reset_request')return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="4"/><path d="M13 12h8M18 12v3M21 12v2"/></svg>';
+ if(kind==='admin_message')return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13V9l12-4v12L4 13Z"/><path d="M7 13v5a2 2 0 0 0 2 2h1v-6"/></svg>';
+ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v3.5L4.5 15v1.5h15V15L18 12.5V9a6 6 0 0 0-6-6Z"/><path d="M9.5 19h5"/></svg>'
+}
 function notificationDate(v){
  const d=new Date(v),diff=Math.max(0,Date.now()-d.getTime()),min=Math.floor(diff/60000);
  if(min<1)return'À l’instant';if(min<60)return min+' min';
@@ -1300,7 +1324,9 @@ function notificationDate(v){
  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})
 }
 function setNotificationTab(tab){
- api.notificationTab=tab==='unread'?'unread':'all';
+ const requested=String(tab||'all');
+ const allowed=['all','unread','messages','system'];
+ api.notificationTab=allowed.includes(requested)&&document.querySelector('[data-notif-tab="'+requested+'"]')?requested:'all';
  document.querySelectorAll('[data-notif-tab]').forEach(b=>b.classList.toggle('active',b.dataset.notifTab===api.notificationTab));
  renderNotifications()
 }
@@ -1308,25 +1334,54 @@ function notificationDayGroup(v){
  const d=new Date(v),now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),day=new Date(d.getFullYear(),d.getMonth(),d.getDate()),diff=Math.round((today-day)/86400000);
  if(diff===0)return"Aujourd’hui";if(diff===1)return"Hier";if(diff<7)return"Cette semaine";return"Plus anciennes"
 }
+function notificationMatchesTab(n,tab){
+ if(tab==='unread')return !n.read_at;
+ if(tab==='messages')return notificationChannelGroup(n.kind)==='messages';
+ if(tab==='system')return notificationChannelGroup(n.kind)==='system';
+ return true
+}
+function desktopNotificationMenuActive(){
+ return !isMobileViewport()&&document.documentElement.dataset.nethorPlatform==='desktop'
+}
 function renderNotifications(){
  const list=document.getElementById('nettoNotifList'),badge=document.getElementById('nettoNotifBadge');if(!list||!badge)return;
- if(!api.notificationTab||!['all','unread'].includes(api.notificationTab))api.notificationTab='all';
+ const desktop=desktopNotificationMenuActive();
+ const validTabs=desktop?['all','unread','messages','system']:['all','unread'];
+ if(!validTabs.includes(api.notificationTab))api.notificationTab='all';
  const unread=api.notifications.filter(n=>!n.read_at).length;
+ const messages=api.notifications.filter(n=>notificationChannelGroup(n.kind)==='messages').length;
+ const system=api.notifications.length-messages;
  updateMobileNotificationBadge(unread);
  badge.textContent=unread>99?'99+':String(unread);badge.classList.toggle('hidden',unread===0);
- const allCount=document.getElementById('nettoNotifAllCount'),unreadCount=document.getElementById('nettoNotifUnreadCount');
+ const allCount=document.getElementById('nettoNotifAllCount'),unreadCount=document.getElementById('nettoNotifUnreadCount'),messagesCount=document.getElementById('nettoNotifMessagesCount'),systemCount=document.getElementById('nettoNotifSystemCount'),summary=document.getElementById('nettoNotifSummary');
  if(allCount)allCount.textContent=String(api.notifications.length);
  if(unreadCount)unreadCount.textContent=String(unread);
+ if(messagesCount)messagesCount.textContent=String(messages);
+ if(systemCount)systemCount.textContent=String(system);
+ if(summary&&desktop)summary.textContent=api.notifications.length+' notification'+(api.notifications.length>1?'s':'');
  document.querySelectorAll('[data-notif-tab]').forEach(b=>b.classList.toggle('active',b.dataset.notifTab===api.notificationTab));
- const rows=(api.notificationTab==='unread'?api.notifications.filter(n=>!n.read_at):[...api.notifications]).sort((a,b)=>{if(api.notificationTab==='all'){const au=!a.read_at?1:0,bu=!b.read_at?1:0;if(au!==bu)return bu-au}return new Date(b.created_at)-new Date(a.created_at)});
+ const rows=api.notifications.filter(n=>notificationMatchesTab(n,api.notificationTab)).sort((a,b)=>{
+  if(!desktop&&api.notificationTab==='all'){const au=!a.read_at?1:0,bu=!b.read_at?1:0;if(au!==bu)return bu-au}
+  return new Date(b.created_at)-new Date(a.created_at)
+ });
  if(!rows.length){
-  list.innerHTML='<div class="nettoNotifEmpty"><div class="nettoNotifEmptyBox"><span class="nettoNotifEmptyIcon">'+(api.notificationTab==='unread'?'✓':'🔔')+'</span><strong>'+(api.notificationTab==='unread'?'Aucune notification non lue':'Aucune notification')+'</strong><span>'+(api.notificationTab==='unread'?'Tu as tout consulté.':'Les nouvelles activités apparaîtront ici.')+'</span></div></div>';return
+  const titles={unread:'Aucune notification non lue',messages:'Aucun message',system:'Aucune notification système',all:'Aucune notification'};
+  const notes={unread:'Tu as tout consulté.',messages:'Les nouveaux messages apparaîtront ici.',system:'Les activités Nethor apparaîtront ici.',all:'Les nouvelles activités apparaîtront ici.'};
+  const title=titles[api.notificationTab]||titles.all,note=notes[api.notificationTab]||notes.all;
+  list.innerHTML='<div class="nettoNotifEmpty"><div class="nettoNotifEmptyBox"><span class="nettoNotifEmptyIcon">'+(api.notificationTab==='unread'?'✓':'🔔')+'</span><strong>'+title+'</strong><span>'+note+'</span></div></div>';return
  }
+ const unreadByGroup=new Map();
+ if(desktop)rows.forEach(n=>{if(!n.read_at){const g=notificationDayGroup(n.created_at);unreadByGroup.set(g,(unreadByGroup.get(g)||0)+1)}});
  let previousGroup='',html='';
  rows.forEach(n=>{
-  const group=!n.read_at?'Nouveau':notificationDayGroup(n.created_at);
-  if(group!==previousGroup){html+='<div class="nettoNotifSectionLabel">'+esc(group)+'</div>';previousGroup=group}
-  html+='<article class="nettoNotifItem '+esc(n.kind)+' '+(!n.read_at?'unread':'')+'" role="button" tabindex="0" data-id="'+n.id+'" data-url="'+esc(n.target_url||'')+'"><span class="nettoNotifIcon"><span class="nettoNotifGlyph">'+notificationIcon(n.kind)+'</span></span><div class="nettoNotifBody"><strong>'+esc(n.title)+'</strong><span>'+esc(n.message)+'</span><div class="nettoNotifCategory">'+esc(notificationCategory(n.kind))+'</div><small>'+notificationDate(n.created_at)+'</small></div><span class="nettoNotifSide"><i class="nettoNotifUnreadDot" aria-hidden="true"></i><button class="nettoNotifDelete" title="Supprimer" aria-label="Supprimer la notification">×</button></span></article>'
+  const group=desktop?notificationDayGroup(n.created_at):(!n.read_at?'Nouveau':notificationDayGroup(n.created_at));
+  if(group!==previousGroup){
+   const fresh=desktop?(unreadByGroup.get(group)||0):0;
+   html+='<div class="nettoNotifSectionLabel"><span>'+esc(group)+'</span>'+(fresh?'<b class="nettoNotifSectionCount">'+fresh+' nouvelle'+(fresh>1?'s':'')+'</b>':'')+'</div>';previousGroup=group
+  }
+  const glyph=desktop?desktopNotificationGlyph(n.kind):notificationIcon(n.kind);
+  const chevron=desktop?'<span class="nettoNotifChevron" aria-hidden="true">›</span>':'';
+  html+='<article class="nettoNotifItem '+esc(n.kind)+' '+(!n.read_at?'unread':'')+'" role="button" tabindex="0" data-id="'+n.id+'" data-url="'+esc(n.target_url||'')+'"><span class="nettoNotifIcon"><span class="nettoNotifGlyph">'+glyph+'</span></span><div class="nettoNotifBody"><strong>'+esc(n.title)+'</strong><span>'+esc(n.message)+'</span><div class="nettoNotifCategory">'+esc(notificationCategory(n.kind))+'</div><small>'+notificationDate(n.created_at)+'</small></div><span class="nettoNotifSide"><i class="nettoNotifUnreadDot" aria-hidden="true"></i>'+chevron+'<button class="nettoNotifDelete" title="Supprimer" aria-label="Supprimer la notification">×</button></span></article>'
  });
  list.innerHTML=html;
  const activate=el=>{
