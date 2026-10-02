@@ -1,4 +1,4 @@
--- Password reset requests — admin-assisted recovery flow
+-- Password reset requests — direct recovery by personal email with admin fallback
 create table if not exists public.password_reset_requests (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
@@ -8,6 +8,8 @@ create table if not exists public.password_reset_requests (
   email_status text not null default 'pending'
     check (email_status in ('pending','sent','failed','not_configured')),
   email_error text,
+  reset_channel text not null default 'admin'
+    check (reset_channel in ('email','admin')),
   resolved_at timestamptz,
   resolved_by uuid references public.profiles(id) on delete set null
 );
