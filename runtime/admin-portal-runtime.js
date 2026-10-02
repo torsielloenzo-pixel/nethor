@@ -1104,7 +1104,7 @@ function openPortalSoundManager(key){
   '</div>'+
   '<div class="audioTrimFields"><label><span>Démarre à</span><div><input data-audio-trim-start-input type="number" min="0" step=".01"><em>s</em></div></label><label><span>Se termine à</span><div><input data-audio-trim-end-input type="number" min="0" step=".01"><em>s</em></div></label></div>'+
   '<div class="audioTrimReadout"><strong data-audio-trim-summary>Chargement…</strong><span data-audio-trim-duration>'+esc(custom?'Lecture de la durée du fichier…':'')+'</span></div>'+
-  '<div class="audioTrimActions"><button class="btn secondaryBtn" type="button" onclick="previewManagedPortalSound()">▶ Lire la sélection</button><button class="btn secondaryBtn" type="button" onclick="resetManagedPortalSound()">Réinitialiser le calage</button><span></span><button class="btn secondaryBtn" type="button" onclick="closePortalSoundManager()">Annuler</button><button class="btn primary" type="button" onclick="applyManagedPortalSound()">Appliquer</button></div>'+
+  '<div class="audioTrimActions"><button class="btn secondaryBtn" type="button" onclick="previewManagedPortalSound()">▶ Lire la sélection</button><button class="btn secondaryBtn" type="button" onclick="resetManagedPortalSound()">Réinitialiser le calage</button><span></span><button class="btn secondaryBtn" type="button" onclick="closePortalSoundManager()">Annuler</button><button class="btn primary" data-audio-trim-apply type="button" onclick="applyManagedPortalSound()"'+(custom?' disabled':'')+'>Appliquer</button></div>'+
  '</section>';
  document.body.appendChild(overlay);
  portalSoundManagerState={key,start:rawStart,end:Number.isFinite(rawEnd)&&rawEnd>0?rawEnd:(baseDuration||.01),duration:baseDuration||.01,loading:custom};
@@ -1127,7 +1127,7 @@ function openPortalSoundManager(key){
    const duration=Number(audio.duration);if(!Number.isFinite(duration)||duration<=0)return;
    const st=portalSoundManagerState;st.duration=duration;st.start=Math.min(st.start,Math.max(0,duration-.01));
    st.end=Number.isFinite(rawEnd)&&rawEnd>st.start?Math.min(rawEnd,duration):duration;st.loading=false;
-   portalSoundManagerSync();syncLabels()
+   portalSoundManagerSync();syncLabels();const apply=overlay.querySelector('[data-audio-trim-apply]');if(apply)apply.disabled=false
   },{once:true});
   audio.addEventListener('error',()=>{
    const state=$('saveState');state.className='saveState err';state.textContent='Impossible de lire la durée du fichier audio.'
