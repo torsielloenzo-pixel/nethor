@@ -2058,4 +2058,4 @@ async function boot(){
  else showTab(tab,managementButtonFor(tab),{sound:false})
 }
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
-boot();
+setTimeout(boot,0);
