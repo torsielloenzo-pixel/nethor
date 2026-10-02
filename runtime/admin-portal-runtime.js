@@ -172,7 +172,7 @@ function normalize(raw){
  c.platform_ui=c.platform_ui&&typeof c.platform_ui==='object'?c.platform_ui:{};
  for(const kind of ['mobile','desktop']){
   const current=c.platform_ui[kind]&&typeof c.platform_ui[kind]==='object'?c.platform_ui[kind]:{};
-  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||''),tag:String(x.tag||'')}};
+  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||''),tag:String(x.tag||''),api:String(x.api||'')}};
   const themedAsset=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{},legacy=cleanAsset(x),light=cleanAsset(x.light),dark=cleanAsset(x.dark);return{light:light.url||light.path||light.name?light:legacy,dark}};
   const simpleAsset=key=>cleanAsset(current[key]);
   const currentControls=current.controls&&typeof current.controls==='object'?current.controls:{},controls={};
@@ -629,7 +629,7 @@ function ensurePlatformUiConfig(){
  config.platform_ui=config.platform_ui&&typeof config.platform_ui==='object'?config.platform_ui:{};
  for(const kind of ['mobile','desktop']){
   const current=config.platform_ui[kind]&&typeof config.platform_ui[kind]==='object'?config.platform_ui[kind]:{};
-  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||''),tag:String(x.tag||'')}};
+  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||''),tag:String(x.tag||''),api:String(x.api||'')}};
   const themedAsset=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{},legacy=cleanAsset(x),light=cleanAsset(x.light),dark=cleanAsset(x.dark);return{light:light.url||light.path||light.name?light:legacy,dark}};
   const simpleAsset=key=>cleanAsset(current[key]);
   const currentControls=current.controls&&typeof current.controls==='object'?current.controls:{},controls={};
@@ -677,15 +677,16 @@ function platformAssetUrl(kind,key,theme='light'){
 }
 function platformAssetIsVideo(url){return /\.(mp4|webm)(?:$|\?)/i.test(String(url||''))}
 function platformAssetIsScript(url){return /\.js(?:$|\?)/i.test(String(url||''))}
-function platformWelcomeAnimationHost(url,theme='light',tag='',name='Utilisateur'){
+function platformWelcomeAnimationHost(url,theme='light',tag='',name='Utilisateur',api=''){
  const q=new URLSearchParams({src:String(url||''),theme:theme==='dark'?'dark':'light',mode:'media',name:String(name||'Utilisateur')});
  if(tag)q.set('tag',String(tag));
- return 'welcome-animation-host.html?v=2&'+q.toString()
+ if(api)q.set('api',String(api));
+ return 'welcome-animation-host.html?v=3&'+q.toString()
 }
 function platformAssetPreview(kind,key,theme){
  const asset=platformAssetNode(kind,key)||{},url=platformAssetUrl(kind,key,theme),isWelcome=key==='welcome_media',isHeaderAnimation=key==='header_logo_animation',variant=platformAssetVariantNode(kind,key,theme),animated=isWelcome||isHeaderAnimation;
  if(animated&&platformAssetIsScript(url)){
-  const host=platformWelcomeAnimationHost(url,theme,variant?.tag||'','Utilisateur');
+  const host=platformWelcomeAnimationHost(url,theme,variant?.tag||'','Utilisateur',variant?.api||'');
   return '<iframe class="platformWelcomeAnimationFrame" src="'+attr(host)+'" title="'+(isHeaderAnimation?'Aperçu de l’animation d’entête':'Aperçu de l’animation de bienvenue')+'" sandbox="allow-scripts" loading="lazy"></iframe>'
  }
  if(animated&&platformAssetIsVideo(url))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
@@ -813,11 +814,13 @@ function removePlatformControlAsset(kind,key){
 
 function platformHeaderLogoAnimationControl(kind){
  if(kind!=='desktop')return'';
- const ui=platformUiNode('desktop'),mode=ui.header_logo_mode==='animation'?'animation':'image';
- return '<div class="platformHeaderLogoAnimationControl">'+
+ const ui=platformUiNode('desktop'),mode=ui.header_logo_mode==='animation'?'animation':'image',animLight=String(ui.header_logo_animation?.light?.url||'').trim(),animDark=String(ui.header_logo_animation?.dark?.url||'').trim(),hasAnimation=!!(animLight||animDark);
+ return '<div class="platformHeaderLogoAnimationControl '+(mode==='animation'?'isAnimationMode':'isImageMode')+'">'+
   '<div class="platformAssetCopy"><strong>Affichage du logo d’entête</strong><span>En mode Animation, le logo reste fixe au repos et l’animation remplace le logo uniquement lorsque le curseur passe dessus.</span>'+
    '<label class="platformMediaMode">Type <select data-desktop-header-logo-mode><option value="image" '+(mode==='image'?'selected':'')+'>Logo / image</option><option value="animation" '+(mode==='animation'?'selected':'')+'>Animation au survol</option></select></label>'+
    (mode==='animation'?'<small class="platformMediaHint">Formats animation : JS autonome Nethor, GIF, MP4 ou WebM. L’animation ne démarre qu’au survol.</small>':'')+
+   (mode==='animation'&&!hasAnimation?'<small class="platformMediaWarning">Animation au survol sélectionnée : importe au moins une animation claire ou sombre pour l’activer.</small>':'')+
+   (mode==='animation'&&hasAnimation?'<small class="platformMediaReady">Animation au survol active.</small>':'')+
   '</div>'+
   (mode==='animation'?'<div class="platformHeaderAnimationAssets"><div class="platformSubhead"><div><h3>Animation au survol</h3><p>Le logo statique ci-dessus reste l’état de repos.</p></div></div><div class="platformThemeVariants">'+platformThemeVariant(kind,'header_logo_animation','light')+platformThemeVariant(kind,'header_logo_animation','dark')+'</div></div>':'')+
  '</div>'
@@ -861,7 +864,12 @@ function renderPlatformIdentity(kind){
  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
  host.querySelectorAll('[data-platform-welcome-mode]').forEach(el=>el.onchange=()=>{platformUiNode(kind).welcome_media.type=el.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind)});
  const headerMode=host.querySelector('[data-desktop-header-logo-mode]');
- if(headerMode)headerMode.onchange=()=>{platformUiNode('desktop').header_logo_mode=headerMode.value==='animation'?'animation':'image';markDirty();renderPlatformIdentity(kind);try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}};
+ if(headerMode)headerMode.onchange=()=>{
+  const ui=platformUiNode('desktop');ui.header_logo_mode=headerMode.value==='animation'?'animation':'image';
+  markDirty();
+  try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}
+  renderPlatformIdentity(kind)
+ };
  bindPlatformControlFields(host);
  bindPlatformHeaderLogoSize(host,kind)
 }
@@ -870,13 +878,19 @@ function platformAssetExtension(file){
  const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
  return ['js','png','webp','svg','ico','gif','mp4','webm'].includes(ext)?ext:''
 }
-async function inspectPlatformWelcomeScript(file){
+async function inspectPlatformAnimationScript(file){
  const source=await file.text();
- if(!/customElements\.define\s*\(/.test(source))throw new Error('Animation JS invalide : aucun Web Component détecté.');
- const match=source.match(/const\s+TAG\s*=\s*["'`]([a-z][a-z0-9.-]*-[a-z0-9.-]+)["'`]/i);
- const tag=String(match?.[1]||'').toLowerCase();
- if(!tag)throw new Error('Animation JS incompatible : balise Nethor introuvable.');
- return{tag}
+ const tagMatch=
+  source.match(/const\s+TAG\s*=\s*["'`]([a-z][a-z0-9.-]*-[a-z0-9.-]+)["'`]/i)||
+  source.match(/customElements\.define\s*\(\s*["'`]([a-z][a-z0-9.-]*-[a-z0-9.-]+)["'`]/i);
+ const tag=String(tagMatch?.[1]||'').toLowerCase();
+ const apiMatch=
+  source.match(/(?:global|window)\.([A-Za-z_$][\w$]*)\s*=\s*api\b/)||
+  source.match(/window\.([A-Za-z_$][\w$]*)\s*=\s*Object\.freeze\s*\(/);
+ const api=String(apiMatch?.[1]||'');
+ const mountCapable=api&&/\bmount\s*[,:(]/.test(source);
+ if(!tag&&!mountCapable)throw new Error('Animation JS incompatible : aucun Web Component ni API mount() détecté.');
+ return{tag,api:mountCapable?api:''}
 }
 async function uploadPlatformAsset(kind,key,theme,input){
  const file=input?.files?.[0],state=$('saveState');if(!file)return;
@@ -886,13 +900,13 @@ async function uploadPlatformAsset(kind,key,theme,input){
   const allowed=animated?['js','png','webp','svg','gif','mp4','webm']:['png','webp','svg','ico'];
   if(!ext||!allowed.includes(ext))throw new Error('Format non compatible avec cet emplacement.');
   const limit=animated?12*1024*1024:5*1024*1024;if(file.size>limit)throw new Error('Fichier trop lourd : '+(animated?'12':'5')+' Mo maximum.');
-  const scriptMeta=animated&&ext==='js'?await inspectPlatformWelcomeScript(file):null;
+  const scriptMeta=animated&&ext==='js'?await inspectPlatformAnimationScript(file):null;
   state.className='saveState';state.textContent='Import '+platformLabel(kind)+' · '+(theme==='dark'?'sombre':'clair')+'…';
   const storagePath='platform/'+kind+'/'+key+'/'+theme+'-'+Date.now()+'.'+ext;
   const contentType=ext==='js'?'application/javascript':(file.type||undefined);
   const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType});if(error)throw error;
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=platformAssetVariantNode(kind,key,theme);
-  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag=scriptMeta?.tag||'';
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag=scriptMeta?.tag||'';node.api=scriptMeta?.api||'';
   if(welcome&&['js','gif','mp4','webm'].includes(ext))platformAssetNode(kind,key).type='animation';
   if(headerAnimation&&kind==='desktop')platformUiNode('desktop').header_logo_mode='animation';
   markDirty();renderPlatformIdentity(kind);try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
@@ -910,7 +924,7 @@ function downloadPlatformAsset(kind,key,theme='light'){
  const node=platformAssetVariantNode(kind,key,theme),url=platformAssetUrl(kind,key,theme),name=node?.name||('Nethor-'+kind+'-'+key+'-'+theme+'.svg');downloadAssetUrl(url,name)
 }
 function removePlatformAsset(kind,key,theme='light'){
- const node=platformAssetVariantNode(kind,key,theme);node.url='';node.path='';node.name='';node.tag='';markDirty();renderPlatformIdentity(kind)
+ const node=platformAssetVariantNode(kind,key,theme);node.url='';node.path='';node.name='';node.tag='';node.api='';markDirty();renderPlatformIdentity(kind)
 }
 function choosePlatformSimpleAsset(kind,key){$('platformSimpleAssetFile_'+kind+'_'+key)?.click()}
 async function uploadPlatformSimpleAsset(kind,key,input){
