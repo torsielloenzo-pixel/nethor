@@ -27,7 +27,7 @@ function buildPageLayout(page){
   settings:{title:'Personnalisation',subtitle:'Mon affichage et mes raccourcis',back:true},
   'notification-settings':{title:'Notifications',subtitle:'Préférences et canaux',back:true},
   'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true,chrome:false},
-  notifications:{title:'Notifications',subtitle:'Centre d’activité Nethor',back:false},
+  notifications:{title:'Notifications',subtitle:'Centre d’activité Nethor',back:true},
   scanner:{title:'Scanner',subtitle:'Lecture EAN13',back:true,chrome:false},
   articles:{title:'Fiches articles',subtitle:'Référentiel produit interne',back:true},
   accounts:{title:'Gestion des comptes',subtitle:'Administration · Accès · Journal',back:true},
