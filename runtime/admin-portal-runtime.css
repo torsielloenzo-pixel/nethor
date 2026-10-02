@@ -460,3 +460,14 @@ html[data-theme="dark"] .platformHeaderLogoSizeNumber{background:#1f252b;border-
  background:#1f252b;border-color:#353e47
 }
 :root[data-theme="dark"] .platformHeaderAnimationAssets{border-color:#343d46}
+
+
+/* État du mode logo / animation d'entête */
+.platformHeaderLogoAnimationControl.isAnimationMode{border-color:#ffd7c3}
+.platformHeaderLogoAnimationControl.isImageMode{border-color:#e5e8ec}
+.platformMediaWarning,.platformMediaReady{display:block;margin-top:2px;font-size:8.5px;font-weight:800;line-height:1.4}
+.platformMediaWarning{color:#b45309}
+.platformMediaReady{color:#23804a}
+:root[data-theme="dark"] .platformHeaderLogoAnimationControl.isAnimationMode{border-color:#6b3a25}
+:root[data-theme="dark"] .platformMediaWarning{color:#ffb36b}
+:root[data-theme="dark"] .platformMediaReady{color:#78d39e}
