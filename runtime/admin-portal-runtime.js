@@ -1035,6 +1035,106 @@ async function uploadPortalSound(key,input){
 function previewPortalSound(key){
  const node=portalSoundNode(key);window.NettoSounds?.unlock?.();window.NettoSounds?.preview?.(key,node)
 }
+let portalSoundManagerState=null;
+function closePortalSoundManager(){
+ const overlay=$('portalSoundManagerOverlay');if(overlay)overlay.remove();
+ portalSoundManagerState=null
+}
+function portalSoundManagerDuration(key,node){
+ if(String(node?.url||'').trim())return 0;
+ return Math.max(.01,Number(window.NettoSounds?.duration?.(key))||.5)
+}
+function portalSoundManagerClamp(state){
+ const step=state.duration<=1?.005:.01,duration=Math.max(step,Number(state.duration)||step);
+ state.start=Math.max(0,Math.min(duration-step,Number(state.start)||0));
+ state.end=Math.max(state.start+step,Math.min(duration,Number(state.end)||duration));
+ state.start=Math.round(state.start/step)*step;state.end=Math.round(state.end/step)*step;
+ return{step,duration}
+}
+function portalSoundManagerSync(){
+ const state=portalSoundManagerState,overlay=$('portalSoundManagerOverlay');if(!state||!overlay)return;
+ const {step,duration}=portalSoundManagerClamp(state),startRange=overlay.querySelector('[data-audio-trim-start-range]'),endRange=overlay.querySelector('[data-audio-trim-end-range]'),startInput=overlay.querySelector('[data-audio-trim-start-input]'),endInput=overlay.querySelector('[data-audio-trim-end-input]'),selection=overlay.querySelector('[data-audio-trim-selection]'),summary=overlay.querySelector('[data-audio-trim-summary]'),durationLabel=overlay.querySelector('[data-audio-trim-duration]');
+ [startRange,endRange].forEach(el=>{if(el){el.max=String(duration);el.step=String(step)}});
+ if(startRange)startRange.value=String(state.start);
+ if(endRange)endRange.value=String(state.end);
+ if(startInput){startInput.max=String(duration);startInput.step=String(step);startInput.value=state.start.toFixed(step<.01?3:2)}
+ if(endInput){endInput.max=String(duration);endInput.step=String(step);endInput.value=state.end.toFixed(step<.01?3:2)}
+ if(selection){
+  const left=Math.max(0,Math.min(100,state.start/duration*100)),right=Math.max(left,Math.min(100,state.end/duration*100));
+  selection.style.left=left+'%';selection.style.width=(right-left)+'%'
+ }
+ if(summary)summary.textContent='Lecture : '+soundTimeLabel(state.start)+' → '+soundTimeLabel(state.end)+' · '+soundTimeLabel(state.end-state.start);
+ if(durationLabel)durationLabel.textContent='Durée source : '+soundTimeLabel(duration)
+}
+function portalSoundManagerSet(which,value){
+ const state=portalSoundManagerState;if(!state)return;
+ const n=Number(value);if(!Number.isFinite(n))return;
+ if(which==='start')state.start=n;else state.end=n;
+ portalSoundManagerSync()
+}
+function previewManagedPortalSound(){
+ const state=portalSoundManagerState;if(!state)return;
+ const node=portalSoundNode(state.key);window.NettoSounds?.unlock?.();
+ window.NettoSounds?.preview?.(state.key,{...node,trim_start:state.start,trim_end:state.end})
+}
+function resetManagedPortalSound(){
+ const state=portalSoundManagerState;if(!state)return;
+ state.start=0;state.end=Math.max(.01,state.duration||.01);portalSoundManagerSync();previewManagedPortalSound()
+}
+function applyManagedPortalSound(){
+ const state=portalSoundManagerState,node=state?portalSoundNode(state.key):null;if(!state||!node)return;
+ portalSoundManagerClamp(state);
+ node.trim_start=Math.max(0,Number(state.start.toFixed(3)));
+ node.trim_end=state.end>=state.duration-.002?null:Math.max(node.trim_start+.001,Number(state.end.toFixed(3)));
+ markDirty();closePortalSoundManager();renderSoundEditor();
+ $('saveState').textContent='Calage audio modifié — enregistrer pour confirmer'
+}
+function openPortalSoundManager(key){
+ const node=portalSoundNode(key),def=portalSoundDef(key);if(!node||!def)return;
+ closePortalSoundManager();
+ const custom=!!String(node.url||'').trim(),baseDuration=portalSoundManagerDuration(key,node),rawStart=Math.max(0,Number(node.trim_start)||0),rawEnd=Number(node.trim_end);
+ const overlay=document.createElement('div');overlay.id='portalSoundManagerOverlay';overlay.className='audioTrimOverlay';
+ overlay.innerHTML='<section class="audioTrimDialog" role="dialog" aria-modal="true" aria-labelledby="audioTrimTitle">'+
+  '<div class="audioTrimHeader"><div><span class="audioTrimEyebrow">Calage audio</span><h3 id="audioTrimTitle">'+esc(def.label)+'</h3><p>'+esc(custom?(node.name||'Fichier audio personnalisé'):'Son Nethor par défaut')+'</p></div><button class="audioTrimClose" type="button" aria-label="Fermer" onclick="closePortalSoundManager()">×</button></div>'+
+  '<div class="audioTrimNotice">Le fichier original n’est pas modifié. Nethor mémorise uniquement le point de départ et le point de fin utilisés lors de la lecture.</div>'+
+  '<div class="audioTrimTimeline">'+
+   '<div class="audioTrimTrack" aria-hidden="true"><i data-audio-trim-selection></i></div>'+
+   '<div class="audioTrimRangeRow"><label><span>Début</span><b data-audio-trim-start-label>0 s</b></label><input data-audio-trim-start-range type="range" min="0" max="1" step=".01" value="0"></div>'+
+   '<div class="audioTrimRangeRow"><label><span>Fin</span><b data-audio-trim-end-label>0 s</b></label><input data-audio-trim-end-range type="range" min="0" max="1" step=".01" value="1"></div>'+
+  '</div>'+
+  '<div class="audioTrimFields"><label><span>Démarre à</span><div><input data-audio-trim-start-input type="number" min="0" step=".01"><em>s</em></div></label><label><span>Se termine à</span><div><input data-audio-trim-end-input type="number" min="0" step=".01"><em>s</em></div></label></div>'+
+  '<div class="audioTrimReadout"><strong data-audio-trim-summary>Chargement…</strong><span data-audio-trim-duration>'+esc(custom?'Lecture de la durée du fichier…':'')+'</span></div>'+
+  '<div class="audioTrimActions"><button class="btn secondaryBtn" type="button" onclick="previewManagedPortalSound()">▶ Lire la sélection</button><button class="btn secondaryBtn" type="button" onclick="resetManagedPortalSound()">Réinitialiser le calage</button><span></span><button class="btn secondaryBtn" type="button" onclick="closePortalSoundManager()">Annuler</button><button class="btn primary" type="button" onclick="applyManagedPortalSound()">Appliquer</button></div>'+
+ '</section>';
+ document.body.appendChild(overlay);
+ portalSoundManagerState={key,start:rawStart,end:Number.isFinite(rawEnd)&&rawEnd>0?rawEnd:(baseDuration||.01),duration:baseDuration||.01,loading:custom};
+ overlay.addEventListener('click',e=>{if(e.target===overlay)closePortalSoundManager()});
+ const startRange=overlay.querySelector('[data-audio-trim-start-range]'),endRange=overlay.querySelector('[data-audio-trim-end-range]'),startInput=overlay.querySelector('[data-audio-trim-start-input]'),endInput=overlay.querySelector('[data-audio-trim-end-input]');
+ startRange.oninput=()=>portalSoundManagerSet('start',startRange.value);
+ endRange.oninput=()=>portalSoundManagerSet('end',endRange.value);
+ startInput.oninput=()=>portalSoundManagerSet('start',startInput.value);
+ endInput.oninput=()=>portalSoundManagerSet('end',endInput.value);
+ const syncLabels=()=>{
+  const state=portalSoundManagerState;if(!state)return;
+  const a=overlay.querySelector('[data-audio-trim-start-label]'),b=overlay.querySelector('[data-audio-trim-end-label]');
+  if(a)a.textContent=soundTimeLabel(state.start);if(b)b.textContent=soundTimeLabel(state.end)
+ };
+ [startRange,endRange,startInput,endInput].forEach(el=>el.addEventListener('input',syncLabels));
+ if(custom){
+  const audio=new Audio();audio.preload='metadata';audio.src=String(node.url||'');
+  audio.addEventListener('loadedmetadata',()=>{
+   if(!portalSoundManagerState||portalSoundManagerState.key!==key)return;
+   const duration=Number(audio.duration);if(!Number.isFinite(duration)||duration<=0)return;
+   const st=portalSoundManagerState;st.duration=duration;st.start=Math.min(st.start,Math.max(0,duration-.01));
+   st.end=Number.isFinite(rawEnd)&&rawEnd>st.start?Math.min(rawEnd,duration):duration;st.loading=false;
+   portalSoundManagerSync();syncLabels()
+  },{once:true});
+  audio.addEventListener('error',()=>{
+   const state=$('saveState');state.className='saveState err';state.textContent='Impossible de lire la durée du fichier audio.'
+  },{once:true});
+  audio.load()
+ }else{portalSoundManagerSync();syncLabels()}
+}
 async function downloadPortalSound(key){
  const node=portalSoundNode(key),def=portalSoundDef(key);if(!node||!def)return;
  const url=String(node.url||'').trim();
