@@ -1439,3 +1439,52 @@ html[data-nethor-platform="desktop"] body.nettoHasMobileBar{padding-bottom:0!imp
     color:#e7ebee!important;
   }
 }
+
+
+/* Nethor Desktop — structure garantie du chrome des pages */
+@media (min-width:901px){
+  html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]{
+    width:100%!important;
+    min-width:0!important;
+  }
+  html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]>.top{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    flex-wrap:nowrap!important;
+    width:min(96vw,1540px)!important;
+    max-width:1540px!important;
+    min-width:0!important;
+    min-height:82px!important;
+    margin:0 auto!important;
+    padding:0 18px!important;
+    gap:14px!important;
+  }
+  html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .brand{
+    display:flex!important;
+    align-items:center!important;
+    flex:0 0 auto!important;
+    min-width:0!important;
+  }
+  html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .navActions{
+    display:flex!important;
+    align-items:center!important;
+    flex:0 0 auto!important;
+    min-width:0!important;
+  }
+  html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] [data-nethor-global-tools-host]{
+    display:contents!important;
+  }
+  html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoGlobalTools{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    flex:0 0 auto!important;
+    margin-left:auto!important;
+    min-width:0!important;
+    gap:10px!important;
+  }
+  html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] #nettoGlobalBack{
+    flex:0 0 auto!important;
+  }
+}
