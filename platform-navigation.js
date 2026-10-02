@@ -52,7 +52,8 @@ const MOBILE_SPA_CUTOVER=Object.freeze({
  'profile.html':'profile',
  'settings.html':'settings',
  'notification-settings.html':'notification-settings',
- 'report-problem.html':'report-problem'
+ 'report-problem.html':'report-problem',
+ 'scanner.html':'scanner'
 });
 
 const MOBILE_ROUTES=Object.freeze({
