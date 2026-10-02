@@ -1024,14 +1024,14 @@ const SOUND_ADMIN_DEFS=[
  {key:'delete',label:'Suppression',description:'Suppression ou action destructive.',group:'interface'}
 ];
 const SOUND_ADMIN_DEFAULT_ENABLED=Object.freeze({loginSuccess:true,logout:true,update:true,welcome:false});
-const SOUND_EQ_BANDS=Object.freeze([
+const PORTAL_SOUND_EQ_BANDS=Object.freeze([
  {key:'bass',label:'Basses',freq:'80 Hz'},
  {key:'warmth',label:'Chaleur',freq:'250 Hz'},
  {key:'mid',label:'Médiums',freq:'1 kHz'},
  {key:'presence',label:'Présence',freq:'4 kHz'},
  {key:'treble',label:'Aigus',freq:'10 kHz'}
 ]);
-const SOUND_EQ_PRESETS=Object.freeze({
+const PORTAL_SOUND_EQ_PRESETS=Object.freeze({
  flat:{bass:0,warmth:0,mid:0,presence:0,treble:0},
  bass:{bass:6,warmth:3,mid:0,presence:-1,treble:0},
  clear:{bass:-1,warmth:0,mid:1,presence:4,treble:3},
@@ -1040,7 +1040,7 @@ const SOUND_EQ_PRESETS=Object.freeze({
 function normalizePortalSoundEq(raw){
  raw=raw&&typeof raw==='object'?raw:{};
  const out={};
- for(const band of SOUND_EQ_BANDS){
+ for(const band of PORTAL_SOUND_EQ_BANDS){
   const n=Number(raw[band.key]);
   out[band.key]=Number.isFinite(n)?Math.max(-12,Math.min(12,Math.round(n*10)/10)):0
  }
@@ -1048,7 +1048,7 @@ function normalizePortalSoundEq(raw){
 }
 function portalSoundEqActive(eq){
  const node=normalizePortalSoundEq(eq);
- return SOUND_EQ_BANDS.some(b=>Math.abs(node[b.key])>=.05)
+ return PORTAL_SOUND_EQ_BANDS.some(b=>Math.abs(node[b.key])>=.05)
 }
 function ensureSoundConfig(){
  config.sounds=config.sounds&&typeof config.sounds==='object'?config.sounds:{};
@@ -1166,7 +1166,7 @@ function portalSoundManagerSync(){
  if(summary)summary.textContent='Lecture : '+soundTimeLabel(state.start)+' → '+soundTimeLabel(state.end)+' · '+soundTimeLabel(state.end-state.start);
  if(durationLabel)durationLabel.textContent='Durée source : '+soundTimeLabel(duration);
  state.eq=normalizePortalSoundEq(state.eq);
- SOUND_EQ_BANDS.forEach(band=>{
+ PORTAL_SOUND_EQ_BANDS.forEach(band=>{
   const input=overlay.querySelector('[data-audio-eq-band="'+band.key+'"]'),label=overlay.querySelector('[data-audio-eq-value="'+band.key+'"]'),value=state.eq[band.key]||0;
   if(input&&document.activeElement!==input)input.value=String(value);
   if(label)label.textContent=(value>0?'+':'')+Number(value).toFixed(value%1?1:0)+' dB'
@@ -1175,13 +1175,13 @@ function portalSoundManagerSync(){
  if(status)status.textContent=active?'Égalisation personnalisée active':'Courbe neutre · aucun traitement tonal'
 }
 function portalSoundManagerSetEq(band,value){
- const state=portalSoundManagerState;if(!state||!SOUND_EQ_BANDS.some(x=>x.key===band))return;
+ const state=portalSoundManagerState;if(!state||!PORTAL_SOUND_EQ_BANDS.some(x=>x.key===band))return;
  const n=Number(value);if(!Number.isFinite(n))return;
  state.eq=normalizePortalSoundEq({...state.eq,[band]:n});
  portalSoundManagerSync()
 }
 function setManagedPortalEqPreset(name){
- const state=portalSoundManagerState,preset=SOUND_EQ_PRESETS[name];if(!state||!preset)return;
+ const state=portalSoundManagerState,preset=PORTAL_SOUND_EQ_PRESETS[name];if(!state||!preset)return;
  state.eq=normalizePortalSoundEq(preset);portalSoundManagerSync();previewManagedPortalSound()
 }
 function portalSoundManagerSet(which,value){
@@ -1212,7 +1212,7 @@ function openPortalSoundManager(key){
  const node=portalSoundNode(key),def=portalSoundDef(key);if(!node||!def)return;
  closePortalSoundManager();
  const custom=!!String(node.url||'').trim(),baseDuration=portalSoundManagerDuration(key,node),rawStart=Math.max(0,Number(node.trim_start)||0),rawEnd=Number(node.trim_end),initialEq=normalizePortalSoundEq(node.eq);
- const eqHtml=SOUND_EQ_BANDS.map(band=>{
+ const eqHtml=PORTAL_SOUND_EQ_BANDS.map(band=>{
   const value=initialEq[band.key]||0;
   return '<label class="audioEqBand">'+
    '<span><strong>'+esc(band.label)+'</strong><small>'+esc(band.freq)+'</small></span>'+
