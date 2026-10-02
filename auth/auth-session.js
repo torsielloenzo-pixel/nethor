@@ -57,12 +57,15 @@ function authLoginSettings(ui,brand){
   feature_planning:'Planning',
   feature_stock:'Stock',
   feature_team:'Équipe',
-  background_opacity:100
+  background_opacity:100,
+  primary_logo_visible:true,
+  secondary_logo_visible:true
  };
  const root=ui?.login_settings&&typeof ui.login_settings==='object'?ui.login_settings:{};
  const light=root.light&&typeof root.light==='object'?root.light:{};
  const raw=authTheme()==='dark'&&root.dark&&typeof root.dark==='object'?root.dark:light;
  const pick=(key)=>raw[key]!==undefined?raw[key]:(light[key]!==undefined?light[key]:defaults[key]);
+ const bool=(key)=>pick(key)!==false;
  const n=Number(pick('background_opacity'));
  return{
   brand_text:String(pick('brand_text')??defaults.brand_text),
@@ -75,7 +78,9 @@ function authLoginSettings(ui,brand){
   feature_planning:String(pick('feature_planning')??defaults.feature_planning),
   feature_stock:String(pick('feature_stock')??defaults.feature_stock),
   feature_team:String(pick('feature_team')??defaults.feature_team),
-  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,n)):100
+  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,n)):100,
+  primary_logo_visible:bool('primary_logo_visible'),
+  secondary_logo_visible:bool('secondary_logo_visible')
  }
 }
 function authApplyLoginIcon(el,url){
@@ -119,10 +124,11 @@ function applyAuthBranding(){
   }
   if(wordmarkUrl){
    if(wordmark.getAttribute('src')!==wordmarkUrl)wordmark.src=wordmarkUrl;
-   wordmark.hidden=false;if(textEl)textEl.hidden=true
+   wordmark.hidden=false;wordmark.classList.toggle('authLoginInvisible',!settings.secondary_logo_visible);
+   if(textEl){textEl.hidden=true;textEl.classList.remove('authLoginInvisible')}
   }else{
-   wordmark.hidden=true;
-   if(textEl){textEl.hidden=false;textEl.textContent=settings.brand_text}
+   wordmark.hidden=true;wordmark.classList.remove('authLoginInvisible');
+   if(textEl){textEl.hidden=false;textEl.textContent=settings.brand_text;textEl.classList.toggle('authLoginInvisible',!settings.secondary_logo_visible)}
   }
 
   const email=root.querySelector('#email'),password=root.querySelector('#password');
@@ -146,9 +152,25 @@ function applyAuthBranding(){
 async function loadAuthBrandingConfig(force=false){
  if(!force&&authSiteConfig&&Object.keys(authSiteConfig).length){applyAuthBranding();window.NettoSounds?.configure?.(authSiteConfig);return authSiteConfig}
  try{
-  const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
-  if(error)throw error;authSiteConfig=data?.value&&typeof data.value==='object'?data.value:{}
- }catch(e){console.warn('Identité de connexion Nethor:',e);authSiteConfig=authSiteConfig||{}}
+  if(force){
+   const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
+   if(error)throw error;
+   authSiteConfig=data?.value&&typeof data.value==='object'?data.value:{}
+  }else{
+   const {data,error}=await db.rpc('get_public_login_config');
+   if(error)throw error;
+   authSiteConfig=data&&typeof data==='object'?data:{}
+  }
+ }catch(e){
+  console.warn('Identité de connexion Nethor:',e);
+  if(force){
+   try{
+    const {data,error}=await db.rpc('get_public_login_config');
+    if(error)throw error;
+    authSiteConfig=data&&typeof data==='object'?data:{}
+   }catch(e2){console.warn('Identité publique de connexion Nethor:',e2);authSiteConfig=authSiteConfig||{}}
+  }else authSiteConfig=authSiteConfig||{}
+ }
  applyAuthBranding();window.NettoSounds?.configure?.(authSiteConfig);return authSiteConfig
 }
 function ensureWelcomeMediaStyle(){
