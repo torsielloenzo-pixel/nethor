@@ -4,6 +4,7 @@
 (function(){
 'use strict';
 
+const requestedLoginAtLoad=(()=>{try{return new URLSearchParams(location.search).get('tab')==='login'||localStorage.getItem('nettoManagementTab')==='login'}catch(_){return false}})();
 const LOGIN_ASSET_KEYS=[
  'login_logo','login_wordmark','login_background',
  'login_icon_user','login_icon_password',
@@ -46,7 +47,7 @@ function cleanTheme(x,fallback){
   feature_planning:val('feature_planning'),
   feature_stock:val('feature_stock'),
   feature_team:val('feature_team'),
-  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):Math.max(0,Math.min(100,Number(fallback.background_opacity)||100))
+  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):Math.max(0,Math.min(100,Number.isFinite(Number(fallback.background_opacity))?Number(fallback.background_opacity):100))
  }
 }
 function ensureLoginConfigOnPlatform(dst,src){
@@ -213,7 +214,7 @@ function bindEditor(host){
    const s=themeNode(el.dataset.loginKind,el.dataset.loginTheme),key=el.dataset.loginKey;
    if(el.type==='range'){
     s[key]=Math.max(0,Math.min(100,Math.round(Number(el.value)||0)));
-    const out=host.querySelector('[data-login-opacity-label="'+el.dataset.loginKind+'-'+el.dataset.loginTheme+'"]');if(out)out.textContent=s[key]+' %'
+    const out=host.querySelector('[data-login-opacity-label="'+el.dataset.loginKind+'-'+el.dataset.loginTheme+'"]');if(out)out.textContent=s[key]+' %';const preview=el.closest('.loginThemeEditor')?.querySelector('.loginEditorPreview');if(preview)preview.style.setProperty('--login-preview-opacity',String(s[key]/100))
    }else s[key]=el.value;
    markDirty()
   };
@@ -322,7 +323,6 @@ if(typeof baseRenderPlatformEditors==='function')window.renderPlatformEditors=fu
    On restaure donc cet onglet juste après le chargement si l'URL ou le stockage le demande. */
 setTimeout(()=>{
  installLoginStructure();
- const requested=new URLSearchParams(location.search).get('tab')||localStorage.getItem('nettoManagementTab');
- if(requested==='login')window.showTab?.('login',document.querySelector('.managementSide [data-tab="login"]'),{sound:false})
+ if(requestedLoginAtLoad)window.showTab?.('login',document.querySelector('.managementSide [data-tab="login"]'),{sound:false})
 },700);
 })();
