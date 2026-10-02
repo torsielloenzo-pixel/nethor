@@ -21,7 +21,9 @@ const LOGIN_DEFAULTS=Object.freeze({
  feature_planning:'Planning',
  feature_stock:'Stock',
  feature_team:'Équipe',
- background_opacity:100
+ background_opacity:100,
+ primary_logo_visible:true,
+ secondary_logo_visible:true
 });
 function cleanAsset(x){
  x=x&&typeof x==='object'?x:{};
@@ -36,6 +38,7 @@ function cleanTheme(x,fallback){
  x=x&&typeof x==='object'?x:{};fallback=fallback&&typeof fallback==='object'?fallback:LOGIN_DEFAULTS;
  const n=Number(x.background_opacity);
  const val=(key)=>x[key]===undefined?String(fallback[key]??LOGIN_DEFAULTS[key]??''):String(x[key]);
+ const bool=(key)=>x[key]===undefined?(fallback[key]!==false):(x[key]!==false);
  return{
   brand_text:val('brand_text'),
   email_placeholder:val('email_placeholder'),
@@ -47,7 +50,9 @@ function cleanTheme(x,fallback){
   feature_planning:val('feature_planning'),
   feature_stock:val('feature_stock'),
   feature_team:val('feature_team'),
-  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):Math.max(0,Math.min(100,Number.isFinite(Number(fallback.background_opacity))?Number(fallback.background_opacity):100))
+  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):Math.max(0,Math.min(100,Number.isFinite(Number(fallback.background_opacity))?Number(fallback.background_opacity):100)),
+  primary_logo_visible:bool('primary_logo_visible'),
+  secondary_logo_visible:bool('secondary_logo_visible')
  }
 }
 function ensureLoginConfigOnPlatform(dst,src){
@@ -165,8 +170,8 @@ function preview(kind,theme){
  return '<div class="loginEditorPreview" style="--login-preview-bg:url('+JSON.stringify(bg)+');--login-preview-opacity:'+(s.background_opacity/100)+'">'+
   '<div class="loginEditorPreviewBg"></div>'+
   '<div class="loginEditorPreviewCard">'+
-   '<img class="loginEditorPreviewPrimary" src="'+attr(logo)+'" alt="">'+
-   (wordmark?'<img class="loginEditorPreviewWordmark" src="'+attr(wordmark)+'" alt="">':'<strong>'+esc(s.brand_text)+'</strong>')+
+   '<img class="loginEditorPreviewPrimary" style="visibility:'+(s.primary_logo_visible?'visible':'hidden')+'" src="'+attr(logo)+'" alt="">'+
+   (wordmark?'<img class="loginEditorPreviewWordmark" style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'" src="'+attr(wordmark)+'" alt="">':'<strong style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'">'+esc(s.brand_text)+'</strong>')+
    '<div class="loginEditorPreviewField"><span>○</span>'+esc(s.email_placeholder)+'</div>'+
    '<div class="loginEditorPreviewField"><span>□</span>'+esc(s.password_placeholder)+'</div>'+
    '<b>'+esc(s.submit_text)+'</b>'+
@@ -182,7 +187,9 @@ function themeEditor(kind,theme){
   preview(kind,theme)+
   '<div class="loginEditorGroup"><h4>Identité & fond</h4>'+
    assetEditor(kind,'login_logo',theme)+
+   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.primary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="primary_logo_visible"><span><strong>Logo principal visible</strong><small>Masque le logo sans déplacer les autres éléments.</small></span></label>'+
    assetEditor(kind,'login_wordmark',theme)+
+   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.secondary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="secondary_logo_visible"><span><strong>Logo secondaire / texte visible</strong><small>Masque le wordmark ou le texte sans changer la géométrie.</small></span></label>'+
    assetEditor(kind,'login_background',theme)+
    '<label class="loginOpacityControl"><span>Opacité de l’écran de fond <b data-login-opacity-label="'+kind+'-'+theme+'">'+s.background_opacity+' %</b></span><input type="range" min="0" max="100" step="1" value="'+s.background_opacity+'" data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="background_opacity"></label>'+
   '</div>'+
@@ -215,10 +222,21 @@ function bindEditor(host){
    if(el.type==='range'){
     s[key]=Math.max(0,Math.min(100,Math.round(Number(el.value)||0)));
     const out=host.querySelector('[data-login-opacity-label="'+el.dataset.loginKind+'-'+el.dataset.loginTheme+'"]');if(out)out.textContent=s[key]+' %';const preview=el.closest('.loginThemeEditor')?.querySelector('.loginEditorPreview');if(preview)preview.style.setProperty('--login-preview-opacity',String(s[key]/100))
+   }else if(el.type==='checkbox'){
+    s[key]=el.checked;
+    const themeEl=el.closest('.loginThemeEditor');
+    const preview=themeEl?.querySelector('.loginEditorPreview');
+    if(preview){
+      if(key==='primary_logo_visible')preview.querySelector('.loginEditorPreviewPrimary')?.style.setProperty('visibility',s[key]?'visible':'hidden');
+      if(key==='secondary_logo_visible'){
+        const sec=preview.querySelector('.loginEditorPreviewWordmark')||preview.querySelector('.loginEditorPreviewCard>strong');
+        sec?.style.setProperty('visibility',s[key]?'visible':'hidden')
+      }
+    }
    }else s[key]=el.value;
    markDirty()
   };
-  el.addEventListener('input',update)
+  el.addEventListener(el.type==='checkbox'?'change':'input',update)
  })
 }
 window.renderLoginScreenEditor=function(){
