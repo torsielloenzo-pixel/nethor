@@ -185,10 +185,12 @@ function preview(kind,theme){
  return '<div class="loginEditorPreview" style="--login-preview-bg:url('+JSON.stringify(bg)+');--login-preview-opacity:'+(s.background_opacity/100)+'">'+
   '<div class="loginEditorPreviewBg"></div>'+
   '<div class="loginEditorPreviewCard">'+
-   '<img class="loginEditorPreviewPrimary" style="visibility:'+(s.primary_logo_visible?'visible':'hidden')+'" src="'+attr(logo)+'" alt="">'+
-   (s.secondary_display==='logo'
-      ?'<img class="loginEditorPreviewWordmark" style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'" src="'+attr(wordmark||'')+'" alt="">'
-      :'<strong class="loginEditorPreviewSecondaryText" style="visibility:'+(s.secondary_logo_visible?'visible':'hidden')+'">'+esc(s.brand_text)+'</strong>')+
+   (s.primary_logo_visible?'<img class="loginEditorPreviewPrimary" src="'+attr(logo)+'" alt="">':'')+
+   (s.secondary_logo_visible
+      ?(s.secondary_display==='logo'
+        ?(wordmark?'<img class="loginEditorPreviewWordmark" src="'+attr(wordmark)+'" alt="">':'')
+        :'<strong class="loginEditorPreviewSecondaryText">'+esc(s.brand_text)+'</strong>')
+      :'')+
    '<div class="loginEditorPreviewField"><span>○</span>'+esc(s.email_placeholder)+'</div>'+
    '<div class="loginEditorPreviewField"><span>□</span>'+esc(s.password_placeholder)+'</div>'+
    '<b>'+esc(s.submit_text)+'</b>'+
@@ -244,13 +246,7 @@ function bindEditor(host){
     s[key]=el.checked;
     const themeEl=el.closest('.loginThemeEditor');
     const preview=themeEl?.querySelector('.loginEditorPreview');
-    if(preview){
-      if(key==='primary_logo_visible')preview.querySelector('.loginEditorPreviewPrimary')?.style.setProperty('visibility',s[key]?'visible':'hidden');
-      if(key==='secondary_logo_visible'){
-        const sec=preview.querySelector('.loginEditorPreviewWordmark,.loginEditorPreviewSecondaryText');
-        sec?.style.setProperty('visibility',s[key]?'visible':'hidden')
-      }
-    }
+    if(preview&&(key==='primary_logo_visible'||key==='secondary_logo_visible'))renderLoginScreenEditor()
    }else if(el.type==='radio'&&key==='secondary_display'){
     if(!el.checked)return;
     s[key]=el.value==='logo'?'logo':'text';
@@ -259,13 +255,13 @@ function bindEditor(host){
     const themeEl=el.closest('.loginThemeEditor'),previewCard=themeEl?.querySelector('.loginEditorPreviewCard');
     if(previewCard){
       const current=previewCard.querySelector('.loginEditorPreviewWordmark,.loginEditorPreviewSecondaryText');
-      const visible=s.secondary_logo_visible?'visible':'hidden';
-      if(s[key]==='logo'){
-        const img=document.createElement('img');img.className='loginEditorPreviewWordmark';img.alt='';img.src=assetUrl(el.dataset.loginKind,'login_wordmark',el.dataset.loginTheme)||'';img.style.visibility=visible;
-        current?.replaceWith(img)
+      if(!s.secondary_logo_visible){current?.remove()}
+      else if(s[key]==='logo'){
+        const src=assetUrl(el.dataset.loginKind,'login_wordmark',el.dataset.loginTheme)||'';
+        if(src){const img=document.createElement('img');img.className='loginEditorPreviewWordmark';img.alt='';img.src=src;current?.replaceWith(img)}
+        else current?.remove()
       }else{
-        const text=document.createElement('strong');text.className='loginEditorPreviewSecondaryText';text.textContent=s.brand_text;text.style.visibility=visible;
-        current?.replaceWith(text)
+        const text=document.createElement('strong');text.className='loginEditorPreviewSecondaryText';text.textContent=s.brand_text;current?.replaceWith(text)
       }
     }
    }else s[key]=el.value;
