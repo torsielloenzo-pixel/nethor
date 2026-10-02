@@ -21,7 +21,10 @@ function authThemedAsset(node,fallback=''){
  const asset=authThemedAssetNode(node);
  return String(asset?.url||fallback||'').trim()
 }
-function authSimpleAsset(node,fallback=''){return String(node?.url||fallback||'').trim()}
+function authSimpleAsset(node,fallback=''){
+ const value=String(node?.url||fallback||'').trim();
+ return /(?:^|\/)app-icon-mobile-v73\.svg(?:\?|$)/i.test(value)?'assets/app-icon-mobile-v74.svg?v=74':value
+}
 function authIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
 function applyAuthHeadIcons(){
  const mobile=authSiteConfig?.platform_ui?.mobile||{},desktop=authSiteConfig?.platform_ui?.desktop||{},kind=authPlatformKind();
