@@ -232,8 +232,12 @@ function prewarmMobileViews(){
 }
 
 function mobileIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
+function migrateLegacyMobileIcon(url){
+ const value=String(url||'').trim();
+ return /(?:^|\/)app-icon-mobile-v73\.svg(?:\?|$)/i.test(value)?'assets/app-icon-mobile-v74.svg?v=74':value
+}
 function applyMobileSystemIcons(config={}){
- const mobile=config?.platform_ui?.mobile||{},apple=String(mobile?.home_screen_icon?.url||'').trim();
+ const mobile=config?.platform_ui?.mobile||{},apple=migrateLegacyMobileIcon(mobile?.home_screen_icon?.url||'');
  if(apple){
   let link=document.getElementById('nethorMobileConfiguredAppleTouch');if(!link){link=document.createElement('link');link.id='nethorMobileConfiguredAppleTouch';link.rel='apple-touch-icon';document.head?.appendChild(link)}link.href=apple
  }
