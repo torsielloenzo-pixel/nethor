@@ -183,6 +183,8 @@ function normalize(raw){
   const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
   c.platform_ui[kind]={
    header_logo:themedAsset('header_logo'),
+   header_logo_mode:kind==='desktop'&&current.header_logo_mode==='animation'?'animation':'image',
+   header_logo_animation:themedAsset('header_logo_animation'),
    header_logo_scale:kind==='desktop'?headerLogoScale:100,
    login_logo:themedAsset('login_logo'),
    welcome_media:{...themedAsset('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'},
@@ -638,6 +640,8 @@ function ensurePlatformUiConfig(){
   const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
   config.platform_ui[kind]={
    header_logo:themedAsset('header_logo'),
+   header_logo_mode:kind==='desktop'&&current.header_logo_mode==='animation'?'animation':'image',
+   header_logo_animation:themedAsset('header_logo_animation'),
    header_logo_scale:kind==='desktop'?headerLogoScale:100,
    login_logo:themedAsset('login_logo'),
    welcome_media:{...themedAsset('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'},
@@ -653,6 +657,7 @@ function platformUiNode(kind){ensurePlatformUiConfig();return config.platform_ui
 function platformLabel(kind){return kind==='desktop'?'Desktop':'Mobile'}
 function platformDefaultAsset(kind,key){
  if(key==='header_logo')return String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
+ if(key==='header_logo_animation')return '';
  if(key==='login_logo')return kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
  if(key==='home_screen_icon')return 'assets/app-icon-mobile-v74.svg?v=74';
  if(key==='browser_icon')return 'assets/app-icon-v63.svg';
@@ -678,16 +683,16 @@ function platformWelcomeAnimationHost(url,theme='light',tag='',name='Utilisateur
  return 'welcome-animation-host.html?'+q.toString()
 }
 function platformAssetPreview(kind,key,theme){
- const asset=platformAssetNode(kind,key)||{},url=platformAssetUrl(kind,key,theme),isWelcome=key==='welcome_media',variant=platformAssetVariantNode(kind,key,theme);
- if(isWelcome&&asset.type==='animation'&&platformAssetIsScript(url)){
+ const asset=platformAssetNode(kind,key)||{},url=platformAssetUrl(kind,key,theme),isWelcome=key==='welcome_media',isHeaderAnimation=key==='header_logo_animation',variant=platformAssetVariantNode(kind,key,theme),animated=isWelcome||isHeaderAnimation;
+ if(animated&&platformAssetIsScript(url)){
   const host=platformWelcomeAnimationHost(url,theme,variant?.tag||'','Utilisateur');
-  return '<iframe class="platformWelcomeAnimationFrame" src="'+attr(host)+'" title="Aperçu de l’animation de bienvenue" sandbox="allow-scripts" loading="lazy"></iframe>'
+  return '<iframe class="platformWelcomeAnimationFrame" src="'+attr(host)+'" title="'+(isHeaderAnimation?'Aperçu de l’animation d’entête':'Aperçu de l’animation de bienvenue')+'" sandbox="allow-scripts" loading="lazy"></iframe>'
  }
- if(isWelcome&&asset.type==='animation'&&platformAssetIsVideo(url))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
+ if(animated&&platformAssetIsVideo(url))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
  return '<img src="'+attr(url)+'" alt="">'
 }
 function platformAssetAccept(key){
- return key==='welcome_media'
+ return key==='welcome_media'||key==='header_logo_animation'
   ?'.js,.png,.webp,.svg,.gif,.mp4,.webm,application/javascript,text/javascript,image/png,image/webp,image/svg+xml,image/gif,video/mp4,video/webm'
   :'.png,.webp,.svg,.ico,image/png,image/webp,image/svg+xml,image/x-icon,image/vnd.microsoft.icon'
 }
@@ -863,11 +868,11 @@ async function uploadPlatformAsset(kind,key,theme,input){
  const file=input?.files?.[0],state=$('saveState');if(!file)return;
  theme=theme==='dark'?'dark':'light';
  try{
-  const ext=platformAssetExtension(file),welcome=key==='welcome_media';
-  const allowed=welcome?['js','png','webp','svg','gif','mp4','webm']:['png','webp','svg','ico'];
+  const ext=platformAssetExtension(file),welcome=key==='welcome_media',headerAnimation=key==='header_logo_animation',animated=welcome||headerAnimation;
+  const allowed=animated?['js','png','webp','svg','gif','mp4','webm']:['png','webp','svg','ico'];
   if(!ext||!allowed.includes(ext))throw new Error('Format non compatible avec cet emplacement.');
-  const limit=welcome?12*1024*1024:5*1024*1024;if(file.size>limit)throw new Error('Fichier trop lourd : '+(welcome?'12':'5')+' Mo maximum.');
-  const scriptMeta=welcome&&ext==='js'?await inspectPlatformWelcomeScript(file):null;
+  const limit=animated?12*1024*1024:5*1024*1024;if(file.size>limit)throw new Error('Fichier trop lourd : '+(animated?'12':'5')+' Mo maximum.');
+  const scriptMeta=animated&&ext==='js'?await inspectPlatformWelcomeScript(file):null;
   state.className='saveState';state.textContent='Import '+platformLabel(kind)+' · '+(theme==='dark'?'sombre':'clair')+'…';
   const storagePath='platform/'+kind+'/'+key+'/'+theme+'-'+Date.now()+'.'+ext;
   const contentType=ext==='js'?'application/javascript':(file.type||undefined);
