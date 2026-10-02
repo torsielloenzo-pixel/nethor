@@ -45,14 +45,102 @@ function applyAuthHeadIcons(){
   }else manifest.href=manifest.dataset.nethorDefaultHref
  }
 }
+function authLoginSettings(ui,brand){
+ const defaults={
+  brand_text:String(brand?.name||'Nethor').trim()||'Nethor',
+  email_placeholder:'Identifiant',
+  password_placeholder:'Mot de passe',
+  submit_text:'Se connecter',
+  forgot_text:'Mot de passe oublié ?',
+  footer_text:'Accès réservé aux utilisateurs autorisés',
+  feature_management:'Gestion',
+  feature_planning:'Planning',
+  feature_stock:'Stock',
+  feature_team:'Équipe',
+  background_opacity:100
+ };
+ const root=ui?.login_settings&&typeof ui.login_settings==='object'?ui.login_settings:{};
+ const light=root.light&&typeof root.light==='object'?root.light:{};
+ const raw=authTheme()==='dark'&&root.dark&&typeof root.dark==='object'?root.dark:light;
+ const pick=(key)=>raw[key]!==undefined?raw[key]:(light[key]!==undefined?light[key]:defaults[key]);
+ const n=Number(pick('background_opacity'));
+ return{
+  brand_text:String(pick('brand_text')??defaults.brand_text),
+  email_placeholder:String(pick('email_placeholder')??defaults.email_placeholder),
+  password_placeholder:String(pick('password_placeholder')??defaults.password_placeholder),
+  submit_text:String(pick('submit_text')??defaults.submit_text),
+  forgot_text:String(pick('forgot_text')??defaults.forgot_text),
+  footer_text:String(pick('footer_text')??defaults.footer_text),
+  feature_management:String(pick('feature_management')??defaults.feature_management),
+  feature_planning:String(pick('feature_planning')??defaults.feature_planning),
+  feature_stock:String(pick('feature_stock')??defaults.feature_stock),
+  feature_team:String(pick('feature_team')??defaults.feature_team),
+  background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,n)):100
+ }
+}
+function authApplyLoginIcon(el,url){
+ if(!el)return;
+ if(url){
+  el.classList.add('hasCustomLoginIcon');
+  el.style.setProperty('--auth-custom-login-icon','url('+JSON.stringify(url)+')')
+ }else{
+  el.classList.remove('hasCustomLoginIcon');
+  el.style.removeProperty('--auth-custom-login-icon')
+ }
+}
+function authSetLoginSubmitText(button,text){
+ if(!button)return;
+ const node=[...button.childNodes].find(n=>n.nodeType===Node.TEXT_NODE);
+ if(node)node.nodeValue=String(text||'')+' ';
+ else button.insertBefore(document.createTextNode(String(text||'')+' '),button.firstChild)
+}
 function applyAuthBranding(){
- const kind=authPlatformKind(),ui=authPlatformUi(),brand=authSiteConfig?.brand||{};
+ const kind=authPlatformKind(),ui=authPlatformUi(),brand=authSiteConfig?.brand||{},theme=authTheme();
  const fallback=kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
  const logo=authThemedAsset(ui?.login_logo,fallback);
  document.querySelectorAll('.authMobileLogo,.authDesktopLogo').forEach(img=>{if(img&&img.getAttribute('src')!==logo)img.src=logo});
+
  const name=String(brand.name||'Nethor').trim()||'Nethor',sub=String(brand.subtitle||'Portail opérationnel interne').trim()||'Portail opérationnel interne';
+ const settings=authLoginSettings(ui,brand),root=document.querySelector(kind==='desktop'?'.authDesktopRoot':'.authMobileRoot');
  document.querySelectorAll('.authMobileBrandCopy strong,.authDesktopName').forEach(el=>el.textContent=name);
  document.querySelectorAll('.authMobileBrandCopy span,.authDesktopSub').forEach(el=>el.textContent=sub);
+
+ if(root){
+  const bg=authThemedAsset(ui?.login_background,'assets/fl-background.webp');
+  root.style.setProperty('--auth-login-background','url('+JSON.stringify(bg)+')');
+  root.style.setProperty('--auth-login-background-opacity',String(settings.background_opacity/100));
+
+  const textEl=root.querySelector('.authMobileBrandCopy strong,.authDesktopName');
+  const wordmarkUrl=authThemedAsset(ui?.login_wordmark,'');
+  let wordmark=root.querySelector('.authLoginWordmark');
+  if(!wordmark){
+   wordmark=document.createElement('img');wordmark.className='authLoginWordmark';wordmark.alt='';
+   textEl?.parentNode?.insertBefore(wordmark,textEl||null)
+  }
+  if(wordmarkUrl){
+   if(wordmark.getAttribute('src')!==wordmarkUrl)wordmark.src=wordmarkUrl;
+   wordmark.hidden=false;if(textEl)textEl.hidden=true
+  }else{
+   wordmark.hidden=true;
+   if(textEl){textEl.hidden=false;textEl.textContent=settings.brand_text}
+  }
+
+  const email=root.querySelector('#email'),password=root.querySelector('#password');
+  if(email)email.placeholder=settings.email_placeholder;
+  if(password)password.placeholder=settings.password_placeholder;
+  authSetLoginSubmitText(root.querySelector('.loginSubmit'),settings.submit_text);
+  const forgot=root.querySelector('.forgotBtn');if(forgot)forgot.textContent=settings.forgot_text;
+  const foot=root.querySelector('.loginFoot');if(foot)foot.textContent=settings.footer_text;
+
+  const labels=[settings.feature_management,settings.feature_planning,settings.feature_stock,settings.feature_team];
+  root.querySelectorAll('.authFeature small').forEach((el,i)=>{if(labels[i]!==undefined)el.textContent=labels[i]});
+
+  const fields=root.querySelectorAll('.authFieldIcon');
+  authApplyLoginIcon(fields[0],authThemedAsset(ui?.login_icon_user,''));
+  authApplyLoginIcon(fields[1],authThemedAsset(ui?.login_icon_password,''));
+  const featureIcons=root.querySelectorAll('.authFeature>span');
+  ['management','planning','stock','team'].forEach((key,i)=>authApplyLoginIcon(featureIcons[i],authThemedAsset(ui?.['login_icon_'+key],'')))
+ }
  applyAuthHeadIcons()
 }
 async function loadAuthBrandingConfig(force=false){
