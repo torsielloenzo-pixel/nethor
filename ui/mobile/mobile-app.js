@@ -126,7 +126,7 @@ function mobileThemedAsset(node,fallback=''){
 function mobileWelcomeAnimationHost(url,tag,name){
  const q=new URLSearchParams({src:String(url||''),theme:mobileTheme(),mode:'media',name:String(name||'Utilisateur')});
  if(tag)q.set('tag',String(tag));
- return 'welcome-animation-host.html?'+q.toString()
+ return 'welcome-animation-host.html?v=2&'+q.toString()
 }
 function ensureMobileLaunchWelcome(){
  let overlay=document.querySelector('[data-mobile-launch-welcome]');
