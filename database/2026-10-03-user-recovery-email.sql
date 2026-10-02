@@ -14,6 +14,9 @@ create table if not exists public.user_recovery_emails (
     )
 );
 
+create index if not exists user_recovery_emails_updated_by_idx
+  on public.user_recovery_emails(updated_by);
+
 alter table public.user_recovery_emails enable row level security;
 revoke all on table public.user_recovery_emails from anon, authenticated;
 
@@ -38,6 +41,9 @@ create index if not exists email_reset_requests_user_date_idx
 create index if not exists email_reset_requests_open_idx
   on public.email_reset_requests(requested_at desc)
   where resolved_at is null;
+
+create index if not exists email_reset_requests_resolved_by_idx
+  on public.email_reset_requests(resolved_by);
 
 alter table public.email_reset_requests enable row level security;
 revoke all on table public.email_reset_requests from anon, authenticated;
