@@ -1024,6 +1024,32 @@ const SOUND_ADMIN_DEFS=[
  {key:'delete',label:'Suppression',description:'Suppression ou action destructive.',group:'interface'}
 ];
 const SOUND_ADMIN_DEFAULT_ENABLED=Object.freeze({loginSuccess:true,logout:true,update:true,welcome:false});
+const SOUND_EQ_BANDS=Object.freeze([
+ {key:'bass',label:'Basses',freq:'80 Hz'},
+ {key:'warmth',label:'Chaleur',freq:'250 Hz'},
+ {key:'mid',label:'Médiums',freq:'1 kHz'},
+ {key:'presence',label:'Présence',freq:'4 kHz'},
+ {key:'treble',label:'Aigus',freq:'10 kHz'}
+]);
+const SOUND_EQ_PRESETS=Object.freeze({
+ flat:{bass:0,warmth:0,mid:0,presence:0,treble:0},
+ bass:{bass:6,warmth:3,mid:0,presence:-1,treble:0},
+ clear:{bass:-1,warmth:0,mid:1,presence:4,treble:3},
+ soft:{bass:2,warmth:2,mid:0,presence:-2,treble:-3}
+});
+function normalizePortalSoundEq(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const out={};
+ for(const band of SOUND_EQ_BANDS){
+  const n=Number(raw[band.key]);
+  out[band.key]=Number.isFinite(n)?Math.max(-12,Math.min(12,Math.round(n*10)/10)):0
+ }
+ return out
+}
+function portalSoundEqActive(eq){
+ const node=normalizePortalSoundEq(eq);
+ return SOUND_EQ_BANDS.some(b=>Math.abs(node[b.key])>=.05)
+}
 function ensureSoundConfig(){
  config.sounds=config.sounds&&typeof config.sounds==='object'?config.sounds:{};
  config.sounds.items=config.sounds.items&&typeof config.sounds.items==='object'?config.sounds.items:{};
@@ -1037,7 +1063,8 @@ function ensureSoundConfig(){
    path:String(raw.path||''),
    name:String(raw.name||''),
    trim_start:Number.isFinite(trimStart)&&trimStart>0?trimStart:0,
-   trim_end:Number.isFinite(trimEnd)&&trimEnd>0?trimEnd:null
+   trim_end:Number.isFinite(trimEnd)&&trimEnd>0?trimEnd:null,
+   eq:normalizePortalSoundEq(raw.eq)
   }
  }
  return config.sounds
@@ -1047,7 +1074,9 @@ function portalSoundDef(key){return SOUND_ADMIN_DEFS.find(x=>x.key===key)||null}
 function soundStatusText(node){
  const source=String(node?.url||'').trim()?(node.name||'Fichier audio personnalisé'):'Son Nethor par défaut';
  const start=Math.max(0,Number(node?.trim_start)||0),end=Number(node?.trim_end);
- return start>0||Number.isFinite(end)&&end>0?source+' · calage '+soundTimeLabel(start)+' → '+(Number.isFinite(end)&&end>0?soundTimeLabel(end):'fin'):source
+ const trim=start>0||Number.isFinite(end)&&end>0?' · calage '+soundTimeLabel(start)+' → '+(Number.isFinite(end)&&end>0?soundTimeLabel(end):'fin'):'';
+ const eq=portalSoundEqActive(node?.eq)?' · EQ personnalisé':'';
+ return source+trim+eq
 }
 function soundTimeLabel(value){
  const n=Math.max(0,Number(value)||0),m=Math.floor(n/60),sec=n-m*60;
@@ -1098,7 +1127,7 @@ async function uploadPortalSound(key,input){
   const storagePath='audio/'+key+'-'+Date.now()+'.'+ext;
   const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType});if(error)throw error;
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=portalSoundNode(key);
-  node.url=data?.publicUrl||'';node.path=storagePath;node.name=file.name;node.enabled=true;node.trim_start=0;node.trim_end=null;
+  node.url=data?.publicUrl||'';node.path=storagePath;node.name=file.name;node.enabled=true;node.trim_start=0;node.trim_end=null;node.eq=normalizePortalSoundEq(null);
   markDirty();renderSoundEditor();window.NettoSounds?.preview?.(key,node);state.textContent='Son prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur audio : '+(e?.message||e)}
  finally{if(input)input.value=''}
