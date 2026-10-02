@@ -625,30 +625,74 @@ function soundVolume(){try{const raw=localStorage.getItem('nettoSoundVolume');if
 function unlockSound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;soundCtx=soundCtx||new A();if(soundCtx.state==='suspended')soundCtx.resume().catch(()=>{});return soundCtx}catch(_){return null}}
 function soundConfigNode(name,source=soundSiteConfig){
  const raw=source?.sounds?.items?.[name]&&typeof source.sounds.items[name]==='object'?source.sounds.items[name]:{};
- const volume=Number(raw.volume);
+ const volume=Number(raw.volume),trimStart=Number(raw.trim_start),trimEnd=Number(raw.trim_end);
  return{
   enabled:typeof raw.enabled==='boolean'?raw.enabled:!!SOUND_DEFAULT_ENABLED[name],
   volume:Number.isFinite(volume)?Math.max(0,Math.min(1,volume)):1,
   url:String(raw.url||'').trim(),
-  name:String(raw.name||'')
+  name:String(raw.name||''),
+  trim_start:Number.isFinite(trimStart)&&trimStart>0?trimStart:0,
+  trim_end:Number.isFinite(trimEnd)&&trimEnd>0?trimEnd:null
  }
+}
+function synthSoundDuration(name){
+ const def=SOUND_DEFS[name];if(!def||!def.length)return 0;
+ return Math.max(...def.map(t=>(t[1]||0)+(t[2]||.1)))+.08
+}
+function soundTrimBounds(node,duration){
+ const total=Number(duration),max=Number.isFinite(total)&&total>0?total:Infinity;
+ const start=Math.max(0,Number(node?.trim_start)||0);
+ const rawEnd=Number(node?.trim_end);
+ const end=Number.isFinite(rawEnd)&&rawEnd>start?Math.min(max,rawEnd):max;
+ return{start:Math.min(start,Number.isFinite(max)?Math.max(0,max-.001):start),end}
 }
 function soundFilterFrequency(name){return name==='error'?1350:name==='logout'?1750:2400}
 function playSynthSound(name,node,force=false){
  const def=SOUND_DEFS[name],a=unlockSound();if(!def||!a)return false;
  const run=()=>{try{
+  const total=synthSoundDuration(name),bounds=soundTrimBounds(node,total),selection=Math.max(.01,bounds.end-bounds.start);
   const now=a.currentTime,master=a.createGain(),filter=a.createBiquadFilter(),level=Math.max(.0001,soundVolume()*.46*(node?.volume??1));
   filter.type='lowpass';filter.frequency.setValueAtTime(soundFilterFrequency(name),now);
   master.gain.setValueAtTime(level,now);
-  master.gain.exponentialRampToValueAtTime(.0001,now+Math.max(...def.map(t=>(t[1]||0)+(t[2]||.1)))+.08);
+  master.gain.exponentialRampToValueAtTime(.0001,now+selection+.05);
   filter.connect(master);master.connect(a.destination);
-  def.forEach(t=>{const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,o=a.createOscillator(),g=a.createGain(),st=now+delay;o.type=type;o.frequency.setValueAtTime(freq,st);if(endFreq&&endFreq>0)o.frequency.exponentialRampToValueAtTime(endFreq,st+dur);g.gain.setValueAtTime(.0001,st);g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),st+Math.min(.035,dur*.3));g.gain.exponentialRampToValueAtTime(.0001,st+dur);o.connect(g);g.connect(filter);o.start(st);o.stop(st+dur+.025)})
+  def.forEach(t=>{
+   const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,noteStart=delay,noteEnd=delay+dur,clipStart=Math.max(noteStart,bounds.start),clipEnd=Math.min(noteEnd,bounds.end);
+   if(clipEnd<=clipStart)return;
+   const segDur=Math.max(.008,clipEnd-clipStart),st=now+(clipStart-bounds.start),o=a.createOscillator(),g=a.createGain();
+   o.type=type;
+   let startFreq=freq,finishFreq=endFreq;
+   if(endFreq&&endFreq>0&&freq>0&&dur>0){
+    const ratio=endFreq/freq,a0=(clipStart-noteStart)/dur,a1=(clipEnd-noteStart)/dur;
+    startFreq=freq*Math.pow(ratio,Math.max(0,Math.min(1,a0)));
+    finishFreq=freq*Math.pow(ratio,Math.max(0,Math.min(1,a1)))
+   }
+   o.frequency.setValueAtTime(Math.max(.01,startFreq),st);
+   if(finishFreq&&finishFreq>0)o.frequency.exponentialRampToValueAtTime(Math.max(.01,finishFreq),st+segDur);
+   g.gain.setValueAtTime(.0001,st);
+   g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),st+Math.min(.025,segDur*.28));
+   g.gain.exponentialRampToValueAtTime(.0001,st+segDur);
+   o.connect(g);g.connect(filter);o.start(st);o.stop(st+segDur+.02)
+  })
  }catch(_){}};if(a.state==='suspended')a.resume().then(run).catch(()=>{});else run();return true
 }
 function playCustomSound(name,node){
  try{
   const audio=new Audio(node.url);audio.preload='auto';audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)));
-  const p=audio.play();if(p?.catch)p.catch(()=>playSynthSound(name,node,true));return true
+  let started=false,stopTimer=0;
+  const stop=()=>{clearTimeout(stopTimer);try{audio.pause()}catch(_){}};
+  const begin=()=>{
+   if(started)return;started=true;
+   const total=Number(audio.duration),bounds=soundTrimBounds(node,total),selection=Number.isFinite(bounds.end)?Math.max(.01,bounds.end-bounds.start):null;
+   try{audio.currentTime=bounds.start}catch(_){}
+   const p=audio.play();
+   if(p?.catch)p.catch(()=>playSynthSound(name,node,true));
+   if(selection)stopTimer=setTimeout(stop,selection*1000+35);
+   audio.addEventListener('timeupdate',()=>{if(Number.isFinite(bounds.end)&&audio.currentTime>=bounds.end-.015)stop()})
+  };
+  if(audio.readyState>=1)begin();
+  else{audio.addEventListener('loadedmetadata',begin,{once:true});audio.load()}
+  return true
  }catch(_){return playSynthSound(name,node,true)}
 }
 function playSound(name='tap'){
@@ -660,6 +704,8 @@ function previewSound(name,nodeOverride=null){
  if(!SOUND_DEFS[name])return false;
  const base=soundConfigNode(name),node={...base,...(nodeOverride&&typeof nodeOverride==='object'?nodeOverride:{})};
  node.volume=Number.isFinite(Number(node.volume))?Math.max(0,Math.min(1,Number(node.volume))):1;
+ node.trim_start=Math.max(0,Number(node.trim_start)||0);
+ {const end=Number(node.trim_end);node.trim_end=Number.isFinite(end)&&end>node.trim_start?end:null}
  return node.url?playCustomSound(name,node):playSynthSound(name,node,true)
 }
 function encodeSoundWav(buffer){
@@ -684,6 +730,7 @@ const sounds={
  play:playSound,preview:previewSound,unlock:unlockSound,names:Object.freeze(Object.keys(SOUND_DEFS)),
  configure(config){soundSiteConfig=config&&typeof config==='object'?config:{};return soundSiteConfig},
  config:name=>soundConfigNode(name),
+ duration:name=>synthSoundDuration(name),
  downloadDefault:downloadDefaultSound,
  isEnabled:soundEnabled,getVolume:soundVolume,
  setEnabled(v){try{localStorage.setItem('nettoSoundEnabled',v?'1':'0')}catch(_){};window.dispatchEvent(new Event('netto:sound-settings'))},
