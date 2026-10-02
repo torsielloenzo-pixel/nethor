@@ -59,13 +59,15 @@ function authLoginSettings(ui,brand){
   feature_team:'Équipe',
   background_opacity:100,
   primary_logo_visible:true,
-  secondary_logo_visible:true
+  secondary_logo_visible:true,
+  secondary_display:authThemedAsset(ui?.login_wordmark,'')?'logo':'text'
  };
  const root=ui?.login_settings&&typeof ui.login_settings==='object'?ui.login_settings:{};
  const light=root.light&&typeof root.light==='object'?root.light:{};
  const raw=authTheme()==='dark'&&root.dark&&typeof root.dark==='object'?root.dark:light;
  const pick=(key)=>raw[key]!==undefined?raw[key]:(light[key]!==undefined?light[key]:defaults[key]);
  const bool=(key)=>pick(key)!==false;
+ const displayRaw=String(pick('secondary_display')||'').toLowerCase();
  const n=Number(pick('background_opacity'));
  return{
   brand_text:String(pick('brand_text')??defaults.brand_text),
@@ -80,7 +82,8 @@ function authLoginSettings(ui,brand){
   feature_team:String(pick('feature_team')??defaults.feature_team),
   background_opacity:Number.isFinite(n)?Math.max(0,Math.min(100,n)):100,
   primary_logo_visible:bool('primary_logo_visible'),
-  secondary_logo_visible:bool('secondary_logo_visible')
+  secondary_logo_visible:bool('secondary_logo_visible'),
+  secondary_display:displayRaw==='logo'?'logo':'text'
  }
 }
 function authApplyLoginIcon(el,url){
@@ -122,9 +125,13 @@ function applyAuthBranding(){
    wordmark=document.createElement('img');wordmark.className='authLoginWordmark';wordmark.alt='';
    textEl?.parentNode?.insertBefore(wordmark,textEl||null)
   }
-  if(wordmarkUrl){
-   if(wordmark.getAttribute('src')!==wordmarkUrl)wordmark.src=wordmarkUrl;
-   wordmark.hidden=false;wordmark.classList.toggle('authLoginInvisible',!settings.secondary_logo_visible);
+  if(settings.secondary_display==='logo'){
+   if(wordmarkUrl){
+    if(wordmark.getAttribute('src')!==wordmarkUrl)wordmark.src=wordmarkUrl;
+    wordmark.hidden=false;wordmark.classList.toggle('authLoginInvisible',!settings.secondary_logo_visible)
+   }else{
+    wordmark.hidden=true;wordmark.classList.remove('authLoginInvisible')
+   }
    if(textEl){textEl.hidden=true;textEl.classList.remove('authLoginInvisible')}
   }else{
    wordmark.hidden=true;wordmark.classList.remove('authLoginInvisible');
