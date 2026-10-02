@@ -112,7 +112,7 @@ main{padding-top:30px}.profileTop{grid-template-columns:1fr;text-align:center}.a
   }
   .profileColorPicker{
     display:grid!important;
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
     gap:8px!important;
     width:100%!important
   }
