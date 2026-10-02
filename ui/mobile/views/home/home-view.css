@@ -286,6 +286,38 @@
   box-shadow:none!important;
   text-align:left
 }
+/* Accueil Mobile — groupe Bienvenue / Prise de poste plus compact. */
+.mhdWelcomeShiftGroup .mhdHero{
+  min-height:88px;
+  padding:12px 14px 11px
+}
+.mhdWelcomeShiftGroup .mhdHero h1{
+  font-size:22px;
+  line-height:1.03
+}
+.mhdWelcomeShiftGroup .mhdWelcomeDate{margin-top:5px}
+.mhdWelcomeShiftGroup .mhdHero p{margin-top:3px}
+.mhdWelcomeShiftGroup .mhdNext{padding:10px 12px 9px}
+.mhdWelcomeShiftGroup .mhdIcon{
+  width:32px;
+  height:32px;
+  border-radius:10px
+}
+.mhdWelcomeShiftGroup .mhdIcon svg{width:18px;height:18px}
+.mhdWelcomeShiftGroup .mhdTitleWithIcon{gap:8px}
+.mhdWelcomeShiftGroup .mhdNextHead strong{font-size:12.5px}
+.mhdWelcomeShiftGroup .mhdWhen{padding:5px 9px}
+.mhdWelcomeShiftGroup .mhdShiftLine{
+  margin:7px 0 0 40px
+}
+.mhdWelcomeShiftGroup .mhdShiftLine b{font-size:18px}
+.mhdWelcomeShiftGroup .mhdShiftMeta{
+  margin:6px 0 0 40px
+}
+.mhdWelcomeShiftGroup .mhdTag{
+  min-height:22px;
+  padding:0 8px
+}
 :root[data-theme="dark"] .mhdWelcomeShiftGroup{
   background:#171c22;
   border-color:#303842;
@@ -296,5 +328,9 @@
 }
 @media(max-width:380px){
   .mhdWelcomeShiftGroup{border-radius:19px}
-  .mhdWelcomeShiftGroup .mhdHero{min-height:98px}
+  .mhdWelcomeShiftGroup .mhdHero{min-height:84px;padding:11px 12px 10px}
+  .mhdWelcomeShiftGroup .mhdHero h1{font-size:20.5px}
+  .mhdWelcomeShiftGroup .mhdNext{padding:9px 11px 8px}
+  .mhdWelcomeShiftGroup .mhdShiftLine,
+  .mhdWelcomeShiftGroup .mhdShiftMeta{margin-left:38px}
 }
