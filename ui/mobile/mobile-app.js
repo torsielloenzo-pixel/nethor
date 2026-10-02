@@ -126,12 +126,7 @@ function mobileThemedAsset(node,fallback=''){
 function mobileWelcomeAnimationHost(url,tag,name){
  const q=new URLSearchParams({src:String(url||''),theme:mobileTheme(),mode:'media',name:String(name||'Utilisateur')});
  if(tag)q.set('tag',String(tag));
- return 'welcome-animation-host.html?v=2&'+q.toString()
-}
-function setMobileWelcomeAnimationOnly(overlay,enabled){
- const active=enabled===true;
- overlay?.classList.toggle('nethorMobileWelcomeAnimationOnly',active);
- try{document.documentElement.dataset.nethorMobileWelcomeMode=active?'animation':'default'}catch(_){}
+ return 'welcome-animation-host.html?v=5&'+q.toString()
 }
 function ensureMobileLaunchWelcome(){
  let overlay=document.querySelector('[data-mobile-launch-welcome]');
@@ -171,8 +166,6 @@ function renderMobileLaunchWelcome(state){
  if(sub)sub.textContent=brandName+' · '+brandSub;
  if(!mark)return overlay;
  const media=config?.platform_ui?.mobile?.welcome_media||{},variant=mobileThemedAssetNode(media),url=String(variant?.url||'').trim(),type=String(media.type||'image'),tag=String(variant?.tag||'');
- const animationOnly=!!url&&type==='animation';
- setMobileWelcomeAnimationOnly(overlay,animationOnly);
  const signature=url?(type+'|'+url+'|'+tag+'|'+mobileTheme()):'fallback|'+mobileTheme();
  const bootstrapMedia=mark.dataset.bootstrapMedia==='1';
  if(mark.dataset.mediaSignature===signature&&!bootstrapMedia)return overlay;
