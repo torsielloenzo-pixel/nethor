@@ -612,7 +612,9 @@ async function loadWeek(start=currentWeekStart,opts={}){
   console.warn(error);
   if(!planningCacheReady)model=null
  }else{
-  model=data?.data?.version===3?data.data:null;
+  const storedModel=data?.data||null,storedVersion=Number(storedModel?.version||0);
+  model=storedModel&&(storedVersion===3||storedVersion===4)?storedModel:null;
+  if(storedModel&&!model)console.warn('Version planning non prise en charge:',storedVersion);
   if(model){model.weekLabel=data.week_label||model.weekLabel||'';model.sourceFile=data.source_file||model.sourceFile||'';model.sourcePath=data.source_path||model.sourcePath||null}
   planningAbsences=absences;
   planningLoadedWeekKey=key;
@@ -626,7 +628,9 @@ async function loadWeek(start=currentWeekStart,opts={}){
 async function saveWeek(){
  if(!canEdit||!model)return false;setSaveState('Enregistrement…');model.updatedAt=new Date().toISOString();
  const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,source_path:model.sourcePath||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:new Date().toISOString(),updated_by:currentUser?.id||null};
- const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'✓ Enregistré');if(error){console.warn(error);return false}setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
+ const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'✓ Enregistré');if(error){console.warn(error);return false}
+ planningLoadedWeekKey=isoDate(currentWeekStart);planningCacheReady=true;planningCacheUserId=String(currentUser?.id||planningCacheUserId||'');
+ setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
 }
 
 
