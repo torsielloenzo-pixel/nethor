@@ -180,8 +180,10 @@ function normalize(raw){
    const x=currentControls[key]&&typeof currentControls[key]==='object'?currentControls[key]:{};
    controls[key]={label:String(x.label||''),subtitle:String(x.subtitle||''),url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}
   }
+  const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
   c.platform_ui[kind]={
    header_logo:themedAsset('header_logo'),
+   header_logo_scale:kind==='desktop'?headerLogoScale:100,
    login_logo:themedAsset('login_logo'),
    welcome_media:{...themedAsset('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'},
    home_screen_icon:simpleAsset('home_screen_icon'),
@@ -633,8 +635,10 @@ function ensurePlatformUiConfig(){
    const x=currentControls[key]&&typeof currentControls[key]==='object'?currentControls[key]:{};
    controls[key]={label:String(x.label||''),subtitle:String(x.subtitle||''),url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}
   }
+  const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
   config.platform_ui[kind]={
    header_logo:themedAsset('header_logo'),
+   header_logo_scale:kind==='desktop'?headerLogoScale:100,
    login_logo:themedAsset('login_logo'),
    welcome_media:{...themedAsset('welcome_media'),type:current.welcome_media?.type==='animation'?'animation':'image'},
    home_screen_icon:simpleAsset('home_screen_icon'),
@@ -801,11 +805,39 @@ function removePlatformControlAsset(kind,key){
  const node=platformControlNode(kind,key);node.url='';node.path='';node.name='';markDirty();renderPlatformIdentity(kind)
 }
 
+function platformHeaderLogoSizeControl(kind){
+ if(kind!=='desktop')return'';
+ const ui=platformUiNode('desktop'),value=Math.max(60,Math.min(160,Math.round(Number(ui.header_logo_scale)||100)));
+ return '<div class="platformHeaderLogoSize">'+
+  '<div class="platformHeaderLogoSizeCopy"><strong>Taille du logo d’entête</strong><span>Ajuste uniquement la taille du logo affiché dans l’entête Desktop.</span></div>'+
+  '<div class="platformHeaderLogoSizeControls">'+
+   '<input type="range" min="60" max="160" step="5" value="'+value+'" data-desktop-header-logo-scale-range aria-label="Taille du logo d’entête Desktop">'+
+   '<div class="platformHeaderLogoSizeNumber"><input type="number" min="60" max="160" step="5" value="'+value+'" data-desktop-header-logo-scale-number><span>%</span></div>'+
+   '<button class="btn secondaryBtn mini" type="button" data-desktop-header-logo-scale-reset>100 %</button>'+
+  '</div>'+
+ '</div>'
+}
+function bindPlatformHeaderLogoSize(host,kind){
+ if(kind!=='desktop')return;
+ const range=host.querySelector('[data-desktop-header-logo-scale-range]'),number=host.querySelector('[data-desktop-header-logo-scale-number]'),reset=host.querySelector('[data-desktop-header-logo-scale-reset]');
+ if(!range||!number)return;
+ const apply=raw=>{
+  const value=Math.max(60,Math.min(160,Math.round((Number(raw)||100)/5)*5));
+  platformUiNode('desktop').header_logo_scale=value;
+  range.value=String(value);number.value=String(value);
+  markDirty()
+ };
+ range.oninput=()=>apply(range.value);
+ number.oninput=()=>apply(number.value);
+ number.onchange=()=>apply(number.value);
+ if(reset)reset.onclick=()=>apply(100)
+}
 function renderPlatformIdentity(kind){
  const host=$('platformIdentity_'+kind);if(!host)return;
  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent maintenant d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
  '<div class="platformAssetList">'+
  platformAssetRow(kind,'header_logo','Logo de l’entête','Logo utilisé dans les en-têtes de l’application sur '+platformLabel(kind)+'.')+
+ (kind==='desktop'?platformHeaderLogoSizeControl(kind):'')+
  platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion '+platformLabel(kind)+'. Sans fichier personnalisé, Nethor utilise automatiquement son icône officielle de connexion.')+
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
