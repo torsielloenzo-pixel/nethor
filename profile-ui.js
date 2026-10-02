@@ -619,6 +619,38 @@ const SOUND_DEFS={
  logout:[[587.33,0,.19,.11,'sine'],[493.88,.085,.23,.12,'sine'],[392,.18,.31,.11,'sine'],[293.66,.29,.40,.08,'sine']]
 };
 const SOUND_DEFAULT_ENABLED=Object.freeze({loginSuccess:true,logout:true,update:true,welcome:false});
+const SOUND_EQ_BANDS=Object.freeze([
+ {key:'bass',type:'lowshelf',frequency:80,q:.7},
+ {key:'warmth',type:'peaking',frequency:250,q:.8},
+ {key:'mid',type:'peaking',frequency:1000,q:.9},
+ {key:'presence',type:'peaking',frequency:4000,q:.9},
+ {key:'treble',type:'highshelf',frequency:10000,q:.7}
+]);
+function normalizeSoundEq(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const out={};
+ for(const band of SOUND_EQ_BANDS){
+  const n=Number(raw[band.key]);
+  out[band.key]=Number.isFinite(n)?Math.max(-12,Math.min(12,n)):0
+ }
+ return out
+}
+function soundEqActive(eq){
+ const node=normalizeSoundEq(eq);
+ return SOUND_EQ_BANDS.some(b=>Math.abs(node[b.key])>=.05)
+}
+function connectSoundEq(ctx,input,output,eq,at=ctx.currentTime){
+ const values=normalizeSoundEq(eq);
+ if(!soundEqActive(values)){input.connect(output);return[]}
+ let previous=input;const filters=[];
+ for(const band of SOUND_EQ_BANDS){
+  const filter=ctx.createBiquadFilter();filter.type=band.type;filter.frequency.setValueAtTime(band.frequency,at);
+  if(band.type==='peaking')filter.Q.setValueAtTime(band.q,at);
+  filter.gain.setValueAtTime(values[band.key]||0,at);
+  previous.connect(filter);previous=filter;filters.push(filter)
+ }
+ previous.connect(output);return filters
+}
 let soundCtx=null,soundSiteConfig={};
 function soundEnabled(){try{return localStorage.getItem('nettoSoundEnabled')!=='0'}catch(_){return true}}
 function soundVolume(){try{const raw=localStorage.getItem('nettoSoundVolume');if(raw===null)return .72;const v=Number(raw);return Number.isFinite(v)&&v>=0&&v<=1?v:.72}catch(_){return .72}}
@@ -632,7 +664,8 @@ function soundConfigNode(name,source=soundSiteConfig){
   url:String(raw.url||'').trim(),
   name:String(raw.name||''),
   trim_start:Number.isFinite(trimStart)&&trimStart>0?trimStart:0,
-  trim_end:Number.isFinite(trimEnd)&&trimEnd>0?trimEnd:null
+  trim_end:Number.isFinite(trimEnd)&&trimEnd>0?trimEnd:null,
+  eq:normalizeSoundEq(raw.eq)
  }
 }
 function synthSoundDuration(name){
@@ -655,7 +688,7 @@ function playSynthSound(name,node,force=false){
   filter.type='lowpass';filter.frequency.setValueAtTime(soundFilterFrequency(name),now);
   master.gain.setValueAtTime(level,now);
   master.gain.exponentialRampToValueAtTime(.0001,now+selection+.05);
-  filter.connect(master);master.connect(a.destination);
+  connectSoundEq(a,filter,master,node?.eq,now);master.connect(a.destination);
   def.forEach(t=>{
    const [freq,delay=0,dur=.1,gain=.1,type='sine',endFreq]=t,noteStart=delay,noteEnd=delay+dur,clipStart=Math.max(noteStart,bounds.start),clipEnd=Math.min(noteEnd,bounds.end);
    if(clipEnd<=clipStart)return;
@@ -678,15 +711,32 @@ function playSynthSound(name,node,force=false){
 }
 function playCustomSound(name,node){
  try{
-  const audio=new Audio(node.url);audio.preload='auto';audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)));
+  const audio=new Audio(node.url);audio.preload='auto';
+  const wantsEq=soundEqActive(node?.eq),ctx=wantsEq?unlockSound():null;
+  let master=null;
+  if(wantsEq&&ctx){
+   try{
+    audio.crossOrigin='anonymous';
+    const source=ctx.createMediaElementSource(audio);master=ctx.createGain();
+    master.gain.setValueAtTime(Math.max(.0001,soundVolume()*(node?.volume??1)),ctx.currentTime);
+    connectSoundEq(ctx,source,master,node?.eq,ctx.currentTime);master.connect(ctx.destination);
+    audio.volume=1
+   }catch(_){
+    master=null;audio.removeAttribute('crossorigin');
+    audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)))
+   }
+  }else audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)));
   let started=false,stopTimer=0;
   const stop=()=>{clearTimeout(stopTimer);try{audio.pause()}catch(_){}};
   const begin=()=>{
    if(started)return;started=true;
    const total=Number(audio.duration),bounds=soundTrimBounds(node,total),selection=Number.isFinite(bounds.end)?Math.max(.01,bounds.end-bounds.start):null;
    try{audio.currentTime=bounds.start}catch(_){}
-   const p=audio.play();
-   if(p?.catch)p.catch(()=>playSynthSound(name,node,true));
+   const startPlayback=()=>{
+    const p=audio.play();
+    if(p?.catch)p.catch(()=>playSynthSound(name,node,true))
+   };
+   if(master&&ctx?.state==='suspended')ctx.resume().then(startPlayback).catch(()=>startPlayback());else startPlayback();
    if(selection)stopTimer=setTimeout(stop,selection*1000+35);
    audio.addEventListener('timeupdate',()=>{if(Number.isFinite(bounds.end)&&audio.currentTime>=bounds.end-.015)stop()})
   };
@@ -706,6 +756,7 @@ function previewSound(name,nodeOverride=null){
  node.volume=Number.isFinite(Number(node.volume))?Math.max(0,Math.min(1,Number(node.volume))):1;
  node.trim_start=Math.max(0,Number(node.trim_start)||0);
  {const end=Number(node.trim_end);node.trim_end=Number.isFinite(end)&&end>node.trim_start?end:null}
+ node.eq=normalizeSoundEq(node.eq);
  return node.url?playCustomSound(name,node):playSynthSound(name,node,true)
 }
 function encodeSoundWav(buffer){
