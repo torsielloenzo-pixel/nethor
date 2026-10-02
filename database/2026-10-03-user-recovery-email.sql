@@ -61,3 +61,13 @@ on public.email_reset_requests
 for update to authenticated
 using ((select private.has_role(array['admin'])))
 with check ((select private.has_role(array['admin'])));
+
+
+-- Edge Functions use service_role for the private recovery-email workflow.
+grant select, insert, update, delete
+on table public.user_recovery_emails
+to service_role;
+
+grant select, insert, update, delete
+on table public.email_reset_requests
+to service_role;
