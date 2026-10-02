@@ -1,11 +1,11 @@
 {
-  "version": 315,
-  "label": "v1.44.21",
+  "version": 316,
+  "label": "v1.44.22",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Sons & audio — égaliseur 5 bandes",
-  "message": "Ajout d’un égaliseur dans Gestion > Éditeur du portail > Sons & audio > Gérer. Chaque son peut maintenant être réglé indépendamment sur 5 bandes : basses 80 Hz, chaleur 250 Hz, médiums 1 kHz, présence 4 kHz et aigus 10 kHz, de −12 à +12 dB. Ajout des préréglages Neutre, Basses +, Clarté et Doux, avec écoute avant application. Les réglages s’appliquent aux sons Nethor générés et aux fichiers audio personnalisés, sans modifier le fichier source.",
-  "published_at": "2026-10-03T00:37:46+02:00",
+  "title": "Connexion — choix Logo ou Texte",
+  "message": "Dans Gestion > Éditeur du portail > Écran de connexion, la zone sous le logo principal peut maintenant afficher explicitement soit le logo secondaire importé, soit le texte configuré. Le choix est indépendant pour Mobile/Desktop et pour les thèmes clair/sombre. La visibilité de cette zone reste réglable séparément, sans déplacer la mise en page.",
+  "published_at": "2026-10-03T00:45:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
