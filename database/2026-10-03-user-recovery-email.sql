@@ -17,6 +17,12 @@ create table if not exists public.user_recovery_emails (
 alter table public.user_recovery_emails enable row level security;
 revoke all on table public.user_recovery_emails from anon, authenticated;
 
+drop policy if exists user_recovery_emails_no_direct_read on public.user_recovery_emails;
+create policy user_recovery_emails_no_direct_read
+on public.user_recovery_emails
+for select to authenticated
+using (false);
+
 create table if not exists public.email_reset_requests (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
