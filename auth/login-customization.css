@@ -1,0 +1,21 @@
+/* Personnalisation dynamique de l'écran de connexion.
+   Les thèmes ne changent jamais la géométrie : uniquement contenus, médias et opacité. */
+html[data-nethor-platform="mobile"] .authMobileRoot::before,
+html[data-nethor-platform="mobile-preview"] .authMobileRoot::before,
+html[data-nethor-platform="desktop"] .authDesktopRoot::before{
+ background-image:var(--auth-login-background,url("../assets/fl-background.webp"))!important;
+ opacity:var(--auth-login-background-opacity,1)!important
+}
+.authLoginWordmark{display:block;object-fit:contain;margin-left:auto;margin-right:auto}
+.authLoginWordmark[hidden]{display:none!important}
+html[data-nethor-platform="mobile"] .authLoginWordmark,
+html[data-nethor-platform="mobile-preview"] .authLoginWordmark{width:min(190px,70vw);height:42px;margin-top:12px}
+html[data-nethor-platform="desktop"] .authLoginWordmark{width:210px;height:48px;margin-top:13px}
+html[data-nethor-platform="mobile"] .authMobileBrandCopy,
+html[data-nethor-platform="mobile-preview"] .authMobileBrandCopy{min-height:54px;justify-content:flex-start}
+html[data-nethor-platform="desktop"] .authDesktopBrand{min-height:190px}
+.authFieldIcon.hasCustomLoginIcon,.authFeature>span.hasCustomLoginIcon{
+ background-image:var(--auth-custom-login-icon)!important;background-position:center!important;background-repeat:no-repeat!important;background-size:contain!important
+}
+.authFieldIcon.hasCustomLoginIcon svg,.authFeature>span.hasCustomLoginIcon svg{opacity:0!important}
+.authMobileForm .loginFoot,.authDesktopForm .loginFoot{min-height:12px}
