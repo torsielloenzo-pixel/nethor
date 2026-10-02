@@ -135,8 +135,8 @@ html[data-theme="dark"] .nethorMobileTopAction[aria-current="page"]{color:var(--
 }
 .nethorMobileLaunchWelcome.show .nethorMobileLaunchWelcomeMark{transform:scale(1)}
 .nethorMobileLaunchWelcomeMark.hasMedia{
-  width:min(44vw,156px);height:min(44vw,156px);padding:0;border-radius:0;
-  background:transparent;box-shadow:none;overflow:visible
+  width:min(42vw,150px);height:min(42vw,150px);padding:0;border-radius:0;
+  background:transparent!important;box-shadow:none!important;overflow:visible!important
 }
 .nethorMobileLaunchWelcomeMark.hasMedia img,
 .nethorMobileLaunchWelcomeMark.hasMedia video,
