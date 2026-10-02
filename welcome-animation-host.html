@@ -79,11 +79,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
   }
  }
  if(!allowed(src)){fail('Source refusée');return}
+ const globalsBefore=new Set(Object.getOwnPropertyNames(window));
+ function detectMountApi(){
+  try{
+   if(requestedApi&&window[requestedApi]&&typeof window[requestedApi].mount==='function')return window[requestedApi];
+   const names=Object.getOwnPropertyNames(window);
+   for(const key of names){
+    if(globalsBefore.has(key)&&!/^Nethor/i.test(key))continue;
+    let value;try{value=window[key]}catch(_){continue}
+    if(value&&typeof value==='object'&&typeof value.mount==='function')return value
+   }
+  }catch(_){}
+  return null
+ }
  const script=document.createElement('script');script.src=src;script.async=true;
  script.onload=function(){
   try{
-   const api=requestedApi&&window[requestedApi];
-   if(api&&typeof api.mount==='function'){
+   const api=detectMountApi();
+   if(api){
     const target=document.createElement('div');target.className='apiTarget';target.dataset.nethorApiAnimation='1';
     root.replaceChildren(target);
     const instance=api.mount(target,{cursor:'default'});
