@@ -66,7 +66,7 @@ async function loadAuthBrandingConfig(force=false){
 function ensureWelcomeMediaStyle(){
  if(document.getElementById('nethorWelcomeMediaStyle'))return;
  const s=document.createElement('style');s.id='nethorWelcomeMediaStyle';
- s.textContent='.welcomeMark.hasWelcomeMedia{width:min(42vw,150px)!important;height:min(42vw,150px)!important;padding:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}.welcomeMark.hasWelcomeMedia img,.welcomeMark.hasWelcomeMedia video,.welcomeMark.hasWelcomeMedia iframe{display:block;width:100%;height:100%;object-fit:contain;border:0;background:transparent}.welcomeMark.hasWelcomeMedia video,.welcomeMark.hasWelcomeMedia iframe{pointer-events:none}';
+ s.textContent='.welcomeMark.hasWelcomeMedia{width:min(42vw,150px)!important;height:min(42vw,150px)!important;padding:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}.welcomeMark.hasWelcomeMedia img,.welcomeMark.hasWelcomeMedia video,.welcomeMark.hasWelcomeMedia iframe{display:block;width:100%;height:100%;object-fit:contain;border:0;background:transparent}.welcomeMark.hasWelcomeMedia video,.welcomeMark.hasWelcomeMedia iframe{pointer-events:none}.welcomeToast.nethorMobileWelcomeAnimationOnly .welcomeText,.welcomeToast.nethorMobileWelcomeAnimationOnly .welcomeSub{display:none!important}.welcomeToast.nethorMobileWelcomeAnimationOnly .welcomeMark.hasWelcomeMedia{width:min(72vw,280px)!important;height:min(72vw,280px)!important;margin-bottom:0!important}';
  document.head?.appendChild(s)
 }
 function authWelcomeAnimationHost(url,tag,name){
@@ -75,8 +75,10 @@ function authWelcomeAnimationHost(url,tag,name){
  return 'welcome-animation-host.html?v=2&'+q.toString()
 }
 function applyWelcomeBranding(){
- const mark=document.querySelector('#welcomeToast .welcomeMark'),sub=document.querySelector('#welcomeToast .welcomeSub');if(!mark)return;
+ const toast=document.getElementById('welcomeToast'),mark=document.querySelector('#welcomeToast .welcomeMark'),sub=document.querySelector('#welcomeToast .welcomeSub');if(!mark)return;
  const ui=authPlatformUi(),media=ui?.welcome_media||{},variant=authThemedAssetNode(media),url=String(variant?.url||'').trim();
+ const animationOnly=authPlatformKind()==='mobile'&&!!url&&media.type==='animation';
+ toast?.classList.toggle('nethorMobileWelcomeAnimationOnly',animationOnly);
  const brand=authSiteConfig?.brand||{};if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
  if(!url){mark.classList.remove('hasWelcomeMedia');mark.innerHTML='N';return}
  ensureWelcomeMediaStyle();mark.classList.add('hasWelcomeMedia');
