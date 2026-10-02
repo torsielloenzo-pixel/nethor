@@ -125,18 +125,26 @@ function applyAuthBranding(){
    wordmark=document.createElement('img');wordmark.className='authLoginWordmark';wordmark.alt='';
    textEl?.parentNode?.insertBefore(wordmark,textEl||null)
   }
+  let secondaryRendered=false;
   if(settings.secondary_display==='logo'){
-   if(wordmarkUrl){
+   if(wordmarkUrl&&settings.secondary_logo_visible){
     if(wordmark.getAttribute('src')!==wordmarkUrl)wordmark.src=wordmarkUrl;
-    wordmark.hidden=false;wordmark.classList.toggle('authLoginInvisible',!settings.secondary_logo_visible)
+    wordmark.hidden=false;wordmark.classList.remove('authLoginInvisible');secondaryRendered=true
    }else{
     wordmark.hidden=true;wordmark.classList.remove('authLoginInvisible')
    }
    if(textEl){textEl.hidden=true;textEl.classList.remove('authLoginInvisible')}
   }else{
    wordmark.hidden=true;wordmark.classList.remove('authLoginInvisible');
-   if(textEl){textEl.hidden=false;textEl.textContent=settings.brand_text;textEl.classList.toggle('authLoginInvisible',!settings.secondary_logo_visible)}
+   if(textEl){
+    textEl.hidden=false;textEl.textContent=settings.brand_text;
+    textEl.classList.toggle('authLoginInvisible',!settings.secondary_logo_visible);
+    secondaryRendered=settings.secondary_logo_visible&&!!String(settings.brand_text||'').trim()
+   }
   }
+  const primaryRendered=!!settings.primary_logo_visible;
+  const brandSection=root.querySelector('.authMobileBrand,.authDesktopBrand');
+  brandSection?.classList.toggle('authBrandEmpty',!primaryRendered&&!secondaryRendered);
 
   const email=root.querySelector('#email'),password=root.querySelector('#password');
   if(email)email.placeholder=settings.email_placeholder;
