@@ -876,7 +876,6 @@ async function inspectPlatformWelcomeScript(file){
  const match=source.match(/const\s+TAG\s*=\s*["'`]([a-z][a-z0-9.-]*-[a-z0-9.-]+)["'`]/i);
  const tag=String(match?.[1]||'').toLowerCase();
  if(!tag)throw new Error('Animation JS incompatible : balise Nethor introuvable.');
- if(!/window\.NethorWelcome(?:\d+|Animation)\s*=/.test(source))throw new Error('Animation JS incompatible avec le lecteur Nethor.');
  return{tag}
 }
 async function uploadPlatformAsset(kind,key,theme,input){
