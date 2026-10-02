@@ -650,7 +650,7 @@ function platformLabel(kind){return kind==='desktop'?'Desktop':'Mobile'}
 function platformDefaultAsset(kind,key){
  if(key==='header_logo')return String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
  if(key==='login_logo')return kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
- if(key==='home_screen_icon')return 'assets/app-icon-mobile-v73.svg?v=73';
+ if(key==='home_screen_icon')return 'assets/app-icon-mobile-v74.svg?v=74';
  if(key==='browser_icon')return 'assets/app-icon-v63.svg';
  if(key==='desktop_shortcut_icon')return 'assets/app-icon-v63.svg';
  return 'assets/nethor-mark.svg'
