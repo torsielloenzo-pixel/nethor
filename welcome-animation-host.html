@@ -87,9 +87,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     const target=document.createElement('div');target.className='apiTarget';target.dataset.nethorApiAnimation='1';
     root.replaceChildren(target);
     const instance=api.mount(target,{cursor:'default'});
-    const play=()=>{try{instance?.resetImmediate?.();instance?.play?.()}catch(_){}};
-    requestAnimationFrame(play);
-    setTimeout(play,70);
+    requestAnimationFrame(()=>{try{instance?.resetImmediate?.();instance?.play?.()}catch(_){}});
+    setTimeout(()=>{try{instance?.recompute?.()}catch(_){}},100);
     return
    }
    const tag=apiTag();if(!tag){fail('Format JS Nethor non reconnu');return}
