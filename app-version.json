@@ -1,11 +1,11 @@
 {
-  "version": 317,
-  "label": "v1.44.23",
+  "version": 318,
+  "label": "v1.44.24",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Connexion — suppression des espaces inutiles",
-  "message": "Sur l’écran de connexion, un élément rendu invisible est maintenant retiré de la mise en page au lieu de conserver une zone vide. Cela concerne notamment le logo principal et l’élément sous le logo (logo secondaire ou texte). Si les deux sont désactivés, toute la zone d’identité disparaît et les champs remontent automatiquement.",
-  "published_at": "2026-10-03T00:52:00+02:00",
+  "title": "Desktop — correctif d’affichage des pages",
+  "message": "Audit du chrome partagé Desktop et correction des pages dont l’en-tête pouvait se casser en plusieurs lignes. La structure du header est désormais imposée par le shell Desktop : logo, retour et outils globaux restent alignés sur une seule ligne, y compris lorsque la fenêtre est réduite. La page Notifications a aussi été remise à l’échelle Desktop avec un contenu plus lisible et un bouton Retour cohérent. Le correctif s’applique aux pages utilisant le chrome partagé sans modifier l’interface Mobile.",
+  "published_at": "2026-10-03T00:53:32+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
