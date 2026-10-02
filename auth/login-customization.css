@@ -19,3 +19,5 @@ html[data-nethor-platform="desktop"] .authDesktopBrand{min-height:190px}
 }
 .authFieldIcon.hasCustomLoginIcon svg,.authFeature>span.hasCustomLoginIcon svg{opacity:0!important}
 .authMobileForm .loginFoot,.authDesktopForm .loginFoot{min-height:12px}
+
+.authLoginInvisible{visibility:hidden!important;pointer-events:none!important}
