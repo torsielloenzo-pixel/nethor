@@ -13,3 +13,59 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .desktopO
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopLayout .top{display:flex;align-items:center;gap:16px;margin-bottom:28px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopLayout .back{width:auto;min-width:92px;padding:10px 14px;border-radius:12px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="scanner"] .scannerDesktopLayout .title h1{font-size:34px}
+
+
+/* Notifications Desktop — proportions cohérentes avec le shell */
+@media (min-width:901px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .notificationsPageMain{
+  width:min(92vw,980px)!important;
+  margin:0 auto!important;
+  padding:28px 0 64px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterLine{
+  margin:0 0 12px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterLine strong{
+  font-size:17px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterTools{
+  gap:9px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npCircleBtn{
+  width:46px!important;height:46px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterState{
+  min-height:42px!important;padding:8px 14px!important;font-size:11px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npList{
+  border-radius:20px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npGroup{
+  padding:18px 18px 8px!important;font-size:13px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRow{
+  grid-template-columns:58px minmax(0,1fr) 42px!important;
+  gap:13px!important;
+  min-height:82px!important;
+  padding:13px 14px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npIcon{
+  width:56px!important;height:56px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npIcon span{
+  width:36px!important;height:36px!important;font-size:17px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRowText .npSentence{
+  font-size:13.5px!important;line-height:1.45!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRowText .npSentence b{
+  font-size:14px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npCategory,
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npAge{
+  font-size:9.5px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRowMore{
+  width:42px!important;height:42px!important;min-width:42px!important;max-width:42px!important
+ }
+}
