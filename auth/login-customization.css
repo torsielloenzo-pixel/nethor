@@ -1,5 +1,5 @@
 /* Personnalisation dynamique de l'écran de connexion.
-   Les thèmes ne changent jamais la géométrie : uniquement contenus, médias et opacité. */
+   Les éléments masqués quittent le flux afin de ne réserver aucun espace inutile. */
 html[data-nethor-platform="mobile"] .authMobileRoot::before,
 html[data-nethor-platform="mobile-preview"] .authMobileRoot::before,
 html[data-nethor-platform="desktop"] .authDesktopRoot::before{
