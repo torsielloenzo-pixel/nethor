@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Nethor">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Nethor</title>
-<script>(function(){try{var cached=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),ct=cached&&cached.config&&cached.config.launch_theme,lt=localStorage.getItem('nettoTheme'),sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',t=(ct==='dark'||ct==='light')?ct:((lt==='dark'||lt==='light')?lt:sys);document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(_){}try{document.documentElement.dataset.nethorLaunchSplash=sessionStorage.getItem('nethorMobileLaunchShownV1')==='1'?'skip':'show'}catch(_){document.documentElement.dataset.nethorLaunchSplash='show'}})();</script>
+<script>(function(){try{var cached=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),cfg=cached&&cached.config||{},ct=cfg.launch_theme,lt=localStorage.getItem('nettoTheme'),sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',t=(ct==='dark'||ct==='light')?ct:((lt==='dark'||lt==='light')?lt:sys),mobile=cfg.platform_ui&&cfg.platform_ui.mobile||{},media=mobile.welcome_media||{},variant=media[t]&&media[t].url?media[t]:(t==='dark'&&media.light&&media.light.url?media.light:media),url=String(variant&&variant.url||'').trim();document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t;document.documentElement.dataset.nethorMobileWelcomeMode=url&&String(media.type||'image')==='animation'?'animation':'default'}catch(_){}try{document.documentElement.dataset.nethorLaunchSplash=sessionStorage.getItem('nethorMobileLaunchShownV1')==='1'?'skip':'show'}catch(_){document.documentElement.dataset.nethorLaunchSplash='show'}})();</script>
 <script src="platform-resolver.js?v=3"></script>
 <script>
 (function(){
@@ -28,7 +28,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/app-icon-v63.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/app-icon-mobile-v74.svg?v=74">
-<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=21">
+<link rel="stylesheet" href="ui/mobile/mobile-app.css?v=22">
 <link rel="stylesheet" href="operations-widget.css?v=2" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/home/home-view.css?v=5" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/notifications/notifications-view.css?v=1" media="print" onload="this.media='all'">
@@ -53,7 +53,9 @@
   var raw=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),cfg=raw&&raw.config||{},brand=cfg.brand||{},mobile=cfg.platform_ui&&cfg.platform_ui.mobile||{},media=mobile.welcome_media||{},theme=document.documentElement.dataset.theme==='dark'?'dark':'light',variant=media[theme]&&media[theme].url?media[theme]:(theme==='dark'&&media.light&&media.light.url?media.light:media),url=String(variant&&variant.url||'').trim(),tag=String(variant&&variant.tag||''),mark=document.querySelector('[data-mobile-launch-welcome-mark]'),sub=document.querySelector('[data-mobile-launch-welcome-sub]');
   if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
   if(!mark||!url)return;
-  var type=String(media.type||'image'),sig=type+'|'+url+'|'+tag+'|'+theme,safe=url.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  var type=String(media.type||'image'),sig=type+'|'+url+'|'+tag+'|'+theme,safe=url.replace(/&/g,'&amp;').replace(/"/g,'&quot;'),overlay=document.querySelector('[data-mobile-launch-welcome]');
+  if(type==='animation'){if(overlay)overlay.classList.add('nethorMobileWelcomeAnimationOnly');document.documentElement.dataset.nethorMobileWelcomeMode='animation'}
+  else{if(overlay)overlay.classList.remove('nethorMobileWelcomeAnimationOnly');document.documentElement.dataset.nethorMobileWelcomeMode='default'}
   mark.dataset.mediaSignature=sig;mark.dataset.bootstrapMedia='1';mark.classList.add('hasMedia');
   if(type==='animation'&&/\.js(?:$|\?)/i.test(url)){
    var q=new URLSearchParams({src:url,theme:theme,mode:'media',name:'Utilisateur'});if(tag)q.set('tag',tag);
@@ -119,6 +121,6 @@
 <script src="ui/mobile/views/scanner/scanner-view.js?v=2"></script>
 <script src="ui/mobile/views/planning/planning-view.js?v=6"></script>
 <script src="ui/mobile/views/chat/chat-view.js?v=3"></script>
-<script src="ui/mobile/mobile-app.js?v=22"></script>
+<script src="ui/mobile/mobile-app.js?v=23"></script>
 </body>
 </html>
