@@ -44,21 +44,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
   }
   return''
  }
- function fit(el){
+ function removeReducedMotionOverrides(rootNode){
+  try{
+   for(const style of rootNode.querySelectorAll('style')){
+    const sheet=style.sheet;if(!sheet)continue;
+    for(let i=sheet.cssRules.length-1;i>=0;i--){
+     const rule=sheet.cssRules[i],text=String(rule?.conditionText||rule?.media?.mediaText||'').toLowerCase();
+     if(text.includes('prefers-reduced-motion'))sheet.deleteRule(i)
+    }
+   }
+  }catch(_){}
+ }
+ function fit(el,{replay=false}={}){
+  const dark=theme==='dark';
   el.style.display='block';el.style.width='100%';el.style.height='100%';el.style.minHeight='0';
-  el.style.setProperty('--bg','transparent');el.style.setProperty('--nethor-bg','transparent');
-  el.style.setProperty('--fg',theme==='dark'?'#f7f7f8':'#171717');el.style.setProperty('--nethor-text',theme==='dark'?'#f7f7f8':'#171717');
-  if(mode!=='media'||!el.shadowRoot)return;
-  const patch=document.createElement('style');
-  patch.textContent=':host{display:block!important;width:100%!important;height:100%!important;min-height:0!important;background:transparent!important}.stage,.nethor-welcome{width:100%!important;height:100%!important;min-height:0!important;padding:0!important;background:transparent!important;overflow:hidden!important}.wrap,.nethor-welcome__inner,.nethor-inner{width:100%!important;height:100%!important;display:grid!important;place-items:center!important}.logo,.logo-box,.nethor-logo,.nethor-logo-box{width:min(78vw,130px)!important;max-width:92%!important;margin:0!important}.copy,.nethor-copy,.controls,.tag{display:none!important}';
-  el.shadowRoot.appendChild(patch)
+  el.style.colorScheme=theme;
+  el.style.setProperty('--bg','transparent','important');
+  el.style.setProperty('--nethor-bg','transparent','important');
+  el.style.setProperty('--fg',dark?'#f7f7f8':'#171717','important');
+  el.style.setProperty('--nethor-text',dark?'#f7f7f8':'#171717','important');
+  el.style.setProperty('--muted',dark?'#9ba0a8':'#7d8188','important');
+  el.style.setProperty('--line',dark?'rgba(255,255,255,.10)':'rgba(0,0,0,.09)','important');
+  if(!el.shadowRoot)return;
+  removeReducedMotionOverrides(el.shadowRoot);
+  if(mode==='media'&&!el.shadowRoot.querySelector('[data-nethor-host-patch]')){
+   const patch=document.createElement('style');patch.dataset.nethorHostPatch='1';
+   patch.textContent=':host{display:block!important;width:100%!important;height:100%!important;min-height:0!important;background:transparent!important;color-scheme:'+theme+'!important}.stage,.nethor-welcome{width:100%!important;height:100%!important;min-height:0!important;padding:0!important;background:transparent!important;overflow:hidden!important}.wrap,.nethor-welcome__inner,.nethor-inner{width:100%!important;height:100%!important;display:grid!important;place-items:center!important}.logo,.logo-box,.nethor-logo,.nethor-logo-box{width:min(78vw,130px)!important;max-width:92%!important;margin:0!important}.copy,.nethor-copy,.controls,.tag{display:none!important}';
+   el.shadowRoot.appendChild(patch)
+  }
+  if(replay){
+   try{el.replay?.()}catch(_){}
+  }
  }
  if(!allowed(src)){fail('Source refusée');return}
  const script=document.createElement('script');script.src=src;script.async=true;
  script.onload=function(){
   const tag=apiTag();if(!tag){fail('Format JS Nethor non reconnu');return}
-  try{const el=document.createElement(tag);el.setAttribute('name',name);root.replaceChildren(el);requestAnimationFrame(()=>fit(el));setTimeout(()=>fit(el),80)}
-  catch(e){fail('Animation indisponible')}
+  try{
+   const el=document.createElement(tag);el.setAttribute('name',name);root.replaceChildren(el);
+   requestAnimationFrame(()=>fit(el,{replay:true}));
+   setTimeout(()=>fit(el),80);
+   setTimeout(()=>fit(el),260)
+  }catch(e){fail('Animation indisponible')}
  };
  script.onerror=function(){fail('Chargement impossible')};
  document.head.appendChild(script)
