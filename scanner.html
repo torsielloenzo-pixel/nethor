@@ -98,26 +98,32 @@ async function waitForSupabase(ms=8000){
  throw new Error('Supabase indisponible')
 }
 const $=id=>document.getElementById(id);
-let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartPromise=null,visibilityStopTimer=null,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false,cameraPermissionState='unknown',assistTimer=null,assistBusy=false,assistCycle=0,nativeDetectorPromise=null,zxingLibraryPromise=null,zxingReader=null,hypothesisProducts=[],activeCameraTrack=null,torchEnabled=false;
+let scanner=null,scannerRunning=false,scannerStarting=false,cameraStartPromise=null,visibilityStopTimer=null,searchBusy=false,lastCode='',lastCodeAt=0,currentProduct=null,sessionUserId='',cameraRemembered=false,cameraPreferenceLoaded=false,cameraPreferenceDecision='unknown',cameraPermissionState='unknown',assistTimer=null,assistBusy=false,assistCycle=0,nativeDetectorPromise=null,zxingLibraryPromise=null,zxingReader=null,hypothesisProducts=[],activeCameraTrack=null,torchEnabled=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
 function cameraPreferenceKey(){return sessionUserId?'nethorScannerCamera:'+sessionUserId:'nethorScannerCamera'}
-function readLocalCameraPreference(){
+function readLocalCameraDecision(){
  try{
   const raw=localStorage.getItem(cameraPreferenceKey());
-  if(raw==='1')return true;
+  if(raw==='1')return'granted';
+  if(raw==='0')return'denied';
   const parsed=raw?JSON.parse(raw):null;
-  return parsed?.granted===true
- }catch(_){return false}
+  if(parsed?.decision==='granted'||parsed?.decision==='denied')return parsed.decision;
+  if(parsed?.granted===true)return'granted';
+  if(parsed?.granted===false)return'denied';
+  return'unknown'
+ }catch(_){return'unknown'}
 }
+function readLocalCameraPreference(){return readLocalCameraDecision()==='granted'}
 function writeLocalCameraPreference(granted){
  try{
-  if(granted)localStorage.setItem(cameraPreferenceKey(),JSON.stringify({granted:true,at:Date.now()}));
-  else localStorage.removeItem(cameraPreferenceKey())
+  const decision=granted===true?'granted':'denied';
+  localStorage.setItem(cameraPreferenceKey(),JSON.stringify({decision,granted:granted===true,at:Date.now()}))
  }catch(_){}
 }
 function hydrateCameraPreferenceFromCache(){
- cameraRemembered=readLocalCameraPreference();
+ cameraPreferenceDecision=readLocalCameraDecision();
+ cameraRemembered=cameraPreferenceDecision==='granted';
  return cameraRemembered
 }
 async function queryCameraPermission(){
@@ -136,6 +142,13 @@ async function queryCameraPermission(){
   return'unknown'
  }
 }
+function profileCameraDecision(prefs={}){
+ const explicit=String(prefs?.scanner_camera_preference||'').toLowerCase();
+ if(explicit==='granted'||explicit==='denied')return explicit;
+ if(prefs?.scanner_camera_authorized===true)return'granted';
+ if(prefs?.scanner_camera_authorized===false)return'denied';
+ return'unknown'
+}
 async function loadCameraPreference(){
  hydrateCameraPreferenceFromCache();
  if(!sessionUserId){cameraPreferenceLoaded=true;return cameraRemembered}
@@ -143,32 +156,38 @@ async function loadCameraPreference(){
   const {data,error}=await db.from('profiles').select('ui_preferences').eq('id',sessionUserId).maybeSingle();
   if(error)throw error;
   const prefs=data?.ui_preferences&&typeof data.ui_preferences==='object'?data.ui_preferences:{};
-  if(prefs.scanner_camera_authorized===true){
-   cameraRemembered=true;
-   writeLocalCameraPreference(true)
-  }else if(prefs.scanner_camera_authorized===false&&cameraPermissionState==='denied'){
-   cameraRemembered=false;
-   writeLocalCameraPreference(false)
+  const decision=profileCameraDecision(prefs);
+  if(decision==='granted'||decision==='denied'){
+   cameraPreferenceDecision=decision;
+   cameraRemembered=decision==='granted';
+   writeLocalCameraPreference(cameraRemembered)
   }
  }catch(e){console.warn('Préférence caméra:',e)}
  cameraPreferenceLoaded=true;
+ paintCameraPreference();
  return cameraRemembered
 }
 async function rememberCameraPermission(granted){
- const next=granted===true;
+ const next=granted===true,decision=next?'granted':'denied',now=new Date().toISOString();
  cameraRemembered=next;
+ cameraPreferenceDecision=decision;
+ cameraPreferenceLoaded=true;
  writeLocalCameraPreference(next);
+ paintCameraPreference();
  if(!sessionUserId||!db)return;
  try{
   const {data,error}=await db.from('profiles').select('ui_preferences').eq('id',sessionUserId).maybeSingle();
   if(error)throw error;
   const prefs=data?.ui_preferences&&typeof data.ui_preferences==='object'?{...data.ui_preferences}:{};
-  if(prefs.scanner_camera_authorized===next&&(!next||prefs.scanner_camera_authorized_at))return;
+  prefs.scanner_camera_preference=decision;
   prefs.scanner_camera_authorized=next;
+  prefs.scanner_camera_decision_at=now;
   if(next){
-   prefs.scanner_camera_authorized_at=prefs.scanner_camera_authorized_at||new Date().toISOString();
-   prefs.scanner_camera_last_confirmed_at=new Date().toISOString()
+   prefs.scanner_camera_authorized_at=prefs.scanner_camera_authorized_at||now;
+   prefs.scanner_camera_last_confirmed_at=now;
+   delete prefs.scanner_camera_denied_at
   }else{
+   prefs.scanner_camera_denied_at=now;
    delete prefs.scanner_camera_authorized_at;
    delete prefs.scanner_camera_last_confirmed_at
   }
@@ -201,6 +220,13 @@ function goBack(){
 }
 function isMobileView(){return window.NethorPlatform?.isMobile?.()??new URLSearchParams(location.search).get('mobile_preview')==='1'}
 function setCameraState(text){const el=$('cameraStateText');if(el)el.textContent=text}
+function paintCameraPreference(){
+ const el=$('cameraPreference');if(!el)return;
+ if(cameraPreferenceDecision==='granted'){
+  el.classList.add('show');
+  const text=el.querySelector('span:last-child');if(text)text.textContent='Caméra autorisée pour ton profil · ouverture automatique.'
+ }else el.classList.remove('show')
+}
 function showCameraFallback(message){
   $('cameraFallbackText').textContent=message||'Impossible d’ouvrir la caméra.';
   $('cameraFallback').classList.add('show');
@@ -591,8 +617,9 @@ async function startCamera(){
   cameraStartPromise=(async()=>{
     if(scannerRunning)return;
     hideCameraFallback();
-    // La permission navigateur est une information, pas un verrou :
-    // Safari/iOS peut renvoyer un état incomplet ou "prompt" même après accord.
+    if(!cameraPreferenceLoaded)await loadCameraPreference();
+    // Si le profil a déjà mémorisé l'accord, Nethor ouvre directement la caméra.
+    // Le navigateur garde toutefois le contrôle final de l'autorisation matérielle.
     queryCameraPermission().catch(()=>{});
     try{await loadQrLibrary()}catch(e){
       console.warn('Scanner module:',e);
@@ -614,7 +641,7 @@ async function startCamera(){
       setCameraState('Prêt à scanner');
       await tuneActiveCamera();
       startAssistLoop();
-      rememberCameraPermission(true)
+      await rememberCameraPermission(true)
     }catch(e){
       scannerStarting=false;
       scannerRunning=false;
@@ -833,11 +860,16 @@ async function boot(){
   if(!isMobileView())return;
   lockScannerViewport();
   hydrateCameraPreferenceFromCache();
-  const preferenceSync=loadCameraPreference();
+  await loadCameraPreference();
   lockScannerViewport();
-  startCamera();
-  queryCameraPermission().catch(()=>{});
-  preferenceSync.catch(()=>{})
+  const nativePermission=await queryCameraPermission();
+  if(nativePermission==='granted'&&cameraPreferenceDecision!=='granted')await rememberCameraPermission(true);
+  if(cameraPreferenceDecision==='denied'&&nativePermission!=='granted'){
+   showCameraFallback('Tu as refusé la caméra pour ce profil. Nethor ne la redemandera pas automatiquement. Touche « Réessayer » si tu veux modifier ce choix.');
+   setCameraState('Caméra désactivée dans ton profil');
+   return
+  }
+  await startCamera()
 }
 window.addEventListener('pagehide',()=>{if(visibilityStopTimer)clearTimeout(visibilityStopTimer);safeStop()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('result')?.classList.contains('resultModal'))closeProductModal()});
