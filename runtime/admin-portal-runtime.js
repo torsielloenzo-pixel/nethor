@@ -878,19 +878,23 @@ function platformAssetExtension(file){
  const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
  return ['js','png','webp','svg','ico','gif','mp4','webm'].includes(ext)?ext:''
 }
-async function inspectPlatformAnimationScript(file){
+async function inspectPlatformAnimationScript(file,{strict=false}={}){
  const source=await file.text();
+ try{new Function(source)}catch(e){throw new Error('Animation JS invalide : '+(e?.message||'syntaxe incorrecte'))}
  const tagMatch=
   source.match(/const\s+TAG\s*=\s*["'`]([a-z][a-z0-9.-]*-[a-z0-9.-]+)["'`]/i)||
   source.match(/customElements\.define\s*\(\s*["'`]([a-z][a-z0-9.-]*-[a-z0-9.-]+)["'`]/i);
  const tag=String(tagMatch?.[1]||'').toLowerCase();
- const apiMatch=
-  source.match(/(?:global|window)\.([A-Za-z_$][\w$]*)\s*=\s*api\b/)||
-  source.match(/window\.([A-Za-z_$][\w$]*)\s*=\s*Object\.freeze\s*\(/);
- const api=String(apiMatch?.[1]||'');
- const mountCapable=api&&/\bmount\s*[,:(]/.test(source);
- if(!tag&&!mountCapable)throw new Error('Animation JS incompatible : aucun Web Component ni API mount() détecté.');
- return{tag,api:mountCapable?api:''}
+ const apiPatterns=[
+  /(?:global|window)\.([A-Za-z_$][\w$]*)\s*=\s*api\b/,
+  /(?:global|window)\.([A-Za-z_$][\w$]*)\s*=\s*Object\.freeze\s*\(/,
+  /(?:globalThis)\.([A-Za-z_$][\w$]*)\s*=\s*api\b/,
+  /(?:globalThis)\.([A-Za-z_$][\w$]*)\s*=\s*Object\.freeze\s*\(/
+ ];
+ let api='';for(const rx of apiPatterns){const m=source.match(rx);if(m?.[1]){api=String(m[1]);break}}
+ const mountCapable=/\bfunction\s+mount\s*\(|\bmount\s*\([^)]*\)\s*\{|\bmount\s*[,:(]/.test(source);
+ if(strict&&!tag&&!mountCapable)throw new Error('Animation JS incompatible avec le lecteur Nethor.');
+ return{tag,api:mountCapable?api:'',mountCapable}
 }
 async function uploadPlatformAsset(kind,key,theme,input){
  const file=input?.files?.[0],state=$('saveState');if(!file)return;
@@ -900,7 +904,7 @@ async function uploadPlatformAsset(kind,key,theme,input){
   const allowed=animated?['js','png','webp','svg','gif','mp4','webm']:['png','webp','svg','ico'];
   if(!ext||!allowed.includes(ext))throw new Error('Format non compatible avec cet emplacement.');
   const limit=animated?12*1024*1024:5*1024*1024;if(file.size>limit)throw new Error('Fichier trop lourd : '+(animated?'12':'5')+' Mo maximum.');
-  const scriptMeta=animated&&ext==='js'?await inspectPlatformAnimationScript(file):null;
+  const scriptMeta=animated&&ext==='js'?await inspectPlatformAnimationScript(file,{strict:welcome&&!headerAnimation}):null;
   state.className='saveState';state.textContent='Import '+platformLabel(kind)+' · '+(theme==='dark'?'sombre':'clair')+'…';
   const storagePath='platform/'+kind+'/'+key+'/'+theme+'-'+Date.now()+'.'+ext;
   const contentType=ext==='js'?'application/javascript':(file.type||undefined);
