@@ -350,3 +350,75 @@ html[data-theme="dark"] .platformSystemAssetsSection{border-color:rgba(255,255,2
  .soundVolumeControl{grid-template-columns:1fr}
  .soundEditorActions .btn{flex:1 1 calc(50% - 6px)}
 }
+
+
+/* Éditeur de calage audio */
+.audioTrimOverlay{
+ position:fixed;inset:0;z-index:9999;display:grid;place-items:center;
+ padding:24px;background:rgba(10,12,15,.48);backdrop-filter:blur(12px)
+}
+.audioTrimDialog{
+ width:min(720px,calc(100vw - 32px));max-height:min(760px,calc(100dvh - 32px));overflow:auto;
+ padding:20px;border:1px solid #dfe4e8;border-radius:20px;background:#fff;
+ box-shadow:0 28px 80px rgba(0,0,0,.24)
+}
+.audioTrimHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.audioTrimEyebrow{display:block;margin-bottom:4px;color:#ff5a22;font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.audioTrimHeader h3{margin:0;color:#20252b;font-size:20px;letter-spacing:-.025em}
+.audioTrimHeader p{margin:5px 0 0;color:#828b94;font-size:10px}
+.audioTrimClose{
+ width:34px;height:34px;display:grid;place-items:center;flex:none;border:1px solid #e2e6ea;
+ border-radius:11px;background:#fafbfc;color:#5f6871;font:500 23px/1 sans-serif;cursor:pointer
+}
+.audioTrimNotice{
+ margin-top:16px;padding:10px 12px;border:1px solid #e6e9ec;border-radius:12px;
+ background:#f8f9fa;color:#727b84;font-size:9px;line-height:1.5
+}
+.audioTrimTimeline{margin-top:20px;padding:16px;border:1px solid #e6e9ec;border-radius:16px;background:#fafbfc}
+.audioTrimTrack{position:relative;height:10px;margin:2px 0 17px;border-radius:999px;background:#e6e9ed;overflow:hidden}
+.audioTrimTrack i{position:absolute;top:0;bottom:0;left:0;width:100%;border-radius:inherit;background:#ff6a2b}
+.audioTrimRangeRow{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center;margin-top:10px}
+.audioTrimRangeRow label{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#5d6670;font-size:9px}
+.audioTrimRangeRow label b{color:#252b31;font-size:8.5px}
+.audioTrimRangeRow input[type="range"]{width:100%;min-height:0!important;padding:0!important;accent-color:#ff5a22}
+.audioTrimFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.audioTrimFields>label{display:grid;gap:6px;color:#68717a;font-size:9px;font-weight:750}
+.audioTrimFields>label>div{display:grid;grid-template-columns:minmax(0,1fr) 28px;align-items:center;border:1px solid #dde2e6;border-radius:12px;background:#fff;overflow:hidden}
+.audioTrimFields input{
+ width:100%;min-width:0;border:0!important;border-radius:0!important;background:transparent!important;
+ padding:11px 12px!important;color:#252b31;font:800 11px/1 inherit;outline:none
+}
+.audioTrimFields em{font-style:normal;color:#939aa1;font-size:9px;text-align:center}
+.audioTrimReadout{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:10px 12px;
+ border-radius:12px;background:#f4f6f7
+}
+.audioTrimReadout strong{color:#252b31;font-size:9.5px}
+.audioTrimReadout span{color:#88919a;font-size:8.5px}
+.audioTrimActions{display:grid;grid-template-columns:auto auto 1fr auto auto;gap:8px;align-items:center;margin-top:18px}
+.audioTrimActions .btn{white-space:nowrap}
+:root[data-theme="dark"] .audioTrimOverlay{background:rgba(0,0,0,.58)}
+:root[data-theme="dark"] .audioTrimDialog{background:#1b2025;border-color:#353d45}
+:root[data-theme="dark"] .audioTrimHeader h3,
+:root[data-theme="dark"] .audioTrimRangeRow label b,
+:root[data-theme="dark"] .audioTrimFields input,
+:root[data-theme="dark"] .audioTrimReadout strong{color:#f2f4f5}
+:root[data-theme="dark"] .audioTrimHeader p,
+:root[data-theme="dark"] .audioTrimRangeRow label,
+:root[data-theme="dark"] .audioTrimFields>label{color:#a2aab2}
+:root[data-theme="dark"] .audioTrimClose,
+:root[data-theme="dark"] .audioTrimNotice,
+:root[data-theme="dark"] .audioTrimTimeline,
+:root[data-theme="dark"] .audioTrimReadout{background:#222930;border-color:#37414a;color:#a5adb5}
+:root[data-theme="dark"] .audioTrimFields>label>div{background:#20262c;border-color:#39434c}
+:root[data-theme="dark"] .audioTrimTrack{background:#394149}
+@media(max-width:620px){
+ .audioTrimOverlay{padding:10px}
+ .audioTrimDialog{width:100%;max-height:calc(100dvh - 20px);padding:16px;border-radius:17px}
+ .audioTrimRangeRow{grid-template-columns:1fr;gap:7px}
+ .audioTrimFields{grid-template-columns:1fr}
+ .audioTrimReadout{align-items:flex-start;flex-direction:column}
+ .audioTrimActions{grid-template-columns:1fr 1fr}
+ .audioTrimActions>span{display:none}
+ .audioTrimActions .btn{width:100%}
+}
