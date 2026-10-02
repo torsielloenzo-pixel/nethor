@@ -1,4 +1,6 @@
 /* Nethor Scanner runtime — partagé page legacy / vue SPA mobile */
+(function(){
+'use strict';
 const SCANNER_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
 let scannerRuntimeActive=!SCANNER_SPA_MODE;
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
@@ -803,3 +805,4 @@ window.NethorScannerRuntime=Object.freeze({
  get running(){return scannerRunning}
 });
 if(!SCANNER_SPA_MODE)void scannerRuntimeMount();
+})();
