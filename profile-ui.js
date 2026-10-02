@@ -795,7 +795,8 @@ function simplePlatformAssetUrl(config,kind,key,fallback=''){
 function headerAnimationHostUrl(asset,theme){
  const q=new URLSearchParams({src:String(asset?.url||''),theme:theme==='dark'?'dark':'light',mode:'media',name:'Nethor'});
  if(asset?.tag)q.set('tag',String(asset.tag));
- return 'welcome-animation-host.html?v=2&'+q.toString()
+ if(asset?.api)q.set('api',String(asset.api));
+ return 'welcome-animation-host.html?v=3&'+q.toString()
 }
 function clearDesktopHeaderAnimation(button){
  if(!button)return;
@@ -807,8 +808,10 @@ function bindDesktopHeaderAnimation(button,config){
  clearDesktopHeaderAnimation(button);
  button.onmouseenter=null;button.onmouseleave=null;button.onfocus=null;button.onblur=null;
  const ui=config?.platform_ui?.desktop||{},enabled=ui.header_logo_mode==='animation';
+ button.dataset.nethorHeaderMode=enabled?'animation':'image';
  const asset=themedPlatformAsset(config,'desktop','header_logo_animation'),url=String(asset?.url||'').trim();
- if(!enabled||!url)return;
+ if(!enabled||!url){button.classList.remove('nethorHeaderAnimationReady');return}
+ button.classList.add('nethorHeaderAnimationReady');
  const theme=document.documentElement.dataset.theme==='dark'?'dark':'light';
  const show=()=>{
   if(button.querySelector('[data-nethor-header-animation]'))return;
