@@ -1211,28 +1211,49 @@ function applyManagedPortalSound(){
 function openPortalSoundManager(key){
  const node=portalSoundNode(key),def=portalSoundDef(key);if(!node||!def)return;
  closePortalSoundManager();
- const custom=!!String(node.url||'').trim(),baseDuration=portalSoundManagerDuration(key,node),rawStart=Math.max(0,Number(node.trim_start)||0),rawEnd=Number(node.trim_end);
+ const custom=!!String(node.url||'').trim(),baseDuration=portalSoundManagerDuration(key,node),rawStart=Math.max(0,Number(node.trim_start)||0),rawEnd=Number(node.trim_end),initialEq=normalizePortalSoundEq(node.eq);
+ const eqHtml=SOUND_EQ_BANDS.map(band=>{
+  const value=initialEq[band.key]||0;
+  return '<label class="audioEqBand">'+
+   '<span><strong>'+esc(band.label)+'</strong><small>'+esc(band.freq)+'</small></span>'+
+   '<input type="range" min="-12" max="12" step=".5" value="'+value+'" data-audio-eq-band="'+attr(band.key)+'">'+
+   '<b data-audio-eq-value="'+attr(band.key)+'">'+(value>0?'+':'')+value+' dB</b>'+
+  '</label>'
+ }).join('');
  const overlay=document.createElement('div');overlay.id='portalSoundManagerOverlay';overlay.className='audioTrimOverlay';
  overlay.innerHTML='<section class="audioTrimDialog" role="dialog" aria-modal="true" aria-labelledby="audioTrimTitle">'+
-  '<div class="audioTrimHeader"><div><span class="audioTrimEyebrow">Calage audio</span><h3 id="audioTrimTitle">'+esc(def.label)+'</h3><p>'+esc(custom?(node.name||'Fichier audio personnalisé'):'Son Nethor par défaut')+'</p></div><button class="audioTrimClose" type="button" aria-label="Fermer" onclick="closePortalSoundManager()">×</button></div>'+
-  '<div class="audioTrimNotice">Le fichier original n’est pas modifié. Nethor mémorise uniquement le point de départ et le point de fin utilisés lors de la lecture.</div>'+
+  '<div class="audioTrimHeader"><div><span class="audioTrimEyebrow">Gestion audio</span><h3 id="audioTrimTitle">'+esc(def.label)+'</h3><p>'+esc(custom?(node.name||'Fichier audio personnalisé'):'Son Nethor par défaut')+'</p></div><button class="audioTrimClose" type="button" aria-label="Fermer" onclick="closePortalSoundManager()">×</button></div>'+
+  '<div class="audioTrimNotice">Le fichier original n’est pas modifié. Nethor mémorise le calage et l’égalisation utilisés lors de la lecture.</div>'+
   '<div class="audioTrimTimeline">'+
+   '<div class="audioTrimSectionHead"><div><strong>Calage</strong><span>Choisis la portion du son à lire.</span></div></div>'+
    '<div class="audioTrimTrack" aria-hidden="true"><i data-audio-trim-selection></i></div>'+
    '<div class="audioTrimRangeRow"><label><span>Début</span><b data-audio-trim-start-label>0 s</b></label><input data-audio-trim-start-range type="range" min="0" max="1" step=".01" value="0"></div>'+
    '<div class="audioTrimRangeRow"><label><span>Fin</span><b data-audio-trim-end-label>0 s</b></label><input data-audio-trim-end-range type="range" min="0" max="1" step=".01" value="1"></div>'+
   '</div>'+
   '<div class="audioTrimFields"><label><span>Démarre à</span><div><input data-audio-trim-start-input type="number" min="0" step=".01"><em>s</em></div></label><label><span>Se termine à</span><div><input data-audio-trim-end-input type="number" min="0" step=".01"><em>s</em></div></label></div>'+
   '<div class="audioTrimReadout"><strong data-audio-trim-summary>Chargement…</strong><span data-audio-trim-duration>'+esc(custom?'Lecture de la durée du fichier…':'')+'</span></div>'+
-  '<div class="audioTrimActions"><button class="btn secondaryBtn" type="button" onclick="previewManagedPortalSound()">▶ Lire la sélection</button><button class="btn secondaryBtn" type="button" onclick="resetManagedPortalSound()">Réinitialiser le calage</button><span></span><button class="btn secondaryBtn" type="button" onclick="closePortalSoundManager()">Annuler</button><button class="btn primary" data-audio-trim-apply type="button" onclick="applyManagedPortalSound()"'+(custom?' disabled':'')+'>Appliquer</button></div>'+
+  '<section class="audioEqPanel">'+
+   '<div class="audioEqHead"><div><span class="audioEqIcon" aria-hidden="true">≋</span><div><strong>Égaliseur</strong><small data-audio-eq-status>Courbe neutre · aucun traitement tonal</small></div></div><b>5 bandes</b></div>'+
+   '<div class="audioEqPresets" aria-label="Préréglages égaliseur">'+
+    '<button type="button" onclick="setManagedPortalEqPreset(\'flat\')">Neutre</button>'+
+    '<button type="button" onclick="setManagedPortalEqPreset(\'bass\')">Basses +</button>'+
+    '<button type="button" onclick="setManagedPortalEqPreset(\'clear\')">Clarté</button>'+
+    '<button type="button" onclick="setManagedPortalEqPreset(\'soft\')">Doux</button>'+
+   '</div>'+
+   '<div class="audioEqBands">'+eqHtml+'</div>'+
+   '<div class="audioEqHint"><span>−12 dB</span><span>0 dB</span><span>+12 dB</span></div>'+
+  '</section>'+
+  '<div class="audioTrimActions"><button class="btn secondaryBtn" type="button" onclick="previewManagedPortalSound()">▶ Écouter les réglages</button><button class="btn secondaryBtn" type="button" onclick="resetManagedPortalSound()">Réinitialiser le calage</button><span></span><button class="btn secondaryBtn" type="button" onclick="closePortalSoundManager()">Annuler</button><button class="btn primary" data-audio-trim-apply type="button" onclick="applyManagedPortalSound()"'+(custom?' disabled':'')+'>Appliquer</button></div>'+
  '</section>';
  document.body.appendChild(overlay);
- portalSoundManagerState={key,start:rawStart,end:Number.isFinite(rawEnd)&&rawEnd>0?rawEnd:(baseDuration||.01),duration:baseDuration||.01,loading:custom};
+ portalSoundManagerState={key,start:rawStart,end:Number.isFinite(rawEnd)&&rawEnd>0?rawEnd:(baseDuration||.01),duration:baseDuration||.01,loading:custom,eq:initialEq};
  overlay.addEventListener('click',e=>{if(e.target===overlay)closePortalSoundManager()});
  const startRange=overlay.querySelector('[data-audio-trim-start-range]'),endRange=overlay.querySelector('[data-audio-trim-end-range]'),startInput=overlay.querySelector('[data-audio-trim-start-input]'),endInput=overlay.querySelector('[data-audio-trim-end-input]');
  startRange.oninput=()=>portalSoundManagerSet('start',startRange.value);
  endRange.oninput=()=>portalSoundManagerSet('end',endRange.value);
  startInput.oninput=()=>portalSoundManagerSet('start',startInput.value);
  endInput.oninput=()=>portalSoundManagerSet('end',endInput.value);
+ overlay.querySelectorAll('[data-audio-eq-band]').forEach(input=>input.oninput=()=>portalSoundManagerSetEq(input.dataset.audioEqBand,input.value));
  const syncLabels=()=>{
   const state=portalSoundManagerState;if(!state)return;
   const a=overlay.querySelector('[data-audio-trim-start-label]'),b=overlay.querySelector('[data-audio-trim-end-label]');
@@ -1263,7 +1284,7 @@ async function downloadPortalSound(key){
 }
 function resetPortalSound(key){
  const def=portalSoundDef(key);if(!def)return;
- config.sounds.items[key]={enabled:!!SOUND_ADMIN_DEFAULT_ENABLED[key],volume:1,url:'',path:'',name:'',trim_start:0,trim_end:null};
+ config.sounds.items[key]={enabled:!!SOUND_ADMIN_DEFAULT_ENABLED[key],volume:1,url:'',path:'',name:'',trim_start:0,trim_end:null,eq:normalizePortalSoundEq(null)};
  markDirty();renderSoundEditor();$('saveState').textContent='Son « '+def.label+' » réinitialisé — enregistrer pour confirmer'
 }
 
