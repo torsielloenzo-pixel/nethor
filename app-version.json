@@ -1,11 +1,11 @@
 {
-  "version": 319,
-  "label": "v1.44.25",
+  "version": 320,
+  "label": "v1.44.26",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Profil — nouvelle palette Nethor",
-  "message": "La palette de couleur du profil est alignée sur l’identité visuelle actuelle de Nethor et passe à 6 couleurs : Rouge Nethor, Orange Nethor, Ambre Nethor, Terre Nethor, Graphite et Ardoise. Sur mobile, les six choix sont présentés en grille 3 × 2. Les anciennes couleurs de profil sont automatiquement rapprochées de leur équivalent dans la nouvelle palette lors de l’ouverture du profil.",
-  "published_at": "2026-10-03T01:50:00+02:00",
+  "title": "Accueil Desktop — widgets réorganisés",
+  "message": "Refonte limitée à l’accueil Desktop : contenu élargi, rangée Prise de poste / Mes heures / Congés / Prochain repos équilibrée en quatre cartes, Équipe du jour sur toute la largeur, et grandes cartes d’outils en deux colonnes régulières. L’entête global Nethor, les autres pages et l’interface Mobile ne sont pas modifiés.",
+  "published_at": "2026-10-03T01:57:13+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
