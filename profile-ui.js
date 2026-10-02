@@ -736,7 +736,8 @@ function themedPlatformAssetUrl(config,kind,key,fallback=''){
  return String(variant?.url||((theme==='dark')?light?.url:'')||node?.url||fallback||'').trim()
 }
 function simplePlatformAssetUrl(config,kind,key,fallback=''){
- const node=config?.platform_ui?.[kind]?.[key];return String(node?.url||fallback||'').trim()
+ const node=config?.platform_ui?.[kind]?.[key],value=String(node?.url||fallback||'').trim();
+ return /(?:^|\/)app-icon-mobile-v73\.svg(?:\?|$)/i.test(value)?'assets/app-icon-mobile-v74.svg?v=74':value
 }
 function applyHeaderLogo(config={}){
  const platformKey=isMobileViewport()?'mobile':'desktop';
