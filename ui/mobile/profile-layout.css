@@ -159,6 +159,32 @@ main{padding-top:30px}.profileTop{grid-template-columns:1fr;text-align:center}.a
     grid-template-columns:1fr!important;
     width:100%!important
   }
+  .emailCard .buttons{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    width:100%!important
+  }
+  .emailCard .buttons .btn,.emailConfigured .btn{
+    width:100%!important;
+    max-width:none!important
+  }
+  .emailConfigured{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    align-items:stretch!important
+  }
+  .emailFields{
+    grid-template-columns:1fr!important
+  }
+  .emailMode input{
+    width:100%!important;
+    min-width:0!important
+  }
+  .emailResetLink{
+    width:auto!important;
+    max-width:100%!important
+  }
+  
   .notificationsCard{
     padding:14px!important;
     border-radius:17px!important;
