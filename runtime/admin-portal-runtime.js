@@ -958,20 +958,30 @@ function ensureSoundConfig(){
  config.sounds.items=config.sounds.items&&typeof config.sounds.items==='object'?config.sounds.items:{};
  for(const def of SOUND_ADMIN_DEFS){
   const raw=config.sounds.items[def.key]&&typeof config.sounds.items[def.key]==='object'?config.sounds.items[def.key]:{};
-  const volume=Number(raw.volume);
+  const volume=Number(raw.volume),trimStart=Number(raw.trim_start),trimEnd=Number(raw.trim_end);
   config.sounds.items[def.key]={
    enabled:typeof raw.enabled==='boolean'?raw.enabled:!!SOUND_ADMIN_DEFAULT_ENABLED[def.key],
    volume:Number.isFinite(volume)?Math.max(0,Math.min(1,volume)):1,
    url:String(raw.url||''),
    path:String(raw.path||''),
-   name:String(raw.name||'')
+   name:String(raw.name||''),
+   trim_start:Number.isFinite(trimStart)&&trimStart>0?trimStart:0,
+   trim_end:Number.isFinite(trimEnd)&&trimEnd>0?trimEnd:null
   }
  }
  return config.sounds
 }
 function portalSoundNode(key){ensureSoundConfig();return config.sounds.items[key]||null}
 function portalSoundDef(key){return SOUND_ADMIN_DEFS.find(x=>x.key===key)||null}
-function soundStatusText(node){return String(node?.url||'').trim()?(node.name||'Fichier audio personnalisé'):'Son Nethor par défaut'}
+function soundStatusText(node){
+ const source=String(node?.url||'').trim()?(node.name||'Fichier audio personnalisé'):'Son Nethor par défaut';
+ const start=Math.max(0,Number(node?.trim_start)||0),end=Number(node?.trim_end);
+ return start>0||Number.isFinite(end)&&end>0?source+' · calage '+soundTimeLabel(start)+' → '+(Number.isFinite(end)&&end>0?soundTimeLabel(end):'fin'):source
+}
+function soundTimeLabel(value){
+ const n=Math.max(0,Number(value)||0),m=Math.floor(n/60),sec=n-m*60;
+ return m?m+':'+sec.toFixed(sec<10?2:1).padStart(5,'0'):sec.toFixed(n<10?2:1)+' s'
+}
 function soundCard(def){
  const node=portalSoundNode(def.key),custom=!!String(node?.url||'').trim(),volume=Math.round((node?.volume??1)*100);
  return '<article class="soundEditorCard '+(def.group==='primary'?'primary':'')+'" data-sound-key="'+attr(def.key)+'">'+
@@ -983,6 +993,7 @@ function soundCard(def){
   '</div>'+
   '<div class="soundEditorActions">'+
    '<button class="btn secondaryBtn mini" type="button" onclick="previewPortalSound(\''+def.key+'\')">▶ Écouter</button>'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="openPortalSoundManager(\''+def.key+'\')">⏱ Gérer</button>'+
    '<button class="btn secondaryBtn mini" type="button" onclick="choosePortalSound(\''+def.key+'\')">Importer</button>'+
    '<button class="btn secondaryBtn mini" type="button" onclick="downloadPortalSound(\''+def.key+'\')">Télécharger</button>'+
    (custom?'<button class="btn secondaryBtn mini" type="button" onclick="resetPortalSound(\''+def.key+'\')">Réinitialiser</button>':'')+
@@ -1016,7 +1027,7 @@ async function uploadPortalSound(key,input){
   const storagePath='audio/'+key+'-'+Date.now()+'.'+ext;
   const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType});if(error)throw error;
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=portalSoundNode(key);
-  node.url=data?.publicUrl||'';node.path=storagePath;node.name=file.name;node.enabled=true;
+  node.url=data?.publicUrl||'';node.path=storagePath;node.name=file.name;node.enabled=true;node.trim_start=0;node.trim_end=null;
   markDirty();renderSoundEditor();window.NettoSounds?.preview?.(key,node);state.textContent='Son prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur audio : '+(e?.message||e)}
  finally{if(input)input.value=''}
@@ -1033,7 +1044,7 @@ async function downloadPortalSound(key){
 }
 function resetPortalSound(key){
  const def=portalSoundDef(key);if(!def)return;
- config.sounds.items[key]={enabled:!!SOUND_ADMIN_DEFAULT_ENABLED[key],volume:1,url:'',path:'',name:''};
+ config.sounds.items[key]={enabled:!!SOUND_ADMIN_DEFAULT_ENABLED[key],volume:1,url:'',path:'',name:'',trim_start:0,trim_end:null};
  markDirty();renderSoundEditor();$('saveState').textContent='Son « '+def.label+' » réinitialisé — enregistrer pour confirmer'
 }
 
