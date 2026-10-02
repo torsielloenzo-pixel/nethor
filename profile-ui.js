@@ -711,21 +711,24 @@ function playSynthSound(name,node,force=false){
 }
 function playCustomSound(name,node){
  try{
-  const audio=new Audio(node.url);audio.preload='auto';
-  const wantsEq=soundEqActive(node?.eq),ctx=wantsEq?unlockSound():null;
+  const wantsEq=soundEqActive(node?.eq),ctx=wantsEq?unlockSound():null,audio=new Audio();
+  audio.preload='auto';
   let master=null;
   if(wantsEq&&ctx){
    try{
-    audio.crossOrigin='anonymous';
+    audio.crossOrigin='anonymous';audio.src=node.url;
     const source=ctx.createMediaElementSource(audio);master=ctx.createGain();
-    master.gain.setValueAtTime(Math.max(.0001,soundVolume()*(node?.volume??1)),ctx.currentTime);
+    master.gain.setValueAtTime(Math.max(0,Math.min(1,soundVolume()*(node?.volume??1))),ctx.currentTime);
     connectSoundEq(ctx,source,master,node?.eq,ctx.currentTime);master.connect(ctx.destination);
     audio.volume=1
    }catch(_){
-    master=null;audio.removeAttribute('crossorigin');
+    master=null;audio.pause();audio.removeAttribute('crossorigin');audio.src='';audio.src=node.url;
     audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)))
    }
-  }else audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)));
+  }else{
+   audio.src=node.url;
+   audio.volume=Math.max(0,Math.min(1,soundVolume()*(node?.volume??1)))
+  }
   let started=false,stopTimer=0;
   const stop=()=>{clearTimeout(stopTimer);try{audio.pause()}catch(_){}};
   const begin=()=>{
