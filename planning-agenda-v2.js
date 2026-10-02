@@ -405,10 +405,18 @@ function renderAgenda(){
   if(typeof model==='undefined'||(!document.body.classList.contains('planningReady')&&model==null)){
    host.innerHTML='<div class="agendaLoading"><span class="agendaLoadingSpinner" aria-hidden="true"></span><div><strong>Chargement du planning</strong><small>Préparation de la semaine…</small></div></div>';return
   }
-  if(!model){host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return}
-  const a=currentWeekStart;renderDayPicker(a);
+  const a=currentWeekStart;
+  /* Le sélecteur doit rester disponible même lorsqu'aucun planning n'existe
+     pour la semaine affichée, sinon l'utilisateur reste bloqué sur une semaine vide. */
+  renderDayPicker(a);
   document.getElementById('mobileAgendaModeBar')?.classList.toggle('hidden',!isMobile());
   document.getElementById('agendaStats')?.classList.toggle('hidden',isMobile());
+  if(!model){
+   const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle');
+   if(title)title.textContent='Agenda de la semaine';
+   if(sub)sub.textContent='Du '+frDate(a)+' au '+frDate(addDays(a,6));
+   host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return
+  }
   if(isMobile()){
    host.innerHTML=mobileMode==='day'?renderDayAgenda(a):renderWeekAgenda(a);
    if(restFocusActive()&&!restFocusRevealed){
