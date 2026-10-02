@@ -1,11 +1,11 @@
 {
-  "version": 302,
-  "label": "v1.44.9",
+  "version": 303,
+  "label": "v1.44.10",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Planning mobile — affichage & navigation",
-  "message": "Correction du Planning mobile : les plannings importés au format actuel sont de nouveau chargés, et la sélection de date/semaine reste accessible même lorsqu’aucun planning n’existe sur la semaine affichée.",
-  "published_at": "2026-10-02T17:38:00+02:00",
+  "title": "Animations bienvenue — Desktop & ouverture Mobile",
+  "message": "Correction du lecteur d’animations de bienvenue. Desktop force maintenant un vrai replay de l’animation JS et neutralise la règle interne qui pouvait la réduire à un état final fixe. Le splash d’ouverture Mobile utilise le thème Nethor mémorisé dès le premier frame et impose ce thème à l’intérieur de l’animation, indépendamment du thème système.",
+  "published_at": "2026-10-02T22:48:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
