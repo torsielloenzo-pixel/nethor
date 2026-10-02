@@ -200,16 +200,16 @@ function preview(kind,theme){
 function themeEditor(kind,theme){
  const s=themeNode(kind,theme),dark=theme==='dark';
  return '<section class="loginThemeEditor '+(dark?'dark':'light')+'">'+
-  '<div class="loginThemeEditorHead"><div><span class="loginThemeBadge">'+themeLabel(theme)+'</span><h3>Version '+(dark?'sombre':'claire')+'</h3><p>Mêmes dimensions et mêmes emplacements que l’autre thème.</p></div>'+
+  '<div class="loginThemeEditorHead"><div><span class="loginThemeBadge">'+themeLabel(theme)+'</span><h3>Version '+(dark?'sombre':'claire')+'</h3><p>À éléments actifs identiques, les dimensions et emplacements restent les mêmes.</p></div>'+
    (dark?'<button class="btn secondaryBtn mini" type="button" onclick="copyLoginTheme(\''+kind+'\',\'light\',\'dark\')">Copier le clair</button>':'')+
   '</div>'+
   preview(kind,theme)+
   '<div class="loginEditorGroup"><h4>Identité & fond</h4>'+
    assetEditor(kind,'login_logo',theme)+
-   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.primary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="primary_logo_visible"><span><strong>Logo principal visible</strong><small>Masque le logo sans déplacer les autres éléments.</small></span></label>'+
+   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.primary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="primary_logo_visible"><span><strong>Logo principal visible</strong><small>Masque le logo et libère immédiatement l’espace occupé.</small></span></label>'+
    assetEditor(kind,'login_wordmark',theme)+
    secondaryDisplayControl(kind,theme,s.secondary_display)+
-   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.secondary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="secondary_logo_visible"><span><strong>Élément sous le logo visible</strong><small>Masque le logo secondaire ou le texte sans changer la géométrie.</small></span></label>'+
+   '<label class="loginVisibilityToggle"><input type="checkbox" '+(s.secondary_logo_visible?'checked':'')+' data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="secondary_logo_visible"><span><strong>Élément sous le logo visible</strong><small>Masque le logo secondaire ou le texte et supprime son espace.</small></span></label>'+
    assetEditor(kind,'login_background',theme)+
    '<label class="loginOpacityControl"><span>Opacité de l’écran de fond <b data-login-opacity-label="'+kind+'-'+theme+'">'+s.background_opacity+' %</b></span><input type="range" min="0" max="100" step="1" value="'+s.background_opacity+'" data-login-kind="'+kind+'" data-login-theme="'+theme+'" data-login-key="background_opacity"></label>'+
   '</div>'+
@@ -273,8 +273,8 @@ function bindEditor(host){
 window.renderLoginScreenEditor=function(){
  const host=document.getElementById('loginScreenEditor');if(!host)return;
  ensurePlatformUiConfig();
- host.innerHTML='<div class="toolbar loginEditorHead"><div><h2>Écran de connexion</h2><p>Logo principal, logo secondaire, textes, icônes, fond et opacité. Mobile et Desktop sont séparés ; clair et sombre gardent exactement la même structure.</p></div></div>'+
- ['mobile','desktop'].map(kind=>'<div class="loginPlatformEditor"><div class="loginPlatformHead"><span>'+platformLabel(kind)+'</span><div><strong>Connexion '+platformLabel(kind)+'</strong><small>Structure verrouillée entre clair et sombre.</small></div></div><div class="loginThemeGrid">'+themeEditor(kind,'light')+themeEditor(kind,'dark')+'</div></div>').join('');
+ host.innerHTML='<div class="toolbar loginEditorHead"><div><h2>Écran de connexion</h2><p>Logo principal, logo secondaire, textes, icônes, fond et opacité. Mobile et Desktop sont séparés. Un élément désactivé est retiré de la mise en page afin de ne laisser aucun espace vide.</p></div></div>'+
+ ['mobile','desktop'].map(kind=>'<div class="loginPlatformEditor"><div class="loginPlatformHead"><span>'+platformLabel(kind)+'</span><div><strong>Connexion '+platformLabel(kind)+'</strong><small>Même structure tant que les mêmes éléments sont actifs.</small></div></div><div class="loginThemeGrid">'+themeEditor(kind,'light')+themeEditor(kind,'dark')+'</div></div>').join('');
  bindEditor(host)
 };
 
