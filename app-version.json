@@ -1,11 +1,11 @@
 {
-  "version": 318,
-  "label": "v1.44.24",
+  "version": 319,
+  "label": "v1.44.25",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — correctif d’affichage des pages",
-  "message": "Audit du chrome partagé Desktop et correction des pages dont l’en-tête pouvait se casser en plusieurs lignes. La structure du header est désormais imposée par le shell Desktop : logo, retour et outils globaux restent alignés sur une seule ligne, y compris lorsque la fenêtre est réduite. La page Notifications a aussi été remise à l’échelle Desktop avec un contenu plus lisible et un bouton Retour cohérent. Le correctif s’applique aux pages utilisant le chrome partagé sans modifier l’interface Mobile.",
-  "published_at": "2026-10-03T00:53:32+02:00",
+  "title": "Profil — nouvelle palette Nethor",
+  "message": "La palette de couleur du profil est alignée sur l’identité visuelle actuelle de Nethor et passe à 6 couleurs : Rouge Nethor, Orange Nethor, Ambre Nethor, Terre Nethor, Graphite et Ardoise. Sur mobile, les six choix sont présentés en grille 3 × 2. Les anciennes couleurs de profil sont automatiquement rapprochées de leur équivalent dans la nouvelle palette lors de l’ouverture du profil.",
+  "published_at": "2026-10-03T01:50:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
