@@ -597,7 +597,7 @@ function renderMobileQuickBar(){
  document.body.classList.add('nettoHasMobileBar');
  if(!window.__nettoOpenUserMenuHandled)setTimeout(tryOpenRequestedUserMenu,0)
 }
-const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,logout:logoutFromNethor,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,applyHeaderLogo,toggleMobilePreview:()=>toggleMobilePreview(),closeDrops,checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar()},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
+const api={profile:null,siteConfig:{},subrolePermissions:{},avatarUrl:null,onlineIds:new Set(),channel:null,profileChannel:null,accessChannel:null,chatPresenceTimer:null,client:null,session:null,notifications:[],notificationPreferences:null,notifChannel:null,loginHistory:[],modules:NAV_MODULES,allRoles:[...SYSTEM_ROLES],avatarFrames:AVATAR_FRAMES,validAvatarFrame,avatarFrameAsset,setAvatarFrame,paintAvatar:paint,maxRoles:moduleMaxRoles,configuredRoles,roleLabel,canAccess:moduleAllowed,permissionLevel,canManage,isVisible:moduleVisible,visibleModules,rebuildModules,renderMobileQuickBar,mobileBarItems,mobileBarEligible,mobileNavIcon,refresh,loadNotifications,markNotificationRead:markRead,markAllNotificationsRead:markAllRead,deleteNotification,deleteAllNotifications,notificationIcon,notificationCategory,notificationDate,notificationDayGroup,backToUserMenu,goBack,userMenuReturnUrl,logout:logoutFromNethor,loadNotificationPreferences,notificationPreferenceEnabled,notificationPushEnabled,notificationPortalEnabled,notificationRuleKey,preferredTheme,applyProfileTheme,setThemePreference:saveThemePreference,applyHeaderLogo,toggleMobilePreview:()=>toggleMobilePreview(),closeDrops,checkForUpdates:()=>manualCheckForUpdates(),rebuildGlobalHeader:()=>{buildGlobalHeader();renderMobileQuickBar();applyHeaderLogo(api.siteConfig||{})},maintenanceActive:()=>maintenanceActive(),enforceMaintenance:()=>enforceMaintenanceAccess(),openUserCard,closeUserCard,userPresenceLabel,userCardVersion:1};
 window.NettoProfileUI=api;
 
 const SOUND_DEFS={
@@ -861,8 +861,9 @@ function applyHeaderLogo(config={}){
  document.documentElement.style.setProperty('--nethor-desktop-header-logo-width',logoWidth+'px');
  document.documentElement.style.setProperty('--nethor-desktop-header-logo-height',logoHeight+'px');
  if(!custom){
-  style.textContent='html[data-nethor-platform="desktop"] .nethorDesktopBrandButton{width:'+logoWidth+'px!important;min-width:'+logoWidth+'px!important;height:'+logoHeight+'px!important;min-height:'+logoHeight+'px!important}html[data-nethor-platform="desktop"] .nethorDesktopWordmark{font-size:'+wordmarkSize+'px!important}';
+  style.textContent='html[data-nethor-platform="desktop"] .nethorDesktopBrandButton{width:'+logoWidth+'px!important;min-width:'+logoWidth+'px!important;height:'+logoHeight+'px!important;min-height:'+logoHeight+'px!important;position:relative!important;overflow:visible!important}html[data-nethor-platform="desktop"] .nethorDesktopWordmark{font-size:'+wordmarkSize+'px!important}html[data-nethor-platform="desktop"] .nethorDesktopBrandButton.nethorHeaderAnimating .nethorDesktopWordmark{visibility:hidden!important}html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;pointer-events:none!important}html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation iframe,html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation video,html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation img{display:block!important;width:100%!important;height:100%!important;border:0!important;object-fit:contain!important;object-position:left center!important;background:transparent!important}';
   requestAnimationFrame(()=>applyDesktopHeaderLogoElement(config,url,false,logoWidth,logoHeight));
+  setTimeout(()=>applyDesktopHeaderLogoElement(config,url,false,logoWidth,logoHeight),80);
   return
  }
  style.textContent=
@@ -872,7 +873,8 @@ function applyHeaderLogo(config={}){
   'html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;pointer-events:none!important;overflow:visible!important}'+
   'html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation iframe,html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation video,html[data-nethor-platform="desktop"] .nethorDesktopHeaderAnimation img{display:block!important;width:100%!important;height:100%!important;border:0!important;object-fit:contain!important;object-position:left center!important;background:transparent!important}'+
   'html[data-nethor-platform="desktop"] header .mark,html[data-nethor-platform="desktop"] header .brandMark{width:'+logoWidth+'px!important;height:'+logoHeight+'px!important;background-size:contain!important}';
- requestAnimationFrame(()=>applyDesktopHeaderLogoElement(config,url,true,logoWidth,logoHeight))
+ requestAnimationFrame(()=>applyDesktopHeaderLogoElement(config,url,true,logoWidth,logoHeight));
+ setTimeout(()=>applyDesktopHeaderLogoElement(config,url,true,logoWidth,logoHeight),80)
 }
 function iconMime(url){
  const s=String(url||'').split('?')[0].toLowerCase();
@@ -1101,6 +1103,7 @@ function buildGlobalHeader(){
  document.getElementById('nettoDeleteAll').onclick=e=>{e.stopPropagation();sounds.play('warning');deleteAllNotifications()};
  if(!api.globalListenersBound){document.addEventListener('click',e=>{if(!e.target.closest('#nettoGlobalTools'))closeDrops()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrops()});api.globalListenersBound=true}
  if(!window.__nettoOpenUserMenuHandled)tryOpenRequestedUserMenu();
+ try{applyHeaderLogo(api.siteConfig||{})}catch(_){}
 }
 async function bindMobilePreviewGlobal(){
  if(isMobileViewport())return;
