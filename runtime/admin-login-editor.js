@@ -309,6 +309,14 @@ if(typeof baseShowTab==='function')window.showTab=function(name,btn,opts={}){
  if(opts.sound!==false)window.NettoSounds?.play?.('menuOpen')
 };
 
+const baseRenderPlatformIdentity=window.renderPlatformIdentity;
+if(typeof baseRenderPlatformIdentity==='function')window.renderPlatformIdentity=function(kind){
+ baseRenderPlatformIdentity(kind);
+ document.querySelectorAll('#platformIdentity_'+kind+' .platformAssetRow').forEach(row=>{
+  if(row.querySelector('.platformAssetCopy strong')?.textContent?.trim()==='Logo de connexion')row.classList.add('hidden')
+ })
+};
+
 const baseRenderPlatformEditors=window.renderPlatformEditors;
 if(typeof baseRenderPlatformEditors==='function')window.renderPlatformEditors=function(){
  baseRenderPlatformEditors();
