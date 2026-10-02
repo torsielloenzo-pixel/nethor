@@ -5,7 +5,7 @@ const api=window.NettoProfileUI||{},sounds=window.NettoSounds||{play(){}};
 const APP_RELEASE=210;
 const APP_RELEASE_LABEL='v1.20.5';
 const APP_ICON='assets/app-icon-v63.svg';
-const APP_MOBILE_ICON='assets/app-icon-mobile-v73.svg';
+const APP_MOBILE_ICON='assets/app-icon-mobile-v74.svg';
 const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL]]);
 function syncAppIconLinks(){
  const version=Number(localStorage.getItem('nettoAppVersion')||0)||APP_RELEASE;
