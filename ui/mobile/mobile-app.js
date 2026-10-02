@@ -165,9 +165,12 @@ function renderMobileLaunchWelcome(state){
  if(!mark)return overlay;
  const media=config?.platform_ui?.mobile?.welcome_media||{},variant=mobileThemedAssetNode(media),url=String(variant?.url||'').trim(),type=String(media.type||'image'),tag=String(variant?.tag||'');
  const signature=url?(type+'|'+url+'|'+tag+'|'+mobileTheme()):'fallback|'+mobileTheme();
- if(mark.dataset.mediaSignature===signature)return overlay;
+ const bootstrapMedia=mark.dataset.bootstrapMedia==='1';
+ if(mark.dataset.mediaSignature===signature&&!bootstrapMedia)return overlay;
+ delete mark.dataset.bootstrapMedia;
  mark.dataset.mediaSignature=signature;
  mark.classList.remove('hasMedia');
+ mark.replaceChildren();
  if(!url){mark.innerHTML='N';return overlay}
  mark.classList.add('hasMedia');
  const safeUrl=String(url).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
