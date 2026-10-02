@@ -1,11 +1,11 @@
 {
-  "version": 309,
-  "label": "v1.44.15",
+  "version": 310,
+  "label": "v1.44.16",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop — import animation d’entête assoupli",
-  "message": "Correction du rejet des fichiers JavaScript d’animation d’entête. L’éditeur n’exige plus qu’un nom d’API mount() ou un Web Component soit détectable statiquement avant l’import : un script JS syntaxiquement valide peut être envoyé, puis le lecteur détecte dynamiquement après chargement toute API exposant mount(). Les animations NethorHoverLogo générées précédemment sont donc acceptées.",
-  "published_at": "2026-10-02T23:41:00+02:00",
+  "title": "Desktop — menu Notifications modernisé",
+  "message": "Refonte uniquement du menu Notifications sur Desktop : panneau plus large et plus lisible, en-tête épuré, compteur dynamique, filtres Toutes / Non lues / Messages / Système, regroupement par période, indicateur de nouveautés, cartes de notification modernisées, accès direct au centre complet et prise en charge du thème sombre. La version mobile et les autres menus ne sont pas modifiés.",
+  "published_at": "2026-10-02T23:58:06+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
