@@ -524,3 +524,304 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .desktop
 }
 
 
+
+
+/* Planning classique Desktop — modernisation visuelle v1.
+   CSS uniquement : aucun calcul, donnée, import, total ou interaction métier n'est modifié. */
+@media(min-width:761px){
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTabs{
+    width:max-content!important;
+    max-width:100%!important;
+    gap:5px!important;
+    padding:4px!important;
+    margin:0 0 12px!important;
+    border:1px solid #e6eaee!important;
+    border-radius:14px!important;
+    background:#f4f6f8!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab{
+    min-height:40px!important;
+    padding:7px 13px!important;
+    gap:8px!important;
+    border:1px solid transparent!important;
+    border-radius:10px!important;
+    background:transparent!important;
+    color:#5f6873!important;
+    font-size:10px!important;
+    transition:background .16s ease,color .16s ease,box-shadow .16s ease,transform .16s ease!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab:hover{
+    background:#fff!important;
+    color:#27313d!important;
+    box-shadow:0 3px 10px rgba(23,31,42,.06)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab.active{
+    background:linear-gradient(135deg,#ff432b,#ff7227)!important;
+    border-color:transparent!important;
+    color:#fff!important;
+    box-shadow:0 6px 16px rgba(246,77,38,.18)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .workspaceTabIcon{
+    width:24px!important;
+    height:24px!important;
+    border-radius:8px!important;
+    background:#e9edf1!important;
+    color:#65707c!important;
+    transition:inherit!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab.active .workspaceTabIcon{
+    background:rgba(255,255,255,.18)!important;
+    color:#fff!important
+  }
+
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) #sheetViewport{
+    border:1px solid #dde3e9!important;
+    border-radius:17px!important;
+    background:#fff!important;
+    box-shadow:0 14px 36px rgba(24,34,46,.075)!important;
+    scrollbar-color:#c9d0d8 transparent!important;
+    scrollbar-width:thin!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) #sheetMount{
+    border-radius:17px!important;
+    overflow:hidden!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable{
+    color:#18212c!important;
+    font-size:11px!important;
+    background:#fff!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable th,
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable td{
+    height:36px!important;
+    border-right:1px solid #e5e9ed!important;
+    border-bottom:1px solid #e2e7eb!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable thead th{
+    height:44px!important;
+    background:linear-gradient(180deg,#f9fafb 0%,#f2f5f7 100%)!important;
+    color:#46515e!important;
+    border-bottom:1px solid #d9e0e6!important;
+    font-size:8.5px!important;
+    font-weight:900!important;
+    letter-spacing:-.08px!important;
+    box-shadow:inset 0 -1px 0 rgba(255,255,255,.75)!important
+  }
+
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .nameHead{
+    padding:0 12px!important;
+    background:linear-gradient(180deg,#f5f7f9,#edf1f4)!important;
+    color:#26313c!important;
+    border-right:1px solid #cfd7df!important;
+    font-size:10px!important;
+    letter-spacing:.01em!important;
+    box-shadow:10px 0 18px -18px rgba(20,30,42,.55)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .nameCell{
+    padding:0 11px!important;
+    background:#fff!important;
+    border-right:1px solid #d4dbe2!important;
+    box-shadow:10px 0 18px -18px rgba(20,30,42,.42)!important;
+    transition:background .14s ease!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:nth-child(even) .nameCell{
+    background:#fbfcfd!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:hover .nameCell{
+    background:#f4f7f9!important
+  }
+
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningIdentity{
+    grid-template-columns:30px minmax(0,1fr)!important;
+    gap:8px!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningIdentityAvatar{
+    width:30px!important;
+    height:30px!important;
+    border-radius:9px!important;
+    font-size:9.5px!important;
+    box-shadow:0 3px 8px rgba(22,30,40,.10),inset 0 0 0 1px rgba(255,255,255,.18)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningIdentityText strong{
+    color:#18212c!important;
+    font-size:11.5px!important;
+    font-weight:850!important;
+    letter-spacing:-.08px!important
+  }
+
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .timeHead.hourStart,
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot.hourStart{
+    border-left:1.5px solid #b8c2cc!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .timeHead.halfStart:not(.hourStart),
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot.halfStart:not(.hourStart){
+    border-left:1px solid #d7dde3!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .timeHead.blankQuarter{
+    background:#f8fafb!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot{
+    position:relative!important;
+    background-color:#fff;
+    transition:filter .12s ease,box-shadow .12s ease,background-color .12s ease!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:nth-child(even) .slot:not([data-color=""]){
+    /* Les couleurs métier restent strictement celles écrites par le moteur du planning. */
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot[data-color]:not([data-color=""]){
+    border-radius:2px!important;
+    box-shadow:
+      inset 1px 0 rgba(255,255,255,.34),
+      inset 0 1px rgba(255,255,255,.20),
+      inset 0 -1px rgba(0,0,0,.035)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:hover .slot[data-color]:not([data-color=""]){
+    filter:brightness(.985) saturate(1.025)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:hover .slot[data-color=""]{
+    background:#f8fafb!important
+  }
+
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .totalHead{
+    background:linear-gradient(180deg,#f5f7f9,#edf1f4)!important;
+    color:#26313c!important;
+    border-left:1px solid #cfd7df!important;
+    border-right:0!important;
+    font-size:9.5px!important;
+    box-shadow:-10px 0 18px -18px rgba(20,30,42,.55)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .totalCell{
+    position:sticky!important;
+    overflow:hidden!important;
+    background:#fff!important;
+    color:#17212c!important;
+    border-left:1px solid #d4dbe2!important;
+    border-right:0!important;
+    font-size:11px!important;
+    font-weight:900!important;
+    isolation:isolate!important;
+    box-shadow:-10px 0 18px -18px rgba(20,30,42,.45)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .totalCell::before{
+    content:""!important;
+    position:absolute!important;
+    z-index:-1!important;
+    inset:6px 7px!important;
+    border-radius:999px!important;
+    background:#f0f3f6!important;
+    border:1px solid #e9edf1!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:hover .totalCell::before{
+    background:#e9eef3!important
+  }
+
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot.editable:hover{
+    outline:2px solid #ff6538!important;
+    outline-offset:-2px!important;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.42)!important
+  }
+
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .legend{
+    margin-top:9px!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .legend span{
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:5px!important;
+    padding:5px 8px!important;
+    border:1px solid #e7ebee!important;
+    border-radius:999px!important;
+    background:#fafbfc!important;
+    color:#68717b!important;
+    font-size:8.5px!important;
+    font-weight:750!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .legend .sw{
+    width:9px!important;
+    height:9px!important;
+    margin:0!important;
+    border-radius:3px!important
+  }
+
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTabs{
+    background:#181b1f!important;
+    border-color:#343a41!important;
+    box-shadow:none!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab{
+    color:#aeb5bd!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab:hover{
+    background:#252a30!important;
+    color:#f2f4f6!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab.active{
+    color:#fff!important;
+    background:linear-gradient(135deg,#ff432b,#ff7227)!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .workspaceTabIcon{
+    background:#2a3036!important;
+    color:#b9c0c7!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningWorkspaceTab.active .workspaceTabIcon{
+    background:rgba(255,255,255,.16)!important;
+    color:#fff!important
+  }
+
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) #sheetViewport,
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable{
+    background:#181b1f!important;
+    border-color:#353c43!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable th,
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable td{
+    border-right-color:#343a41!important;
+    border-bottom-color:#30363d!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable thead th,
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .nameHead,
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .totalHead{
+    background:linear-gradient(180deg,#282d33,#22272c)!important;
+    color:#dfe4e8!important;
+    border-color:#404851!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .nameCell,
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .totalCell{
+    background:#1b1f23!important;
+    color:#f0f2f4!important;
+    border-color:#3b4249!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:nth-child(even) .nameCell{
+    background:#1e2227!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:hover .nameCell{
+    background:#262b31!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningIdentityText strong{
+    color:#f0f2f4!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot[data-color=""]{
+    background:#1b1f23!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable tbody tr:hover .slot[data-color=""]{
+    background:#23282e!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .timeHead.hourStart,
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot.hourStart{
+    border-left-color:#59636d!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .timeHead.halfStart:not(.hourStart),
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .slot.halfStart:not(.hourStart){
+    border-left-color:#404850!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .totalCell::before{
+    background:#252a30!important;
+    border-color:#343b42!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .legend span{
+    background:#1e2227!important;
+    border-color:#353c43!important;
+    color:#b8c0c8!important
+  }
+}
