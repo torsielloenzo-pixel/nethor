@@ -57,7 +57,7 @@
   mark.dataset.mediaSignature=sig;mark.dataset.bootstrapMedia='1';mark.classList.add('hasMedia');
   if(type==='animation'&&/\.js(?:$|\?)/i.test(url)){
    var q=new URLSearchParams({src:url,theme:theme,mode:'media',name:'Utilisateur'});if(tag)q.set('tag',tag);
-   mark.innerHTML='<iframe src="welcome-animation-host.html?'+String(q).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="Animation Nethor" sandbox="allow-scripts" tabindex="-1"></iframe>'
+   mark.innerHTML='<iframe src="welcome-animation-host.html?v=2&'+String(q).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="Animation Nethor" sandbox="allow-scripts" tabindex="-1"></iframe>'
   }else if(type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url))mark.innerHTML='<video src="'+safe+'" autoplay muted loop playsinline preload="auto"></video>';
   else mark.innerHTML='<img src="'+safe+'" alt="" draggable="false">'
  }catch(_){}
@@ -119,6 +119,6 @@
 <script src="ui/mobile/views/scanner/scanner-view.js?v=2"></script>
 <script src="ui/mobile/views/planning/planning-view.js?v=6"></script>
 <script src="ui/mobile/views/chat/chat-view.js?v=3"></script>
-<script src="ui/mobile/mobile-app.js?v=21"></script>
+<script src="ui/mobile/mobile-app.js?v=22"></script>
 </body>
 </html>
