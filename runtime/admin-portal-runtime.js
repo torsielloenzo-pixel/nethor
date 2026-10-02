@@ -629,7 +629,7 @@ function ensurePlatformUiConfig(){
  config.platform_ui=config.platform_ui&&typeof config.platform_ui==='object'?config.platform_ui:{};
  for(const kind of ['mobile','desktop']){
   const current=config.platform_ui[kind]&&typeof config.platform_ui[kind]==='object'?config.platform_ui[kind]:{};
-  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}};
+  const cleanAsset=x=>{x=x&&typeof x==='object'?x:{};return{url:String(x.url||''),path:String(x.path||''),name:String(x.name||''),tag:String(x.tag||'')}};
   const themedAsset=key=>{const x=current[key]&&typeof current[key]==='object'?current[key]:{},legacy=cleanAsset(x),light=cleanAsset(x.light),dark=cleanAsset(x.dark);return{light:light.url||light.path||light.name?light:legacy,dark}};
   const simpleAsset=key=>cleanAsset(current[key]);
   const currentControls=current.controls&&typeof current.controls==='object'?current.controls:{},controls={};
@@ -689,6 +689,7 @@ function platformAssetPreview(kind,key,theme){
   return '<iframe class="platformWelcomeAnimationFrame" src="'+attr(host)+'" title="'+(isHeaderAnimation?'Aperçu de l’animation d’entête':'Aperçu de l’animation de bienvenue')+'" sandbox="allow-scripts" loading="lazy"></iframe>'
  }
  if(animated&&platformAssetIsVideo(url))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
+ if(!url&&animated)return '<span class="platformAssetEmptyPreview">Aucune animation</span>';
  return '<img src="'+attr(url)+'" alt="">'
 }
 function platformAssetAccept(key){
@@ -894,7 +895,8 @@ async function uploadPlatformAsset(kind,key,theme,input){
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=platformAssetVariantNode(kind,key,theme);
   node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag=scriptMeta?.tag||'';
   if(welcome&&['js','gif','mp4','webm'].includes(ext))platformAssetNode(kind,key).type='animation';
-  markDirty();renderPlatformIdentity(kind);state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
+  if(headerAnimation&&kind==='desktop')platformUiNode('desktop').header_logo_mode='animation';
+  markDirty();renderPlatformIdentity(kind);try{window.NettoProfileUI?.applyHeaderLogo?.(config)}catch(_){}state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur média : '+(e?.message||e)}
  finally{if(input)input.value=''}
 }
