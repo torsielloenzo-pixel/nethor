@@ -10,13 +10,13 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "assets/app-icon-mobile-v73.svg",
+      "src": "assets/app-icon-mobile-v74.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "assets/app-icon-mobile-v73-maskable.svg",
+      "src": "assets/app-icon-mobile-v74-maskable.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
