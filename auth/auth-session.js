@@ -233,12 +233,17 @@ async function syncProfileTheme(p,uid){
  if(!stored&&uid){const {error}=await db.from('profiles').update({ui_preferences:p.ui_preferences}).eq('id',uid);if(error)console.warn('Initialisation thème profil:',error)}
  return theme
 }
+function authIsRevokedSessionError(error){
+ const code=String(error?.code||'').toUpperCase(),message=String(error?.message||'');
+ return code==='NETHOR_SESSION_REVOKED'||/session inactive ou révoquée/i.test(message)||(/401/.test(String(error?.status||''))&&/session/i.test(message))
+}
 async function loadSessionProfile(uid,fields='display_name,role,ui_preferences'){
  let lastError=null;
  for(let attempt=0;attempt<3;attempt++){
   const {data,error}=await db.from('profiles').select(fields).eq('id',uid).maybeSingle();
   if(!error)return{data,error:null};
   lastError=error;
+  if(authIsRevokedSessionError(error))break;
   if(attempt<2)await new Promise(r=>setTimeout(r,220*(attempt+1)));
  }
  return{data:null,error:lastError}
@@ -255,7 +260,15 @@ async function boot(){
  const {data:{session},error:sessionError}=await db.auth.getSession();if(sessionError){console.warn('Session:',sessionError);return showLogin('Impossible de vérifier la session. Réessaie dans un instant.')}if(!session)return showLogin();
  applyCachedProfileTheme(session.user.id);
  const {data,error}=await loadSessionProfile(session.user.id);
- if(error){console.warn('Profil:',error);return showLogin('Connexion momentanément indisponible. Recharge la page : ta session est conservée.')}
+ if(error){
+  console.warn('Profil:',error);
+  if(authIsRevokedSessionError(error)){
+   try{await db.auth.signOut({scope:'local'})}catch(_){}
+   profile=null;window.currentRole='';
+   return showLogin('Ta session a expiré ou a été révoquée. Reconnecte-toi pour continuer.')
+  }
+  return showLogin('Connexion momentanément indisponible. Recharge la page : ta session est conservée.')
+ }
  if(!data){await db.auth.signOut({scope:'local'});return showLogin('Compte non autorisé.')}
  profile=data;await syncProfileTheme(profile,session.user.id);window.currentRole=profile.role;const bootMaintenanceTarget=await maintenanceTargetForRole(profile.role,'');if(bootMaintenanceTarget==='maintenance.html'){location.replace('maintenance.html');return}await window.NettoProfileUI?.refresh?.();const stockPermission=window.NettoProfileUI?.permissionLevel?.('stock',profile)||'none';if(stockPermission==='none'){location.replace('home.html');return}canOperateFL=stockPermission==='operate'||stockPermission==='manage';canManageFL=stockPermission==='manage';window.canOperateFL=canOperateFL;window.canManageFL=canManageFL;const returnTo=safeReturnPath();if(returnTo&&profile.role==='admin'){location.replace(returnTo);return}$('login').classList.add('hidden');$('site').classList.remove('hidden');$('who').textContent=(profile.display_name||'Utilisateur')+' • '+(window.NettoProfileUI?.roleLabel?.(profile.role)||profile.role);
  const manager=canManageFL,isAdmin=profile.role==='admin';document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',!isAdmin));document.querySelectorAll('.stockModeBtn[data-mode="order"]').forEach(x=>x.classList.toggle('hidden',!canOperateFL));document.querySelectorAll('.stockModeBtn[data-mode="manage"]').forEach(x=>x.classList.toggle('hidden',!canManageFL));$('suggestBtn')?.classList.toggle('hidden',!canOperateFL);$('cartBtn')?.classList.toggle('hidden',!canOperateFL);$('manageBtn')?.classList.toggle('hidden',!canManageFL);
