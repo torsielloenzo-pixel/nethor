@@ -53,6 +53,17 @@ function paintAvatar(){
  else el.textContent=initials(p.display_name)
 }
 function stateText(sel,msg,type=''){const el=root()?.querySelector(sel);if(el){el.textContent=msg;el.className='npvState'+(type?' '+type:'')}}
+function selectProfileColor(button){
+ const color=normalizeProfileColor(button?.dataset?.color),view=root();if(!view)return;
+ view.querySelectorAll('.npvColors [data-color]').forEach(item=>{
+  const active=item===button||normalizeProfileColor(item.dataset.color)===color&&item===button;
+  item.classList.toggle('active',active);
+  item.setAttribute('aria-pressed',String(active))
+ });
+ const avatar=view.querySelector('[data-avatar]');
+ if(avatar)avatar.style.background=color;
+ window.NettoSounds?.play?.('tap')
+}
 async function saveProfile(button){
  const p=services()?.profile;if(!p)return;
  const color=normalizeProfileColor(root()?.querySelector('.npvColors button.active')?.dataset.color||p.profile_color);
@@ -181,6 +192,8 @@ async function loadRewards(){
 async function equipReward(select){const kind=select.dataset.rewardKind;select.disabled=true;stateText('[data-reward-state]','Application…');try{const {error}=await services().client.rpc('reward_equip',{p_kind:kind,p_item:select.value||null});if(error)throw error;stateText('[data-reward-state]','✓ Personnalisation appliquée.','ok');await loadRewards()}catch(e){stateText('[data-reward-state]','Erreur : '+(e?.message||'application impossible'),'err')}finally{select.disabled=false}}
 function syncSounds(){const s=window.NettoSounds,card=root()?.querySelector('[data-sound-card]');if(!card||!s){card?.classList.add('hidden');return}const enabled=!!s.isEnabled?.(),volume=Math.round((s.getVolume?.()??.72)*100);const toggle=card.querySelector('[data-sound-enabled]'),range=card.querySelector('[data-sound-volume]'),label=card.querySelector('[data-sound-value]');if(toggle)toggle.checked=enabled;if(range)range.value=String(volume);if(label)label.textContent=volume+'%'}
 function onClick(e){
+ const colorButton=e.target.closest('.npvColors [data-color]');
+ if(colorButton){selectProfileColor(colorButton);return}
  const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action;
  if(a==='back')back();else if(a==='save-profile')void saveProfile(b);else if(a==='email-save')void saveRecoveryEmail(b,false);else if(a==='email-change')openRecoveryEmailChange();else if(a==='email-cancel')cancelRecoveryEmailChange();else if(a==='email-save-change')void saveRecoveryEmail(b,true);else if(a==='email-reset')void requestRecoveryEmailReset(b);else if(a==='change-password')void changePassword(b);else if(a==='avatar-open')openAvatar();else if(a==='avatar-close')cleanupAvatar();else if(a==='avatar-choose')root()?.querySelector('[data-avatar-input]')?.click();else if(a==='avatar-save')void saveAvatar(b);else if(a==='avatar-remove')void removeAvatar(b);else if(a==='zoom-out')setZoom(state.crop.zoom-.1);else if(a==='zoom-in')setZoom(state.crop.zoom+.1);else if(a==='open-rewards')router()?.open?.('rewards',{source:'profile'});else if(a==='open-notifications')router()?.open?.('notifications',{source:'profile'});else if(a==='sound-test')window.NettoSounds?.play?.('confirm')
 }
