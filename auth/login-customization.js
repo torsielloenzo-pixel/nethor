@@ -42,7 +42,7 @@ window.applyAuthBranding=function(){
  const root=document.querySelector(kind==='desktop'?'.authDesktopRoot':'.authMobileRoot');
  if(!root)return;
 
- const bg=themed(ui?.login_background,theme,'assets/fl-background.webp');
+ const bg=themed(ui?.login_background,theme,'assets/fl-background.svg');
  root.style.setProperty('--auth-login-background','url('+JSON.stringify(bg)+')');
  root.style.setProperty('--auth-login-background-opacity',String(Math.max(0,Math.min(1,Number(settings.background_opacity)/100))));
 
