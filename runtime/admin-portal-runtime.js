@@ -690,7 +690,7 @@ function renderQuickPlanningWidgetEditor(){
  const w=ensureQuickPlanningWidgetConfig();
  host.innerHTML=
   '<div class="operationsWidgetAdminCard">'+
-   '<div class="operationsWidgetAdminSummary"><div><strong>Personnalisation & visibilité</strong><small>Le widget occupe 6 colonnes sur 12 sur Desktop afin de pouvoir partager sa ligne avec un autre widget. Il se recalcule automatiquement depuis le planning publié.</small></div><label class="toggleChip"><input type="checkbox" data-quick-planning="enabled" '+(w.enabled!==false?'checked':'')+'> Afficher le widget</label></div>'+
+   '<div class="operationsWidgetAdminSummary"><div><strong>Personnalisation & visibilité</strong><small>Le widget occupe 8 colonnes sur 12 sur Desktop afin de rester très large tout en laissant 4 colonnes disponibles pour un second widget compact. Il se recalcule automatiquement depuis le planning publié.</small></div><label class="toggleChip"><input type="checkbox" data-quick-planning="enabled" '+(w.enabled!==false?'checked':'')+'> Afficher le widget</label></div>'+
    '<div class="quickPlanningAdminGrid">'+
     '<div class="field"><label>Titre</label><input maxlength="90" value="'+attr(w.title)+'" data-quick-planning="title"></div>'+
     '<div class="field"><label>Sous-titre</label><input maxlength="120" value="'+attr(w.subtitle)+'" data-quick-planning="subtitle"></div>'+
