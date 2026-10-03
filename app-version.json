@@ -1,11 +1,11 @@
 {
-  "version": 325,
-  "label": "v1.44.31",
+  "version": 326,
+  "label": "v1.44.32",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — notifications avec logo seul",
-  "message": "Les visuels des notifications Mobile n’utilisent plus les deux cercles noir et orange. Le logo ou l’icône est maintenant affiché seul sur fond transparent, dans le centre de notifications et dans Informations importantes sur l’accueil. L’éditeur Mobile affiche également le logo seul et les anciens réglages Fond / Accent / Forme ont été retirés de l’interface pour éviter toute ambiguïté. Les imports, téléchargements et réinitialisations restent disponibles pour chacun des 15 types.",
-  "published_at": "2026-10-03T03:23:29+02:00",
+  "title": "Mobile — volume Sons & audio appliqué",
+  "message": "Correction du moteur audio Mobile : le volume défini dans Gestion > Sons & audio est maintenant appliqué aux sons personnalisés sur iPhone via Web Audio, au lieu de dépendre du volume HTMLMediaElement. La SPA Mobile charge désormais son moteur audio partagé et synchronise automatiquement les réglages audio avec site_config, y compris après une modification en temps réel.",
+  "published_at": "2026-10-03T03:29:27+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
