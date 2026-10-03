@@ -1,11 +1,11 @@
 {
-  "version": 334,
-  "label": "v1.44.40",
+  "version": 335,
+  "label": "v1.44.41",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — vue rapide planning",
-  "message": "Ajout du widget Vue rapide planning : l’accueil Desktop affiche uniquement les personnes réellement en poste à l’instant présent, avec leur plage horaire, une frise basée automatiquement sur les horaires réels du planning du jour et une ligne « Maintenant » actualisée sans défilement manuel. Le bouton « Voir le planning complet » ouvre directement la journée concernée. Visibilité, textes, densité, avatars, rôles, horaires, légende et couleurs clair/sombre sont personnalisables depuis Gestion > Éditeur du portail > Blocs & widgets.",
-  "published_at": "2026-10-03T23:34:00+02:00",
+  "title": "Accueil Desktop — typographie de la bannière",
+  "message": "La salutation utilisateur est désormais plus discrète et le nom du magasin « Netto Le Thor » devient l’élément principal. Gestion > Éditeur du portail > Widgets > Bannière d’accueil propose maintenant un bloc « Taille des textes » avec réglage indépendant en pixels de la salutation, du nom du magasin, du titre des horaires et de la valeur des horaires.",
+  "published_at": "2026-10-03T23:40:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
