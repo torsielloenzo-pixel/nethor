@@ -320,6 +320,10 @@ const HOME_STORE_INFO_DEFAULTS={
   height:178,
   image_dim:28,
   image_position:'center center',
+  greeting_size:18,
+  store_name_size:30,
+  hours_label_size:11,
+  hours_value_size:28,
   shadow:true
  }
 };
@@ -356,6 +360,10 @@ function homeStoreInfoConfig(cfg){
    height:Math.max(140,Math.min(260,Number(rawStyle.height)||HOME_STORE_INFO_DEFAULTS.style.height)),
    image_dim:Math.max(0,Math.min(75,Number(rawStyle.image_dim)??HOME_STORE_INFO_DEFAULTS.style.image_dim)),
    image_position:homeStorePosition(rawStyle.image_position),
+   greeting_size:Math.max(12,Math.min(42,Number(rawStyle.greeting_size)||HOME_STORE_INFO_DEFAULTS.style.greeting_size)),
+   store_name_size:Math.max(14,Math.min(52,Number(rawStyle.store_name_size)||HOME_STORE_INFO_DEFAULTS.style.store_name_size)),
+   hours_label_size:Math.max(8,Math.min(24,Number(rawStyle.hours_label_size)||HOME_STORE_INFO_DEFAULTS.style.hours_label_size)),
+   hours_value_size:Math.max(14,Math.min(48,Number(rawStyle.hours_value_size)||HOME_STORE_INFO_DEFAULTS.style.hours_value_size)),
    shadow:rawStyle.shadow!==false
   }
  }
@@ -401,7 +409,7 @@ function homeRenderStoreInfoWidget(cfg,now,name){
  const w=homeStoreInfoConfig(cfg);if(!w.enabled)return'';
  const opening=homeStoreOpeningState(w.hours,now),photo=homeStoreSafeMediaUrl(w.photo_url),greeting=homeStoreGreeting(w,now),hoursLabel=homeStoreHoursLabel(opening.spec);
  const s=w.style,shadow=s.shadow?'0 18px 46px rgba(10,14,20,.18)':'none',dim=(s.image_dim/100).toFixed(2);
- const style='--nsiw-accent:'+s.accent+';--nsiw-surface-light:'+s.surface_light+';--nsiw-surface-dark:'+s.surface_dark+';--nsiw-text-light:'+s.text_light+';--nsiw-text-dark:'+s.text_dark+';--nsiw-muted-light:'+s.muted_light+';--nsiw-muted-dark:'+s.muted_dark+';--nsiw-radius:'+s.radius+'px;--nsiw-height:'+s.height+'px;--nsiw-image-dim:'+dim+';--nsiw-image-position:'+s.image_position+';--nsiw-shadow:'+shadow;
+ const style='--nsiw-accent:'+s.accent+';--nsiw-surface-light:'+s.surface_light+';--nsiw-surface-dark:'+s.surface_dark+';--nsiw-text-light:'+s.text_light+';--nsiw-text-dark:'+s.text_dark+';--nsiw-muted-light:'+s.muted_light+';--nsiw-muted-dark:'+s.muted_dark+';--nsiw-radius:'+s.radius+'px;--nsiw-height:'+s.height+'px;--nsiw-image-dim:'+dim+';--nsiw-image-position:'+s.image_position+';--nsiw-greeting-size:'+s.greeting_size+'px;--nsiw-store-name-size:'+s.store_name_size+'px;--nsiw-hours-label-size:'+s.hours_label_size+'px;--nsiw-hours-value-size:'+s.hours_value_size+'px;--nsiw-shadow:'+shadow;
  const visual=photo?'<span class="nsiwVisual" style="background-image:url(\''+homeEsc(photo)+'\')" aria-hidden="true"></span>':'<span class="nsiwVisual empty" aria-hidden="true"></span>';
  return '<section id="nethorStoreInfoWidget" class="nsiw nsiwBanner'+(photo?' hasPhoto':'')+'" style="'+homeEsc(style)+'" aria-label="Bannière du point de vente">'+
   visual+
