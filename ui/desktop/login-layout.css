@@ -14,7 +14,7 @@ html[data-nethor-platform="desktop"] .authDesktopRoot{
  background:#eee9e1;color:var(--auth-text);isolation:isolate
 }
 html[data-nethor-platform="desktop"] .authDesktopRoot::before{
- content:"";position:fixed;inset:-12px;z-index:-2;background:url("../../assets/fl-background.webp") center center/cover no-repeat;
+ content:"";position:fixed;inset:-12px;z-index:-2;background:url("../../assets/fl-background.svg") center center/cover no-repeat;
  filter:saturate(.92) contrast(.96);transform:scale(1.02)
 }
 html[data-nethor-platform="desktop"] .authDesktopRoot::after{
