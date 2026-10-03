@@ -674,6 +674,11 @@ function ensurePlatformUiConfig(){
    const x=currentControls[key]&&typeof currentControls[key]==='object'?currentControls[key]:{};
    controls[key]={label:String(x.label||''),subtitle:String(x.subtitle||''),url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}
   }
+  const notificationVisuals={};
+  if(kind==='mobile'){
+   const source=current.notification_visuals&&typeof current.notification_visuals==='object'?current.notification_visuals:{};
+   for(const def of MOBILE_NOTIFICATION_VISUAL_DEFS)notificationVisuals[def.key]=normalizeMobileNotificationVisual(source[def.key])
+  }
   const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
   config.platform_ui[kind]={
    header_logo:themedAsset('header_logo'),
@@ -685,7 +690,8 @@ function ensurePlatformUiConfig(){
    home_screen_icon:simpleAsset('home_screen_icon'),
    browser_icon:themedAsset('browser_icon'),
    desktop_shortcut_icon:simpleAsset('desktop_shortcut_icon'),
-   controls
+   controls,
+   notification_visuals:kind==='mobile'?notificationVisuals:{}
   }
  }
  return config.platform_ui
