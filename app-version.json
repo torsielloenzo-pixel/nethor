@@ -1,11 +1,11 @@
 {
-  "version": 330,
-  "label": "v1.44.36",
-  "important": true,
+  "version": 331,
+  "label": "v1.44.37",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Sécurité — sessions et autorisations serveur",
-  "message": "Renforcement du socle comptes Nethor : vérification serveur des sessions actives, révocation immédiate des anciennes sessions, contrôles d’accès centralisés côté Supabase, verrouillage de la vue statistiques administrateur et meilleure gestion d’une session révoquée côté application.",
-  "published_at": "2026-10-03T12:26:13+02:00",
+  "title": "Accueil Desktop — informations point de vente",
+  "message": "Ajout d’un bandeau opérationnel Desktop avec date et semaine du planning, coordonnées de Netto Le Thor, état d’ouverture et horaires clients, heure actuelle et session équipe matin/après-midi calculée depuis le planning. Le widget est activable et personnalisable depuis Gestion > Éditeur du portail > Blocs & widgets.",
+  "published_at": "2026-10-03T23:09:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
