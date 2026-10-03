@@ -1,11 +1,11 @@
 {
-  "version": 335,
-  "label": "v1.44.41",
+  "version": 336,
+  "label": "v1.44.42",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — planning compact demi-largeur",
-  "message": "Le widget Vue rapide planning passe en format compact demi-largeur : 6 colonnes sur 12, hauteur fortement réduite et alignement autonome pour pouvoir partager une ligne avec un autre widget sans être étiré par sa hauteur. La logique du planning, les personnes en poste et la ligne « Maintenant » restent inchangées.",
-  "published_at": "2026-10-03T23:39:00+02:00",
+  "title": "Accueil Desktop — planning élargi",
+  "message": "Le widget Vue rapide planning passe de 6/12 à 8/12 de la grille Desktop. Il devient nettement plus large tout en conservant une zone de 4/12 pour un second widget compact sur la même ligne. Le comportement, les personnes en poste et la ligne « Maintenant » restent inchangés.",
+  "published_at": "2026-10-03T23:43:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
