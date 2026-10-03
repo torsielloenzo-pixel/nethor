@@ -201,17 +201,11 @@ function statIcon(id){
 function notifIcon(kind){return kind==='manual_edit'||kind==='import_new'||kind==='import_replace'?'▦':kind==='admin_message'?'!':kind==='maintenance'?'⚒':kind==='app_update'?'↑':'•'}
 function homeNotificationVisual(kind){
  const raw=services()?.siteConfig?.platform_ui?.mobile?.notification_visuals?.[kind],node=raw&&typeof raw==='object'?raw:{};
- const safe=(v,f)=>/^#[0-9a-f]{6}$/i.test(String(v||''))?String(v):f,shape=['circle','rounded','square'].includes(String(node.shape||''))?String(node.shape):'rounded';
- return{
-  url:String(node.url||'').trim(),
-  outer:safe(node.outer_color,'#24292F'),
-  accent:safe(node.accent_color,'#FF5A2A'),
-  radius:shape==='square'?'8px':shape==='circle'?'50%':'10px'
- }
+ return{url:String(node.url||'').trim()}
 }
 function homeNotificationIconHtml(kind){
  const visual=homeNotificationVisual(kind),body=visual.url?'<img src="'+esc(visual.url)+'" alt="" draggable="false">':esc(notifIcon(kind));
- return '<span class="mhdInfoIcon" style="--mhd-notif-outer:'+esc(visual.outer)+';--mhd-notif-accent:'+esc(visual.accent)+';--mhd-notif-radius:'+esc(visual.radius)+'">'+body+'</span>'
+ return '<span class="mhdInfoIcon">'+body+'</span>'
 }
 function since(value){
  if(!value)return'';
