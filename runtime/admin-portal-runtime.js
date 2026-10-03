@@ -275,7 +275,7 @@ const PAGE_FEATURES={
  stock:['Stock Fruits & Légumes','Consultation','Fiches produit','Suggestions de commande','Panier de commande'],
  planning:['Vues Jour / Semaine / Année','Import planning Excel','Couverture magasin','Mes statistiques','Détection d’anomalies','Indisponibilités / Congés','Tâches du jour'],
  chat:['Canal Général','Conversations','Pièces jointes','Présence équipe','Rôles affichés'],
- scanner:['Lecture EAN8 / EAN13 / UPC-A','Recherche manuelle EAN13','Ouverture fiche article'],
+ scanner:['Lecture EAN8 / EAN13 / UPC-A','Recherche manuelle EAN13','Informations de la fiche trouvée'],
  articles:['Création & modification','Familles','Catégories','Conditionnements','EAN13','Statut produit'],
  notifications:['Centre d’activité','Notifications portail','Suivi lu / non lu','Badge non lu','Destination de barre mobile'],
  notification_settings:['Préférences de notifications','Canal portail','Push mobile','Types de notifications'],
