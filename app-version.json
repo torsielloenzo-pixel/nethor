@@ -6,6 +6,6 @@
   "mode": "manual",
   "title": "Sécurité — sessions et autorisations serveur",
   "message": "Renforcement du socle comptes Nethor : vérification serveur des sessions actives, révocation immédiate des anciennes sessions, contrôles d’accès centralisés côté Supabase, verrouillage de la vue statistiques administrateur et meilleure gestion d’une session révoquée côté application.",
-  "published_at": "2026-10-03T12:30:00+02:00",
+  "published_at": "2026-10-03T12:26:13+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
