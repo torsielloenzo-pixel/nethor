@@ -215,6 +215,57 @@ function normalizeStoreInfoWidgetConfig(raw){
  }
 }
 
+
+const QUICK_PLANNING_WIDGET_DEFAULTS={
+ enabled:true,
+ title:'Vue rapide planning',
+ subtitle:'Personnes en poste actuellement',
+ action_label:'Voir le planning complet',
+ empty_text:'Aucune personne en poste actuellement',
+ show_avatar:true,
+ show_role:true,
+ show_shift:true,
+ show_legend:true,
+ density:'comfortable',
+ bar_mode:'profile',
+ style:{
+  accent:'#ff5a2a',now_color:'#ff5a2a',
+  surface_light:'#ffffff',surface_dark:'#23272d',
+  text_light:'#1f2937',text_dark:'#f3f5f7',
+  grid_light:'#e7ebf0',grid_dark:'#3a4149',
+  radius:18,shadow:true
+ }
+};
+function normalizeQuickPlanningWidgetConfig(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const style=raw.style&&typeof raw.style==='object'?raw.style:{};
+ return{
+  enabled:raw.enabled!==false,
+  title:String(raw.title||QUICK_PLANNING_WIDGET_DEFAULTS.title),
+  subtitle:String(raw.subtitle||QUICK_PLANNING_WIDGET_DEFAULTS.subtitle),
+  action_label:String(raw.action_label||QUICK_PLANNING_WIDGET_DEFAULTS.action_label),
+  empty_text:String(raw.empty_text||QUICK_PLANNING_WIDGET_DEFAULTS.empty_text),
+  show_avatar:raw.show_avatar!==false,
+  show_role:raw.show_role!==false,
+  show_shift:raw.show_shift!==false,
+  show_legend:raw.show_legend!==false,
+  density:raw.density==='compact'?'compact':'comfortable',
+  bar_mode:raw.bar_mode==='accent'?'accent':'profile',
+  style:{
+   accent:validColor(style.accent,QUICK_PLANNING_WIDGET_DEFAULTS.style.accent),
+   now_color:validColor(style.now_color,QUICK_PLANNING_WIDGET_DEFAULTS.style.now_color),
+   surface_light:validColor(style.surface_light,QUICK_PLANNING_WIDGET_DEFAULTS.style.surface_light),
+   surface_dark:validColor(style.surface_dark,QUICK_PLANNING_WIDGET_DEFAULTS.style.surface_dark),
+   text_light:validColor(style.text_light,QUICK_PLANNING_WIDGET_DEFAULTS.style.text_light),
+   text_dark:validColor(style.text_dark,QUICK_PLANNING_WIDGET_DEFAULTS.style.text_dark),
+   grid_light:validColor(style.grid_light,QUICK_PLANNING_WIDGET_DEFAULTS.style.grid_light),
+   grid_dark:validColor(style.grid_dark,QUICK_PLANNING_WIDGET_DEFAULTS.style.grid_dark),
+   radius:Math.max(10,Math.min(30,Number(style.radius)||QUICK_PLANNING_WIDGET_DEFAULTS.style.radius)),
+   shadow:style.shadow!==false
+  }
+ }
+}
+
 function normalize(raw){
  const c=raw&&typeof raw==='object'?clone(raw):{};
  c.brand={name:c.brand?.name||'Nethor',subtitle:c.brand?.subtitle||'Espace outils',header_logo_url:String(c.brand?.header_logo_url||''),header_logo_path:String(c.brand?.header_logo_path||''),header_logo_name:String(c.brand?.header_logo_name||'')};
@@ -225,6 +276,7 @@ function normalize(raw){
  Object.keys(c.pages).filter(k=>k.startsWith('custom_')).forEach(k=>delete c.pages[k]);
  delete c.customMenus;
  c.store_info_widget=normalizeStoreInfoWidgetConfig(c.store_info_widget);
+ c.quick_planning_widget=normalizeQuickPlanningWidgetConfig(c.quick_planning_widget);
  c.personalization=c.personalization&&typeof c.personalization==='object'?c.personalization:{};
  c.personalization.home_menus_enabled=c.personalization.home_menus_enabled!==false;
  c.mobile_user_menu=c.mobile_user_menu&&typeof c.mobile_user_menu==='object'?c.mobile_user_menu:{};
@@ -600,6 +652,64 @@ function renderStoreInfoWidgetEditor(){
  updateStoreBannerPreview()
 }
 
+
+function ensureQuickPlanningWidgetConfig(){
+ config.quick_planning_widget=normalizeQuickPlanningWidgetConfig(config.quick_planning_widget);
+ return config.quick_planning_widget
+}
+function renderQuickPlanningWidgetEditor(){
+ let host=$('quickPlanningWidgetEditor');
+ if(!host){
+  const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
+  const block=document.createElement('div');block.className='operationsWidgetAdmin quickPlanningWidgetAdmin';
+  block.innerHTML='<div class="quickPlanningAdminHead"><div><span class="eyebrow">WIDGET DESKTOP · PLANNING</span><h3>Vue rapide planning</h3><p>Personnes actuellement en poste, horaires réels du planning et repère « Maintenant » automatique.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderQuickPlanningWidgetEditor()">↻ Actualiser</button></div><div id="quickPlanningWidgetEditor"></div>';
+  panel.appendChild(block);host=$('quickPlanningWidgetEditor')
+ }
+ const w=ensureQuickPlanningWidgetConfig();
+ host.innerHTML=
+  '<div class="operationsWidgetAdminCard">'+
+   '<div class="operationsWidgetAdminSummary"><div><strong>Personnalisation & visibilité</strong><small>Le widget est réservé à l’accueil Desktop et se recalcule automatiquement depuis le planning publié.</small></div><label class="toggleChip"><input type="checkbox" data-quick-planning="enabled" '+(w.enabled!==false?'checked':'')+'> Afficher le widget</label></div>'+
+   '<div class="quickPlanningAdminGrid">'+
+    '<div class="field"><label>Titre</label><input maxlength="90" value="'+attr(w.title)+'" data-quick-planning="title"></div>'+
+    '<div class="field"><label>Sous-titre</label><input maxlength="120" value="'+attr(w.subtitle)+'" data-quick-planning="subtitle"></div>'+
+    '<div class="field"><label>Texte du bouton</label><input maxlength="80" value="'+attr(w.action_label)+'" data-quick-planning="action_label"></div>'+
+    '<div class="field"><label>Densité</label><select data-quick-planning="density"><option value="comfortable" '+(w.density==='comfortable'?'selected':'')+'>Confortable</option><option value="compact" '+(w.density==='compact'?'selected':'')+'>Compacte</option></select></div>'+
+    '<div class="field full"><label>Texte lorsqu’aucune personne n’est en poste</label><input maxlength="160" value="'+attr(w.empty_text)+'" data-quick-planning="empty_text"></div>'+
+    '<div class="field"><label>Couleur des barres</label><select data-quick-planning="bar_mode"><option value="profile" '+(w.bar_mode==='profile'?'selected':'')+'>Couleur du profil utilisateur</option><option value="accent" '+(w.bar_mode==='accent'?'selected':'')+'>Couleur d’accent unique</option></select></div>'+
+   '</div>'+
+   '<div class="operationsWidgetAdminToggles">'+
+    '<label class="operationsWidgetToggle"><span><strong>Avatar</strong><small>Afficher les initiales / couleurs du profil.</small></span><input type="checkbox" data-quick-planning="show_avatar" '+(w.show_avatar?'checked':'')+'></label>'+
+    '<label class="operationsWidgetToggle"><span><strong>Rôle</strong><small>Afficher le rôle sous le nom.</small></span><input type="checkbox" data-quick-planning="show_role" '+(w.show_role?'checked':'')+'></label>'+
+    '<label class="operationsWidgetToggle"><span><strong>Horaire du poste</strong><small>Afficher la plage horaire active sous le nom.</small></span><input type="checkbox" data-quick-planning="show_shift" '+(w.show_shift?'checked':'')+'></label>'+
+    '<label class="operationsWidgetToggle"><span><strong>Légende</strong><small>Afficher En poste · Pause · Maintenant.</small></span><input type="checkbox" data-quick-planning="show_legend" '+(w.show_legend?'checked':'')+'></label>'+
+   '</div>'+
+   '<div class="quickPlanningStyleGrid">'+
+    '<div class="field"><label>Accent</label><input type="color" value="'+attr(w.style.accent)+'" data-quick-planning-style="accent"></div>'+
+    '<div class="field"><label>« Maintenant »</label><input type="color" value="'+attr(w.style.now_color)+'" data-quick-planning-style="now_color"></div>'+
+    '<div class="field"><label>Fond clair</label><input type="color" value="'+attr(w.style.surface_light)+'" data-quick-planning-style="surface_light"></div>'+
+    '<div class="field"><label>Fond sombre</label><input type="color" value="'+attr(w.style.surface_dark)+'" data-quick-planning-style="surface_dark"></div>'+
+    '<div class="field"><label>Texte clair</label><input type="color" value="'+attr(w.style.text_light)+'" data-quick-planning-style="text_light"></div>'+
+    '<div class="field"><label>Texte sombre</label><input type="color" value="'+attr(w.style.text_dark)+'" data-quick-planning-style="text_dark"></div>'+
+    '<div class="field"><label>Grille claire</label><input type="color" value="'+attr(w.style.grid_light)+'" data-quick-planning-style="grid_light"></div>'+
+    '<div class="field"><label>Grille sombre</label><input type="color" value="'+attr(w.style.grid_dark)+'" data-quick-planning-style="grid_dark"></div>'+
+    '<div class="field"><label>Arrondi (px)</label><input type="number" min="10" max="30" value="'+attr(w.style.radius)+'" data-quick-planning-style="radius"></div>'+
+   '</div>'+
+   '<div class="operationsWidgetAdminToggles"><label class="operationsWidgetToggle"><span><strong>Ombre</strong><small>Ajoute une profondeur légère autour du widget.</small></span><input type="checkbox" data-quick-planning-style="shadow" '+(w.style.shadow!==false?'checked':'')+'></label></div>'+
+   '<div class="quickPlanningNote"><b>Plage horaire automatique :</b> aucune heure de début ou de fin n’est réglable manuellement. La frise utilise la première prise de poste et la dernière fin de poste présentes dans le planning du jour. Aucun défilement horizontal n’est proposé.</div>'+
+   '<div class="quickPlanningPreview"><div class="quickPlanningPreviewCard"><div class="quickPlanningPreviewHead"><strong>'+esc(w.title)+'</strong><span>'+esc(w.action_label)+' →</span></div><div class="quickPlanningPreviewRow"><span class="quickPlanningPreviewName">Utilisateur</span><span class="quickPlanningPreviewTrack"><i class="quickPlanningPreviewBar" style="background:linear-gradient(90deg,'+attr(w.style.accent)+',color-mix(in srgb,'+attr(w.style.accent)+' 72%,#fff))"></i><i class="quickPlanningPreviewNow" style="border-color:'+attr(w.style.now_color)+'"></i></span></div></div></div>'+
+  '</div>';
+ host.querySelectorAll('[data-quick-planning]').forEach(el=>el.oninput=el.onchange=()=>{
+  const node=ensureQuickPlanningWidgetConfig(),key=el.dataset.quickPlanning;
+  node[key]=el.type==='checkbox'?el.checked:el.value;markDirty()
+ });
+ host.querySelectorAll('[data-quick-planning-style]').forEach(el=>el.oninput=el.onchange=()=>{
+  const node=ensureQuickPlanningWidgetConfig(),key=el.dataset.quickPlanningStyle;
+  let value=el.type==='checkbox'?el.checked:el.value;
+  if(key==='radius')value=Math.max(10,Math.min(30,Number(value)||18));
+  node.style[key]=value;markDirty()
+ })
+}
+
 function ensurePersonalizationConfig(){
  config.personalization=config.personalization&&typeof config.personalization==='object'?config.personalization:{};
  if(typeof config.personalization.home_menus_enabled!=='boolean')config.personalization.home_menus_enabled=true;
@@ -633,6 +743,7 @@ function renderSystem(){
  if(!host)return;
  renderOperationsWidgetEditor();
  renderStoreInfoWidgetEditor();
+ renderQuickPlanningWidgetEditor();
  refreshSystemStats(mods);
  const q=String($('systemPageSearch')?.value||'').trim().toLocaleLowerCase('fr');
  const filter=String($('systemPageFilter')?.value||'all');
