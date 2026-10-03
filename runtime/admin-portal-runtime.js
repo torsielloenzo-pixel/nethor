@@ -153,6 +153,45 @@ async function loadManagementOverview(){
   if(logsBox)logsBox.innerHTML=(logsRes.data||[]).map(x=>'<div class="managementPreviewRow"><span class="managementPreviewAvatar">A</span><div><strong>'+esc(x.title||'Modification')+'</strong><small>'+esc(x.area||x.description||'Nethor')+'</small></div><time>'+new Date(x.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</time></div>').join('')||'<div class="managementEmpty">Aucune modification récente.</div>'
  }catch(e){console.warn('Vue Gestion:',e);if(usersBox)usersBox.innerHTML='<div class="managementEmpty">Comptes indisponibles.</div>';if(logsBox)logsBox.innerHTML='<div class="managementEmpty">Journal indisponible.</div>'}
 }
+
+const STORE_INFO_WIDGET_DEFAULTS={
+ enabled:true,
+ store_name:'Netto Le Thor',
+ address:'150 Chemin St Michel, 84250 Le Thor',
+ phone:'04 90 01 34 23',
+ photo_url:'',
+ date_label:"Aujourd'hui",
+ session_label:'Session en cours',
+ hours:{0:'09:00-12:30',1:'08:00-20:00',2:'08:00-20:00',3:'08:00-20:00',4:'08:00-20:00',5:'08:00-20:00',6:'08:00-20:00'},
+ style:{accent:'#ff6a2b',surface_light:'#ffffff',surface_dark:'#23272d',text_light:'#20242a',text_dark:'#f3f5f7',border_light:'#e4e7eb',border_dark:'#3b4148',radius:18,shadow:true}
+};
+function normalizeStoreInfoWidgetConfig(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const hours=raw.hours&&typeof raw.hours==='object'?raw.hours:{};
+ const style=raw.style&&typeof raw.style==='object'?raw.style:{};
+ return{
+  enabled:raw.enabled!==false,
+  store_name:String(raw.store_name||STORE_INFO_WIDGET_DEFAULTS.store_name),
+  address:String(raw.address||STORE_INFO_WIDGET_DEFAULTS.address),
+  phone:String(raw.phone||STORE_INFO_WIDGET_DEFAULTS.phone),
+  photo_url:String(raw.photo_url||''),
+  date_label:String(raw.date_label||STORE_INFO_WIDGET_DEFAULTS.date_label),
+  session_label:String(raw.session_label||STORE_INFO_WIDGET_DEFAULTS.session_label),
+  hours:{...STORE_INFO_WIDGET_DEFAULTS.hours,...hours},
+  style:{
+   accent:validColor(style.accent,STORE_INFO_WIDGET_DEFAULTS.style.accent),
+   surface_light:validColor(style.surface_light,STORE_INFO_WIDGET_DEFAULTS.style.surface_light),
+   surface_dark:validColor(style.surface_dark,STORE_INFO_WIDGET_DEFAULTS.style.surface_dark),
+   text_light:validColor(style.text_light,STORE_INFO_WIDGET_DEFAULTS.style.text_light),
+   text_dark:validColor(style.text_dark,STORE_INFO_WIDGET_DEFAULTS.style.text_dark),
+   border_light:validColor(style.border_light,STORE_INFO_WIDGET_DEFAULTS.style.border_light),
+   border_dark:validColor(style.border_dark,STORE_INFO_WIDGET_DEFAULTS.style.border_dark),
+   radius:Math.max(10,Math.min(30,Number(style.radius)||STORE_INFO_WIDGET_DEFAULTS.style.radius)),
+   shadow:style.shadow!==false
+  }
+ }
+}
+
 function normalize(raw){
  const c=raw&&typeof raw==='object'?clone(raw):{};
  c.brand={name:c.brand?.name||'Nethor',subtitle:c.brand?.subtitle||'Espace outils',header_logo_url:String(c.brand?.header_logo_url||''),header_logo_path:String(c.brand?.header_logo_path||''),header_logo_name:String(c.brand?.header_logo_name||'')};
@@ -162,6 +201,7 @@ function normalize(raw){
  c.pages=c.pages&&typeof c.pages==='object'?c.pages:{};
  Object.keys(c.pages).filter(k=>k.startsWith('custom_')).forEach(k=>delete c.pages[k]);
  delete c.customMenus;
+ c.store_info_widget=normalizeStoreInfoWidgetConfig(c.store_info_widget);
  c.personalization=c.personalization&&typeof c.personalization==='object'?c.personalization:{};
  c.personalization.home_menus_enabled=c.personalization.home_menus_enabled!==false;
  c.mobile_user_menu=c.mobile_user_menu&&typeof c.mobile_user_menu==='object'?c.mobile_user_menu:{};
@@ -418,6 +458,61 @@ function renderOperationsWidgetEditor(){
   const node=ensureOperationsWidgetConfig();node.sections[el.dataset.operationsSection]=el.checked;markDirty()
  })
 }
+
+function ensureStoreInfoWidgetConfig(){
+ config.store_info_widget=normalizeStoreInfoWidgetConfig(config.store_info_widget);
+ return config.store_info_widget
+}
+function renderStoreInfoWidgetEditor(){
+ let host=$('storeInfoWidgetEditor');
+ if(!host){
+  const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
+  const block=document.createElement('div');block.className='operationsWidgetAdmin storeInfoWidgetAdmin';
+  block.innerHTML='<div class="storeInfoAdminHead"><div><span class="eyebrow">WIDGET DESKTOP</span><h3>Informations point de vente</h3><p>Date, magasin, état d’ouverture et session d’équipe sur l’accueil ordinateur.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderStoreInfoWidgetEditor()">↻ Actualiser</button></div><div id="storeInfoWidgetEditor"></div>';
+  panel.appendChild(block);host=$('storeInfoWidgetEditor')
+ }
+ const w=ensureStoreInfoWidgetConfig(),days=[['1','Lundi'],['2','Mardi'],['3','Mercredi'],['4','Jeudi'],['5','Vendredi'],['6','Samedi'],['0','Dimanche']];
+ host.innerHTML=
+  '<div class="operationsWidgetAdminCard">'+
+   '<div class="operationsWidgetAdminSummary"><div><strong>Informations point de vente</strong><small>Widget visible uniquement sur l’accueil Desktop.</small></div><label class="toggleChip"><input type="checkbox" data-store-info="enabled" '+(w.enabled!==false?'checked':'')+'> Widget visible</label></div>'+
+   '<div class="storeInfoAdminGrid">'+
+    '<div class="field"><label>Nom du point de vente</label><input maxlength="90" value="'+attr(w.store_name)+'" data-store-info="store_name"></div>'+
+    '<div class="field"><label>Téléphone</label><input maxlength="40" value="'+attr(w.phone)+'" data-store-info="phone"></div>'+
+    '<div class="field full"><label>Adresse</label><input maxlength="180" value="'+attr(w.address)+'" data-store-info="address"></div>'+
+    '<div class="field full"><label>Photo du lieu · URL ou chemin</label><input maxlength="500" placeholder="Ex. assets/netto-le-thor.webp ou https://…" value="'+attr(w.photo_url)+'" data-store-info="photo_url"><small class="platformMediaHint">Si ce champ est vide, Nethor affiche une icône magasin neutre plutôt qu’une photo non vérifiée.</small></div>'+
+    '<div class="field"><label>Libellé date</label><input maxlength="50" value="'+attr(w.date_label)+'" data-store-info="date_label"></div>'+
+    '<div class="field"><label>Libellé session</label><input maxlength="50" value="'+attr(w.session_label)+'" data-store-info="session_label"></div>'+
+   '</div>'+
+   '<div class="storeInfoHours">'+days.map(([key,label])=>'<div class="field"><label>'+label+'</label><input maxlength="40" value="'+attr(w.hours[key]||'')+'" data-store-hour="'+key+'" placeholder="08:00-20:00"></div>').join('')+'</div>'+
+   '<div class="storeInfoStyleGrid">'+
+    '<div class="field"><label>Accent</label><input type="color" value="'+attr(w.style.accent)+'" data-store-style="accent"></div>'+
+    '<div class="field"><label>Fond clair</label><input type="color" value="'+attr(w.style.surface_light)+'" data-store-style="surface_light"></div>'+
+    '<div class="field"><label>Fond sombre</label><input type="color" value="'+attr(w.style.surface_dark)+'" data-store-style="surface_dark"></div>'+
+    '<div class="field"><label>Texte clair</label><input type="color" value="'+attr(w.style.text_light)+'" data-store-style="text_light"></div>'+
+    '<div class="field"><label>Texte sombre</label><input type="color" value="'+attr(w.style.text_dark)+'" data-store-style="text_dark"></div>'+
+    '<div class="field"><label>Bordure claire</label><input type="color" value="'+attr(w.style.border_light)+'" data-store-style="border_light"></div>'+
+    '<div class="field"><label>Bordure sombre</label><input type="color" value="'+attr(w.style.border_dark)+'" data-store-style="border_dark"></div>'+
+    '<div class="field"><label>Arrondi (px)</label><input type="number" min="10" max="30" value="'+attr(w.style.radius)+'" data-store-style="radius"></div>'+
+   '</div>'+
+   '<div class="operationsWidgetAdminToggles"><label class="operationsWidgetToggle"><span><strong>Ombre</strong><small>Ajoute une profondeur légère au bandeau.</small></span><input type="checkbox" data-store-style="shadow" '+(w.style.shadow!==false?'checked':'')+'></label></div>'+
+   '<div class="storeInfoPreview"><div class="storeInfoPreviewBar"><div><small>'+esc(w.date_label)+'</small><strong>Semaine 40</strong></div><div><small>Point de vente</small><strong>'+esc(w.store_name)+'</strong></div><div><small>Accueil clients</small><strong>Ouvert / Fermé</strong></div><div><small>'+esc(w.session_label)+'</small><strong>Équipe du matin</strong></div></div></div>'+
+   '<div class="storeInfoSource"><b>Données préremplies :</b> Netto Le Thor · 150 Chemin St Michel · 04 90 01 34 23 · lun.–sam. 08:00–20:00 · dim. 09:00–12:30. Ces valeurs restent modifiables ici si les informations du magasin évoluent.</div>'+
+  '</div>';
+ host.querySelectorAll('[data-store-info]').forEach(el=>el.oninput=el.onchange=()=>{
+  const node=ensureStoreInfoWidgetConfig(),key=el.dataset.storeInfo;
+  node[key]=el.type==='checkbox'?el.checked:el.value;markDirty()
+ });
+ host.querySelectorAll('[data-store-hour]').forEach(el=>el.oninput=el.onchange=()=>{
+  ensureStoreInfoWidgetConfig().hours[el.dataset.storeHour]=el.value.trim();markDirty()
+ });
+ host.querySelectorAll('[data-store-style]').forEach(el=>el.oninput=el.onchange=()=>{
+  const node=ensureStoreInfoWidgetConfig(),key=el.dataset.storeStyle;
+  let value=el.type==='checkbox'?el.checked:el.value;
+  if(key==='radius')value=Math.max(10,Math.min(30,Number(value)||18));
+  node.style[key]=value;markDirty()
+ })
+}
+
 function ensurePersonalizationConfig(){
  config.personalization=config.personalization&&typeof config.personalization==='object'?config.personalization:{};
  if(typeof config.personalization.home_menus_enabled!=='boolean')config.personalization.home_menus_enabled=true;
@@ -450,6 +545,7 @@ function renderSystem(){
  const host=$('systemModules'),mods=builtinModules();
  if(!host)return;
  renderOperationsWidgetEditor();
+ renderStoreInfoWidgetEditor();
  refreshSystemStats(mods);
  const q=String($('systemPageSearch')?.value||'').trim().toLocaleLowerCase('fr');
  const filter=String($('systemPageFilter')?.value||'all');
@@ -1563,6 +1659,8 @@ function collectGlobal(){config.brand.name=$('brandName').value.trim()||'Nethor'
 function paintGlobal(){document.documentElement.style.setProperty('--primary',config.theme.primary);document.documentElement.style.setProperty('--secondary',config.theme.secondary);document.documentElement.style.setProperty('--ink',config.theme.ink);$('previewName').textContent=config.brand.name;$('previewSubtitle').textContent=config.brand.subtitle;$('primaryHex').textContent=config.theme.primary;$('secondaryHex').textContent=config.theme.secondary;$('inkHex').textContent=config.theme.ink;const pm=$('previewMark'),logo=String(config.brand.header_logo_url||'').trim();if(pm){pm.classList.toggle('hasHeaderLogo',!!logo);pm.textContent=logo?'':'N';if(logo){pm.style.background='';pm.style.backgroundImage='url('+JSON.stringify(logo)+')'}else{pm.style.backgroundImage='';pm.style.background='linear-gradient(135deg,'+config.theme.primary+','+config.theme.secondary+')'}}renderHeaderLogoAsset();const enabled=!!config.maintenance?.enabled,mn=$('maintenanceNotice'),ml=$('maintenanceStateLabel');if(mn){mn.classList.toggle('active',enabled);mn.innerHTML=enabled?'<b>Maintenance activée.</b> Les utilisateurs non administrateurs sont redirigés vers la page de maintenance.':'<b>Maintenance désactivée.</b> Le portail reste accessible normalement.'}if(ml){ml.textContent=enabled?'Activée':'Désactivée';ml.classList.toggle('active',enabled)}}
 function fillGlobal(){$('brandName').value=config.brand.name;$('brandSubtitle').value=config.brand.subtitle;$('homeEyebrow').value=config.home.eyebrow;$('homeIntro').value=config.home.intro;$('primaryColor').value=config.theme.primary;$('secondaryColor').value=config.theme.secondary;$('inkColor').value=config.theme.ink;$('maintenanceEnabled').checked=!!config.maintenance?.enabled;paintGlobal()}
 function validateConfig(){
+ const storeInfo=ensureStoreInfoWidgetConfig();
+ if(storeInfo.photo_url&&!validUrl(storeInfo.photo_url))throw new Error('URL de photo invalide pour le widget point de vente.');
  for(const [id,p] of Object.entries(config.pages)){if(p?.url&&!validUrl(p.url))throw new Error('Destination invalide pour '+(p.label||id))}
  ensureMobileBar();const enabled=config.mobile_bar.items.filter(x=>x.enabled!==false),ids=enabled.map(x=>x.id);
  if(enabled.length>3)throw new Error('La barre mobile unifiée est limitée à 3 raccourcis.');
