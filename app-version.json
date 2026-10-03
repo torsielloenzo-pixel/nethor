@@ -1,11 +1,11 @@
 {
-  "version": 336,
-  "label": "v1.44.42",
+  "version": 337,
+  "label": "v1.44.43",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — horaires sans cadre",
-  "message": "Suppression du cadre sombre autour de « Horaires d’ouverture aujourd’hui » et de la valeur des horaires dans la bannière Desktop. Le texte reste directement intégré à la bannière, à côté de la séparation verticale orange. L’aperçu dans Gestion a été mis à jour de la même façon.",
-  "published_at": "2026-10-03T23:47:00+02:00",
+  "title": "Desktop — barre latérale de navigation",
+  "message": "Ajout d’une barre latérale de navigation Desktop à gauche : Accueil, Planning, Équipe (sans redirection pour le moment), Chat, puis Paramètres ancré en bas. Chaque entrée utilise une icône cohérente avec l’identité visuelle Nethor, avec état actif orange et prise en charge du thème sombre.",
+  "published_at": "2026-10-03T23:55:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
