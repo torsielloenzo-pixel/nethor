@@ -188,6 +188,7 @@ async function refreshCore({emitChange=true}={}){
   if(!profileResult.data)throw new Error('Profil utilisateur introuvable');
   state.profile=profileResult.data;
   state.siteConfig=configResult.error?state.siteConfig:(configResult.data?.value&&typeof configResult.data.value==='object'?configResult.data.value:{});
+  try{window.NettoSounds?.configure?.(state.siteConfig)}catch(error){console.warn('[Nethor MobileServices] configuration audio',error)}
   state.subrolePermissions=permissionResult.subrolePermissions;
   state.subroleKeys=permissionResult.subroleKeys;
   state.avatarUrl=await avatarFor(state.profile);
