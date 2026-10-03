@@ -18,7 +18,7 @@ const MANAGEMENT_META={
  mobile:{group:'Éditeur du portail',title:'Mobile',description:'Personnalise l’identité, les menus, les boutons, les notifications, la barre rapide et le menu utilisateur réellement affichés sur mobile.'},
  desktop:{group:'Éditeur du portail',title:'Desktop',description:'Personnalise l’identité, les menus et les boutons réellement affichés sur ordinateur.'},
  sounds:{group:'Éditeur du portail',title:'Sons & audio',description:'Gère l’identité sonore de Nethor : connexion, bienvenue, déconnexion et sons d’interface.'},
- blocks:{group:'Éditeur du portail',title:'Blocs & widgets',description:'Règle les composants fonctionnels et widgets indépendamment des pages.'},
+ blocks:{group:'Éditeur du portail',title:'Widgets',description:'Gère les widgets de Nethor, dont la bannière d’accueil Desktop et les blocs opérationnels.'},
  articles:{group:'Contenus',title:'Fiches articles',description:'Administre le référentiel produits, les familles, catégories et EAN13.'},
  media:{group:'Éditeur du portail',title:'Médias & logos',description:'Consulte et télécharge les ressources visuelles officielles utilisées par Nethor.'},
  notifications:{group:'Communication',title:'Notifications',description:'Gère les envois, les règles globales et les autorisations de notification.'},
@@ -157,26 +157,46 @@ async function loadManagementOverview(){
 const STORE_INFO_WIDGET_DEFAULTS={
  enabled:true,
  store_name:'Netto Le Thor',
- address:'150 Chemin St Michel, 84250 Le Thor',
- phone:'04 90 01 34 23',
  photo_url:'',
- date_label:"Aujourd'hui",
- session_label:'Session en cours',
+ photo_path:'',
+ photo_name:'',
+ opening_label:"Horaires d'ouverture aujourd'hui",
+ greetings:{morning:'Bonjour',afternoon:'Bon après-midi',evening:'Bonsoir'},
  hours:{0:'09:00-12:30',1:'08:00-20:00',2:'08:00-20:00',3:'08:00-20:00',4:'08:00-20:00',5:'08:00-20:00',6:'08:00-20:00'},
- style:{accent:'#ff6a2b',surface_light:'#ffffff',surface_dark:'#23272d',text_light:'#20242a',text_dark:'#f3f5f7',border_light:'#e4e7eb',border_dark:'#3b4148',radius:18,shadow:true}
+ style:{
+  accent:'#ff6a2b',
+  surface_light:'#202630',
+  surface_dark:'#171b21',
+  text_light:'#ffffff',
+  text_dark:'#ffffff',
+  muted_light:'#d4d8df',
+  muted_dark:'#d4d8df',
+  radius:18,
+  height:178,
+  image_dim:28,
+  image_position:'center center',
+  shadow:true
+ }
 };
+function normalizeStoreInfoPosition(value){
+ const allowed=['center center','right center','left center','center top','center bottom'],v=String(value||'').trim();
+ return allowed.includes(v)?v:STORE_INFO_WIDGET_DEFAULTS.style.image_position
+}
 function normalizeStoreInfoWidgetConfig(raw){
  raw=raw&&typeof raw==='object'?raw:{};
- const hours=raw.hours&&typeof raw.hours==='object'?raw.hours:{};
- const style=raw.style&&typeof raw.style==='object'?raw.style:{};
+ const hours=raw.hours&&typeof raw.hours==='object'?raw.hours:{},style=raw.style&&typeof raw.style==='object'?raw.style:{},greetings=raw.greetings&&typeof raw.greetings==='object'?raw.greetings:{};
  return{
   enabled:raw.enabled!==false,
   store_name:String(raw.store_name||STORE_INFO_WIDGET_DEFAULTS.store_name),
-  address:String(raw.address||STORE_INFO_WIDGET_DEFAULTS.address),
-  phone:String(raw.phone||STORE_INFO_WIDGET_DEFAULTS.phone),
   photo_url:String(raw.photo_url||''),
-  date_label:String(raw.date_label||STORE_INFO_WIDGET_DEFAULTS.date_label),
-  session_label:String(raw.session_label||STORE_INFO_WIDGET_DEFAULTS.session_label),
+  photo_path:String(raw.photo_path||''),
+  photo_name:String(raw.photo_name||''),
+  opening_label:String(raw.opening_label||STORE_INFO_WIDGET_DEFAULTS.opening_label),
+  greetings:{
+   morning:String(greetings.morning||STORE_INFO_WIDGET_DEFAULTS.greetings.morning),
+   afternoon:String(greetings.afternoon||STORE_INFO_WIDGET_DEFAULTS.greetings.afternoon),
+   evening:String(greetings.evening||STORE_INFO_WIDGET_DEFAULTS.greetings.evening)
+  },
   hours:{...STORE_INFO_WIDGET_DEFAULTS.hours,...hours},
   style:{
    accent:validColor(style.accent,STORE_INFO_WIDGET_DEFAULTS.style.accent),
@@ -184,9 +204,12 @@ function normalizeStoreInfoWidgetConfig(raw){
    surface_dark:validColor(style.surface_dark,STORE_INFO_WIDGET_DEFAULTS.style.surface_dark),
    text_light:validColor(style.text_light,STORE_INFO_WIDGET_DEFAULTS.style.text_light),
    text_dark:validColor(style.text_dark,STORE_INFO_WIDGET_DEFAULTS.style.text_dark),
-   border_light:validColor(style.border_light,STORE_INFO_WIDGET_DEFAULTS.style.border_light),
-   border_dark:validColor(style.border_dark,STORE_INFO_WIDGET_DEFAULTS.style.border_dark),
-   radius:Math.max(10,Math.min(30,Number(style.radius)||STORE_INFO_WIDGET_DEFAULTS.style.radius)),
+   muted_light:validColor(style.muted_light,STORE_INFO_WIDGET_DEFAULTS.style.muted_light),
+   muted_dark:validColor(style.muted_dark,STORE_INFO_WIDGET_DEFAULTS.style.muted_dark),
+   radius:Math.max(10,Math.min(32,Number(style.radius)||STORE_INFO_WIDGET_DEFAULTS.style.radius)),
+   height:Math.max(140,Math.min(260,Number(style.height)||STORE_INFO_WIDGET_DEFAULTS.style.height)),
+   image_dim:Math.max(0,Math.min(75,Number(style.image_dim)??STORE_INFO_WIDGET_DEFAULTS.style.image_dim)),
+   image_position:normalizeStoreInfoPosition(style.image_position),
    shadow:style.shadow!==false
   }
  }
@@ -463,26 +486,82 @@ function ensureStoreInfoWidgetConfig(){
  config.store_info_widget=normalizeStoreInfoWidgetConfig(config.store_info_widget);
  return config.store_info_widget
 }
+function storeBannerHoursText(spec){
+ const value=String(spec||'').trim();
+ return !value||/^(ferme|fermé|closed)$/i.test(value)?'Fermé aujourd’hui':value.replace(/\s*[-–—]\s*/g,' – ')
+}
+function updateStoreBannerPreview(){
+ const w=ensureStoreInfoWidgetConfig(),root=$('storeBannerPreview');if(!root)return;
+ const theme=document.documentElement.dataset.theme==='dark'?'dark':'light',s=w.style;
+ root.style.setProperty('--sb-surface',theme==='dark'?s.surface_dark:s.surface_light);
+ root.style.setProperty('--sb-text',theme==='dark'?s.text_dark:s.text_light);
+ root.style.setProperty('--sb-muted',theme==='dark'?s.muted_dark:s.muted_light);
+ root.style.setProperty('--sb-accent',s.accent);
+ root.style.setProperty('--sb-radius',s.radius+'px');
+ root.style.setProperty('--sb-height',Math.max(120,Math.round(s.height*.68))+'px');
+ root.style.setProperty('--sb-dim',(s.image_dim/100).toFixed(2));
+ root.style.setProperty('--sb-position',s.image_position);
+ const visual=root.querySelector('.storeBannerPreviewVisual'),url=validUrl(w.photo_url)?String(w.photo_url||'').trim():'';
+ if(visual){
+  visual.style.backgroundImage=url?'url("'+url.replace(/"/g,'%22')+'")':'none';
+  visual.classList.toggle('empty',!url)
+ }
+ const greeting=$('storeBannerPreviewGreeting'),store=$('storeBannerPreviewStore'),label=$('storeBannerPreviewLabel'),hours=$('storeBannerPreviewHours');
+ if(greeting)greeting.textContent=(w.greetings.evening||'Bonsoir')+' Utilisateur';
+ if(store)store.textContent=w.store_name||'Netto Le Thor';
+ if(label)label.textContent=w.opening_label||"Horaires d'ouverture aujourd'hui";
+ if(hours)hours.textContent=storeBannerHoursText(w.hours[String(new Date().getDay())]||w.hours['1'])
+}
+function chooseStoreBannerImage(){$('storeBannerFile')?.click()}
+async function uploadStoreBannerImage(input){
+ const file=input?.files?.[0];if(!file)return;
+ try{
+  const ext=(file.name.split('.').pop()||'').toLowerCase().replace(/[^a-z0-9]/g,''),allowed=new Set(['jpg','jpeg','png','webp','avif']);
+  if(!allowed.has(ext))throw new Error('Format non pris en charge. Utilise JPG, PNG, WEBP ou AVIF.');
+  if(file.size>12*1024*1024)throw new Error('Image trop lourde : 12 Mo maximum.');
+  const state=$('saveState');if(state){state.className='saveState';state.textContent='Import de la bannière…'}
+  const storagePath='widgets/home/banner/background-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=ensureStoreInfoWidgetConfig();
+  node.photo_url=data?.publicUrl||'';node.photo_path=storagePath;node.photo_name=file.name;
+  markDirty();renderStoreInfoWidgetEditor();if(state)state.textContent='Image de bannière prête à être enregistrée'
+ }catch(e){
+  const state=$('saveState');if(state){state.className='saveState err';state.textContent='Erreur bannière : '+(e?.message||e)}
+  alert('Import impossible : '+(e?.message||e))
+ }finally{if(input)input.value=''}
+}
+function removeStoreBannerImage(){
+ const node=ensureStoreInfoWidgetConfig();node.photo_url='';node.photo_path='';node.photo_name='';
+ markDirty();renderStoreInfoWidgetEditor()
+}
 function renderStoreInfoWidgetEditor(){
  let host=$('storeInfoWidgetEditor');
  if(!host){
   const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
   const block=document.createElement('div');block.className='operationsWidgetAdmin storeInfoWidgetAdmin';
-  block.innerHTML='<div class="storeInfoAdminHead"><div><span class="eyebrow">WIDGET DESKTOP</span><h3>Informations point de vente</h3><p>Date, magasin, état d’ouverture et session d’équipe sur l’accueil ordinateur.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderStoreInfoWidgetEditor()">↻ Actualiser</button></div><div id="storeInfoWidgetEditor"></div>';
+  block.innerHTML='<div class="storeInfoAdminHead"><div><span class="eyebrow">WIDGET DESKTOP · BANNIÈRE</span><h3>Bannière d’accueil</h3><p>Accueil personnalisé, point de vente, horaires du jour et photo fondue dans le fond de la bannière.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderStoreInfoWidgetEditor()">↻ Actualiser</button></div><div id="storeInfoWidgetEditor"></div>';
   panel.appendChild(block);host=$('storeInfoWidgetEditor')
  }
  const w=ensureStoreInfoWidgetConfig(),days=[['1','Lundi'],['2','Mardi'],['3','Mercredi'],['4','Jeudi'],['5','Vendredi'],['6','Samedi'],['0','Dimanche']];
  host.innerHTML=
   '<div class="operationsWidgetAdminCard">'+
-   '<div class="operationsWidgetAdminSummary"><div><strong>Informations point de vente</strong><small>Widget visible uniquement sur l’accueil Desktop.</small></div><label class="toggleChip"><input type="checkbox" data-store-info="enabled" '+(w.enabled!==false?'checked':'')+'> Widget visible</label></div>'+
+   '<div class="operationsWidgetAdminSummary"><div><strong>Bannière d’accueil</strong><small>Visible uniquement sur l’accueil Desktop. Le prénom affiché provient automatiquement du compte connecté.</small></div><label class="toggleChip"><input type="checkbox" data-store-info="enabled" '+(w.enabled!==false?'checked':'')+'> Afficher la bannière</label></div>'+
    '<div class="storeInfoAdminGrid">'+
-    '<div class="field"><label>Nom du point de vente</label><input maxlength="90" value="'+attr(w.store_name)+'" data-store-info="store_name"></div>'+
-    '<div class="field"><label>Téléphone</label><input maxlength="40" value="'+attr(w.phone)+'" data-store-info="phone"></div>'+
-    '<div class="field full"><label>Adresse</label><input maxlength="180" value="'+attr(w.address)+'" data-store-info="address"></div>'+
-    '<div class="field full"><label>Photo du lieu · URL ou chemin</label><input maxlength="500" placeholder="Ex. assets/netto-le-thor.webp ou https://…" value="'+attr(w.photo_url)+'" data-store-info="photo_url"><small class="platformMediaHint">Si ce champ est vide, Nethor affiche une icône magasin neutre plutôt qu’une photo non vérifiée.</small></div>'+
-    '<div class="field"><label>Libellé date</label><input maxlength="50" value="'+attr(w.date_label)+'" data-store-info="date_label"></div>'+
-    '<div class="field"><label>Libellé session</label><input maxlength="50" value="'+attr(w.session_label)+'" data-store-info="session_label"></div>'+
+    '<div class="field"><label>Nom du magasin</label><input maxlength="90" value="'+attr(w.store_name)+'" data-store-info="store_name"></div>'+
+    '<div class="field"><label>Titre des horaires</label><input maxlength="90" value="'+attr(w.opening_label)+'" data-store-info="opening_label"></div>'+
+    '<div class="field"><label>Matin</label><input maxlength="40" value="'+attr(w.greetings.morning)+'" data-store-greeting="morning"></div>'+
+    '<div class="field"><label>Après-midi</label><input maxlength="40" value="'+attr(w.greetings.afternoon)+'" data-store-greeting="afternoon"></div>'+
+    '<div class="field"><label>Soir</label><input maxlength="40" value="'+attr(w.greetings.evening)+'" data-store-greeting="evening"></div>'+
+    '<div class="field"><label>Position de la photo</label><select data-store-style="image_position">'+
+     [['center center','Centrée'],['right center','Alignée à droite'],['left center','Alignée à gauche'],['center top','Centrée en haut'],['center bottom','Centrée en bas']].map(x=>'<option value="'+x[0]+'" '+(w.style.image_position===x[0]?'selected':'')+'>'+x[1]+'</option>').join('')+
+    '</select></div>'+
    '</div>'+
+   '<div class="storeBannerAsset">'+
+    '<div class="storeBannerAssetCopy"><strong>Image de fond</strong><small>La photo est automatiquement fondue dans le fond sombre de la bannière, comme sur la référence.</small><span>'+(w.photo_name?esc(w.photo_name):w.photo_url?'Image personnalisée enregistrée':'Aucune image · fond graphique Nethor utilisé')+'</span></div>'+
+    '<div class="storeBannerAssetActions"><button class="btn secondaryBtn mini" type="button" onclick="chooseStoreBannerImage()">Importer une image</button>'+(w.photo_url?'<button class="btn secondaryBtn mini" type="button" onclick="removeStoreBannerImage()">Retirer</button>':'')+'</div>'+
+    '<input id="storeBannerFile" type="file" accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadStoreBannerImage(this)">'+
+   '</div>'+
+   '<div class="field storeBannerUrlField"><label>URL ou chemin de l’image</label><input maxlength="700" placeholder="Ex. assets/magasin.webp ou https://…" value="'+attr(w.photo_url)+'" data-store-info="photo_url"><small class="platformMediaHint">Tu peux importer une image ou renseigner directement une URL/chemin public.</small></div>'+
    '<div class="storeInfoHours">'+days.map(([key,label])=>'<div class="field"><label>'+label+'</label><input maxlength="40" value="'+attr(w.hours[key]||'')+'" data-store-hour="'+key+'" placeholder="08:00-20:00"></div>').join('')+'</div>'+
    '<div class="storeInfoStyleGrid">'+
     '<div class="field"><label>Accent</label><input type="color" value="'+attr(w.style.accent)+'" data-store-style="accent"></div>'+
@@ -490,27 +569,35 @@ function renderStoreInfoWidgetEditor(){
     '<div class="field"><label>Fond sombre</label><input type="color" value="'+attr(w.style.surface_dark)+'" data-store-style="surface_dark"></div>'+
     '<div class="field"><label>Texte clair</label><input type="color" value="'+attr(w.style.text_light)+'" data-store-style="text_light"></div>'+
     '<div class="field"><label>Texte sombre</label><input type="color" value="'+attr(w.style.text_dark)+'" data-store-style="text_dark"></div>'+
-    '<div class="field"><label>Bordure claire</label><input type="color" value="'+attr(w.style.border_light)+'" data-store-style="border_light"></div>'+
-    '<div class="field"><label>Bordure sombre</label><input type="color" value="'+attr(w.style.border_dark)+'" data-store-style="border_dark"></div>'+
-    '<div class="field"><label>Arrondi (px)</label><input type="number" min="10" max="30" value="'+attr(w.style.radius)+'" data-store-style="radius"></div>'+
+    '<div class="field"><label>Secondaire clair</label><input type="color" value="'+attr(w.style.muted_light)+'" data-store-style="muted_light"></div>'+
+    '<div class="field"><label>Secondaire sombre</label><input type="color" value="'+attr(w.style.muted_dark)+'" data-store-style="muted_dark"></div>'+
+    '<div class="field"><label>Arrondi (px)</label><input type="number" min="10" max="32" value="'+attr(w.style.radius)+'" data-store-style="radius"></div>'+
+    '<div class="field"><label>Hauteur (px)</label><input type="number" min="140" max="260" value="'+attr(w.style.height)+'" data-store-style="height"></div>'+
+    '<div class="field"><label>Assombrissement photo (%)</label><input type="number" min="0" max="75" value="'+attr(w.style.image_dim)+'" data-store-style="image_dim"></div>'+
    '</div>'+
-   '<div class="operationsWidgetAdminToggles"><label class="operationsWidgetToggle"><span><strong>Ombre</strong><small>Ajoute une profondeur légère au bandeau.</small></span><input type="checkbox" data-store-style="shadow" '+(w.style.shadow!==false?'checked':'')+'></label></div>'+
-   '<div class="storeInfoPreview"><div class="storeInfoPreviewBar"><div><small>'+esc(w.date_label)+'</small><strong>Semaine 40</strong></div><div><small>Point de vente</small><strong>'+esc(w.store_name)+'</strong></div><div><small>Accueil clients</small><strong>Ouvert / Fermé</strong></div><div><small>'+esc(w.session_label)+'</small><strong>Équipe du matin</strong></div></div></div>'+
-   '<div class="storeInfoSource"><b>Données préremplies :</b> Netto Le Thor · 150 Chemin St Michel · 04 90 01 34 23 · lun.–sam. 08:00–20:00 · dim. 09:00–12:30. Ces valeurs restent modifiables ici si les informations du magasin évoluent.</div>'+
+   '<div class="operationsWidgetAdminToggles"><label class="operationsWidgetToggle"><span><strong>Ombre</strong><small>Ajoute une profondeur discrète autour de la bannière.</small></span><input type="checkbox" data-store-style="shadow" '+(w.style.shadow!==false?'checked':'')+'></label></div>'+
+   '<div class="storeInfoPreview"><span class="storeInfoPreviewTitle">Aperçu</span><div id="storeBannerPreview" class="storeBannerPreview"><span class="storeBannerPreviewVisual empty"></span><div class="storeBannerPreviewContent"><div><strong id="storeBannerPreviewGreeting">Bonsoir Utilisateur</strong><small id="storeBannerPreviewStore">Netto Le Thor</small></div><div class="storeBannerPreviewHours"><span id="storeBannerPreviewLabel">Horaires d’ouverture aujourd’hui</span><b id="storeBannerPreviewHours">08:00 – 20:00</b></div></div></div></div>'+
+   '<div class="storeInfoSource"><b>Horaires par défaut :</b> lundi à samedi 08:00–20:00 · dimanche 09:00–12:30. L’affichage choisit automatiquement le bon jour en heure de Paris.</div>'+
   '</div>';
  host.querySelectorAll('[data-store-info]').forEach(el=>el.oninput=el.onchange=()=>{
   const node=ensureStoreInfoWidgetConfig(),key=el.dataset.storeInfo;
-  node[key]=el.type==='checkbox'?el.checked:el.value;markDirty()
+  node[key]=el.type==='checkbox'?el.checked:el.value;markDirty();updateStoreBannerPreview()
+ });
+ host.querySelectorAll('[data-store-greeting]').forEach(el=>el.oninput=el.onchange=()=>{
+  ensureStoreInfoWidgetConfig().greetings[el.dataset.storeGreeting]=el.value;markDirty();updateStoreBannerPreview()
  });
  host.querySelectorAll('[data-store-hour]').forEach(el=>el.oninput=el.onchange=()=>{
-  ensureStoreInfoWidgetConfig().hours[el.dataset.storeHour]=el.value.trim();markDirty()
+  ensureStoreInfoWidgetConfig().hours[el.dataset.storeHour]=el.value.trim();markDirty();updateStoreBannerPreview()
  });
  host.querySelectorAll('[data-store-style]').forEach(el=>el.oninput=el.onchange=()=>{
   const node=ensureStoreInfoWidgetConfig(),key=el.dataset.storeStyle;
   let value=el.type==='checkbox'?el.checked:el.value;
-  if(key==='radius')value=Math.max(10,Math.min(30,Number(value)||18));
-  node.style[key]=value;markDirty()
- })
+  if(key==='radius')value=Math.max(10,Math.min(32,Number(value)||18));
+  if(key==='height')value=Math.max(140,Math.min(260,Number(value)||178));
+  if(key==='image_dim')value=Math.max(0,Math.min(75,Number(value)||0));
+  node.style[key]=value;markDirty();updateStoreBannerPreview()
+ });
+ updateStoreBannerPreview()
 }
 
 function ensurePersonalizationConfig(){
