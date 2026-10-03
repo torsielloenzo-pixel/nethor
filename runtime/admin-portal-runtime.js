@@ -1325,8 +1325,103 @@ function resetPortalSound(key){
  markDirty();renderSoundEditor();$('saveState').textContent='Son « '+def.label+' » réinitialisé — enregistrer pour confirmer'
 }
 
+function mobileNotificationVisualNode(kind){
+ ensurePlatformUiConfig();
+ const defs=platformUiNode('mobile').notification_visuals||{};
+ defs[kind]=normalizeMobileNotificationVisual(defs[kind]);
+ platformUiNode('mobile').notification_visuals=defs;
+ return defs[kind]
+}
+function mobileNotificationVisualDef(kind){return MOBILE_NOTIFICATION_VISUAL_DEFS.find(x=>x.key===kind)||null}
+function mobileNotificationRadius(shape){return shape==='square'?'8px':shape==='rounded'?'14px':'50%'}
+function mobileNotificationPreview(def,node){
+ const radius=mobileNotificationRadius(node.shape),visual=node.url
+  ?'<img src="'+attr(node.url)+'" alt="" loading="lazy">'
+  :'<span>'+esc(def.icon)+'</span>';
+ return '<div class="mobileNotifVisualPreview" style="--mnv-outer:'+attr(node.outer_color)+';--mnv-accent:'+attr(node.accent_color)+';--mnv-radius:'+radius+'">'+
+  '<div class="mobileNotifVisualIcon"><i>'+visual+'</i></div>'+
+  '<div class="mobileNotifVisualSample"><strong>'+esc(def.label)+'</strong><span>Aperçu de la notification</span></div>'+
+ '</div>'
+}
+function renderMobileNotificationVisualEditor(){
+ const host=$('mobileNotificationVisuals');if(!host)return;
+ ensurePlatformUiConfig();
+ const groups=['Planning','Messages','Système'];
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Visuels des notifications Mobile</h2><p>Contrôle individuellement l’icône, les couleurs et la forme de chaque type de notification affiché dans l’application Mobile. Les fichiers personnalisés restent propres à chaque notification.</p></div></div>'+
+ groups.map(group=>{
+  const defs=MOBILE_NOTIFICATION_VISUAL_DEFS.filter(x=>x.group===group);
+  return '<section class="mobileNotifVisualGroup"><div class="platformSubhead"><div><h3>'+esc(group)+'</h3><p>'+defs.length+' type'+(defs.length>1?'s':'')+' de notification</p></div></div><div class="mobileNotifVisualGrid">'+
+   defs.map(def=>{
+    const node=mobileNotificationVisualNode(def.key),custom=!!node.url;
+    return '<article class="mobileNotifVisualCard" data-mobile-notif-kind="'+attr(def.key)+'">'+
+     '<div class="mobileNotifVisualCardHead"><div><strong>'+esc(def.label)+'</strong><small>'+esc(def.key)+'</small></div><span class="mobileNotifVisualBadge">'+(custom?'Personnalisé':'Nethor')+'</span></div>'+
+     mobileNotificationPreview(def,node)+
+     '<div class="mobileNotifVisualSettings">'+
+      '<label><span>Fond</span><input type="color" value="'+attr(node.outer_color)+'" data-mobile-notif-outer="'+attr(def.key)+'"></label>'+
+      '<label><span>Accent</span><input type="color" value="'+attr(node.accent_color)+'" data-mobile-notif-accent="'+attr(def.key)+'"></label>'+
+      '<label class="mobileNotifVisualShape"><span>Forme</span><select data-mobile-notif-shape="'+attr(def.key)+'"><option value="circle" '+(node.shape==='circle'?'selected':'')+'>Ronde</option><option value="rounded" '+(node.shape==='rounded'?'selected':'')+'>Arrondie</option><option value="square" '+(node.shape==='square'?'selected':'')+'>Carrée</option></select></label>'+
+     '</div>'+
+     '<div class="platformAssetActions mobileNotifVisualActions">'+
+      '<button class="btn secondaryBtn mini" type="button" onclick="chooseMobileNotificationVisual(\''+attr(def.key)+'\')">Importer</button>'+
+      '<button class="btn secondaryBtn mini" type="button" onclick="downloadMobileNotificationVisual(\''+attr(def.key)+'\')">Télécharger</button>'+
+      '<button class="btn secondaryBtn mini" type="button" onclick="resetMobileNotificationVisual(\''+attr(def.key)+'\')">Réinitialiser</button>'+
+     '</div>'+
+     '<input id="mobileNotifVisualFile_'+attr(def.key)+'" type="file" accept=".png,.webp,.svg,.gif,image/png,image/webp,image/svg+xml,image/gif" hidden onchange="uploadMobileNotificationVisual(\''+attr(def.key)+'\',this)">'+
+    '</article>'
+   }).join('')+
+  '</div></section>'
+ }).join('');
+ host.querySelectorAll('[data-mobile-notif-outer]').forEach(el=>el.oninput=el.onchange=()=>{
+  const kind=el.dataset.mobileNotifOuter,node=mobileNotificationVisualNode(kind);node.outer_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_OUTER);markDirty();renderMobileNotificationVisualEditor()
+ });
+ host.querySelectorAll('[data-mobile-notif-accent]').forEach(el=>el.oninput=el.onchange=()=>{
+  const kind=el.dataset.mobileNotifAccent,node=mobileNotificationVisualNode(kind);node.accent_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_ACCENT);markDirty();renderMobileNotificationVisualEditor()
+ });
+ host.querySelectorAll('[data-mobile-notif-shape]').forEach(el=>el.onchange=()=>{
+  const kind=el.dataset.mobileNotifShape,node=mobileNotificationVisualNode(kind);node.shape=['circle','rounded','square'].includes(el.value)?el.value:'circle';markDirty();renderMobileNotificationVisualEditor()
+ })
+}
+function chooseMobileNotificationVisual(kind){$('mobileNotifVisualFile_'+kind)?.click()}
+function mobileNotificationVisualExtension(file){
+ const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
+ return ['png','webp','svg','gif'].includes(ext)?ext:''
+}
+async function uploadMobileNotificationVisual(kind,input){
+ const file=input?.files?.[0],def=mobileNotificationVisualDef(kind),state=$('saveState');if(!file||!def)return;
+ try{
+  const ext=mobileNotificationVisualExtension(file);
+  if(!ext)throw new Error('Format refusé. Utilise PNG, WebP, SVG ou GIF.');
+  if(file.size>5*1024*1024)throw new Error('Visuel trop lourd : 5 Mo maximum.');
+  state.className='saveState';state.textContent='Import du visuel « '+def.label+' »…';
+  const storagePath='platform/mobile/notifications/'+kind+'/'+Date.now()+'.'+ext;
+  const contentType=file.type||({png:'image/png',webp:'image/webp',svg:'image/svg+xml',gif:'image/gif'}[ext]);
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=mobileNotificationVisualNode(kind);
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;
+  markDirty();renderMobileNotificationVisualEditor();
+  state.className='saveState';state.textContent='Visuel « '+def.label+' » prêt à être enregistré'
+ }catch(e){state.className='saveState err';state.textContent='Erreur visuel notification : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+function mobileNotificationSvg(def,node){
+ const radius=node.shape==='circle'?64:node.shape==='rounded'?24:12;
+ const emoji=String(def.icon||'🔔').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ return '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="'+radius+'" fill="'+node.outer_color+'"/><rect x="22" y="22" width="84" height="84" rx="'+(node.shape==='circle'?42:node.shape==='rounded'?20:10)+'" fill="'+node.accent_color+'"/><text x="64" y="76" text-anchor="middle" font-size="42" font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif">'+emoji+'</text></svg>'
+}
+function downloadMobileNotificationVisual(kind){
+ const def=mobileNotificationVisualDef(kind),node=mobileNotificationVisualNode(kind);if(!def)return;
+ if(node.url){downloadAssetUrl(node.url,node.name||('Nethor-mobile-notification-'+kind));return}
+ const blob=new Blob([mobileNotificationSvg(def,node)],{type:'image/svg+xml;charset=utf-8'}),href=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=href;a.download='Nethor-mobile-notification-'+kind+'.svg';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1200)
+}
+function resetMobileNotificationVisual(kind){
+ const def=mobileNotificationVisualDef(kind);if(!def)return;
+ platformUiNode('mobile').notification_visuals[kind]=normalizeMobileNotificationVisual(null);
+ markDirty();renderMobileNotificationVisualEditor();$('saveState').textContent='Visuel « '+def.label+' » réinitialisé — enregistrer pour confirmer'
+}
+
 function renderPlatformEditors(){
- ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
+ ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
 }
 function ensurePortalPlatformStructure(){
  const nav=document.querySelector('.managementNavGroup[data-nav-group="portal"] .managementNavChildren');
@@ -1344,6 +1439,7 @@ function ensurePortalPlatformStructure(){
  const mobileTab=$('tab-mobile');
  if(mobileTab){
   if(!$('platformIdentity_mobile')){const p=document.createElement('div');p.id='platformIdentity_mobile';p.className='panel platformIdentityPanel';mobileTab.prepend(p)}
+  if(!$('mobileNotificationVisuals')){const p=document.createElement('div');p.id='mobileNotificationVisuals';p.className='panel mobileNotificationVisualPanel';const identity=$('platformIdentity_mobile');identity?.insertAdjacentElement('afterend',p)}
   if(!$('platformComponents_mobile')){const p=document.createElement('div');p.id='platformComponents_mobile';p.className='panel platformComponentsPanel';mobileTab.appendChild(p)}
   const barPanel=$('mobileBarEditor')?.closest('.panel'),bar=barPanel?.querySelector('.toolbar h2'),barDesc=barPanel?.querySelector('.toolbar p');
   if(bar)bar.textContent='Barre de navigation mobile actuelle';
