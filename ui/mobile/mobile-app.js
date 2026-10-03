@@ -226,14 +226,23 @@ async function finishMobileLaunchWelcome(startedAt){
  root.removeAttribute('aria-hidden');
  markMobileLaunchShown()
 }
-function prewarmMobileViews(){
+async function prewarmMobileViews(){
+ const overlay=document.querySelector('[data-mobile-launch-welcome]');
+ const status=overlay?.querySelector?.('[data-mobile-launch-welcome-status]');
+ const setStatus=value=>{if(status&&overlay?.classList.contains('show'))status.textContent=value};
  const tasks=[
-  window.NethorMobilePlanningView?.preload?.(),
-  window.NethorMobileChatView?.preload?.()
- ].filter(Boolean);
- if(!tasks.length)return Promise.resolve([]);
+  {id:'home',label:'Accueil',promise:Promise.resolve(services()?.ready?.()).then(()=>true)},
+  {id:'planning',label:'Planning',promise:window.NethorMobilePlanningView?.preload?.()},
+  {id:'chat',label:'Chat',promise:window.NethorMobileChatView?.preload?.()}
+ ].filter(item=>item.promise&&typeof item.promise.then==='function');
+ if(!tasks.length){root.dataset.prewarm='ready';return[]}
  root.dataset.prewarm='running';
- return Promise.allSettled(tasks).then(results=>{root.dataset.prewarm='ready';return results}).catch(()=>{root.dataset.prewarm='partial';return[]})
+ setStatus('Chargement Accueil · Planning · Chat…');
+ const results=await Promise.allSettled(tasks.map(item=>item.promise));
+ const failed=results.filter(result=>result.status==='rejected').length;
+ root.dataset.prewarm=failed?'partial':'ready';
+ setStatus(failed?'Préparation terminée':'Accueil · Planning · Chat prêts');
+ return results
 }
 
 function mobileIconMime(url){const x=String(url||'').split('?')[0].toLowerCase();return x.endsWith('.png')?'image/png':x.endsWith('.webp')?'image/webp':x.endsWith('.ico')?'image/x-icon':'image/svg+xml'}
@@ -328,6 +337,96 @@ function onRouteEvent(event){
   const view=String(event?.detail?.view||requestedView());
   syncActive(view);
   root.dataset.mobileView=view
+}
+
+let mobileSwipeState=null;
+let suppressSwipeClickUntil=0;
+function mobileSwipeOrder(){
+  const allowed=new Set(['home','planning','chat']),seen=new Set(),order=[];
+  navHost.querySelectorAll(':scope > [data-mobile-destination]').forEach(link=>{
+    const id=String(link.getAttribute('data-mobile-destination')||'').trim().toLowerCase();
+    if(allowed.has(id)&&!seen.has(id)){seen.add(id);order.push(id)}
+  });
+  return order
+}
+function mobileSwipeHorizontalScroller(target){
+  let node=target?.nodeType===1?target:target?.parentElement;
+  while(node&&node!==viewHost){
+    try{
+      const style=getComputedStyle(node);
+      if(/auto|scroll/.test(style.overflowX)&&node.scrollWidth>node.clientWidth+6)return node
+    }catch(_){}
+    node=node.parentElement
+  }
+  return null
+}
+function mobileSwipeBlocked(target){
+  if(!target?.closest)return false;
+  if(target.closest('input,textarea,select,[contenteditable="true"],[data-mobile-swipe-ignore]'))return true;
+  return !!mobileSwipeHorizontalScroller(target)
+}
+function clearMobileSwipeState(){
+  mobileSwipeState=null;
+  root.removeAttribute('data-mobile-swipe')
+}
+function bindMobileSwipeNavigation(){
+  if(viewHost.dataset.mobileSwipeBound==='1')return;
+  viewHost.dataset.mobileSwipeBound='1';
+  viewHost.dataset.mobileSwipeReady='1';
+
+  viewHost.addEventListener('touchstart',event=>{
+    if(event.touches.length!==1||root.dataset.keyboard==='open')return clearMobileSwipeState();
+    const touch=event.touches[0],order=mobileSwipeOrder(),view=requestedView(),index=order.indexOf(view);
+    if(index<0||mobileSwipeBlocked(event.target))return clearMobileSwipeState();
+    const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
+    if(touch.clientX<14||touch.clientX>width-14)return clearMobileSwipeState();
+    mobileSwipeState={
+      x:touch.clientX,y:touch.clientY,lastX:touch.clientX,lastY:touch.clientY,
+      startedAt:performance.now(),index,order,locked:false,cancelled:false
+    }
+  },{passive:true});
+
+  viewHost.addEventListener('touchmove',event=>{
+    const state=mobileSwipeState;
+    if(!state||state.cancelled||event.touches.length!==1)return;
+    const touch=event.touches[0],dx=touch.clientX-state.x,dy=touch.clientY-state.y;
+    state.lastX=touch.clientX;state.lastY=touch.clientY;
+    const ax=Math.abs(dx),ay=Math.abs(dy);
+    if(!state.locked){
+      if(ax<10&&ay<10)return;
+      if(ay>ax*.92){state.cancelled=true;root.removeAttribute('data-mobile-swipe');return}
+      if(ax>ay*1.12){state.locked=true;root.dataset.mobileSwipe='tracking'}
+      else return
+    }
+    if(state.locked)event.preventDefault()
+  },{passive:false});
+
+  viewHost.addEventListener('touchend',event=>{
+    const state=mobileSwipeState;
+    if(!state){clearMobileSwipeState();return}
+    const touch=event.changedTouches?.[0],endX=touch?.clientX??state.lastX,endY=touch?.clientY??state.lastY;
+    const dx=endX-state.x,dy=endY-state.y,elapsed=Math.max(1,performance.now()-state.startedAt);
+    const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
+    const threshold=Math.max(52,Math.min(86,width*.16));
+    const velocity=Math.abs(dx)/elapsed;
+    const qualifies=state.locked&&!state.cancelled&&Math.abs(dx)>Math.abs(dy)*1.18&&(Math.abs(dx)>=threshold||(Math.abs(dx)>=38&&velocity>=.62));
+    clearMobileSwipeState();
+    if(!qualifies)return;
+    const step=dx>0?1:-1; // Consigne Nethor : swipe vers la droite = élément suivant de la barre.
+    const next=state.order[state.index+step];
+    if(!next)return;
+    event.preventDefault();
+    suppressSwipeClickUntil=performance.now()+450;
+    root.dataset.mobileSwipe='navigating';
+    Promise.resolve(router()?.open?.(next,{source:'swipe'})).finally(()=>root.removeAttribute('data-mobile-swipe'))
+  },{passive:false});
+
+  viewHost.addEventListener('touchcancel',clearMobileSwipeState,{passive:true});
+  viewHost.addEventListener('click',event=>{
+    if(performance.now()>=suppressSwipeClickUntil)return;
+    event.preventDefault();
+    event.stopPropagation()
+  },true)
 }
 function editableTarget(el){
   if(!el||el.disabled||el.readOnly)return false;
@@ -464,13 +563,16 @@ async function boot(){
   syncLegacyLinks();
   syncActive();
   bindEnvironmentState();
+  bindMobileSwipeNavigation();
   enforceShellGeometry();
   root.dataset.router='ready';
   root.dataset.ready='1';
 
   const servicePromise=bootServices();
   const routerPromise=mobileRouter.start({host:viewHost,nav:[navHost,headerHost]});
-  requestAnimationFrame(()=>void prewarmMobileViews());
+  const prewarmPromise=new Promise(resolve=>{
+    requestAnimationFrame(()=>resolve(prewarmMobileViews()))
+  }).then(value=>value);
 
   const serviceState=await servicePromise;
   if(services()?.status==='signed-out')return;
@@ -480,6 +582,7 @@ async function boot(){
   renderMobileLaunchWelcome({profile:services()?.profile||serviceState?.profile,siteConfig:liveConfig});
 
   await routerPromise;
+  await prewarmPromise;
   applyConfiguredChrome(services()?.siteConfig||{});
   syncLegacyLinks();
   syncActive();
