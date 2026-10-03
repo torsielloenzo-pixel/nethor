@@ -1,0 +1,88 @@
+/* Nethor — widget informations point de vente (Desktop) */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw{
+  --nsiw-accent:#ff6a2b;--nsiw-surface:#fff;--nsiw-text:#20242a;--nsiw-muted:#7b838d;--nsiw-border:#e4e7eb;
+  order:0!important;grid-column:1/-1!important;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  min-width:0;overflow:hidden;border:1px solid var(--nsiw-border);border-radius:var(--nsiw-radius,18px);
+  background:var(--nsiw-surface);color:var(--nsiw-text);box-shadow:var(--nsiw-shadow,0 8px 24px rgba(20,27,36,.07))
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw{
+  --nsiw-surface:var(--nsiw-surface-dark,#23272d);--nsiw-text:var(--nsiw-text-dark,#f3f5f7);--nsiw-muted:#a9b0b8;--nsiw-border:var(--nsiw-border-dark,#3b4148)
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwCell{
+  position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center;
+  min-width:0;min-height:116px;padding:16px 18px
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwCell+.nsiwCell:before{
+  content:"";position:absolute;left:0;top:18px;bottom:18px;width:1px;background:var(--nsiw-border)
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwIcon,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwPhoto{
+  width:44px;height:44px;border-radius:13px;display:grid;place-items:center;overflow:hidden;flex:none
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwIcon{
+  background:color-mix(in srgb,var(--nsiw-accent) 12%,transparent);color:var(--nsiw-accent);
+  border:1px solid color-mix(in srgb,var(--nsiw-accent) 20%,transparent)
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwIcon svg{
+  width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwPhoto{
+  background:linear-gradient(145deg,#fff4ee,#f0f2f4);border:1px solid var(--nsiw-border);color:var(--nsiw-accent)
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwPhoto{background:#2d3238}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwPhoto img{width:100%;height:100%;object-fit:cover;display:block}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwPhoto svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwCopy{min-width:0}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwKicker{
+  display:flex;align-items:center;gap:6px;margin-bottom:4px;color:var(--nsiw-muted);font-size:8px;font-weight:900;letter-spacing:.72px;text-transform:uppercase
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwCopy>strong{
+  display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;margin:0;color:var(--nsiw-text);font-size:13.5px;line-height:1.22;font-weight:900
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwCopy>small{
+  display:block;margin-top:4px;min-width:0;color:var(--nsiw-muted);font-size:8.8px;line-height:1.35;font-weight:650
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwMetaStrong{color:var(--nsiw-text)!important;font-weight:850!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStatus{
+  display:inline-flex;align-items:center;gap:6px;width:max-content;max-width:100%;font-size:12px;font-weight:950;line-height:1.2
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStatus:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 3px color-mix(in srgb,currentColor 14%,transparent)}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStatus.open{color:#238756}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStatus.closed{color:#cf4d3e}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwPhone{font-variant-numeric:tabular-nums}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwClock{font-variant-numeric:tabular-nums;font-weight:850!important;color:var(--nsiw-text)!important}
+@media(max-width:1080px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw{grid-template-columns:repeat(2,minmax(0,1fr))}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwCell:nth-child(3):before{display:none}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwCell:nth-child(n+3){border-top:1px solid var(--nsiw-border)}
+}
+
+/* Gestion > Éditeur du portail > Blocs & widgets */
+.storeInfoWidgetAdmin{margin-top:14px!important}
+.storeInfoWidgetAdmin .storeInfoAdminHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.storeInfoWidgetAdmin .storeInfoAdminHead h3{margin:3px 0 4px;font-size:16px}
+.storeInfoWidgetAdmin .storeInfoAdminHead p{margin:0;color:#7d858f;font-size:9px;line-height:1.45}
+.storeInfoWidgetAdmin .storeInfoAdminGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.storeInfoWidgetAdmin .storeInfoAdminGrid .full{grid-column:1/-1}
+.storeInfoWidgetAdmin .storeInfoHours{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}
+.storeInfoWidgetAdmin .storeInfoHours .field{margin:0}
+.storeInfoWidgetAdmin .storeInfoStyleGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}
+.storeInfoWidgetAdmin .storeInfoStyleGrid input[type="color"]{width:100%;min-height:38px;padding:4px}
+.storeInfoWidgetAdmin .storeInfoPreview{margin-top:12px;padding:12px;border:1px solid #e2e6ea;border-radius:14px;background:#f8fafb}
+.storeInfoWidgetAdmin .storeInfoPreviewBar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:hidden;border:1px solid #e3e6ea;border-radius:12px;background:#fff}
+.storeInfoWidgetAdmin .storeInfoPreviewBar>div{min-width:0;padding:10px;border-right:1px solid #eceef1}
+.storeInfoWidgetAdmin .storeInfoPreviewBar>div:last-child{border-right:0}
+.storeInfoWidgetAdmin .storeInfoPreviewBar small{display:block;color:#87909a;font-size:7px;text-transform:uppercase;font-weight:850;letter-spacing:.55px}
+.storeInfoWidgetAdmin .storeInfoPreviewBar strong{display:block;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.storeInfoWidgetAdmin .storeInfoSource{margin-top:10px;padding:9px 10px;border-radius:10px;background:#fff6f1;color:#8f543b;font-size:8px;line-height:1.45}
+:root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoAdminHead p{color:#aab1ba}
+:root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoPreview{background:#20242a;border-color:#3a4047}
+:root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoPreviewBar{background:#282d33;border-color:#414850}
+:root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoPreviewBar>div{border-color:#3a4047}
+:root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoPreviewBar small{color:#a9b0b8}
+:root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoSource{background:#382a24;color:#efb69e}
+@media(max-width:900px){
+ .storeInfoWidgetAdmin .storeInfoAdminGrid{grid-template-columns:1fr}
+ .storeInfoWidgetAdmin .storeInfoAdminGrid .full{grid-column:auto}
+ .storeInfoWidgetAdmin .storeInfoHours,.storeInfoWidgetAdmin .storeInfoStyleGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
