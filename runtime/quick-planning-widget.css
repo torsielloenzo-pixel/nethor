@@ -2,7 +2,7 @@
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{
   --qp-accent:#ff5a2a;--qp-now:#ff5a2a;--qp-surface:var(--qp-surface-light,#fff);--qp-text:var(--qp-text-light,#1f2937);
   --qp-muted:#748093;--qp-grid:var(--qp-grid-light,#e7ebf0);--qp-row-h:30px;
-  order:3!important;grid-column:span 6!important;align-self:start!important;min-width:0;overflow:hidden;
+  order:3!important;grid-column:span 8!important;align-self:start!important;min-width:0;overflow:hidden;
   border:1px solid var(--qp-grid);border-radius:var(--qp-radius,18px);background:var(--qp-surface);color:var(--qp-text);
   box-shadow:var(--qp-shadow,0 10px 30px rgba(28,36,48,.07))
 }
@@ -174,6 +174,6 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densi
  .quickPlanningStyleGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
-@media(max-width:1180px){
+@media(max-width:1040px){
  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{grid-column:1/-1!important}
 }
