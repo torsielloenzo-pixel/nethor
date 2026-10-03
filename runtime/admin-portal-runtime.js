@@ -1341,19 +1341,19 @@ function mobileNotificationVisualNode(kind){
 function mobileNotificationVisualDef(kind){return MOBILE_NOTIFICATION_VISUAL_DEFS.find(x=>x.key===kind)||null}
 function mobileNotificationRadius(shape){return shape==='square'?'8px':shape==='rounded'?'14px':'50%'}
 function mobileNotificationPreview(def,node){
- const radius=mobileNotificationRadius(node.shape),visual=node.url
+ const visual=node.url
   ?'<img src="'+attr(node.url)+'" alt="" loading="lazy">'
   :'<span>'+esc(def.icon)+'</span>';
- return '<div class="mobileNotifVisualPreview" style="--mnv-outer:'+attr(node.outer_color)+';--mnv-accent:'+attr(node.accent_color)+';--mnv-radius:'+radius+'">'+
+ return '<div class="mobileNotifVisualPreview">'+
   '<div class="mobileNotifVisualIcon"><i>'+visual+'</i></div>'+
-  '<div class="mobileNotifVisualSample"><strong>'+esc(def.label)+'</strong><span>Aperçu de la notification</span></div>'+
+  '<div class="mobileNotifVisualSample"><strong>'+esc(def.label)+'</strong><span>Logo seul · fond transparent</span></div>'+
  '</div>'
 }
 function renderMobileNotificationVisualEditor(){
  const host=$('mobileNotificationVisuals');if(!host)return;
  ensurePlatformUiConfig();
  const groups=['Planning','Messages','Système'];
- host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Visuels des notifications Mobile</h2><p>Contrôle individuellement l’icône, les couleurs et la forme de chaque type de notification affiché dans l’application Mobile. Les fichiers personnalisés restent propres à chaque notification.</p></div></div>'+
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Visuels des notifications Mobile</h2><p>Contrôle individuellement le logo de chaque type de notification Mobile. Le visuel est affiché seul, sans cercle noir ni fond orange.</p></div></div>'+
  groups.map(group=>{
   const defs=MOBILE_NOTIFICATION_VISUAL_DEFS.filter(x=>x.group===group);
   return '<section class="mobileNotifVisualGroup"><div class="platformSubhead"><div><h3>'+esc(group)+'</h3><p>'+defs.length+' type'+(defs.length>1?'s':'')+' de notification</p></div></div><div class="mobileNotifVisualGrid">'+
@@ -1362,11 +1362,6 @@ function renderMobileNotificationVisualEditor(){
     return '<article class="mobileNotifVisualCard" data-mobile-notif-kind="'+attr(def.key)+'">'+
      '<div class="mobileNotifVisualCardHead"><div><strong>'+esc(def.label)+'</strong><small>'+esc(def.key)+'</small></div><span class="mobileNotifVisualBadge">'+(custom?'Personnalisé':'Nethor')+'</span></div>'+
      mobileNotificationPreview(def,node)+
-     '<div class="mobileNotifVisualSettings">'+
-      '<label><span>Fond</span><input type="color" value="'+attr(node.outer_color)+'" data-mobile-notif-outer="'+attr(def.key)+'"></label>'+
-      '<label><span>Accent</span><input type="color" value="'+attr(node.accent_color)+'" data-mobile-notif-accent="'+attr(def.key)+'"></label>'+
-      '<label class="mobileNotifVisualShape"><span>Forme</span><select data-mobile-notif-shape="'+attr(def.key)+'"><option value="circle" '+(node.shape==='circle'?'selected':'')+'>Ronde</option><option value="rounded" '+(node.shape==='rounded'?'selected':'')+'>Arrondie</option><option value="square" '+(node.shape==='square'?'selected':'')+'>Carrée</option></select></label>'+
-     '</div>'+
      '<div class="platformAssetActions mobileNotifVisualActions">'+
       '<button class="btn secondaryBtn mini" type="button" onclick="chooseMobileNotificationVisual(\''+attr(def.key)+'\')">Importer</button>'+
       '<button class="btn secondaryBtn mini" type="button" onclick="downloadMobileNotificationVisual(\''+attr(def.key)+'\')">Télécharger</button>'+
@@ -1377,17 +1372,6 @@ function renderMobileNotificationVisualEditor(){
    }).join('')+
   '</div></section>'
  }).join('');
- host.querySelectorAll('[data-mobile-notif-outer]').forEach(el=>{
-  el.oninput=()=>{const kind=el.dataset.mobileNotifOuter,node=mobileNotificationVisualNode(kind);node.outer_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_OUTER);const card=el.closest('.mobileNotifVisualCard'),preview=card?.querySelector('.mobileNotifVisualPreview');if(preview)preview.style.setProperty('--mnv-outer',node.outer_color)};
-  el.onchange=()=>{markDirty();renderMobileNotificationVisualEditor()}
- });
- host.querySelectorAll('[data-mobile-notif-accent]').forEach(el=>{
-  el.oninput=()=>{const kind=el.dataset.mobileNotifAccent,node=mobileNotificationVisualNode(kind);node.accent_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_ACCENT);const card=el.closest('.mobileNotifVisualCard'),preview=card?.querySelector('.mobileNotifVisualPreview');if(preview)preview.style.setProperty('--mnv-accent',node.accent_color)};
-  el.onchange=()=>{markDirty();renderMobileNotificationVisualEditor()}
- });
- host.querySelectorAll('[data-mobile-notif-shape]').forEach(el=>el.onchange=()=>{
-  const kind=el.dataset.mobileNotifShape,node=mobileNotificationVisualNode(kind);node.shape=['circle','rounded','square'].includes(el.value)?el.value:'circle';markDirty();renderMobileNotificationVisualEditor()
- })
 }
 function chooseMobileNotificationVisual(kind){$('mobileNotifVisualFile_'+kind)?.click()}
 function mobileNotificationVisualExtension(file){
@@ -1412,9 +1396,8 @@ async function uploadMobileNotificationVisual(kind,input){
  finally{if(input)input.value=''}
 }
 function mobileNotificationSvg(def,node){
- const radius=node.shape==='circle'?64:node.shape==='rounded'?24:12;
  const emoji=String(def.icon||'🔔').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
- return '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="'+radius+'" fill="'+node.outer_color+'"/><rect x="22" y="22" width="84" height="84" rx="'+(node.shape==='circle'?42:node.shape==='rounded'?20:10)+'" fill="'+node.accent_color+'"/><text x="64" y="76" text-anchor="middle" font-size="42" font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif">'+emoji+'</text></svg>'
+ return '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><text x="64" y="82" text-anchor="middle" font-size="64" font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif">'+emoji+'</text></svg>'
 }
 function downloadMobileNotificationVisual(kind){
  const def=mobileNotificationVisualDef(kind),node=mobileNotificationVisualNode(kind);if(!def)return;
