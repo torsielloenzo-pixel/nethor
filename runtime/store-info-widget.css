@@ -1,6 +1,6 @@
 /* Nethor — widget informations point de vente (Desktop) */
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw{
-  --nsiw-accent:#ff6a2b;--nsiw-surface:#fff;--nsiw-text:#20242a;--nsiw-muted:#7b838d;--nsiw-border:#e4e7eb;
+  --nsiw-accent:#ff6a2b;--nsiw-surface:var(--nsiw-surface-light,#fff);--nsiw-text:var(--nsiw-text-light,#20242a);--nsiw-muted:#7b838d;--nsiw-border:var(--nsiw-border-light,#e4e7eb);
   order:0!important;grid-column:1/-1!important;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   min-width:0;overflow:hidden;border:1px solid var(--nsiw-border);border-radius:var(--nsiw-radius,18px);
   background:var(--nsiw-surface);color:var(--nsiw-text);box-shadow:var(--nsiw-shadow,0 8px 24px rgba(20,27,36,.07))
