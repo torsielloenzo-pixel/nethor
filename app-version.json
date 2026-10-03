@@ -1,11 +1,11 @@
 {
-  "version": 338,
-  "label": "v1.45.0",
+  "version": 339,
+  "label": "v1.45.1",
   "important": false,
-  "clear_cache": true,
+  "clear_cache": false,
   "mode": "manual",
-  "title": "Gestion — nouvelle architecture",
-  "message": "Refonte complète de Gestion : séparation stricte entre affichage, placement et droits d’accès ; widgets historiques de l’accueil réservés au Mobile ; nouvelle organisation Accueil & interface, Apparence & médias, Contenus, Utilisateurs & accès, Communication et Système ; gestion simple afficher/masquer des widgets Mobile ; widgets Desktop regroupés séparément ; Pilotage magasin conserve ses vrais droits dans Rôles & permissions ; classement automatique prévu pour les futurs widgets et pages.",
-  "published_at": "2026-10-04T00:18:00+02:00",
+  "title": "Mobile — ouverture instantanée et navigation par swipe",
+  "message": "Pendant l’animation d’ouverture, Nethor prépare Accueil, Planning et Chat avant de rendre l’application disponible. La navigation principale accepte aussi le swipe horizontal selon l’ordre réel de la barre mobile : un swipe vers la droite avance vers l’élément suivant et un swipe vers la gauche revient vers l’élément précédent. Les champs de saisie, le clavier et les zones à défilement horizontal sont protégés contre les déclenchements involontaires.",
+  "published_at": "2026-10-04T01:55:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
