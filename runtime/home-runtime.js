@@ -70,11 +70,15 @@ function homeDayFacts(model,dateKey,name){
 function homeDayHours(model,dateKey,name){
  const d=homeDayFacts(model,dateKey,name);return{hours:d.hours,ranges:d.ranges,idx:d.idx}
 }
+const HOME_MOBILE_ONLY_WIDGETS=new Set(['welcome','next_shift','hours','absences','next_rest','tasks','important_info','team_today','quick_access']);
 function homeWidgetVisible(cfg,id,profile,subroleKeys=[]){
- const node=cfg?.home_widgets?.[id]||{},role=profile?.role||'',fallback=id==='operations_hub'?role==='admin':true;
+ const node=cfg?.home_widgets?.[id]||{};
+ if(node.enabled===false)return false;
+ const personal=profile?.ui_preferences?.home_widgets?.[id];
+ if(HOME_MOBILE_ONLY_WIDGETS.has(id))return typeof personal==='boolean'?personal:true;
+ const role=profile?.role||'',fallback=id==='operations_hub'?role==='admin':true;
  const roleValue=node?.roles?.[role],allowed=(typeof roleValue==='boolean'?roleValue:fallback)||subroleKeys.some(k=>node?.subroles?.[k]===true);
  if(!allowed)return false;
- const personal=profile?.ui_preferences?.home_widgets?.[id];
  return typeof personal==='boolean'?personal:true
 }
 function homeStatIcon(id){
@@ -612,7 +616,7 @@ async function renderHomeDashboard(profile,name,cfg){
  homeTaskRows=taskRowsRes.error?[]:(taskRowsRes.data||[]);
  homeTaskTeam=profilesRes.error?[]:(profilesRes.data||[]);
  homeTaskAssignees=[];homeTaskCompletions=[];
- if(widget('tasks')&&homeTaskRows.length){
+ if(homeIsMobilePlatform()&&widget('tasks')&&homeTaskRows.length){
   const ids=homeTaskRows.map(x=>x.id),[aRes,cRes]=await Promise.all([
    db.from('daily_task_assignees').select('task_id,user_id').in('task_id',ids),
    db.from('daily_task_completions').select('task_id,user_id,completed_at').in('task_id',ids)
@@ -676,13 +680,13 @@ async function renderHomeDashboard(profile,name,cfg){
   if(quickPlanningWidget)sections.push(quickPlanningWidget)
  }
  if(homeIsMobilePlatform()&&widget('welcome'))sections.push('<section class="mhdHero mhdWelcome"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+homeEsc(dateLabel)+'</span></div><h1>Bonjour '+homeEsc(name||roleLabel)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
- if(widget('next_shift')){
+ if(homeIsMobilePlatform()&&widget('next_shift')){
   const shiftText=nextShift?.ranges?.length?nextShift.ranges.map(r=>homeClock(r.a)+' - '+homeClock(r.b)).join(' • '):'Aucune prise de poste à venir',when=nextShift?homeDateLabel(nextShift.dateKey,todayKey):'—',target=nextShift?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextShift.dateKey))))+'&day='+encodeURIComponent(nextShift.dateKey):'planning.html';
   sections.push('<button class="mhdCard mhdNext" type="button" onclick="location.href=\''+homeEsc(target)+'\'"><div class="mhdNextHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('next_shift')+'</span><strong>Prise de poste</strong></div><span class="mhdWhen">'+homeEsc(when)+'</span></div><div class="mhdShiftLine"><b>'+homeEsc(shiftText)+'</b><span class="mhdChevron">›</span></div><div class="mhdShiftMeta"><span class="mhdTag green">Planning personnel</span>'+(nextShift?.hours?'<span class="mhdTag amber">'+homeEsc(String(nextShift.hours).replace('.',','))+' h</span>':'')+'</div></button>')
  }
  const stats=[];
- if(widget('hours'))stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('hours')+'</span>Mes heures</div><strong>'+homeEsc(String(currentHours).replace('.',','))+' h</strong><small>planifiées cette semaine</small><div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div></button>');
- if(widget('absences')){
+ if(homeIsMobilePlatform()&&widget('hours'))stats.push('<button class="mhdStat" type="button" onclick="location.href=\'planning.html\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('hours')+'</span>Mes heures</div><strong>'+homeEsc(String(currentHours).replace('.',','))+' h</strong><small>planifiées cette semaine</small><div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div></button>');
+ if(homeIsMobilePlatform()&&widget('absences')){
   const leaveStart=nextLeave?.start||'',leaveEnd=nextLeave?.end||'',leaveOngoing=!!leaveStart&&leaveStart<=todayKey&&todayKey<=leaveEnd,leaveFocusDate=leaveOngoing?todayKey:leaveStart,leaveTarget=leaveFocusDate?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(leaveFocusDate))))+'&day='+encodeURIComponent(leaveFocusDate)+'&focus=leave':'planning.html';
   const short=k=>homeParseDate(k).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}),daysUntil=leaveStart?Math.max(0,homeDateDiffDays(todayKey,leaveStart)):0;
   let leaveMain='Aucun',leaveSub='aucun congé planifié';
@@ -695,14 +699,14 @@ async function renderHomeDashboard(profile,name,cfg){
   }
   stats.push('<button class="mhdStat mhdStatLeave" type="button" onclick="location.href=\''+homeEsc(leaveTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('absences')+'</span>Congés</div><strong>'+leaveMain+'</strong><small>'+homeEsc(leaveSub)+'</small></button>')
  }
- if(widget('next_rest')){const restTarget=nextRest?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextRest))))+'&day='+encodeURIComponent(nextRest)+'&focus=rest':'planning.html';stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(restTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('next_rest')+'</span>Prochain repos</div><strong>'+(nextRest?homeEsc(homeParseDate(nextRest).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')):'—')+'</strong><small>'+(nextRest?'Jour de repos':'non déterminé')+'</small></button>')}
+ if(homeIsMobilePlatform()&&widget('next_rest')){const restTarget=nextRest?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextRest))))+'&day='+encodeURIComponent(nextRest)+'&focus=rest':'planning.html';stats.push('<button class="mhdStat" type="button" onclick="location.href=\''+homeEsc(restTarget)+'\'"><div class="mhdStatHead"><span class="mhdMiniIcon">'+homeStatIcon('next_rest')+'</span>Prochain repos</div><strong>'+(nextRest?homeEsc(homeParseDate(nextRest).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','')):'—')+'</strong><small>'+(nextRest?'Jour de repos':'non déterminé')+'</small></button>')}
  if(stats.length)sections.push('<section class="mhdStats">'+stats.join('')+'</section>');
- if(widget('tasks'))sections.push(homeRenderDailyTasks(profile,taskLoadError));
- if(widget('important_info')){
+ if(homeIsMobilePlatform()&&widget('tasks'))sections.push(homeRenderDailyTasks(profile,taskLoadError));
+ if(homeIsMobilePlatform()&&widget('important_info')){
   const infos=notifications.filter(n=>['manual_edit','import_new','import_replace','admin_message','maintenance','app_update','absence_decision'].includes(n.kind)).slice(0,2);
   sections.push('<section class="mhdCard mhdSection mhdImportant"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('important_info')+'</span><strong>Informations importantes</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\'notifications.html\'">Voir toutes ›</button></div>'+(infos.length?infos.map((n,i)=>'<button type="button" class="mhdInfoRow '+(i?'orange':'')+'" onclick="location.href=\''+homeEsc(n.target_url||'notifications.html')+'\'"><span class="mhdInfoIcon">'+homeEsc(homeNotifIcon(n.kind))+'</span><span class="mhdInfoCopy"><strong>'+homeEsc(n.title||'Information Nethor')+'</strong><small>'+homeEsc(n.message||'')+'</small></span><time>'+homeEsc(homeSince(n.created_at))+'</time></button>').join(''):'<div class="mhdEmpty">Aucune information importante pour le moment.</div>')+'</section>')
  }
- if(widget('team_today')){
+ if(homeIsMobilePlatform()&&widget('team_today')){
   const shown=todayTeam.slice(0,3),extra=Math.max(0,todayTeam.length-shown.length);
   const teamPlanningTarget='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
   sections.push('<section class="mhdCard mhdSection mhdTeamSection'+(homeTaskMode(profile?.role)==='editor'?' editorCompanion':'')+'"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('team_today')+'</span><strong class="mhdTeamHeading">'+(homeIsMobilePlatform()?'Équipe aujourd’hui':'Équipe<br>du jour')+'</strong></div><button class="mhdSectionLink" type="button" onclick="location.href=\''+homeEsc(teamPlanningTarget)+'\'">Voir le planning ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((x,i)=>'<div class="mhdPerson"><span id="mhdAvatar'+i+'" class="mhdAvatar">'+homeEsc((x.name||'U').slice(0,1).toUpperCase())+'</span>'+(x.profile&&window.NettoProfileUI?.onlineIds?.has?.(x.profile.id)?'<i class="mhdOnline"></i>':'')+'<strong>'+homeEsc(x.name)+'</strong><small>'+homeEsc(x.profile?window.NettoProfileUI?.roleLabel?.(x.profile.role)||x.profile.role:'Équipe')+'</small></div>').join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>');
@@ -721,7 +725,7 @@ async function renderHomeDashboard(profile,name,cfg){
   tasks:{rows:homeTaskRows,assignees:homeTaskAssignees,completions:homeTaskCompletions,team:homeTaskTeam}
  });
  // Paint team avatars after the final DOM exists.
- if(widget('team_today')){
+ if(homeIsMobilePlatform()&&widget('team_today')){
   const shown=todayTeam.slice(0,3);
   for(let i=0;i<shown.length;i++){
    const p=shown[i].profile;if(!p)continue;let url=null;
