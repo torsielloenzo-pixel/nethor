@@ -441,7 +441,7 @@ function moduleBadgesHtml(m,p){
 function pageProtectionText(m){
  const rows=[];
  if(m.enabledLocked)rows.push('activation protégée');
- if(m.rolesLocked)rows.push('rôles protégés');
+ if(m.rolesLocked)rows.push('accès administrateur protégé');
  if(m.placementLocked)rows.push('emplacements de navigation protégés');
  return rows.length?'Garde-fous techniques : '+rows.join(', ')+'. Les droits d’accès se gèrent dans Utilisateurs & accès.':''
 }
@@ -929,7 +929,7 @@ function refreshModuleCardSummary(id){
  const m=builtinModules().find(x=>x.id===id),p=config.pages[id],card=$('moduleCard_'+id);if(!m||!p||!card)return;
  const name=card.querySelector('.moduleDisplayName'),meta=card.querySelector('.moduleHeadMeta'),badges=card.querySelector('.moduleHeadBadges');
  if(name)name.textContent=p.label||m.label;
- if(meta)meta.textContent=m.id+' · '+(p.url||m.url||'')+' · '+((p.roles||[]).map(r=>roleName(r)).join(', ')||'Aucun rôle');
+ if(meta)meta.textContent=m.id+' · '+(p.url||m.url||'')+' · '+pagePlatformLabel(m);
  if(badges)badges.innerHTML=moduleBadgesHtml(m,p);
  refreshSystemStats()
 }
@@ -961,8 +961,11 @@ function openSystemPage(id,event){
 function resetSystemPage(id,event){
  event?.preventDefault?.();event?.stopPropagation?.();
  const mods=builtinModules(),index=mods.findIndex(x=>x.id===id),m=mods[index];if(!m)return;
- if(!confirm('Réinitialiser les réglages de « '+(config.pages[id]?.label||m.label)+' » ?'))return;
- config.pages[id]=defaultPage(m,Math.max(0,index));ensurePages();markDirty();renderSystem();window.NettoSounds?.play?.('confirm')
+ if(!confirm('Réinitialiser les réglages d’affichage de « '+(config.pages[id]?.label||m.label)+' » ? Les droits utilisateurs seront conservés.'))return;
+ const current=config.pages[id]||{},keptRoles=Array.isArray(current.roles)?[...current.roles]:null;
+ config.pages[id]=defaultPage(m,Math.max(0,index));
+ if(keptRoles)config.pages[id].roles=keptRoles;
+ ensurePages();markDirty();renderSystem();window.NettoSounds?.play?.('confirm')
 }
 function collapseAllSystemPages(){
  document.querySelectorAll('#systemModules .moduleBody').forEach(x=>x.classList.add('collapsed'));
