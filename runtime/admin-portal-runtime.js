@@ -391,7 +391,7 @@ function rolePicker(m,p){
  }).join('')+'</div>'
 }
 function visualHtml(url,icon){return url?'<img src="'+attr(url)+'" alt="">':esc(icon||'•')}
-const PAGE_GROUP_LABELS={principal:'Pages principales',terrain:'Outils terrain',communication:'Communication',administration:'Administration',systeme:'Système'};
+const PAGE_GROUP_LABELS={principal:'Navigation principale',terrain:'Outils métier',communication:'Communication',administration:'Administration',systeme:'Système'};
 const PAGE_GROUP_ORDER=['principal','terrain','communication','administration','systeme'];
 const PAGE_FEATURES={
  home:['Widgets d’accueil','Planning du jour','Accès rapides','Tâches du jour'],
@@ -407,12 +407,20 @@ const PAGE_FEATURES={
  fl_assistant:['Imports XLS / XLSX / CSV','Ventes','Stock','Casse & dons','Commandes précédentes','Référentiel EAN13'],
  rewards:['Défis','Boutique','Jetons','Équipements de profil'],
  bakery:['Stock Boulangerie','Consultation','Gestion articles','Catégories','EAN13'],
- accounts:['Comptes','Rôles & permissions','Sous-rôles internes','Widgets','Journal d’activité','Réinitialisation mot de passe'],
- portal_admin:['Tableau de bord','Utilisateurs','Contenus','Éditeur du portail','Communication','Système','Pages & menus','Disponibilité mobile / desktop','Blocs & widgets','Navigation mobile','Catalogue des destinations mobiles','Problèmes signalés','Journal','Aperçu mobile'],
+ accounts:['Comptes','Rôles & permissions','Sous-rôles internes','Journal d’activité','Réinitialisation mot de passe'],
+ portal_admin:['Tableau de bord','Accueil & interface','Apparence & médias','Contenus','Utilisateurs & accès','Communication','Système','Pages & fonctionnalités','Widgets d’accueil','Mobile','Desktop','Problèmes signalés','Journal'],
  settings:['Accueil personnalisé','Raccourcis','Apparence'],
  maintenance:['Mode maintenance','Redirection utilisateurs']
 };
-function pageGroup(m){return PAGE_GROUP_LABELS[m?.group]?m.group:'principal'}
+function pageGroup(m){
+ if(PAGE_GROUP_LABELS[m?.group])return m.group;
+ const sig=[m?.id,m?.label,m?.homeLabel,m?.url,m?.subtitle].filter(Boolean).join(' ').toLowerCase();
+ if(m?.platform==='system'||/(maintenance|repair|setting|param[eè]tre|system)/i.test(sig))return'systeme';
+ if(/(account|admin|portal|gestion|reward|boutique)/i.test(sig))return'administration';
+ if(/(chat|notification|message|problem|signal)/i.test(sig))return'communication';
+ if(/(stock|scanner|article|bakery|boulanger|assistant|fruit|l[eé]gume)/i.test(sig))return'terrain';
+ return'principal'
+}
 function pagePlatformLabel(m){return m?.platform==='mobile'?'Mobile uniquement':m?.platform==='desktop'?'Desktop uniquement':m?.platform==='system'?'Système':'Mobile + desktop'}
 function moduleMobileAvailable(m){return !!m&&m.navigation!==false&&m.platform!=='desktop'&&m.platform!=='system'}
 function moduleDesktopAvailable(m){return !!m&&m.navigation!==false&&m.platform!=='mobile'&&m.platform!=='system'}
@@ -425,7 +433,8 @@ function moduleBadgesHtml(m,p){
   moduleMobileBarEligible(m)?'<span class="moduleBadge mobilebar">Barre mobile</span>':'',
   p.home?'<span class="moduleBadge">Accueil</span>':'',
   p.user_menu?'<span class="moduleBadge">Menu utilisateur</span>':'',
-  (m.rolesLocked||m.enabledLocked||m.placementLocked)?'<span class="moduleBadge protected">Protégée</span>':''
+  (m.rolesLocked||m.enabledLocked||m.placementLocked)?'<span class="moduleBadge protected">Protégée</span>':'',
+  !PAGE_GROUP_LABELS[m?.group]?'<span class="moduleBadge">Classement auto</span>':''
  ];
  return badges.filter(Boolean).join('')
 }
