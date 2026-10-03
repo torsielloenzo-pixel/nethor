@@ -1,11 +1,11 @@
 {
-  "version": 328,
-  "label": "v1.44.34",
+  "version": 329,
+  "label": "v1.44.35",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — Scanner en consultation seule",
-  "message": "Quand le Scanner Mobile retrouve un article, Nethor affiche désormais uniquement les informations de la fiche trouvée : photo, nom, famille, catégorie, statut, EAN13, code article et conditionnement. Le bouton « Ouvrir la fiche article » et la navigation vers le référentiel ont été supprimés. Il reste simplement le bouton Fermer pour reprendre le scan. Le même comportement a été appliqué à la page Scanner de secours.",
-  "published_at": "2026-10-03T12:12:06+02:00",
+  "title": "Mobile — démarrage du Scanner corrigé",
+  "message": "Correction d’un blocage du Scanner Mobile apparu après la suppression du bouton « Ouvrir la fiche article ». Une ancienne référence openArticle restait exportée par le moteur Scanner alors que la fonction avait été supprimée, ce qui interrompait le chargement du runtime et affichait « Moteur Scanner indisponible ». Cette référence obsolète a été retirée et le moteur Scanner charge à nouveau normalement.",
+  "published_at": "2026-10-03T12:16:08+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
