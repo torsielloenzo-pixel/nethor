@@ -530,7 +530,7 @@ function renderOperationsWidgetEditor(){
    Object.entries(sectionLabel).map(([k,v])=>'<label class="operationsWidgetToggle"><span><strong>'+esc(v)+'</strong><small>Afficher cette partie du widget.</small></span><input type="checkbox" data-operations-section="'+k+'" '+(w.sections[k]!==false?'checked':'')+'></label>').join('')+
    '<label class="operationsWidgetToggle"><span><strong>Compteurs</strong><small>Afficher le nombre d’éléments sur les onglets.</small></span><input type="checkbox" data-operations-widget="show_counters" '+(w.show_counters!==false?'checked':'')+'></label>'+
   '</div>'+
-  '<div class="operationsWidgetAdminNote"><b>Droits :</b> ce bloc règle uniquement le contenu et l’apparence. La visibilité Administrateur / Responsable / Employé / Lecture seule reste centralisée dans <b>Comptes & rôles → Rôles & permissions → Widgets de l’accueil</b>.</div>'+
+  '<div class="operationsWidgetAdminNote"><b>Séparation :</b> ce bloc règle le contenu, l’apparence et l’activation globale. Les droits d’accès au module Pilotage magasin restent dans <b>Utilisateurs & accès → Rôles & permissions</b>.</div>'+
  '</div>';
  host.querySelectorAll('[data-operations-widget]').forEach(el=>el.oninput=el.onchange=()=>{
   const key=el.dataset.operationsWidget,node=ensureOperationsWidgetConfig();
@@ -733,6 +733,137 @@ function renderQuickPlanningWidgetEditor(){
  })
 }
 
+
+const MOBILE_HOME_WIDGET_DEFS=[
+ {id:'welcome',label:'Bonjour / espace de travail',description:'Accueil personnalisé et date du jour.',icon:'home'},
+ {id:'next_shift',label:'Prise de poste',description:'Prochaine plage horaire issue du planning.',icon:'planning'},
+ {id:'hours',label:'Mes heures',description:'Total des heures planifiées cette semaine.',icon:'planning'},
+ {id:'absences',label:'Congés',description:'Congés et absence à venir.',icon:'planning'},
+ {id:'next_rest',label:'Prochain repos',description:'Premier jour de repos à venir.',icon:'planning'},
+ {id:'tasks',label:'Tâches du jour',description:'Missions quotidiennes et validation.',icon:'articles'},
+ {id:'important_info',label:'Informations importantes',description:'Informations et notifications prioritaires.',icon:'notifications'},
+ {id:'team_today',label:'Équipe aujourd’hui',description:'Personnes planifiées sur la journée.',icon:'accounts'},
+ {id:'quick_access',label:'Accès rapides',description:'Raccourcis vers les principaux outils.',icon:'home'}
+];
+const KNOWN_MANAGED_WIDGET_KEYS=new Set(['store_info_widget','quick_planning_widget']);
+function ensureMobileHomeWidgetDisplayConfig(){
+ config.home_widgets=config.home_widgets&&typeof config.home_widgets==='object'?config.home_widgets:{};
+ for(const def of MOBILE_HOME_WIDGET_DEFS){
+  const node=config.home_widgets[def.id]=config.home_widgets[def.id]&&typeof config.home_widgets[def.id]==='object'?config.home_widgets[def.id]:{};
+  node.enabled=node.enabled!==false;
+  node.platform='mobile';
+  node.category='home';
+  delete node.roles;delete node.subroles
+ }
+ return config.home_widgets
+}
+function managementWidgetIcon(def){
+ const fn=window.NettoProfileUI?.mobileNavIcon;
+ return typeof fn==='function'?fn(def.icon||'home'):'•'
+}
+function renderMobileHomeWidgetEditor(){
+ const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
+ let section=$('mobileHomeWidgetSection');
+ if(!section){
+  section=document.createElement('div');section.id='mobileHomeWidgetSection';section.className='widgetPlatformSection';
+  const toolbar=panel.querySelector(':scope > .toolbar');toolbar?.insertAdjacentElement('afterend',section)
+ }
+ const nodes=ensureMobileHomeWidgetDisplayConfig(),enabled=MOBILE_HOME_WIDGET_DEFS.filter(x=>nodes[x.id]?.enabled!==false).length;
+ section.innerHTML='<div class="widgetPlatformHead"><div><span>ACCUEIL · MOBILE UNIQUEMENT</span><strong>Widgets de l’accueil mobile</strong><small>Ces blocs ne sont jamais créés sur Desktop. Ici, on règle uniquement leur affichage global.</small></div><div class="widgetBulkActions"><button type="button" data-mobile-widget-bulk="on">Tout afficher</button><button type="button" data-mobile-widget-bulk="off">Tout masquer</button><b class="widgetPlatformBadge mobile">'+enabled+'/'+MOBILE_HOME_WIDGET_DEFS.length+' visibles</b></div></div>'+
+ '<div class="mobileWidgetGrid">'+MOBILE_HOME_WIDGET_DEFS.map(def=>{const node=nodes[def.id]||{};return'<label class="mobileWidgetCard"><span class="mobileWidgetIcon">'+managementWidgetIcon(def)+'</span><span class="mobileWidgetCopy"><strong>'+esc(def.label)+'</strong><small>'+esc(def.description)+'</small></span><span class="mobileWidgetSwitch"><input type="checkbox" data-mobile-home-widget="'+attr(def.id)+'" '+(node.enabled!==false?'checked':'')+'> '+(node.enabled!==false?'Affiché':'Masqué')+'</span></label>'}).join('')+'</div>'+
+ '<div class="widgetLegacyClean"><b>Règle claire :</b> aucun rôle ni sous-rôle ici. Les préférences individuelles peuvent encore masquer un widget pour un utilisateur, mais l’administrateur définit uniquement s’il existe ou non sur l’accueil Mobile.</div>';
+ section.querySelectorAll('[data-mobile-home-widget]').forEach(input=>input.onchange=()=>{
+  const node=ensureMobileHomeWidgetDisplayConfig()[input.dataset.mobileHomeWidget];node.enabled=input.checked;markDirty();renderMobileHomeWidgetEditor()
+ });
+ section.querySelectorAll('[data-mobile-widget-bulk]').forEach(btn=>btn.onclick=()=>{
+  const value=btn.dataset.mobileWidgetBulk==='on';const nodes=ensureMobileHomeWidgetDisplayConfig();
+  MOBILE_HOME_WIDGET_DEFS.forEach(def=>nodes[def.id].enabled=value);markDirty();renderMobileHomeWidgetEditor()
+ })
+}
+function inferManagedWidgetPlatform(id,node={},root='home_widgets'){
+ const explicit=String(node?.management?.platform||node?.platform||'').toLowerCase();
+ if(['mobile','desktop','all'].includes(explicit))return explicit;
+ if(MOBILE_HOME_WIDGET_DEFS.some(x=>x.id===id))return'mobile';
+ if(root==='store_info_widget'||root==='quick_planning_widget'||/(desktop|banner|store_info|quick_planning)/i.test(id))return'desktop';
+ if(/mobile/i.test(id))return'mobile';
+ return'all'
+}
+function inferManagedWidgetCategory(id,node={}){
+ const explicit=String(node?.management?.category||node?.category||'').toLowerCase();
+ if(explicit)return explicit;
+ return /(operations|pilot|service|order|delivery|hub)/i.test(id)?'operations':'home'
+}
+function discoverManagedWidgets(){
+ const rows=[];
+ const knownHome=new Set([...MOBILE_HOME_WIDGET_DEFS.map(x=>x.id),'operations_hub']);
+ for(const [id,node] of Object.entries(config.home_widgets||{})){
+  if(knownHome.has(id))continue;
+  rows.push({id,root:'home_widgets',node:node&&typeof node==='object'?node:{},platform:inferManagedWidgetPlatform(id,node,'home_widgets'),category:inferManagedWidgetCategory(id,node)})
+ }
+ for(const [key,node] of Object.entries(config||{})){
+  if(!/_widget$/.test(key)||KNOWN_MANAGED_WIDGET_KEYS.has(key))continue;
+  rows.push({id:key,root:key,node:node&&typeof node==='object'?node:{},platform:inferManagedWidgetPlatform(key,node,key),category:inferManagedWidgetCategory(key,node)})
+ }
+ const registry=window.NethorWidgetRegistry;
+ const external=Array.isArray(registry)?registry:(typeof registry?.items==='function'?registry.items():[]);
+ for(const item of external||[]){
+  const id=String(item?.id||'').trim();if(!id||rows.some(x=>x.id===id)||knownHome.has(id)||KNOWN_MANAGED_WIDGET_KEYS.has(id))continue;
+  rows.push({id,root:String(item.root||'registry'),node:item,platform:inferManagedWidgetPlatform(id,item,item.root),category:inferManagedWidgetCategory(id,item)})
+ }
+ return rows
+}
+function setDiscoveredWidgetEnabled(row,value){
+ if(row.root==='home_widgets'){
+  config.home_widgets=config.home_widgets&&typeof config.home_widgets==='object'?config.home_widgets:{};
+  const node=config.home_widgets[row.id]=config.home_widgets[row.id]&&typeof config.home_widgets[row.id]==='object'?config.home_widgets[row.id]:{};
+  node.enabled=value;node.platform=row.platform;node.category=row.category
+ }else if(row.root!=='registry'){
+  const node=config[row.root]=config[row.root]&&typeof config[row.root]==='object'?config[row.root]:{};
+  node.enabled=value;
+  node.management=node.management&&typeof node.management==='object'?node.management:{};
+  node.management.platform=row.platform;node.management.category=row.category
+ }
+ markDirty()
+}
+function renderAutoDiscoveredWidgets(){
+ const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
+ let section=$('autoDiscoveredWidgetSection');
+ if(!section){section=document.createElement('div');section.id='autoDiscoveredWidgetSection';section.className='widgetPlatformSection';panel.appendChild(section)}
+ const rows=discoverManagedWidgets();
+ section.classList.toggle('hidden',!rows.length);
+ if(!rows.length){section.innerHTML='';return}
+ const label=p=>p==='mobile'?'Mobile':p==='desktop'?'Desktop':'Mobile + Desktop';
+ section.innerHTML='<div class="widgetPlatformHead"><div><span>CLASSEMENT AUTOMATIQUE</span><strong>Widgets détectés automatiquement</strong><small>Tout nouveau widget déclaré dans la configuration est classé selon sa plateforme et sa catégorie. Les métadonnées platform/category sont prioritaires.</small></div><b class="widgetPlatformBadge">'+rows.length+' détecté'+(rows.length>1?'s':'')+'</b></div>'+
+ '<div class="autoWidgetGrid">'+rows.map((row,index)=>'<label class="autoWidgetCard"><span class="autoWidgetIcon">'+managementWidgetIcon({icon:row.category==='operations'?'planning':'home'})+'</span><span class="autoWidgetCopy"><strong>'+esc(row.node?.label||row.node?.title||row.id)+'</strong><small>'+esc(label(row.platform)+' · '+row.category+' · '+row.id)+'</small></span><span class="mobileWidgetSwitch"><input type="checkbox" data-auto-widget-index="'+index+'" '+(row.node?.enabled!==false?'checked':'')+'> '+(row.node?.enabled!==false?'Actif':'Inactif')+'</span></label>').join('')+'</div>';
+ section.querySelectorAll('[data-auto-widget-index]').forEach(input=>input.onchange=()=>{const row=rows[Number(input.dataset.autoWidgetIndex)];if(row)setDiscoveredWidgetEnabled(row,input.checked);renderAutoDiscoveredWidgets()})
+}
+function ensureWidgetArchitectureIntro(){
+ const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
+ let note=$('widgetArchitectureIntro');
+ if(!note){
+  note=document.createElement('div');note.id='widgetArchitectureIntro';
+  note.innerHTML='<div class="managementArchitectureNote"><span>≡</span><div><strong>Affichage ≠ permissions</strong><small>Cette page décide uniquement quels widgets existent et comment ils apparaissent. Les droits d’accès aux fonctions restent dans Utilisateurs & accès.</small></div></div><div class="managementArchitectureRule"><div><span>1 · MOBILE</span><strong>Accueil terrain</strong><small>Widgets personnels, planning, équipe et raccourcis.</small></div><div><span>2 · DESKTOP</span><strong>Accueil point de vente</strong><small>Bannière, vue planning et futurs widgets ordinateur.</small></div><div><span>3 · ACCÈS</span><strong>Fonctions sécurisées</strong><small>Les droits réels sont gérés séparément par rôle.</small></div></div>';
+  const toolbar=panel.querySelector(':scope > .toolbar');toolbar?.insertAdjacentElement('afterend',note)
+ }
+}
+function organizeWidgetEditorDom(){
+ const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
+ ensureWidgetArchitectureIntro();renderMobileHomeWidgetEditor();
+ const ensureBucket=(id,kicker,title,desc,badge)=>{
+  let bucket=$(id);
+  if(!bucket){bucket=document.createElement('div');bucket.id=id;bucket.className='widgetEditorBucket widgetPlatformSection';bucket.innerHTML='<div class="widgetPlatformHead"><div><span>'+esc(kicker)+'</span><strong>'+esc(title)+'</strong><small>'+esc(desc)+'</small></div><b class="widgetPlatformBadge '+(badge==='Desktop'?'desktop':'')+'">'+esc(badge)+'</b></div><div data-widget-bucket-body></div>';panel.appendChild(bucket)}
+  return bucket.querySelector('[data-widget-bucket-body]')
+ };
+ const desktop=ensureBucket('desktopWidgetBucket','ACCUEIL · DESKTOP','Widgets Desktop','Composants destinés uniquement à l’accueil ordinateur.','Desktop');
+ const secured=ensureBucket('securedWidgetBucket','FONCTIONNALITÉ SÉCURISÉE','Pilotage magasin','Affichage global ici ; accès aux données et actions dans Utilisateurs & accès.','Accès contrôlé');
+ const store=$('storeInfoWidgetEditor')?.closest('.storeInfoWidgetAdmin'),quick=$('quickPlanningWidgetEditor')?.closest('.quickPlanningWidgetAdmin'),ops=$('operationsWidgetEditor')?.closest('.operationsWidgetAdmin');
+ if(store&&store.parentElement!==desktop)desktop.appendChild(store);
+ if(quick&&quick.parentElement!==desktop)desktop.appendChild(quick);
+ if(ops&&ops.parentElement!==secured)secured.appendChild(ops);
+ const opHead=ops?.querySelector('.operationsWidgetAdminHead p');if(opHead)opHead.textContent='Contenu et présentation du module. Les droits d’accès restent dans Utilisateurs & accès → Rôles & permissions.';
+ renderAutoDiscoveredWidgets()
+}
+
 function ensurePersonalizationConfig(){
  config.personalization=config.personalization&&typeof config.personalization==='object'?config.personalization:{};
  if(typeof config.personalization.home_menus_enabled!=='boolean')config.personalization.home_menus_enabled=true;
@@ -767,6 +898,8 @@ function renderSystem(){
  renderOperationsWidgetEditor();
  renderStoreInfoWidgetEditor();
  renderQuickPlanningWidgetEditor();
+ renderMobileHomeWidgetEditor();
+ organizeWidgetEditorDom();
  refreshSystemStats(mods);
  const q=String($('systemPageSearch')?.value||'').trim().toLocaleLowerCase('fr');
  const filter=String($('systemPageFilter')?.value||'all');
