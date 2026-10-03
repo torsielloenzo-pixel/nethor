@@ -180,6 +180,11 @@ function normalize(raw){
    const x=currentControls[key]&&typeof currentControls[key]==='object'?currentControls[key]:{};
    controls[key]={label:String(x.label||''),subtitle:String(x.subtitle||''),url:String(x.url||''),path:String(x.path||''),name:String(x.name||'')}
   }
+  const notificationVisuals={};
+  if(kind==='mobile'){
+   const source=current.notification_visuals&&typeof current.notification_visuals==='object'?current.notification_visuals:{};
+   for(const def of MOBILE_NOTIFICATION_VISUAL_DEFS)notificationVisuals[def.key]=normalizeMobileNotificationVisual(source[def.key])
+  }
   const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
   c.platform_ui[kind]={
    header_logo:themedAsset('header_logo'),
@@ -191,7 +196,8 @@ function normalize(raw){
    home_screen_icon:simpleAsset('home_screen_icon'),
    browser_icon:themedAsset('browser_icon'),
    desktop_shortcut_icon:simpleAsset('desktop_shortcut_icon'),
-   controls
+   controls,
+   notification_visuals:kind==='mobile'?notificationVisuals:{}
   }
  }
  return c
@@ -625,6 +631,37 @@ function toggleModuleBody(id,event){
  const opening=body.classList.contains('collapsed');body.classList.toggle('collapsed',!opening);card?.classList.toggle('open',opening);window.NettoSounds?.play?.(opening?'menuOpen':'menuClose')
 }
 
+const MOBILE_NOTIFICATION_VISUAL_DEFS=Object.freeze([
+ {key:'manual_edit',label:'Planning modifié',group:'Planning',icon:'🗓️'},
+ {key:'import_new',label:'Nouveau planning',group:'Planning',icon:'📥'},
+ {key:'import_replace',label:'Planning remplacé',group:'Planning',icon:'🔄'},
+ {key:'reset_day',label:'Réinitialisation journée',group:'Planning',icon:'↩️'},
+ {key:'reset_week',label:'Réinitialisation semaine',group:'Planning',icon:'↩️'},
+ {key:'absence_request',label:'Demande congé / indisponibilité',group:'Planning',icon:'🏖️'},
+ {key:'absence_decision',label:'Décision congé',group:'Planning',icon:'✅'},
+ {key:'chat_message',label:'Message équipe',group:'Messages',icon:'💬'},
+ {key:'chat_direct',label:'Message direct',group:'Messages',icon:'💬'},
+ {key:'chat_group',label:'Message groupe',group:'Messages',icon:'👥'},
+ {key:'chat_general',label:'Message général',group:'Messages',icon:'👥'},
+ {key:'admin_message',label:'Information administrateur',group:'Système',icon:'📣'},
+ {key:'app_update',label:'Mise à jour Nethor',group:'Système',icon:'⬆️'},
+ {key:'maintenance',label:'Maintenance',group:'Système',icon:'🛠️'},
+ {key:'password_reset_request',label:'Sécurité / mot de passe',group:'Système',icon:'🔑'}
+]);
+const MOBILE_NOTIFICATION_DEFAULT_OUTER='#24292F';
+const MOBILE_NOTIFICATION_DEFAULT_ACCENT='#FF5A2A';
+function normalizeMobileNotificationVisual(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const shape=['circle','rounded','square'].includes(String(raw.shape||''))?String(raw.shape):'circle';
+ return{
+  url:String(raw.url||''),
+  path:String(raw.path||''),
+  name:String(raw.name||''),
+  outer_color:validColor(raw.outer_color,MOBILE_NOTIFICATION_DEFAULT_OUTER),
+  accent_color:validColor(raw.accent_color,MOBILE_NOTIFICATION_DEFAULT_ACCENT),
+  shape
+ }
+}
 function ensurePlatformUiConfig(){
  config.platform_ui=config.platform_ui&&typeof config.platform_ui==='object'?config.platform_ui:{};
  for(const kind of ['mobile','desktop']){
