@@ -1,11 +1,11 @@
 {
-  "version": 327,
-  "label": "v1.44.33",
+  "version": 328,
+  "label": "v1.44.34",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Images statiques Nethor — migration SVG",
-  "message": "Audit complet des images embarquées dans le dépôt Nethor. Tous les logos, pictogrammes, cadres et icônes étaient déjà en SVG ; le seul visuel raster statique restant était le fond Fruits & Légumes / connexion en WebP. Il est maintenant servi via un SVG autonome qui embarque exactement l’image d’origine, afin de conserver le rendu au pixel près sans casser les dimensions, le cover, le flou ni les thèmes clair/sombre. Toutes les références actives utilisent désormais fl-background.svg. Le WebP d’origine est conservé temporairement uniquement comme secours de compatibilité pour les anciens caches.",
-  "published_at": "2026-10-03T03:36:33+02:00",
+  "title": "Mobile — Scanner en consultation seule",
+  "message": "Quand le Scanner Mobile retrouve un article, Nethor affiche désormais uniquement les informations de la fiche trouvée : photo, nom, famille, catégorie, statut, EAN13, code article et conditionnement. Le bouton « Ouvrir la fiche article » et la navigation vers le référentiel ont été supprimés. Il reste simplement le bouton Fermer pour reprendre le scan. Le même comportement a été appliqué à la page Scanner de secours.",
+  "published_at": "2026-10-03T12:12:06+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
