@@ -302,27 +302,47 @@ function homeSuggestedTasks(profile,cfg){
 const HOME_STORE_INFO_DEFAULTS={
  enabled:true,
  store_name:'Netto Le Thor',
- address:'150 Chemin St Michel, 84250 Le Thor',
- phone:'04 90 01 34 23',
  photo_url:'',
- date_label:"Aujourd'hui",
- session_label:'Session en cours',
+ photo_path:'',
+ photo_name:'',
+ opening_label:"Horaires d'ouverture aujourd'hui",
+ greetings:{morning:'Bonjour',afternoon:'Bon après-midi',evening:'Bonsoir'},
  hours:{0:'09:00-12:30',1:'08:00-20:00',2:'08:00-20:00',3:'08:00-20:00',4:'08:00-20:00',5:'08:00-20:00',6:'08:00-20:00'},
- style:{accent:'#ff6a2b',surface_light:'#ffffff',surface_dark:'#23272d',text_light:'#20242a',text_dark:'#f3f5f7',border_light:'#e4e7eb',border_dark:'#3b4148',radius:18,shadow:true}
+ style:{
+  accent:'#ff6a2b',
+  surface_light:'#202630',
+  surface_dark:'#171b21',
+  text_light:'#ffffff',
+  text_dark:'#ffffff',
+  muted_light:'#d4d8df',
+  muted_dark:'#d4d8df',
+  radius:18,
+  height:178,
+  image_dim:28,
+  image_position:'center center',
+  shadow:true
+ }
 };
 function homeStoreHex(v,fallback){return /^#[0-9a-f]{6}$/i.test(String(v||''))?String(v):fallback}
+function homeStorePosition(v){
+ const value=String(v||'').trim(),allowed=['center center','right center','left center','center top','center bottom'];
+ return allowed.includes(value)?value:HOME_STORE_INFO_DEFAULTS.style.image_position
+}
 function homeStoreInfoConfig(cfg){
  const raw=cfg?.store_info_widget&&typeof cfg.store_info_widget==='object'?cfg.store_info_widget:{};
- const rawHours=raw.hours&&typeof raw.hours==='object'?raw.hours:{};
- const rawStyle=raw.style&&typeof raw.style==='object'?raw.style:{};
+ const rawHours=raw.hours&&typeof raw.hours==='object'?raw.hours:{},rawStyle=raw.style&&typeof raw.style==='object'?raw.style:{},rawGreetings=raw.greetings&&typeof raw.greetings==='object'?raw.greetings:{};
  return{
   enabled:raw.enabled!==false,
   store_name:String(raw.store_name||HOME_STORE_INFO_DEFAULTS.store_name),
-  address:String(raw.address||HOME_STORE_INFO_DEFAULTS.address),
-  phone:String(raw.phone||HOME_STORE_INFO_DEFAULTS.phone),
   photo_url:String(raw.photo_url||''),
-  date_label:String(raw.date_label||HOME_STORE_INFO_DEFAULTS.date_label),
-  session_label:String(raw.session_label||HOME_STORE_INFO_DEFAULTS.session_label),
+  photo_path:String(raw.photo_path||''),
+  photo_name:String(raw.photo_name||''),
+  opening_label:String(raw.opening_label||HOME_STORE_INFO_DEFAULTS.opening_label),
+  greetings:{
+   morning:String(rawGreetings.morning||HOME_STORE_INFO_DEFAULTS.greetings.morning),
+   afternoon:String(rawGreetings.afternoon||HOME_STORE_INFO_DEFAULTS.greetings.afternoon),
+   evening:String(rawGreetings.evening||HOME_STORE_INFO_DEFAULTS.greetings.evening)
+  },
   hours:{...HOME_STORE_INFO_DEFAULTS.hours,...rawHours},
   style:{
    accent:homeStoreHex(rawStyle.accent,HOME_STORE_INFO_DEFAULTS.style.accent),
@@ -330,9 +350,12 @@ function homeStoreInfoConfig(cfg){
    surface_dark:homeStoreHex(rawStyle.surface_dark,HOME_STORE_INFO_DEFAULTS.style.surface_dark),
    text_light:homeStoreHex(rawStyle.text_light,HOME_STORE_INFO_DEFAULTS.style.text_light),
    text_dark:homeStoreHex(rawStyle.text_dark,HOME_STORE_INFO_DEFAULTS.style.text_dark),
-   border_light:homeStoreHex(rawStyle.border_light,HOME_STORE_INFO_DEFAULTS.style.border_light),
-   border_dark:homeStoreHex(rawStyle.border_dark,HOME_STORE_INFO_DEFAULTS.style.border_dark),
-   radius:Math.max(10,Math.min(30,Number(rawStyle.radius)||HOME_STORE_INFO_DEFAULTS.style.radius)),
+   muted_light:homeStoreHex(rawStyle.muted_light,HOME_STORE_INFO_DEFAULTS.style.muted_light),
+   muted_dark:homeStoreHex(rawStyle.muted_dark,HOME_STORE_INFO_DEFAULTS.style.muted_dark),
+   radius:Math.max(10,Math.min(32,Number(rawStyle.radius)||HOME_STORE_INFO_DEFAULTS.style.radius)),
+   height:Math.max(140,Math.min(260,Number(rawStyle.height)||HOME_STORE_INFO_DEFAULTS.style.height)),
+   image_dim:Math.max(0,Math.min(75,Number(rawStyle.image_dim)??HOME_STORE_INFO_DEFAULTS.style.image_dim)),
+   image_position:homeStorePosition(rawStyle.image_position),
    shadow:rawStyle.shadow!==false
   }
  }
@@ -342,16 +365,6 @@ function homeStoreSafeMediaUrl(value){
  if(!s)return'';
  if(/^\s*(javascript|data|vbscript):/i.test(s))return'';
  return /^(https?:\/\/|\.\/|\.\.\/|[a-zA-Z0-9_./?=&%-]+$)/.test(s)?s:''
-}
-function homeStoreIcon(kind){
- const common='viewBox="0 0 24 24" aria-hidden="true" focusable="false"';
- const icons={
-  calendar:'<svg '+common+'><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17M8 13h3M13 13h3M8 16.5h3"/></svg>',
-  store:'<svg '+common+'><path d="M4 10.5h16M5 10.5V20h14v-9.5M3.5 10.5l2-6h13l2 6"/><path d="M8 20v-5h4v5M15.5 14h1.5"/></svg>',
-  clock:'<svg '+common+'><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3.5 2"/></svg>',
-  photo:'<svg '+common+'><path d="M4 18.5V9l2.2-4h11.6L20 9v9.5"/><path d="M3 9h18M7 18.5v-5h4v5M15 13.5h2.5"/></svg>'
- };
- return icons[kind]||icons.clock
 }
 function homeParisClockParts(d=new Date()){
  try{
@@ -376,52 +389,35 @@ function homeStoreOpeningState(hours,now=new Date()){
  const open=intervals.some(x=>x.b>=x.a?(minute>=x.a&&minute<x.b):(minute>=x.a||minute<x.b));
  return{open,spec,clock:String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0'),day:p.day}
 }
-function homeIsoWeekNumber(dateKey){
- const parts=String(dateKey||'').split('-').map(Number),d=new Date(Date.UTC(parts[0],(parts[1]||1)-1,parts[2]||1));
- const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);
- const start=new Date(Date.UTC(d.getUTCFullYear(),0,1));
- return Math.ceil((((d-start)/86400000)+1)/7)
+function homeStoreGreeting(w,now=new Date()){
+ const p=homeParisClockParts(now),key=(p.hour>=18||p.hour<5)?'evening':p.hour>=12?'afternoon':'morning';
+ return String(w?.greetings?.[key]||HOME_STORE_INFO_DEFAULTS.greetings[key])
 }
-function homeStoreSessionInfo(model,dateKey,nowHour){
- const morning=nowHour<13.5,label=morning?'Équipe du matin':"Équipe d’après-midi";
- if(!model?.days?.[dateKey])return{label,detail:'Planning non renseigné pour aujourd’hui'};
- const periodStart=morning?(model.startTime??6):13.5,periodEnd=morning?13.5:Math.max(21,(model.startTime??6)+24*.25);
- let planned=0,active=0;
- (model.employees||[]).forEach((e,i)=>{
-  const row=model.days[dateKey].cells?.[i]||[],ranges=homeWorkRanges(row,model);
-  if(ranges.some(r=>r.b>periodStart&&r.a<periodEnd))planned++;
-  if(ranges.some(r=>nowHour>=r.a&&nowHour<r.b))active++
- });
- const p=planned+' personne'+(planned>1?'s':'')+' planifiée'+(planned>1?'s':'');
- return{label,detail:p+(active?' · '+active+' en poste actuellement':' · aucune présence active maintenant')}
+function homeStoreHoursLabel(spec){
+ const value=String(spec||'').trim();
+ return !value||/^(ferme|fermé|closed)$/i.test(value)?'Fermé aujourd’hui':value.replace(/\s*[-–—]\s*/g,' – ')
 }
-function homeRenderStoreInfoWidget(cfg,now,todayKey,todayModel){
+function homeRenderStoreInfoWidget(cfg,now,name){
  const w=homeStoreInfoConfig(cfg);if(!w.enabled)return'';
- const opening=homeStoreOpeningState(w.hours,now),p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,sessionInfo=homeStoreSessionInfo(todayModel,todayKey,nowHour);
- const dateLabel=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);
- const week='Semaine '+homeIsoWeekNumber(todayKey),hoursLabel=/^(ferme|fermé|closed)$/i.test(opening.spec)?'Fermé aujourd’hui':opening.spec.replace(/-/g,' – ');
- const photo=homeStoreSafeMediaUrl(w.photo_url);
- const photoHtml=photo?'<span class="nsiwPhoto"><img src="'+homeEsc(photo)+'" alt="Photo '+homeEsc(w.store_name)+'"></span>':'<span class="nsiwPhoto">'+homeStoreIcon('photo')+'</span>';
- const s=w.style,shadow=s.shadow?'0 8px 24px rgba(20,27,36,.07)':'none';
- const style='--nsiw-accent:'+s.accent+';--nsiw-surface-light:'+s.surface_light+';--nsiw-surface-dark:'+s.surface_dark+';--nsiw-text-light:'+s.text_light+';--nsiw-text-dark:'+s.text_dark+';--nsiw-border-light:'+s.border_light+';--nsiw-border-dark:'+s.border_dark+';--nsiw-radius:'+s.radius+'px;--nsiw-shadow:'+shadow;
- return '<section id="nethorStoreInfoWidget" class="nsiw" style="'+homeEsc(style)+'" aria-label="Informations du point de vente">'+
-  '<article class="nsiwCell"><span class="nsiwIcon">'+homeStoreIcon('calendar')+'</span><div class="nsiwCopy"><span class="nsiwKicker">'+homeEsc(w.date_label)+'</span><strong class="nsiwDate">'+homeEsc(dateLabel)+'</strong><small class="nsiwWeek">'+homeEsc(week)+'</small></div></article>'+
-  '<article class="nsiwCell"><span class="nsiwIcon">'+homeStoreIcon('store')+'</span><div class="nsiwCopy"><span class="nsiwKicker">Point de vente</span><strong>'+homeEsc(w.store_name)+'</strong><small>'+homeEsc(w.address)+'</small><small class="nsiwPhone">'+homeEsc(w.phone)+'</small></div></article>'+
-  '<article class="nsiwCell">'+photoHtml+'<div class="nsiwCopy"><span class="nsiwKicker">Accueil clients</span><strong class="nsiwStatus '+(opening.open?'open':'closed')+'">'+(opening.open?'Ouvert':'Fermé')+'</strong><small class="nsiwHours">Horaires clients · '+homeEsc(hoursLabel)+'</small><small class="nsiwClock">Heure actuelle · '+homeEsc(opening.clock)+'</small></div></article>'+
-  '<article class="nsiwCell"><span class="nsiwIcon">'+homeStoreIcon('clock')+'</span><div class="nsiwCopy"><span class="nsiwKicker">'+homeEsc(w.session_label)+'</span><strong>'+homeEsc(sessionInfo.label)+'</strong><small>'+homeEsc(sessionInfo.detail)+'</small></div></article>'+
+ const opening=homeStoreOpeningState(w.hours,now),photo=homeStoreSafeMediaUrl(w.photo_url),greeting=homeStoreGreeting(w,now),hoursLabel=homeStoreHoursLabel(opening.spec);
+ const s=w.style,shadow=s.shadow?'0 18px 46px rgba(10,14,20,.18)':'none',dim=(s.image_dim/100).toFixed(2);
+ const style='--nsiw-accent:'+s.accent+';--nsiw-surface-light:'+s.surface_light+';--nsiw-surface-dark:'+s.surface_dark+';--nsiw-text-light:'+s.text_light+';--nsiw-text-dark:'+s.text_dark+';--nsiw-muted-light:'+s.muted_light+';--nsiw-muted-dark:'+s.muted_dark+';--nsiw-radius:'+s.radius+'px;--nsiw-height:'+s.height+'px;--nsiw-image-dim:'+dim+';--nsiw-image-position:'+s.image_position+';--nsiw-shadow:'+shadow;
+ const visual=photo?'<span class="nsiwVisual" style="background-image:url(\''+homeEsc(photo)+'\')" aria-hidden="true"></span>':'<span class="nsiwVisual empty" aria-hidden="true"></span>';
+ return '<section id="nethorStoreInfoWidget" class="nsiw nsiwBanner'+(photo?' hasPhoto':'')+'" style="'+homeEsc(style)+'" aria-label="Bannière du point de vente">'+
+  visual+
+  '<div class="nsiwContent">'+
+   '<div class="nsiwWelcome"><span class="nsiwGreeting"><span class="nsiwGreetingPrefix">'+homeEsc(greeting)+'</span> <strong>'+homeEsc(name||'Utilisateur')+'</strong></span><span class="nsiwStoreName">'+homeEsc(w.store_name)+'</span></div>'+
+   '<div class="nsiwHoursBlock"><span class="nsiwHoursLabel">'+homeEsc(w.opening_label)+'</span><strong class="nsiwHours">'+homeEsc(hoursLabel)+'</strong></div>'+
+  '</div>'+
  '</section>'
 }
-function homeStartStoreInfoClock(cfg){
+function homeStartStoreInfoClock(w,name){
  clearInterval(window.__nethorStoreInfoClockTimer);
  const tick=()=>{
   const root=$('nethorStoreInfoWidget');if(!root)return;
-  const state=homeStoreOpeningState(cfg.hours,new Date()),status=root.querySelector('.nsiwStatus'),clock=root.querySelector('.nsiwClock'),hours=root.querySelector('.nsiwHours'),date=root.querySelector('.nsiwDate'),week=root.querySelector('.nsiwWeek');
-  if(status){status.textContent=state.open?'Ouvert':'Fermé';status.classList.toggle('open',state.open);status.classList.toggle('closed',!state.open)}
-  if(clock)clock.textContent='Heure actuelle · '+state.clock;
-  if(hours){const h=/^(ferme|fermé|closed)$/i.test(state.spec)?'Fermé aujourd’hui':state.spec.replace(/-/g,' – ');hours.textContent='Horaires clients · '+h}
-  const now=new Date(),key=homeParisDateKey(now);
-  if(date)date.textContent=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);
-  if(week)week.textContent='Semaine '+homeIsoWeekNumber(key)
+  const now=new Date(),opening=homeStoreOpeningState(w.hours,now),prefix=root.querySelector('.nsiwGreetingPrefix'),hours=root.querySelector('.nsiwHours');
+  if(prefix)prefix.textContent=homeStoreGreeting(w,now);
+  if(hours)hours.textContent=homeStoreHoursLabel(opening.spec)
  };
  tick();window.__nethorStoreInfoClockTimer=setInterval(tick,30000)
 }
@@ -501,7 +497,7 @@ async function renderHomeDashboard(profile,name,cfg){
  const dateLabel=today.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace('.','');
  const sections=[];
  if(!homeIsMobilePlatform()){
-  const storeInfoWidget=homeRenderStoreInfoWidget(cfg,today,todayKey,todayModel);
+  const storeInfoWidget=homeRenderStoreInfoWidget(cfg,today,name);
   if(storeInfoWidget)sections.push(storeInfoWidget)
  }
  if(homeIsMobilePlatform()&&widget('welcome'))sections.push('<section class="mhdHero mhdWelcome"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+homeEsc(dateLabel)+'</span></div><h1>Bonjour '+homeEsc(name||roleLabel)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
@@ -541,7 +537,7 @@ async function renderHomeDashboard(profile,name,cfg){
   if(modules.length)sections.push('<section class="mhdCard mhdSection mhdQuickSection"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+homeDashboardIcon('quick_access')+'</span><strong>Accès rapides</strong></div></div><div class="mhdQuickGrid">'+modules.map(m=>'<button class="mhdQuick" type="button" onclick="location.href=\''+homeEsc(m.url||m.baseUrl||'home.html')+'\'"><span class="mhdQuickIcon">'+(window.NettoProfileUI?.mobileNavIcon?.(m.id)||'')+'</span><strong>'+homeEsc(m.homeLabel||m.label||m.id)+'</strong></button>').join('')+'</div></section>')
  }
  host.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
- if(!homeIsMobilePlatform()&&$('nethorStoreInfoWidget'))homeStartStoreInfoClock(homeStoreInfoConfig(cfg));
+ if(!homeIsMobilePlatform()&&$('nethorStoreInfoWidget'))homeStartStoreInfoClock(homeStoreInfoConfig(cfg),name);
  const todaySelf=todayModel?homeDayFacts(todayModel,todayKey,name):{hours:0,ranges:[]};
  await window.NethorOperationsWidget?.mount?.({
   host,db,session:homeSession,profile,config:cfg||{},subroleKeys,todayKey,
