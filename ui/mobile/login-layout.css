@@ -18,7 +18,7 @@ html[data-nethor-platform="mobile-preview"] .authMobileRoot{
 html[data-nethor-platform="mobile"] .authMobileRoot::before,
 html[data-nethor-platform="mobile-preview"] .authMobileRoot::before{
  content:"";position:fixed;inset:-10px;z-index:-2;
- background:url("../../assets/fl-background.webp") center center/cover no-repeat;
+ background:url("../../assets/fl-background.svg") center center/cover no-repeat;
  filter:saturate(.92) contrast(.96);transform:scale(1.025)
 }
 html[data-nethor-platform="mobile"] .authMobileRoot::after,
