@@ -433,7 +433,7 @@ function pageProtectionText(m){
  if(m.enabledLocked)rows.push('activation protégée');
  if(m.rolesLocked)rows.push('rôles protégés');
  if(m.placementLocked)rows.push('emplacements de navigation protégés');
- return rows.length?'Cette page possède des garde-fous techniques : '+rows.join(', ')+'. Les autres éléments restent modifiables.':''
+ return rows.length?'Garde-fous techniques : '+rows.join(', ')+'. Les droits d’accès se gèrent dans Utilisateurs & accès.':''
 }
 function systemFilterMatch(m,p,filter){
  if(filter==='active')return p.enabled!==false;
@@ -462,7 +462,7 @@ function systemModuleCard(m,index){
  return '<article class="moduleCard" id="moduleCard_'+attr(m.id)+'">'+
   '<div class="moduleHead" onclick="toggleModuleBody(\''+attr(m.id)+'\',event)">'+
    '<div class="moduleVisual">'+visualHtml(p.image_url||m.asset,p.icon||m.icon)+'</div>'+
-   '<div class="moduleHeadInfo"><strong class="moduleDisplayName">'+esc(p.label||m.label)+'</strong><span class="moduleHeadMeta">'+esc(m.id)+' · '+esc(p.url||m.url||'')+' · '+esc((p.roles||[]).map(r=>roleName(r)).join(', ')||'Aucun rôle')+'</span><div class="moduleHeadBadges">'+moduleBadgesHtml(m,p)+'</div></div>'+
+   '<div class="moduleHeadInfo"><strong class="moduleDisplayName">'+esc(p.label||m.label)+'</strong><span class="moduleHeadMeta">'+esc(m.id)+' · '+esc(p.url||m.url||'')+' · '+esc(pagePlatformLabel(m))+'</span><div class="moduleHeadBadges">'+moduleBadgesHtml(m,p)+'</div></div>'+
    '<div class="moduleHeadActions"><button type="button" class="moduleHeadAction" onclick="openSystemPage(\''+attr(m.id)+'\',event)">Ouvrir</button><button type="button" class="moduleHeadAction" onclick="resetSystemPage(\''+attr(m.id)+'\',event)">Réinitialiser</button></div>'+
    '<span class="moduleChevron">⌄</span>'+
   '</div>'+
@@ -490,7 +490,7 @@ function systemModuleCard(m,index){
     '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_home" '+(p.default_home?'checked':'')+' '+placementDisabled+'> Accueil par défaut</label>'+
     '<label class="toggleChip"><input type="checkbox" data-page="'+attr(m.id)+'" data-key="default_user" '+(p.default_user?'checked':'')+' '+placementDisabled+'> Menu par défaut</label>'+
    '</div>'+
-   '<div class="moduleRoleTitle">Rôles autorisés</div>'+rolePicker(m,p)+
+   '<div class="moduleProtection"><b>Droits d’accès :</b> gérés séparément dans Utilisateurs & accès → Rôles & permissions.</div>'+ 
    (protection?'<div class="moduleProtection">'+esc(protection)+'</div>':'')+
   '</div>'+
  '</article>'
