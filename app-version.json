@@ -1,11 +1,11 @@
 {
-  "version": 332,
-  "label": "v1.44.38",
+  "version": 333,
+  "label": "v1.44.39",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — bannière magasin",
-  "message": "Remplacement du bandeau d’informations par une bannière Desktop de type point de vente : salutation automatique Bonjour / Bon après-midi / Bonsoir avec le nom de l’utilisateur, nom du magasin, horaires réels du jour et image de fond fondue dans le décor. La bannière peut être affichée ou masquée et entièrement personnalisée depuis Gestion > Éditeur du portail > Widgets, avec import d’image, horaires, textes, couleurs, hauteur, arrondi, position et assombrissement de la photo.",
-  "published_at": "2026-10-03T23:21:00+02:00",
+  "title": "Accueil Desktop — vue rapide planning",
+  "message": "Ajout du widget Vue rapide planning sur l’accueil Desktop : seules les personnes réellement en poste à l’instant T sont affichées, avec leurs plages horaires, une ligne Maintenant mise à jour automatiquement et une frise calculée depuis les horaires réels du planning sans défilement manuel. Un bouton ouvre le planning complet. La visibilité, les textes, la densité, les informations affichées et les couleurs clair/sombre sont personnalisables dans Gestion > Éditeur du portail > Blocs & widgets.",
+  "published_at": "2026-10-03T23:31:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
