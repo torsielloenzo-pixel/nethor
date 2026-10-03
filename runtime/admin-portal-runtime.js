@@ -12,20 +12,20 @@ function validColor(v,f='#ff2f1f'){return /^#[0-9a-f]{6}$/i.test(String(v||''))?
 function validUrl(v){const s=String(v||'').trim();return !s||(!/^\s*(javascript|data|vbscript):/i.test(s)&&(/^(https?:\/\/|\.\/|\.\.\/|[a-zA-Z0-9_./?=&%-]+$)/.test(s)))}
 function markDirty(){dirty=true;$('saveState').textContent='Modifications non enregistrées';$('saveState').className='saveState'}
 const MANAGEMENT_META={
- overview:{group:'Gestion',title:'Tableau de bord',description:'Vue d’ensemble de l’administration Nethor et accès aux principales zones de gestion.'},
- general:{group:'Éditeur du portail',title:'Identité globale',description:'Définit les valeurs communes et les couleurs utilisées lorsque Mobile ou Desktop n’ont pas de réglage spécifique.'},
- system:{group:'Éditeur du portail',title:'Pages & menus',description:'Organise les pages, leur visibilité, leurs libellés et leurs accès communs.'},
- mobile:{group:'Éditeur du portail',title:'Mobile',description:'Personnalise l’identité, les menus, les boutons, les notifications, la barre rapide et le menu utilisateur réellement affichés sur mobile.'},
- desktop:{group:'Éditeur du portail',title:'Desktop',description:'Personnalise l’identité, les menus et les boutons réellement affichés sur ordinateur.'},
- sounds:{group:'Éditeur du portail',title:'Sons & audio',description:'Gère l’identité sonore de Nethor : connexion, bienvenue, déconnexion et sons d’interface.'},
- blocks:{group:'Éditeur du portail',title:'Widgets',description:'Gère les widgets de Nethor, dont la bannière d’accueil Desktop et les blocs opérationnels.'},
- articles:{group:'Contenus',title:'Fiches articles',description:'Administre le référentiel produits, les familles, catégories et EAN13.'},
- media:{group:'Éditeur du portail',title:'Médias & logos',description:'Consulte et télécharge les ressources visuelles officielles utilisées par Nethor.'},
- notifications:{group:'Communication',title:'Notifications',description:'Gère les envois, les règles globales et les autorisations de notification.'},
- problems:{group:'Communication',title:'Problèmes signalés',description:'Consulte, diagnostique et traite les problèmes remontés par les utilisateurs.'},
- maintenance:{group:'Système',title:'Maintenance',description:'Contrôle la disponibilité du portail pour les utilisateurs.'},
- logs:{group:'Système',title:'Journal des modifications',description:'Retrouve les mises à jour, patchs et modifications appliquées au portail.'}
-};
+ overview:{group:'Gestion',title:'Tableau de bord',description:'Vue d’ensemble de l’administration Nethor, organisée par nature de réglage.'},
+ blocks:{group:'Accueil & interface',title:'Widgets d’accueil',description:'Affiche, masque et personnalise les widgets sans mélanger leur visibilité avec les droits utilisateurs.'},
+ system:{group:'Accueil & interface',title:'Pages & fonctionnalités',description:'Gère l’existence, les libellés, les destinations et les emplacements des pages. Les droits utilisateurs sont séparés.'},
+ mobile:{group:'Accueil & interface',title:'Mobile',description:'Gère la structure, la navigation et les composants propres à l’application mobile.'},
+ desktop:{group:'Accueil & interface',title:'Desktop',description:'Gère la structure et les composants propres à l’interface ordinateur.'},
+ general:{group:'Apparence & médias',title:'Identité & thèmes',description:'Nom, identité globale et couleurs communes de Nethor.'},
+ sounds:{group:'Apparence & médias',title:'Sons & audio',description:'Gère l’identité sonore : connexion, bienvenue, déconnexion et interface.'},
+ media:{group:'Apparence & médias',title:'Médias & logos',description:'Bibliothèque des ressources visuelles officielles de Nethor.'},
+ articles:{group:'Contenus',title:'Fiches articles',description:'Administre le référentiel produits, familles, catégories et EAN13.'},
+ notifications:{group:'Communication',title:'Notifications',description:'Gère les envois, règles globales et autorisations de notification.'},
+ problems:{group:'Communication',title:'Problèmes signalés',description:'Consulte, diagnostique et traite les problèmes remontés.'},
+ maintenance:{group:'Système',title:'Maintenance',description:'Contrôle la disponibilité du portail.'},
+ logs:{group:'Système',title:'Journal des modifications',description:'Retrouve les mises à jour, patchs et modifications du portail.'}
+}
 const ACCOUNT_META={
  accounts:{title:'Comptes',description:'Création, profils et accès des utilisateurs.'},
  roles:{title:'Rôles & permissions',description:'Niveaux d’accès, permissions, sous-rôles et droits fonctionnels.'},
@@ -56,7 +56,7 @@ function updateManagementHero(name){
  let meta;
  if(name==='accounts'){
   const a=ACCOUNT_META[accountSubview]||ACCOUNT_META.accounts;
-  meta={group:'Utilisateurs',title:a.title,description:a.description}
+  meta={group:'Utilisateurs & accès',title:a.title,description:a.description}
  }else meta=MANAGEMENT_META[name]||MANAGEMENT_META.overview;
  if($('managementBreadcrumb'))$('managementBreadcrumb').innerHTML='Gestion <span>›</span> '+esc(meta.group)+(meta.title!==meta.group?' <span>›</span> '+esc(meta.title):'');
  if($('managementHeroTitle'))$('managementHeroTitle').textContent=meta.title;
