@@ -15,7 +15,7 @@ const MANAGEMENT_META={
  overview:{group:'Gestion',title:'Tableau de bord',description:'Vue d’ensemble de l’administration Nethor et accès aux principales zones de gestion.'},
  general:{group:'Éditeur du portail',title:'Identité globale',description:'Définit les valeurs communes et les couleurs utilisées lorsque Mobile ou Desktop n’ont pas de réglage spécifique.'},
  system:{group:'Éditeur du portail',title:'Pages & menus',description:'Organise les pages, leur visibilité, leurs libellés et leurs accès communs.'},
- mobile:{group:'Éditeur du portail',title:'Mobile',description:'Personnalise l’identité, les menus, les boutons, la barre rapide et le menu utilisateur réellement affichés sur mobile.'},
+ mobile:{group:'Éditeur du portail',title:'Mobile',description:'Personnalise l’identité, les menus, les boutons, les notifications, la barre rapide et le menu utilisateur réellement affichés sur mobile.'},
  desktop:{group:'Éditeur du portail',title:'Desktop',description:'Personnalise l’identité, les menus et les boutons réellement affichés sur ordinateur.'},
  sounds:{group:'Éditeur du portail',title:'Sons & audio',description:'Gère l’identité sonore de Nethor : connexion, bienvenue, déconnexion et sons d’interface.'},
  blocks:{group:'Éditeur du portail',title:'Blocs & widgets',description:'Règle les composants fonctionnels et widgets indépendamment des pages.'},
@@ -1371,11 +1371,13 @@ function renderMobileNotificationVisualEditor(){
    }).join('')+
   '</div></section>'
  }).join('');
- host.querySelectorAll('[data-mobile-notif-outer]').forEach(el=>el.oninput=el.onchange=()=>{
-  const kind=el.dataset.mobileNotifOuter,node=mobileNotificationVisualNode(kind);node.outer_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_OUTER);markDirty();renderMobileNotificationVisualEditor()
+ host.querySelectorAll('[data-mobile-notif-outer]').forEach(el=>{
+  el.oninput=()=>{const kind=el.dataset.mobileNotifOuter,node=mobileNotificationVisualNode(kind);node.outer_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_OUTER);const card=el.closest('.mobileNotifVisualCard'),preview=card?.querySelector('.mobileNotifVisualPreview');if(preview)preview.style.setProperty('--mnv-outer',node.outer_color)};
+  el.onchange=()=>{markDirty();renderMobileNotificationVisualEditor()}
  });
- host.querySelectorAll('[data-mobile-notif-accent]').forEach(el=>el.oninput=el.onchange=()=>{
-  const kind=el.dataset.mobileNotifAccent,node=mobileNotificationVisualNode(kind);node.accent_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_ACCENT);markDirty();renderMobileNotificationVisualEditor()
+ host.querySelectorAll('[data-mobile-notif-accent]').forEach(el=>{
+  el.oninput=()=>{const kind=el.dataset.mobileNotifAccent,node=mobileNotificationVisualNode(kind);node.accent_color=validColor(el.value,MOBILE_NOTIFICATION_DEFAULT_ACCENT);const card=el.closest('.mobileNotifVisualCard'),preview=card?.querySelector('.mobileNotifVisualPreview');if(preview)preview.style.setProperty('--mnv-accent',node.accent_color)};
+  el.onchange=()=>{markDirty();renderMobileNotificationVisualEditor()}
  });
  host.querySelectorAll('[data-mobile-notif-shape]').forEach(el=>el.onchange=()=>{
   const kind=el.dataset.mobileNotifShape,node=mobileNotificationVisualNode(kind);node.shape=['circle','rounded','square'].includes(el.value)?el.value:'circle';markDirty();renderMobileNotificationVisualEditor()
@@ -1465,7 +1467,7 @@ function ensurePortalPlatformStructure(){
   const btn=document.createElement('button');btn.className=desktopAction.className;btn.type='button';btn.dataset.generatedTab='sounds';btn.setAttribute('onclick',"showTab('sounds')");
   btn.innerHTML='<span>♫</span><strong>Sons & audio</strong><small>Connexion, bienvenue et interface</small>';desktopAction.insertAdjacentElement('afterend',btn)
  }
- document.querySelectorAll('.managementActionGrid button[onclick*="showTab(\'mobile\')"]').forEach(btn=>{const s=btn.querySelector('strong');if(s)s.textContent='Mobile';const sm=btn.querySelector('small');if(sm)sm.textContent='Identité, navigation et menus'});
+ document.querySelectorAll('.managementActionGrid button[onclick*="showTab(\'mobile\')"]').forEach(btn=>{const s=btn.querySelector('strong');if(s)s.textContent='Mobile';const sm=btn.querySelector('small');if(sm)sm.textContent='Identité, navigation, menus et notifications'});
 }
 
 const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-blocks','tab-media','tab-notifications']);
