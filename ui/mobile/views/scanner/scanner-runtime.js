@@ -710,7 +710,7 @@ function renderProduct(p,match={}){
         '<div class="fact"><span>Code article</span><strong>'+esc(p.article_code||'—')+'</strong></div>'+
         '<div class="fact"><span>Conditionnement</span><strong>'+esc(pack)+'</strong></div>'+
       '</div>'+
-      '<div class="resultActions"><button class="secondary" type="button" onclick="closeProductModal()">Fermer</button><button class="primary" type="button" onclick="openArticle()">Ouvrir la fiche article</button></div>'+
+      '<div class="resultActions single"><button class="secondary" type="button" onclick="closeProductModal()">Fermer</button></div>'+
     '</article>';
   resetManualInputLock()
 }
@@ -738,11 +738,6 @@ function scanAnother(){
 }
 function focusManual(){const input=$('eanInput');if(!input)return;input.removeAttribute('readonly');input.setAttribute('tabindex','0');input.setAttribute('inputmode','numeric');input.focus({preventScroll:true});input.select()}
 function manualSearch(e){e.preventDefault();safeStop().then(()=>findProduct($('eanInput').value,false))}
-function openArticle(){
-  if(!currentProduct?.ean)return;
-  location.href='articles.html?ean='+encodeURIComponent(currentProduct.ean)+'&source=scanner'
-}
-
 function scannerPageAccess(role,cfg){
   const page=cfg.pages?.scanner&&typeof cfg.pages.scanner==='object'?cfg.pages.scanner:{};
   if(page.enabled===false)return false;
