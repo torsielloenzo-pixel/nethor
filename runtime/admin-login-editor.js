@@ -124,7 +124,7 @@ function assetNode(kind,key,theme){
 }
 function defaultAsset(kind,key){
  if(key==='login_logo')return kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
- if(key==='login_background')return 'assets/fl-background.webp';
+ if(key==='login_background')return 'assets/fl-background.svg';
  return''
 }
 function assetUrl(kind,key,theme){
