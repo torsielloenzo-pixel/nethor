@@ -422,6 +422,169 @@ function homeStartStoreInfoClock(w,name){
  tick();window.__nethorStoreInfoClockTimer=setInterval(tick,30000)
 }
 
+
+const HOME_QUICK_PLANNING_DEFAULTS={
+ enabled:true,
+ title:'Vue rapide planning',
+ subtitle:'Personnes en poste actuellement',
+ action_label:'Voir le planning complet',
+ empty_text:'Aucune personne en poste actuellement',
+ show_avatar:true,
+ show_role:true,
+ show_shift:true,
+ show_legend:true,
+ density:'comfortable',
+ bar_mode:'profile',
+ style:{
+  accent:'#ff5a2a',now_color:'#ff5a2a',
+  surface_light:'#ffffff',surface_dark:'#23272d',
+  text_light:'#1f2937',text_dark:'#f3f5f7',
+  grid_light:'#e7ebf0',grid_dark:'#3a4149',
+  radius:18,shadow:true
+ }
+};
+function homeQuickPlanningConfig(cfg){
+ const raw=cfg?.quick_planning_widget&&typeof cfg.quick_planning_widget==='object'?cfg.quick_planning_widget:{};
+ const style=raw.style&&typeof raw.style==='object'?raw.style:{};
+ return{
+  enabled:raw.enabled!==false,
+  title:String(raw.title||HOME_QUICK_PLANNING_DEFAULTS.title),
+  subtitle:String(raw.subtitle||HOME_QUICK_PLANNING_DEFAULTS.subtitle),
+  action_label:String(raw.action_label||HOME_QUICK_PLANNING_DEFAULTS.action_label),
+  empty_text:String(raw.empty_text||HOME_QUICK_PLANNING_DEFAULTS.empty_text),
+  show_avatar:raw.show_avatar!==false,
+  show_role:raw.show_role!==false,
+  show_shift:raw.show_shift!==false,
+  show_legend:raw.show_legend!==false,
+  density:raw.density==='compact'?'compact':'comfortable',
+  bar_mode:raw.bar_mode==='accent'?'accent':'profile',
+  style:{
+   accent:homeStoreHex(style.accent,HOME_QUICK_PLANNING_DEFAULTS.style.accent),
+   now_color:homeStoreHex(style.now_color,HOME_QUICK_PLANNING_DEFAULTS.style.now_color),
+   surface_light:homeStoreHex(style.surface_light,HOME_QUICK_PLANNING_DEFAULTS.style.surface_light),
+   surface_dark:homeStoreHex(style.surface_dark,HOME_QUICK_PLANNING_DEFAULTS.style.surface_dark),
+   text_light:homeStoreHex(style.text_light,HOME_QUICK_PLANNING_DEFAULTS.style.text_light),
+   text_dark:homeStoreHex(style.text_dark,HOME_QUICK_PLANNING_DEFAULTS.style.text_dark),
+   grid_light:homeStoreHex(style.grid_light,HOME_QUICK_PLANNING_DEFAULTS.style.grid_light),
+   grid_dark:homeStoreHex(style.grid_dark,HOME_QUICK_PLANNING_DEFAULTS.style.grid_dark),
+   radius:Math.max(10,Math.min(30,Number(style.radius)||HOME_QUICK_PLANNING_DEFAULTS.style.radius)),
+   shadow:style.shadow!==false
+  }
+ }
+}
+function homeQuickPlanningProfileFor(name,rows=[]){
+ const target=homeNorm(name),base=target.replace(/\s+[a-z]$/,'');
+ return (rows||[]).find(x=>{
+  const p=homeNorm(x?.display_name),pb=p.replace(/\s+[a-z]$/,'');
+  return p===target||pb===target||p===base||pb===base
+ })||null
+}
+function homeQuickPlanningInitials(name){
+ const parts=String(name||'U').trim().split(/\s+/).filter(Boolean);
+ return parts.slice(0,2).map(x=>(x[0]||'').toUpperCase()).join('')||'U'
+}
+function homeQuickPlanningBounds(model,dateKey,nowHour){
+ const ranges=[];
+ if(model?.days?.[dateKey]){
+  (model.employees||[]).forEach((e,i)=>{
+   const row=model.days[dateKey].cells?.[i]||[];
+   homeWorkRanges(row,model||{}).forEach(r=>ranges.push(r))
+  })
+ }
+ let start,end;
+ if(ranges.length){
+  start=Math.floor(Math.min(...ranges.map(r=>r.a)));
+  end=Math.ceil(Math.max(...ranges.map(r=>r.b)))
+ }else{
+  start=Math.max(0,Math.floor(nowHour)-4);end=Math.min(24,start+8)
+ }
+ if(end-start<4){
+  const mid=(start+end)/2;start=Math.max(0,Math.floor(mid-2));end=Math.min(24,Math.ceil(mid+2))
+ }
+ if(end<=start)end=Math.min(24,start+4);
+ return{start,end,span:Math.max(1,end-start)}
+}
+function homeQuickPlanningTicks(bounds){
+ const span=bounds.span,step=span<=8?1:span<=14?2:3,out=[];
+ for(let t=bounds.start;t<=bounds.end+.001;t+=step)out.push(t);
+ if(!out.length||Math.abs(out[out.length-1]-bounds.end)>.001)out.push(bounds.end);
+ return out
+}
+function homeQuickPlanningPeople(model,dateKey,profileRows,nowHour,w){
+ if(!model?.days?.[dateKey])return[];
+ const out=[];
+ (model.employees||[]).forEach((employee,i)=>{
+  const row=model.days[dateKey].cells?.[i]||[],ranges=homeWorkRanges(row,model||{}),current=ranges.find(r=>nowHour>=r.a&&nowHour<r.b);
+  if(!current)return;
+  const profile=homeQuickPlanningProfileFor(employee?.name,profileRows),profileColor=homeStoreHex(profile?.profile_color,w.style.accent);
+  out.push({
+   name:String(employee?.name||profile?.display_name||'Utilisateur'),
+   profile,ranges,current,
+   color:w.bar_mode==='accent'?w.style.accent:profileColor
+  })
+ });
+ return out.sort((a,b)=>a.current.a-b.current.a||a.name.localeCompare(b.name,'fr',{sensitivity:'base'}))
+}
+function homeQuickPlanningPosition(value,bounds){
+ return Math.max(0,Math.min(100,((value-bounds.start)/bounds.span)*100))
+}
+function homeQuickPlanningSegments(person,bounds){
+ let html='';
+ const visible=person.ranges.filter(r=>r.b>bounds.start&&r.a<bounds.end);
+ visible.forEach(r=>{
+  const left=homeQuickPlanningPosition(Math.max(bounds.start,r.a),bounds),right=homeQuickPlanningPosition(Math.min(bounds.end,r.b),bounds),width=Math.max(0,right-left);
+  if(width>0)html+='<span class="qplanSegment" style="left:'+left.toFixed(3)+'%;width:'+width.toFixed(3)+'%;--qp-person:'+homeEsc(person.color)+'" title="'+homeEsc(homeClock(r.a)+' – '+homeClock(r.b))+'"></span>'
+ });
+ for(let i=0;i<visible.length-1;i++){
+  const a=visible[i],b=visible[i+1];if(b.a<=a.b)continue;
+  const left=homeQuickPlanningPosition(a.b,bounds),right=homeQuickPlanningPosition(b.a,bounds),width=Math.max(0,right-left);
+  if(width>0)html+='<span class="qplanPause" style="left:'+left.toFixed(3)+'%;width:'+width.toFixed(3)+'%;--qp-person:'+homeEsc(person.color)+'"></span>'
+ }
+ return html
+}
+function homeQuickPlanningCalendarIcon(){
+ return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17M8 13h3M13 13h3M8 16.5h3"/></svg>'
+}
+function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart){
+ const w=homeQuickPlanningConfig(cfg);if(!w.enabled)return'';
+ const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(todayModel,todayKey,nowHour),people=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,w);
+ const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
+ const ticks=homeQuickPlanningTicks(bounds),target='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
+ const s=w.style,shadow=s.shadow?'0 10px 30px rgba(28,36,48,.07)':'none';
+ const style='--qp-accent:'+s.accent+';--qp-now:'+s.now_color+';--qp-surface-light:'+s.surface_light+';--qp-surface-dark:'+s.surface_dark+';--qp-text-light:'+s.text_light+';--qp-text-dark:'+s.text_dark+';--qp-grid-light:'+s.grid_light+';--qp-grid-dark:'+s.grid_dark+';--qp-radius:'+s.radius+'px;--qp-shadow:'+shadow;
+ const names=people.length?people.map(person=>{
+  const role=person.profile?(window.NettoProfileUI?.roleLabel?.(person.profile.role)||person.profile.role||'Équipe'):'Équipe';
+  const meta=[];
+  if(w.show_role)meta.push(role);
+  if(w.show_shift)meta.push(homeClock(person.current.a)+' – '+homeClock(person.current.b));
+  return '<div class="qplanName" style="--qp-person:'+homeEsc(person.color)+'">'+
+   (w.show_avatar?'<span class="qplanAvatar">'+homeEsc(homeQuickPlanningInitials(person.name))+'</span>':'')+
+   '<span class="qplanNameCopy"><strong>'+homeEsc(person.name)+'</strong>'+(meta.length?'<small>'+homeEsc(meta.join(' · '))+'</small>':'')+'</span></div>'
+ }).join(''):'<div class="qplanEmptyName">'+homeEsc(todayModel?.days?.[todayKey]?w.empty_text:'Planning du jour non renseigné')+'</div>';
+ const tracks=people.length?people.map(person=>'<div class="qplanTrack" style="--qp-person:'+homeEsc(person.color)+'">'+homeQuickPlanningSegments(person,bounds)+'</div>').join(''):'<div class="qplanTrack empty"></div>';
+ const tickHtml=ticks.map((t,index)=>{
+  const left=homeQuickPlanningPosition(t,bounds),cls=(index===0?' first':'')+(index===ticks.length-1?' last':'');
+  return '<span class="qplanTick'+cls+'" style="left:'+left.toFixed(3)+'%"><span>'+homeEsc(homeClock(t).replace('h00','h'))+'</span></span>'
+ }).join('');
+ const clock=String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0');
+ return '<section id="nethorQuickPlanningWidget" class="qplan density'+(w.density==='compact'?'Compact':'Comfortable')+(w.show_avatar?'':' noAvatars')+'" style="'+homeEsc(style)+'" aria-label="'+homeEsc(w.title)+'">'+
+  '<div class="qplanHead"><div class="qplanTitle"><span class="qplanTitleIcon">'+homeQuickPlanningCalendarIcon()+'</span><span class="qplanTitleCopy"><strong>'+homeEsc(w.title)+'</strong><small>'+homeEsc(w.subtitle)+' · '+people.length+' en poste</small></span></div><button type="button" class="qplanFullLink" onclick="location.href=\''+homeEsc(target)+'\'">'+homeEsc(w.action_label)+' <span>→</span></button></div>'+
+  '<div class="qplanBoard"><div class="qplanNames"><div class="qplanNameAxis"></div>'+names+'</div><div class="qplanTimeline"><div class="qplanAxis">'+tickHtml+'</div><div class="qplanRows">'+tracks+'</div><span class="qplanNow'+edgeClass+'" style="left:'+nowPct.toFixed(3)+'%"><span class="qplanNowLabel">Maintenant</span></span></div></div>'+
+  '<div class="qplanFoot">'+(w.show_legend?'<div class="qplanLegend"><span class="solid">En poste</span><span class="pause">Pause / coupure</span><span class="now">Maintenant</span></div>':'<span></span>')+'<span class="qplanUpdated">Actualisé automatiquement · '+homeEsc(clock)+'</span></div>'+
+ '</section>'
+}
+function homeStartQuickPlanningClock(cfg,todayModel,todayKey,profileRows,weekStart){
+ clearInterval(window.__nethorQuickPlanningTimer);
+ const tick=()=>{
+  const root=$('nethorQuickPlanningWidget');if(!root)return;
+  const now=new Date();
+  if(homeParisDateKey(now)!==todayKey){clearInterval(window.__nethorQuickPlanningTimer);location.reload();return}
+  const html=homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart);
+  if(html)root.outerHTML=html
+ };
+ window.__nethorQuickPlanningTimer=setInterval(tick,30000)
+}
+
 async function renderHomeDashboard(profile,name,cfg){
  const host=$('homeDashboard');if(!host)return;
  host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
@@ -500,6 +663,10 @@ async function renderHomeDashboard(profile,name,cfg){
   const storeInfoWidget=homeRenderStoreInfoWidget(cfg,today,name);
   if(storeInfoWidget)sections.push(storeInfoWidget)
  }
+ if(!homeIsMobilePlatform()){
+  const quickPlanningWidget=homeRenderQuickPlanningWidget(cfg,today,todayKey,todayModel,profileRows,weekStart);
+  if(quickPlanningWidget)sections.push(quickPlanningWidget)
+ }
  if(homeIsMobilePlatform()&&widget('welcome'))sections.push('<section class="mhdHero mhdWelcome"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+homeEsc(dateLabel)+'</span></div><h1>Bonjour '+homeEsc(name||roleLabel)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
  if(widget('next_shift')){
   const shiftText=nextShift?.ranges?.length?nextShift.ranges.map(r=>homeClock(r.a)+' - '+homeClock(r.b)).join(' • '):'Aucune prise de poste à venir',when=nextShift?homeDateLabel(nextShift.dateKey,todayKey):'—',target=nextShift?'planning.html?week='+encodeURIComponent(homeIsoDate(homeStartOfWeek(homeParseDate(nextShift.dateKey))))+'&day='+encodeURIComponent(nextShift.dateKey):'planning.html';
@@ -538,6 +705,7 @@ async function renderHomeDashboard(profile,name,cfg){
  }
  host.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
  if(!homeIsMobilePlatform()&&$('nethorStoreInfoWidget'))homeStartStoreInfoClock(homeStoreInfoConfig(cfg),name);
+ if(!homeIsMobilePlatform()&&$('nethorQuickPlanningWidget'))homeStartQuickPlanningClock(homeQuickPlanningConfig(cfg),todayModel,todayKey,profileRows,weekStart);
  const todaySelf=todayModel?homeDayFacts(todayModel,todayKey,name):{hours:0,ranges:[]};
  await window.NethorOperationsWidget?.mount?.({
   host,db,session:homeSession,profile,config:cfg||{},subroleKeys,todayKey,
