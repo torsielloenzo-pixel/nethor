@@ -1,11 +1,11 @@
 {
-  "version": 335,
-  "label": "v1.44.41",
+  "version": 336,
+  "label": "v1.44.42",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — typographie de la bannière",
-  "message": "La salutation utilisateur est désormais plus discrète et le nom du magasin « Netto Le Thor » devient l’élément principal. Gestion > Éditeur du portail > Widgets > Bannière d’accueil propose maintenant un bloc « Taille des textes » avec réglage indépendant en pixels de la salutation, du nom du magasin, du titre des horaires et de la valeur des horaires.",
-  "published_at": "2026-10-03T23:40:00+02:00",
+  "title": "Accueil Desktop — suppression de l’ancienne bannière",
+  "message": "Suppression de l’ancien bloc d’accueil Desktop « Espace de travail / Bonjour utilisateur ». La nouvelle bannière magasin personnalisable devient désormais le premier élément de l’accueil.",
+  "published_at": "2026-10-03T23:45:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
