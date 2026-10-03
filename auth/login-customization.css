@@ -3,7 +3,7 @@
 html[data-nethor-platform="mobile"] .authMobileRoot::before,
 html[data-nethor-platform="mobile-preview"] .authMobileRoot::before,
 html[data-nethor-platform="desktop"] .authDesktopRoot::before{
- background-image:var(--auth-login-background,url("../assets/fl-background.webp"))!important;
+ background-image:var(--auth-login-background,url("../assets/fl-background.svg"))!important;
  opacity:var(--auth-login-background-opacity,1)!important
 }
 .authLoginWordmark{display:block;object-fit:contain;margin-left:auto;margin-right:auto}
