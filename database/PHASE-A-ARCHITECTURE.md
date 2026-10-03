@@ -89,7 +89,19 @@ critical_tables_missing: []
 **Terminé.** RPC `nethor_data_architecture_health()` appliquée et testée avec un contexte Administrateur authentifié.
 
 ### A4 — Historique DB entièrement versionné
-**À poursuivre.** La base Supabase possède un historique de migrations plus riche que les fichiers SQL actuellement conservés dans le dépôt. Il faut progressivement réconcilier le dépôt et l'état réel de production afin qu'une reconstruction ne dépende pas uniquement du projet Supabase vivant.
+**En cours.** La réconciliation a été démarrée le 3 octobre 2026.
+
+État mesuré :
+- 107 migrations enregistrées dans Supabase ;
+- 38 artefacts SQL présents dans `database/` ;
+- registre canonique des migrations créé avec hash du SQL live ;
+- empreinte structurelle de production créée pour tables, fonctions, vues, politiques RLS, triggers et index ;
+- inventaire GitHub des artefacts SQL créé ;
+- 4 migrations historiques contenant des UUID littéraux classées comme spécifiques à l'environnement afin d'éviter un rejeu aveugle sur une nouvelle instance.
+
+Références : `database/reconciliation/`.
+
+Étape suivante : produire la matrice migration Supabase → fichier GitHub → niveau de rejouabilité, puis construire un historique ordonné pouvant être restauré sur une base vierge hors production.
 
 ### A5 — Couche d'accès aux données commune
 **À faire.** Introduire une couche commune pour les opérations récurrentes (profil, planning, articles, tâches, notifications) afin que Desktop et Mobile utilisent le même contrat de données au lieu de répéter des requêtes dans chaque page.
