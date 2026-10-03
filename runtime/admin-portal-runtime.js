@@ -1733,26 +1733,14 @@ function renderPlatformEditors(){
 }
 function ensurePortalPlatformStructure(){
  restructureManagementOverview();
- const nav=document.querySelector('.managementNavGroup[data-nav-group="portal"] .managementNavChildren');
- const mobileBtn=nav?.querySelector('[data-tab="mobile"]');
- if(mobileBtn){mobileBtn.textContent='Mobile';mobileBtn.setAttribute('onclick',"showTab('mobile',this)")}
- if(nav&&!nav.querySelector('[data-tab="desktop"]')){
-  const btn=document.createElement('button');btn.className='managementNavChild';btn.dataset.tab='desktop';btn.type='button';btn.textContent='Desktop';btn.setAttribute('onclick',"showTab('desktop',this)");
-  mobileBtn?.insertAdjacentElement('afterend',btn)
- }
- const desktopBtn=nav?.querySelector('[data-tab="desktop"]');
- if(nav&&!nav.querySelector('[data-tab="sounds"]')){
-  const btn=document.createElement('button');btn.className='managementNavChild';btn.dataset.tab='sounds';btn.type='button';btn.textContent='Sons & audio';btn.setAttribute('onclick',"showTab('sounds',this)");
-  desktopBtn?.insertAdjacentElement('afterend',btn)
- }
  const mobileTab=$('tab-mobile');
  if(mobileTab){
   if(!$('platformIdentity_mobile')){const p=document.createElement('div');p.id='platformIdentity_mobile';p.className='panel platformIdentityPanel';mobileTab.prepend(p)}
   if(!$('mobileNotificationVisuals')){const p=document.createElement('div');p.id='mobileNotificationVisuals';p.className='panel mobileNotificationVisualPanel';const identity=$('platformIdentity_mobile');identity?.insertAdjacentElement('afterend',p)}
   if(!$('platformComponents_mobile')){const p=document.createElement('div');p.id='platformComponents_mobile';p.className='panel platformComponentsPanel';mobileTab.appendChild(p)}
   const barPanel=$('mobileBarEditor')?.closest('.panel'),bar=barPanel?.querySelector('.toolbar h2'),barDesc=barPanel?.querySelector('.toolbar p');
-  if(bar)bar.textContent='Barre de navigation mobile actuelle';
-  if(barDesc)barDesc.textContent='Coque Mobile unifiée : Notifications et Menu utilisateur dans l’entête, puis Accueil · Planning · Chat dans une barre basse de 3 colonnes.'
+  if(bar)bar.textContent='Navigation mobile';
+  if(barDesc)barDesc.textContent='Entête, actions et barre basse propres à la plateforme Mobile.'
  }
  if(!$('tab-desktop')){
   const section=document.createElement('section');section.id='tab-desktop';section.className='section';
@@ -1764,17 +1752,12 @@ function ensurePortalPlatformStructure(){
   section.innerHTML='<div id="soundEditorPanel" class="panel soundEditorPanel"></div>';
   const before=$('tab-blocks');before?.parentNode?.insertBefore(section,before)
  }
- const actionGrid=document.querySelector('#tab-overview .managementActionGrid'),mobileAction=actionGrid?.querySelector('button[onclick*="showTab(\'mobile\')"]');
- if(actionGrid&&mobileAction&&!actionGrid.querySelector('[data-generated-tab="desktop"]')){
-  const btn=document.createElement('button');btn.className=mobileAction.className;btn.type='button';btn.dataset.generatedTab='desktop';btn.setAttribute('onclick',"showTab('desktop')");
-  btn.innerHTML='<span>▣</span><strong>Desktop</strong><small>Identité, menus et boutons</small>';mobileAction.insertAdjacentElement('afterend',btn)
- }
- const desktopAction=actionGrid?.querySelector('[data-generated-tab="desktop"]');
- if(actionGrid&&desktopAction&&!actionGrid.querySelector('[data-generated-tab="sounds"]')){
-  const btn=document.createElement('button');btn.className=desktopAction.className;btn.type='button';btn.dataset.generatedTab='sounds';btn.setAttribute('onclick',"showTab('sounds')");
-  btn.innerHTML='<span>♫</span><strong>Sons & audio</strong><small>Connexion, bienvenue et interface</small>';desktopAction.insertAdjacentElement('afterend',btn)
- }
- document.querySelectorAll('.managementActionGrid button[onclick*="showTab(\'mobile\')"]').forEach(btn=>{const s=btn.querySelector('strong');if(s)s.textContent='Mobile';const sm=btn.querySelector('small');if(sm)sm.textContent='Identité, navigation, menus et notifications'});
+ const pagesTitle=document.querySelector('#tab-system .pagesEditorHead h2'),pagesText=document.querySelector('#tab-system .pagesEditorHead p');
+ if(pagesTitle)pagesTitle.textContent='Pages & fonctionnalités';
+ if(pagesText)pagesText.textContent='Structure, activation, libellés et emplacements. Les droits d’accès sont gérés séparément dans Utilisateurs & accès.';
+ const blockTitle=document.querySelector('#tab-blocks .toolbar h2'),blockText=document.querySelector('#tab-blocks .toolbar p');
+ if(blockTitle)blockTitle.textContent='Widgets d’accueil';
+ if(blockText)blockText.textContent='Affichage et personnalisation uniquement. Les permissions utilisateurs sont séparées.';
 }
 
 const MANAGEMENT_COMPACT_SECTIONS=new Set(['tab-general','tab-blocks','tab-media','tab-notifications']);
