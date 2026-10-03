@@ -1,11 +1,11 @@
 {
-  "version": 333,
-  "label": "v1.44.39",
+  "version": 334,
+  "label": "v1.44.40",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — composition de la bannière",
-  "message": "La bannière Desktop place maintenant le cadre « Horaires d’ouverture aujourd’hui » immédiatement à côté de la salutation utilisateur, séparé par une fine ligne verticale orange Nethor. L’ensemble reste sur une même ligne et conserve la photo de fond fondue.",
-  "published_at": "2026-10-03T23:27:00+02:00",
+  "title": "Accueil Desktop — vue rapide planning",
+  "message": "Ajout du widget Vue rapide planning : l’accueil Desktop affiche uniquement les personnes réellement en poste à l’instant présent, avec leur plage horaire, une frise basée automatiquement sur les horaires réels du planning du jour et une ligne « Maintenant » actualisée sans défilement manuel. Le bouton « Voir le planning complet » ouvre directement la journée concernée. Visibilité, textes, densité, avatars, rôles, horaires, légende et couleurs clair/sombre sont personnalisables depuis Gestion > Éditeur du portail > Blocs & widgets.",
+  "published_at": "2026-10-03T23:34:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
