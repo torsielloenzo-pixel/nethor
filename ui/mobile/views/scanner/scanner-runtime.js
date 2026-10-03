@@ -823,7 +823,7 @@ async function scannerRuntimeUnmount(){
  return true
 }
 Object.assign(window,{
- goBack,startCamera,toggleScannerTorch,manualSearch,activateManualInput,closeProductModal,chooseHypothesis,scanAnother,focusManual,openArticle
+ goBack,startCamera,toggleScannerTorch,manualSearch,activateManualInput,closeProductModal,chooseHypothesis,scanAnother,focusManual
 });
 window.NethorScannerRuntime=Object.freeze({
  mount:scannerRuntimeMount,
