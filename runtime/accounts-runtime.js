@@ -173,16 +173,7 @@ async function savePlanningWidgetPermissions(){
  }catch(e){console.error(e);state.className='state err';state.textContent='Erreur : '+e.message;window.NettoSounds?.play?.('error')}finally{btn.disabled=false}
 }
 function homeWidgetDefinitions(){return[
- {id:'welcome',label:'Bonjour / espace de travail',description:'Bannière d’accueil avec la date du jour.'},
- {id:'next_shift',label:'Prise de poste',description:'Prochaine plage horaire planifiée.'},
- {id:'hours',label:'Mes heures',description:'Total des heures planifiées sur la semaine.'},
- {id:'absences',label:'Congés',description:'Prochaine absence ou demande de congé.'},
- {id:'next_rest',label:'Prochain repos',description:'Premier jour de repos à venir.'},
- {id:'tasks',label:'Tâches du jour',description:'Missions quotidiennes créées par l’encadrement et validées par les équipes.'},
- {id:'important_info',label:'Informations importantes',description:'Dernières notifications importantes du portail.'},
- {id:'team_today',label:'Équipe aujourd’hui',description:'Personnes planifiées sur la journée.'},
- {id:'quick_access',label:'Accès rapides',description:'Raccourcis vers les outils accessibles.'},
- {id:'operations_hub',label:'Pilotage magasin',description:'Relève, service, commandes clients, livraisons et Flash magasin.'}
+ {id:'operations_hub',label:'Pilotage magasin',description:'Accès aux données Relève, Mon service, Commandes, Livraisons et Flash magasin.'}
 ]}
 function homeWidgetRoleValue(widget,roleKey){
  const v=siteConfig?.home_widgets?.[widget]?.roles?.[roleKey],fallback=widget==='operations_hub'?roleKey==='admin':true;
@@ -216,7 +207,7 @@ async function saveHomeWidgetPermissions(){
    }
   }
   const {error}=await db.from('app_settings').upsert({key:'site_config',value:siteConfig,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;
-  state.className='state ok';state.textContent='✓ Accueil mobile enregistré';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderHomeWidgetMatrix()
+  state.className='state ok';state.textContent='✓ Accès Pilotage magasin enregistrés';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderHomeWidgetMatrix()
  }catch(e){console.error(e);state.className='state err';state.textContent='Erreur : '+e.message;window.NettoSounds?.play?.('error')}finally{btn.disabled=false}
 }
 function togglePermissionAccordion(key){const body=$('permissionAccordion-'+key),wrap=document.querySelector('[data-accordion="'+key+'"]'),head=wrap?.querySelector('.permissionAccordionHead');if(!body||!wrap)return;const opening=body.classList.contains('hidden');body.classList.toggle('hidden',!opening);wrap.classList.toggle('open',opening);head?.setAttribute('aria-expanded',String(opening))}
