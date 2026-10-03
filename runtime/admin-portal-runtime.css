@@ -577,9 +577,6 @@ html[data-theme="dark"] .platformHeaderLogoSizeNumber{background:#1f252b;border-
  letter-spacing:.04em
 }
 .mobileNotifVisualPreview{
- --mnv-outer:#24292f;
- --mnv-accent:#ff5a2a;
- --mnv-radius:50%;
  display:grid;
  grid-template-columns:58px minmax(0,1fr);
  align-items:center;
@@ -595,25 +592,21 @@ html[data-theme="dark"] .platformHeaderLogoSizeNumber{background:#1f252b;border-
  height:54px;
  display:grid;
  place-items:center;
- border-radius:var(--mnv-radius);
- background:var(--mnv-outer);
- box-shadow:0 5px 14px #11182714
+ background:transparent
 }
 .mobileNotifVisualIcon i{
- width:34px;
- height:34px;
+ width:44px;
+ height:44px;
  display:grid;
  place-items:center;
- overflow:hidden;
- border-radius:var(--mnv-radius);
- background:var(--mnv-accent);
+ overflow:visible;
+ background:transparent;
  font-style:normal;
- font-size:17px;
- box-shadow:0 4px 10px #ff5a2a22
+ font-size:25px
 }
 .mobileNotifVisualIcon img{
- width:76%;
- height:76%;
+ width:100%;
+ height:100%;
  object-fit:contain;
  display:block
 }
