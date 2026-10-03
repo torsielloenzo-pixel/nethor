@@ -62,10 +62,9 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStoreNa
   content:"";width:18px;height:3px;border-radius:999px;background:var(--nsiw-accent,#ff6a2b);box-shadow:0 0 18px color-mix(in srgb,var(--nsiw-accent,#ff6a2b) 46%,transparent)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursBlock{
-  grid-column:3;grid-row:1;justify-self:start;width:100%;padding:18px 20px;border-radius:15px;
-  background:linear-gradient(145deg,rgba(15,18,23,.62),rgba(15,18,23,.34));
-  border:1px solid rgba(255,255,255,.13);box-shadow:0 12px 30px rgba(0,0,0,.14);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)
+  grid-column:3;grid-row:1;justify-self:start;width:100%;padding:0;border-radius:0;
+  background:transparent;border:0;box-shadow:none;
+  backdrop-filter:none;-webkit-backdrop-filter:none
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursLabel{
   display:block;color:#e5e8ed;font-size:var(--nsiw-hours-label-size,11px);line-height:1.25;font-weight:650;text-shadow:0 1px 10px rgba(0,0,0,.32)
@@ -81,7 +80,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
 }
 @media(max-width:900px){
  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{grid-template-columns:auto 3px minmax(210px,250px);gap:14px;padding:22px}
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursBlock{width:100%;padding:15px 16px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursBlock{width:100%;padding:0}
 }
 
 /* Gestion > Éditeur du portail > Widgets > Bannière */
@@ -127,7 +126,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
 .storeBannerPreviewContent>div:first-child strong{display:block;font-size:var(--sb-greeting-size,13px);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .storeBannerPreviewContent>div:first-child small{display:flex;align-items:center;gap:7px;margin-top:7px;color:var(--sb-muted);font-size:var(--sb-store-name-size,19px);font-weight:900;line-height:1.04}
 .storeBannerPreviewContent>div:first-child small:before{content:"";width:13px;height:2px;border-radius:99px;background:var(--sb-accent)}
-.storeBannerPreviewHours{grid-column:3;grid-row:1;justify-self:start;width:100%;padding:11px 12px;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:rgba(15,18,23,.46);backdrop-filter:blur(6px)}
+.storeBannerPreviewHours{grid-column:3;grid-row:1;justify-self:start;width:100%;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 .storeBannerPreviewHours span{display:block;color:#e1e5eb;font-size:var(--sb-hours-label-size,8px)}.storeBannerPreviewHours b{display:block;margin-top:4px;color:#fff;font-size:var(--sb-hours-value-size,17px)}
 .storeInfoWidgetAdmin .storeInfoSource{margin-top:10px;padding:9px 10px;border-radius:10px;background:#fff6f1;color:#8f543b;font-size:8px;line-height:1.45}
 :root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoAdminHead p{color:#aab1ba}
