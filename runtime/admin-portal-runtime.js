@@ -175,6 +175,10 @@ const STORE_INFO_WIDGET_DEFAULTS={
   height:178,
   image_dim:28,
   image_position:'center center',
+  greeting_size:18,
+  store_name_size:30,
+  hours_label_size:11,
+  hours_value_size:28,
   shadow:true
  }
 };
@@ -210,6 +214,10 @@ function normalizeStoreInfoWidgetConfig(raw){
    height:Math.max(140,Math.min(260,Number(style.height)||STORE_INFO_WIDGET_DEFAULTS.style.height)),
    image_dim:Math.max(0,Math.min(75,Number(style.image_dim)??STORE_INFO_WIDGET_DEFAULTS.style.image_dim)),
    image_position:normalizeStoreInfoPosition(style.image_position),
+   greeting_size:Math.max(12,Math.min(42,Number(style.greeting_size)||STORE_INFO_WIDGET_DEFAULTS.style.greeting_size)),
+   store_name_size:Math.max(14,Math.min(52,Number(style.store_name_size)||STORE_INFO_WIDGET_DEFAULTS.style.store_name_size)),
+   hours_label_size:Math.max(8,Math.min(24,Number(style.hours_label_size)||STORE_INFO_WIDGET_DEFAULTS.style.hours_label_size)),
+   hours_value_size:Math.max(14,Math.min(48,Number(style.hours_value_size)||STORE_INFO_WIDGET_DEFAULTS.style.hours_value_size)),
    shadow:style.shadow!==false
   }
  }
@@ -553,6 +561,10 @@ function updateStoreBannerPreview(){
  root.style.setProperty('--sb-height',Math.max(120,Math.round(s.height*.68))+'px');
  root.style.setProperty('--sb-dim',(s.image_dim/100).toFixed(2));
  root.style.setProperty('--sb-position',s.image_position);
+ root.style.setProperty('--sb-greeting-size',Math.max(10,Math.round(s.greeting_size*.72))+'px');
+ root.style.setProperty('--sb-store-name-size',Math.max(11,Math.round(s.store_name_size*.62))+'px');
+ root.style.setProperty('--sb-hours-label-size',Math.max(7,Math.round(s.hours_label_size*.72))+'px');
+ root.style.setProperty('--sb-hours-value-size',Math.max(11,Math.round(s.hours_value_size*.62))+'px');
  const visual=root.querySelector('.storeBannerPreviewVisual'),url=validUrl(w.photo_url)?String(w.photo_url||'').trim():'';
  if(visual){
   visual.style.backgroundImage=url?'url("'+url.replace(/"/g,'%22')+'")':'none';
@@ -615,6 +627,12 @@ function renderStoreInfoWidgetEditor(){
    '</div>'+
    '<div class="field storeBannerUrlField"><label>URL ou chemin de l’image</label><input maxlength="700" placeholder="Ex. assets/magasin.webp ou https://…" value="'+attr(w.photo_url)+'" data-store-info="photo_url"><small class="platformMediaHint">Tu peux importer une image ou renseigner directement une URL/chemin public.</small></div>'+
    '<div class="storeInfoHours">'+days.map(([key,label])=>'<div class="field"><label>'+label+'</label><input maxlength="40" value="'+attr(w.hours[key]||'')+'" data-store-hour="'+key+'" placeholder="08:00-20:00"></div>').join('')+'</div>'+
+   '<div class="storeBannerTypography"><div class="storeBannerSectionTitle"><strong>Taille des textes</strong><small>Réglages indépendants de chaque texte de la bannière.</small></div><div class="storeBannerTypographyGrid">'+
+    '<div class="field"><label>Bonjour / Bonsoir + utilisateur</label><input type="number" min="12" max="42" value="'+attr(w.style.greeting_size)+'" data-store-style="greeting_size"><small>px</small></div>'+
+    '<div class="field"><label>Nom du magasin</label><input type="number" min="14" max="52" value="'+attr(w.style.store_name_size)+'" data-store-style="store_name_size"><small>px</small></div>'+
+    '<div class="field"><label>Titre horaires</label><input type="number" min="8" max="24" value="'+attr(w.style.hours_label_size)+'" data-store-style="hours_label_size"><small>px</small></div>'+
+    '<div class="field"><label>Valeur des horaires</label><input type="number" min="14" max="48" value="'+attr(w.style.hours_value_size)+'" data-store-style="hours_value_size"><small>px</small></div>'+
+   '</div></div>'+
    '<div class="storeInfoStyleGrid">'+
     '<div class="field"><label>Accent</label><input type="color" value="'+attr(w.style.accent)+'" data-store-style="accent"></div>'+
     '<div class="field"><label>Fond clair</label><input type="color" value="'+attr(w.style.surface_light)+'" data-store-style="surface_light"></div>'+
@@ -647,6 +665,10 @@ function renderStoreInfoWidgetEditor(){
   if(key==='radius')value=Math.max(10,Math.min(32,Number(value)||18));
   if(key==='height')value=Math.max(140,Math.min(260,Number(value)||178));
   if(key==='image_dim')value=Math.max(0,Math.min(75,Number(value)||0));
+  if(key==='greeting_size')value=Math.max(12,Math.min(42,Number(value)||18));
+  if(key==='store_name_size')value=Math.max(14,Math.min(52,Number(value)||30));
+  if(key==='hours_label_size')value=Math.max(8,Math.min(24,Number(value)||11));
+  if(key==='hours_value_size')value=Math.max(14,Math.min(48,Number(value)||28));
   node.style[key]=value;markDirty();updateStoreBannerPreview()
  });
  updateStoreBannerPreview()
