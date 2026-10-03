@@ -1,11 +1,11 @@
 {
-  "version": 323,
-  "label": "v1.44.29",
+  "version": 324,
+  "label": "v1.44.30",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — visuels de notifications personnalisables",
-  "message": "Ajout dans Gestion > Éditeur du portail > Mobile d’un gestionnaire complet des visuels de notifications. Les 15 types existants peuvent être personnalisés séparément : couleur de fond, couleur d’accent, forme ronde/arrondie/carrée, import PNG/WebP/SVG/GIF, téléchargement du visuel actuel et réinitialisation. Les personnalisations s’appliquent au centre de notifications Mobile et aux notifications importantes affichées sur l’accueil Mobile. Desktop reste inchangé.",
-  "published_at": "2026-10-03T03:07:06+02:00",
+  "title": "Mobile — personnalisation des notifications corrigée",
+  "message": "Correction du gestionnaire de visuels de notifications Mobile : les réglages n’étaient pas conservés car la normalisation de l’Éditeur du portail reconstruisait la configuration Mobile sans le bloc notification_visuals. Les 15 types sont maintenant préservés à chaque rendu et à l’enregistrement. Les imports déjà envoyés pour Planning modifié, Décision congé et Sécurité / mot de passe ont été récupérés depuis le stockage et réassociés automatiquement. Les réglages Mobile sont désormais persistants et propagés au centre de notifications et à l’accueil.",
+  "published_at": "2026-10-03T03:17:09+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
