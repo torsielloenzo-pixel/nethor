@@ -1,21 +1,42 @@
 (function(){
 'use strict';
-const COLORS=['#FF3B30','#FF8A00','#1F2937','#6B7280'];
-const state={host:null,mounted:false,unsubscribe:null,selectedFile:null,objectUrl:null,crop:{img:null,base:1,zoom:1,x:0,y:0,drag:false,px:0,py:0},rewards:[],equipment:[]};
+const PROFILE_COLORS=Object.freeze([
+ {value:'#FF301F',label:'Rouge Nethor'},
+ {value:'#FF6D18',label:'Orange Nethor'},
+ {value:'#FFAD24',label:'Ambre Nethor'},
+ {value:'#8B5E45',label:'Terre Nethor'},
+ {value:'#1B1F24',label:'Graphite'},
+ {value:'#70747B',label:'Ardoise'}
+]);
+const PROFILE_COLOR_ALIASES=Object.freeze({'#FF3B30':'#FF301F','#FF8A00':'#FF6D18','#1F2937':'#1B1F24','#6B7280':'#70747B'});
+const state={host:null,mounted:false,unsubscribe:null,selectedFile:null,objectUrl:null,crop:{img:null,base:1,zoom:1,x:0,y:0,drag:false,px:0,py:0},rewards:[],equipment:[],email:{loaded:false,configured:false,mode:'loading',busy:false}};
 function services(){return window.NethorMobileServices||window.MobileServices||null}
 function router(){return window.NethorMobileRouter||window.MobileRouter||null}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function roleLabel(role){return({admin:'Administrateur','role_point-de-vente':'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'})[role]||String(role||'Compte')}
 function initials(name){return String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')||'U'}
+function normalizeProfileColor(value){
+ const raw=String(value||'').toUpperCase(),mapped=PROFILE_COLOR_ALIASES[raw]||raw;
+ return PROFILE_COLORS.some(x=>x.value===mapped)?mapped:PROFILE_COLORS[0].value
+}
+function emailCardHtml(){
+ const email=state.email,loading=!email.loaded||email.mode==='loading';
+ let body='';
+ if(loading)body='<div class="npvEmailLoading">Chargement de l’adresse e-mail…</div>';
+ else if(email.mode==='change')body='<div class="npvEmailFields"><label><span>Ancienne adresse e-mail</span><input data-recovery-email-old type="email" autocomplete="email" inputmode="email" placeholder="Ancienne adresse e-mail"></label><label><span>Nouvelle adresse e-mail</span><input data-recovery-email-next type="email" autocomplete="email" inputmode="email" placeholder="Nouvelle adresse e-mail"></label></div><div class="npvEmailActions"><button class="npvSecondary" data-action="email-cancel" type="button">Annuler</button><button class="npvPrimary" data-action="email-save-change" type="button">Enregistrer la nouvelle adresse</button></div><button class="npvEmailReset" data-action="email-reset" type="button">Je ne connais plus l’ancienne adresse e-mail</button>';
+ else if(email.configured)body='<div class="npvEmailConfigured"><span class="npvEmailCheck">✓</span><div><strong>Adresse e-mail enregistrée</strong><small>L’adresse complète reste masquée pour protéger ton compte.</small></div></div><button class="npvSecondary npvEmailModify" data-action="email-change" type="button">Modifier</button>';
+ else body='<div class="npvEmailFields"><label><span>Adresse e-mail</span><input data-recovery-email-new type="email" autocomplete="email" inputmode="email" placeholder="nom@exemple.fr"><small>Un e-mail te sera envoyé immédiatement après l’enregistrement.</small></label></div><button class="npvPrimary" data-action="email-save" type="button">Enregistrer l’adresse e-mail</button>';
+ return '<section class="npvCard npvEmailCard"><div class="npvCardHead"><h2>Adresse e-mail de récupération</h2><p>Ajoute une adresse personnelle pour sécuriser la récupération de ton compte. Lorsqu’une adresse est déjà enregistrée, elle reste masquée.</p></div>'+body+'<div class="npvState" data-email-state aria-live="polite"></div></section>'
+}
 function back(){router()?.replace?.('user-menu',{source:'profile-back'})}
 function root(){return state.host?.querySelector('[data-profile-view]')}
 function render(){
  const shared=services(),p=shared?.profile;if(!state.mounted||!state.host||!p)return;
- const theme=p.ui_preferences?.theme==='dark'?'dark':'light',color=COLORS.includes(String(p.profile_color||'').toUpperCase())?String(p.profile_color).toUpperCase():COLORS[0];
+ const theme=p.ui_preferences?.theme==='dark'?'dark':'light',color=normalizeProfileColor(p.profile_color);
  state.host.innerHTML='<div class="nethorProfileView" data-profile-view>'+
  '<div class="npvTop"><button type="button" data-action="back" class="npvBack" aria-label="Retour">‹</button><div><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'+
  '<section class="npvCard npvIdentity"><div class="npvAvatarWrap"><div class="npvAvatar" data-avatar style="background:'+esc(color)+'">'+initials(p.display_name)+'</div><button class="npvAvatarEdit" data-action="avatar-open" type="button" aria-label="Modifier la photo">✎</button></div><div class="npvIdentityCopy"><h2>'+esc(p.display_name||'Utilisateur')+'</h2><span>'+esc(roleLabel(p.role))+'</span></div></section>'+
- '<section class="npvCard"><div class="npvCardHead"><h2>Apparence</h2><p>Ta couleur et ton thème te suivent sur tes appareils.</p></div><div class="npvField"><label>Couleur du profil</label><div class="npvColors">'+COLORS.map(c=>'<button type="button" data-color="'+c+'" class="'+(c===color?'active':'')+'" style="--c:'+c+'" aria-label="'+c+'"></button>').join('')+'</div></div><div class="npvField"><label for="npvTheme">Thème</label><select id="npvTheme"><option value="light" '+(theme==='light'?'selected':'')+'>Mode clair</option><option value="dark" '+(theme==='dark'?'selected':'')+'>Mode sombre</option></select></div><button class="npvPrimary" data-action="save-profile" type="button">Enregistrer le profil</button><div class="npvState" data-profile-state></div></section>'+
+ '<section class="npvCard"><div class="npvCardHead"><h2>Apparence</h2><p>Ta couleur et ton thème te suivent sur tes appareils.</p></div><div class="npvField"><label>Couleur du profil</label><div class="npvColors">'+PROFILE_COLORS.map(item=>'<button type="button" data-color="'+item.value+'" class="'+(item.value===color?'active':'')+'" style="--c:'+item.value+'" title="'+esc(item.label)+'" aria-label="'+esc(item.label)+'"></button>').join('')+'</div><small class="npvColorHelp">Palette Nethor · utilisée quand aucune photo n’est définie.</small></div><div class="npvField"><label for="npvTheme">Thème</label><select id="npvTheme"><option value="light" '+(theme==='light'?'selected':'')+'>Mode clair</option><option value="dark" '+(theme==='dark'?'selected':'')+'>Mode sombre</option></select></div><button class="npvPrimary" data-action="save-profile" type="button">Enregistrer le profil</button><div class="npvState" data-profile-state></div></section>'+emailCardHtml()+
  '<section class="npvCard"><div class="npvCardHead"><h2>Sécurité du compte</h2><p>Le mot de passe actuel est vérifié avant modification.</p></div><div class="npvPasswordGrid"><input data-current-password type="password" autocomplete="current-password" placeholder="Mot de passe actuel"><input data-new-password type="password" autocomplete="new-password" minlength="8" placeholder="Nouveau mot de passe"><input data-confirm-password type="password" autocomplete="new-password" minlength="8" placeholder="Confirmer le nouveau mot de passe"></div><button class="npvPrimary" data-action="change-password" type="button">Changer le mot de passe</button><div class="npvState" data-password-state></div></section>'+
  (p.role==='admin'?'<section class="npvCard"><div class="npvCardHead"><h2>Personnalisation avancée</h2><p>Avatar de poste, cadre, accessoire, titre et thème de récompense.</p></div><div class="npvRewardGrid" data-reward-grid><div class="npvState">Chargement…</div></div><button class="npvSecondary" data-action="open-rewards" type="button">Ouvrir Défis & Boutique</button><div class="npvState" data-reward-state></div></section><section class="npvCard" data-sound-card><div class="npvCardHead"><h2>Sons d’interface</h2><p>Réglages locaux à cet appareil.</p></div><label class="npvSwitch"><input data-sound-enabled type="checkbox"><span>Activer les sons</span></label><label class="npvVolume">Volume <b data-sound-value>72%</b><input data-sound-volume type="range" min="0" max="100" value="72"></label><button class="npvSecondary" data-action="sound-test" type="button">Tester</button></section>':'')+
  '<section class="npvCard"><div class="npvCardHead"><h2>Notifications</h2><p>Consulte ton centre d’activité complet.</p></div><button class="npvSecondary" data-action="open-notifications" type="button">Ouvrir les notifications</button></section>'+
@@ -27,14 +48,14 @@ function render(){
 }
 function paintAvatar(){
  const shared=services(),p=shared?.profile,el=root()?.querySelector('[data-avatar]');if(!p||!el)return;
- el.innerHTML='';el.style.background=p.profile_color||COLORS[0];
+ el.innerHTML='';el.style.background=normalizeProfileColor(p.profile_color);
  if(shared.avatarUrl){const img=document.createElement('img');img.src=shared.avatarUrl;img.alt='Photo de profil';el.appendChild(img)}
  else el.textContent=initials(p.display_name)
 }
 function stateText(sel,msg,type=''){const el=root()?.querySelector(sel);if(el){el.textContent=msg;el.className='npvState'+(type?' '+type:'')}}
 async function saveProfile(button){
  const p=services()?.profile;if(!p)return;
- const color=root()?.querySelector('.npvColors button.active')?.dataset.color||p.profile_color||COLORS[0];
+ const color=normalizeProfileColor(root()?.querySelector('.npvColors button.active')?.dataset.color||p.profile_color);
  const theme=root()?.querySelector('#npvTheme')?.value==='dark'?'dark':'light';
  button.disabled=true;stateText('[data-profile-state]','Enregistrement…');
  try{
@@ -44,6 +65,75 @@ async function saveProfile(button){
   stateText('[data-profile-state]','✓ Profil enregistré.','ok');paintAvatar()
  }catch(e){stateText('[data-profile-state]','Erreur : '+(e?.message||'enregistrement impossible'),'err')}
  finally{button.disabled=false}
+}
+async function invokeProfileEmail(body){
+ const client=services()?.client;if(!client)throw new Error('Service indisponible');
+ const {data,error}=await client.functions.invoke('profile-email',{body});
+ if(error){
+  let message=data?.error||data?.message||'';
+  try{
+   const response=error.context;
+   if(!message&&response){
+    const copy=response.clone?response.clone():response,type=copy.headers?.get?.('content-type')||'';
+    if(type.includes('application/json')){const payload=await copy.json();message=payload?.error||payload?.message||''}
+    else{const txt=await copy.text();if(txt)message=txt.slice(0,300)}
+   }
+  }catch(_){}
+  throw new Error(message||error.message||'Action impossible')
+ }
+ if(data?.error)throw new Error(data.error);
+ return data||{}
+}
+function validRecoveryEmail(value){
+ const v=String(value||'').trim().toLowerCase();
+ return v.length>=5&&v.length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)&&!/@stock-fl\.local$/i.test(v)
+}
+async function loadRecoveryEmailStatus(){
+ state.email.mode='loading';state.email.loaded=false;render();
+ try{
+  const data=await invokeProfileEmail({action:'status'});
+  state.email.configured=!!data.configured;
+  state.email.mode=state.email.configured?'configured':'empty';
+  state.email.loaded=true;render()
+ }catch(_){
+  state.email.configured=false;state.email.mode='empty';state.email.loaded=true;render();
+  stateText('[data-email-state]','Impossible de charger l’état de l’adresse e-mail.','err')
+ }
+}
+function openRecoveryEmailChange(){if(!state.email.configured||state.email.busy)return;state.email.mode='change';render();setTimeout(()=>root()?.querySelector('[data-recovery-email-old]')?.focus(),40)}
+function cancelRecoveryEmailChange(){if(state.email.busy)return;state.email.mode='configured';render()}
+async function saveRecoveryEmail(button,changing){
+ if(state.email.busy)return;
+ const oldEmail=changing?String(root()?.querySelector('[data-recovery-email-old]')?.value||'').trim().toLowerCase():'';
+ const newEmail=String(root()?.querySelector(changing?'[data-recovery-email-next]':'[data-recovery-email-new]')?.value||'').trim().toLowerCase();
+ if(changing&&!validRecoveryEmail(oldEmail)){stateText('[data-email-state]','Renseigne correctement l’ancienne adresse e-mail.','err');window.NettoSounds?.play?.('warning');return}
+ if(!validRecoveryEmail(newEmail)){stateText('[data-email-state]','Renseigne une adresse e-mail valide.','err');window.NettoSounds?.play?.('warning');return}
+ if(changing&&oldEmail===newEmail){stateText('[data-email-state]','La nouvelle adresse doit être différente de l’ancienne.','err');window.NettoSounds?.play?.('warning');return}
+ state.email.busy=true;button.disabled=true;stateText('[data-email-state]',changing?'Vérification et modification de l’adresse…':'Enregistrement de l’adresse…');
+ try{
+  const data=await invokeProfileEmail({action:'save',old_email:oldEmail,new_email:newEmail});
+  state.email.configured=true;state.email.mode='configured';render();
+  if(data.mail_status==='sent')stateText('[data-email-state]','✓ Adresse e-mail enregistrée. Un e-mail vient de t’être envoyé.','ok');
+  else if(data.mail_status==='not_configured')stateText('[data-email-state]','✓ Adresse e-mail enregistrée. L’envoi automatique d’e-mail n’est pas encore configuré.','ok');
+  else stateText('[data-email-state]','✓ Adresse e-mail enregistrée, mais l’e-mail de confirmation n’a pas pu être envoyé.','ok');
+  window.NettoSounds?.play?.('success')
+ }catch(e){
+  stateText('[data-email-state]','Erreur : '+(e?.message||'enregistrement impossible.'),'err');
+  window.NettoSounds?.play?.('error')
+ }finally{state.email.busy=false}
+}
+async function requestRecoveryEmailReset(button){
+ if(!state.email.configured||state.email.busy)return;
+ if(!confirm('Envoyer une demande à l’administrateur pour réinitialiser l’adresse e-mail enregistrée ?'))return;
+ state.email.busy=true;button.disabled=true;stateText('[data-email-state]','Envoi de la demande à l’administrateur…');
+ try{
+  const data=await invokeProfileEmail({action:'request-reset'});
+  stateText('[data-email-state]',data.already_pending?'✓ Une demande de réinitialisation est déjà en attente.':'✓ Demande envoyée à l’administrateur.','ok');
+  window.NettoSounds?.play?.('success')
+ }catch(e){
+  stateText('[data-email-state]','Erreur : '+(e?.message||'demande impossible.'),'err');
+  window.NettoSounds?.play?.('error')
+ }finally{state.email.busy=false;button.disabled=false}
 }
 async function changePassword(button){
  const current=root()?.querySelector('[data-current-password]')?.value||'',next=root()?.querySelector('[data-new-password]')?.value||'',confirmValue=root()?.querySelector('[data-confirm-password]')?.value||'';
@@ -92,11 +182,11 @@ async function equipReward(select){const kind=select.dataset.rewardKind;select.d
 function syncSounds(){const s=window.NettoSounds,card=root()?.querySelector('[data-sound-card]');if(!card||!s){card?.classList.add('hidden');return}const enabled=!!s.isEnabled?.(),volume=Math.round((s.getVolume?.()??.72)*100);const toggle=card.querySelector('[data-sound-enabled]'),range=card.querySelector('[data-sound-volume]'),label=card.querySelector('[data-sound-value]');if(toggle)toggle.checked=enabled;if(range)range.value=String(volume);if(label)label.textContent=volume+'%'}
 function onClick(e){
  const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action;
- if(a==='back')back();else if(a==='save-profile')void saveProfile(b);else if(a==='change-password')void changePassword(b);else if(a==='avatar-open')openAvatar();else if(a==='avatar-close')cleanupAvatar();else if(a==='avatar-choose')root()?.querySelector('[data-avatar-input]')?.click();else if(a==='avatar-save')void saveAvatar(b);else if(a==='avatar-remove')void removeAvatar(b);else if(a==='zoom-out')setZoom(state.crop.zoom-.1);else if(a==='zoom-in')setZoom(state.crop.zoom+.1);else if(a==='open-rewards')router()?.open?.('rewards',{source:'profile'});else if(a==='open-notifications')router()?.open?.('notifications',{source:'profile'});else if(a==='sound-test')window.NettoSounds?.play?.('confirm')
+ if(a==='back')back();else if(a==='save-profile')void saveProfile(b);else if(a==='email-save')void saveRecoveryEmail(b,false);else if(a==='email-change')openRecoveryEmailChange();else if(a==='email-cancel')cancelRecoveryEmailChange();else if(a==='email-save-change')void saveRecoveryEmail(b,true);else if(a==='email-reset')void requestRecoveryEmailReset(b);else if(a==='change-password')void changePassword(b);else if(a==='avatar-open')openAvatar();else if(a==='avatar-close')cleanupAvatar();else if(a==='avatar-choose')root()?.querySelector('[data-avatar-input]')?.click();else if(a==='avatar-save')void saveAvatar(b);else if(a==='avatar-remove')void removeAvatar(b);else if(a==='zoom-out')setZoom(state.crop.zoom-.1);else if(a==='zoom-in')setZoom(state.crop.zoom+.1);else if(a==='open-rewards')router()?.open?.('rewards',{source:'profile'});else if(a==='open-notifications')router()?.open?.('notifications',{source:'profile'});else if(a==='sound-test')window.NettoSounds?.play?.('confirm')
 }
 function onChange(e){if(e.target.matches('[data-avatar-input]'))chooseFile(e.target);else if(e.target.matches('[data-crop-zoom]'))setZoom(e.target.value);else if(e.target.matches('[data-reward-kind]'))void equipReward(e.target);else if(e.target.matches('[data-sound-enabled]')){window.NettoSounds?.setEnabled?.(e.target.checked);syncSounds()}else if(e.target.matches('[data-sound-volume]')){const n=Math.max(0,Math.min(100,Number(e.target.value)||0));window.NettoSounds?.setVolume?.(n/100);syncSounds()}}
 function onProfile(detail){if(state.mounted&&['core','ready'].includes(detail?.type))render()}
-async function mount(host){state.host=host;state.mounted=true;host.innerHTML='<div class="npvLoading">Chargement du profil…</div>';host.addEventListener('click',onClick);host.addEventListener('change',onChange);host.addEventListener('input',onChange);await services()?.ready?.();if(!state.mounted)return false;state.unsubscribe=services()?.subscribe?.(onProfile,{immediate:false})||null;render();return true}
+async function mount(host){state.host=host;state.mounted=true;state.email={loaded:false,configured:false,mode:'loading',busy:false};host.innerHTML='<div class="npvLoading">Chargement du profil…</div>';host.addEventListener('click',onClick);host.addEventListener('change',onChange);host.addEventListener('input',onChange);await services()?.ready?.();if(!state.mounted)return false;state.unsubscribe=services()?.subscribe?.(onProfile,{immediate:false})||null;render();void loadRecoveryEmailStatus();return true}
 async function unmount(){state.mounted=false;if(typeof state.unsubscribe==='function')state.unsubscribe();state.unsubscribe=null;cleanupAvatar();if(state.host){state.host.removeEventListener('click',onClick);state.host.removeEventListener('change',onChange);state.host.removeEventListener('input',onChange);state.host.innerHTML=''}state.host=null;return true}
 const api=Object.freeze({mount,unmount,render});
 window.NethorMobileProfileView=api;router()?.register?.('profile',api);
