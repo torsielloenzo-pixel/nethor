@@ -151,7 +151,8 @@
 
   .mhdInfoRow{margin-top:7px;padding:10px;border:1px solid #ffd8ce;border-radius:13px;background:linear-gradient(90deg,#fff3f1,#fff9f4);display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center}
   .mhdInfoRow.orange{border-color:#ffe2c9;background:linear-gradient(90deg,#fff6ec,#fffaf5)}
-  .mhdInfoIcon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff3024,#ff7c24);color:#fff;display:grid;place-items:center;font-size:15px}
+  .mhdInfoIcon{width:34px;height:34px;border-radius:var(--mhd-notif-radius,10px);background:var(--mhd-notif-accent,linear-gradient(135deg,#ff3024,#ff7c24));color:#fff;display:grid;place-items:center;font-size:15px;box-shadow:0 0 0 3px var(--mhd-notif-outer,transparent)}
+  .mhdInfoIcon img{display:block;width:70%;height:70%;object-fit:contain}
   .mhdInfoCopy{min-width:0}.mhdInfoCopy strong{display:block;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mhdInfoCopy small{display:block;margin-top:2px;color:#777f88;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mhdTeam{display:flex;align-items:flex-start;gap:13px;overflow:hidden;padding-top:2px}
   .mhdPerson{width:67px;text-align:center;flex:none;position:relative}
