@@ -39,10 +39,15 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwVisual:
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{
   position:relative;z-index:2;min-height:var(--nsiw-height,178px);
-  display:grid;grid-template-columns:minmax(0,1fr) minmax(245px,35%);align-items:center;gap:44px;
+  display:grid;grid-template-columns:auto 3px minmax(245px,330px);align-items:center;justify-content:start;gap:22px;
   padding:28px 34px
 }
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwWelcome{min-width:0;max-width:620px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent:after{
+  content:"";grid-column:2;grid-row:1;width:3px;height:64px;align-self:center;border-radius:999px;
+  background:var(--nsiw-accent,#ff6a2b);
+  box-shadow:0 0 18px color-mix(in srgb,var(--nsiw-accent,#ff6a2b) 42%,transparent)
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwWelcome{grid-column:1;grid-row:1;min-width:0;max-width:620px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwGreeting{
   display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   color:var(--nsiw-text);font-size:clamp(22px,2.2vw,34px);font-weight:650;letter-spacing:-.8px;line-height:1.08;
@@ -57,7 +62,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStoreNa
   content:"";width:18px;height:3px;border-radius:999px;background:var(--nsiw-accent,#ff6a2b);box-shadow:0 0 18px color-mix(in srgb,var(--nsiw-accent,#ff6a2b) 46%,transparent)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursBlock{
-  justify-self:end;width:min(100%,330px);padding:18px 20px;border-radius:15px;
+  grid-column:3;grid-row:1;justify-self:start;width:100%;padding:18px 20px;border-radius:15px;
   background:linear-gradient(145deg,rgba(15,18,23,.62),rgba(15,18,23,.34));
   border:1px solid rgba(255,255,255,.13);box-shadow:0 12px 30px rgba(0,0,0,.14);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)
@@ -70,12 +75,14 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
   font-variant-numeric:tabular-nums;text-shadow:0 2px 14px rgba(0,0,0,.35)
 }
 @media(max-width:1120px){
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{grid-template-columns:minmax(0,1fr) minmax(220px,38%);gap:24px;padding:24px 26px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{grid-template-columns:auto 3px minmax(220px,300px);gap:16px;padding:24px 26px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent:after{height:58px}
  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwVisual{inset:0 0 0 30%}
 }
 @media(max-width:900px){
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{grid-template-columns:1fr auto;gap:18px;padding:22px}
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursBlock{width:250px;padding:15px 16px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{grid-template-columns:auto 3px minmax(210px,250px);gap:14px;padding:22px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwGreeting{font-size:clamp(20px,2.5vw,28px)}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursBlock{width:100%;padding:15px 16px}
 }
 
 /* Gestion > Éditeur du portail > Widgets > Bannière */
@@ -110,11 +117,13 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
 .storeBannerPreviewVisual.empty{background:radial-gradient(circle at 76% 34%,color-mix(in srgb,var(--sb-accent) 20%,transparent),transparent 24%),linear-gradient(135deg,#3a4048,#202630 55%,#171b21)}
 .storeBannerPreviewVisual:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--sb-surface),color-mix(in srgb,var(--sb-surface) 65%,transparent) 52%,transparent)}
 .storeBannerPreviewVisual:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--sb-dim))}
-.storeBannerPreviewContent{min-height:var(--sb-height,122px);display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,34%);align-items:center;gap:22px;padding:18px 22px}
+.storeBannerPreviewContent{min-height:var(--sb-height,122px);display:grid;grid-template-columns:auto 2px minmax(190px,245px);align-items:center;justify-content:start;gap:13px;padding:18px 22px}
+.storeBannerPreviewContent:after{content:"";grid-column:2;grid-row:1;width:2px;height:46px;border-radius:999px;background:var(--sb-accent);box-shadow:0 0 12px color-mix(in srgb,var(--sb-accent) 40%,transparent)}
+.storeBannerPreviewContent>div:first-child{grid-column:1;grid-row:1}
 .storeBannerPreviewContent>div:first-child strong{display:block;font-size:18px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .storeBannerPreviewContent>div:first-child small{display:flex;align-items:center;gap:7px;margin-top:7px;color:var(--sb-muted);font-size:9px;font-weight:750}
 .storeBannerPreviewContent>div:first-child small:before{content:"";width:13px;height:2px;border-radius:99px;background:var(--sb-accent)}
-.storeBannerPreviewHours{justify-self:end;width:100%;padding:11px 12px;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:rgba(15,18,23,.46);backdrop-filter:blur(6px)}
+.storeBannerPreviewHours{grid-column:3;grid-row:1;justify-self:start;width:100%;padding:11px 12px;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:rgba(15,18,23,.46);backdrop-filter:blur(6px)}
 .storeBannerPreviewHours span{display:block;color:#e1e5eb;font-size:7.5px}.storeBannerPreviewHours b{display:block;margin-top:4px;color:#fff;font-size:13px}
 .storeInfoWidgetAdmin .storeInfoSource{margin-top:10px;padding:9px 10px;border-radius:10px;background:#fff6f1;color:#8f543b;font-size:8px;line-height:1.45}
 :root[data-theme="dark"] .storeInfoWidgetAdmin .storeInfoAdminHead p{color:#aab1ba}
@@ -127,5 +136,5 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
  .storeInfoWidgetAdmin .storeInfoHours{grid-template-columns:repeat(2,minmax(0,1fr))}
  .storeInfoWidgetAdmin .storeInfoStyleGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .storeBannerAsset{align-items:flex-start;flex-direction:column}
- .storeBannerPreviewContent{grid-template-columns:1fr}.storeBannerPreviewHours{justify-self:start;width:min(100%,260px)}
+ .storeBannerPreviewContent{grid-template-columns:auto 2px minmax(180px,240px)}.storeBannerPreviewHours{justify-self:start;width:100%}
 }
