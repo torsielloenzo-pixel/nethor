@@ -1,11 +1,11 @@
 {
-  "version": 321,
-  "label": "v1.44.27",
+  "version": 322,
+  "label": "v1.44.28",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mobile — e-mail de récupération et nouvelles couleurs",
-  "message": "Dans Mon profil sur Mobile, ajout du même système d’adresse e-mail de récupération que sur Desktop : enregistrement d’une adresse personnelle, confirmation par e-mail, modification avec vérification de l’ancienne adresse, adresse enregistrée masquée et demande de réinitialisation à l’administrateur si l’ancienne adresse est inconnue. La palette du profil Mobile est également synchronisée avec les 6 nouvelles couleurs Nethor : Rouge, Orange, Ambre, Terre, Graphite et Ardoise, affichées en grille 3 × 2. Les anciennes couleurs sont automatiquement rapprochées de leur nouvel équivalent.",
-  "published_at": "2026-10-03T02:47:02+02:00",
+  "title": "Mobile — sélection des couleurs du profil corrigée",
+  "message": "Correction de Mon profil sur Mobile : les 6 couleurs de la palette Nethor sont maintenant réellement sélectionnables au toucher. La couleur choisie est prévisualisée immédiatement sur l’avatar, puis enregistrée avec le bouton Enregistrer le profil. Aucun changement sur Desktop.",
+  "published_at": "2026-10-03T02:50:29+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
