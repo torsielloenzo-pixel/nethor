@@ -1,0 +1,111 @@
+/* Nethor — architecture Gestion v2 */
+.managementArchitectureNote{
+ display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;align-items:start;
+ margin:0 0 14px;padding:12px 13px;border:1px solid #e3e7eb;border-radius:14px;background:#f8fafb
+}
+.managementArchitectureNote>span{
+ width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#fff0e8;color:#ed572d;font-weight:950
+}
+.managementArchitectureNote strong{display:block;font-size:10.5px;color:#26313d}
+.managementArchitectureNote small{display:block;margin-top:3px;color:#7b8590;font-size:8.5px;line-height:1.45}
+.managementArchitectureRule{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 14px
+}
+.managementArchitectureRule>div{
+ padding:10px 11px;border:1px solid #e5e8ec;border-radius:12px;background:#fff
+}
+.managementArchitectureRule span{
+ display:block;color:#ed572d;font-size:7px;font-weight:950;letter-spacing:.65px;text-transform:uppercase
+}
+.managementArchitectureRule strong{display:block;margin-top:4px;font-size:9.5px;color:#26313d}
+.managementArchitectureRule small{display:block;margin-top:3px;color:#7d8791;font-size:7.7px;line-height:1.4}
+
+.widgetPlatformSection{
+ margin-top:14px;padding:13px;border:1px solid #e2e6ea;border-radius:15px;background:#fbfcfd
+}
+.widgetPlatformHead{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px
+}
+.widgetPlatformHead>div{min-width:0}
+.widgetPlatformHead span{
+ display:block;color:#ed572d;font-size:7px;font-weight:950;letter-spacing:.7px;text-transform:uppercase
+}
+.widgetPlatformHead strong{display:block;margin-top:3px;font-size:13px;color:#202a35}
+.widgetPlatformHead small{display:block;margin-top:3px;color:#7d8791;font-size:8px;line-height:1.4}
+.widgetPlatformBadge{
+ flex:none;display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;
+ background:#eef2f6;color:#68727d;font-size:7px;font-weight:900
+}
+.widgetPlatformBadge.mobile{background:#eef6ff;color:#3975a8}
+.widgetPlatformBadge.desktop{background:#fff1ea;color:#d75a32}
+.mobileWidgetGrid,.autoWidgetGrid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px
+}
+.mobileWidgetCard,.autoWidgetCard{
+ min-width:0;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center;
+ padding:10px;border:1px solid #e4e8ec;border-radius:12px;background:#fff
+}
+.mobileWidgetIcon,.autoWidgetIcon{
+ width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#fff2eb;color:#ed572d
+}
+.mobileWidgetIcon svg,.autoWidgetIcon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
+.mobileWidgetCopy,.autoWidgetCopy{min-width:0}
+.mobileWidgetCopy strong,.autoWidgetCopy strong{
+ display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#25303b;font-size:9.5px
+}
+.mobileWidgetCopy small,.autoWidgetCopy small{
+ display:block;margin-top:3px;color:#828b95;font-size:7.4px;line-height:1.35
+}
+.mobileWidgetSwitch{display:flex;align-items:center;gap:6px;color:#78828d;font-size:7px;font-weight:850}
+.mobileWidgetSwitch input{accent-color:#ff5a2a}
+.widgetBulkActions{display:flex;gap:6px;flex-wrap:wrap}
+.widgetBulkActions button{
+ border:1px solid #e1e5e9;border-radius:8px;background:#fff;padding:6px 9px;color:#59636e;font-size:7px;font-weight:850;cursor:pointer
+}
+.widgetBulkActions button:hover{border-color:#ffc9b8;color:#e64f25}
+.widgetLegacyClean{
+ margin-top:10px;padding:8px 9px;border-radius:10px;background:#f3f6f8;color:#707b86;font-size:7.5px;line-height:1.45
+}
+.widgetLegacyClean b{color:#404b57}
+
+.widgetEditorBucket{margin-top:14px}
+.widgetEditorBucket>.widgetPlatformHead{margin-bottom:9px}
+.widgetEditorBucket>.operationsWidgetAdmin{margin-top:8px!important}
+.widgetEditorBucket .operationsWidgetAdmin:first-of-type{margin-top:0!important}
+
+.managementSide .managementNavParent span>strong,
+.managementSide .managementNavDirect span>strong{letter-spacing:-.05px}
+.managementSide .managementNavChild{position:relative}
+.managementSide .managementNavChild:before{
+ content:"";position:absolute;left:12px;top:50%;width:4px;height:4px;border-radius:50%;background:#c9ced4;transform:translateY(-50%)
+}
+.managementSide .managementNavChild.active:before{background:#ff5a2a}
+.managementSide .managementNavChild{padding-left:25px!important}
+
+:root[data-theme="dark"] .managementArchitectureNote,
+:root[data-theme="dark"] .widgetPlatformSection{background:#20242a;border-color:#3a4047}
+:root[data-theme="dark"] .managementArchitectureNote>span{background:#3a2922}
+:root[data-theme="dark"] .managementArchitectureNote strong,
+:root[data-theme="dark"] .widgetPlatformHead strong{color:#f2f4f6}
+:root[data-theme="dark"] .managementArchitectureNote small,
+:root[data-theme="dark"] .widgetPlatformHead small{color:#aab1b9}
+:root[data-theme="dark"] .managementArchitectureRule>div,
+:root[data-theme="dark"] .mobileWidgetCard,
+:root[data-theme="dark"] .autoWidgetCard{background:#282d33;border-color:#3c434b}
+:root[data-theme="dark"] .managementArchitectureRule strong,
+:root[data-theme="dark"] .mobileWidgetCopy strong,
+:root[data-theme="dark"] .autoWidgetCopy strong{color:#f0f3f5}
+:root[data-theme="dark"] .managementArchitectureRule small,
+:root[data-theme="dark"] .mobileWidgetCopy small,
+:root[data-theme="dark"] .autoWidgetCopy small{color:#aab1b9}
+:root[data-theme="dark"] .widgetBulkActions button{background:#282d33;border-color:#414850;color:#c3c9cf}
+:root[data-theme="dark"] .widgetLegacyClean{background:#282d33;color:#aeb5bd}
+:root[data-theme="dark"] .widgetLegacyClean b{color:#e5e8eb}
+
+@media(max-width:1150px){
+ .mobileWidgetGrid,.autoWidgetGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .managementArchitectureRule,.mobileWidgetGrid,.autoWidgetGrid{grid-template-columns:1fr}
+ .widgetPlatformHead{align-items:flex-start;flex-direction:column}
+}
