@@ -30,10 +30,16 @@ function desktopSidebarIcon(kind){
 }
 function ensureDesktopSidebarStyle(){
  if(document.getElementById('nethorDesktopSidebarCss'))return;
- const link=document.createElement('link');link.id='nethorDesktopSidebarCss';link.rel='stylesheet';link.href='ui/desktop/desktop-sidebar.css?v=1';document.head.appendChild(link)
+ const link=document.createElement('link');
+ link.id='nethorDesktopSidebarCss';
+ link.rel='stylesheet';
+ link.href='ui/desktop/desktop-sidebar.css?v=1';
+ document.head.appendChild(link)
 }
 function desktopSidebarItem(kind,label,url,active,disabled=false){
- const attrs=disabled?' aria-disabled="true" title="Disponible prochainement"':(' onclick="location.href=\\''+esc(url)+'\\'"');
+ const attrs=disabled
+  ?' aria-disabled="true" title="Disponible prochainement"'
+  :' data-sidebar-url="'+esc(url)+'" onclick="window.location.href=this.dataset.sidebarUrl"';
  return '<button class="nethorSidebarItem'+(active?' active':'')+'" type="button"'+attrs+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(kind)+'</span><span class="nethorSidebarLabel">'+esc(label)+'</span></button>'
 }
 function buildDesktopSidebar(page){
@@ -74,12 +80,7 @@ function buildPageLayout(page){
  const back=cfg.back?'<div class="navActions"><button class="btn light backBtn" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'home.html\'">← Retour</button></div>':'';
  const sidebar=buildDesktopSidebar(id);
  const header=(cfg.chrome===false?'':'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="nethorDesktopBrandButton" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorDesktopWordmark" aria-hidden="true"><span class="nethorDesktopWordmarkNe">ne</span><span class="nethorDesktopWordmarkThor">thor</span></span></button></div>'+back+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>')+sidebar;
- return {
-  platform:'desktop',
-  handlesBack:!!cfg.back,
-  header,
-  lead:''
- }
+ return {platform:'desktop',handlesBack:!!cfg.back,header,lead:''}
 }
 window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout});
 })();
