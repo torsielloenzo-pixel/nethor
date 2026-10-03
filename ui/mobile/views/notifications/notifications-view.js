@@ -11,25 +11,16 @@ function icon(kind){return({
  manual_edit:'🗓️',import_new:'📥',import_replace:'🔄',reset_day:'↩️',reset_week:'↩️',password_reset_request:'🔑',
  absence_request:'🏖️',absence_decision:'✅'
 })[kind]||'🔔'}
-function safeHex(value,fallback){
- return /^#[0-9a-f]{6}$/i.test(String(value||''))?String(value):fallback
-}
 function notificationVisual(kind){
  const raw=services()?.siteConfig?.platform_ui?.mobile?.notification_visuals?.[kind];
  const node=raw&&typeof raw==='object'?raw:{};
- const shape=['circle','rounded','square'].includes(String(node.shape||''))?String(node.shape):'circle';
- return{
-  url:String(node.url||'').trim(),
-  outer:safeHex(node.outer_color,'#24292F'),
-  accent:safeHex(node.accent_color,'#FF5A2A'),
-  radius:shape==='square'?'8px':shape==='rounded'?'14px':'50%'
- }
+ return{url:String(node.url||'').trim()}
 }
 function notificationVisualHtml(kind){
  const visual=notificationVisual(kind),body=visual.url
   ?'<img class="npCustomIcon" src="'+esc(visual.url)+'" alt="" draggable="false">'
   :esc(icon(kind));
- return '<div class="npIcon" aria-hidden="true" style="--np-icon-outer:'+esc(visual.outer)+';--np-icon-accent:'+esc(visual.accent)+';--np-icon-radius:'+esc(visual.radius)+'"><span>'+body+'</span></div>'
+ return '<div class="npIcon" aria-hidden="true"><span>'+body+'</span></div>'
 }
 function category(kind){return({
  chat_message:'Message équipe',chat_direct:'Message',chat_group:'Message groupe',chat_general:'Message groupe',admin_message:'Information',
