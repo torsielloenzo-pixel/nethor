@@ -711,10 +711,10 @@ function playSynthSound(name,node,force=false){
 }
 function playCustomSound(name,node){
  try{
-  const wantsEq=soundEqActive(node?.eq),ctx=wantsEq?unlockSound():null,audio=new Audio();
+  const wantsEq=soundEqActive(node?.eq),useWebAudio=wantsEq||isMobileViewport(),ctx=useWebAudio?unlockSound():null,audio=new Audio();
   audio.preload='auto';
   let master=null;
-  if(wantsEq&&ctx){
+  if(useWebAudio&&ctx){
    try{
     audio.crossOrigin='anonymous';audio.src=node.url;
     const source=ctx.createMediaElementSource(audio);master=ctx.createGain();
