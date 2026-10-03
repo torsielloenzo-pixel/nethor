@@ -45,17 +45,22 @@ function visible(area,m){const v=prefs?.[area]?.[m.id];if(typeof v==='boolean')r
 function icon(m){return m.asset?'<img src="'+esc(m.asset)+'" alt="">':esc(m.icon||'•')}
 function renderArea(area,id){const host=$(id),list=available(area);if(!list.length){host.innerHTML='<div class="empty">Aucun espace configurable pour ce rôle.</div>';return}host.innerHTML=list.map(m=>'<label class="item"><span class="icon">'+icon(m)+'</span><span class="info"><strong>'+esc(area==='home'?(m.homeLabel||m.label):m.label)+'</strong><span>'+esc(m.subtitle||m.description||'')+'</span></span><span class="toggle"><input type="checkbox" data-area="'+area+'" data-id="'+esc(m.id)+'" '+(visible(area,m)?'checked':'')+'> Visible</span></label>').join('');host.querySelectorAll('input[data-id]').forEach(x=>x.onchange=()=>{prefs[x.dataset.area][x.dataset.id]=x.checked;markDirty()})}
 const HOME_WIDGETS=[
- {id:'next_shift',label:'Prise de poste',description:'Prochaine prise de poste calculée depuis le planning.',icon:'planning'},
- {id:'hours',label:'Mes heures',description:'Total des heures planifiées sur la semaine.',icon:'planning'},
- {id:'absences',label:'Congés',description:'Congés issus des cases jaunes du planning.',icon:'planning'},
- {id:'next_rest',label:'Prochain repos',description:'Prochain repos calculé depuis les jours vides, rouges ou orange.',icon:'planning'},
- {id:'tasks',label:'Tâches du jour',description:'Missions affectées et validation de la journée.',icon:'articles'},
- {id:'important_info',label:'Informations importantes',description:'Notifications et informations à surveiller.',icon:'notifications'},
- {id:'team_today',label:'Équipe aujourd’hui',description:'Personnes planifiées aujourd’hui.',icon:'accounts'},
- {id:'operations_hub',label:'Pilotage magasin',description:'Relève, service, commandes, livraisons et Flash magasin.',icon:'home'}
-];
+ {id:'welcome',label:'Bonjour / espace de travail',description:'Message d’accueil de la page mobile.',icon:'home',displayOnly:true},
+ {id:'next_shift',label:'Prise de poste',description:'Prochaine prise de poste calculée depuis le planning.',icon:'planning',displayOnly:true},
+ {id:'hours',label:'Mes heures',description:'Total des heures planifiées sur la semaine.',icon:'planning',displayOnly:true},
+ {id:'absences',label:'Congés',description:'Congés issus des cases jaunes du planning.',icon:'planning',displayOnly:true},
+ {id:'next_rest',label:'Prochain repos',description:'Prochain repos calculé depuis les jours vides, rouges ou orange.',icon:'planning',displayOnly:true},
+ {id:'tasks',label:'Tâches du jour',description:'Missions affectées et validation de la journée.',icon:'articles',displayOnly:true},
+ {id:'important_info',label:'Informations importantes',description:'Notifications et informations à surveiller.',icon:'notifications',displayOnly:true},
+ {id:'team_today',label:'Équipe aujourd’hui',description:'Personnes planifiées aujourd’hui.',icon:'accounts',displayOnly:true},
+ {id:'quick_access',label:'Accès rapides',description:'Raccourcis vers les outils accessibles.',icon:'home',displayOnly:true},
+ {id:'operations_hub',label:'Pilotage magasin',description:'Relève, service, commandes, livraisons et Flash magasin.',icon:'home',displayOnly:false}
+]
 function homeWidgetAllowed(id){
- const node=window.NettoProfileUI?.siteConfig?.home_widgets?.[id]||{},role=profile?.role||'',roleValue=node?.roles?.[role],fallback=id==='operations_hub'?role==='admin':true;
+ const node=window.NettoProfileUI?.siteConfig?.home_widgets?.[id]||{},def=HOME_WIDGETS.find(x=>x.id===id);
+ if(node.enabled===false)return false;
+ if(def?.displayOnly)return true;
+ const role=profile?.role||'',roleValue=node?.roles?.[role],fallback=id==='operations_hub'?role==='admin':true;
  const roleAllowed=typeof roleValue==='boolean'?roleValue:fallback;
  return roleAllowed||subroleKeys.some(k=>node?.subroles?.[k]===true)
 }
@@ -67,7 +72,7 @@ function homeWidgetVisiblePref(id){const v=prefs?.home_widgets?.[id];return type
 function renderHomeWidgets(){
  const host=$('homeWidgetsEditor');if(!host)return;
  const list=HOME_WIDGETS.filter(x=>homeWidgetAllowed(x.id));
- if(!list.length){host.innerHTML='<div class="empty">Aucun widget disponible pour ce rôle.</div>';return}
+ if(!list.length){host.innerHTML='<div class="empty">Aucun widget mobile n’est activé.</div>';return}
  host.innerHTML=list.map(x=>'<label class="item"><span class="icon">'+homeWidgetIcon(x)+'</span><span class="info"><strong>'+esc(x.label)+'</strong><span>'+esc(x.description)+'</span></span><span class="toggle"><input type="checkbox" data-home-widget="'+esc(x.id)+'" '+(homeWidgetVisiblePref(x.id)?'checked':'')+'> Visible</span></label>').join('');
  host.querySelectorAll('input[data-home-widget]').forEach(x=>x.onchange=()=>{prefs.home_widgets[x.dataset.homeWidget]=x.checked;markDirty()})
 }
