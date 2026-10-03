@@ -134,12 +134,16 @@ function allowedModules(){
   .map(configuredModule)
   .sort((a,b)=>Number(state.config?.pages?.[a.id]?.order||a.order)-Number(state.config?.pages?.[b.id]?.order||b.order))
 }
+const MOBILE_HOME_DISPLAY_WIDGETS=new Set(['welcome','next_shift','hours','absences','next_rest','tasks','important_info','team_today','quick_access']);
 function widgetVisible(id){
- const cfg=state.config,profile=state.profile,node=cfg?.home_widgets?.[id]||{},role=profile?.role||'',fallback=id==='operations_hub'?role==='admin':true;
+ const cfg=state.config,profile=state.profile,node=cfg?.home_widgets?.[id]||{};
+ if(node.enabled===false)return false;
+ const personal=profile?.ui_preferences?.home_widgets?.[id];
+ if(MOBILE_HOME_DISPLAY_WIDGETS.has(id))return typeof personal==='boolean'?personal:true;
+ const role=profile?.role||'',fallback=id==='operations_hub'?role==='admin':true;
  const roleValue=node?.roles?.[role],subroleKeys=services()?.subroleKeys||[];
  const allowed=(typeof roleValue==='boolean'?roleValue:fallback)||subroleKeys.some(key=>node?.subroles?.[key]===true);
  if(!allowed)return false;
- const personal=profile?.ui_preferences?.home_widgets?.[id];
  return typeof personal==='boolean'?personal:true
 }
 function routeIdForFile(file){
