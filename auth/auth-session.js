@@ -114,7 +114,7 @@ function applyAuthBranding(){
  document.querySelectorAll('.authMobileBrandCopy span,.authDesktopSub').forEach(el=>el.textContent=sub);
 
  if(root){
-  const bg=authThemedAsset(ui?.login_background,'assets/fl-background.webp');
+  const bg=authThemedAsset(ui?.login_background,'assets/fl-background.svg');
   root.style.setProperty('--auth-login-background','url('+JSON.stringify(bg)+')');
   root.style.setProperty('--auth-login-background-opacity',String(settings.background_opacity/100));
 
