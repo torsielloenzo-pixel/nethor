@@ -551,7 +551,7 @@ function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,w
  const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
  const ticks=homeQuickPlanningTicks(bounds),target='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
  const s=w.style,shadow=s.shadow?'0 10px 30px rgba(28,36,48,.07)':'none';
- const style='--qp-accent:'+s.accent+';--qp-now:'+s.now_color+';--qp-surface-light:'+s.surface_light+';--qp-surface-dark:'+s.surface_dark+';--qp-text-light:'+s.text_light+';--qp-text-dark:'+s.text_dark+';--qp-grid-light:'+s.grid_light+';--qp-grid-dark:'+s.grid_dark+';--qp-radius:'+s.radius+'px;--qp-shadow:'+shadow;
+ const style='--qp-accent:'+s.accent+';--qp-now:'+s.now_color+';--qp-surface-light:'+s.surface_light+';--qp-surface-dark:'+s.surface_dark+';--qp-text-light:'+s.text_light+';--qp-text-dark:'+s.text_dark+';--qp-grid-light:'+s.grid_light+';--qp-grid-dark:'+s.grid_dark+';--qp-radius:'+s.radius+'px;--qp-shadow:'+shadow+';--qp-count:'+(people.length||1);
  const names=people.length?people.map(person=>{
   const role=person.profile?(window.NettoProfileUI?.roleLabel?.(person.profile.role)||person.profile.role||'Équipe'):'Équipe';
   const meta=[];
