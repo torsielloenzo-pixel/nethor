@@ -1,11 +1,11 @@
 {
-  "version": 336,
-  "label": "v1.44.42",
+  "version": 335,
+  "label": "v1.44.41",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — suppression de l’ancienne bannière",
-  "message": "Suppression de l’ancien bloc d’accueil Desktop « Espace de travail / Bonjour utilisateur ». La nouvelle bannière magasin personnalisable devient désormais le premier élément de l’accueil.",
-  "published_at": "2026-10-03T23:45:00+02:00",
+  "title": "Accueil Desktop — planning compact demi-largeur",
+  "message": "Le widget Vue rapide planning passe en format compact demi-largeur : 6 colonnes sur 12, hauteur fortement réduite et alignement autonome pour pouvoir partager une ligne avec un autre widget sans être étiré par sa hauteur. La logique du planning, les personnes en poste et la ligne « Maintenant » restent inchangées.",
+  "published_at": "2026-10-03T23:39:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
