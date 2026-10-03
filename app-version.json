@@ -1,11 +1,11 @@
 {
-  "version": 331,
-  "label": "v1.44.37",
+  "version": 332,
+  "label": "v1.44.38",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Accueil Desktop — informations point de vente",
-  "message": "Ajout d’un bandeau opérationnel Desktop avec date et semaine du planning, coordonnées de Netto Le Thor, état d’ouverture et horaires clients, heure actuelle et session équipe matin/après-midi calculée depuis le planning. Le widget est activable et personnalisable depuis Gestion > Éditeur du portail > Blocs & widgets.",
-  "published_at": "2026-10-03T23:09:00+02:00",
+  "title": "Accueil Desktop — bannière magasin",
+  "message": "Remplacement du bandeau d’informations par une bannière Desktop de type point de vente : salutation automatique Bonjour / Bon après-midi / Bonsoir avec le nom de l’utilisateur, nom du magasin, horaires réels du jour et image de fond fondue dans le décor. La bannière peut être affichée ou masquée et entièrement personnalisée depuis Gestion > Éditeur du portail > Widgets, avec import d’image, horaires, textes, couleurs, hauteur, arrondi, position et assombrissement de la photo.",
+  "published_at": "2026-10-03T23:21:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
