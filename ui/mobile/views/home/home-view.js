@@ -199,6 +199,20 @@ function statIcon(id){
  return icons[id]||icons.hours
 }
 function notifIcon(kind){return kind==='manual_edit'||kind==='import_new'||kind==='import_replace'?'▦':kind==='admin_message'?'!':kind==='maintenance'?'⚒':kind==='app_update'?'↑':'•'}
+function homeNotificationVisual(kind){
+ const raw=services()?.siteConfig?.platform_ui?.mobile?.notification_visuals?.[kind],node=raw&&typeof raw==='object'?raw:{};
+ const safe=(v,f)=>/^#[0-9a-f]{6}$/i.test(String(v||''))?String(v):f,shape=['circle','rounded','square'].includes(String(node.shape||''))?String(node.shape):'rounded';
+ return{
+  url:String(node.url||'').trim(),
+  outer:safe(node.outer_color,'#24292F'),
+  accent:safe(node.accent_color,'#FF5A2A'),
+  radius:shape==='square'?'8px':shape==='circle'?'50%':'10px'
+ }
+}
+function homeNotificationIconHtml(kind){
+ const visual=homeNotificationVisual(kind),body=visual.url?'<img src="'+esc(visual.url)+'" alt="" draggable="false">':esc(notifIcon(kind));
+ return '<span class="mhdInfoIcon" style="--mhd-notif-outer:'+esc(visual.outer)+';--mhd-notif-accent:'+esc(visual.accent)+';--mhd-notif-radius:'+esc(visual.radius)+'">'+body+'</span>'
+}
 function since(value){
  if(!value)return'';
  const ms=Date.now()-new Date(value).getTime(),m=Math.max(0,Math.floor(ms/60000));
@@ -533,7 +547,7 @@ async function render(){
 
  if(widgetVisible('important_info')){
   const infos=(services()?.notifications||[]).filter(n=>IMPORTANT_KINDS.has(n.kind)).slice(0,2);
-  sections.push('<section class="mhdCard mhdSection mhdImportant"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+dashboardIcon('important_info')+'</span><strong>Informations importantes</strong></div><button class="mhdSectionLink" type="button" data-home-nav="notifications.html">Voir toutes ›</button></div>'+(infos.length?infos.map((item,index)=>'<button type="button" class="mhdInfoRow '+(index?'orange':'')+'" data-home-nav="'+esc(item.target_url||'notifications.html')+'"><span class="mhdInfoIcon">'+esc(notifIcon(item.kind))+'</span><span class="mhdInfoCopy"><strong>'+esc(item.title||'Information Nethor')+'</strong><small>'+esc(item.message||'')+'</small></span><time>'+esc(since(item.created_at))+'</time></button>').join(''):'<div class="mhdEmpty">Aucune information importante pour le moment.</div>')+'</section>')
+  sections.push('<section class="mhdCard mhdSection mhdImportant"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+dashboardIcon('important_info')+'</span><strong>Informations importantes</strong></div><button class="mhdSectionLink" type="button" data-home-nav="notifications.html">Voir toutes ›</button></div>'+(infos.length?infos.map((item,index)=>'<button type="button" class="mhdInfoRow '+(index?'orange':'')+'" data-home-nav="'+esc(item.target_url||'notifications.html')+'">'+homeNotificationIconHtml(item.kind)+'<span class="mhdInfoCopy"><strong>'+esc(item.title||'Information Nethor')+'</strong><small>'+esc(item.message||'')+'</small></span><time>'+esc(since(item.created_at))+'</time></button>').join(''):'<div class="mhdEmpty">Aucune information importante pour le moment.</div>')+'</section>')
  }
 
  const avatarRows=[];
