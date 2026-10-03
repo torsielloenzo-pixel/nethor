@@ -684,13 +684,13 @@ function renderQuickPlanningWidgetEditor(){
  if(!host){
   const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
   const block=document.createElement('div');block.className='operationsWidgetAdmin quickPlanningWidgetAdmin';
-  block.innerHTML='<div class="quickPlanningAdminHead"><div><span class="eyebrow">WIDGET DESKTOP · PLANNING</span><h3>Vue rapide planning</h3><p>Personnes actuellement en poste, horaires réels du planning et repère « Maintenant » automatique.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderQuickPlanningWidgetEditor()">↻ Actualiser</button></div><div id="quickPlanningWidgetEditor"></div>';
+  block.innerHTML='<div class="quickPlanningAdminHead"><div><span class="eyebrow">WIDGET DESKTOP · PLANNING</span><h3>Vue rapide planning</h3><p>Format demi-largeur compact : personnes actuellement en poste, horaires réels du planning et repère « Maintenant » automatique.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderQuickPlanningWidgetEditor()">↻ Actualiser</button></div><div id="quickPlanningWidgetEditor"></div>';
   panel.appendChild(block);host=$('quickPlanningWidgetEditor')
  }
  const w=ensureQuickPlanningWidgetConfig();
  host.innerHTML=
   '<div class="operationsWidgetAdminCard">'+
-   '<div class="operationsWidgetAdminSummary"><div><strong>Personnalisation & visibilité</strong><small>Le widget est réservé à l’accueil Desktop et se recalcule automatiquement depuis le planning publié.</small></div><label class="toggleChip"><input type="checkbox" data-quick-planning="enabled" '+(w.enabled!==false?'checked':'')+'> Afficher le widget</label></div>'+
+   '<div class="operationsWidgetAdminSummary"><div><strong>Personnalisation & visibilité</strong><small>Le widget occupe 6 colonnes sur 12 sur Desktop afin de pouvoir partager sa ligne avec un autre widget. Il se recalcule automatiquement depuis le planning publié.</small></div><label class="toggleChip"><input type="checkbox" data-quick-planning="enabled" '+(w.enabled!==false?'checked':'')+'> Afficher le widget</label></div>'+
    '<div class="quickPlanningAdminGrid">'+
     '<div class="field"><label>Titre</label><input maxlength="90" value="'+attr(w.title)+'" data-quick-planning="title"></div>'+
     '<div class="field"><label>Sous-titre</label><input maxlength="120" value="'+attr(w.subtitle)+'" data-quick-planning="subtitle"></div>'+
