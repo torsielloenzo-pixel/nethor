@@ -311,24 +311,20 @@ window.copyLoginTheme=function(kind,from,to){
  const state=document.getElementById('saveState');if(state)state.textContent='Version claire copiée vers sombre — enregistrer pour confirmer'
 };
 
-/* Ajoute l'entrée Gestion > Éditeur du portail > Écran de connexion. */
+/* Ajoute l'entrée Gestion > Apparence & médias > Écran de connexion. */
 function installLoginStructure(){
- const nav=document.querySelector('.managementNavGroup[data-nav-group="portal"] .managementNavChildren');
- const desktop=nav?.querySelector('[data-tab="desktop"]');
+ const nav=document.querySelector('.managementNavGroup[data-nav-group="appearance"] .managementNavChildren')||document.querySelector('.managementNavGroup[data-nav-group="portal"] .managementNavChildren');
+ const identity=nav?.querySelector('[data-tab="general"]');
  if(nav&&!nav.querySelector('[data-tab="login"]')){
   const btn=document.createElement('button');btn.className='managementNavChild';btn.dataset.tab='login';btn.type='button';btn.textContent='Écran de connexion';btn.setAttribute('onclick',"showTab('login',this)");
-  desktop?.insertAdjacentElement('afterend',btn)
+  identity?.insertAdjacentElement('afterend',btn)
  }
  if(!document.getElementById('tab-login')){
   const section=document.createElement('section');section.id='tab-login';section.className='section';
   section.innerHTML='<div id="loginScreenEditor" class="panel loginScreenEditorPanel"></div>';
   const before=document.getElementById('tab-blocks');before?.parentNode?.insertBefore(section,before)
  }
- const grid=document.querySelector('#tab-overview .managementActionGrid'),desktopAction=grid?.querySelector('[data-generated-tab="desktop"]')||grid?.querySelector('button[onclick*="desktop"]');
- if(grid&&desktopAction&&!grid.querySelector('[data-generated-tab="login"]')){
-  const b=document.createElement('button');b.className=desktopAction.className;b.type='button';b.dataset.generatedTab='login';b.setAttribute('onclick',"showTab('login')");
-  b.innerHTML='<span>▤</span><strong>Écran de connexion</strong><small>Clair, sombre, logos, fond et textes</small>';desktopAction.insertAdjacentElement('afterend',b)
- }
+
 }
 const baseStructure=window.ensurePortalPlatformStructure;
 if(typeof baseStructure==='function')window.ensurePortalPlatformStructure=function(){baseStructure();installLoginStructure()};
@@ -351,7 +347,7 @@ if(typeof baseShowTab==='function')window.showTab=function(name,btn,opts={}){
  try{localStorage.setItem('nettoManagementTab','login')}catch(_){}
  const u=new URL(location.href);u.searchParams.set('tab','login');u.searchParams.delete('sub');history.replaceState({},'',u);
  const crumb=document.getElementById('managementBreadcrumb'),title=document.getElementById('managementHeroTitle'),desc=document.getElementById('managementHeroText');
- if(crumb)crumb.innerHTML='Gestion <span>›</span> Éditeur du portail <span>›</span> Écran de connexion';
+ if(crumb)crumb.innerHTML='Gestion <span>›</span> Apparence & médias <span>›</span> Écran de connexion';
  if(title)title.textContent='Écran de connexion';
  if(desc)desc.textContent='Personnalise complètement la connexion Mobile et Desktop, séparément pour les thèmes clair et sombre.';
  if(typeof enhanceCompactPortal==='function')enhanceCompactPortal();
