@@ -7,7 +7,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/tool-pages-layout.js?v=5',
- 'ui/mobile/views/scanner/scanner-runtime.js?v=3'
+ 'ui/mobile/views/scanner/scanner-runtime.js?v=4'
 ];
 const state={host:null,mounted:false,styleNodes:[],scriptPromises:new Map(),previousLayout:null,previousPageId:null};
 
