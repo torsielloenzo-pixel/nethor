@@ -11,6 +11,26 @@ function icon(kind){return({
  manual_edit:'🗓️',import_new:'📥',import_replace:'🔄',reset_day:'↩️',reset_week:'↩️',password_reset_request:'🔑',
  absence_request:'🏖️',absence_decision:'✅'
 })[kind]||'🔔'}
+function safeHex(value,fallback){
+ return /^#[0-9a-f]{6}$/i.test(String(value||''))?String(value):fallback
+}
+function notificationVisual(kind){
+ const raw=services()?.siteConfig?.platform_ui?.mobile?.notification_visuals?.[kind];
+ const node=raw&&typeof raw==='object'?raw:{};
+ const shape=['circle','rounded','square'].includes(String(node.shape||''))?String(node.shape):'circle';
+ return{
+  url:String(node.url||'').trim(),
+  outer:safeHex(node.outer_color,'#24292F'),
+  accent:safeHex(node.accent_color,'#FF5A2A'),
+  radius:shape==='square'?'8px':shape==='rounded'?'14px':'50%'
+ }
+}
+function notificationVisualHtml(kind){
+ const visual=notificationVisual(kind),body=visual.url
+  ?'<img class="npCustomIcon" src="'+esc(visual.url)+'" alt="" draggable="false">'
+  :esc(icon(kind));
+ return '<div class="npIcon" aria-hidden="true" style="--np-icon-outer:'+esc(visual.outer)+';--np-icon-accent:'+esc(visual.accent)+';--np-icon-radius:'+esc(visual.radius)+'"><span>'+body+'</span></div>'
+}
 function category(kind){return({
  chat_message:'Message équipe',chat_direct:'Message',chat_group:'Message groupe',chat_general:'Message groupe',admin_message:'Information',
  app_update:'Mise à jour',maintenance:'Maintenance',manual_edit:'Planning modifié',import_new:'Nouveau planning',import_replace:'Planning remplacé',
@@ -89,7 +109,7 @@ function render(){
   const group=!n.read_at?'Nouveau':dayGroup(n.created_at);
   if(group!==previous){html+='<div class="npGroup">'+esc(group)+'</div>';previous=group}
   html+='<article class="npRow '+(!n.read_at?'unread':'')+'" data-np-id="'+esc(n.id)+'" data-np-url="'+esc(n.target_url||'')+'" tabindex="0" role="button">'+
-   '<div class="npIcon" aria-hidden="true"><span>'+icon(n.kind)+'</span></div>'+
+   notificationVisualHtml(n.kind)+
    '<div class="npRowText"><div class="npSentence"><b>'+esc(n.title||'Notification')+'</b> '+esc(n.message||'')+'</div>'+
    '<div class="npMeta">'+(!n.read_at?'<i class="npUnreadDot" aria-hidden="true"></i>':'')+'<span class="npCategory">'+esc(category(n.kind))+'</span><span class="npAge">'+esc(age(n.created_at))+'</span></div></div>'+
    '<button class="npRowMore" data-np-action="row-menu" type="button" aria-label="Options de cette notification" aria-expanded="false">⋯</button>'+
@@ -157,7 +177,7 @@ function onInput(event){
 }
 function onServices(detail){
  if(!state.mounted)return;
- if(detail?.type==='notifications'||detail?.type==='ready'||detail?.type==='snapshot'){
+ if(detail?.type==='notifications'||detail?.type==='core'||detail?.type==='ready'||detail?.type==='snapshot'){
   state.items=[...(detail.notifications||services()?.notifications||[])];
   state.ready=true;render()
  }
