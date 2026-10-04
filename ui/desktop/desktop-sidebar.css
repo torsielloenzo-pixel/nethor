@@ -18,6 +18,10 @@ html[data-theme="dark"][data-nethor-page-layout="desktop"]{
 }
 html[data-nethor-page-layout="desktop"] body{
  box-sizing:border-box!important;
+ margin:0!important;
+ padding-top:0!important;
+ padding-right:0!important;
+ padding-bottom:0!important;
  padding-left:var(--nethor-sidebar-w)!important;
  background:var(--nethor-shell-bg)
 }
