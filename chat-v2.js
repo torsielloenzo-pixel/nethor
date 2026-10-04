@@ -37,7 +37,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,attachmentPreviewUrl:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:'',voicePeaks:new Map(),activeVoiceId:null,generalAvatarUrl:'',generalAvatarPath:'',contactsEnsuredFor:''
+ signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:'',voicePeaks:new Map(),activeVoiceId:null,generalAvatarUrl:'',generalAvatarPath:'',contactsEnsuredFor:'',generalAvatarEditor:null
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -773,44 +773,79 @@ async function openDirect(id){const {data,error}=await db.rpc('chat_get_direct_c
 async function createGroup(){const name=$('groupName').value.trim();if(!name)return showToast('Donne un nom au groupe');if(!state.groupMembers.size)return showToast('Ajoute au moins un membre');const btn=$('createGroupBtn');btn.disabled=true;const {data,error}=await db.rpc('create_chat_conversation',{p_type:'group',p_name:name,p_member_ids:[...state.groupMembers]});btn.disabled=false;if(error){console.error(error);return showToast('Création impossible')}closeNewChat();await loadConversations();await openConversation(data,{showMobile:true})}
 function infoMemberRow(p){const m=member(p.user_id)||{id:p.user_id,display_name:'Utilisateur'};return '<button type="button" class="infoRow contactInfoRow" onclick="openContactCard(\''+m.id+'\')">'+avatarHtml(m,'pickAvatar')+'<div><strong>'+esc(m.display_name||'Utilisateur')+(p.user_id===state.session.user.id?' · Vous':'')+'</strong><small>'+esc(roleLabel(m.role))+' · '+esc(contactPresence(m.id))+'</small></div>'+(p.role==='owner'?'<span style="font-size:8px;color:#e34b27;font-weight:900">CRÉATEUR</span>':'<span>›</span>')+'</button>'}
 function openConversationInfo(){const c=activeConversation();if(!c)return;$('infoModal').classList.remove('hidden');renderConversationInfo()}
-function closeConversationInfo(){$('infoModal').classList.add('hidden')}
+function closeConversationInfo(){disposeGeneralAvatarEditor();$('infoModal').classList.add('hidden')}
 function renderConversationInfo(){
  const c=activeConversation(),box=$('infoContent');if(!c||!box)return;const mine=state.participants.find(p=>p.user_id===state.session.user.id),canGroupManage=c.conversation_type==='group'&&(c.created_by===state.session.user.id||state.profile.role==='admin'),canGeneralManage=c.conversation_type==='general'&&state.profile.role==='admin';
  let html='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'+conversationAvatar(c,true)+'<div><strong style="font-size:15px">'+esc(conversationTitle(c))+'</strong><small style="display:block;margin-top:3px;color:#858b93;font-size:9px">'+esc(conversationPresence(c))+'</small></div></div>';
  html+='<label class="infoToggle"><span>Mettre les notifications en sourdine</span><input type="checkbox" '+(mine?.muted?'checked':'')+' onchange="setMuted(this.checked)"></label>';
- if(canGeneralManage)html+='<div class="infoSection generalAvatarSettings"><div class="infoSectionTitle">Photo du canal Général</div><div class="generalAvatarAdmin">'+conversationAvatar(c,true)+'<div><strong>Visuel du canal</strong><small>Visible par toute l’équipe dans la liste et l’en-tête.</small></div></div><div class="generalAvatarActions"><button class="modalAction compact" type="button" onclick="document.getElementById(\'generalAvatarInput\').click()">Modifier la photo</button>'+(state.generalAvatarUrl?'<button class="generalAvatarReset" type="button" onclick="resetGeneralAvatar()">Réinitialiser</button>':'')+'</div><input id="generalAvatarInput" type="file" accept=".png,.jpg,.jpeg,.webp,.svg,image/png,image/jpeg,image/webp,image/svg+xml" hidden onchange="uploadGeneralAvatar(this)"></div>';
+ if(canGeneralManage)html+='<div class="infoSection generalAvatarSettings"><div class="infoSectionTitle">Photo du canal Général</div><div class="generalAvatarAdmin">'+conversationAvatar(c,true)+'<div><strong>Visuel du canal</strong><small>Visible par toute l’équipe dans la liste et l’en-tête.</small></div></div><div class="generalAvatarActions"><label class="generalAvatarChoose">'+(state.generalAvatarUrl?'Remplacer la photo':'Choisir une photo')+'<input id="generalAvatarInput" class="generalAvatarFileInput" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" onchange="selectGeneralAvatarFile(this)"></label>'+(state.generalAvatarUrl?'<button class="generalAvatarReset" type="button" onclick="resetGeneralAvatar()">Réinitialiser</button>':'')+'</div>'+generalAvatarEditorHtml()+'</div>';
  if(canGroupManage)html+='<div class="infoSection"><div class="infoSectionTitle">Nom du groupe</div><input id="infoGroupName" class="groupNameInput" value="'+esc(c.conversation_name||'')+'" maxlength="80"></div><div class="infoSection"><div class="infoSectionTitle">Membres du groupe</div><div class="modalMembers">'+state.members.filter(m=>m.id!==state.session.user.id).map(m=>{const selected=state.participants.some(p=>p.user_id===m.id);return '<button class="pickMember '+(selected?'selected':'')+'" onclick="this.classList.toggle(\'selected\')" data-info-member="'+m.id+'">'+avatarHtml(m,'pickAvatar')+'<span><strong>'+esc(m.display_name||'Utilisateur')+'</strong><small>'+esc(roleLabel(m.role))+'</small></span><i class="pickCheck">✓</i></button>'}).join('')+'</div><button class="modalAction" onclick="saveGroupInfo()">Enregistrer le groupe</button></div>';
  else html+='<div class="infoSection"><div class="infoSectionTitle">Participants</div><div class="infoMembers">'+state.participants.map(infoMemberRow).join('')+'</div></div>';
  if(c.conversation_type==='direct')html+='<button class="infoDanger" onclick="clearDirectConversation()">Effacer le contenu de la discussion</button>';
  if(c.conversation_type==='group'){if(canGroupManage)html+='<div class="infoHint">Le créateur peut renommer le groupe, ajouter ou retirer des membres et le supprimer visuellement. Une suppression est conservée dans les archives administrateur.</div><button class="infoDanger" onclick="deleteConversation()">Supprimer le groupe</button>';else if(mine?.role!=='owner')html+='<button class="infoDanger" onclick="leaveGroup()">Quitter le groupe</button>'}
- box.innerHTML=html
+ box.innerHTML=html;
+ if(state.generalAvatarEditor)requestAnimationFrame(drawGeneralAvatarCrop)
 }
 async function setMuted(v){const {error}=await db.rpc('chat_set_muted',{p_conversation:state.activeId,p_muted:!!v});if(error)showToast('Impossible de modifier ce réglage');else{const p=state.participants.find(x=>x.user_id===state.session.user.id);if(p)p.muted=!!v;showToast(v?'Notifications en sourdine':'Notifications réactivées')}}
-async function uploadGeneralAvatar(input){
- if(state.profile?.role!=='admin')return showToast('Administrateur uniquement');
+function disposeGeneralAvatarEditor(){
+ const editor=state.generalAvatarEditor;if(editor?.objectUrl)try{URL.revokeObjectURL(editor.objectUrl)}catch(_){}
+ state.generalAvatarEditor=null
+}
+function generalAvatarEditorHtml(){
+ const editor=state.generalAvatarEditor;if(!editor)return'';
+ return '<div class="generalAvatarCropPanel"><div class="generalAvatarCropStage"><canvas id="generalAvatarCropCanvas" width="280" height="280" aria-label="Aperçu du cadrage"></canvas></div><div class="generalAvatarCropControls"><label><span>Zoom</span><input type="range" min="1" max="3" step="0.01" value="'+editor.zoom+'" oninput="setGeneralAvatarCrop(\'zoom\',this.value)"></label><label><span>Horizontal</span><input type="range" min="0" max="100" step="1" value="'+editor.x+'" oninput="setGeneralAvatarCrop(\'x\',this.value)"></label><label><span>Vertical</span><input type="range" min="0" max="100" step="1" value="'+editor.y+'" oninput="setGeneralAvatarCrop(\'y\',this.value)"></label></div><div class="generalAvatarCropActions"><button type="button" class="generalAvatarCropCancel" onclick="cancelGeneralAvatarCrop()">Annuler</button><button id="generalAvatarSaveBtn" type="button" class="modalAction compact" onclick="saveGeneralAvatarCrop()">Enregistrer la photo</button></div></div>'
+}
+function paintGeneralAvatarCrop(canvas){
+ const editor=state.generalAvatarEditor;if(!editor?.image||!canvas)return;
+ const size=canvas.width,ctx=canvas.getContext('2d'),w=editor.image.naturalWidth||1,h=editor.image.naturalHeight||1;
+ const base=Math.max(size/w,size/h),scale=base*Math.max(1,Number(editor.zoom)||1),dw=w*scale,dh=h*scale;
+ const ox=Math.max(0,dw-size)*(Math.max(0,Math.min(100,Number(editor.x)||0))/100);
+ const oy=Math.max(0,dh-size)*(Math.max(0,Math.min(100,Number(editor.y)||0))/100);
+ ctx.clearRect(0,0,size,size);ctx.drawImage(editor.image,-ox,-oy,dw,dh)
+}
+function drawGeneralAvatarCrop(){paintGeneralAvatarCrop($('generalAvatarCropCanvas'))}
+function setGeneralAvatarCrop(key,value){
+ const editor=state.generalAvatarEditor;if(!editor||!['zoom','x','y'].includes(key))return;
+ editor[key]=Number(value);drawGeneralAvatarCrop()
+}
+function cancelGeneralAvatarCrop(){disposeGeneralAvatarEditor();renderConversationInfo()}
+function selectGeneralAvatarFile(input){
+ if(state.profile?.role!=='admin'){input.value='';return showToast('Administrateur uniquement')}
  const file=input?.files?.[0];if(!file)return;
- const ext=(file.name.split('.').pop()||'').toLowerCase().replace(/[^a-z0-9]/g,'');
- if(!['png','jpg','jpeg','webp','svg'].includes(ext)){input.value='';return showToast('Format non pris en charge')}
+ if(!['image/jpeg','image/png','image/webp'].includes(String(file.type||'').toLowerCase())){input.value='';return showToast('Utilise une image JPG, PNG ou WebP')}
  if(file.size>5*1024*1024){input.value='';return showToast('Image trop lourde · 5 Mo maximum')}
- const oldPath=state.generalAvatarPath;
+ const objectUrl=URL.createObjectURL(file),img=new Image();
+ img.onload=()=>{
+  disposeGeneralAvatarEditor();
+  state.generalAvatarEditor={image:img,objectUrl,zoom:1,x:50,y:50,name:file.name};
+  input.value='';renderConversationInfo()
+ };
+ img.onerror=()=>{URL.revokeObjectURL(objectUrl);input.value='';showToast('Impossible de lire cette image')};
+ img.src=objectUrl
+}
+async function chatActionForm(form){
+ const {data:{session}}=await db.auth.getSession();if(!session?.access_token)throw new Error('session');
+ const response=await fetch(SUPABASE_URL+'/functions/v1/chat-actions',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:form});
+ const data=await response.json().catch(()=>({}));if(!response.ok||!data?.ok)throw new Error(data?.error||'chat action');return data
+}
+async function saveGeneralAvatarCrop(){
+ if(state.profile?.role!=='admin'||!state.generalAvatarEditor)return;
+ const btn=$('generalAvatarSaveBtn');if(btn){btn.disabled=true;btn.textContent='Enregistrement…'}
  try{
-  const path='chat/general/channel-'+Date.now()+'.'+ext;
-  const {error:uploadError}=await db.storage.from('portal-assets').upload(path,file,{upsert:false,contentType:file.type||undefined});if(uploadError)throw uploadError;
-  const {data}=db.storage.from('portal-assets').getPublicUrl(path),url=data?.publicUrl||'';
-  const {error}=await db.rpc('chat_set_general_avatar',{p_url:url,p_path:path});if(error)throw error;
-  state.generalAvatarUrl=url;state.generalAvatarPath=path;
-  if(oldPath&&oldPath!==path)db.storage.from('portal-assets').remove([oldPath]).catch(()=>{});
-  state.lastConversationRenderKey='';renderConversations();renderConversationHeader();renderConversationInfo();showToast('Photo du canal Général mise à jour')
- }catch(error){console.error('Photo canal Général:',error);showToast('Modification impossible')}
- finally{input.value=''}
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;paintGeneralAvatarCrop(canvas);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.92));if(!blob)throw new Error('image conversion');
+  const form=new FormData();form.append('action','set-general-avatar');form.append('file',new File([blob],'canal-general.webp',{type:'image/webp'}));
+  const data=await chatActionForm(form);
+  state.generalAvatarUrl=String(data.avatar_url||'');state.generalAvatarPath=String(data.avatar_path||'');
+  disposeGeneralAvatarEditor();state.lastConversationRenderKey='';renderConversations();renderConversationHeader();renderConversationInfo();showToast('Photo du canal Général mise à jour')
+ }catch(error){console.error('Photo canal Général:',error);showToast('Impossible d’enregistrer la photo')}
+ finally{const current=$('generalAvatarSaveBtn');if(current){current.disabled=false;current.textContent='Enregistrer la photo'}}
 }
 async function resetGeneralAvatar(){
  if(state.profile?.role!=='admin'||!confirm('Réinitialiser la photo du canal Général ?'))return;
- const oldPath=state.generalAvatarPath;
- const {error}=await db.rpc('chat_set_general_avatar',{p_url:null,p_path:null});if(error){console.error(error);return showToast('Réinitialisation impossible')}
- state.generalAvatarUrl='';state.generalAvatarPath='';
- if(oldPath)db.storage.from('portal-assets').remove([oldPath]).catch(()=>{});
- state.lastConversationRenderKey='';renderConversations();renderConversationHeader();renderConversationInfo();showToast('Photo du canal Général réinitialisée')
+ const {data,error}=await db.functions.invoke('chat-actions',{body:{action:'reset-general-avatar'}});
+ if(error||!data?.ok){console.error(error||data);return showToast('Réinitialisation impossible')}
+ disposeGeneralAvatarEditor();state.generalAvatarUrl='';state.generalAvatarPath='';state.lastConversationRenderKey='';renderConversations();renderConversationHeader();renderConversationInfo();showToast('Photo du canal Général réinitialisée')
 }
 async function clearDirectConversation(id=state.activeId){
  const conv=conversationById(id);if(!conv||conv.conversation_type!=='direct')return;
