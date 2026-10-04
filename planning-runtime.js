@@ -986,6 +986,35 @@ async function waitForProfileContext(uid,ms=1800){
  }
  return api?.session?.user?.id===uid?api.profile:null
 }
+async function prewarmPlanningRuntime(){
+ if(!PLANNING_SPA_MODE)return false;
+ const shared=planningSharedServices();
+ if(!shared)return false;
+ await shared.ready();
+ const session=shared.session,p=shared.profile;
+ if(!session||!p||!shared.client)return false;
+ const permission=planningPermissionFromShared(p,shared.siteConfig||{});
+ if(permission==='none')return false;
+ const uid=String(session.user.id||'');
+ if(planningCacheReady&&planningCacheUserId===uid&&planningLoadedWeekKey)return true;
+ db=shared.client;
+ role=p.role||'lecture';
+ planningPermissionLevel=permission;
+ canEdit=permission==='manage';
+ currentUser={id:session.user.id,name:p.display_name||'Utilisateur'};
+ planningSiteConfig=shared.siteConfig||{};
+ absenceAccess=absencePermission(planningSiteConfig,role);
+ currentWeekStart=startOfWeek(new Date());
+ currentDay=Math.max(0,Math.min(6,(new Date().getDay()+6)%7));
+ planningDeepLinkFocus='';
+ await Promise.all([
+  loadTeamProfiles(),
+  loadWeek(currentWeekStart,{render:false,silent:true})
+ ]);
+ planningCacheUserId=uid;
+ planningRuntimeActive=false;
+ return planningCacheReady
+}
 async function syncFreshPlanningAccess(fresh=(planningSharedServices()?.profile||window.NettoProfileUI?.profile)){
  if(!fresh)return;
  try{
@@ -1126,6 +1155,7 @@ async function mountPlanningRuntime(){return init()}
 window.NethorPlanningRuntime=Object.freeze({
  mount:mountPlanningRuntime,
  unmount:unmountPlanningRuntime,
+ prewarm:prewarmPlanningRuntime,
  reset:()=>unmountPlanningRuntime({hard:true}),
  render:()=>renderAll(),
  loadWeek:(value)=>loadWeek(value?parseISO(value):currentWeekStart),
