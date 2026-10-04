@@ -10,7 +10,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=2',
- 'planning-runtime.js?v=3',
+ 'planning-runtime.js?v=4',
  'planning-agenda-v2.js?v=20'
 ];
 const state={
@@ -126,9 +126,19 @@ async function warmAsset(url){
  }catch(_){return false}
 }
 async function preload(){
- const fragmentPromise=template();
- await Promise.allSettled([...STYLE_ASSETS,...SCRIPT_ASSETS].map(warmAsset));
- try{await fragmentPromise;return true}catch(_){return false}
+ try{
+  const fragmentPromise=template();
+  await services()?.ready?.();
+  await loadAssets();
+  await fragmentPromise;
+  const warmed=await window.NethorPlanningRuntime?.prewarm?.();
+  suspendStyles();
+  return warmed!==false
+ }catch(error){
+  console.warn('[Nethor PlanningView] preload',error);
+  suspendStyles();
+  return false
+ }
 }
 function errorView(message){
  if(!state.host)return;
