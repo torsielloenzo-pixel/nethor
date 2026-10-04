@@ -1,16 +1,16 @@
 {
-  "version": 365,
-  "label": "v1.46.16",
+  "version": 366,
+  "label": "v1.46.17",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Éditeur photo du canal Général corrigé",
-  "message": "La modification de la photo du canal Général utilise maintenant un sélecteur natif fiable, un aperçu avec cadrage et zoom, puis un enregistrement serveur sécurisé.",
-  "published_at": "2026-10-05T01:47:43+02:00",
+  "title": "Conversations épinglées dans le Chat",
+  "message": "L’administrateur peut désormais épingler ou désépingler une conversation pour tous les membres concernés. Le tri du Chat suit maintenant strictement : épinglées, récentes, puis conversations vides par ordre alphabétique.",
+  "published_at": "2026-10-05T01:56:14+02:00",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Sélection d’image JPG, PNG ou WebP directement depuis les paramètres du canal",
-    "Aperçu circulaire avec zoom et réglage horizontal/vertical avant enregistrement",
-    "Enregistrement du visuel via la fonction serveur Chat et remplacement propre de l’ancien fichier"
+    "Épinglage global réservé à l’administrateur",
+    "Les conversations épinglées restent en tête de liste pour tous les membres qui y ont accès",
+    "Tri strict : épinglées, conversations avec activité récente, puis conversations vides par ordre alphabétique"
   ]
 }
