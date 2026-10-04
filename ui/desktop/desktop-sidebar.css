@@ -26,6 +26,7 @@ html[data-nethor-page-layout="desktop"] body{
  background:var(--nethor-shell-bg)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-desktop-sidebar="0"] body{padding-left:0!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="index"] body:has(#site.hidden){padding:0!important;background:inherit!important}
 html[data-nethor-page-layout="desktop"] .nethorDesktopSidebar{
  position:fixed;z-index:110;inset:0 auto 0 0;width:var(--nethor-sidebar-w);
  display:flex;flex-direction:column;padding:0 10px 14px;border-right:1px solid var(--nethor-sidebar-border);
