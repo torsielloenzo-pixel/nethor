@@ -351,3 +351,105 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
  border-color:#633d36;
  color:#ffb09a
 }
+
+
+/* Canal Général — éditeur photo fiable */
+.generalAvatarChoose{
+ position:relative;
+ min-height:39px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border:0;
+ border-radius:11px;
+ background:var(--chat-gradient);
+ color:#fff;
+ font-size:9px;
+ font-weight:900;
+ cursor:pointer;
+ overflow:hidden;
+ padding:0 13px
+}
+.generalAvatarFileInput{
+ position:absolute;
+ inset:0;
+ width:100%;
+ height:100%;
+ opacity:0;
+ cursor:pointer;
+ font-size:0
+}
+.generalAvatarCropPanel{
+ margin-top:10px;
+ padding:11px;
+ border:1px solid var(--chat-line);
+ border-radius:14px;
+ background:#f8f9fa
+}
+.generalAvatarCropStage{
+ width:min(100%,280px);
+ aspect-ratio:1;
+ margin:0 auto;
+ border-radius:50%;
+ overflow:hidden;
+ background:#e9edf1;
+ box-shadow:inset 0 0 0 1px #dfe4e8
+}
+.generalAvatarCropStage canvas{
+ width:100%;
+ height:100%;
+ display:block
+}
+.generalAvatarCropControls{
+ display:grid;
+ gap:9px;
+ margin-top:12px
+}
+.generalAvatarCropControls label{
+ display:grid;
+ grid-template-columns:74px minmax(0,1fr);
+ gap:10px;
+ align-items:center
+}
+.generalAvatarCropControls span{
+ font-size:8.5px;
+ font-weight:850;
+ color:var(--chat-muted)
+}
+.generalAvatarCropControls input[type="range"]{
+ width:100%;
+ accent-color:#ff5a2a
+}
+.generalAvatarCropActions{
+ display:grid;
+ grid-template-columns:auto minmax(0,1fr);
+ gap:8px;
+ margin-top:11px
+}
+.generalAvatarCropCancel{
+ min-height:39px;
+ padding:0 13px;
+ border:1px solid var(--chat-line);
+ border-radius:11px;
+ background:#fff;
+ color:#59616a;
+ font-size:9px;
+ font-weight:900
+}
+.generalAvatarCropActions .modalAction.compact{
+ margin:0;
+ min-height:39px
+}
+:root[data-theme="dark"] .generalAvatarCropPanel{
+ background:#23272c;
+ border-color:#393f47
+}
+:root[data-theme="dark"] .generalAvatarCropStage{
+ background:#171a1e;
+ box-shadow:inset 0 0 0 1px #3a4048
+}
+:root[data-theme="dark"] .generalAvatarCropCancel{
+ background:#2b3036;
+ border-color:#3c434c;
+ color:#e5e9ed
+}
