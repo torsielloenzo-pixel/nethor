@@ -18,13 +18,54 @@ function buildUserMenu(ctx){
   '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>'+icon(logout,'↪')+'</span><span><strong>'+esc(logout.label)+'</strong><small>'+esc(logout.subtitle)+'</small></span></button>'+
  '</div>'
 }
+const DESKTOP_SIDEBAR_DEFAULTS={
+ home:{label:'Accueil',url:'home.html',icon:'home',enabled:true},
+ activity:{label:'Activité magasin',url:'home.html#nethorDesktopStatsRow',icon:'activity',enabled:true},
+ planning:{label:'Planning',url:'planning.html',icon:'planning',enabled:true},
+ team:{label:'Équipe',url:'home.html#nethorDesktopTeamWidget',icon:'team',enabled:true},
+ tasks:{label:'Tâches',url:'home.html#nethorDesktopPriorities',icon:'tasks',enabled:true},
+ receptions:{label:'Réceptions',url:'home.html#nethorDesktopDeliveriesKpi',icon:'receptions',enabled:true},
+ articles:{label:'Fiches articles',url:'articles.html',icon:'articles',enabled:true},
+ chat:{label:'Chat',url:'chat.html',icon:'chat',enabled:true},
+ incidents:{label:'Incidents',url:'report-problem.html',icon:'incidents',enabled:true},
+ reports:{label:'Rapports',url:'admin-portal.html?tab=logs',icon:'reports',enabled:true},
+ settings:{label:'Paramètres',url:'settings.html',icon:'settings',enabled:true}
+};
+function desktopDashboardConfig(site={}){
+ const raw=site?.desktop_dashboard_widget&&typeof site.desktop_dashboard_widget==='object'?site.desktop_dashboard_widget:{};
+ const header=raw.header&&typeof raw.header==='object'?raw.header:{};
+ const sidebar=raw.sidebar&&typeof raw.sidebar==='object'?raw.sidebar:{},items=sidebar.items&&typeof sidebar.items==='object'?sidebar.items:{};
+ const normalized={};
+ Object.entries(DESKTOP_SIDEBAR_DEFAULTS).forEach(([key,def])=>normalized[key]={...def,...(items[key]&&typeof items[key]==='object'?items[key]:{})});
+ return{
+  enabled:raw.enabled!==false,
+  header:{
+   store_name:String(header.store_name||site?.store_info_widget?.store_name||'Netto Le Thor'),
+   store_subtitle:String(header.store_subtitle||'Point de vente'),
+   store_url:String(header.store_url||'home.html'),
+   show_store:header.show_store!==false,
+   show_datetime:header.show_datetime!==false,
+   show_notifications:header.show_notifications!==false,
+   show_user:header.show_user!==false,
+   show_store_image:header.show_store_image!==false
+  },
+  sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalized}
+ }
+}
 function desktopSidebarIcon(kind){
+ const common='viewBox="0 0 24 24" aria-hidden="true"';
  const icons={
-  home:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.7 12 3.5l8.5 7.2"/><path d="M5.5 9.8V20h13V9.8"/><path d="M9.5 20v-6h5v6"/></svg>',
-  planning:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"/><path d="M8 13h3M13 13h3M8 16.5h3"/></svg>',
-  team:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.8 19c.4-3.3 2.1-5 5.2-5s4.8 1.7 5.2 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.2c3.2-.5 5 1.1 5.3 4.1"/></svg>',
-  chat:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.8 3.2v-3.2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/><path d="M7.5 9h9M7.5 12.5h6"/></svg>',
-  settings:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 13.8a7.6 7.6 0 0 0 0-3.6l2-1.5-2-3.4-2.4 1a8.2 8.2 0 0 0-3.1-1.8L13.2 2H9.3L9 4.5a8.2 8.2 0 0 0-3.1 1.8l-2.4-1-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3.6l-2 1.5 2 3.4 2.4-1A8.2 8.2 0 0 0 9 19.5l.3 2.5h3.9l.3-2.5a8.2 8.2 0 0 0 3.1-1.8l2.4 1 2-3.4-2-1.5Z"/></svg>'
+  home:'<svg '+common+'><path d="M3.5 10.7 12 3.5l8.5 7.2"/><path d="M5.5 9.8V20h13V9.8"/><path d="M9.5 20v-6h5v6"/></svg>',
+  activity:'<svg '+common+'><path d="M4 20V10M8 20V5M12 20v-8M16 20V8M20 20V3"/><path d="M2.5 20.5h19"/></svg>',
+  planning:'<svg '+common+'><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"/><path d="M8 13h3M13 13h3M8 16.5h3"/></svg>',
+  team:'<svg '+common+'><circle cx="9" cy="8" r="3"/><path d="M3.8 19c.4-3.3 2.1-5 5.2-5s4.8 1.7 5.2 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.2c3.2-.5 5 1.1 5.3 4.1"/></svg>',
+  tasks:'<svg '+common+'><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="m8 12 2.2 2.2L16.5 8"/><path d="M8 7h.01M8 17h8"/></svg>',
+  receptions:'<svg '+common+'><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+  articles:'<svg '+common+'><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.3 7.7 7.7 4.2 7.7-4.2M12 12v9"/></svg>',
+  chat:'<svg '+common+'><path d="M5 4.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.8 3.2v-3.2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/><path d="M7.5 9h9M7.5 12.5h6"/></svg>',
+  incidents:'<svg '+common+'><path d="M12 3 21 20H3L12 3Z"/><path d="M12 9v5M12 17.2v.2"/></svg>',
+  reports:'<svg '+common+'><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8 15l2.4-3 2.5 1.8L16.5 9"/><path d="M8 18h8"/></svg>',
+  settings:'<svg '+common+'><circle cx="12" cy="12" r="3"/><path d="M19 13.8a7.6 7.6 0 0 0 0-3.6l2-1.5-2-3.4-2.4 1a8.2 8.2 0 0 0-3.1-1.8L13.2 2H9.3L9 4.5a8.2 8.2 0 0 0-3.1 1.8l-2.4-1-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3.6l-2 1.5 2 3.4 2.4-1A8.2 8.2 0 0 0 9 19.5l.3 2.5h3.9l.3-2.5a8.2 8.2 0 0 0 3.1-1.8l2.4 1 2-3.4-2-1.5Z"/></svg>'
  };
  return icons[kind]||icons.home
 }
@@ -33,27 +74,60 @@ function ensureDesktopSidebarStyle(){
  const link=document.createElement('link');
  link.id='nethorDesktopSidebarCss';
  link.rel='stylesheet';
- link.href='ui/desktop/desktop-sidebar.css?v=1';
+ link.href='ui/desktop/desktop-sidebar.css?v=2';
  document.head.appendChild(link)
 }
-function desktopSidebarItem(kind,label,url,active,disabled=false){
- const attrs=disabled
-  ?' aria-disabled="true" title="Disponible prochainement"'
-  :' data-sidebar-url="'+esc(url)+'" onclick="window.location.href=this.dataset.sidebarUrl"';
- return '<button class="nethorSidebarItem'+(active?' active':'')+'" type="button"'+attrs+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(kind)+'</span><span class="nethorSidebarLabel">'+esc(label)+'</span></button>'
+function desktopSidebarItem(key,def,active){
+ return '<button class="nethorSidebarItem'+(active?' active':'')+'" data-sidebar-key="'+esc(key)+'" type="button" data-sidebar-url="'+esc(def.url)+'" onclick="window.location.href=this.dataset.sidebarUrl"'+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(def.icon)+'</span><span class="nethorSidebarLabel">'+esc(def.label)+'</span><span class="nethorSidebarBadge hidden" aria-hidden="true"></span></button>'
+}
+function sidebarActiveKey(page){
+ const id=String(page||'').toLowerCase();
+ if(['home'].includes(id))return'home';
+ if(id==='planning')return'planning';
+ if(id==='chat')return'chat';
+ if(id==='articles')return'articles';
+ if(id==='report-problem')return'incidents';
+ if(['settings','notification-settings'].includes(id))return'settings';
+ return''
 }
 function buildDesktopSidebar(page){
  ensureDesktopSidebarStyle();
- const id=String(page||'').toLowerCase(),settingsActive=['settings','notification-settings'].includes(id);
+ const active=sidebarActiveKey(page);
+ const mainKeys=['home','activity','planning','team','tasks','receptions','articles','chat','incidents','reports'];
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
-  '<nav class="nethorDesktopSidebarNav">'+
-   desktopSidebarItem('home','Accueil','home.html',id==='home')+
-   desktopSidebarItem('planning','Planning','planning.html',id==='planning')+
-   desktopSidebarItem('team','Équipe','',false,true)+
-   desktopSidebarItem('chat','Chat','chat.html',id==='chat')+
-  '</nav>'+
-  '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings','Paramètres','settings.html',settingsActive)+'</div>'+
+  '<button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark"><span>ne</span><b>thor</b></span></button>'+
+  '<nav class="nethorDesktopSidebarNav">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key)).join('')+'</nav>'+
+  '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+'</div>'+
  '</aside>'
+}
+function desktopHeaderStore(){
+ return '<button class="nethorDesktopStoreSwitch" type="button" data-desktop-store-url="home.html" onclick="location.href=this.dataset.desktopStoreUrl"><span class="nethorStoreThumb" aria-hidden="true"></span><span class="nethorStoreCopy"><strong data-nethor-store-name>Netto Le Thor</strong><small data-nethor-store-subtitle>Point de vente</small></span><span class="nethorStoreChevron">⌄</span></button>'
+}
+function desktopHeaderDateTime(){
+ return '<div class="nethorDesktopDateTime"><span class="nethorDateIcon">'+desktopSidebarIcon('planning')+'</span><span><small data-nethor-desktop-date>—</small><strong data-nethor-desktop-time>--:--</strong></span></div>'
+}
+function updateDesktopClock(){
+ const date=document.querySelector('[data-nethor-desktop-date]'),time=document.querySelector('[data-nethor-desktop-time]');if(!date&&!time)return;
+ const now=new Date();
+ try{
+  if(date)date.textContent=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(now).replace(/^./,c=>c.toUpperCase());
+  if(time)time.textContent=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now)
+ }catch(_){if(date)date.textContent=now.toLocaleDateString('fr-FR');if(time)time.textContent=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+}
+function startDesktopClock(){clearInterval(window.__nethorDesktopHeaderClock);updateDesktopClock();window.__nethorDesktopHeaderClock=setInterval(updateDesktopClock,30000)}
+function applyDesktopShellConfig(site={}){
+ if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop')return;
+ const c=desktopDashboardConfig(site);
+ document.documentElement.style.setProperty('--nethor-sidebar-w',c.sidebar.width+'px');
+ document.documentElement.dataset.nethorDesktopSidebar=c.sidebar.enabled?'1':'0';
+ document.documentElement.dataset.nethorDesktopStore=c.header.show_store?'1':'0';
+ document.documentElement.dataset.nethorDesktopDatetime=c.header.show_datetime?'1':'0';
+ document.documentElement.dataset.nethorDesktopNotifications=c.header.show_notifications?'1':'0';
+ document.documentElement.dataset.nethorDesktopUser=c.header.show_user?'1':'0';
+ const store=document.querySelector('.nethorDesktopStoreSwitch');if(store){store.dataset.desktopStoreUrl=c.header.store_url||'home.html';const n=store.querySelector('[data-nethor-store-name]'),s=store.querySelector('[data-nethor-store-subtitle]');if(n)n.textContent=c.header.store_name;if(s)s.textContent=c.header.store_subtitle;const thumb=store.querySelector('.nethorStoreThumb'),photo=c.header.show_store_image?String(site?.store_info_widget?.photo_url||'').trim():'';if(thumb){thumb.classList.toggle('hasPhoto',!!photo);thumb.style.backgroundImage=photo?'url("'+photo.replace(/"/g,'%22')+'")':''}}
+ const sidebar=document.querySelector('.nethorDesktopSidebar');
+ if(sidebar)Object.entries(c.sidebar.items).forEach(([key,item])=>{const el=sidebar.querySelector('[data-sidebar-key="'+CSS.escape(key)+'"]');if(!el)return;el.classList.toggle('hidden',item.enabled===false);el.dataset.sidebarUrl=item.url||DESKTOP_SIDEBAR_DEFAULTS[key]?.url||'home.html';const label=el.querySelector('.nethorSidebarLabel');if(label)label.textContent=item.label||DESKTOP_SIDEBAR_DEFAULTS[key]?.label||key});
+ startDesktopClock()
 }
 function buildPageLayout(page){
  const id=String(page||'').toLowerCase();
@@ -74,13 +148,14 @@ function buildPageLayout(page){
   rewards:{title:'Défis & Boutique',subtitle:'Missions et récompenses',back:true,chrome:false},
   chat:{title:'Chat',subtitle:'Messagerie interne',back:true,chrome:false}
  };
- const cfg=pages[id];
- if(!cfg)return null;
+ const cfg=pages[id];if(!cfg)return null;
  if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'desktop',handlesBack:true,header:'',lead:''};
- const back=cfg.back?'<div class="navActions"><button class="btn light backBtn" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'home.html\'">← Retour</button></div>':'';
  const sidebar=buildDesktopSidebar(id);
- const header=(cfg.chrome===false?'':'<header data-nethor-page-chrome="desktop"><div class="top"><div class="brand"><button class="nethorDesktopBrandButton" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorDesktopWordmark" aria-hidden="true"><span class="nethorDesktopWordmarkNe">ne</span><span class="nethorDesktopWordmarkThor">thor</span></span></button></div>'+back+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>')+sidebar;
+ const header=(cfg.chrome===false?'':'<header data-nethor-page-chrome="desktop"><div class="top nethorDesktopReferenceHeader">'+desktopHeaderStore()+desktopHeaderDateTime()+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>')+sidebar;
+ setTimeout(()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}),0);
  return {platform:'desktop',handlesBack:!!cfg.back,header,lead:''}
 }
-window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout});
+window.addEventListener('netto:profile',e=>applyDesktopShellConfig(e.detail?.siteConfig||window.NettoProfileUI?.siteConfig||{}));
+document.addEventListener('nethor:page-layout-ready',()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}));
+window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout,applyDesktopShellConfig,desktopDashboardConfig});
 })();
