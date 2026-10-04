@@ -95,7 +95,7 @@ function buildDesktopSidebar(page){
  const active=sidebarActiveKey(page);
  const mainKeys=['home','activity','planning','team','tasks','receptions','articles','chat','incidents','reports'];
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
-  '<button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark"><span>ne</span><b>thor</b></span></button>'+
+  '<button class="nethorSidebarBrand nethorDesktopBrandButton" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
   '<nav class="nethorDesktopSidebarNav">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key)).join('')+'</nav>'+
   '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+'</div>'+
  '</aside>'
