@@ -1,11 +1,11 @@
 {
-  "version": 342,
-  "label": "v1.45.4",
+  "version": 343,
+  "label": "v1.45.5",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile — sens du swipe inversé",
-  "message": "Le sens de navigation par swipe a été inversé pour suivre le déplacement naturel des pages : swipe vers la gauche pour aller vers la page située à droite dans la barre mobile, swipe vers la droite pour revenir vers la page située à gauche.",
-  "published_at": "2026-10-04T02:18:00+02:00",
+  "title": "Mises à jour Mobile fiabilisées",
+  "message": "Le système de mise à jour Mobile attend désormais que le nouveau Service Worker soit réellement installé puis activé avant de recharger Nethor. Il ne peut plus envoyer la commande d’installation à l’ancien worker par erreur, et le nouveau cache n’est plus supprimé pendant l’activation. Les mises à jour sans réinitialisation ne purgent plus inutilement le cache.",
+  "published_at": "2026-10-04T02:25:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
