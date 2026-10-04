@@ -82,7 +82,7 @@ function ensureDesktopSidebarStyle(){
  const link=document.createElement('link');
  link.id='nethorDesktopSidebarCss';
  link.rel='stylesheet';
- link.href='ui/desktop/desktop-sidebar.css?v=6';
+ link.href='ui/desktop/desktop-sidebar.css?v=7';
  document.head.appendChild(link)
 }
 function desktopSidebarItem(key,def,active){
