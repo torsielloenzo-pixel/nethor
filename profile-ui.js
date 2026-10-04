@@ -1634,18 +1634,30 @@ function syncAppIconLinks(){
  let tile=document.querySelector('meta[name="msapplication-TileColor"]');if(!tile){tile=document.createElement('meta');tile.name='msapplication-TileColor';document.head.appendChild(tile)}tile.content='#202631';
 }
 async function setupAppUpdates(){
- if(!('serviceWorker' in navigator))return;
+ if(!('serviceWorker' in navigator)||window.__nethorUpdateSetup)return;
+ window.__nethorUpdateSetup=true;
  try{
   const reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+  let lastCheck=0,checkPromise=null;
   const show=()=>{if(reg.waiting&&navigator.serviceWorker.controller)void showUpdateAvailable(reg).catch(e=>console.warn('Mise à jour Nethor:',e))};
+  const check=(force=false)=>{
+   const now=Date.now();
+   if(!force&&now-lastCheck<120000)return checkPromise||Promise.resolve();
+   if(checkPromise)return checkPromise;
+   lastCheck=now;
+   checkPromise=reg.update().catch(e=>console.warn('Vérification mise à jour:',e)).finally(()=>{checkPromise=null});
+   return checkPromise
+  };
   show();
   reg.addEventListener('updatefound',()=>{
    const worker=reg.installing;if(!worker)return;
    worker.addEventListener('statechange',()=>{if(worker.state==='installed')show()})
   });
-  reg.update().catch(()=>{});
-  window.addEventListener('focus',()=>reg.update().catch(()=>{}))
- }catch(e){console.warn('Mise à jour application:',e)}
+  void check(true);
+  window.addEventListener('focus',()=>void check(false),{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)void check(false)});
+  window.addEventListener('online',()=>void check(true),{passive:true})
+ }catch(e){console.warn('Mise à jour application:',e);window.__nethorUpdateSetup=false}
 }
 
 function maintenanceActive(config=api?.siteConfig){return config?.maintenance?.enabled===true}
