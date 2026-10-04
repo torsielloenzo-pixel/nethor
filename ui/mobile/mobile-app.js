@@ -347,6 +347,10 @@ function onRouteEvent(event){
 
 let mobileSwipeState=null;
 let suppressSwipeClickUntil=0;
+let mobileSwipeTransitionTimer=0;
+function mobileSwipeReducedMotion(){
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true
+}
 function mobileSwipeOrder(){
   const allowed=new Set(['home','planning','chat']),seen=new Set(),order=[];
   navHost.querySelectorAll(':scope > [data-mobile-destination]').forEach(link=>{
@@ -371,9 +375,86 @@ function mobileSwipeBlocked(target){
   if(target.closest('input,textarea,select,[contenteditable="true"],[data-mobile-swipe-ignore]'))return true;
   return !!mobileSwipeHorizontalScroller(target)
 }
-function clearMobileSwipeState(){
+function resetMobileSwipePreview({snap=false}={}){
+  if(!viewHost)return;
+  if(snap&&!mobileSwipeReducedMotion()){
+    viewHost.classList.add('nethorSwipeSnapBack');
+    requestAnimationFrame(()=>{
+      viewHost.style.setProperty('--nethor-swipe-offset','0px');
+      viewHost.style.setProperty('--nethor-swipe-opacity','1')
+    });
+    setTimeout(()=>viewHost.classList.remove('nethorSwipeSnapBack'),180)
+  }else viewHost.classList.remove('nethorSwipeSnapBack');
+  if(!snap||mobileSwipeReducedMotion()){
+    viewHost.style.removeProperty('--nethor-swipe-offset');
+    viewHost.style.removeProperty('--nethor-swipe-opacity')
+  }else setTimeout(()=>{
+    viewHost.style.removeProperty('--nethor-swipe-offset');
+    viewHost.style.removeProperty('--nethor-swipe-opacity')
+  },190)
+}
+function clearMobileSwipeState(options={}){
   mobileSwipeState=null;
-  root.removeAttribute('data-mobile-swipe')
+  root.removeAttribute('data-mobile-swipe');
+  resetMobileSwipePreview(options)
+}
+function updateMobileSwipePreview(state,dx){
+  if(!state?.locked||!viewHost)return;
+  const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
+  const first=state.index<=0,last=state.index>=state.order.length-1;
+  const blockedEdge=(dx>0&&first)||(dx<0&&last);
+  const resistance=blockedEdge?.075:.16;
+  const max=blockedEdge?10:22;
+  const offset=Math.max(-max,Math.min(max,dx*resistance));
+  const progress=Math.min(1,Math.abs(dx)/(width*.42));
+  viewHost.style.setProperty('--nethor-swipe-offset',offset.toFixed(2)+'px');
+  viewHost.style.setProperty('--nethor-swipe-opacity',String((1-progress*.055).toFixed(3)))
+}
+function ensureMobileSwipeVeil(){
+  let veil=root.querySelector('[data-mobile-swipe-veil]');
+  if(!veil){
+    veil=document.createElement('div');
+    veil.className='nethorMobileSwipeVeil';
+    veil.setAttribute('data-mobile-swipe-veil','');
+    veil.setAttribute('aria-hidden','true');
+    root.appendChild(veil)
+  }
+  const hostRect=viewHost.getBoundingClientRect(),rootRect=root.getBoundingClientRect();
+  veil.style.left=(hostRect.left-rootRect.left)+'px';
+  veil.style.top=(hostRect.top-rootRect.top)+'px';
+  veil.style.width=hostRect.width+'px';
+  veil.style.height=hostRect.height+'px';
+  return veil
+}
+async function runMobileSwipeTransition(next,step){
+  clearTimeout(mobileSwipeTransitionTimer);
+  const reduced=mobileSwipeReducedMotion(),direction=step>0?'next':'previous';
+  const veil=ensureMobileSwipeVeil();
+  root.dataset.mobileSwipe='navigating';
+  root.dataset.mobileSwipeDirection=direction;
+  viewHost.classList.remove('nethorSwipeSnapBack','nethorSwipeEntering');
+  resetMobileSwipePreview();
+  if(!reduced){
+    viewHost.classList.add('nethorSwipeLeaving');
+    requestAnimationFrame(()=>veil.classList.add('show'));
+    await new Promise(resolve=>setTimeout(resolve,95))
+  }
+  const ok=await Promise.resolve(router()?.open?.(next,{source:'swipe'}));
+  viewHost.classList.remove('nethorSwipeLeaving');
+  if(ok!==false&&!reduced){
+    viewHost.classList.add('nethorSwipeEntering');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>veil.classList.remove('show')));
+    mobileSwipeTransitionTimer=setTimeout(()=>{
+      viewHost.classList.remove('nethorSwipeEntering');
+      root.removeAttribute('data-mobile-swipe');
+      root.removeAttribute('data-mobile-swipe-direction')
+    },240)
+  }else{
+    veil.classList.remove('show');
+    root.removeAttribute('data-mobile-swipe');
+    root.removeAttribute('data-mobile-swipe-direction')
+  }
+  return ok
 }
 function beginMobileSwipe(event){
   if(event.isPrimary===false||root.dataset.keyboard==='open')return clearMobileSwipeState();
@@ -399,7 +480,10 @@ function moveMobileSwipe(event){
     if(ax>=ay*.9&&ax>=12){state.locked=true;root.dataset.mobileSwipe='tracking'}
     else return
   }
-  if(state.locked&&event.cancelable)event.preventDefault()
+  if(state.locked){
+    updateMobileSwipePreview(state,dx);
+    if(event.cancelable)event.preventDefault()
+  }
 }
 function endMobileSwipe(event){
   const state=mobileSwipeState;
@@ -410,15 +494,13 @@ function endMobileSwipe(event){
   const threshold=Math.max(38,Math.min(72,width*.12));
   const velocity=Math.abs(dx)/elapsed;
   const qualifies=state.locked&&!state.cancelled&&Math.abs(dx)>Math.abs(dy)*1.05&&(Math.abs(dx)>=threshold||(Math.abs(dx)>=28&&velocity>=.42));
-  clearMobileSwipeState();
-  if(!qualifies)return;
-  const step=dx<0?1:-1; // Swipe gauche = élément suivant à droite ; swipe droite = élément précédent à gauche.
+  const step=dx<0?1:-1; // Swipe gauche = page suivante située à droite ; swipe droite = page précédente située à gauche.
   const next=state.order[state.index+step];
-  if(!next)return;
+  if(!qualifies||!next){clearMobileSwipeState({snap:true});return}
+  mobileSwipeState=null;
   if(event.cancelable)event.preventDefault();
-  suppressSwipeClickUntil=performance.now()+500;
-  root.dataset.mobileSwipe='navigating';
-  Promise.resolve(router()?.open?.(next,{source:'swipe'})).finally(()=>root.removeAttribute('data-mobile-swipe'))
+  suppressSwipeClickUntil=performance.now()+520;
+  void runMobileSwipeTransition(next,step)
 }
 function bindMobileSwipeNavigation(){
   if(viewHost.dataset.mobileSwipeBound==='1')return;
