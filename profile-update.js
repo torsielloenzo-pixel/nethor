@@ -2,11 +2,11 @@
 'use strict';
 window.NethorProfileFeatures=window.NethorProfileFeatures||{};
 const api=window.NettoProfileUI||{},sounds=window.NettoSounds||{play(){}};
-const APP_RELEASE=361;
-const APP_RELEASE_LABEL='v1.46.12';
+const APP_RELEASE=362;
+const APP_RELEASE_LABEL='v1.46.13';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v74.svg';
-const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL],[360,'v1.46.11'],[359,'v1.46.10'],[358,'v1.46.9'],[357,'v1.46.8']]);
+const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL],[361,'v1.46.12'],[360,'v1.46.11'],[359,'v1.46.10'],[358,'v1.46.9'],[357,'v1.46.8']]);
 function syncAppIconLinks(){
  const version=Number(localStorage.getItem('nettoAppVersion')||0)||APP_RELEASE;
  document.querySelectorAll('link[rel="icon"],link[rel="shortcut icon"],link[rel="apple-touch-icon"]').forEach(x=>x.remove());
@@ -16,7 +16,30 @@ function syncAppIconLinks(){
  const apple=document.createElement('link');apple.rel='apple-touch-icon';apple.href=APP_MOBILE_ICON+'?v='+version;document.head.appendChild(apple);
  let manifest=document.querySelector('link[rel="manifest"]');if(!manifest){manifest=document.createElement('link');manifest.rel='manifest';document.head.appendChild(manifest)}manifest.href='manifest.webmanifest?v='+version
 }
-let updateRegistration=null;
+let updateRegistration=null,updateRegistrationPromise=null,updateSnapshotPromise=null;
+const RELEASE_CACHE_KEY='nethorReleaseInfoCacheV1';
+const RELEASE_CACHE_TTL=30000;
+
+function readReleaseCache(){
+ try{
+  const cached=JSON.parse(localStorage.getItem(RELEASE_CACHE_KEY)||'null');
+  if(!cached||!cached.info||!Number(cached.info.version))return null;
+  return cached
+ }catch(_){return null}
+}
+function writeReleaseCache(info){
+ try{localStorage.setItem(RELEASE_CACHE_KEY,JSON.stringify({saved_at:Date.now(),info}))}catch(_){}
+}
+async function getUpdateRegistration(){
+ if(!('serviceWorker' in navigator))return null;
+ if(updateRegistration)return updateRegistration;
+ if(updateRegistrationPromise)return updateRegistrationPromise;
+ updateRegistrationPromise=navigator.serviceWorker.getRegistration()
+  .then(reg=>reg||navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}))
+  .then(reg=>(updateRegistration=reg))
+  .finally(()=>{updateRegistrationPromise=null});
+ return updateRegistrationPromise
+}
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function ensureProfileStylesheet(id,href,match){
@@ -90,7 +113,7 @@ async function latestVersionFromLogs(){
  return latest
 }
 
-function waitForUpdateWorker(reg,timeout=2500){
+function waitForUpdateWorker(reg,timeout=1800){
  return new Promise(resolve=>{
   if(reg?.waiting)return resolve(reg.waiting);
   let done=false;
@@ -137,7 +160,7 @@ function setManualUpdateBusy(active){
  if(small)small.textContent=active?'Vérification en cours…':'Rechercher une nouvelle version'
 }
 
-async function prepareWaitingUpdate(reg,timeout=8000){
+async function prepareWaitingUpdate(reg,timeout=5000){
  if(!reg)return null;
  if(reg.waiting)return reg.waiting;
  await reg.update().catch(()=>{});
@@ -145,8 +168,7 @@ async function prepareWaitingUpdate(reg,timeout=8000){
 }
 
 async function forceUpdateReload(reg,targetVersion,info,url=location.href){
- if(updateRequiresCacheReset(info))await purgeNethorCaches();
- try{await reg?.unregister?.()}catch(_){}
+ try{await reg?.update?.()}catch(_){}
  try{
   sessionStorage.removeItem('nettoUpdateLater');
   sessionStorage.setItem('nettoForceUpdateVersion',String(targetVersion||''))
@@ -155,24 +177,35 @@ async function forceUpdateReload(reg,targetVersion,info,url=location.href){
 }
 
 async function updateCenterSnapshot(forceNetwork=false){
- if(!('serviceWorker' in navigator)){
-  const info=await releaseInfo();
-  return{reg:null,info,current:0,latest:Number(info.version)||APP_RELEASE,available:false,supported:false}
- }
- const reg=await navigator.serviceWorker.getRegistration().then(x=>x||navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}));
- updateRegistration=reg;
- if(forceNetwork){
-  await reg.update().catch(()=>{});
-  if(!reg.waiting)await waitForUpdateWorker(reg,3200)
- }
- const info=await releaseInfo();
- const active=Number(await workerVersion(navigator.serviceWorker.controller||reg.active))||0;
- const stored=Number(localStorage.getItem('nettoAppVersion')||0)||0;
- const waiting=Number(await workerVersion(reg.waiting))||0;
- const current=active||stored||APP_RELEASE;
- const latest=Math.max(Number(info.version)||APP_RELEASE,waiting);
- info.version=latest;
- return{reg,info,current,latest,waiting,available:latest>current,supported:true}
+ if(forceNetwork&&updateSnapshotPromise)return updateSnapshotPromise;
+ const run=async()=>{
+  if(!('serviceWorker' in navigator)){
+   const info=await releaseInfo({forceNetwork,allowCached:!forceNetwork});
+   return{reg:null,info,current:0,latest:Number(info.version)||APP_RELEASE,available:false,supported:false}
+  }
+  const reg=await getUpdateRegistration();
+  updateRegistration=reg;
+  const stored=Number(localStorage.getItem('nettoAppVersion')||0)||0;
+  const activeWorker=navigator.serviceWorker.controller||reg?.active||null;
+  const activeVersionPromise=workerVersion(activeWorker);
+  const infoPromise=releaseInfo({forceNetwork,allowCached:!forceNetwork});
+  const updatePromise=forceNetwork&&reg?.update?reg.update():Promise.resolve();
+
+  const [info,active]=await Promise.all([infoPromise,activeVersionPromise,updatePromise]).then(values=>[values[0],values[1]]);
+  if(forceNetwork&&reg&&!reg.waiting)await waitForUpdateWorker(reg,1800);
+  const waiting=Number(await workerVersion(reg?.waiting))||0;
+  const current=Number(active)||stored||APP_RELEASE;
+  const latest=Math.max(Number(info.version)||APP_RELEASE,waiting);
+  info.version=latest;
+  try{
+   localStorage.setItem('nettoUpdateLastCheckAt',new Date().toISOString());
+   localStorage.setItem('nettoUpdateLastKnownVersion',String(latest))
+  }catch(_){}
+  return{reg,info,current,latest,waiting,available:latest>current,supported:true}
+ };
+ if(!forceNetwork)return run();
+ updateSnapshotPromise=run().finally(()=>{updateSnapshotPromise=null});
+ return updateSnapshotPromise
 }
 
 function closeUpdateCenter(){
@@ -348,17 +381,7 @@ function renderUpdateCenter(snapshot,status=''){
 }
 
 async function desktopNetworkSnapshot(){
- const response=await fetch('app-version.json?desktop_update='+Date.now(),{cache:'no-store'});
- if(!response.ok)throw new Error('HTTP '+response.status);
- const networkInfo=await response.json();
- rememberReleaseLabel(networkInfo.version,networkInfo.label);
- const fresh=await updateCenterSnapshot(true);
- const manifestVersion=Number(networkInfo.version)||Number(fresh.latest)||APP_RELEASE;
- fresh.info={...(fresh.info||{}),...networkInfo,label:displayVersion(manifestVersion,networkInfo.label)};
- fresh.latest=Math.max(manifestVersion,Number(fresh.waiting)||0);
- fresh.info.version=fresh.latest;
- fresh.available=fresh.latest>Number(fresh.current||0);
- return fresh
+ return updateCenterSnapshot(true)
 }
 
 async function desktopRunUpdateCheck(snapshot={}){
@@ -395,44 +418,17 @@ async function manualCheckForUpdates(){
  try{
   if(!('serviceWorker' in navigator)){mobilePreviewNotice('Mises à jour non prises en charge');return}
   mobilePreviewNotice('Vérification de la version publiée…');
-
-  const regPromise=navigator.serviceWorker.getRegistration().then(reg=>reg||navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}));
-  const [info,reg]=await Promise.all([releaseInfo(),regPromise]);
-  updateRegistration=reg;
-
-  const manifestVersion=Number(info.version)||APP_RELEASE;
-  const stored=Number(localStorage.getItem('nettoAppVersion')||0)||0;
-
-  // Toujours interroger le réseau avant d'annoncer que l'application est à jour.
-  // C'est important sur iOS/PWA où une registration peut rester active longtemps.
-  await reg.update().catch(()=>{});
-  if(!reg.waiting)await waitForUpdateWorker(reg,3200);
-
-  const active=Number(await workerVersion(navigator.serviceWorker.controller||reg.active))||0;
-  const current=active||stored||0;
-  const waitingVersion=Number(await workerVersion(reg.waiting))||0;
-  const latest=Math.max(manifestVersion,waitingVersion);
-
-  if(reg.waiting&&latest>current){
+  const fresh=await updateCenterSnapshot(true);
+  if(fresh.supported===false){mobilePreviewNotice('Mises à jour non prises en charge');return}
+  if(fresh.available){
    sessionStorage.removeItem('nettoUpdateLater');
-   await showUpdateAvailable(reg,latest,true);
-   mobilePreviewNotice('Mise à jour disponible : '+displayVersion(latest,info.label));
+   await showUpdateAvailable(fresh.reg,fresh.latest,true,fresh.info);
+   mobilePreviewNotice('Mise à jour disponible : '+displayVersion(fresh.latest,fresh.info?.label));
    return
   }
-
-  // Le manifeste peut être plus récent avant que le navigateur ait fini
-  // d'installer le nouveau worker. On affiche quand même la mise à jour :
-  // l'acceptation forcera sa préparation puis son activation.
-  if(manifestVersion>current){
-   sessionStorage.removeItem('nettoUpdateLater');
-   await showUpdateAvailable(reg,manifestVersion,true);
-   mobilePreviewNotice('Mise à jour disponible : '+displayVersion(manifestVersion,info.label));
-   return
-  }
-
-  const installed=Math.max(current,waitingVersion);
+  const installed=Math.max(Number(fresh.current)||0,Number(fresh.waiting)||0);
   if(installed>0)try{localStorage.setItem('nettoAppVersion',String(installed))}catch(_){}
-  mobilePreviewNotice('Nethor est à jour - '+displayVersion(installed||manifestVersion,installed===manifestVersion?info.label:''));
+  mobilePreviewNotice('Nethor est à jour - '+displayVersion(installed||fresh.latest,fresh.info?.label||''));
   sounds.play('update')
  }catch(e){
   console.warn('Recherche de mise à jour:',e);
@@ -446,7 +442,7 @@ async function manualCheckForUpdates(){
 function workerVersion(worker){
  return new Promise(resolve=>{
   if(!worker){resolve(null);return}
-  const ch=new MessageChannel(),timer=setTimeout(()=>resolve(null),1200);
+  const ch=new MessageChannel(),timer=setTimeout(()=>resolve(null),700);
   ch.port1.onmessage=e=>{clearTimeout(timer);resolve(Number(e.data&&e.data.version)||null)};
   try{worker.postMessage({type:'GET_VERSION'},[ch.port2])}catch(_){clearTimeout(timer);resolve(null)}
  })
@@ -461,13 +457,26 @@ function publicUpdateCopy(){
 
 function updateInstallMode(info){return String(info?.mode||'manual').toLowerCase()==='auto'?'auto':'manual'}
 
-async function releaseInfo(){
+async function releaseInfo({forceNetwork=false,allowCached=true}={}){
+ const cached=readReleaseCache();
+ if(!forceNetwork&&allowCached&&cached&&Date.now()-Number(cached.saved_at||0)<RELEASE_CACHE_TTL){
+  const info={...cached.info};rememberReleaseLabel(info.version,info.label);
+  return{...info,label:displayVersion(info.version,info.label),mode:updateInstallMode(info)}
+ }
  try{
   const r=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));
   const info=await r.json();rememberReleaseLabel(info.version,info.label);
-  return{...info,label:displayVersion(info.version,info.label),mode:updateInstallMode(info)}
- }catch(_){
-  const copy=publicUpdateCopy();return{version:APP_RELEASE,label:APP_RELEASE_LABEL,important:true,mode:'manual',title:copy.title,message:copy.message,icon:APP_ICON}
+  const normalized={...info,label:displayVersion(info.version,info.label),mode:updateInstallMode(info)};
+  writeReleaseCache(normalized);
+  return normalized
+ }catch(e){
+  if(allowCached&&cached?.info){
+   const info={...cached.info,stale:true};rememberReleaseLabel(info.version,info.label);
+   return{...info,label:displayVersion(info.version,info.label),mode:updateInstallMode(info)}
+  }
+  if(forceNetwork)throw e;
+  const copy=publicUpdateCopy();
+  return{version:APP_RELEASE,label:APP_RELEASE_LABEL,important:true,mode:'manual',title:copy.title,message:copy.message,icon:APP_ICON,stale:true}
  }
 }
 
@@ -528,7 +537,7 @@ async function activateWaitingUpdate(info){
  const advertised=Number(info?.version)||APP_RELEASE;
  if(!worker){
   setUpdateProgress(8,'Préparation de la nouvelle version…');
-  worker=await prepareWaitingUpdate(reg,8000)
+  worker=await prepareWaitingUpdate(reg,5000)
  }
 
  const workerV=Number(await workerVersion(worker))||0;
@@ -537,10 +546,7 @@ async function activateWaitingUpdate(info){
 
  const complete=async()=>{
   if(finished)return;finished=true;progress.stop();
-  if(updateRequiresCacheReset(info)){
-   setUpdateProgress(97,'Nettoyage de l’ancienne version…');
-   await purgeNethorCaches()
-  }
+  if(updateRequiresCacheReset(info))setUpdateProgress(97,'Finalisation du nouveau cache…');
   try{
    localStorage.setItem('nettoAppVersion',String(targetVersion));
    localStorage.setItem('nettoAppUpdatedAt',new Date().toISOString())
@@ -559,22 +565,22 @@ async function activateWaitingUpdate(info){
  }
 
  navigator.serviceWorker.addEventListener('controllerchange',()=>{void complete()},{once:true});
- setTimeout(()=>{if(!finished)progress.finalize()},3600);
+ setTimeout(()=>{if(!finished)progress.finalize()},2400);
  setTimeout(async()=>{
   if(finished)return;
   const current=Number(await workerVersion(navigator.serviceWorker.controller))||0;
   if(current>=targetVersion){await complete();return}
   setUpdateProgress(96,'Activation forcée de la nouvelle version…');
   await forceUpdateReload(reg,targetVersion,info)
- },9500);
+ },6000);
 
  worker.postMessage({type:updateRequiresCacheReset(info)?'PURGE_CACHES_AND_SKIP_WAITING':'SKIP_WAITING'});
  return true
 }
 
-async function showUpdateAvailable(reg,forcedVersion=0,force=false){
+async function showUpdateAvailable(reg,forcedVersion=0,force=false,knownInfo=null){
  updateRegistration=reg||updateRegistration;
- const info=await releaseInfo(),waitingVersion=await workerVersion(updateRegistration?.waiting);
+ const info=knownInfo?{...knownInfo}:await releaseInfo(),waitingVersion=await workerVersion(updateRegistration?.waiting);
  const version=Math.max(Number(info.version)||APP_RELEASE,Number(forcedVersion)||0,waitingVersion||0);
  info.version=version;
  if(updateInstallMode(info)==='auto'){await activateWaitingUpdate(info);return}
