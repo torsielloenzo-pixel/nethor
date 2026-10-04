@@ -239,9 +239,15 @@ async function prewarmMobileViews(){
  root.dataset.prewarm='running';
  setStatus('Chargement Accueil · Planning · Chat…');
  const results=await Promise.allSettled(tasks.map(item=>item.promise));
- const failed=results.filter(result=>result.status==='rejected').length;
+ let failed=0;
+ results.forEach((result,index)=>{
+  const ok=result.status==='fulfilled'&&result.value!==false;
+  if(!ok)failed++;
+  const id=tasks[index]?.id;
+  if(id)root.dataset['prewarm'+id.charAt(0).toUpperCase()+id.slice(1)]=ok?'ready':'error'
+ });
  root.dataset.prewarm=failed?'partial':'ready';
- setStatus(failed?'Préparation terminée':'Accueil · Planning · Chat prêts');
+ setStatus(failed?'Préparation partielle':'Accueil · Planning · Chat prêts');
  return results
 }
 
