@@ -309,7 +309,7 @@ const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
  },
  quick_actions:{
   incident:{enabled:true,label:'Nouveau signalement',url:'report-problem.html',icon:'alert'},
-  task:{enabled:true,label:'Nouvelle tâche',url:'home.html#nethorDesktopFollowupWidget',icon:'task'},
+  task:{enabled:true,label:'Voir les tâches',url:'home.html#nethorDesktopFollowupWidget',icon:'task'},
   planning:{enabled:true,label:'Importer planning',url:'planning.html',icon:'calendar'},
   scanner:{enabled:true,label:'Ouvrir le scanner',url:'scanner.html',icon:'scan'}
  },
