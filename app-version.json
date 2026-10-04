@@ -1,11 +1,11 @@
 {
-  "version": 351,
-  "label": "v1.46.2",
+  "version": 352,
+  "label": "v1.46.3",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Refonte Desktop point de vente",
-  "message": "Refonte Desktop finalisée : navigation latérale inspirée de la maquette, logo Nethor déplacé en haut de la barre, entête limité au point de vente, à la date/heure, aux notifications et au compte, tableau de bord opérationnel complet alimenté par les données Nethor, et paramètres centralisés dans Gestion avec affichage séparé des droits d’accès.",
-  "published_at": "2026-10-04T18:11:00+02:00",
+  "title": "Ajustements interface Desktop",
+  "message": "Alignement du logo Nethor sur l’axe du nouvel entête, accueil Desktop étendu à toute la zone utile, entête et barre latérale harmonisés sur les pages Desktop, et retour des boutons Connexions administrateur, Visualiser mobile et Mise à jour. Ces éléments sont désormais configurables depuis Gestion.",
+  "published_at": "2026-10-04T18:50:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
