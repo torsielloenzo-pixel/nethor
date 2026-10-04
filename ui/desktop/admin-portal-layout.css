@@ -54,3 +54,8 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab
 :root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadBtn{background:#25282d;border-color:#3b4047;color:#d9dde3}
 :root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadAllBtn:hover,
 :root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] #tab-logs .logDownloadBtn:hover{background:#3a2922;border-color:#754836;color:#ffad86}
+
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementPageToolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;padding:10px 12px;border:1px solid #e1e5ea;border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(20,28,40,.035)}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementPageToolbar .managementSearch{max-width:560px;flex:1}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementPageToolbar .headActions{display:flex;align-items:center;gap:8px}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementPageToolbar{background:#23272d;border-color:#3a4149}
