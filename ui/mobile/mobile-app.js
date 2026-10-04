@@ -412,7 +412,7 @@ function endMobileSwipe(event){
   const qualifies=state.locked&&!state.cancelled&&Math.abs(dx)>Math.abs(dy)*1.05&&(Math.abs(dx)>=threshold||(Math.abs(dx)>=28&&velocity>=.42));
   clearMobileSwipeState();
   if(!qualifies)return;
-  const step=dx>0?1:-1;
+  const step=dx<0?1:-1; // Swipe gauche = élément suivant à droite ; swipe droite = élément précédent à gauche.
   const next=state.order[state.index+step];
   if(!next)return;
   if(event.cancelable)event.preventDefault();
