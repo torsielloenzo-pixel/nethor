@@ -1,16 +1,16 @@
 {
-  "version": 363,
-  "label": "v1.46.14",
+  "version": 364,
+  "label": "v1.46.15",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mises à jour Nethor optimisées",
-  "message": "Le système de mise à jour a été accéléré et fiabilisé : vérifications parallèles, réutilisation des ressources inchangées, moins de contrôles inutiles et activation sans désinscription du Service Worker.",
-  "published_at": "2026-10-05T01:31:00+02:00",
+  "title": "Chat Nethor devient un carnet de contacts",
+  "message": "Chaque membre dispose désormais d’une conversation directe permanente avec tous les autres comptes. Effacer une discussion privée supprime uniquement son contenu et conserve le contact.",
+  "published_at": "2026-10-05T01:37:38+02:00",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Vérification réseau et Service Worker exécutées en parallèle",
-    "Réutilisation locale des ressources versionnées inchangées",
-    "Moins de contrôles automatiques redondants et activation plus directe"
+    "Une conversation directe permanente existe avec chaque membre de l’équipe",
+    "Effacer une discussion supprime les messages sans retirer le contact",
+    "Photo du canal Général personnalisable par l’administrateur et canal non archivable"
   ]
 }
