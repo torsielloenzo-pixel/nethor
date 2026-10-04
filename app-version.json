@@ -1,11 +1,11 @@
 {
-  "version": 354,
-  "label": "v1.46.5",
+  "version": 355,
+  "label": "v1.46.6",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Ajustements Desktop",
-  "message": "Texte Desktop agrandi de 10 %, widget Vue magasin aujourd’hui étendu à tout son espace, horloge de l’entête synchronisée à la vraie heure avec actualisation discrète, et photo du point de vente configurable et téléchargeable depuis Gestion.",
-  "published_at": "2026-10-04T19:21:00+02:00",
+  "title": "Point de vente & tailles de texte",
+  "message": "Le bloc Netto Le Thor est élargi et ouvre désormais la fiche Google Maps exacte du magasin. Ajout dans Gestion de réglages indépendants pour la taille du texte de la barre latérale et des widgets avec leur contenu.",
+  "published_at": "2026-10-04T19:43:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
