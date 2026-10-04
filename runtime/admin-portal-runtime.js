@@ -407,6 +407,7 @@ function normalize(raw){
    home_screen_icon:simpleAsset('home_screen_icon'),
    browser_icon:themedAsset('browser_icon'),
    desktop_shortcut_icon:simpleAsset('desktop_shortcut_icon'),
+   update_logo:simpleAsset('update_logo'),
    controls,
    notification_visuals:kind==='mobile'?notificationVisuals:{}
   }
@@ -1362,6 +1363,7 @@ function platformDefaultAsset(kind,key){
  if(key==='home_screen_icon')return 'assets/app-icon-mobile-v74.svg?v=74';
  if(key==='browser_icon')return 'assets/app-icon-v63.svg';
  if(key==='desktop_shortcut_icon')return 'assets/app-icon-v63.svg';
+ if(key==='update_logo')return 'assets/app-icon-v63.svg';
  return 'assets/nethor-mark.svg'
 }
 function platformAssetNode(kind,key){const node=platformUiNode(kind);return node[key]}
@@ -1435,7 +1437,8 @@ function platformSimpleAssetRow(kind,key,title,description,note){
 }
 function renderPlatformSystemAssets(kind){
  if(kind==='mobile')return '<section class="platformSystemAssetsSection"><div class="platformSubhead"><div><h3>Icône d’application & raccourci</h3><p>Personnalise l’icône affichée quand Nethor est ajouté depuis Safari à l’écran d’accueil. Cette icône système est indépendante du thème clair/sombre de Nethor.</p></div></div><div class="platformAssetList">'+platformSimpleAssetRow(kind,'home_screen_icon','Écran d’accueil · Safari / application','Icône utilisée pour « Ajouter à l’écran d’accueil » et pour l’installation de l’application sur Mobile.','PNG carré 512 × 512 recommandé.')+'</div></section>';
- return '<section class="platformSystemAssetsSection"><div class="platformSubhead"><div><h3>Navigateur & raccourci bureau</h3><p>Gère séparément l’icône de l’onglet navigateur et celle de l’application installée sur le bureau.</p></div></div><div class="platformAssetList">'+
+ return '<section class="platformSystemAssetsSection"><div class="platformSubhead"><div><h3>Navigateur, raccourci & mise à jour</h3><p>Gère les icônes système propres à la version Desktop, dont le logo affiché dans la fenêtre de mise à jour Nethor.</p></div></div><div class="platformAssetList">'+
+  platformSimpleAssetRow(kind,'update_logo','Mise à jour Nethor · logo','Logo affiché au centre de la fenêtre de mise à jour sur ordinateur. Ce réglage ne modifie aucun autre logo de Nethor.','Icône Nethor officielle par défaut.')+
   platformAssetRow(kind,'browser_icon','Onglet navigateur Desktop','Favicon affiché dans l’onglet. Les versions claire et sombre suivent le thème Nethor.')+
   platformSimpleAssetRow(kind,'desktop_shortcut_icon','Raccourci bureau · application installée','Icône utilisée lors de l’installation de Nethor comme application/raccourci sur ordinateur.','PNG ou SVG carré 512 × 512 recommandé.')+
  '</div></section>'
