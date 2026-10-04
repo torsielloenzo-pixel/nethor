@@ -2,13 +2,13 @@
 'use strict';
 
 const STYLE_ASSETS=[
- 'chat-v2.css?v=28',
+ 'chat-v2.css?v=29',
  'ui/mobile/chat-layout.css?v=3',
  'ui/mobile/views/chat/chat-view.css?v=2'
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/chat-layout.js?v=2',
- 'chat-v2.js?v=29'
+ 'chat-v2.js?v=30'
 ];
 const state={
  host:null,
