@@ -154,3 +154,21 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
 :root[data-theme="dark"] .storeBannerCrop{background:#22262c;border-color:#3a4047}
 :root[data-theme="dark"] .storeBannerRange output{background:#1c2025;border-color:#3d444d;color:#d7dce2}
 @media(max-width:1100px){.storeBannerCropGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Zoom navigateur / fenêtre réduite : la bannière passe proprement sur deux lignes. */
+@container (max-width:720px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{
+  grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto;align-content:center;gap:12px!important;padding:20px 22px!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent:after{display:none!important}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwWelcome{grid-column:1;grid-row:1;max-width:none}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHoursBlock{grid-column:1;grid-row:2;width:auto!important}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwVisual{inset:0 0 0 18%!important}
+}
+@container (max-width:520px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwContent{padding:17px 18px!important}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwGreeting{white-space:normal}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStoreName{flex-wrap:wrap}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwVisual{inset:0!important;opacity:.62}
+}
