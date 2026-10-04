@@ -885,13 +885,21 @@ function bindDesktopHeaderAnimation(button,config){
  button.onfocus=show;button.onblur=hide
 }
 function applyDesktopHeaderLogoElement(config,url,custom,logoWidth,logoHeight){
- const button=document.querySelector('html[data-nethor-platform="desktop"] .nethorDesktopBrandButton');
+ const button=document.querySelector('html[data-nethor-platform="desktop"] .nethorSidebarBrand')||document.querySelector('html[data-nethor-platform="desktop"] .nethorDesktopBrandButton');
  if(!button)return;
- const set=(prop,value)=>button.style.setProperty(prop,value,'important');
+ const set=(prop,value)=>button.style.setProperty(prop,value,'important'),inSidebar=button.classList.contains('nethorSidebarBrand');
+ set('position','relative');set('overflow','visible');
+ if(inSidebar){
+  if(custom){
+   set('background-image','url('+JSON.stringify(url)+')');set('background-repeat','no-repeat');set('background-position','12px center');set('background-size',logoWidth+'px '+logoHeight+'px')
+  }else{
+   button.style.removeProperty('background-image');button.style.removeProperty('background-repeat');button.style.removeProperty('background-position');button.style.removeProperty('background-size')
+  }
+  bindDesktopHeaderAnimation(button,config);return
+ }
  set('width',logoWidth+'px');set('min-width',logoWidth+'px');set('max-width','none');
  set('height',logoHeight+'px');set('min-height',logoHeight+'px');set('max-height','none');
  set('flex','0 0 '+logoWidth+'px');
- set('position','relative');set('overflow','visible');
  if(custom){
   set('background-image','url('+JSON.stringify(url)+')');set('background-repeat','no-repeat');set('background-position','left center');set('background-size','contain')
  }else{
