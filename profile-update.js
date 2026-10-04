@@ -23,7 +23,7 @@ function ensureProfileStylesheet(id,href,match){
  if(document.getElementById(id)||(match&&document.querySelector('link[href*="'+match+'"]')))return;
  const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head?.appendChild(link)
 }
-function ensureUpdateStyles(){ensureProfileStylesheet('nettoUpdateStylesheet','profile-update.css?v=1','profile-update.css')}
+function ensureUpdateStyles(){ensureProfileStylesheet('nettoUpdateStylesheet','profile-update.css?v=2','profile-update.css')}
 function ensureUpdateCenterStyles(){ensureUpdateStyles()}
 function closeDrops(){try{api.closeDrops?.()}catch(_){}}
 function mobilePreviewNotice(message){
@@ -181,7 +181,7 @@ function closeUpdateCenter(){
  document.body?.style.removeProperty('overflow')
 }
 
-function renderUpdateCenter(snapshot,status=''){
+function renderClassicUpdateCenter(snapshot,status=''){
  const host=document.getElementById('nettoUpdateCenterBody');if(!host)return;
  const current=snapshot.current||APP_RELEASE,latest=snapshot.latest||Number(snapshot.info?.version)||APP_RELEASE;
  const available=!!snapshot.available,major=available&&updateRequiresCacheReset(snapshot.info);
@@ -217,18 +217,174 @@ function renderUpdateCenter(snapshot,status=''){
  }
 }
 
-async function openUpdateCenter(){
+async function openClassicUpdateCenter(){
  closeDrops();ensureUpdateStyles();ensureUpdateCenterStyles();
  document.getElementById('nettoUpdateCenterBackdrop')?.remove();
  const bg=document.createElement('div');bg.id='nettoUpdateCenterBackdrop';bg.className='nettoUpdateCenterBackdrop';
  bg.innerHTML='<section class="nettoUpdateCenter" role="dialog" aria-modal="true" aria-labelledby="nettoUpdateCenterTitle"><header class="nettoUpdateCenterHead"><div><strong id="nettoUpdateCenterTitle">Mise à jour</strong><small>Version et état de Nethor sur cet appareil</small></div><button type="button" class="nettoUpdateCenterClose" aria-label="Fermer">×</button></header><div id="nettoUpdateCenterBody" class="nettoUpdateCenterBody"><div class="nettoUpdateCenterStatus">Lecture de la version installée…</div></div></section>';
  document.body.appendChild(bg);document.documentElement.classList.add('nettoUpdateCenterOpen');document.body.style.overflow='hidden';
  bg.querySelector('.nettoUpdateCenterClose').onclick=closeUpdateCenter;
- bg.onclick=e=>{if(e.target===bg&&!isMobileViewport())closeUpdateCenter()};
+ bg.onclick=e=>{if(e.target===bg&&!updateCenterIsMobile())closeUpdateCenter()};
  try{renderUpdateCenter(await updateCenterSnapshot(false))}catch(e){
   console.warn('Ouverture centre de mise à jour:',e);
   const body=document.getElementById('nettoUpdateCenterBody');if(body)body.innerHTML='<div class="nettoUpdateCenterStatus">Impossible de lire l’état des mises à jour.</div><div class="nettoUpdateCenterActions"><button type="button" class="nettoUpdateCenterSecondary" onclick="this.closest(\'.nettoUpdateCenterBackdrop\').remove()">Fermer</button><button type="button" class="nettoUpdateCenterPrimary" onclick="location.reload()">Réessayer</button></div>'
  }
+}
+
+
+function updateCenterIsMobile(){
+ try{
+  const platform=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'').toLowerCase();
+  if(platform)return platform!=='desktop';
+ }catch(_){}
+ return window.matchMedia?.('(max-width: 650px)')?.matches===true
+}
+
+function desktopUpdateLogo(info={}){
+ const custom=String(api?.siteConfig?.platform_ui?.desktop?.update_logo?.url||'').trim();
+ return custom||String(info?.icon||APP_ICON)
+}
+
+function desktopUpdateSvg(kind){
+ const common='viewBox="0 0 24 24" aria-hidden="true" focusable="false"';
+ if(kind==='check')return '<svg '+common+'><path d="m6.5 12.4 3.3 3.3 7.7-8"/></svg>';
+ if(kind==='up')return '<svg '+common+'><path d="M12 18V6m0 0-4.2 4.2M12 6l4.2 4.2"/></svg>';
+ if(kind==='alert')return '<svg '+common+'><path d="M12 7.2v6.1"/><path d="M12 17.1h.01"/></svg>';
+ if(kind==='refresh')return '<svg '+common+'><path d="M20 11a8 8 0 0 0-14.7-4.4L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.7 4.4L20 15"/><path d="M20 20v-5h-5"/></svg>';
+ if(kind==='download')return '<svg '+common+'><path d="M12 3v11"/><path d="m8 10 4 4 4-4"/><path d="M5 18v2h14v-2"/></svg>';
+ if(kind==='document')return '<svg '+common+'><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="M10 12h5M10 16h5"/></svg>';
+ if(kind==='warning')return '<svg '+common+'><path d="M12 3 2.8 19h18.4z"/><path d="M12 8.5v5"/><path d="M12 16.8h.01"/></svg>';
+ return '<svg '+common+'><path d="M5 12h14"/><path d="m14 7 5 5-5 5"/></svg>'
+}
+
+function desktopReleaseNotes(info={}){
+ const direct=Array.isArray(info.notes)?info.notes:(Array.isArray(info.changes)?info.changes:[]);
+ const notes=direct.map(x=>String(x||'').trim()).filter(Boolean);
+ if(!notes.length&&info.title)notes.push(String(info.title).trim());
+ if(notes.length<3&&info.message){
+  const message=String(info.message).trim();
+  if(message&&!notes.includes(message))notes.push(message)
+ }
+ return notes.slice(0,3)
+}
+
+function desktopVersionLabel(value,info={},isLatest=false){
+ const same=Number(value)>0&&Number(value)===Number(info.version);
+ return displayVersion(value,(isLatest||same)?info.label:'')
+}
+
+function desktopVersionStrip(current,latest,info={},checking=false,available=false){
+ return '<div class="nettoDesktopUpdateVersions">'+
+  '<div><span>Version installée</span><strong>'+esc(desktopVersionLabel(current,info,false))+'</strong></div>'+
+  '<span class="nettoDesktopUpdateArrow">'+desktopUpdateSvg('arrow')+'</span>'+
+  '<div><span>'+(available?'Nouvelle version':'Dernière version')+'</span><strong class="'+(available?'isNew':'')+'">'+(checking?'—':esc(desktopVersionLabel(latest,info,true)))+'</strong></div>'+
+ '</div>'
+}
+
+function renderDesktopUpdateCenter(snapshot,state='ready'){
+ const host=document.getElementById('nettoUpdateCenterBody');if(!host)return;
+ snapshot=snapshot||{};
+ const info=snapshot.info||{};
+ const current=Number(snapshot.current)||Number(localStorage.getItem('nettoAppVersion')||0)||APP_RELEASE;
+ const latest=Number(snapshot.latest)||Number(info.version)||current;
+ const logo=desktopUpdateLogo(info);
+ const badge=state==='ready'
+  ?'<span class="nettoDesktopUpdateBadge success">'+desktopUpdateSvg('check')+'</span>'
+  :state==='available'
+   ?'<span class="nettoDesktopUpdateBadge available">'+desktopUpdateSvg('up')+'</span>'
+   :state==='error'
+    ?'<span class="nettoDesktopUpdateBadge error">'+desktopUpdateSvg('alert')+'</span>'
+    :'';
+ const logoHtml='<div class="nettoDesktopUpdateLogoWrap"><img src="'+esc(logo)+'" alt="Logo Nethor">'+badge+'</div>';
+
+ if(state==='checking'){
+  host.innerHTML='<div class="nettoDesktopUpdateMain">'+logoHtml+
+   '<h2>Vérification en cours...</h2><p class="nettoDesktopUpdateLead">Recherche de la dernière version disponible.</p>'+
+   '<div class="nettoDesktopUpdateChecking"><span class="nettoDesktopUpdateSpinner"></span><strong>Vérification de la dernière version...</strong></div>'+
+   desktopVersionStrip(current,latest,info,true,false)+
+   '<button type="button" class="nettoDesktopUpdateAction disabled" disabled><span class="nettoDesktopUpdateMutedRefresh">'+desktopUpdateSvg('refresh')+'</span>Vérification en cours...</button></div>';
+  return
+ }
+
+ if(state==='error'){
+  host.innerHTML='<div class="nettoDesktopUpdateMain">'+logoHtml+
+   '<h2>Impossible de vérifier les mises à jour</h2><p class="nettoDesktopUpdateLead">Une erreur est survenue lors de la vérification.<br>Veuillez réessayer dans quelques instants.</p>'+
+   '<div class="nettoDesktopUpdateWarning"><span>'+desktopUpdateSvg('warning')+'</span><p>Vérifiez votre connexion internet<br>ou réessayez plus tard.</p></div>'+
+   '<button type="button" class="nettoDesktopUpdateAction primary" id="nettoDesktopUpdateRetry">'+desktopUpdateSvg('refresh')+'Réessayer</button></div>';
+  document.getElementById('nettoDesktopUpdateRetry').onclick=()=>desktopRunUpdateCheck(snapshot);
+  return
+ }
+
+ if(state==='available'){
+  const notes=desktopReleaseNotes(info);
+  host.innerHTML='<div class="nettoDesktopUpdateMain">'+logoHtml+
+   '<h2>Une mise à jour est disponible</h2><p class="nettoDesktopUpdateLead">Une nouvelle version de Nethor est prête à être installée.</p>'+
+   desktopVersionStrip(current,latest,info,false,true)+
+   '<div class="nettoDesktopUpdateNews"><span class="nettoDesktopUpdateNewsIcon">'+desktopUpdateSvg('document')+'</span><div><strong>Nouveautés</strong><ul>'+(notes.length?notes.map(x=>'<li>'+esc(x)+'</li>').join(''):'<li>Améliorations et optimisations de Nethor</li>')+'</ul></div></div>'+
+   '<div class="nettoDesktopUpdateSplitActions"><button type="button" class="nettoDesktopUpdateLater" id="nettoDesktopUpdateLater">Plus tard</button><button type="button" class="nettoDesktopUpdateAction primary" id="nettoDesktopUpdateInstall">'+desktopUpdateSvg('download')+'Mettre à jour Nethor</button></div></div>';
+  document.getElementById('nettoDesktopUpdateLater').onclick=closeUpdateCenter;
+  const install=document.getElementById('nettoDesktopUpdateInstall');
+  install.onclick=async()=>{
+   if(install.disabled)return;
+   install.disabled=true;install.innerHTML=desktopUpdateSvg('download')+'Mise à jour...';
+   try{await activateWaitingUpdate(info)}
+   catch(e){console.warn('Installation mise à jour Desktop:',e);renderDesktopUpdateCenter(snapshot,'error')}
+  };
+  return
+ }
+
+ host.innerHTML='<div class="nettoDesktopUpdateMain">'+logoHtml+
+  '<h2>Nethor est à jour</h2><p class="nettoDesktopUpdateLead">Vous utilisez la dernière version disponible.</p>'+
+  desktopVersionStrip(current,latest,info,false,false)+
+  '<div class="nettoDesktopUpdateLastCheck"><i></i><span>Dernière vérification : à l’instant</span></div>'+
+  '<button type="button" class="nettoDesktopUpdateAction outline" id="nettoDesktopUpdateCheck">'+desktopUpdateSvg('refresh')+'Vérifier à nouveau</button></div>';
+ document.getElementById('nettoDesktopUpdateCheck').onclick=()=>desktopRunUpdateCheck(snapshot)
+}
+
+function renderUpdateCenter(snapshot,status=''){
+ if(updateCenterIsMobile())return renderClassicUpdateCenter(snapshot,status);
+ const state=status==='checking'?'checking':status==='error'?'error':snapshot?.available?'available':'ready';
+ renderDesktopUpdateCenter(snapshot,state)
+}
+
+async function desktopNetworkSnapshot(){
+ const response=await fetch('app-version.json?desktop_update='+Date.now(),{cache:'no-store'});
+ if(!response.ok)throw new Error('HTTP '+response.status);
+ const networkInfo=await response.json();
+ rememberReleaseLabel(networkInfo.version,networkInfo.label);
+ const fresh=await updateCenterSnapshot(true);
+ const manifestVersion=Number(networkInfo.version)||Number(fresh.latest)||APP_RELEASE;
+ fresh.info={...(fresh.info||{}),...networkInfo,label:displayVersion(manifestVersion,networkInfo.label)};
+ fresh.latest=Math.max(manifestVersion,Number(fresh.waiting)||0);
+ fresh.info.version=fresh.latest;
+ fresh.available=fresh.latest>Number(fresh.current||0);
+ return fresh
+}
+
+async function desktopRunUpdateCheck(snapshot={}){
+ renderDesktopUpdateCenter(snapshot,'checking');
+ try{
+  const fresh=await desktopNetworkSnapshot();
+  if(fresh.supported===false)throw new Error('Mises à jour non prises en charge');
+  renderDesktopUpdateCenter(fresh,fresh.available?'available':'ready')
+ }catch(e){
+  console.warn('Vérification mise à jour Desktop:',e);
+  renderDesktopUpdateCenter(snapshot,'error');
+  sounds.play('error')
+ }
+}
+
+async function openUpdateCenter(){
+ if(updateCenterIsMobile())return openClassicUpdateCenter();
+ closeDrops();ensureUpdateStyles();ensureUpdateCenterStyles();
+ document.getElementById('nettoUpdateCenterBackdrop')?.remove();
+ const bg=document.createElement('div');bg.id='nettoUpdateCenterBackdrop';bg.className='nettoUpdateCenterBackdrop nettoDesktopUpdateBackdrop';
+ bg.innerHTML='<section class="nettoUpdateCenter nettoDesktopUpdateCenter" role="dialog" aria-modal="true" aria-labelledby="nettoUpdateCenterTitle"><header class="nettoDesktopUpdateHead"><div class="nettoDesktopUpdateHeadTitle"><i></i><div><strong id="nettoUpdateCenterTitle">Mise à jour Nethor</strong><small>Version et état de l’application</small></div></div><button type="button" class="nettoUpdateCenterClose" aria-label="Fermer">×</button></header><div id="nettoUpdateCenterBody" class="nettoUpdateCenterBody"></div></section>';
+ document.body.appendChild(bg);document.documentElement.classList.add('nettoUpdateCenterOpen');document.body.style.overflow='hidden';
+ bg.querySelector('.nettoUpdateCenterClose').onclick=closeUpdateCenter;
+ bg.onclick=e=>{if(e.target===bg)closeUpdateCenter()};
+ const current=Number(localStorage.getItem('nettoAppVersion')||0)||APP_RELEASE;
+ await desktopRunUpdateCheck({info:{},current,latest:0,available:false,supported:true})
 }
 
 async function manualCheckForUpdates(){
