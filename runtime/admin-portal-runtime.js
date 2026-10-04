@@ -1372,10 +1372,12 @@ const PLATFORM_CONTROL_DEFAULTS={
  user_menu:{label:'Menu utilisateur',subtitle:'Profil, préférences et réglages',glyph:'☺'},
  theme:{label:'Mode sombre',subtitle:'Changer l’apparence',glyph:'◐'},
  update:{label:'Mise à jour',subtitle:'Rechercher une nouvelle version',glyph:'↓'},
+ login_logs:{label:'Connexions',subtitle:'Historique des connexions administrateur',glyph:'◷'},
+ mobile_preview:{label:'Visualiser mobile',subtitle:'Ouvrir l’aperçu mobile',glyph:'▯'},
  logout:{label:'Déconnexion',subtitle:'Quitter la session',glyph:'↪'}
 };
 function platformControlDefs(kind){
- const keys=kind==='mobile'?['notifications','user_menu','theme','update','logout']:['notifications','user_menu','theme','update','logout'];
+ const keys=kind==='mobile'?['notifications','user_menu','theme','update','logout']:['notifications','user_menu','login_logs','mobile_preview','update','theme','logout'];
  return keys.map(key=>({key,...PLATFORM_CONTROL_DEFAULTS[key]}))
 }
 function platformControlNode(kind,key){
