@@ -112,6 +112,8 @@ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"
 
 
 /* Contrat de mise en page Desktop v2 : toutes les pages utilisent le même axe sidebar + entête. */
+html[data-nethor-page-layout="desktop"] body>main{box-sizing:border-box!important;width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+
 html[data-nethor-page-layout="desktop"]{
  --nethor-desktop-header-h:72px;
  --nethor-desktop-gutter:18px;
