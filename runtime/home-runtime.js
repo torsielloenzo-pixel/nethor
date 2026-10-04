@@ -461,6 +461,8 @@ function homeQuickPlanningConfig(cfg){
  return{
   enabled:raw.enabled!==false,
   title:String(cfg?.desktop_dashboard_widget?.widgets?.planning_view?.label||raw.title||HOME_QUICK_PLANNING_DEFAULTS.title),
+  show_all_day:cfg?.desktop_dashboard_widget?.widgets?.planning_view?.show_all_day!==false,
+  max_people:Math.max(1,Math.min(12,Number(cfg?.desktop_dashboard_widget?.widgets?.planning_view?.max_items)||6)),
   subtitle:String(raw.subtitle||HOME_QUICK_PLANNING_DEFAULTS.subtitle),
   action_label:String(raw.action_label||HOME_QUICK_PLANNING_DEFAULTS.action_label),
   empty_text:String(raw.empty_text||HOME_QUICK_PLANNING_DEFAULTS.empty_text),
@@ -526,8 +528,8 @@ function homeQuickPlanningPeople(model,dateKey,profileRows,nowHour,w){
  if(!model?.days?.[dateKey])return[];
  const out=[];
  (model.employees||[]).forEach((employee,i)=>{
-  const row=model.days[dateKey].cells?.[i]||[],ranges=homeWorkRanges(row,model||{}),current=ranges.find(r=>nowHour>=r.a&&nowHour<r.b);
-  if(!current)return;
+  const row=model.days[dateKey].cells?.[i]||[],ranges=homeWorkRanges(row,model||{}),activeRange=ranges.find(r=>nowHour>=r.a&&nowHour<r.b),current=activeRange||ranges[0];
+  if(!ranges.length||(!activeRange&&!w.show_all_day))return;
   const profile=homeQuickPlanningProfileFor(employee?.name,profileRows),profileColor=homeStoreHex(profile?.profile_color,w.style.accent);
   out.push({
    name:String(employee?.name||profile?.display_name||'Utilisateur'),
@@ -559,7 +561,7 @@ function homeQuickPlanningCalendarIcon(){
 }
 function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart){
  const w=homeQuickPlanningConfig(cfg);if(!w.enabled)return'';
- const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(todayModel,todayKey,nowHour),people=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,w);
+ const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(todayModel,todayKey,nowHour),allPeople=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,w),people=allPeople.slice(0,w.max_people);
  const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
  const ticks=homeQuickPlanningTicks(bounds),target='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
  const s=w.style,shadow=s.shadow?'0 10px 30px rgba(28,36,48,.07)':'none';
