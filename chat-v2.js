@@ -126,34 +126,46 @@ function startPresence(){
  if(!chatPresenceListener){chatPresenceListener=e=>syncPresence(e.detail?.ids||[]);window.addEventListener('netto:presence',chatPresenceListener)}
 }
 async function loadConversations(){
- const [conversationResult,generalResult]=await Promise.all([
+ const [conversationResult,generalResult,pinsResult]=await Promise.all([
   db.rpc('list_chat_conversations'),
-  db.from('chat_conversations').select('avatar_url,avatar_path').eq('type','general').maybeSingle()
+  db.from('chat_conversations').select('avatar_url,avatar_path').eq('type','general').maybeSingle(),
+  db.from('chat_conversations').select('id,pinned_at').not('pinned_at','is',null)
  ]);
  const {data,error}=conversationResult;if(error){console.error('Conversations:',error);showToast('Impossible de charger les discussions');return}
  if(!generalResult.error){state.generalAvatarUrl=String(generalResult.data?.avatar_url||'');state.generalAvatarPath=String(generalResult.data?.avatar_path||'')}
- state.conversations=data||[];renderConversations();
+ const pinMap=new Map((pinsResult.data||[]).map(row=>[row.id,row.pinned_at]));
+ state.conversations=(data||[]).map(row=>({...row,pinned_at:pinMap.get(row.conversation_id)||null}));renderConversations();
  if(state.activeId&&!state.conversations.some(c=>c.conversation_id===state.activeId)){state.activeId=null;state.messages=[];state.participants=[];renderConversationHeader();renderMessages()}
 }
 function renderConversations(){
  const box=$('conversationList');if(!box)return;
  const q=(state.search||'').trim().toLowerCase();
  const list=state.conversations.filter(c=>{if(state.onlyUnread&&Number(c.unread_count)<=0)return false;if(!q)return true;return(conversationTitle(c)+' '+(c.last_message||'')).toLowerCase().includes(q)}).sort((a,b)=>{
-  if(a.conversation_type==='general'&&b.conversation_type!=='general')return-1;if(b.conversation_type==='general'&&a.conversation_type!=='general')return 1;
-  const at=a.last_message_at?new Date(a.last_message_at).getTime():0,bt=b.last_message_at?new Date(b.last_message_at).getTime():0;if(at!==bt)return bt-at;
-  if(a.conversation_type==='direct'&&b.conversation_type==='direct')return conversationTitle(a).localeCompare(conversationTitle(b),'fr',{sensitivity:'base'});
-  return new Date(b.updated_at||0)-new Date(a.updated_at||0)
+  const aPinned=!!a.pinned_at,bPinned=!!b.pinned_at;
+  if(aPinned!==bPinned)return aPinned?-1:1;
+  if(aPinned&&bPinned){
+   const ap=new Date(a.pinned_at).getTime()||0,bp=new Date(b.pinned_at).getTime()||0;
+   if(ap!==bp)return bp-ap;
+   return conversationTitle(a).localeCompare(conversationTitle(b),'fr',{sensitivity:'base'})
+  }
+  const aRecent=!!a.last_message_at,bRecent=!!b.last_message_at;
+  if(aRecent!==bRecent)return aRecent?-1:1;
+  if(aRecent&&bRecent){
+   const at=new Date(a.last_message_at).getTime()||0,bt=new Date(b.last_message_at).getTime()||0;
+   if(at!==bt)return bt-at
+  }
+  return conversationTitle(a).localeCompare(conversationTitle(b),'fr',{sensitivity:'base'})
  });
  const memberVisual=state.members.map(m=>[m.id,m.avatar_url||'',m.profile_color||'',m.avatar_frame||''].join(':')).join(';');
- const key=q+'|'+(state.onlyUnread?'1':'0')+'|'+(state.activeId||'')+'|'+[...state.onlineIds].sort().join(',')+'|'+memberVisual+'|'+list.map(c=>[c.conversation_id,c.conversation_name||'',c.last_message||'',c.last_message_at||'',c.updated_at||'',c.unread_count||0,c.created_by||''].join(':')).join(';');
+ const key=q+'|'+(state.onlyUnread?'1':'0')+'|'+(state.activeId||'')+'|'+[...state.onlineIds].sort().join(',')+'|'+memberVisual+'|'+list.map(c=>[c.conversation_id,c.conversation_name||'',c.last_message||'',c.last_message_at||'',c.updated_at||'',c.unread_count||0,c.created_by||'',c.pinned_at||''].join(':')).join(';');
  if(key===state.lastConversationRenderKey)return;
  state.lastConversationRenderKey=key;
  if(!list.length){box.innerHTML='<div class="listEmpty">'+(q?'Aucune discussion trouvée.':state.onlyUnread?'Aucune discussion non lue.':'Aucune discussion pour le moment.')+'</div>';return}
  box.innerHTML=list.map(c=>{
   const title=conversationTitle(c),active=c.conversation_id===state.activeId,emptyPreview=c.conversation_type==='direct'?'Entamer la discussion':c.conversation_type==='general'?'Canal général':'Aucun message',preview=(c.last_sender===state.session?.user?.id?'Vous : ':'')+(c.last_message||emptyPreview),direct=conversationMember(c),online=direct&&state.onlineIds.has(direct.id);
   const ownerGroup=c.conversation_type==='group'&&c.created_by===state.session?.user?.id;
-  return '<button class="convRow '+(active?'active ':'')+(ownerGroup?'ownerGroup':'')+'" data-conversation-id="'+c.conversation_id+'" onclick="conversationRowClick(event,\''+c.conversation_id+'\')" onpointerdown="startConversationLongPress(event,\''+c.conversation_id+'\')" onpointerup="cancelConversationLongPress()" onpointercancel="cancelConversationLongPress()" onpointerleave="cancelConversationLongPress()" oncontextmenu="conversationContextMenu(event,\''+c.conversation_id+'\')">'+conversationAvatar(c)+
-   '<span class="convCopy"><span class="convTitleLine"><strong>'+esc(title)+'</strong>'+(online?'<i class="onlineMini"></i>':'')+'</span><span class="convPreview">'+esc(preview)+'</span></span>'+
+  return '<button class="convRow '+(active?'active ':'')+(ownerGroup?'ownerGroup ':'')+(c.pinned_at?'pinned':'')+'" data-conversation-id="'+c.conversation_id+'" onclick="conversationRowClick(event,\''+c.conversation_id+'\')" onpointerdown="startConversationLongPress(event,\''+c.conversation_id+'\')" onpointerup="cancelConversationLongPress()" onpointercancel="cancelConversationLongPress()" onpointerleave="cancelConversationLongPress()" oncontextmenu="conversationContextMenu(event,\''+c.conversation_id+'\')">'+conversationAvatar(c)+
+   '<span class="convCopy"><span class="convTitleLine"><strong>'+esc(title)+'</strong>'+(c.pinned_at?'<span class="convPinnedIcon" title="Conversation épinglée" aria-label="Conversation épinglée"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6 3 3v1H7v-1l3-3-1-6zM12 13v8"/></svg></span>':'')+(online?'<i class="onlineMini"></i>':'')+'</span><span class="convPreview">'+esc(preview)+'</span></span>'+
    '<span class="convMeta"><span class="convTime">'+esc(timeShort(c.last_message_at||c.updated_at))+'</span>'+(Number(c.unread_count)>0?'<b class="unreadBadge">'+Math.min(99,Number(c.unread_count))+'</b>':'')+'</span></button>'
  }).join('');
  syncConversationFilterButtons()
@@ -180,8 +192,12 @@ function conversationContextMenu(e,id){if(chatDesktopMode())return;e.preventDefa
 function openConversationActions(id,opts={}){
  const conv=conversationById(id),backdrop=$('conversationActionSheet'),sheet=backdrop?.querySelector('.conversationActionSheet');if(!conv||!backdrop||!sheet)return;state.actionConversationId=id;
  const head=$('conversationActionHeader');if(head)head.innerHTML=conversationAvatar(conv)+'<div><strong>'+esc(conversationTitle(conv))+'</strong><small>'+esc(conv.conversation_type==='direct'?'Contact Nethor':conv.conversation_type==='general'?'Canal général':(conv.member_ids||[]).length+' membre(s)')+'</small></div>';
- const isGeneral=conv.conversation_type==='general',isDirect=conv.conversation_type==='direct';
- const archive=$('conversationActionArchive'),remove=$('conversationActionHide');
+ const isGeneral=conv.conversation_type==='general',isDirect=conv.conversation_type==='direct',admin=state.profile?.role==='admin';
+ const pin=$('conversationActionPin'),archive=$('conversationActionArchive'),remove=$('conversationActionHide');
+ pin?.classList.toggle('hidden',!admin);
+ const pinTitle=pin?.querySelector('strong'),pinHint=pin?.querySelector('small');
+ if(pinTitle)pinTitle.textContent=conv.pinned_at?'Désépingler':'Épingler la conversation';
+ if(pinHint)pinHint.textContent=conv.pinned_at?'Retirer du haut de la liste pour tous':'Afficher en haut de la liste pour tous';
  archive?.classList.toggle('hidden',isGeneral||isDirect);
  remove?.classList.toggle('hidden',isGeneral);
  const removeTitle=remove?.querySelector('strong'),removeHint=remove?.querySelector('small');
@@ -649,6 +665,10 @@ function configureConversationMenu(c){
  const creator=c.created_by===state.session?.user?.id,admin=state.profile?.role==='admin',canManageGroup=isGroup&&(creator||admin),canManageGeneral=isGeneral&&admin,canDeleteConversation=isDirect||canManageGroup;
  const myParticipant=state.participants.find(p=>p.user_id===state.session?.user?.id);
  const subtitle=$('conversationMenuSubtitle');if(subtitle)subtitle.textContent=isGeneral?'Canal de toute l’équipe':isDirect?'Contact Nethor':((c.member_ids||[]).length+' membre(s)');
+ const pinItem=$('conversationPinItem');pinItem?.classList.toggle('hidden',!admin);
+ const pinLabel=$('conversationPinLabel'),pinHint=$('conversationPinHint');
+ if(pinLabel)pinLabel.textContent=c.pinned_at?'Désépingler':'Épingler la conversation';
+ if(pinHint)pinHint.textContent=c.pinned_at?'Retirer du haut de la liste pour tous':'Afficher en haut de la liste pour tous';
  $('conversationAddMembersItem')?.classList.toggle('hidden',isGeneral||(isGroup&&!canManageGroup));
  const hint=$('conversationAddMembersHint');if(hint)hint.textContent=isDirect?'Créer un groupe avec ce contact':'Ajouter au groupe';
  $('conversationSettingsItem')?.classList.toggle('hidden',!(canManageGroup||canManageGeneral));
@@ -658,6 +678,21 @@ function configureConversationMenu(c){
  if(deleteHint)deleteHint.textContent=isDirect?'Supprime uniquement les messages · le contact reste visible':'Réservé au créateur ou administrateur';
  $('conversationLeaveItem')?.classList.toggle('hidden',!isGroup||canManageGroup||myParticipant?.role==='owner');
  $('conversationDangerDivider')?.classList.toggle('hidden',!(canDeleteConversation||(isGroup&&!canManageGroup&&myParticipant?.role!=='owner')))
+}
+async function setConversationPinned(conversationId,pinned){
+ if(state.profile?.role!=='admin')return showToast('Administrateur uniquement');
+ const conv=conversationById(conversationId);if(!conv)return;
+ const next=typeof pinned==='boolean'?pinned:!conv.pinned_at;
+ const {error}=await db.rpc('chat_set_conversation_pinned',{p_conversation:conversationId,p_pinned:next});
+ if(error){console.error('Épinglage conversation:',error);return showToast('Impossible de modifier l’épinglage')}
+ state.lastConversationRenderKey='';await loadConversations();
+ showToast(next?'Conversation épinglée pour tous':'Conversation désépinglée pour tous')
+}
+function toggleConversationPinFromMenu(){
+ const id=state.activeId;if(!id)return;closeConversationMenu();return setConversationPinned(id)
+}
+function actionSheetTogglePin(){
+ const id=state.actionConversationId;if(!id)return;closeConversationActions();return setConversationPinned(id)
 }
 function openConversationParticipants(){
  closeConversationMenu();const c=activeConversation();if(!c)return;
