@@ -1443,20 +1443,27 @@ html[data-nethor-platform="desktop"] body.nettoHasMobileBar{padding-bottom:0!imp
 
 /* Nethor Desktop — structure garantie du chrome des pages */
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]{
+  box-sizing:border-box!important;
   width:100%!important;
   min-width:0!important;
+  min-height:72px!important;
+  height:72px!important;
+  margin:0!important;
+  padding:0!important;
 }
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]>.top{
+  box-sizing:border-box!important;
   display:flex!important;
   align-items:center!important;
   justify-content:flex-start!important;
   flex-wrap:nowrap!important;
-  width:min(96vw,1540px)!important;
-  max-width:1540px!important;
+  width:100%!important;
+  max-width:none!important;
   min-width:0!important;
-  min-height:82px!important;
-  margin:0 auto!important;
-  padding:0 18px!important;
+  min-height:72px!important;
+  height:72px!important;
+  margin:0!important;
+  padding:8px 18px!important;
   gap:14px!important;
 }
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .brand{
