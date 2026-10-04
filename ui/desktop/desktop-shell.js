@@ -149,7 +149,7 @@ function desktopTextCandidate(el){
 function scaleDesktopText(root=document.body){
  if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop'||!root)return;
  const nodes=[];
- if(root instanceof Element&&desktopTextCandidate(root))nodes.push(root);
+ if(root instanceof Element&&root.dataset.nethorTextScaled!=='1'&&desktopTextCandidate(root))nodes.push(root);
  root.querySelectorAll?.('*').forEach(el=>{if(desktopTextCandidate(el)&&el.dataset.nethorTextScaled!=='1')nodes.push(el)});
  const prepared=nodes.map(el=>{
   let size=parseFloat(getComputedStyle(el).fontSize);if(!Number.isFinite(size)||size<=0)return null;
