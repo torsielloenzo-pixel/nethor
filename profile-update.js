@@ -2,11 +2,11 @@
 'use strict';
 window.NethorProfileFeatures=window.NethorProfileFeatures||{};
 const api=window.NettoProfileUI||{},sounds=window.NettoSounds||{play(){}};
-const APP_RELEASE=366;
-const APP_RELEASE_LABEL='v1.46.17';
+const APP_RELEASE=367;
+const APP_RELEASE_LABEL='v1.46.18';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v74.svg';
-const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL],[365,'v1.46.16'],[364,'v1.46.15'],[363,'v1.46.14'],[362,'v1.46.13'],[361,'v1.46.12'],[360,'v1.46.11'],[359,'v1.46.10'],[358,'v1.46.9'],[357,'v1.46.8']]);
+const RELEASE_LABELS=new Map([[APP_RELEASE,APP_RELEASE_LABEL],[366,'v1.46.17'],[365,'v1.46.16'],[364,'v1.46.15'],[363,'v1.46.14'],[362,'v1.46.13'],[361,'v1.46.12'],[360,'v1.46.11'],[359,'v1.46.10'],[358,'v1.46.9'],[357,'v1.46.8']]);
 function syncAppIconLinks(){
  const version=Number(localStorage.getItem('nettoAppVersion')||0)||APP_RELEASE;
  document.querySelectorAll('link[rel="icon"],link[rel="shortcut icon"],link[rel="apple-touch-icon"]').forEach(x=>x.remove());
