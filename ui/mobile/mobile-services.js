@@ -599,7 +599,7 @@ async function activateMobileUpdate(reg,manifest){
   })
 }
 
-const MOBILE_UPDATE_RELEASE_LABELS=new Map([[362,'v1.46.13'],[361,'v1.46.12'],[360,'v1.46.11'],[359,'v1.46.10'],[358,'v1.46.9'],[357,'v1.46.8']]);
+const MOBILE_UPDATE_RELEASE_LABELS=new Map([[363,'v1.46.14'],[362,'v1.46.13'],[361,'v1.46.12'],[360,'v1.46.11'],[359,'v1.46.10'],[358,'v1.46.9'],[357,'v1.46.8']]);
 let mobileUpdateSnapshot=null;
 
 function mobileUpdateEsc(value){
