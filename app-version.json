@@ -1,16 +1,16 @@
 {
-  "version": 359,
-  "label": "v1.46.10",
+  "version": 360,
+  "label": "v1.46.11",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Mises à jour Desktop — nouvelle interface",
-  "message": "Desktop : la fenêtre de mise à jour reprend désormais le nouveau visuel à quatre états et son logo peut être personnalisé depuis Gestion > Desktop.",
-  "published_at": "2026-10-05T00:41:00+02:00",
+  "title": "Mises à jour Desktop — interface complète",
+  "message": "Desktop : le nouveau visuel à quatre états est désormais utilisé aussi lorsqu’une mise à jour est détectée automatiquement. Le logo reste personnalisable depuis Gestion > Desktop.",
+  "published_at": "2026-10-05T00:52:00+02:00",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Nouvelle interface de mise à jour Desktop",
-    "Logo de mise à jour personnalisable dans Gestion",
-    "États de vérification, disponibilité et erreur harmonisés"
+    "Nouveau visuel Desktop pour les quatre états de mise à jour",
+    "Même interface lors d’une détection automatique de nouvelle version",
+    "Logo de mise à jour personnalisable depuis Gestion > Desktop"
   ]
 }
