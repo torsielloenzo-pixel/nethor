@@ -1442,7 +1442,7 @@ function platformHeaderLogoAnimationControl(kind){
  if(kind!=='desktop')return'';
  const ui=platformUiNode('desktop'),mode=ui.header_logo_mode==='animation'?'animation':'image',animLight=String(ui.header_logo_animation?.light?.url||'').trim(),animDark=String(ui.header_logo_animation?.dark?.url||'').trim(),hasAnimation=!!(animLight||animDark);
  return '<div class="platformHeaderLogoAnimationControl '+(mode==='animation'?'isAnimationMode':'isImageMode')+'">'+
-  '<div class="platformAssetCopy"><strong>Affichage du logo d’entête</strong><span>En mode Animation, le logo reste fixe au repos et l’animation remplace le logo uniquement lorsque le curseur passe dessus.</span>'+
+  '<div class="platformAssetCopy"><strong>Affichage du logo Desktop · barre latérale</strong><span>Le logo autrefois affiché dans l’entête est maintenant placé en haut de la barre latérale. En mode Animation, il reste fixe au repos puis s’anime au survol.</span>'+
    '<label class="platformMediaMode">Type <select data-desktop-header-logo-mode><option value="image" '+(mode==='image'?'selected':'')+'>Logo / image</option><option value="animation" '+(mode==='animation'?'selected':'')+'>Animation au survol</option></select></label>'+
    (mode==='animation'?'<small class="platformMediaHint">Formats animation : JS autonome Nethor, GIF, MP4 ou WebM. L’animation ne démarre qu’au survol.</small>':'')+
    (mode==='animation'&&!hasAnimation?'<small class="platformMediaWarning">Animation au survol sélectionnée : importe au moins une animation claire ou sombre pour l’activer.</small>':'')+
@@ -1455,7 +1455,7 @@ function platformHeaderLogoSizeControl(kind){
  if(kind!=='desktop')return'';
  const ui=platformUiNode('desktop'),value=Math.max(60,Math.min(160,Math.round(Number(ui.header_logo_scale)||100)));
  return '<div class="platformHeaderLogoSize">'+
-  '<div class="platformHeaderLogoSizeCopy"><strong>Taille du logo d’entête</strong><span>Ajuste uniquement la taille du logo affiché dans l’entête Desktop.</span></div>'+
+  '<div class="platformHeaderLogoSizeCopy"><strong>Taille du logo de la barre latérale</strong><span>Ajuste uniquement la taille du logo Nethor affiché en haut de la barre latérale Desktop.</span></div>'+
   '<div class="platformHeaderLogoSizeControls">'+
    '<input type="range" min="60" max="160" step="5" value="'+value+'" data-desktop-header-logo-scale-range aria-label="Taille du logo d’entête Desktop">'+
    '<div class="platformHeaderLogoSizeNumber"><input type="number" min="60" max="160" step="5" value="'+value+'" data-desktop-header-logo-scale-number><span>%</span></div>'+
@@ -1483,7 +1483,7 @@ function renderPlatformIdentity(kind){
  const host=$('platformIdentity_'+kind);if(!host)return;
  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent maintenant d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
  '<div class="platformAssetList">'+
- platformAssetRow(kind,'header_logo','Logo de l’entête','Logo affiché au repos dans les en-têtes de l’application sur '+platformLabel(kind)+'.')+
+ platformAssetRow(kind,'header_logo','Logo principal','Logo affiché au repos en haut de la barre latérale sur Desktop, et dans l’entête sur Mobile. Plateforme : '+platformLabel(kind)+'.')+
  (kind==='desktop'?platformHeaderLogoAnimationControl(kind)+platformHeaderLogoSizeControl(kind):'')+
  platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion '+platformLabel(kind)+'. Sans fichier personnalisé, Nethor utilise automatiquement son icône officielle de connexion.')+
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
