@@ -616,7 +616,7 @@ async function renderHomeDashboard(profile,name,cfg){
  homeTaskRows=taskRowsRes.error?[]:(taskRowsRes.data||[]);
  homeTaskTeam=profilesRes.error?[]:(profilesRes.data||[]);
  homeTaskAssignees=[];homeTaskCompletions=[];
- if(homeIsMobilePlatform()&&widget('tasks')&&homeTaskRows.length){
+ if(homeTaskRows.length&&(homeIsMobilePlatform()?widget('tasks'):true)){
   const ids=homeTaskRows.map(x=>x.id),[aRes,cRes]=await Promise.all([
    db.from('daily_task_assignees').select('task_id,user_id').in('task_id',ids),
    db.from('daily_task_completions').select('task_id,user_id,completed_at').in('task_id',ids)
@@ -671,13 +671,22 @@ async function renderHomeDashboard(profile,name,cfg){
  const roleLabel=window.NettoProfileUI?.roleLabel?.(profile.role)||profile.role||'Compte';
  const dateLabel=today.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace('.','');
  const sections=[];
+ let desktopDashboardResult=null;
  if(!homeIsMobilePlatform()){
   const storeInfoWidget=homeRenderStoreInfoWidget(cfg,today,name);
-  if(storeInfoWidget)sections.push(storeInfoWidget)
- }
- if(!homeIsMobilePlatform()){
   const quickPlanningWidget=homeRenderQuickPlanningWidget(cfg,today,todayKey,todayModel,profileRows,weekStart);
-  if(quickPlanningWidget)sections.push(quickPlanningWidget)
+  if(window.NethorDesktopHomeDashboard?.render){
+   desktopDashboardResult=await window.NethorDesktopHomeDashboard.render({
+    db,session:homeSession,profile,name,cfg,today,todayKey,weekStart,todayModel,profileRows,
+    notifications,taskRows:homeTaskRows,taskAssignees:homeTaskAssignees,taskCompletions:homeTaskCompletions,taskTeam:homeTaskTeam,
+    storeInfoHtml:storeInfoWidget,quickPlanningHtml:quickPlanningWidget
+   });
+   if(desktopDashboardResult?.html)sections.push(desktopDashboardResult.html)
+  }
+  if(!desktopDashboardResult?.html){
+   if(storeInfoWidget)sections.push(storeInfoWidget);
+   if(quickPlanningWidget)sections.push(quickPlanningWidget)
+  }
  }
  if(homeIsMobilePlatform()&&widget('welcome'))sections.push('<section class="mhdHero mhdWelcome"><div class="mhdHeroTop"><span class="mhdPill"><i></i> ESPACE DE TRAVAIL</span><span class="mhdPill mhdDatePill">▣ '+homeEsc(dateLabel)+'</span></div><h1>Bonjour '+homeEsc(name||roleLabel)+' 👋</h1><p>Voici tes informations utiles pour aujourd’hui.</p></section>');
  if(homeIsMobilePlatform()&&widget('next_shift')){
@@ -718,12 +727,16 @@ async function renderHomeDashboard(profile,name,cfg){
  host.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
  if(!homeIsMobilePlatform()&&$('nethorStoreInfoWidget'))homeStartStoreInfoClock(homeStoreInfoConfig(cfg),name);
  if(!homeIsMobilePlatform()&&$('nethorQuickPlanningWidget'))homeStartQuickPlanningClock(homeQuickPlanningConfig(cfg),todayModel,todayKey,profileRows,weekStart);
+ if(desktopDashboardResult?.html)window.NethorDesktopHomeDashboard?.activate?.(desktopDashboardResult);
  const todaySelf=todayModel?homeDayFacts(todayModel,todayKey,name):{hours:0,ranges:[]};
- await window.NethorOperationsWidget?.mount?.({
-  host,db,session:homeSession,profile,config:cfg||{},subroleKeys,todayKey,
-  service:{hours:todaySelf.hours,ranges:todaySelf.ranges,weekHours:currentHours,nextShift},
-  tasks:{rows:homeTaskRows,assignees:homeTaskAssignees,completions:homeTaskCompletions,team:homeTaskTeam}
- });
+ const showLegacyOperations=homeIsMobilePlatform()||!desktopDashboardResult?.html||cfg?.desktop_dashboard_widget?.legacy_operations_hub===true;
+ if(showLegacyOperations){
+  await window.NethorOperationsWidget?.mount?.({
+   host,db,session:homeSession,profile,config:cfg||{},subroleKeys,todayKey,
+   service:{hours:todaySelf.hours,ranges:todaySelf.ranges,weekHours:currentHours,nextShift},
+   tasks:{rows:homeTaskRows,assignees:homeTaskAssignees,completions:homeTaskCompletions,team:homeTaskTeam}
+  })
+ }else await window.NethorOperationsWidget?.unmount?.();
  // Paint team avatars after the final DOM exists.
  if(homeIsMobilePlatform()&&widget('team_today')){
   const shown=todayTeam.slice(0,3);
