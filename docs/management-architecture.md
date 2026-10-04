@@ -45,3 +45,17 @@ Gestion détecte automatiquement les nouvelles clés de `site_config.home_widget
 Métadonnées recommandées : `platform` (`mobile`, `desktop`, `all`) et `category` (`home`, `operations`, etc.). Pour une configuration racine `*_widget`, elles peuvent être placées sous `management.platform` et `management.category`.
 
 Sans métadonnée, Gestion utilise une inférence prudente par nom. Une métadonnée explicite reste toujours prioritaire.
+
+## Tableau de bord Desktop point de vente
+
+La configuration de l’accueil Desktop de référence est centralisée dans `site_config.desktop_dashboard_widget`.
+
+Elle respecte la même séparation que le reste de Gestion :
+
+- **Structure / affichage** : entête, barre latérale, visibilité des widgets, libellés, destinations et style.
+- **Contenu spécialisé** : la bannière magasin reste détaillée dans `store_info_widget` et la frise planning dans `quick_planning_widget`.
+- **Données** : planning, tâches, notifications, livraisons et chat proviennent des modules Nethor existants. Le tableau de bord ne fabrique pas de valeurs de démonstration.
+- **Accès** : un lien visible dans la barre latérale ne donne aucun droit supplémentaire. Les rôles, sous-rôles, RLS et contrôles serveur restent la source d’autorité.
+- **Placement** : le tableau de bord est Desktop uniquement. Les widgets d’accueil Mobile gardent leur propre configuration dans `home_widgets`.
+
+La barre latérale et l’entête Desktop lisent cette même configuration afin d’éviter qu’une personnalisation soit dupliquée dans plusieurs écrans.
