@@ -453,3 +453,36 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
  border-color:#3c434c;
  color:#e5e9ed
 }
+
+
+/* Chat — conversations épinglées globalement */
+.convRow.pinned{position:relative}
+.convRow.pinned::before{
+ content:"";
+ position:absolute;
+ left:2px;
+ top:14px;
+ bottom:14px;
+ width:2px;
+ border-radius:999px;
+ background:#ff672f;
+ opacity:.72
+}
+.convPinnedIcon{
+ width:15px;
+ height:15px;
+ flex:none;
+ display:inline-grid;
+ place-items:center;
+ color:#f05b2b
+}
+.convPinnedIcon svg{
+ width:13px;
+ height:13px;
+ fill:none;
+ stroke:currentColor;
+ stroke-width:1.8;
+ stroke-linecap:round;
+ stroke-linejoin:round
+}
+:root[data-theme="dark"] .convPinnedIcon{color:#ff865c}
