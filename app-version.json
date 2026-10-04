@@ -8,4 +8,4 @@
   "message": "La navigation gestuelle Mobile conserve désormais en mémoire la géométrie de la barre de navigation pendant le geste. Le déplacement du doigt n'effectue plus de recalcul de mise en page à chaque image : la page, l'aperçu voisin et la glissière sont pilotés uniquement par transformations GPU jusqu'au relâchement.",
   "published_at": "2026-10-04T13:22:00+02:00",
   "icon": "assets/app-icon-v63.svg"
-}\n
+}
