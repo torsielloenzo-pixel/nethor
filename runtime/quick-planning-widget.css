@@ -2,7 +2,8 @@
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{
   --qp-accent:#ff5a2a;--qp-now:#ff5a2a;--qp-surface:var(--qp-surface-light,#fff);--qp-text:var(--qp-text-light,#1f2937);
   --qp-muted:#748093;--qp-grid:var(--qp-grid-light,#e7ebf0);--qp-row-h:30px;
-  order:3!important;grid-column:span 8!important;align-self:start!important;min-width:0;overflow:hidden;
+  order:3!important;grid-column:span 8!important;align-self:stretch!important;min-width:0;min-height:0;overflow:hidden;
+  display:grid!important;grid-template-rows:auto minmax(0,1fr) auto;
   border:1px solid var(--qp-grid);border-radius:var(--qp-radius,18px);background:var(--qp-surface);color:var(--qp-text);
   box-shadow:var(--qp-shadow,0 10px 30px rgba(28,36,48,.07))
 }
@@ -38,12 +39,12 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanFullLi
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanFullLink:hover{transform:translateY(-1px);background:color-mix(in srgb,var(--qp-accent) 11%,var(--qp-surface))}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanBoard{
-  display:grid;grid-template-columns:minmax(108px,128px) minmax(0,1fr);padding:6px 11px 4px
+  display:grid;grid-template-columns:minmax(108px,128px) minmax(0,1fr);min-height:0;height:100%;padding:6px 11px 4px
 }
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNames{min-width:0;padding-right:8px}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameAxis{height:21px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNames{min-width:0;min-height:0;padding-right:8px;display:flex;flex-direction:column}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameAxis{height:21px;flex:0 0 21px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanName{
-  min-height:var(--qp-row-h);display:grid;grid-template-columns:22px minmax(0,1fr);align-items:center;gap:6px;padding:2px 0
+  min-height:var(--qp-row-h);flex:1 1 var(--qp-row-h);display:grid;grid-template-columns:22px minmax(0,1fr);align-items:center;gap:6px;padding:2px 0
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.noAvatars .qplanName{grid-template-columns:minmax(0,1fr)}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAvatar{
@@ -58,13 +59,13 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameCo
   display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--qp-muted);font-size:6.5px;line-height:1.15;font-weight:700
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTimeline{
-  position:relative;min-width:0;overflow:visible
+  position:relative;min-width:0;min-height:0;overflow:visible;display:flex;flex-direction:column
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAxis{
-  position:relative;height:21px;border-bottom:1px solid var(--qp-grid)
+  position:relative;height:21px;flex:0 0 21px;border-bottom:1px solid var(--qp-grid)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick{
-  position:absolute;top:1px;bottom:calc(-1 * (var(--qp-row-h) * var(--qp-count,1)));width:1px;background:color-mix(in srgb,var(--qp-grid) 78%,transparent);pointer-events:none
+  position:absolute;top:1px;bottom:calc(-100% * var(--qp-count,1));width:1px;background:color-mix(in srgb,var(--qp-grid) 78%,transparent);pointer-events:none
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick>span{
   position:absolute;top:0;left:0;transform:translateX(-50%);padding:0 3px;background:var(--qp-surface);
@@ -72,9 +73,9 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick>s
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick.first>span{transform:none}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick.last>span{transform:translateX(-100%)}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanRows{position:relative;z-index:2}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanRows{position:relative;z-index:2;display:flex;flex:1 1 auto;min-height:0;flex-direction:column}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack{
-  position:relative;height:var(--qp-row-h);display:block;border-bottom:1px solid color-mix(in srgb,var(--qp-grid) 70%,transparent)
+  position:relative;height:auto;min-height:var(--qp-row-h);flex:1 1 var(--qp-row-h);display:block;border-bottom:1px solid color-mix(in srgb,var(--qp-grid) 70%,transparent)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack:last-child{border-bottom:0}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack:before{
@@ -112,7 +113,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNow.ed
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanEmptyName{
   min-height:34px;display:flex;align-items:center;color:var(--qp-muted);font-size:7px;font-weight:800
 }
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack.empty{height:34px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack.empty{height:auto;min-height:34px;flex:1 1 34px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack.empty:after{
   content:"Aucune présence active";position:absolute;inset:0;display:grid;place-items:center;color:var(--qp-muted);font-size:8px;font-weight:800
 }
