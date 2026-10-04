@@ -695,7 +695,7 @@ async function mount(host){
  state.unsubscribe=shared?.subscribe?.(onServiceChange,{immediate:false})||null;
  state.session=shared?.session||null;state.db=shared?.client||null;
  startRealtime();
- state.preloaded=null;await render();
+ await render();
  return true
 }
 async function unmount(){
