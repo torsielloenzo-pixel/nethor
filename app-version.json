@@ -1,11 +1,11 @@
 {
-  "version": 345,
-  "label": "v1.45.7",
+  "version": 346,
+  "label": "v1.45.8",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Navigation gestuelle Mobile",
-  "message": "La navigation principale Mobile devient directement pilotée au doigt : la page suit le geste en temps réel, un aperçu de la vue voisine apparaît sous le panneau, la glissière de la barre basse se déplace proportionnellement entre Accueil, Planning et Chat, et le relâchement utilise une inertie courte avec retour naturel ou validation selon la distance et la vitesse. Le rendu utilise un seul calque GPU pour garder le swipe fluide.",
+  "title": "Swipe Mobile optimisé",
+  "message": "La navigation gestuelle Mobile conserve désormais en mémoire la géométrie de la barre de navigation pendant le geste. Le déplacement du doigt n'effectue plus de recalcul de mise en page à chaque image : la page, l'aperçu voisin et la glissière sont pilotés uniquement par transformations GPU jusqu'au relâchement.",
   "published_at": "2026-10-04T13:22:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }\n
