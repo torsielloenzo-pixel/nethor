@@ -105,7 +105,7 @@ async function openPlanningUserCard(userId){
  }catch(_){showToast('Fiche utilisateur indisponible')}
 }
 document.addEventListener('click',e=>{const avatar=e.target.closest('[data-planning-user-id]');if(!avatar)return;e.preventDefault();e.stopPropagation();openPlanningUserCard(avatar.dataset.planningUserId)});
-function identityHtml(name){const p=planningProfileFor(name),label=p?.display_name||name;return '<div class="planningIdentity">'+identityAvatarHtml(p,label)+'<span class="planningIdentityText"><strong>'+esc(label)+'</strong>'+planningReadBadgeHtml(p,dayKey(),false)+'</span></div>'}
+function identityHtml(name){const p=planningProfileFor(name),label=p?.display_name||name;return '<div class="planningIdentity">'+identityAvatarHtml(p,label)+'<span class="planningIdentityText"><strong>'+esc(label)+'</strong></span></div>'}
 function rowRanges(row){const out=[];let start=null,color=null;for(let i=0;i<=row.length;i++){const v=i<row.length?(row[i]||null):null;if(v!==color){if(color&&start!==null)out.push({a:(model.startTime??6)+start*.25,b:(model.startTime??6)+i*.25,c:color});start=v?i:null;color=v}}return out}
 function renderMobileSchedule(day,employees,rows){
  const box=document.getElementById('mobileSchedule');if(!box)return;if(!model||!day){box.classList.add('hidden');box.innerHTML='';return}box.classList.remove('hidden');
@@ -144,6 +144,28 @@ function planningReadBadgeHtml(profile,date=dayKey(),compact=false){
  const time=readAt&&!Number.isNaN(readAt.getTime())?readAt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'';
  const title=read?('Planning consulté'+(time?' à '+time:'')):'Planning non consulté ce jour';
  return '<span class="planningReadBadge '+(read?'isRead':'isUnread')+(compact?' compact':'')+'" title="'+esc(title)+'" aria-label="'+esc(read?'Lu':'Non lu')+'"><span class="planningReadIcon" aria-hidden="true">'+(read?'✓':'◷')+'</span>'+(compact?'':'<span class="planningReadText">'+(read?'Lu':'Non lu')+(time?'<small>'+esc(time)+'</small>':'')+'</span>')+'</span>'
+}
+function planningReadCellHtml(profile,date=dayKey()){
+ const status=planningReadStatusForProfile(profile,date);
+ if(!status?.status_visible)return '';
+ const read=status.is_read===true,readAt=read&&status.read_at?new Date(status.read_at):null;
+ const time=readAt&&!Number.isNaN(readAt.getTime())?readAt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'';
+ const title=read?('Lu'+(time?' à '+time:'')):'Non lu';
+ return '<span class="planningReadCellState '+(read?'isRead':'isUnread')+'" title="'+esc(title)+'" aria-label="'+esc(title)+'"><span aria-hidden="true">'+(read?'✓':'◷')+'</span><b>'+(read?'Lu':'Non lu')+'</b></span>'
+}
+function planningReadWeekSummaryHtml(name,start=currentWeekStart){
+ if(!planningReadStatusEnabled())return '';
+ const profile=planningProfileFor(name);if(!profile?.id)return '';
+ const labels=['L','Ma','Me','J','V','S','D'],marks=[];
+ for(let i=0;i<7;i++){
+  const date=isoDate(addDays(start,i)),status=planningReadStatusForProfile(profile,date);
+  if(!status?.status_visible)continue;
+  const read=status.is_read===true,readAt=read&&status.read_at?new Date(status.read_at):null;
+  const time=readAt&&!Number.isNaN(readAt.getTime())?readAt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'';
+  const title=DAYS[i][1]+' • '+(read?'Lu'+(time?' à '+time:''):'Non lu');
+  marks.push('<span class="planningReadDayMark '+(read?'isRead':'isUnread')+'" title="'+esc(title)+'" aria-label="'+esc(title)+'">'+labels[i]+'</span>')
+ }
+ return marks.length?'<div class="planningReadWeekMarks">'+marks.join('')+'</div>':''
 }
 function clearPlanningReadStatuses(weekKey=''){
  planningReadStatusSeq++;
@@ -665,10 +687,10 @@ function renderReader(){
  meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime);
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
- let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Employé</th>';
+ let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol"><col class="readCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Utilisateur</th><th class="readHead" title="Consultation du planning pour cette journée">Lu</th>';
  ss.forEach((t,i)=>{const major=i%2===0,label=major?(Number.isInteger(t)?String(Math.floor(t)):fmtTime(t)):'',cls=(i%4===0?'hourStart ':'')+(i%2===0?'halfStart':'blankQuarter');h+='<th class="timeHead '+cls+'" title="'+fmtTime(t)+'–'+fmtTime(t+.25)+'">'+label+'</th>'});
  h+='<th class="totalHead">Total</th></tr></thead><tbody>';
- visibleEmployees.forEach(({emp,ri,row})=>{h+='<tr><th class="nameCell" title="Ligne Excel '+(emp.excelRow||ri+4)+'">'+identityHtml(emp.name)+'</th>';ss.forEach((t,si)=>{const v=row[si]||null,cls=(si%4===0?'hourStart ':'')+(si%2===0?'halfStart ':'')+(editMode?'editable ':'');h+='<td class="slot '+cls+'" data-color="'+(v||'')+'" data-row="'+ri+'" data-slot="'+si+'" title="'+esc(emp.name)+' • '+fmtTime(t)+'–'+fmtTime(t+.25)+'" style="'+(v?'background:'+COLOR[v]+';':'')+'"></td>'});h+='<td class="totalCell" data-total-row="'+ri+'">'+String(totalForRow(row)).replace('.',',')+' h</td></tr>'});
+ visibleEmployees.forEach(({emp,ri,row})=>{const profile=planningProfileFor(emp.name);h+='<tr><th class="nameCell" title="Ligne Excel '+(emp.excelRow||ri+4)+'">'+identityHtml(emp.name)+'</th><td class="readCell">'+planningReadCellHtml(profile,dayKey())+'</td>';ss.forEach((t,si)=>{const v=row[si]||null,cls=(si%4===0?'hourStart ':'')+(si%2===0?'halfStart ':'')+(editMode?'editable ':'');h+='<td class="slot '+cls+'" data-color="'+(v||'')+'" data-row="'+ri+'" data-slot="'+si+'" title="'+esc(emp.name)+' • '+fmtTime(t)+'–'+fmtTime(t+.25)+'" style="'+(v?'background:'+COLOR[v]+';':'')+'"></td>'});h+='<td class="totalCell" data-total-row="'+ri+'">'+String(totalForRow(row)).replace('.',',')+' h</td></tr>'});
  h+='</tbody></table>';document.getElementById('sheetMount').innerHTML=h;renderMobileSchedule(day,visibleEmployees.map(x=>x.emp),visibleEmployees.map(x=>x.row));document.body.classList.toggle('planningEditing',editMode);if(editMode)bindEditing();
 }
 function renderAll(){renderWeekHeader();renderReader();renderPlanningInsights()}
