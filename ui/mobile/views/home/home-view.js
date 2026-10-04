@@ -464,6 +464,10 @@ async function render(){
  const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today));
  const uid=String(state.session.user.id||'');
  let snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&Date.now()-state.preloaded.loadedAt<45000?state.preloaded:null;
+ if(!snapshot&&state.preloadPromise){
+  await state.preloadPromise;
+  snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&Date.now()-state.preloaded.loadedAt<45000?state.preloaded:null
+ }
  if(!snapshot)snapshot=await loadHomeSnapshot(shared);
  if(!state.mounted||token!==state.renderToken)return;
  if(!snapshot){
