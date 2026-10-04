@@ -1,11 +1,11 @@
 {
-  "version": 355,
-  "label": "v1.46.6",
+  "version": 356,
+  "label": "v1.46.7",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Point de vente & tailles de texte",
-  "message": "Le bloc Netto Le Thor est élargi et ouvre désormais la fiche Google Maps exacte du magasin. Ajout dans Gestion de réglages indépendants pour la taille du texte de la barre latérale et des widgets avec leur contenu.",
-  "published_at": "2026-10-04T19:43:00+02:00",
+  "title": "Vue magasin aujourd’hui",
+  "message": "Le widget Vue magasin aujourd’hui utilise désormais une échelle fixe de 06:00 à 20:30, découpée heure par heure, avec des lignes, barres, avatars et repères graphiques agrandis pour une meilleure lisibilité.",
+  "published_at": "2026-10-05T00:25:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
