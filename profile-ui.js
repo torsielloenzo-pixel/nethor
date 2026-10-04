@@ -1089,7 +1089,13 @@ function applyDesktopChromeControls(wrap,controls){
  if(!wrap)return;
  const notifications=configuredControl(controls,'notifications',{label:'Notifications',subtitle:'Centre d’activité Nethor'});
  const update=configuredControl(controls,'update',{label:'Mise à jour',subtitle:'Rechercher une nouvelle version'});
+ const loginLogs=configuredControl(controls,'login_logs',{label:'Connexions',subtitle:'Historique des connexions administrateur'});
+ const mobilePreview=configuredControl(controls,'mobile_preview',{label:'Visualiser mobile',subtitle:'Ouvrir l’aperçu mobile'});
  const userMenu=configuredControl(controls,'user_menu',{label:'Menu utilisateur',subtitle:'Profil, préférences et réglages'});
+ const loginBtn=wrap.querySelector('#nettoLoginBtn');
+ if(loginBtn){loginBtn.setAttribute('aria-label',loginLogs.label);loginBtn.title=loginLogs.subtitle||loginLogs.label;if(loginLogs.url)replaceControlIcon(loginBtn,loginLogs.url)}
+ const mobilePreviewBtn=wrap.querySelector('#nettoMobilePreviewBtn');
+ if(mobilePreviewBtn){mobilePreviewBtn.setAttribute('aria-label',mobilePreview.label);mobilePreviewBtn.title=mobilePreview.subtitle||mobilePreview.label;if(mobilePreview.url)replaceControlIcon(mobilePreviewBtn,mobilePreview.url)}
  const bell=wrap.querySelector('#nettoBellBtn');
  if(bell){bell.setAttribute('aria-label',notifications.label);bell.title=notifications.subtitle||notifications.label;if(notifications.url)replaceControlIcon(bell,notifications.url)}
  const notifTitle=wrap.querySelector('.nettoNotifTitle');
