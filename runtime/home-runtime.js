@@ -497,31 +497,15 @@ function homeQuickPlanningInitials(name){
  const parts=String(name||'U').trim().split(/\s+/).filter(Boolean);
  return parts.slice(0,2).map(x=>(x[0]||'').toUpperCase()).join('')||'U'
 }
-function homeQuickPlanningBounds(model,dateKey,nowHour){
- const ranges=[];
- if(model?.days?.[dateKey]){
-  (model.employees||[]).forEach((e,i)=>{
-   const row=model.days[dateKey].cells?.[i]||[];
-   homeWorkRanges(row,model||{}).forEach(r=>ranges.push(r))
-  })
- }
- let start,end;
- if(ranges.length){
-  start=Math.floor(Math.min(...ranges.map(r=>r.a)));
-  end=Math.ceil(Math.max(...ranges.map(r=>r.b)))
- }else{
-  start=Math.max(0,Math.floor(nowHour)-4);end=Math.min(24,start+8)
- }
- if(end-start<4){
-  const mid=(start+end)/2;start=Math.max(0,Math.floor(mid-2));end=Math.min(24,Math.ceil(mid+2))
- }
- if(end<=start)end=Math.min(24,start+4);
- return{start,end,span:Math.max(1,end-start)}
+function homeQuickPlanningBounds(){
+ const start=6,end=20.5;
+ return{start,end,span:end-start}
 }
 function homeQuickPlanningTicks(bounds){
- const span=bounds.span,step=span<=8?1:span<=14?2:3,out=[];
- for(let t=bounds.start;t<=bounds.end+.001;t+=step)out.push(t);
- if(!out.length||Math.abs(out[out.length-1]-bounds.end)>.001)out.push(bounds.end);
+ const out=[];
+ for(let t=Math.ceil(bounds.start);t<=Math.floor(bounds.end);t+=1)out.push(t);
+ if(!out.length||Math.abs(out[0]-bounds.start)>.001)out.unshift(bounds.start);
+ if(Math.abs(out[out.length-1]-bounds.end)>.001)out.push(bounds.end);
  return out
 }
 function homeQuickPlanningPeople(model,dateKey,profileRows,nowHour,w){
@@ -561,8 +545,8 @@ function homeQuickPlanningCalendarIcon(){
 }
 function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart){
  const w=homeQuickPlanningConfig(cfg);if(!w.enabled)return'';
- const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(todayModel,todayKey,nowHour),allPeople=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,w),people=allPeople.slice(0,w.max_people);
- const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
+ const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(),allPeople=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,w),people=allPeople.slice(0,w.max_people);
+ const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),nowInRange=nowHour>=bounds.start&&nowHour<=bounds.end,edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
  const ticks=homeQuickPlanningTicks(bounds),target='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
  const s=w.style,shadow=s.shadow?'0 10px 30px rgba(28,36,48,.07)':'none';
  const style='--qp-accent:'+s.accent+';--qp-now:'+s.now_color+';--qp-surface-light:'+s.surface_light+';--qp-surface-dark:'+s.surface_dark+';--qp-text-light:'+s.text_light+';--qp-text-dark:'+s.text_dark+';--qp-grid-light:'+s.grid_light+';--qp-grid-dark:'+s.grid_dark+';--qp-radius:'+s.radius+'px;--qp-shadow:'+shadow+';--qp-count:'+(people.length||1);
@@ -578,12 +562,12 @@ function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,w
  const tracks=people.length?people.map(person=>'<div class="qplanTrack" style="--qp-person:'+homeEsc(person.color)+'">'+homeQuickPlanningSegments(person,bounds)+'</div>').join(''):'<div class="qplanTrack empty"></div>';
  const tickHtml=ticks.map((t,index)=>{
   const left=homeQuickPlanningPosition(t,bounds),cls=(index===0?' first':'')+(index===ticks.length-1?' last':'');
-  return '<span class="qplanTick'+cls+'" style="left:'+left.toFixed(3)+'%"><span>'+homeEsc(homeClock(t).replace('h00','h'))+'</span></span>'
+  return '<span class="qplanTick'+cls+'" style="left:'+left.toFixed(3)+'%"><span>'+homeEsc(homeClock(t).replace('h',':'))+'</span></span>'
  }).join('');
  const clock=String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0');
  return '<section id="nethorQuickPlanningWidget" class="qplan density'+(w.density==='compact'?'Compact':'Comfortable')+(w.show_avatar?'':' noAvatars')+'" style="'+homeEsc(style)+'" aria-label="'+homeEsc(w.title)+'">'+
   '<div class="qplanHead"><div class="qplanTitle"><span class="qplanTitleIcon">'+homeQuickPlanningCalendarIcon()+'</span><span class="qplanTitleCopy"><strong>'+homeEsc(w.title)+'</strong><small>'+homeEsc(w.subtitle)+' · '+people.length+' en poste</small></span></div><button type="button" class="qplanFullLink" onclick="location.href=\''+homeEsc(target)+'\'">'+homeEsc(w.action_label)+' <span>→</span></button></div>'+
-  '<div class="qplanBoard"><div class="qplanNames"><div class="qplanNameAxis"></div>'+names+'</div><div class="qplanTimeline"><div class="qplanAxis">'+tickHtml+'</div><div class="qplanRows">'+tracks+'</div><span class="qplanNow'+edgeClass+'" style="left:'+nowPct.toFixed(3)+'%"><span class="qplanNowLabel">Maintenant</span></span></div></div>'+
+  '<div class="qplanBoard"><div class="qplanNames"><div class="qplanNameAxis"></div>'+names+'</div><div class="qplanTimeline"><div class="qplanAxis">'+tickHtml+'</div><div class="qplanRows">'+tracks+'</div>'+(nowInRange?'<span class="qplanNow'+edgeClass+'" style="left:'+nowPct.toFixed(3)+'%"><span class="qplanNowLabel">Maintenant</span></span>':'')+'</div></div>'+
   '<div class="qplanFoot">'+(w.show_legend?'<div class="qplanLegend"><span class="solid">En poste</span><span class="pause">Pause / coupure</span><span class="now">Maintenant</span></div>':'<span></span>')+'<span class="qplanUpdated">Actualisé automatiquement · '+homeEsc(clock)+'</span></div>'+
  '</section>'
 }
