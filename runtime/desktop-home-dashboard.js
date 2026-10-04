@@ -11,7 +11,7 @@ const DEFAULTS={
   critical_alerts:{enabled:true,label:'Alertes critiques'},
   deliveries:{enabled:true,label:'Livraisons attendues'},
   priorities:{enabled:true,label:'Priorités immédiates',max_items:5},
-  planning_view:{enabled:true,label:'Vue magasin aujourd’hui'},
+  planning_view:{enabled:true,label:'Vue magasin aujourd’hui',show_all_day:true,max_items:6},
   team_service:{enabled:true,label:'Équipe en service',max_items:5},
   operations_followup:{enabled:true,label:'Suivi opérationnel',max_items:6},
   priority_messages:{enabled:true,label:'Messages prioritaires',max_items:4},
