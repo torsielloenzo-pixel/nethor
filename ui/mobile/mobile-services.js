@@ -13,6 +13,7 @@ let refreshTimer=null;
 let notificationTimer=null;
 let permissionTimer=null;
 let preferenceTimer=null;
+let serviceWorkerRegistrationPromise=null;
 const listeners=new Set();
 
 const state={
@@ -290,6 +291,43 @@ function ensureClient(){
   });
   return client
 }
+function waitForWorkerActivation(reg,timeout=3500){
+  return new Promise(resolve=>{
+    if(reg?.active)return resolve(reg.active);
+    let done=false;
+    const finish=worker=>{
+      if(done)return;
+      if(worker?.state==='activated'||reg?.active){done=true;clearTimeout(timer);resolve(reg?.active||worker||null)}
+    };
+    const bind=worker=>{
+      if(!worker)return;
+      worker.addEventListener?.('statechange',()=>finish(worker));
+      finish(worker)
+    };
+    const timer=setTimeout(()=>{if(!done){done=true;resolve(reg?.active||null)}},timeout);
+    bind(reg?.installing);bind(reg?.waiting);
+    reg?.addEventListener?.('updatefound',()=>bind(reg.installing),{once:true})
+  })
+}
+async function ensureMobileServiceWorker({update=false}={}){
+  if(!('serviceWorker' in navigator))return null;
+  if(!serviceWorkerRegistrationPromise){
+    serviceWorkerRegistrationPromise=(async()=>{
+      const reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+      if(!reg.active)await waitForWorkerActivation(reg);
+      return reg
+    })().catch(error=>{
+      console.warn('[Nethor MobileServices] Service Worker',error);
+      serviceWorkerRegistrationPromise=null;
+      return null
+    })
+  }
+  const reg=await serviceWorkerRegistrationPromise;
+  if(update&&reg){
+    await reg.update().catch(error=>console.warn('[Nethor MobileServices] Service Worker update',error));
+  }
+  return reg
+}
 async function start(){
   if(startPromise)return startPromise;
   startPromise=(async()=>{
@@ -297,6 +335,7 @@ async function start(){
     state.status='starting';
     emit('starting');
     ensureClient();
+    void ensureMobileServiceWorker();
     const {data,error}=await client.auth.getSession();
     if(error)throw error;
     state.session=data?.session||null;
@@ -454,17 +493,28 @@ async function deleteAllNotifications(){
   emit('notifications');
   return true
 }
-function activeServiceWorkerVersion(){
+function serviceWorkerVersion(worker){
   return new Promise(resolve=>{
     try{
-      const controller=navigator.serviceWorker?.controller;
-      if(!controller||typeof MessageChannel==='undefined'){resolve(0);return}
+      if(!worker||typeof MessageChannel==='undefined'){resolve(0);return}
       const channel=new MessageChannel();
-      const timer=setTimeout(()=>resolve(0),900);
-      channel.port1.onmessage=event=>{clearTimeout(timer);resolve(Number(event?.data?.version)||0)};
-      controller.postMessage({type:'GET_VERSION'},[channel.port2])
+      let settled=false;
+      const finish=value=>{if(settled)return;settled=true;clearTimeout(timer);resolve(Number(value)||0)};
+      const timer=setTimeout(()=>finish(0),1200);
+      channel.port1.onmessage=event=>finish(event?.data?.version);
+      worker.postMessage({type:'GET_VERSION'},[channel.port2])
     }catch(_){resolve(0)}
   })
+}
+async function activeServiceWorkerVersion(reg=null){
+  try{
+    const registration=reg||await ensureMobileServiceWorker();
+    let worker=navigator.serviceWorker?.controller||registration?.active||null;
+    if(!worker&&registration){
+      worker=await waitForWorkerActivation(registration,2500);
+    }
+    return await serviceWorkerVersion(worker)
+  }catch(_){return 0}
 }
 async function checkForUpdates({interactive=true}={}){
   let manifest=null;
@@ -476,7 +526,8 @@ async function checkForUpdates({interactive=true}={}){
     if(interactive)alert('Impossible de vérifier les mises à jour pour le moment.');
     return{available:false,error}
   }
-  const current=await activeServiceWorkerVersion();
+  const registration=await ensureMobileServiceWorker({update:true});
+  const current=await activeServiceWorkerVersion(registration);
   const available=current>0&&Number(manifest?.version||0)>Number(current||0);
   if(!interactive)return{available,current,manifest};
   if(!current){
@@ -490,7 +541,7 @@ async function checkForUpdates({interactive=true}={}){
   const accepted=confirm('Une mise à jour de Nethor est disponible'+(manifest?.label?' ('+manifest.label+')':'')+'.\n\nL’installer maintenant ?');
   if(!accepted)return{available,current,manifest,accepted:false};
   try{
-    const registration=await navigator.serviceWorker?.getRegistration?.();
+    const registration=await ensureMobileServiceWorker({update:true});
     await registration?.update?.();
     const worker=registration?.waiting||registration?.installing||registration?.active||navigator.serviceWorker?.controller;
     worker?.postMessage?.({type:'PURGE_CACHES_AND_SKIP_WAITING'});
