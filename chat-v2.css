@@ -246,3 +246,108 @@ html[data-theme="dark"] .conversationFilter{background:#292d32;color:#bec3c9}htm
   border-top-color:#30343b!important;
 }
 
+
+
+/* Chat contacts persistants — avatars circulaires et états vides */
+.convAvatar,.activeAvatar,.msgAvatar,.pickAvatar,.archiveRowAvatar,.contactAvatar,.emptyDirectAvatar,
+.conversationActionHeader .convAvatar,.infoRow .pickAvatar{
+ border-radius:50%!important
+}
+.convAvatar img,.activeAvatar img,.msgAvatar img,.pickAvatar img,.archiveRowAvatar img,.contactAvatar img,.emptyDirectAvatar img{
+ border-radius:50%!important
+}
+.emptyDirectChat{
+ min-height:100%;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ padding:34px 24px;
+ color:#7f8791
+}
+.emptyDirectAvatar{
+ width:78px;
+ height:78px;
+ display:grid;
+ place-items:center;
+ overflow:hidden;
+ flex:none;
+ background:var(--chat-gradient);
+ color:#fff;
+ font-size:18px;
+ font-weight:950;
+ box-shadow:0 10px 26px #ff5a2a20
+}
+.emptyDirectAvatar img{width:100%;height:100%;object-fit:cover}
+.emptyDirectChat strong{
+ margin-top:15px;
+ color:var(--chat-text);
+ font-size:15px;
+ font-weight:900;
+ letter-spacing:-.25px
+}
+.emptyDirectChat span{
+ margin-top:6px;
+ max-width:290px;
+ color:var(--chat-muted);
+ font-size:10px;
+ line-height:1.5
+}
+.generalAvatarSettings{
+ padding-top:2px
+}
+.generalAvatarAdmin{
+ display:grid;
+ grid-template-columns:52px minmax(0,1fr);
+ align-items:center;
+ gap:10px;
+ padding:10px;
+ border:1px solid var(--chat-line);
+ border-radius:14px;
+ background:#f7f8f9
+}
+.generalAvatarAdmin .activeAvatar{
+ width:52px;
+ height:52px
+}
+.generalAvatarAdmin strong{
+ display:block;
+ font-size:10.5px
+}
+.generalAvatarAdmin small{
+ display:block;
+ margin-top:3px;
+ color:var(--chat-muted);
+ font-size:8.5px;
+ line-height:1.4
+}
+.generalAvatarActions{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ gap:8px;
+ margin-top:8px
+}
+.generalAvatarActions .modalAction.compact{
+ margin:0;
+ min-height:39px
+}
+.generalAvatarReset{
+ min-height:39px;
+ padding:0 12px;
+ border:1px solid #ffd4ca;
+ border-radius:11px;
+ background:#fff4f1;
+ color:#bb3526;
+ font-size:9px;
+ font-weight:900
+}
+:root[data-theme="dark"] .generalAvatarAdmin{
+ background:#24282d;
+ border-color:#373d44
+}
+:root[data-theme="dark"] .generalAvatarReset{
+ background:#3a2825;
+ border-color:#633d36;
+ color:#ffb09a
+}
