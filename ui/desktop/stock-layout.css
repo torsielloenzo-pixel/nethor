@@ -1,13 +1,13 @@
 /* Phase 4.16 — Stock F&L Desktop */
-html[data-nethor-platform="desktop"] body:has(#site:not(.hidden)){zoom:1.25}
+html[data-nethor-platform="desktop"] body:has(#site:not(.hidden)){zoom:1}
 html[data-nethor-platform="desktop"] #site{position:relative;min-height:100dvh;isolation:isolate}
-html[data-nethor-platform="desktop"] .stockDesktopChrome{padding:15px 20px 13px!important}
+html[data-nethor-platform="desktop"] .stockDesktopChrome{display:none!important}
 html[data-nethor-platform="desktop"] .stockDesktopChrome .stockDesktopTop{width:min(96vw,1540px);max-width:1540px;margin:auto}
 html[data-nethor-platform="desktop"] .stockDesktopIdentity{display:flex;align-items:center;gap:18px;min-width:0}
 html[data-nethor-platform="desktop"] .stockDesktopChrome .brand .title{font-size:31px!important;line-height:1.05!important;letter-spacing:-.8px!important}
 html[data-nethor-platform="desktop"] .stockDesktopChrome .subtitle{font-size:12px!important;margin-top:5px!important}
 html[data-nethor-platform="desktop"] .stockDesktopHeaderActions{display:flex;align-items:center;gap:7px}
-html[data-nethor-platform="desktop"] #site>main{max-width:1080px!important;padding:20px 20px 44px!important;margin-inline:auto}
+html[data-nethor-platform="desktop"] #site>main{width:calc(100% - 36px)!important;max-width:none!important;padding:16px 0 44px!important;margin-inline:auto}
 html[data-nethor-platform="desktop"] .stockWorkspace{gap:16px!important;margin-bottom:20px!important}
 html[data-nethor-platform="desktop"] .stockDesktopModeNav{gap:9px!important;padding:8px!important;border-radius:18px!important;top:76px!important}
 html[data-nethor-platform="desktop"] .stockDesktopModeNav .stockModeBtn{min-height:52px!important;padding:12px!important;border-radius:14px!important;gap:9px!important;font-size:13px!important}
@@ -87,3 +87,8 @@ html[data-nethor-platform="desktop"] .qty{font-size:24px!important}
 
 /* Migrated from index.html — Phase 4.18 */
 @media(min-width:900px){main{margin-top:12px;padding-left:22px;padding-right:22px}.category{border-radius:20px}}
+
+html[data-nethor-platform="desktop"] .stockDesktopPageBar{width:calc(100% - 36px);min-height:54px;margin:10px auto 0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #e4e8ed;border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(20,28,40,.035)}
+html[data-nethor-platform="desktop"] .stockDesktopPageBar .stockDesktopIdentity{min-width:0}
+html[data-nethor-platform="desktop"] .stockDesktopPageBar #who{margin:0!important;font-size:9px!important;color:#737d8a!important}
+:root[data-theme="dark"] .stockDesktopPageBar{background:#23272d!important;border-color:#3a4149!important}
