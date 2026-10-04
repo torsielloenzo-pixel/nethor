@@ -584,21 +584,18 @@ async function boot(){
   root.dataset.router='ready';
   root.dataset.ready='1';
 
-  const servicePromise=bootServices();
-  const routerPromise=mobileRouter.start({host:viewHost,nav:[navHost,headerHost]});
-  const prewarmPromise=new Promise(resolve=>{
-    requestAnimationFrame(()=>resolve(prewarmMobileViews()))
-  }).then(value=>value);
-
-  const serviceState=await servicePromise;
+  const serviceState=await bootServices();
   if(services()?.status==='signed-out')return;
   const liveConfig=services()?.siteConfig||serviceState?.siteConfig||{};
   if(liveConfig&&Object.keys(liveConfig).length)rememberMobileLaunchConfig(liveConfig,services()?.profile||serviceState?.profile);
   applyConfiguredChrome(liveConfig);
   renderMobileLaunchWelcome({profile:services()?.profile||serviceState?.profile,siteConfig:liveConfig});
 
+  const prewarmPromise=prewarmMobileViews();
+  if(launchStarted!==null)await prewarmPromise;
+  const routerPromise=mobileRouter.start({host:viewHost,nav:[navHost,headerHost]});
   await routerPromise;
-  await prewarmPromise;
+  if(launchStarted===null)void prewarmPromise;
   applyConfiguredChrome(services()?.siteConfig||{});
   syncLegacyLinks();
   syncActive();
