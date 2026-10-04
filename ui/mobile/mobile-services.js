@@ -516,6 +516,88 @@ async function activeServiceWorkerVersion(reg=null){
     return await serviceWorkerVersion(worker)
   }catch(_){return 0}
 }
+function waitForWaitingWorker(reg,targetVersion=0,timeout=15000){
+  return new Promise(resolve=>{
+    let settled=false,timer=null;
+    const finish=worker=>{
+      if(settled)return;
+      settled=true;
+      if(timer)clearTimeout(timer);
+      resolve(worker||null)
+    };
+    const inspect=async worker=>{
+      if(!worker)return false;
+      const state=String(worker.state||'');
+      if(state==='installed'||state==='activated'){
+        const version=await serviceWorkerVersion(worker);
+        if(!targetVersion||version>=targetVersion){finish(worker);return true}
+      }
+      return false
+    };
+    const bind=worker=>{
+      if(!worker)return;
+      void inspect(worker);
+      worker.addEventListener?.('statechange',()=>{void inspect(worker)})
+    };
+    void inspect(reg?.waiting);
+    bind(reg?.installing);
+    const onUpdate=()=>bind(reg?.installing);
+    reg?.addEventListener?.('updatefound',onUpdate);
+    timer=setTimeout(async()=>{
+      reg?.removeEventListener?.('updatefound',onUpdate);
+      if(await inspect(reg?.waiting))return;
+      finish(null)
+    },timeout)
+  })
+}
+function updateNeedsCacheReset(manifest){
+  return manifest?.clear_cache===true||manifest?.cache_reset===true||manifest?.major===true||manifest?.important===true
+}
+function reloadAfterMobileUpdate(version){
+  const u=new URL(location.href);
+  u.searchParams.set('_nethor_update',String(version||'latest')+'-'+Date.now());
+  location.replace(u.href)
+}
+async function activateMobileUpdate(reg,manifest){
+  const target=Number(manifest?.version)||0;
+  if(!reg||!target)throw new Error('Mise à jour invalide');
+  const activeVersion=await activeServiceWorkerVersion(reg);
+  if(activeVersion>=target){reloadAfterMobileUpdate(target);return true}
+  let worker=reg.waiting;
+  if(!worker||await serviceWorkerVersion(worker)<target){
+    await reg.update();
+    worker=await waitForWaitingWorker(reg,target,15000)
+  }
+  if(!worker){
+    const latestActive=await activeServiceWorkerVersion(reg);
+    if(latestActive>=target){reloadAfterMobileUpdate(target);return true}
+    throw new Error('Le nouveau Service Worker n’est pas encore prêt')
+  }
+  const workerVersion=await serviceWorkerVersion(worker);
+  if(workerVersion<target)throw new Error('Version du Service Worker incohérente');
+  return new Promise((resolve,reject)=>{
+    let finished=false;
+    const done=()=>{
+      if(finished)return;
+      finished=true;
+      clearTimeout(timer);
+      navigator.serviceWorker?.removeEventListener?.('controllerchange',onControllerChange);
+      reloadAfterMobileUpdate(target);
+      resolve(true)
+    };
+    const onControllerChange=()=>done();
+    navigator.serviceWorker?.addEventListener?.('controllerchange',onControllerChange);
+    const timer=setTimeout(async()=>{
+      if(finished)return;
+      const current=await activeServiceWorkerVersion(reg);
+      if(current>=target){done();return}
+      finished=true;
+      navigator.serviceWorker?.removeEventListener?.('controllerchange',onControllerChange);
+      reject(new Error('Activation de la mise à jour trop longue'))
+    },12000);
+    worker.postMessage({type:updateNeedsCacheReset(manifest)?'PURGE_CACHES_AND_SKIP_WAITING':'SKIP_WAITING'})
+  })
+}
 async function checkForUpdates({interactive=true}={}){
   let manifest=null;
   try{
@@ -541,15 +623,12 @@ async function checkForUpdates({interactive=true}={}){
   const accepted=confirm('Une mise à jour de Nethor est disponible'+(manifest?.label?' ('+manifest.label+')':'')+'.\n\nL’installer maintenant ?');
   if(!accepted)return{available,current,manifest,accepted:false};
   try{
-    const registration=await ensureMobileServiceWorker({update:true});
-    await registration?.update?.();
-    const worker=registration?.waiting||registration?.installing||registration?.active||navigator.serviceWorker?.controller;
-    worker?.postMessage?.({type:'PURGE_CACHES_AND_SKIP_WAITING'});
-    let reloaded=false;
-    const reload=()=>{if(reloaded)return;reloaded=true;location.reload()};
-    navigator.serviceWorker?.addEventListener?.('controllerchange',reload,{once:true});
-    setTimeout(reload,1200);
-  }catch(_){location.reload()}
+    await activateMobileUpdate(registration,manifest)
+  }catch(error){
+    console.warn('[Nethor MobileServices] installation update',error);
+    if(interactive)alert('La mise à jour a été détectée mais son installation n’est pas encore terminée. Réessaie dans quelques instants.');
+    return{available:true,current,manifest,accepted:true,error}
+  }
   return{available,current,manifest,accepted:true}
 }
 async function markNotificationRead(id){
