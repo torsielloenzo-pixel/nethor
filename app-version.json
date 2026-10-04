@@ -1,16 +1,16 @@
 {
-  "version": 364,
-  "label": "v1.46.15",
+  "version": 365,
+  "label": "v1.46.16",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Chat Nethor devient un carnet de contacts",
-  "message": "Chaque membre dispose désormais d’une conversation directe permanente avec tous les autres comptes. Effacer une discussion privée supprime uniquement son contenu et conserve le contact.",
-  "published_at": "2026-10-05T01:37:38+02:00",
+  "title": "Éditeur photo du canal Général corrigé",
+  "message": "La modification de la photo du canal Général utilise maintenant un sélecteur natif fiable, un aperçu avec cadrage et zoom, puis un enregistrement serveur sécurisé.",
+  "published_at": "2026-10-05T01:47:43+02:00",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Une conversation directe permanente existe avec chaque membre de l’équipe",
-    "Effacer une discussion supprime les messages sans retirer le contact",
-    "Photo du canal Général personnalisable par l’administrateur et canal non archivable"
+    "Sélection d’image JPG, PNG ou WebP directement depuis les paramètres du canal",
+    "Aperçu circulaire avec zoom et réglage horizontal/vertical avant enregistrement",
+    "Enregistrement du visuel via la fonction serveur Chat et remplacement propre de l’ancien fichier"
   ]
 }
