@@ -114,11 +114,52 @@ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .brand,
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .navActions{display:none!important}
 
-@media(max-width:1180px) and (min-width:901px){
- html[data-nethor-page-layout="desktop"]{--nethor-sidebar-w:184px}
- .nethorSidebarLabel{font-size:10px}.nethorDesktopStoreSwitch{min-width:290px;width:310px;max-width:330px}.nethorDesktopDateTime small{display:none}
+@media(max-width:1180px) and (min-width:1001px){
+ html[data-nethor-page-layout="desktop"]{--nethor-sidebar-w:174px}
+ .nethorSidebarLabel{font-size:10px}
+ .nethorDesktopStoreSwitch{min-width:270px;width:290px;max-width:310px}
+ .nethorDesktopDateTime small{display:none}
 }
-@media(max-width:900px){.nethorDesktopSidebar{display:none!important}}
+@media(max-width:1000px){
+ html[data-nethor-page-layout="desktop"]{--nethor-sidebar-w:76px}
+ html[data-nethor-page-layout="desktop"] .nethorDesktopSidebar{display:flex!important;padding-inline:7px}
+ .nethorSidebarBrand{padding:0;background-position:center;background-size:48px 40px;justify-content:center}
+ .nethorSidebarBrand .nethorSidebarWordmark{font-size:0}
+ .nethorSidebarBrand .nethorSidebarWordmark span:first-child{font-size:27px;letter-spacing:-2px}
+ .nethorSidebarBrand .nethorSidebarWordmark b{display:none}
+ .nethorSidebarBrand .nethorDesktopHeaderAnimation{left:50%!important;width:48px!important;transform:translate(-50%,-50%)!important}
+ .nethorSidebarItem{grid-template-columns:1fr;justify-items:center;padding:7px 4px;gap:0}
+ .nethorSidebarLabel{display:none!important}
+ .nethorSidebarBadge{position:absolute;top:3px;right:3px;min-width:16px;height:16px;padding:0 4px;font-size:7px}
+ .nethorDesktopSidebarBottom{padding-top:6px}
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]>.top.nethorDesktopReferenceHeader{
+  padding-inline:10px!important;gap:8px!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none
+ }
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]>.top.nethorDesktopReferenceHeader::-webkit-scrollbar{display:none}
+ .nethorDesktopStoreSwitch{min-width:230px;width:250px;max-width:270px;height:50px;grid-template-columns:38px minmax(0,1fr) 14px;padding:4px 8px}
+ .nethorStoreThumb{width:36px;height:36px}
+ .nethorDesktopDateTime{height:50px;gap:7px;padding-left:8px}
+ .nethorDateIcon{width:32px;height:32px}
+ .nethorDesktopDateTime small{display:none}
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoGlobalTools{gap:5px!important}
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] :is(.nettoLoginBtn,.nettoMobilePreviewBtn,.nettoUpdateBtn,.nettoBellBtn){
+  width:42px!important;min-width:42px!important;height:42px!important
+ }
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUserBtn{
+  width:42px!important;min-width:42px!important;max-width:42px!important;height:42px!important;padding:3px!important
+ }
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUserText,
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUserChevron{display:none!important}
+ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoTopAvatar{width:34px!important;height:34px!important}
+}
+@media(max-width:720px){
+ .nethorDesktopStoreSwitch{min-width:185px;width:200px;max-width:215px;grid-template-columns:34px minmax(0,1fr)}
+ .nethorStoreThumb{width:32px;height:32px}
+ .nethorStoreCopy small,.nethorStoreChevron{display:none}
+ .nethorDesktopDateTime{min-width:58px;padding-left:5px;border-left:0}
+ .nethorDateIcon{display:none}
+ .nethorDesktopDateTime strong{font-size:16px}
+}
 
 
 /* Contrat de mise en page Desktop v2 : toutes les pages utilisent le même axe sidebar + entête. */
