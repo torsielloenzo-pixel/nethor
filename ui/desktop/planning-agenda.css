@@ -203,3 +203,78 @@
     min-width:0;
   }
 }
+
+
+/* Suivi lecture v2 — colonne hebdomadaire dédiée */
+@media(min-width:761px){
+  body.agendaLayout .agendaGrid,
+  body.agendaLayout .agendaGridDesktop{
+    grid-template-columns:minmax(138px,168px) 78px repeat(7,minmax(96px,1fr)) minmax(78px,92px)!important;
+    min-width:1030px
+  }
+  body.agendaLayout .agendaReadHead{
+    position:sticky;
+    top:0;
+    z-index:5;
+    display:grid;
+    place-items:center;
+    min-height:0;
+    padding:5px 3px;
+    color:#7d8690;
+    background:#f4f6f8;
+    border-right:1px solid #dde2e7;
+    border-bottom:1px solid #dde2e7;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.04em;
+    text-transform:uppercase
+  }
+  body.agendaLayout .agendaReadCell{
+    display:grid;
+    place-items:center;
+    min-height:52px;
+    padding:4px 3px;
+    background:#fafbfc;
+    border-right:1px solid #e2e6ea;
+    border-bottom:1px solid #e7e9ec
+  }
+  body.agendaLayout .planningReadWeekMarks{
+    display:grid;
+    grid-template-columns:repeat(4,15px);
+    justify-content:center;
+    gap:3px
+  }
+  body.agendaLayout .planningReadDayMark{
+    display:grid;
+    place-items:center;
+    width:15px;
+    height:15px;
+    border-radius:5px;
+    color:#8a939c;
+    background:#e9edf0;
+    font-size:6.5px;
+    line-height:1;
+    font-weight:900
+  }
+  body.agendaLayout .planningReadDayMark.isRead{
+    color:#fff;
+    background:#25a963
+  }
+  body.agendaLayout .planningReadDayMark.isUnread{
+    color:#7d8790;
+    background:#e5e9ec
+  }
+  html[data-theme="dark"] body.agendaLayout .agendaReadHead{
+    color:#aeb6be;
+    background:#252a2f;
+    border-color:#3a4148
+  }
+  html[data-theme="dark"] body.agendaLayout .agendaReadCell{
+    background:#1d2125;
+    border-color:#32383f
+  }
+  html[data-theme="dark"] body.agendaLayout .planningReadDayMark.isUnread{
+    color:#c0c7ce;
+    background:#394047
+  }
+}
