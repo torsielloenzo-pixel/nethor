@@ -49,7 +49,8 @@ function desktopDashboardConfig(site={}){
    show_user:header.show_user!==false,
    show_store_image:header.show_store_image!==false
   },
-  sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalized}
+  sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalized},
+  style:{accent:String(raw?.style?.accent||'#ff5a2a')}
  }
 }
 function desktopSidebarIcon(kind){
@@ -119,6 +120,7 @@ function applyDesktopShellConfig(site={}){
  if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop')return;
  const c=desktopDashboardConfig(site);
  document.documentElement.style.setProperty('--nethor-sidebar-w',c.sidebar.width+'px');
+ document.documentElement.style.setProperty('--nethor-sidebar-accent',c.style.accent||'#ff5a2a');
  document.documentElement.dataset.nethorDesktopSidebar=c.sidebar.enabled?'1':'0';
  document.documentElement.dataset.nethorDesktopStore=c.header.show_store?'1':'0';
  document.documentElement.dataset.nethorDesktopDatetime=c.header.show_datetime?'1':'0';
