@@ -728,7 +728,7 @@ async function renderHomeDashboard(profile,name,cfg){
  }
  host.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
  if(!homeIsMobilePlatform()&&$('nethorStoreInfoWidget'))homeStartStoreInfoClock(homeStoreInfoConfig(cfg),name);
- if(!homeIsMobilePlatform()&&$('nethorQuickPlanningWidget'))homeStartQuickPlanningClock(homeQuickPlanningConfig(cfg),todayModel,todayKey,profileRows,weekStart);
+ if(!homeIsMobilePlatform()&&$('nethorQuickPlanningWidget'))homeStartQuickPlanningClock(cfg,todayModel,todayKey,profileRows,weekStart);
  if(desktopDashboardResult?.html)window.NethorDesktopHomeDashboard?.activate?.(desktopDashboardResult);
  const todaySelf=todayModel?homeDayFacts(todayModel,todayKey,name):{hours:0,ranges:[]};
  const showLegacyOperations=homeIsMobilePlatform()||!desktopDashboardResult?.html||cfg?.desktop_dashboard_widget?.legacy_operations_hub===true;
