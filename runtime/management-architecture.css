@@ -130,3 +130,13 @@ html[data-theme="dark"] .ddSidebarRow input:not([type="checkbox"]),html[data-the
 @media(max-width:700px){.ddAdminGrid{grid-template-columns:1fr}.ddSidebarRow,.ddWidgetRow{grid-template-columns:1fr}.ddSidebarRow>input:last-child{grid-column:auto}.ddMax{max-width:none}}
 
 .ddPlanningModeToggle{margin-top:10px}
+
+
+/* Photo du point de vente dans l’entête Desktop */
+.desktopStoreImageAdmin{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:11px;align-items:center;margin-top:11px;padding:10px;border:1px solid #e7ebef;border-radius:12px;background:#fff}
+.desktopStoreImagePreview{width:58px;height:46px;border-radius:10px;background:linear-gradient(145deg,#2b313b,#101318);background-size:cover;background-position:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.desktopStoreImagePreview:not(.hasImage):after{content:"N";display:grid;place-items:center;width:100%;height:100%;font-weight:950;color:#ff6a26;font-size:20px}
+.desktopStoreImageCopy{min-width:0;display:flex;flex-direction:column;gap:2px}.desktopStoreImageCopy strong{font-size:10px}.desktopStoreImageCopy small{font-size:8px;color:#7b8593;line-height:1.4}.desktopStoreImageCopy span{margin-top:2px;font-size:7.5px;font-weight:800;color:#596576;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desktopStoreImageActions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+:root[data-theme="dark"] .desktopStoreImageAdmin{background:#23272d;border-color:#3a4149}:root[data-theme="dark"] .desktopStoreImageCopy small{color:#aab2bc}:root[data-theme="dark"] .desktopStoreImageCopy span{color:#d1d6dc}
+@media(max-width:900px){.desktopStoreImageAdmin{grid-template-columns:58px 1fr}.desktopStoreImageActions{grid-column:1/-1;justify-content:flex-start}}
