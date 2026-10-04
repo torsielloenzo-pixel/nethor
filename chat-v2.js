@@ -6,6 +6,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 let db=CHAT_SPA_MODE?null:supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let chatRuntimeActive=false,chatPresenceListener=null,chatFocusListener=null,chatOwnPresenceChannel=null,chatPresenceTimer=null;
+let chatCacheReady=false,chatCacheUserId='',chatCacheConversationId='';
 function chatSharedServices(){return CHAT_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
 function chatPermissionFromShared(profile,config){
  const role=profile?.role||'',page=config?.pages?.chat||{},levels={none:0,view:1,operate:2,manage:3};
@@ -799,6 +800,49 @@ function startMemberRealtime(){if(state.memberChannel)return;state.memberChannel
 document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#discussionMenu')&&!e.target.closest('#chatMenuListBtn'))closeDiscussionMenu();if(!e.target.closest('#conversationMenu')&&!e.target.closest('#conversationMenuBtn'))closeConversationMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeAllChatMenus();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('contactModal')?.classList.add('hidden');$('addMembersModal')?.classList.add('hidden');$('conversationActionSheet')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
 
+async function prewarmChatRuntime(){
+ if(!CHAT_SPA_MODE)return false;
+ const shared=chatSharedServices();
+ if(!shared)return false;
+ await shared.ready();
+ const session=shared.session,p=shared.profile;
+ if(!session||!p||!shared.client)return false;
+ const permission=chatPermissionFromShared(p,shared.siteConfig||{});
+ if(permission==='none')return false;
+ db=shared.client;
+ state.session=session;
+ state.profile=p;
+ state.canManage=permission==='manage';
+ window.currentRole=p.role;
+ const uid=String(session.user.id||'');
+ if(chatCacheReady&&chatCacheUserId===uid&&state.members.length&&state.conversations.length)return true;
+ state.activeId=null;
+ state.messages=[];state.participants=[];state.reactions=[];
+ await Promise.all([loadMembers(),loadConversations()]);
+ const params=new URLSearchParams(location.search),requested=params.get('c');
+ const general=state.conversations.find(c=>c.conversation_type==='general')?.conversation_id;
+ const initial=(requested&&state.conversations.some(c=>c.conversation_id===requested))?requested:general;
+ if(initial){
+  state.activeId=initial;
+  const [participantsRes,messagesRes]=await Promise.all([
+   db.from('chat_participants').select('conversation_id,user_id,role,joined_at,last_read_at,muted').eq('conversation_id',initial),
+   db.from('chat_messages').select('id,user_id,display_name,body,attachment_path,attachment_name,attachment_type,attachment_size,created_at,conversation_id,reply_to,edited_at,deleted_at').eq('conversation_id',initial).order('created_at',{ascending:true}).limit(400)
+  ]);
+  state.participants=participantsRes.error?[]:(participantsRes.data||[]);
+  state.messages=messagesRes.error?[]:(messagesRes.data||[]);
+  const ids=state.messages.map(m=>m.id);
+  if(ids.length){
+   const reactionsRes=await db.from('chat_reactions').select('message_id,user_id,emoji,created_at').in('message_id',ids);
+   state.reactions=reactionsRes.error?[]:(reactionsRes.data||[])
+  }else state.reactions=[];
+  chatCacheConversationId=initial
+ }else chatCacheConversationId='';
+ chatCacheReady=true;
+ chatCacheUserId=uid;
+ chatRuntimeActive=false;
+ return true
+}
+
 async function boot(){
  chatRuntimeActive=true;
  const shared=chatSharedServices();
@@ -820,12 +864,28 @@ async function boot(){
  state.profile=p;window.currentRole=p.role;
  if(permission==='none'){chatGoHome();return false}
  state.canManage=permission==='manage';
+ const uid=String(session.user.id||''),sameCachedUser=CHAT_SPA_MODE&&chatCacheReady&&chatCacheUserId===uid;
  state.lastConversationRenderKey='';state.lastMessageRenderKey='';state.search='';state.messageSearch='';state.onlyUnread=false;
- await loadMembers();startPresence();await loadConversations();startRealtime();startMemberRealtime();
+ if(!sameCachedUser){
+  await loadMembers();
+  await loadConversations()
+ }else{
+  renderConversations();
+  renderNewChatMembers();
+  renderConversationHeader()
+ }
+ startPresence();startRealtime();startMemberRealtime();
  const params=new URLSearchParams(location.search),requestedUser=params.get('user');
- if(requestedUser&&requestedUser!==state.session.user.id&&state.members.some(m=>m.id===requestedUser)){await openDirect(requestedUser);return true}
+ if(requestedUser&&requestedUser!==state.session.user.id&&state.members.some(m=>m.id===requestedUser)){await openDirect(requestedUser);chatCacheReady=true;chatCacheUserId=uid;chatCacheConversationId=state.activeId||'';return true}
  const requested=params.get('c'),general=state.conversations.find(c=>c.conversation_type==='general')?.conversation_id,initial=(requested&&state.conversations.some(c=>c.conversation_id===requested))?requested:general;
- if(initial)await openConversation(initial,{showMobile:!chatDesktopMode()&&(!!requested||!!requestedUser)});else{renderConversationHeader();renderMessages()}
+ const showMobile=!chatDesktopMode()&&(!!requested||!!requestedUser);
+ if(initial&&sameCachedUser&&chatCacheConversationId===initial&&state.activeId===initial){
+  renderConversations();renderConversationHeader();await renderMessages();renderDesktopDetails();
+  if(showMobile)document.body.classList.add('mobileConversationOpen');else document.body.classList.remove('mobileConversationOpen');
+  syncChatRoute(initial);await markRead();setupTypingChannel();renderConversationHeader()
+ }else if(initial)await openConversation(initial,{showMobile});
+ else{state.activeId=null;renderConversationHeader();renderMessages()}
+ chatCacheReady=true;chatCacheUserId=uid;chatCacheConversationId=state.activeId||'';
  if(!chatFocusListener){chatFocusListener=async()=>{if(!chatRuntimeActive)return;await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()};window.addEventListener('focus',chatFocusListener)}
  return true
 }
@@ -850,9 +910,19 @@ async function unmountChatRuntime(){
  document.documentElement.style.removeProperty('--chat-vv-top');
  document.documentElement.style.removeProperty('--chat-vv-h');
  clearAttachment();
+ if(CHAT_SPA_MODE){
+  chatCacheReady=!!state.session;
+  chatCacheUserId=String(state.session?.user?.id||chatCacheUserId||'');
+  chatCacheConversationId=state.activeId||'';
+  state.replyTo=null;state.editingId=null;state.actionConversationId=null;
+  state.messageLoadSeq++;state.messageRenderSeq++;
+  state.lastMessageRenderKey='';state.lastConversationRenderKey='';
+  return true
+ }
  state.messages=[];state.participants=[];state.reactions=[];state.conversations=[];state.members=[];state.onlineIds=new Set();state.presenceHistory=new Map();
  state.activeId=null;state.replyTo=null;state.editingId=null;state.actionConversationId=null;state.messageLoadSeq++;state.messageRenderSeq++;
  state.lastMessageRenderKey='';state.lastConversationRenderKey='';
+ chatCacheReady=false;chatCacheUserId='';chatCacheConversationId='';
  return true
 }
 
@@ -927,6 +997,6 @@ async function unmountChatRuntime(){
 Object.assign(window,{actionSheetArchive,actionSheetHide,actionSheetInfo,cancelComposeMode,cancelConversationLongPress,cancelImageLongPress,clearAttachment,closeAddMembersModal,closeChatArchives,closeContactCard,closeConversationActions,closeConversationInfo,closeDiscussionMenu,closeImage,closeMobileConversation,closeNewChat,composerInput,conversationContextMenu,conversationRowClick,createGroup,cycleVoiceSpeed,deleteConversation,deleteConversationFromMenu,deleteMessage,desktopArchiveActive,downloadCurrentImage,editMessage,endImageLongPress,handleKey,leaveGroup,leaveGroupFromMenu,markAllRead,openAddMembersFromConversation,openAttachmentBrowser,openChatArchives,openContactCard,openConversationInfo,openConversationInfoFromManageMenu,openConversationParticipants,openDirect,openHeaderConversationActions,openImage,openNewChat,openReactionPicker,pickReaction,refreshChat,renderAddMembersList,renderNewChatMembers,replyToMessage,restoreAdminArchivedConversation,restorePersonalArchivedConversation,saveAddedMembers,saveGroupInfo,scrollToMessage,searchConversations,searchMessages,seekVoiceMessage,selectAttachment,sendMessage,setConversationListFilter,setMuted,setNewChatMode,startConversationLongPress,startImageLongPress,toggleAddMemberSelection,toggleConversationMenu,toggleDiscussionMenu,toggleGroupMember,toggleMessageActions,toggleMessageSearch,toggleReaction,toggleRecording,toggleUnreadOnly,toggleVoicePlayback});
 
 if(!CHAT_SPA_MODE)boot().catch(e=>console.error('[Nethor Chat] boot',e));
-window.NethorChatRuntime=Object.freeze({mount:boot,unmount:unmountChatRuntime,get active(){return chatRuntimeActive},get activeConversationId(){return state.activeId}});
+window.NethorChatRuntime=Object.freeze({mount:boot,unmount:unmountChatRuntime,prewarm:prewarmChatRuntime,get active(){return chatRuntimeActive},get cached(){return chatCacheReady},get activeConversationId(){return state.activeId}});
 
 })();
