@@ -417,6 +417,10 @@ function renderAgenda(){
    if(sub)sub.textContent='Du '+frDate(a)+' au '+frDate(addDays(a,6));
    host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return
   }
+  try{
+   const selected=isoDate(addDays(a,Math.max(0,Math.min(6,typeof currentDay==='number'?currentDay:0))));
+   window.NethorPlanningRuntime?.markRead?.(selected,isMobile()?'planning_mobile':'planning_desktop')
+  }catch(_){}
   if(isMobile()){
    host.innerHTML=mobileMode==='day'?renderDayAgenda(a):renderWeekAgenda(a);
    if(restFocusActive()&&!restFocusRevealed){
