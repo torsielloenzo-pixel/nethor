@@ -9,7 +9,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] body{backgro
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] body>main{
  width:auto!important;max-width:none!important;margin:0!important;padding:18px 24px 44px!important
 }
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopLayout,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopDashboard .mhdStack{display:block!important;width:100%!important;max-width:none!important}\nhtml[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopLayout,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopDashboard{width:100%!important;max-width:none!important;margin:0!important}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] #homePages,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] #status{display:none!important}
