@@ -164,17 +164,20 @@ self.addEventListener('notificationclick',e=>{
  }));
 });
 
-async function purgeNethorCaches(){
+async function purgeNethorCaches({preserveCurrent=false}={}){
  const keys=await caches.keys();
- await Promise.all(keys.filter(k=>/^netto-tools-v\d+$/.test(String(k))).map(k=>caches.delete(k)))
+ await Promise.all(keys
+  .filter(k=>/^netto-tools-v\d+$/.test(String(k)))
+  .filter(k=>!preserveCurrent||k!==CACHE)
+  .map(k=>caches.delete(k)))
 }
 self.addEventListener('message',e=>{
  const type=e.data&&e.data.type;
  if(type==='PURGE_CACHES_AND_SKIP_WAITING'){
-  e.waitUntil((async()=>{await purgeNethorCaches();await self.skipWaiting()})());
+  e.waitUntil((async()=>{await purgeNethorCaches({preserveCurrent:true});await self.skipWaiting()})());
   return
  }
- if(type==='PURGE_CACHES'){e.waitUntil(purgeNethorCaches());return}
+ if(type==='PURGE_CACHES'){e.waitUntil(purgeNethorCaches({preserveCurrent:false}));return}
  if(type==='SKIP_WAITING'){self.skipWaiting();return}
  if(type==='WARM_NAVIGATION_ROUTES'){
   const urls=Array.isArray(e.data?.urls)?e.data.urls.slice(0,8):[];
