@@ -54,6 +54,66 @@ html[data-theme="dark"] .nethorMobileTopAction>.nethorMobileHeaderAvatar{border-
 .nethorMobileView[aria-busy="true"]{cursor:progress}
 .nethorMobileView[aria-busy="true"]>*{pointer-events:none}
 
+/* Démo swipe Mobile — transition légère qui masque le remontage des vues sans déplacer le chrome. */
+.nethorMobileView{position:relative;overflow-x:hidden}
+.nethorMobileApp[data-mobile-swipe="tracking"] .nethorMobileView>*{
+  transform:translate3d(var(--nethor-swipe-offset,0px),0,0);
+  opacity:var(--nethor-swipe-opacity,1);
+  transition:none!important;
+  will-change:transform,opacity
+}
+.nethorMobileView.nethorSwipeSnapBack>*{
+  transform:translate3d(0,0,0)!important;
+  opacity:1!important;
+  transition:transform .16s cubic-bezier(.22,.82,.32,1),opacity .16s ease!important
+}
+.nethorMobileApp[data-mobile-swipe-direction="next"] .nethorMobileView.nethorSwipeLeaving>*{
+  transform:translate3d(-24px,0,0) scale(.996);
+  opacity:.86;
+  transition:transform .095s cubic-bezier(.4,0,1,1),opacity .095s ease!important
+}
+.nethorMobileApp[data-mobile-swipe-direction="previous"] .nethorMobileView.nethorSwipeLeaving>*{
+  transform:translate3d(24px,0,0) scale(.996);
+  opacity:.86;
+  transition:transform .095s cubic-bezier(.4,0,1,1),opacity .095s ease!important
+}
+.nethorMobileApp[data-mobile-swipe-direction="next"] .nethorMobileView.nethorSwipeEntering>*{
+  animation:nethorMobileSwipeInNext .21s cubic-bezier(.2,.82,.28,1) both
+}
+.nethorMobileApp[data-mobile-swipe-direction="previous"] .nethorMobileView.nethorSwipeEntering>*{
+  animation:nethorMobileSwipeInPrevious .21s cubic-bezier(.2,.82,.28,1) both
+}
+@keyframes nethorMobileSwipeInNext{
+  from{transform:translate3d(22px,0,0) scale(.997);opacity:.88}
+  to{transform:translate3d(0,0,0) scale(1);opacity:1}
+}
+@keyframes nethorMobileSwipeInPrevious{
+  from{transform:translate3d(-22px,0,0) scale(.997);opacity:.88}
+  to{transform:translate3d(0,0,0) scale(1);opacity:1}
+}
+.nethorMobileSwipeVeil{
+  position:absolute;z-index:19;pointer-events:none;overflow:hidden;
+  background:rgba(246,246,248,0);
+  opacity:0;
+  backdrop-filter:blur(0);
+  -webkit-backdrop-filter:blur(0);
+  transition:opacity .09s ease,background .09s ease,backdrop-filter .09s ease,-webkit-backdrop-filter .09s ease
+}
+.nethorMobileSwipeVeil.show{
+  opacity:1;
+  background:rgba(246,246,248,.42);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px)
+}
+html[data-theme="dark"] .nethorMobileSwipeVeil.show{background:rgba(23,25,28,.46)}
+@media (prefers-reduced-motion:reduce){
+  .nethorMobileApp[data-mobile-swipe="tracking"] .nethorMobileView>*,
+  .nethorMobileView.nethorSwipeSnapBack>*,
+  .nethorMobileView.nethorSwipeLeaving>*,
+  .nethorMobileView.nethorSwipeEntering>*{animation:none!important;transition:none!important;transform:none!important;opacity:1!important}
+  .nethorMobileSwipeVeil{display:none!important}
+}
+
 .nethorMobileNavIconWrap{position:relative;display:grid;place-items:center;width:30px;height:27px}
 .nethorMobileNavIconWrap>span{display:grid;place-items:center;width:27px;height:27px;font-size:22px;line-height:1}
 .nethorMobileNotifBadge{position:absolute;top:-3px;right:-7px;display:grid;place-items:center;min-width:16px;height:16px;padding:0 4px;border:2px solid var(--mobile-app-surface);border-radius:999px;background:#ff3b30;color:#fff;font-size:8px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
