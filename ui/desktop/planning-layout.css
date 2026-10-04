@@ -923,3 +923,108 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .desktop
     background:#3a4148;
   }
 }
+
+
+/* Suivi lecture v2 — colonne dédiée Desktop */
+@media(min-width:761px){
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable col.readCol{
+    width:50px!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable col.slotCol{
+    width:calc((100% - 270px) / 58)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readHead,
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readCell{
+    width:50px!important;
+    min-width:50px!important;
+    max-width:50px!important;
+    padding:0 3px!important;
+    text-align:center!important;
+    border-right:1px solid #dce2e7!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readHead{
+    color:#78818b!important;
+    font-size:8px!important;
+    font-weight:900!important;
+    letter-spacing:.03em!important;
+    text-transform:uppercase!important;
+    background:linear-gradient(180deg,#f8fafb,#f0f3f6)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readCell{
+    background:#fbfcfd!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    max-width:100%;
+    font-size:7.5px;
+    line-height:1;
+    font-weight:850;
+    white-space:nowrap
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState>span{
+    display:grid;
+    place-items:center;
+    width:14px;
+    height:14px;
+    flex:0 0 14px;
+    border-radius:50%;
+    font-size:8px;
+    font-weight:950
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState b{
+    font:inherit
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState.isRead{
+    color:#16814a
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState.isRead>span{
+    color:#fff;
+    background:#25a963
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState.isUnread{
+    color:#858e97
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState.isUnread>span{
+    color:#7f8993;
+    background:#e7ebee
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readHead{
+    color:#aeb6be!important;
+    background:linear-gradient(180deg,#282d33,#22272c)!important;
+    border-color:#404850!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readCell{
+    background:#1c2024!important;
+    border-color:#353c43!important
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState.isRead{
+    color:#78dda6
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState.isUnread{
+    color:#aab2ba
+  }
+  html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState.isUnread>span{
+    color:#c0c7ce;
+    background:#394047
+  }
+}
+@media(min-width:761px) and (max-width:1279px){
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable col.readCol{
+    width:46px!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readHead,
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable .readCell{
+    width:46px!important;
+    min-width:46px!important;
+    max-width:46px!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable col.slotCol{
+    width:calc((100% - 252px) / 58)!important
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState b{
+    display:none
+  }
+}
