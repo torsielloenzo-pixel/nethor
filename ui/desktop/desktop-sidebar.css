@@ -190,3 +190,16 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="index"] .stockDeskt
  box-sizing:border-box!important;width:calc(100% - 36px)!important;max-width:none!important;margin:10px auto 0!important
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="index"] .stockDesktopModeNav{top:82px!important}
+
+
+/* Horloge Desktop : actualisation à la minute, transition volontairement discrète. */
+html[data-nethor-page-layout="desktop"] [data-nethor-desktop-time]{
+ transition:opacity .16s ease,transform .16s ease
+}
+html[data-nethor-page-layout="desktop"] [data-nethor-desktop-time].nethorClockTick{
+ animation:nethorClockTick .24s ease both
+}
+@keyframes nethorClockTick{
+ 0%{opacity:.68;transform:translateY(1px)}
+ 100%{opacity:1;transform:none}
+}
