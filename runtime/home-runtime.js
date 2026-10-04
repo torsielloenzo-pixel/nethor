@@ -460,7 +460,7 @@ function homeQuickPlanningConfig(cfg){
  const style=raw.style&&typeof raw.style==='object'?raw.style:{};
  return{
   enabled:raw.enabled!==false,
-  title:String(raw.title||HOME_QUICK_PLANNING_DEFAULTS.title),
+  title:String(cfg?.desktop_dashboard_widget?.widgets?.planning_view?.label||raw.title||HOME_QUICK_PLANNING_DEFAULTS.title),
   subtitle:String(raw.subtitle||HOME_QUICK_PLANNING_DEFAULTS.subtitle),
   action_label:String(raw.action_label||HOME_QUICK_PLANNING_DEFAULTS.action_label),
   empty_text:String(raw.empty_text||HOME_QUICK_PLANNING_DEFAULTS.empty_text),
