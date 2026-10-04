@@ -368,3 +368,34 @@ revoke execute on function public.chat_set_general_avatar(text,text) from public
 grant execute on function public.chat_ensure_my_contacts() to authenticated;
 grant execute on function public.chat_get_direct_contact(uuid) to authenticated;
 grant execute on function public.chat_set_general_avatar(text,text) to authenticated;
+
+
+-- Durcissement : les contacts directs et Général sont des entrées permanentes.
+create or replace function public.chat_delete_conversation(p_conversation uuid)
+returns void
+language plpgsql
+security definer
+set search_path=''
+as $$
+declare
+  uid uuid:=auth.uid();
+  ctype text;
+begin
+  if uid is null then raise exception 'not allowed'; end if;
+
+  select c.type into ctype
+  from public.chat_conversations c
+  where c.id=p_conversation;
+
+  if ctype is null then raise exception 'conversation not found'; end if;
+  if ctype in ('general','direct') then raise exception 'conversation is permanent'; end if;
+  if not private.chat_can_manage(p_conversation,uid) then raise exception 'not allowed'; end if;
+
+  delete from public.chat_conversations where id=p_conversation;
+end
+$$;
+
+revoke execute on function private.chat_direct_key(uuid,uuid) from public,anon,authenticated;
+revoke execute on function private.chat_make_direct_contact(uuid,uuid) from public,anon,authenticated;
+revoke execute on function private.chat_profile_direct_contacts() from public,anon,authenticated;
+revoke execute on function private.chat_cleanup_direct_contacts() from public,anon,authenticated;
