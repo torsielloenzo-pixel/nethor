@@ -231,7 +231,7 @@ async function prewarmMobileViews(){
  const status=overlay?.querySelector?.('[data-mobile-launch-welcome-status]');
  const setStatus=value=>{if(status&&overlay?.classList.contains('show'))status.textContent=value};
  const tasks=[
-  {id:'home',label:'Accueil',promise:Promise.resolve(services()?.ready?.()).then(()=>true)},
+  {id:'home',label:'Accueil',promise:window.NethorMobileHomeView?.preload?.()||Promise.resolve(services()?.ready?.()).then(()=>true)},
   {id:'planning',label:'Planning',promise:window.NethorMobilePlanningView?.preload?.()},
   {id:'chat',label:'Chat',promise:window.NethorMobileChatView?.preload?.()}
  ].filter(item=>item.promise&&typeof item.promise.then==='function');
@@ -354,7 +354,7 @@ function mobileSwipeHorizontalScroller(target){
   while(node&&node!==viewHost){
     try{
       const style=getComputedStyle(node);
-      if(/auto|scroll/.test(style.overflowX)&&node.scrollWidth>node.clientWidth+6)return node
+      if(/auto|scroll/.test(style.overflowX)&&node.scrollWidth>node.clientWidth+8)return node
     }catch(_){}
     node=node.parentElement
   }
@@ -369,59 +369,75 @@ function clearMobileSwipeState(){
   mobileSwipeState=null;
   root.removeAttribute('data-mobile-swipe')
 }
+function beginMobileSwipe(event){
+  if(event.isPrimary===false||root.dataset.keyboard==='open')return clearMobileSwipeState();
+  if(event.pointerType&&event.pointerType!=='touch'&&event.pointerType!=='pen')return clearMobileSwipeState();
+  const order=mobileSwipeOrder(),view=requestedView(),index=order.indexOf(view);
+  if(index<0||mobileSwipeBlocked(event.target))return clearMobileSwipeState();
+  mobileSwipeState={
+    pointerId:event.pointerId,
+    x:event.clientX,y:event.clientY,lastX:event.clientX,lastY:event.clientY,
+    startedAt:performance.now(),index,order,locked:false,cancelled:false
+  };
+  root.dataset.mobileSwipe='armed'
+}
+function moveMobileSwipe(event){
+  const state=mobileSwipeState;
+  if(!state||state.cancelled||(state.pointerId!=null&&event.pointerId!==state.pointerId))return;
+  const dx=event.clientX-state.x,dy=event.clientY-state.y;
+  state.lastX=event.clientX;state.lastY=event.clientY;
+  const ax=Math.abs(dx),ay=Math.abs(dy);
+  if(!state.locked){
+    if(ax<8&&ay<8)return;
+    if(ay>ax*1.08){state.cancelled=true;root.removeAttribute('data-mobile-swipe');return}
+    if(ax>=ay*.9&&ax>=12){state.locked=true;root.dataset.mobileSwipe='tracking'}
+    else return
+  }
+  if(state.locked&&event.cancelable)event.preventDefault()
+}
+function endMobileSwipe(event){
+  const state=mobileSwipeState;
+  if(!state||(state.pointerId!=null&&event.pointerId!==state.pointerId)){clearMobileSwipeState();return}
+  const endX=Number.isFinite(event.clientX)?event.clientX:state.lastX,endY=Number.isFinite(event.clientY)?event.clientY:state.lastY;
+  const dx=endX-state.x,dy=endY-state.y,elapsed=Math.max(1,performance.now()-state.startedAt);
+  const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
+  const threshold=Math.max(38,Math.min(72,width*.12));
+  const velocity=Math.abs(dx)/elapsed;
+  const qualifies=state.locked&&!state.cancelled&&Math.abs(dx)>Math.abs(dy)*1.05&&(Math.abs(dx)>=threshold||(Math.abs(dx)>=28&&velocity>=.42));
+  clearMobileSwipeState();
+  if(!qualifies)return;
+  const step=dx>0?1:-1;
+  const next=state.order[state.index+step];
+  if(!next)return;
+  if(event.cancelable)event.preventDefault();
+  suppressSwipeClickUntil=performance.now()+500;
+  root.dataset.mobileSwipe='navigating';
+  Promise.resolve(router()?.open?.(next,{source:'swipe'})).finally(()=>root.removeAttribute('data-mobile-swipe'))
+}
 function bindMobileSwipeNavigation(){
   if(viewHost.dataset.mobileSwipeBound==='1')return;
   viewHost.dataset.mobileSwipeBound='1';
   viewHost.dataset.mobileSwipeReady='1';
-
-  viewHost.addEventListener('touchstart',event=>{
-    if(event.touches.length!==1||root.dataset.keyboard==='open')return clearMobileSwipeState();
-    const touch=event.touches[0],order=mobileSwipeOrder(),view=requestedView(),index=order.indexOf(view);
-    if(index<0||mobileSwipeBlocked(event.target))return clearMobileSwipeState();
-    const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
-    if(touch.clientX<14||touch.clientX>width-14)return clearMobileSwipeState();
-    mobileSwipeState={
-      x:touch.clientX,y:touch.clientY,lastX:touch.clientX,lastY:touch.clientY,
-      startedAt:performance.now(),index,order,locked:false,cancelled:false
-    }
-  },{passive:true});
-
-  viewHost.addEventListener('touchmove',event=>{
-    const state=mobileSwipeState;
-    if(!state||state.cancelled||event.touches.length!==1)return;
-    const touch=event.touches[0],dx=touch.clientX-state.x,dy=touch.clientY-state.y;
-    state.lastX=touch.clientX;state.lastY=touch.clientY;
-    const ax=Math.abs(dx),ay=Math.abs(dy);
-    if(!state.locked){
-      if(ax<10&&ay<10)return;
-      if(ay>ax*.92){state.cancelled=true;root.removeAttribute('data-mobile-swipe');return}
-      if(ax>ay*1.12){state.locked=true;root.dataset.mobileSwipe='tracking'}
-      else return
-    }
-    if(state.locked)event.preventDefault()
-  },{passive:false});
-
-  viewHost.addEventListener('touchend',event=>{
-    const state=mobileSwipeState;
-    if(!state){clearMobileSwipeState();return}
-    const touch=event.changedTouches?.[0],endX=touch?.clientX??state.lastX,endY=touch?.clientY??state.lastY;
-    const dx=endX-state.x,dy=endY-state.y,elapsed=Math.max(1,performance.now()-state.startedAt);
-    const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
-    const threshold=Math.max(52,Math.min(86,width*.16));
-    const velocity=Math.abs(dx)/elapsed;
-    const qualifies=state.locked&&!state.cancelled&&Math.abs(dx)>Math.abs(dy)*1.18&&(Math.abs(dx)>=threshold||(Math.abs(dx)>=38&&velocity>=.62));
-    clearMobileSwipeState();
-    if(!qualifies)return;
-    const step=dx>0?1:-1; // Consigne Nethor : swipe vers la droite = élément suivant de la barre.
-    const next=state.order[state.index+step];
-    if(!next)return;
-    event.preventDefault();
-    suppressSwipeClickUntil=performance.now()+450;
-    root.dataset.mobileSwipe='navigating';
-    Promise.resolve(router()?.open?.(next,{source:'swipe'})).finally(()=>root.removeAttribute('data-mobile-swipe'))
-  },{passive:false});
-
-  viewHost.addEventListener('touchcancel',clearMobileSwipeState,{passive:true});
+  if(window.PointerEvent){
+    viewHost.addEventListener('pointerdown',beginMobileSwipe,{passive:true});
+    viewHost.addEventListener('pointermove',moveMobileSwipe,{passive:false});
+    viewHost.addEventListener('pointerup',endMobileSwipe,{passive:false});
+    viewHost.addEventListener('pointercancel',clearMobileSwipeState,{passive:true})
+  }else{
+    viewHost.addEventListener('touchstart',event=>{
+      const touch=event.touches?.[0];if(!touch)return;
+      beginMobileSwipe({isPrimary:true,pointerType:'touch',pointerId:1,clientX:touch.clientX,clientY:touch.clientY,target:event.target})
+    },{passive:true});
+    viewHost.addEventListener('touchmove',event=>{
+      const touch=event.touches?.[0];if(!touch)return;
+      moveMobileSwipe({pointerId:1,clientX:touch.clientX,clientY:touch.clientY,cancelable:event.cancelable,preventDefault:()=>event.preventDefault()})
+    },{passive:false});
+    viewHost.addEventListener('touchend',event=>{
+      const touch=event.changedTouches?.[0];if(!touch)return clearMobileSwipeState();
+      endMobileSwipe({pointerId:1,clientX:touch.clientX,clientY:touch.clientY,cancelable:event.cancelable,preventDefault:()=>event.preventDefault()})
+    },{passive:false});
+    viewHost.addEventListener('touchcancel',clearMobileSwipeState,{passive:true})
+  }
   viewHost.addEventListener('click',event=>{
     if(performance.now()>=suppressSwipeClickUntil)return;
     event.preventDefault();
