@@ -18,6 +18,7 @@ function buildUserMenu(ctx){
   '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>'+icon(logout,'↪')+'</span><span><strong>'+esc(logout.label)+'</strong><small>'+esc(logout.subtitle)+'</small></span></button>'+
  '</div>'
 }
+const DEFAULT_STORE_GOOGLE_URL='https://www.google.com/maps/search/?api=1&query=Netto%20Le%20Thor&query_place_id=ChIJSY7JsE71tRIRRSih3toBniY&utm_source=nethor&utm_campaign=place_details_search';
 const DESKTOP_SIDEBAR_DEFAULTS={
  home:{label:'Accueil',url:'home.html',icon:'home',enabled:true},
  activity:{label:'Activité magasin',url:'home.html#nethorDesktopStatsRow',icon:'activity',enabled:true},
@@ -42,7 +43,7 @@ function desktopDashboardConfig(site={}){
   header:{
    store_name:String(header.store_name||site?.store_info_widget?.store_name||'Netto Le Thor'),
    store_subtitle:String(header.store_subtitle||'Point de vente'),
-   store_url:String(header.store_url||'home.html'),
+   store_url:String(!header.store_url||header.store_url==='home.html'?DEFAULT_STORE_GOOGLE_URL:header.store_url),
    store_image_url:String(header.store_image_url||''),
    store_image_path:String(header.store_image_path||''),
    store_image_name:String(header.store_image_name||''),
@@ -56,7 +57,7 @@ function desktopDashboardConfig(site={}){
    show_store_image:header.show_store_image!==false
   },
   sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalized},
-  style:{accent:String(raw?.style?.accent||'#ff5a2a')}
+  style:{accent:String(raw?.style?.accent||'#ff5a2a'),sidebar_text_scale:Math.max(70,Math.min(160,Number(raw?.style?.sidebar_text_scale)||100)),widget_text_scale:Math.max(70,Math.min(160,Number(raw?.style?.widget_text_scale)||100))}
  }
 }
 function desktopSidebarIcon(kind){
@@ -107,8 +108,13 @@ function buildDesktopSidebar(page){
   '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+'</div>'+
  '</aside>'
 }
+function openDesktopStoreCard(url){
+ const target=String(url||DEFAULT_STORE_GOOGLE_URL).trim()||DEFAULT_STORE_GOOGLE_URL;
+ if(/^https?:\/\//i.test(target)){window.open(target,'_blank','noopener,noreferrer');return}
+ location.href=target
+}
 function desktopHeaderStore(){
- return '<button class="nethorDesktopStoreSwitch" type="button" data-desktop-store-url="home.html" onclick="location.href=this.dataset.desktopStoreUrl"><span class="nethorStoreThumb" aria-hidden="true"></span><span class="nethorStoreCopy"><strong data-nethor-store-name>Netto Le Thor</strong><small data-nethor-store-subtitle>Point de vente</small></span><span class="nethorStoreChevron">⌄</span></button>'
+ return '<button class="nethorDesktopStoreSwitch" type="button" data-desktop-store-url="'+esc(DEFAULT_STORE_GOOGLE_URL)+'" onclick="window.NethorDesktopShell?.openStoreCard?.(this.dataset.desktopStoreUrl)" aria-label="Ouvrir la fiche Google de Netto Le Thor"><span class="nethorStoreThumb" aria-hidden="true"></span><span class="nethorStoreCopy"><strong data-nethor-store-name>Netto Le Thor</strong><small data-nethor-store-subtitle>Point de vente</small></span><span class="nethorStoreChevron">↗</span></button>'
 }
 function desktopHeaderDateTime(){
  return '<div class="nethorDesktopDateTime"><span class="nethorDateIcon">'+desktopSidebarIcon('planning')+'</span><span><small data-nethor-desktop-date>—</small><strong data-nethor-desktop-time>--:--</strong></span></div>'
@@ -146,24 +152,38 @@ function desktopTextCandidate(el){
  if(el.matches('input,select,textarea'))return true;
  return Array.from(el.childNodes||[]).some(n=>n.nodeType===3&&String(n.nodeValue||'').trim())
 }
+function desktopTextScaleFor(el){
+ let factor=NETHOR_DESKTOP_TEXT_SCALE;
+ const rootStyle=getComputedStyle(document.documentElement);
+ if(el.closest?.('.nethorDesktopSidebar')){
+  const sidebar=parseFloat(rootStyle.getPropertyValue('--nethor-sidebar-text-scale'))||1;factor*=sidebar
+ }
+ if(el.closest?.('.nethorDesktopReferenceDashboard')){
+  const widgets=parseFloat(rootStyle.getPropertyValue('--nethor-widget-text-scale'))||1;factor*=widgets
+ }
+ return factor
+}
 function scaleDesktopText(root=document.body){
  if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop'||!root)return;
  const nodes=[];
- if(root instanceof Element&&root.dataset.nethorTextScaled!=='1'&&desktopTextCandidate(root))nodes.push(root);
- root.querySelectorAll?.('*').forEach(el=>{if(desktopTextCandidate(el)&&el.dataset.nethorTextScaled!=='1')nodes.push(el)});
+ if(root instanceof Element&&desktopTextCandidate(root))nodes.push(root);
+ root.querySelectorAll?.('*').forEach(el=>{if(desktopTextCandidate(el))nodes.push(el)});
  const prepared=nodes.map(el=>{
-  let size=parseFloat(getComputedStyle(el).fontSize);if(!Number.isFinite(size)||size<=0)return null;
-  const parent=el.parentElement;
-  if(parent?.dataset?.nethorTextScaled==='1'){
-   const parentNow=parseFloat(getComputedStyle(parent).fontSize),parentBase=parseFloat(parent.dataset.nethorTextBase||'');
-   if(Number.isFinite(parentNow)&&Number.isFinite(parentBase)&&Math.abs(size-parentNow)<.08)size=parentBase
+  let base=parseFloat(el.dataset.nethorTextBase||'');
+  if(!Number.isFinite(base)||base<=0){
+   base=parseFloat(getComputedStyle(el).fontSize);if(!Number.isFinite(base)||base<=0)return null;
+   const parent=el.parentElement;
+   if(parent?.dataset?.nethorTextScaled==='1'){
+    const parentNow=parseFloat(getComputedStyle(parent).fontSize),parentBase=parseFloat(parent.dataset.nethorTextBase||'');
+    if(Number.isFinite(parentNow)&&Number.isFinite(parentBase)&&Math.abs(base-parentNow)<.08)base=parentBase
+   }
+   el.dataset.nethorTextBase=String(base)
   }
-  return{el,base:size}
+  return{el,base,factor:desktopTextScaleFor(el)}
  }).filter(Boolean);
- prepared.forEach(({el,base})=>{
-  el.dataset.nethorTextBase=String(base);
+ prepared.forEach(({el,base,factor})=>{
   el.dataset.nethorTextScaled='1';
-  el.style.setProperty('font-size',(base*NETHOR_DESKTOP_TEXT_SCALE).toFixed(2)+'px','important')
+  el.style.setProperty('font-size',(base*factor).toFixed(2)+'px','important')
  })
 }
 function startDesktopTextScaling(){
@@ -187,6 +207,8 @@ function applyDesktopShellConfig(site={}){
  const c=desktopDashboardConfig(site);
  document.documentElement.style.setProperty('--nethor-sidebar-w',c.sidebar.width+'px');
  document.documentElement.style.setProperty('--nethor-sidebar-accent',c.style.accent||'#ff5a2a');
+ document.documentElement.style.setProperty('--nethor-sidebar-text-scale',(c.style.sidebar_text_scale/100).toFixed(3));
+ document.documentElement.style.setProperty('--nethor-widget-text-scale',(c.style.widget_text_scale/100).toFixed(3));
  document.documentElement.dataset.nethorDesktopSidebar=c.sidebar.enabled?'1':'0';
  document.documentElement.dataset.nethorDesktopStore=c.header.show_store?'1':'0';
  document.documentElement.dataset.nethorDesktopDatetime=c.header.show_datetime?'1':'0';
@@ -202,7 +224,7 @@ function applyDesktopShellConfig(site={}){
   if(brand){brand.classList.toggle('customLogo',hasCustomLogo);brand.style.backgroundImage=hasCustomLogo?'var(--nethor-header-logo)':''}
  }
  if(sidebar)Object.entries(c.sidebar.items).forEach(([key,item])=>{const el=sidebar.querySelector('[data-sidebar-key="'+CSS.escape(key)+'"]');if(!el)return;el.classList.toggle('hidden',item.enabled===false);el.dataset.sidebarUrl=item.url||DESKTOP_SIDEBAR_DEFAULTS[key]?.url||'home.html';const label=el.querySelector('.nethorSidebarLabel');if(label)label.textContent=item.label||DESKTOP_SIDEBAR_DEFAULTS[key]?.label||key});
- startDesktopClock()
+ startDesktopClock();scaleDesktopText(document.body)
 }
 function buildPageLayout(page){
  const id=String(page||'').toLowerCase();
@@ -240,5 +262,5 @@ function buildDesktopChrome(page){
 }
 window.addEventListener('netto:profile',e=>applyDesktopShellConfig(e.detail?.siteConfig||window.NettoProfileUI?.siteConfig||{}));
 document.addEventListener('nethor:page-layout-ready',()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}));
-window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout,buildDesktopChrome,applyDesktopShellConfig,desktopDashboardConfig});
+window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout,buildDesktopChrome,applyDesktopShellConfig,desktopDashboardConfig,openStoreCard:openDesktopStoreCard,scaleText:scaleDesktopText});
 })();
