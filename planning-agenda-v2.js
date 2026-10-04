@@ -382,13 +382,13 @@ function renderWeekAgenda(a){
  const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle'),stats=document.getElementById('agendaStats');
  if(title)title.textContent=isMobile()?'Semaine '+isoWeekNumber(a):'Semaine du '+a.getDate()+' au '+b.getDate()+' '+b.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
  if(sub)sub.textContent=isMobile()?mobileWeekRangeLabel(a):'Vue équipe simplifiée • mêmes données et calculs que la vue classique';
- let html='<div class="agendaGrid'+(desktop?' agendaGridDesktop':'')+'"><div class="agendaCorner">Équipe</div>',weekHours=0;
+ let html='<div class="agendaGrid'+(desktop?' agendaGridDesktop':'')+'"><div class="agendaCorner">Utilisateur</div>'+(desktop?'<div class="agendaReadHead" title="Jours du planning consultés">Lu</div>':'');let weekHours=0;
  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0);html+='<div class="agendaDayHead '+(key===todayKey?'today ':'')+(active?'activeDay':'')+'"><strong>'+escLocal(dayShort(dt))+'</strong><span>'+dt.getDate()+'</span></div>'}
  if(desktop)html+='<div class="agendaWeekTotalHead"><strong>Total</strong><span>Semaine</span></div>';
  employees.forEach((emp,ri)=>{
   let employeeTotal=0;for(let di=0;di<7;di++){const row=model.days?.[isoDate(addDays(a,di))]?.cells?.[ri]||[];employeeTotal+=shiftHours(agendaRanges(row))}weekHours+=employeeTotal;
-  const info=avatarFor(emp);html+='<div class="agendaEmployee">'+info.avatar+'<div class="planningIdentityText"><strong>'+escLocal(info.label)+'</strong>'+(desktop?'':'<span class="agendaEmployeeTotal">'+hoursLabel(employeeTotal)+'</span>')+'</div></div>';
-  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0),row=model.days?.[key]?.cells?.[ri]||[],ranges=agendaRanges(row),profile=(desktop&&typeof planningProfileFor==='function')?planningProfileFor(emp.name):null,readBadge=(desktop&&typeof planningReadBadgeHtml==='function')?planningReadBadgeHtml(profile,key,true):'';html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(active?'activeDay ':'')+(ranges.length?'':'empty')+'">'+readBadge;
+  const info=avatarFor(emp);html+='<div class="agendaEmployee">'+info.avatar+'<div class="planningIdentityText"><strong>'+escLocal(info.label)+'</strong>'+(desktop?'':'<span class="agendaEmployeeTotal">'+hoursLabel(employeeTotal)+'</span>')+'</div></div>'+(desktop?'<div class="agendaReadCell">'+(typeof planningReadWeekSummaryHtml==='function'?planningReadWeekSummaryHtml(emp.name,a):'')+'</div>':'');
+  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0),row=model.days?.[key]?.cells?.[ri]||[],ranges=agendaRanges(row);html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(active?'activeDay ':'')+(ranges.length?'':'empty')+'">';
    if(ranges.length)ranges.forEach(r=>{html+='<div class="agendaShift" data-color="'+escLocal(r.c)+'"><strong>'+fmtTime(r.a)+'–'+fmtTime(r.b)+'</strong><small>'+hoursLabel(r.b-r.a)+'</small></div>'});else html+='<span class="agendaWeekDash">–</span>';
    html+='</div>';
   }
