@@ -22,8 +22,8 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw:before
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwVisual{
   position:absolute;z-index:-2;inset:0 0 0 38%;
-  background-size:cover;background-repeat:no-repeat;background-position:var(--nsiw-image-position,center center);
-  transform:scale(1.01)
+  background-size:cover;background-repeat:no-repeat;background-position:var(--nsiw-image-position,50% 50%);
+  transform:scale(var(--nsiw-image-zoom,1));transform-origin:var(--nsiw-image-origin,50% 50%);transition:transform .18s ease,background-position .18s ease
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwVisual.empty{
   background:
@@ -116,7 +116,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
  content:"";position:absolute;z-index:-1;inset:0;
  background:linear-gradient(105deg,var(--sb-surface) 0%,var(--sb-surface) 38%,color-mix(in srgb,var(--sb-surface) 80%,transparent) 58%,transparent 82%)
 }
-.storeBannerPreviewVisual{position:absolute;z-index:-2;inset:0 0 0 38%;background-size:cover;background-position:var(--sb-position);background-repeat:no-repeat}
+.storeBannerPreviewVisual{position:absolute;z-index:-2;inset:0 0 0 38%;background-size:cover;background-position:var(--sb-position,50% 50%);background-repeat:no-repeat;transform:scale(var(--sb-zoom,1));transform-origin:var(--sb-origin,50% 50%);transition:transform .16s ease,background-position .16s ease}
 .storeBannerPreviewVisual.empty{background:radial-gradient(circle at 76% 34%,color-mix(in srgb,var(--sb-accent) 20%,transparent),transparent 24%),linear-gradient(135deg,#3a4048,#202630 55%,#171b21)}
 .storeBannerPreviewVisual:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--sb-surface),color-mix(in srgb,var(--sb-surface) 65%,transparent) 52%,transparent)}
 .storeBannerPreviewVisual:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--sb-dim))}
@@ -142,3 +142,15 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
  .storeBannerAsset{align-items:flex-start;flex-direction:column}
  .storeBannerPreviewContent{grid-template-columns:auto 2px minmax(180px,240px)}.storeBannerPreviewHours{justify-self:start;width:100%}
 }
+
+
+.storeBannerCrop{margin-top:11px;padding:12px;border:1px solid #e2e6ea;border-radius:13px;background:#fafbfc}
+.storeBannerCropGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;align-items:end}
+.storeBannerCropGrid .field{margin:0}
+.storeBannerRange{display:grid;grid-template-columns:minmax(0,1fr) 54px;gap:8px;align-items:center}
+.storeBannerRange input[type="range"]{width:100%;accent-color:#ff6a2b}
+.storeBannerRange output{display:block;padding:6px 7px;border:1px solid #dfe4e9;border-radius:8px;background:#fff;color:#4f5b68;font-size:8px;font-weight:850;text-align:center;font-variant-numeric:tabular-nums}
+.storeBannerCropReset .btn{width:100%;min-height:34px}
+:root[data-theme="dark"] .storeBannerCrop{background:#22262c;border-color:#3a4047}
+:root[data-theme="dark"] .storeBannerRange output{background:#1c2025;border-color:#3d444d;color:#d7dce2}
+@media(max-width:1100px){.storeBannerCropGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
