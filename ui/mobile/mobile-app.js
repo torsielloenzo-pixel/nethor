@@ -351,6 +351,7 @@ let mobileSwipeState=null;
 let suppressSwipeClickUntil=0;
 let mobileGestureFrame=0;
 let mobileGestureTransitioning=false;
+let mobileGestureNavMetrics=null;
 const mobileGestureSnapshots=new Map();
 
 function mobileSwipeReducedMotion(){
@@ -404,13 +405,22 @@ function setMobileNavWeights(indexFloat){
     link.style.setProperty('--nethor-nav-weight',weight.toFixed(3))
   })
 }
-function positionMobileNavGlider(indexFloat,{animate=false}={}){
+function refreshMobileNavMetrics(){
+  const links=mobileGestureLinkList(),navRect=navHost.getBoundingClientRect();
+  mobileGestureNavMetrics=links.map(link=>{
+    const rect=link.getBoundingClientRect();
+    return {left:rect.left-navRect.left,width:rect.width}
+  });
+  return mobileGestureNavMetrics
+}
+function positionMobileNavGlider(indexFloat,{animate=false,refresh=false}={}){
   const glider=ensureMobileNavGlider(),links=mobileGestureLinkList();
   if(!links.length)return;
+  const metrics=(refresh||!mobileGestureNavMetrics||mobileGestureNavMetrics.length!==links.length)?refreshMobileNavMetrics():mobileGestureNavMetrics;
   const max=links.length-1,safe=clampGesture(indexFloat,0,max),a=Math.floor(safe),b=Math.ceil(safe),mix=safe-a;
-  const navRect=navHost.getBoundingClientRect(),ra=links[a].getBoundingClientRect(),rb=links[b].getBoundingClientRect();
-  const left=(ra.left-navRect.left)+((rb.left-ra.left)*mix);
-  const width=ra.width+((rb.width-ra.width)*mix);
+  const ma=metrics[a],mb=metrics[b];
+  const left=ma.left+((mb.left-ma.left)*mix);
+  const width=ma.width+((mb.width-ma.width)*mix);
   glider.classList.toggle('animate',animate);
   glider.style.width=width+'px';
   glider.style.transform='translate3d('+left+'px,0,0)';
@@ -543,6 +553,7 @@ function beginMobileSwipe(event){
     width:Math.max(1,viewHost.clientWidth||window.innerWidth||1),locked:false,cancelled:false,
     offset:0,progress:0,step:0,target:''
   };
+  refreshMobileNavMetrics();
   viewHost.classList.add('nethorGestureSurface');
   root.dataset.mobileSwipe='armed'
 }
@@ -645,7 +656,7 @@ function bindMobileSwipeNavigation(){
   if(viewHost.dataset.mobileSwipeBound==='1')return;
   viewHost.dataset.mobileSwipeBound='1';viewHost.dataset.mobileSwipeReady='1';
   ensureMobileNavGlider();syncMobileGestureNav();
-  const resize=()=>{if(!mobileSwipeState&&!mobileGestureTransitioning)syncMobileGestureNav()};
+  const resize=()=>{mobileGestureNavMetrics=null;if(!mobileSwipeState&&!mobileGestureTransitioning)syncMobileGestureNav()};
   window.addEventListener('resize',resize,{passive:true});
   if(window.PointerEvent){
     viewHost.addEventListener('pointerdown',beginMobileSwipe,{passive:true});
