@@ -1,7 +1,7 @@
 /* Nethor — Vue rapide planning (Desktop) */
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{
   --qp-accent:#ff5a2a;--qp-now:#ff5a2a;--qp-surface:var(--qp-surface-light,#fff);--qp-text:var(--qp-text-light,#1f2937);
-  --qp-muted:#748093;--qp-grid:var(--qp-grid-light,#e7ebf0);--qp-row-h:30px;
+  --qp-muted:#748093;--qp-grid:var(--qp-grid-light,#e7ebf0);--qp-row-h:44px;
   order:3!important;grid-column:span 8!important;align-self:stretch!important;min-width:0;min-height:0;overflow:hidden;
   display:grid!important;grid-template-rows:auto minmax(0,1fr) auto;
   border:1px solid var(--qp-grid);border-radius:var(--qp-radius,18px);background:var(--qp-surface);color:var(--qp-text);
@@ -39,37 +39,37 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanFullLi
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanFullLink:hover{transform:translateY(-1px);background:color-mix(in srgb,var(--qp-accent) 11%,var(--qp-surface))}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanBoard{
-  display:grid;grid-template-columns:minmax(108px,128px) minmax(0,1fr);min-height:0;height:100%;padding:6px 11px 4px
+  display:grid;grid-template-columns:minmax(148px,176px) minmax(0,1fr);min-height:0;height:100%;padding:10px 14px 8px
 }
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNames{min-width:0;min-height:0;padding-right:8px;display:flex;flex-direction:column}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameAxis{height:21px;flex:0 0 21px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNames{min-width:0;min-height:0;padding-right:12px;display:flex;flex-direction:column}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameAxis{height:30px;flex:0 0 30px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanName{
-  min-height:var(--qp-row-h);flex:1 1 var(--qp-row-h);display:grid;grid-template-columns:22px minmax(0,1fr);align-items:center;gap:6px;padding:2px 0
+  min-height:var(--qp-row-h);flex:1 1 var(--qp-row-h);display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:9px;padding:4px 0
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.noAvatars .qplanName{grid-template-columns:minmax(0,1fr)}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAvatar{
-  width:21px;height:21px;display:grid;place-items:center;border-radius:50%;background:var(--qp-person,#ff6a2b);color:#fff;
-  font-size:6.5px;font-weight:950;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)
+  width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:var(--qp-person,#ff6a2b);color:#fff;
+  font-size:8px;font-weight:950;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameCopy{min-width:0}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameCopy strong{
-  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8.2px;line-height:1.15;font-weight:900;color:var(--qp-text)
+  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9.6px;line-height:1.18;font-weight:900;color:var(--qp-text)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameCopy small{
-  display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--qp-muted);font-size:6.5px;line-height:1.15;font-weight:700
+  display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--qp-muted);font-size:7.6px;line-height:1.2;font-weight:700
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTimeline{
   position:relative;min-width:0;min-height:0;overflow:visible;display:flex;flex-direction:column
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAxis{
-  position:static;height:21px;flex:0 0 21px;border-bottom:1px solid var(--qp-grid)
+  position:static;height:30px;flex:0 0 30px;border-bottom:1px solid var(--qp-grid)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick{
   position:absolute;top:1px;bottom:0;width:1px;background:color-mix(in srgb,var(--qp-grid) 78%,transparent);pointer-events:none
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick>span{
   position:absolute;top:0;left:0;transform:translateX(-50%);padding:0 3px;background:var(--qp-surface);
-  color:var(--qp-muted);font-size:6.5px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap
+  color:var(--qp-muted);font-size:7.3px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick.first>span{transform:none}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick.last>span{transform:translateX(-100%)}
@@ -79,12 +79,12 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack{
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack:last-child{border-bottom:0}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack:before{
-  content:"";position:absolute;left:0;right:0;top:50%;height:10px;transform:translateY(-50%);
-  border-radius:6px;background:color-mix(in srgb,var(--qp-grid) 48%,transparent)
+  content:"";position:absolute;left:0;right:0;top:50%;height:18px;transform:translateY(-50%);
+  border-radius:9px;background:color-mix(in srgb,var(--qp-grid) 48%,transparent)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanSegment,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanPause{
-  position:absolute;top:50%;height:10px;transform:translateY(-50%);border-radius:5px
+  position:absolute;top:50%;height:18px;transform:translateY(-50%);border-radius:9px
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanSegment{
   z-index:2;background:linear-gradient(90deg,var(--qp-person),color-mix(in srgb,var(--qp-person) 76%,#fff));
@@ -98,15 +98,15 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanPause{
   background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--qp-person) 16%,transparent) 0 2px,transparent 2px 5px)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNow{
-  position:absolute;z-index:8;top:13px;bottom:0;width:0;border-left:2px dashed var(--qp-now);pointer-events:none
+  position:absolute;z-index:8;top:21px;bottom:0;width:0;border-left:2px dashed var(--qp-now);pointer-events:none
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNow:after{
-  content:"";position:absolute;top:4px;left:-4px;width:7px;height:7px;border-radius:50%;background:var(--qp-now);
+  content:"";position:absolute;top:6px;left:-5px;width:9px;height:9px;border-radius:50%;background:var(--qp-now);
   box-shadow:0 0 0 3px color-mix(in srgb,var(--qp-now) 13%,transparent)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNowLabel{
   position:absolute;top:-12px;left:0;transform:translateX(-50%);padding:2px 4px;border-radius:5px;
-  background:var(--qp-surface);color:var(--qp-now);font-size:6.2px;font-weight:950;white-space:nowrap
+  background:var(--qp-surface);color:var(--qp-now);font-size:7px;font-weight:950;white-space:nowrap
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNow.edgeStart .qplanNowLabel{transform:none}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNow.edgeEnd .qplanNowLabel{transform:translateX(-100%)}
@@ -137,12 +137,12 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanLegend
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanUpdated{
   color:var(--qp-muted);font-size:6.2px;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap
 }
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densityCompact{--qp-row-h:25px}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densityComfortable{--qp-row-h:30px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densityCompact{--qp-row-h:38px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densityComfortable{--qp-row-h:44px}
 @media(max-width:1040px){
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanBoard{grid-template-columns:minmax(130px,160px) minmax(0,1fr)}
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanName{grid-template-columns:25px minmax(0,1fr);gap:7px}
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAvatar{width:24px;height:24px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanBoard{grid-template-columns:minmax(138px,158px) minmax(0,1fr)}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanName{grid-template-columns:28px minmax(0,1fr);gap:7px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAvatar{width:27px;height:27px}
 }
 
 /* Gestion — Vue rapide planning */
