@@ -1,11 +1,11 @@
 {
-  "version": 340,
-  "label": "v1.45.2",
+  "version": 341,
+  "label": "v1.45.3",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile — swipe corrigé et préchargement réel",
-  "message": "Correction du swipe principal Mobile avec Pointer Events et touch-action adaptée. Accueil, Planning et Chat sont désormais réellement préparés pendant l’animation d’ouverture : données Accueil en mémoire, semaine et équipe du Planning préchargées, conversations et discussion générale du Chat préparées avant le premier affichage. Les caches SPA sont conservés entre les changements de vue pour éviter un nouveau chargement à chaque swipe.",
-  "published_at": "2026-10-04T02:05:00+02:00",
+  "title": "Mobile — Service Worker réactivé",
+  "message": "Le shell Mobile enregistre désormais automatiquement le Service Worker au démarrage. Le contrôle des mises à jour lit aussi la version du worker actif même lors de la première activation, ce qui supprime le message indiquant que la vérification automatique n’est pas disponible. Le Service Worker et son cache sont synchronisés sur la version 341.",
+  "published_at": "2026-10-04T02:15:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
