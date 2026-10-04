@@ -1,11 +1,11 @@
 {
-  "version": 348,
-  "label": "v1.45.10",
+  "version": 349,
+  "label": "v1.46.0",
   "important": true,
-  "clear_cache": false,
+  "clear_cache": true,
   "mode": "manual",
-  "title": "Swipe Mobile désactivé",
-  "message": "Le swipe horizontal entre Accueil, Planning et Chat est temporairement désactivé. La navigation Mobile se fait uniquement via la barre inférieure afin de stabiliser l’interface avant une prochaine réintégration.",
-  "published_at": "2026-10-04T13:22:00+02:00",
+  "title": "Refonte Desktop point de vente",
+  "message": "Nouvel accueil Desktop inspiré du tableau de bord point de vente : barre latérale complète avec logo Nethor, entête limité au magasin/date/notifications/compte, nouveaux KPI et widgets opérationnels, et configuration centralisée depuis Gestion. Les droits d’accès restent séparés des réglages d’affichage.",
+  "published_at": "2026-10-04T18:11:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
