@@ -342,18 +342,12 @@ function onServiceEvent(detail){
 function onRouteEvent(event){
   const view=String(event?.detail?.view||requestedView());
   syncActive(view);
-  root.dataset.mobileView=view;
-  syncMobileGestureNav(view);
-  queueMobileGestureSnapshot(view)
+  root.dataset.mobileView=view
 }
 
 let mobileSwipeState=null;
 let suppressSwipeClickUntil=0;
-let mobileGestureFrame=0;
-let mobileGestureTransitioning=false;
-let mobileGestureNavMetrics=null;
-const mobileGestureSnapshots=new Map();
-
+let mobileSwipeTransitionTimer=0;
 function mobileSwipeReducedMotion(){
   return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true
 }
@@ -381,288 +375,142 @@ function mobileSwipeBlocked(target){
   if(target.closest('input,textarea,select,[contenteditable="true"],[data-mobile-swipe-ignore]'))return true;
   return !!mobileSwipeHorizontalScroller(target)
 }
-function clampGesture(value,min,max){return Math.min(max,Math.max(min,value))}
-function mobileGestureLinkList(){
-  const order=mobileSwipeOrder();
-  return order.map(id=>navHost.querySelector(':scope > [data-mobile-destination="'+id+'"]')).filter(Boolean)
+function resetMobileSwipePreview({snap=false}={}){
+  if(!viewHost)return;
+  if(snap&&!mobileSwipeReducedMotion()){
+    viewHost.classList.add('nethorSwipeSnapBack');
+    requestAnimationFrame(()=>{
+      viewHost.style.setProperty('--nethor-swipe-offset','0px');
+      viewHost.style.setProperty('--nethor-swipe-opacity','1')
+    });
+    setTimeout(()=>viewHost.classList.remove('nethorSwipeSnapBack'),180)
+  }else viewHost.classList.remove('nethorSwipeSnapBack');
+  if(!snap||mobileSwipeReducedMotion()){
+    viewHost.style.removeProperty('--nethor-swipe-offset');
+    viewHost.style.removeProperty('--nethor-swipe-opacity')
+  }else setTimeout(()=>{
+    viewHost.style.removeProperty('--nethor-swipe-offset');
+    viewHost.style.removeProperty('--nethor-swipe-opacity')
+  },190)
 }
-function ensureMobileNavGlider(){
-  let glider=navHost.querySelector('[data-mobile-nav-glider]');
-  if(!glider){
-    glider=document.createElement('span');
-    glider.className='nethorMobileNavGlider';
-    glider.setAttribute('data-mobile-nav-glider','');
-    glider.setAttribute('aria-hidden','true');
-    navHost.prepend(glider)
+function clearMobileSwipeState(options={}){
+  mobileSwipeState=null;
+  root.removeAttribute('data-mobile-swipe');
+  resetMobileSwipePreview(options)
+}
+function updateMobileSwipePreview(state,dx){
+  if(!state?.locked||!viewHost)return;
+  const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
+  const first=state.index<=0,last=state.index>=state.order.length-1;
+  const blockedEdge=(dx>0&&first)||(dx<0&&last);
+  const resistance=blockedEdge?.075:.16;
+  const max=blockedEdge?10:22;
+  const offset=Math.max(-max,Math.min(max,dx*resistance));
+  const progress=Math.min(1,Math.abs(dx)/(width*.42));
+  viewHost.style.setProperty('--nethor-swipe-offset',offset.toFixed(2)+'px');
+  viewHost.style.setProperty('--nethor-swipe-opacity',String((1-progress*.055).toFixed(3)))
+}
+function ensureMobileSwipeVeil(){
+  let veil=root.querySelector('[data-mobile-swipe-veil]');
+  if(!veil){
+    veil=document.createElement('div');
+    veil.className='nethorMobileSwipeVeil';
+    veil.setAttribute('data-mobile-swipe-veil','');
+    veil.setAttribute('aria-hidden','true');
+    root.appendChild(veil)
   }
-  navHost.classList.add('nethorGestureNavReady');
-  return glider
+  const hostRect=viewHost.getBoundingClientRect(),rootRect=root.getBoundingClientRect();
+  veil.style.left=(hostRect.left-rootRect.left)+'px';
+  veil.style.top=(hostRect.top-rootRect.top)+'px';
+  veil.style.width=hostRect.width+'px';
+  veil.style.height=hostRect.height+'px';
+  return veil
 }
-function setMobileNavWeights(indexFloat){
-  const links=mobileGestureLinkList();
-  links.forEach((link,index)=>{
-    const weight=clampGesture(1-Math.abs(index-indexFloat),0,1);
-    link.style.setProperty('--nethor-nav-weight',weight.toFixed(3))
-  })
-}
-function refreshMobileNavMetrics(){
-  const links=mobileGestureLinkList(),navRect=navHost.getBoundingClientRect();
-  mobileGestureNavMetrics=links.map(link=>{
-    const rect=link.getBoundingClientRect();
-    return {left:rect.left-navRect.left,width:rect.width}
-  });
-  return mobileGestureNavMetrics
-}
-function positionMobileNavGlider(indexFloat,{animate=false,refresh=false}={}){
-  const glider=ensureMobileNavGlider(),links=mobileGestureLinkList();
-  if(!links.length)return;
-  const metrics=(refresh||!mobileGestureNavMetrics||mobileGestureNavMetrics.length!==links.length)?refreshMobileNavMetrics():mobileGestureNavMetrics;
-  const max=links.length-1,safe=clampGesture(indexFloat,0,max),a=Math.floor(safe),b=Math.ceil(safe),mix=safe-a;
-  const ma=metrics[a],mb=metrics[b];
-  const left=ma.left+((mb.left-ma.left)*mix);
-  const width=ma.width+((mb.width-ma.width)*mix);
-  glider.classList.toggle('animate',animate);
-  glider.style.width=width+'px';
-  glider.style.transform='translate3d('+left+'px,0,0)';
-  setMobileNavWeights(safe)
-}
-function syncMobileGestureNav(view=requestedView()){
-  if(mobileSwipeState||mobileGestureTransitioning)return;
-  const order=mobileSwipeOrder(),index=order.indexOf(String(view||''));
-  if(index>=0)requestAnimationFrame(()=>positionMobileNavGlider(index,{animate:true}))
-}
-function scrubGestureSnapshot(rootNode){
-  rootNode.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));
-  rootNode.querySelectorAll('input,textarea,select,button,a,[contenteditable]').forEach(node=>{
-    node.removeAttribute('href');node.removeAttribute('name');node.removeAttribute('for');
-    node.setAttribute('tabindex','-1');node.setAttribute('aria-hidden','true');
-    if('disabled' in node)try{node.disabled=true}catch(_){}
-  });
-  rootNode.querySelectorAll('video,audio,iframe,canvas').forEach(node=>node.remove());
-  return rootNode
-}
-function captureMobileGestureSnapshot(view){
-  const id=String(view||'');
-  if(!['home','planning','chat'].includes(id)||viewHost.dataset.mobileView!==id||viewHost.hasAttribute('aria-busy'))return;
-  const shell=document.createElement('div');
-  shell.className='nethorMobileGestureSnapshot nethorMobileView';
-  shell.dataset.mobileView=id;
-  for(const node of Array.from(viewHost.childNodes))shell.appendChild(node.cloneNode(true));
-  scrubGestureSnapshot(shell);
-  mobileGestureSnapshots.set(id,shell)
-}
-function queueMobileGestureSnapshot(view){
-  const run=()=>captureMobileGestureSnapshot(view);
-  if('requestIdleCallback' in window)window.requestIdleCallback(run,{timeout:700});
-  else setTimeout(run,120)
-}
-function ensureMobileGesturePeek(){
-  let peek=root.querySelector('[data-mobile-gesture-peek]');
-  if(peek)return peek;
-  peek=document.createElement('div');
-  peek.className='nethorMobileGesturePeek';
-  peek.setAttribute('data-mobile-gesture-peek','');
-  peek.setAttribute('aria-hidden','true');
-  peek.innerHTML='<div class="nethorMobileGesturePeekFallback"><span class="nethorMobileGesturePeekIcon"></span><strong></strong><small>Glisser pour ouvrir</small><i></i><i></i><i></i><i></i></div><div class="nethorMobileGesturePeekCanvas"></div>';
-  root.appendChild(peek);
-  return peek
-}
-function gestureDestinationIcon(view){
-  const source=navHost.querySelector(':scope > [data-mobile-destination="'+view+'"] > span');
-  if(!source)return'';
-  const clone=source.cloneNode(true);
-  clone.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));
-  return clone.innerHTML
-}
-function prepareMobileGesturePeek(view,step){
-  const peek=ensureMobileGesturePeek(),canvas=peek.querySelector('.nethorMobileGesturePeekCanvas'),fallback=peek.querySelector('.nethorMobileGesturePeekFallback');
-  if(peek.dataset.target===view)return peek;
-  const previous=peek.querySelector('.nethorMobileGestureSnapshot');
-  if(previous)previous.remove();
-  peek.dataset.target=view||'';
-  peek.dataset.step=String(step||0);
-  const snapshot=mobileGestureSnapshots.get(view);
-  if(snapshot){
-    canvas.replaceChildren(snapshot);
-    canvas.hidden=false;fallback.hidden=true
+async function runMobileSwipeTransition(next,step){
+  clearTimeout(mobileSwipeTransitionTimer);
+  const reduced=mobileSwipeReducedMotion(),direction=step>0?'next':'previous';
+  const veil=ensureMobileSwipeVeil();
+  root.dataset.mobileSwipe='navigating';
+  root.dataset.mobileSwipeDirection=direction;
+  viewHost.classList.remove('nethorSwipeSnapBack','nethorSwipeEntering');
+  resetMobileSwipePreview();
+  if(!reduced){
+    viewHost.classList.add('nethorSwipeLeaving');
+    requestAnimationFrame(()=>veil.classList.add('show'));
+    await new Promise(resolve=>setTimeout(resolve,95))
+  }
+  const ok=await Promise.resolve(router()?.open?.(next,{source:'swipe'}));
+  viewHost.classList.remove('nethorSwipeLeaving');
+  if(ok!==false&&!reduced){
+    viewHost.classList.add('nethorSwipeEntering');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>veil.classList.remove('show')));
+    mobileSwipeTransitionTimer=setTimeout(()=>{
+      viewHost.classList.remove('nethorSwipeEntering');
+      root.removeAttribute('data-mobile-swipe');
+      root.removeAttribute('data-mobile-swipe-direction')
+    },240)
   }else{
-    canvas.replaceChildren();canvas.hidden=true;fallback.hidden=false;
-    const label=navHost.querySelector(':scope > [data-mobile-destination="'+view+'"] small')?.textContent||view;
-    const strong=fallback.querySelector('strong'),icon=fallback.querySelector('.nethorMobileGesturePeekIcon');
-    if(strong)strong.textContent=label;
-    if(icon)icon.innerHTML=gestureDestinationIcon(view)
+    veil.classList.remove('show');
+    root.removeAttribute('data-mobile-swipe');
+    root.removeAttribute('data-mobile-swipe-direction')
   }
-  peek.classList.add('prepared');
-  return peek
-}
-function clearMobileGesturePeek(){
-  const peek=root.querySelector('[data-mobile-gesture-peek]');
-  if(!peek)return;
-  const snap=peek.querySelector('.nethorMobileGestureSnapshot');
-  if(snap)snap.remove();
-  peek.classList.remove('prepared','visible','settled');
-  peek.style.removeProperty('transform');
-  peek.style.removeProperty('opacity');
-  delete peek.dataset.target;delete peek.dataset.step
-}
-function setGestureHostTransform(offset,progress){
-  const scale=1-(progress*.008);
-  viewHost.style.transform='translate3d('+offset.toFixed(2)+'px,0,0) scale('+scale.toFixed(4)+')';
-  viewHost.style.opacity=String((1-progress*.018).toFixed(3))
-}
-function renderMobileGestureFrame(){
-  mobileGestureFrame=0;
-  const state=mobileSwipeState;
-  if(!state||!state.locked||state.cancelled)return;
-  const rawDx=state.pendingX-state.x,rawDy=state.pendingY-state.y,width=state.width;
-  const step=rawDx<0?1:-1,targetIndex=state.index+step,target=state.order[targetIndex];
-  const edge=!target;
-  const offset=edge?rawDx*.16:clampGesture(rawDx*.96,-width,width);
-  const progress=edge?clampGesture(Math.abs(offset)/(width*.18),0,.28):clampGesture(Math.abs(offset)/width,0,1);
-  state.offset=offset;state.progress=progress;state.step=step;state.target=target||'';
-  setGestureHostTransform(offset,progress);
-  if(target){
-    const peek=prepareMobileGesturePeek(target,step);
-    const remaining=1-progress,parallax=step*remaining*34;
-    peek.classList.add('visible');
-    peek.classList.toggle('settled',progress>.72);
-    peek.style.opacity=String(clampGesture(.36+(progress*.72),0,1));
-    peek.style.transform='translate3d('+parallax.toFixed(2)+'px,0,0) scale('+(0.982+(progress*.018)).toFixed(4)+')';
-    positionMobileNavGlider(state.index+(step*progress))
-  }else{
-    clearMobileGesturePeek();
-    positionMobileNavGlider(state.index)
-  }
-  root.dataset.mobileSwipe=edge?'edge':'tracking';
-  root.dataset.mobileSwipeDirection=step>0?'next':'previous';
-  root.style.setProperty('--nethor-gesture-progress',progress.toFixed(3));
-  if(Math.abs(rawDy)>Math.abs(rawDx)*1.35)state.cancelled=true
-}
-function scheduleMobileGestureFrame(){
-  if(!mobileGestureFrame)mobileGestureFrame=requestAnimationFrame(renderMobileGestureFrame)
+  return ok
 }
 function beginMobileSwipe(event){
-  if(mobileGestureTransitioning||event.isPrimary===false||root.dataset.keyboard==='open')return;
-  if(event.pointerType&&event.pointerType!=='touch'&&event.pointerType!=='pen')return;
+  if(event.isPrimary===false||root.dataset.keyboard==='open')return clearMobileSwipeState();
+  if(event.pointerType&&event.pointerType!=='touch'&&event.pointerType!=='pen')return clearMobileSwipeState();
   const order=mobileSwipeOrder(),view=requestedView(),index=order.indexOf(view);
-  if(index<0||mobileSwipeBlocked(event.target))return;
-  const now=performance.now();
+  if(index<0||mobileSwipeBlocked(event.target))return clearMobileSwipeState();
   mobileSwipeState={
-    pointerId:event.pointerId,x:event.clientX,y:event.clientY,pendingX:event.clientX,pendingY:event.clientY,
-    lastX:event.clientX,lastAt:now,velocityX:0,startedAt:now,index,order,
-    width:Math.max(1,viewHost.clientWidth||window.innerWidth||1),locked:false,cancelled:false,
-    offset:0,progress:0,step:0,target:''
+    pointerId:event.pointerId,
+    x:event.clientX,y:event.clientY,lastX:event.clientX,lastY:event.clientY,
+    startedAt:performance.now(),index,order,locked:false,cancelled:false
   };
-  refreshMobileNavMetrics();
-  viewHost.classList.add('nethorGestureSurface');
   root.dataset.mobileSwipe='armed'
 }
 function moveMobileSwipe(event){
   const state=mobileSwipeState;
   if(!state||state.cancelled||(state.pointerId!=null&&event.pointerId!==state.pointerId))return;
-  const now=performance.now(),dx=event.clientX-state.x,dy=event.clientY-state.y,ax=Math.abs(dx),ay=Math.abs(dy);
-  const dt=Math.max(1,now-state.lastAt),instant=(event.clientX-state.lastX)/dt;
-  state.velocityX=(state.velocityX*.62)+(instant*.38);
-  state.lastX=event.clientX;state.lastAt=now;state.pendingX=event.clientX;state.pendingY=event.clientY;
+  const dx=event.clientX-state.x,dy=event.clientY-state.y;
+  state.lastX=event.clientX;state.lastY=event.clientY;
+  const ax=Math.abs(dx),ay=Math.abs(dy);
   if(!state.locked){
-    if(ax<7&&ay<7)return;
-    if(ay>ax*1.12){state.cancelled=true;cancelMobileGesture(state,{immediate:true});return}
-    if(ax>=11&&ax>=ay*.88){state.locked=true;root.dataset.mobileSwipe='tracking'}
+    if(ax<8&&ay<8)return;
+    if(ay>ax*1.08){state.cancelled=true;root.removeAttribute('data-mobile-swipe');return}
+    if(ax>=ay*.9&&ax>=12){state.locked=true;root.dataset.mobileSwipe='tracking'}
     else return
   }
-  scheduleMobileGestureFrame();
-  if(event.cancelable)event.preventDefault()
-}
-function animateElement(element,keyframes,options){
-  if(!element||mobileSwipeReducedMotion())return Promise.resolve();
-  if(typeof element.animate==='function'){
-    const animation=element.animate(keyframes,options);
-    return animation.finished.catch(()=>{})
+  if(state.locked){
+    updateMobileSwipePreview(state,dx);
+    if(event.cancelable)event.preventDefault()
   }
-  const last=keyframes[keyframes.length-1]||{};
-  Object.assign(element.style,last);
-  return new Promise(resolve=>setTimeout(resolve,Number(options?.duration)||0))
-}
-function resetGestureInlineStyles(){
-  viewHost.style.removeProperty('transform');viewHost.style.removeProperty('opacity');
-  viewHost.classList.remove('nethorGestureSurface');
-  root.removeAttribute('data-mobile-swipe');root.removeAttribute('data-mobile-swipe-direction');
-  root.style.removeProperty('--nethor-gesture-progress')
-}
-async function cancelMobileGesture(state=mobileSwipeState,{immediate=false}={}){
-  if(!state)return;
-  mobileSwipeState=null;
-  if(mobileGestureFrame){cancelAnimationFrame(mobileGestureFrame);mobileGestureFrame=0}
-  const peek=root.querySelector('[data-mobile-gesture-peek]');
-  const from=viewHost.style.transform||'translate3d(0,0,0)';
-  if(!immediate&&!mobileSwipeReducedMotion()){
-    positionMobileNavGlider(state.index,{animate:true});
-    await Promise.all([
-      animateElement(viewHost,[{transform:from,opacity:viewHost.style.opacity||'1'},{transform:'translate3d(0,0,0) scale(1)',opacity:1}],{duration:190,easing:'cubic-bezier(.2,.82,.25,1)',fill:'forwards'}),
-      peek?animateElement(peek,[{opacity:Number(peek.style.opacity||0),transform:peek.style.transform||'none'},{opacity:0,transform:'translate3d('+(state.step*18)+'px,0,0) scale(.985)'}],{duration:150,easing:'ease-out',fill:'forwards'}):Promise.resolve()
-    ])
-  }else positionMobileNavGlider(state.index);
-  resetGestureInlineStyles();clearMobileGesturePeek();setMobileNavWeights(state.index)
-}
-async function commitMobileGesture(state){
-  if(!state?.target||mobileGestureTransitioning)return;
-  mobileGestureTransitioning=true;mobileSwipeState=null;
-  if(mobileGestureFrame){cancelAnimationFrame(mobileGestureFrame);mobileGestureFrame=0}
-  const step=state.step,width=state.width,target=state.target,exit=step>0?-width*1.04:width*1.04;
-  const peek=prepareMobileGesturePeek(target,step),from=viewHost.style.transform||'translate3d('+state.offset+'px,0,0)';
-  root.dataset.mobileSwipe='settling';
-  positionMobileNavGlider(state.index+step,{animate:true});
-  const speed=Math.max(.8,Math.abs(state.velocityX));
-  const remaining=Math.max(0,width-Math.abs(state.offset));
-  const exitDuration=clampGesture(remaining/(speed*1.65),105,210);
-  await Promise.all([
-    animateElement(viewHost,[{transform:from,opacity:viewHost.style.opacity||'1'},{transform:'translate3d('+exit+'px,0,0) scale(.992)',opacity:.94}],{duration:exitDuration,easing:'cubic-bezier(.18,.72,.28,1)',fill:'forwards'}),
-    animateElement(peek,[{opacity:Number(peek.style.opacity||.7),transform:peek.style.transform||'none'},{opacity:1,transform:'translate3d(0,0,0) scale(1)'}],{duration:exitDuration,easing:'cubic-bezier(.18,.72,.28,1)',fill:'forwards'})
-  ]);
-  viewHost.style.transform='translate3d('+exit+'px,0,0)';
-  viewHost.style.opacity='.94';
-  const ok=await Promise.resolve(router()?.open?.(target,{source:'swipe'}));
-  if(ok!==false){
-    const entry=step>0?38:-38;
-    viewHost.style.transform='translate3d('+entry+'px,0,0)';
-    viewHost.style.opacity='.86';
-    root.dataset.mobileSwipe='arriving';
-    const duration=mobileSwipeReducedMotion()?0:185;
-    await Promise.all([
-      animateElement(viewHost,[{transform:'translate3d('+entry+'px,0,0)',opacity:.86},{transform:'translate3d(0,0,0) scale(1)',opacity:1}],{duration,easing:'cubic-bezier(.16,.84,.28,1)',fill:'forwards'}),
-      animateElement(peek,[{opacity:1},{opacity:0}],{duration:Math.min(duration,150),easing:'ease-out',fill:'forwards'})
-    ])
-  }
-  resetGestureInlineStyles();clearMobileGesturePeek();
-  syncMobileGestureNav(target);
-  suppressSwipeClickUntil=performance.now()+300;
-  mobileGestureTransitioning=false
 }
 function endMobileSwipe(event){
   const state=mobileSwipeState;
-  if(!state||(state.pointerId!=null&&event.pointerId!==state.pointerId))return;
-  if(mobileGestureFrame){cancelAnimationFrame(mobileGestureFrame);mobileGestureFrame=0;renderMobileGestureFrame()}
-  const endX=Number.isFinite(event.clientX)?event.clientX:state.pendingX;
-  const endY=Number.isFinite(event.clientY)?event.clientY:state.pendingY;
-  const dx=endX-state.x,dy=endY-state.y;
-  if(!state.locked||state.cancelled||Math.abs(dx)<=Math.abs(dy)*.92){void cancelMobileGesture(state);return}
-  const directionalVelocity=state.step>0?-state.velocityX:state.velocityX;
-  const commit=!!state.target&&(state.progress>=.22||(state.progress>=.07&&directionalVelocity>=.52));
+  if(!state||(state.pointerId!=null&&event.pointerId!==state.pointerId)){clearMobileSwipeState();return}
+  const endX=Number.isFinite(event.clientX)?event.clientX:state.lastX,endY=Number.isFinite(event.clientY)?event.clientY:state.lastY;
+  const dx=endX-state.x,dy=endY-state.y,elapsed=Math.max(1,performance.now()-state.startedAt);
+  const width=Math.max(1,viewHost.clientWidth||window.innerWidth||1);
+  const threshold=Math.max(38,Math.min(72,width*.12));
+  const velocity=Math.abs(dx)/elapsed;
+  const qualifies=state.locked&&!state.cancelled&&Math.abs(dx)>Math.abs(dy)*1.05&&(Math.abs(dx)>=threshold||(Math.abs(dx)>=28&&velocity>=.42));
+  const step=dx<0?1:-1; // Swipe gauche = page suivante située à droite ; swipe droite = page précédente située à gauche.
+  const next=state.order[state.index+step];
+  if(!qualifies||!next){clearMobileSwipeState({snap:true});return}
+  mobileSwipeState=null;
   if(event.cancelable)event.preventDefault();
-  if(commit){suppressSwipeClickUntil=performance.now()+520;void commitMobileGesture(state)}
-  else void cancelMobileGesture(state)
+  suppressSwipeClickUntil=performance.now()+520;
+  void runMobileSwipeTransition(next,step)
 }
 function bindMobileSwipeNavigation(){
   if(viewHost.dataset.mobileSwipeBound==='1')return;
-  viewHost.dataset.mobileSwipeBound='1';viewHost.dataset.mobileSwipeReady='1';
-  ensureMobileNavGlider();syncMobileGestureNav();
-  const resize=()=>{mobileGestureNavMetrics=null;if(!mobileSwipeState&&!mobileGestureTransitioning)syncMobileGestureNav()};
-  window.addEventListener('resize',resize,{passive:true});
+  viewHost.dataset.mobileSwipeBound='1';
+  viewHost.dataset.mobileSwipeReady='1';
   if(window.PointerEvent){
     viewHost.addEventListener('pointerdown',beginMobileSwipe,{passive:true});
     viewHost.addEventListener('pointermove',moveMobileSwipe,{passive:false});
     viewHost.addEventListener('pointerup',endMobileSwipe,{passive:false});
-    viewHost.addEventListener('pointercancel',()=>{if(mobileSwipeState)void cancelMobileGesture(mobileSwipeState)},{passive:true})
+    viewHost.addEventListener('pointercancel',clearMobileSwipeState,{passive:true})
   }else{
     viewHost.addEventListener('touchstart',event=>{
       const touch=event.touches?.[0];if(!touch)return;
@@ -673,17 +521,17 @@ function bindMobileSwipeNavigation(){
       moveMobileSwipe({pointerId:1,clientX:touch.clientX,clientY:touch.clientY,cancelable:event.cancelable,preventDefault:()=>event.preventDefault()})
     },{passive:false});
     viewHost.addEventListener('touchend',event=>{
-      const touch=event.changedTouches?.[0];if(!touch){if(mobileSwipeState)void cancelMobileGesture(mobileSwipeState);return}
+      const touch=event.changedTouches?.[0];if(!touch)return clearMobileSwipeState();
       endMobileSwipe({pointerId:1,clientX:touch.clientX,clientY:touch.clientY,cancelable:event.cancelable,preventDefault:()=>event.preventDefault()})
     },{passive:false});
-    viewHost.addEventListener('touchcancel',()=>{if(mobileSwipeState)void cancelMobileGesture(mobileSwipeState)},{passive:true})
+    viewHost.addEventListener('touchcancel',clearMobileSwipeState,{passive:true})
   }
   viewHost.addEventListener('click',event=>{
     if(performance.now()>=suppressSwipeClickUntil)return;
-    event.preventDefault();event.stopPropagation()
+    event.preventDefault();
+    event.stopPropagation()
   },true)
 }
-
 function editableTarget(el){
   if(!el||el.disabled||el.readOnly)return false;
   if(el.matches?.('textarea,[contenteditable="true"]'))return true;
