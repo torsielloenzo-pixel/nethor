@@ -8,7 +8,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/chat-layout.js?v=2',
- 'chat-v2.js?v=27'
+ 'chat-v2.js?v=28'
 ];
 const state={
  host:null,
@@ -86,9 +86,19 @@ async function warmAsset(url){
  }catch(_){return false}
 }
 async function preload(){
- const fragmentPromise=fragment();
- await Promise.allSettled([...STYLE_ASSETS,...SCRIPT_ASSETS].map(warmAsset));
- try{await fragmentPromise;return true}catch(_){return false}
+ try{
+  const fragmentPromise=fragment();
+  await services()?.ready?.();
+  await loadAssets();
+  await fragmentPromise;
+  const warmed=await window.NethorChatRuntime?.prewarm?.();
+  cleanupStyles();
+  return warmed!==false
+ }catch(error){
+  console.warn('[Nethor ChatView] preload',error);
+  cleanupStyles();
+  return false
+ }
 }
 function errorView(message){
  if(!state.host)return;
