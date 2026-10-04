@@ -189,6 +189,7 @@ async function render(ctx){
 }
 function activate(result){
  const root=document.querySelector('.nethorDesktopReferenceDashboard');if(!root)return;
+ const planningTitle=root.querySelector('.ndPlanningSlot .qplanTitleCopy strong');if(planningTitle&&result?.config?.widgets?.planning_view?.label)planningTitle.textContent=result.config.widgets.planning_view.label;
  root.querySelectorAll('[data-desktop-home-url]').forEach(btn=>btn.addEventListener('click',()=>{const url=btn.dataset.desktopHomeUrl;if(url)location.href=url}));
  const badges={tasks:Math.max(0,(result?.tasks?.total||0)-(result?.tasks?.done||0)),chat:(result?.ext?.chat||[]).reduce((n,x)=>n+Number(x.unread_count||0),0),incidents:Number(result?.alertCount||0),receptions:(result?.ext?.deliveries||[]).filter(x=>!['put_away','cancelled'].includes(x.status)).length};
  Object.entries(badges).forEach(([key,value])=>{const b=document.querySelector('.nethorSidebarItem[data-sidebar-key="'+key+'"] .nethorSidebarBadge');if(!b)return;b.textContent=value>99?'99+':String(value);b.classList.toggle('hidden',!value)})
