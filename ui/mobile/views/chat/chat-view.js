@@ -2,13 +2,13 @@
 'use strict';
 
 const STYLE_ASSETS=[
- 'chat-v2.css?v=27',
+ 'chat-v2.css?v=28',
  'ui/mobile/chat-layout.css?v=3',
  'ui/mobile/views/chat/chat-view.css?v=2'
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/chat-layout.js?v=2',
- 'chat-v2.js?v=28'
+ 'chat-v2.js?v=29'
 ];
 const state={
  host:null,
@@ -53,7 +53,7 @@ function ensureScript(src){
 async function fragment(){
  if(state.modalFragment)return state.modalFragment;
  if(!state.modalPromise){
-  state.modalPromise=fetch('ui/shared/chat-modals.html?v=1',{cache:'force-cache'})
+  state.modalPromise=fetch('ui/shared/chat-modals.html?v=2',{cache:'force-cache'})
    .then(r=>{if(!r.ok)throw new Error('Fragment Chat HTTP '+r.status);return r.text()})
    .then(text=>{state.modalFragment=text;return text})
    .catch(error=>{state.modalPromise=null;throw error})
