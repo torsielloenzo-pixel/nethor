@@ -1,11 +1,11 @@
 {
-  "version": 344,
-  "label": "v1.45.6",
+  "version": 345,
+  "label": "v1.45.7",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Démo swipe Mobile",
-  "message": "La navigation Mobile Accueil, Planning et Chat reçoit une transition de swipe légère : suivi discret du doigt, sortie courte de la vue, voile flouté très bref pendant le remontage, puis entrée de la page suivante depuis le bon côté. L’entête et la barre de navigation restent fixes.",
+  "title": "Navigation gestuelle Mobile",
+  "message": "La navigation principale Mobile devient directement pilotée au doigt : la page suit le geste en temps réel, un aperçu de la vue voisine apparaît sous le panneau, la glissière de la barre basse se déplace proportionnellement entre Accueil, Planning et Chat, et le relâchement utilise une inertie courte avec retour naturel ou validation selon la distance et la vitesse. Le rendu utilise un seul calque GPU pour garder le swipe fluide.",
   "published_at": "2026-10-04T13:22:00+02:00",
   "icon": "assets/app-icon-v63.svg"
-}
+}\n
