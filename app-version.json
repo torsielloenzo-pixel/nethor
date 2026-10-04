@@ -1,11 +1,11 @@
 {
-  "version": 347,
-  "label": "v1.45.9",
+  "version": 348,
+  "label": "v1.45.10",
   "important": true,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Restauration Mobile stable",
-  "message": "Restauration de la dernière base Mobile stable pour corriger la barre de navigation, le rendu des pages, les menus et les animations. La refonte gestuelle expérimentale a été retirée. Le swipe léger précédent est conservé.",
+  "title": "Swipe Mobile désactivé",
+  "message": "Le swipe horizontal entre Accueil, Planning et Chat est temporairement désactivé. La navigation Mobile se fait uniquement via la barre inférieure afin de stabiliser l’interface avant une prochaine réintégration.",
   "published_at": "2026-10-04T13:22:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
