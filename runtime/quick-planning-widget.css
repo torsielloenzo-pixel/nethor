@@ -178,3 +178,30 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densi
 @media(max-width:1040px){
  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{grid-column:1/-1!important}
 }
+
+
+/* Zoom navigateur / fenêtre réduite : le planning conserve sa lisibilité sans recouvrir les autres widgets. */
+@container (max-width:820px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{--qp-row-h:40px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanBoard{grid-template-columns:minmax(118px,138px) minmax(0,1fr);padding:8px 10px 7px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNames{padding-right:8px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanName{grid-template-columns:27px minmax(0,1fr);gap:6px;padding-block:3px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAvatar{width:25px;height:25px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameCopy small{display:none}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack:before,
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanSegment,
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanPause{height:16px}
+}
+@container (max-width:600px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{--qp-row-h:38px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanHead{align-items:flex-start;gap:8px;flex-wrap:wrap}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanFullLink{margin-left:38px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanBoard{grid-template-columns:minmax(88px,104px) minmax(0,1fr);padding-inline:8px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanName{grid-template-columns:minmax(0,1fr)}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAvatar{display:none}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanNameCopy strong{font-size:8.5px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick>span{font-size:6.6px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick:nth-child(even):not(.first):not(.last)>span{display:none}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanLegend{gap:6px}
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanUpdated{display:none}
+}
