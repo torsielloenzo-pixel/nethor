@@ -72,7 +72,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick>s
   color:var(--qp-muted);font-size:7.3px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick.first>span{transform:none}
-html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick.last>span{transform:translateX(-100%)}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick.last>span{top:13px;transform:translateX(-100%);color:var(--qp-accent);font-weight:950}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanRows{position:relative;z-index:2;display:flex;flex:1 1 auto;min-height:0;flex-direction:column}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTrack{
   position:relative;height:auto;min-height:var(--qp-row-h);flex:1 1 var(--qp-row-h);display:block;border-bottom:1px solid color-mix(in srgb,var(--qp-grid) 70%,transparent)
