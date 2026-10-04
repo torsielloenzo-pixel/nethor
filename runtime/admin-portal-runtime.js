@@ -176,6 +176,9 @@ const STORE_INFO_WIDGET_DEFAULTS={
   height:178,
   image_dim:28,
   image_position:'center center',
+  image_zoom:100,
+  image_x:50,
+  image_y:50,
   greeting_size:18,
   store_name_size:30,
   hours_label_size:11,
@@ -186,6 +189,10 @@ const STORE_INFO_WIDGET_DEFAULTS={
 function normalizeStoreInfoPosition(value){
  const allowed=['center center','right center','left center','center top','center bottom'],v=String(value||'').trim();
  return allowed.includes(v)?v:STORE_INFO_WIDGET_DEFAULTS.style.image_position
+}
+function storeInfoPositionCoordinates(position){
+ const map={'center center':[50,50],'right center':[100,50],'left center':[0,50],'center top':[50,0],'center bottom':[50,100]};
+ return map[normalizeStoreInfoPosition(position)]||[50,50]
 }
 function normalizeStoreInfoWidgetConfig(raw){
  raw=raw&&typeof raw==='object'?raw:{};
@@ -215,6 +222,9 @@ function normalizeStoreInfoWidgetConfig(raw){
    height:Math.max(140,Math.min(260,Number(style.height)||STORE_INFO_WIDGET_DEFAULTS.style.height)),
    image_dim:Math.max(0,Math.min(75,Number(style.image_dim)??STORE_INFO_WIDGET_DEFAULTS.style.image_dim)),
    image_position:normalizeStoreInfoPosition(style.image_position),
+   image_zoom:Math.max(100,Math.min(250,Number(style.image_zoom)||STORE_INFO_WIDGET_DEFAULTS.style.image_zoom)),
+   image_x:Math.max(0,Math.min(100,Number.isFinite(Number(style.image_x))?Number(style.image_x):storeInfoPositionCoordinates(style.image_position)[0])),
+   image_y:Math.max(0,Math.min(100,Number.isFinite(Number(style.image_y))?Number(style.image_y):storeInfoPositionCoordinates(style.image_position)[1])),
    greeting_size:Math.max(12,Math.min(42,Number(style.greeting_size)||STORE_INFO_WIDGET_DEFAULTS.style.greeting_size)),
    store_name_size:Math.max(14,Math.min(52,Number(style.store_name_size)||STORE_INFO_WIDGET_DEFAULTS.style.store_name_size)),
    hours_label_size:Math.max(8,Math.min(24,Number(style.hours_label_size)||STORE_INFO_WIDGET_DEFAULTS.style.hours_label_size)),
@@ -647,7 +657,9 @@ function updateStoreBannerPreview(){
  root.style.setProperty('--sb-radius',s.radius+'px');
  root.style.setProperty('--sb-height',Math.max(120,Math.round(s.height*.68))+'px');
  root.style.setProperty('--sb-dim',(s.image_dim/100).toFixed(2));
- root.style.setProperty('--sb-position',s.image_position);
+ root.style.setProperty('--sb-position',s.image_x+'% '+s.image_y+'%');
+ root.style.setProperty('--sb-origin',s.image_x+'% '+s.image_y+'%');
+ root.style.setProperty('--sb-zoom',(s.image_zoom/100).toFixed(2));
  root.style.setProperty('--sb-greeting-size',Math.max(10,Math.round(s.greeting_size*.72))+'px');
  root.style.setProperty('--sb-store-name-size',Math.max(11,Math.round(s.store_name_size*.62))+'px');
  root.style.setProperty('--sb-hours-label-size',Math.max(7,Math.round(s.hours_label_size*.72))+'px');
@@ -685,6 +697,10 @@ function removeStoreBannerImage(){
  const node=ensureStoreInfoWidgetConfig();node.photo_url='';node.photo_path='';node.photo_name='';
  markDirty();renderStoreInfoWidgetEditor()
 }
+function resetStoreBannerCrop(){
+ const node=ensureStoreInfoWidgetConfig();node.style.image_zoom=100;node.style.image_x=50;node.style.image_y=50;node.style.image_position='center center';
+ markDirty();renderStoreInfoWidgetEditor()
+}
 function renderStoreInfoWidgetEditor(){
  let host=$('storeInfoWidgetEditor');
  if(!host){
@@ -712,6 +728,12 @@ function renderStoreInfoWidgetEditor(){
     '<div class="storeBannerAssetActions"><button class="btn secondaryBtn mini" type="button" onclick="chooseStoreBannerImage()">Importer une image</button>'+(w.photo_url?'<button class="btn secondaryBtn mini" type="button" onclick="removeStoreBannerImage()">Retirer</button>':'')+'</div>'+
     '<input id="storeBannerFile" type="file" accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadStoreBannerImage(this)">'+
    '</div>'+
+   '<div class="storeBannerCrop"><div class="storeBannerSectionTitle"><strong>Agrandir & recadrer l’image</strong><small>Le cadrage est appliqué directement à la bannière Desktop.</small></div><div class="storeBannerCropGrid">'+
+    '<div class="field"><label>Zoom</label><div class="storeBannerRange"><input type="range" min="100" max="250" step="5" value="'+attr(w.style.image_zoom)+'" data-store-style="image_zoom"><output data-store-output="image_zoom">'+attr(w.style.image_zoom)+' %</output></div></div>'+
+    '<div class="field"><label>Position horizontale</label><div class="storeBannerRange"><input type="range" min="0" max="100" step="1" value="'+attr(w.style.image_x)+'" data-store-style="image_x"><output data-store-output="image_x">'+attr(w.style.image_x)+' %</output></div></div>'+
+    '<div class="field"><label>Position verticale</label><div class="storeBannerRange"><input type="range" min="0" max="100" step="1" value="'+attr(w.style.image_y)+'" data-store-style="image_y"><output data-store-output="image_y">'+attr(w.style.image_y)+' %</output></div></div>'+
+    '<div class="field storeBannerCropReset"><label>Réinitialiser</label><button class="btn secondaryBtn mini" type="button" onclick="resetStoreBannerCrop()">Centrer · 100 %</button></div>'+
+   '</div></div>'+
    '<div class="field storeBannerUrlField"><label>URL ou chemin de l’image</label><input maxlength="700" placeholder="Ex. assets/magasin.webp ou https://…" value="'+attr(w.photo_url)+'" data-store-info="photo_url"><small class="platformMediaHint">Tu peux importer une image ou renseigner directement une URL/chemin public.</small></div>'+
    '<div class="storeInfoHours">'+days.map(([key,label])=>'<div class="field"><label>'+label+'</label><input maxlength="40" value="'+attr(w.hours[key]||'')+'" data-store-hour="'+key+'" placeholder="08:00-20:00"></div>').join('')+'</div>'+
    '<div class="storeBannerTypography"><div class="storeBannerSectionTitle"><strong>Taille des textes</strong><small>Réglages indépendants de chaque texte de la bannière.</small></div><div class="storeBannerTypographyGrid">'+
@@ -752,11 +774,22 @@ function renderStoreInfoWidgetEditor(){
   if(key==='radius')value=Math.max(10,Math.min(32,Number(value)||18));
   if(key==='height')value=Math.max(140,Math.min(260,Number(value)||178));
   if(key==='image_dim')value=Math.max(0,Math.min(75,Number(value)||0));
+  if(key==='image_zoom')value=Math.max(100,Math.min(250,Number(value)||100));
+  if(key==='image_x'||key==='image_y')value=Math.max(0,Math.min(100,Number(value)||0));
+  if(key==='image_position'){
+   const [x,y]=storeInfoPositionCoordinates(value);node.style.image_x=x;node.style.image_y=y
+  }
   if(key==='greeting_size')value=Math.max(12,Math.min(42,Number(value)||18));
   if(key==='store_name_size')value=Math.max(14,Math.min(52,Number(value)||30));
   if(key==='hours_label_size')value=Math.max(8,Math.min(24,Number(value)||11));
   if(key==='hours_value_size')value=Math.max(14,Math.min(48,Number(value)||28));
-  node.style[key]=value;markDirty();updateStoreBannerPreview()
+  node.style[key]=value;
+  const output=host.querySelector('[data-store-output="'+key+'"]');if(output)output.textContent=value+' %';
+  if(key==='image_position'){
+   const ox=host.querySelector('[data-store-output="image_x"]'),oy=host.querySelector('[data-store-output="image_y"]'),ix=host.querySelector('[data-store-style="image_x"]'),iy=host.querySelector('[data-store-style="image_y"]');
+   if(ix)ix.value=node.style.image_x;if(iy)iy.value=node.style.image_y;if(ox)ox.textContent=node.style.image_x+' %';if(oy)oy.textContent=node.style.image_y+' %'
+  }
+  markDirty();updateStoreBannerPreview()
  });
  updateStoreBannerPreview()
 }
