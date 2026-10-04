@@ -43,6 +43,9 @@ function desktopDashboardConfig(site={}){
    store_name:String(header.store_name||site?.store_info_widget?.store_name||'Netto Le Thor'),
    store_subtitle:String(header.store_subtitle||'Point de vente'),
    store_url:String(header.store_url||'home.html'),
+   store_image_url:String(header.store_image_url||''),
+   store_image_path:String(header.store_image_path||''),
+   store_image_name:String(header.store_image_name||''),
    show_store:header.show_store!==false,
    show_datetime:header.show_datetime!==false,
    show_notifications:header.show_notifications!==false,
@@ -112,13 +115,73 @@ function desktopHeaderDateTime(){
 }
 function updateDesktopClock(){
  const date=document.querySelector('[data-nethor-desktop-date]'),time=document.querySelector('[data-nethor-desktop-time]');if(!date&&!time)return;
- const now=new Date();
+ const now=new Date();let nextDate='',nextTime='';
  try{
-  if(date)date.textContent=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(now).replace(/^./,c=>c.toUpperCase());
-  if(time)time.textContent=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now)
- }catch(_){if(date)date.textContent=now.toLocaleDateString('fr-FR');if(time)time.textContent=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+  nextDate=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(now).replace(/^./,c=>c.toUpperCase());
+  nextTime=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now)
+ }catch(_){
+  nextDate=now.toLocaleDateString('fr-FR');
+  nextTime=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+ }
+ if(date&&date.textContent!==nextDate)date.textContent=nextDate;
+ if(time&&time.textContent!==nextTime){
+  time.textContent=nextTime;time.classList.remove('nethorClockTick');void time.offsetWidth;time.classList.add('nethorClockTick')
+ }
 }
-function startDesktopClock(){clearInterval(window.__nethorDesktopHeaderClock);updateDesktopClock();window.__nethorDesktopHeaderClock=setInterval(updateDesktopClock,30000)}
+function startDesktopClock(){
+ clearTimeout(window.__nethorDesktopHeaderClockStart);clearInterval(window.__nethorDesktopHeaderClock);
+ updateDesktopClock();
+ const arm=()=>{window.__nethorDesktopHeaderClock=setInterval(updateDesktopClock,60000);updateDesktopClock()};
+ const delay=60000-(Date.now()%60000)+80;
+ window.__nethorDesktopHeaderClockStart=setTimeout(arm,delay);
+ if(!window.__nethorDesktopClockVisibilityBound){
+  window.__nethorDesktopClockVisibilityBound=true;
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateDesktopClock()});
+  window.addEventListener('focus',updateDesktopClock)
+ }
+}
+const NETHOR_DESKTOP_TEXT_SCALE=1.10;
+function desktopTextCandidate(el){
+ if(!(el instanceof Element)||el.matches('script,style,svg,path,defs,use,canvas,video,audio'))return false;
+ if(el.matches('input,select,textarea'))return true;
+ return Array.from(el.childNodes||[]).some(n=>n.nodeType===3&&String(n.nodeValue||'').trim())
+}
+function scaleDesktopText(root=document.body){
+ if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop'||!root)return;
+ const nodes=[];
+ if(root instanceof Element&&desktopTextCandidate(root))nodes.push(root);
+ root.querySelectorAll?.('*').forEach(el=>{if(desktopTextCandidate(el)&&el.dataset.nethorTextScaled!=='1')nodes.push(el)});
+ const prepared=nodes.map(el=>{
+  let size=parseFloat(getComputedStyle(el).fontSize);if(!Number.isFinite(size)||size<=0)return null;
+  const parent=el.parentElement;
+  if(parent?.dataset?.nethorTextScaled==='1'){
+   const parentNow=parseFloat(getComputedStyle(parent).fontSize),parentBase=parseFloat(parent.dataset.nethorTextBase||'');
+   if(Number.isFinite(parentNow)&&Number.isFinite(parentBase)&&Math.abs(size-parentNow)<.08)size=parentBase
+  }
+  return{el,base:size}
+ }).filter(Boolean);
+ prepared.forEach(({el,base})=>{
+  el.dataset.nethorTextBase=String(base);
+  el.dataset.nethorTextScaled='1';
+  el.style.setProperty('font-size',(base*NETHOR_DESKTOP_TEXT_SCALE).toFixed(2)+'px','important')
+ })
+}
+function startDesktopTextScaling(){
+ if(window.__nethorDesktopTextScaleStarted)return;window.__nethorDesktopTextScaleStarted=true;
+ const run=()=>scaleDesktopText(document.body);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else requestAnimationFrame(run);
+ const observer=new MutationObserver(records=>{
+  const roots=new Set();
+  records.forEach(record=>{
+   if(record.type==='characterData'){if(record.target.parentElement)roots.add(record.target.parentElement);return}
+   record.addedNodes.forEach(node=>{if(node.nodeType===1)roots.add(node);else if(node.nodeType===3&&node.parentElement)roots.add(node.parentElement)})
+  });
+  if(!roots.size)return;
+  requestAnimationFrame(()=>roots.forEach(root=>scaleDesktopText(root)))
+ });
+ const bind=()=>{if(document.body)observer.observe(document.body,{subtree:true,childList:true,characterData:true})};
+ if(document.body)bind();else document.addEventListener('DOMContentLoaded',bind,{once:true})
+}
 function applyDesktopShellConfig(site={}){
  if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop')return;
  const c=desktopDashboardConfig(site);
@@ -132,7 +195,7 @@ function applyDesktopShellConfig(site={}){
  document.documentElement.dataset.nethorDesktopUpdate=c.header.show_update?'1':'0';
  document.documentElement.dataset.nethorDesktopMobilePreview=c.header.show_mobile_preview?'1':'0';
  document.documentElement.dataset.nethorDesktopAdminLogs=c.header.show_admin_logs?'1':'0';
- const store=document.querySelector('.nethorDesktopStoreSwitch');if(store){store.dataset.desktopStoreUrl=c.header.store_url||'home.html';const n=store.querySelector('[data-nethor-store-name]'),s=store.querySelector('[data-nethor-store-subtitle]');if(n)n.textContent=c.header.store_name;if(s)s.textContent=c.header.store_subtitle;const thumb=store.querySelector('.nethorStoreThumb'),photo=c.header.show_store_image?String(site?.store_info_widget?.photo_url||'').trim():'';if(thumb){thumb.classList.toggle('hasPhoto',!!photo);thumb.style.backgroundImage=photo?'url("'+photo.replace(/"/g,'%22')+'")':''}}
+ const store=document.querySelector('.nethorDesktopStoreSwitch');if(store){store.dataset.desktopStoreUrl=c.header.store_url||'home.html';const n=store.querySelector('[data-nethor-store-name]'),s=store.querySelector('[data-nethor-store-subtitle]');if(n)n.textContent=c.header.store_name;if(s)s.textContent=c.header.store_subtitle;const thumb=store.querySelector('.nethorStoreThumb'),photo=c.header.show_store_image?String(c.header.store_image_url||site?.store_info_widget?.photo_url||'').trim():'';if(thumb){thumb.classList.toggle('hasPhoto',!!photo);thumb.style.backgroundImage=photo?'url("'+photo.replace(/"/g,'%22')+'")':''}}
  const sidebar=document.querySelector('.nethorDesktopSidebar');
  if(sidebar){
   const brand=sidebar.querySelector('.nethorSidebarBrand'),logoNode=site?.platform_ui?.desktop?.header_logo||{},hasCustomLogo=!!String(logoNode?.url||logoNode?.light?.url||logoNode?.dark?.url||site?.brand?.header_logo_url||'').trim();
@@ -171,7 +234,8 @@ function buildDesktopChrome(page){
  const id=String(page||'home').toLowerCase();
  const sidebar=buildDesktopSidebar(id);
  const header='<header data-nethor-page-chrome="desktop"><div class="top nethorDesktopReferenceHeader">'+desktopHeaderStore()+desktopHeaderDateTime()+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>'+sidebar;
- setTimeout(()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}),0);
+ startDesktopTextScaling();
+ setTimeout(()=>{applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{});scaleDesktopText(document.body)},0);
  return header
 }
 window.addEventListener('netto:profile',e=>applyDesktopShellConfig(e.detail?.siteConfig||window.NettoProfileUI?.siteConfig||{}));
