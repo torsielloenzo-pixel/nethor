@@ -1,11 +1,11 @@
 {
-  "version": 357,
-  "label": "v1.46.8",
-  "important": true,
+  "version": 358,
+  "label": "v1.46.9",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Recadrage bannière Desktop",
-  "message": "Ajout dans Gestion de contrôles de zoom et de recadrage horizontal/vertical pour l’image de la bannière d’accueil Desktop, avec aperçu instantané et bouton de recentrage.",
-  "published_at": "2026-10-05T00:30:00+02:00",
+  "title": "Alertes critiques — anomalies du jour",
+  "message": "Desktop : le widget Alertes critiques affiche désormais le nombre d’anomalies réellement détectées dans le planning du jour (journée longue, créneau très court, longue coupure, conflit avec une absence/congé et couverture réduite).",
+  "published_at": "2026-10-05T00:32:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
