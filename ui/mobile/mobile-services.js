@@ -598,39 +598,149 @@ async function activateMobileUpdate(reg,manifest){
     worker.postMessage({type:updateNeedsCacheReset(manifest)?'PURGE_CACHES_AND_SKIP_WAITING':'SKIP_WAITING'})
   })
 }
-async function checkForUpdates({interactive=true}={}){
-  let manifest=null;
-  try{
-    const response=await fetch('app-version.json?ts='+Date.now(),{cache:'no-store'});
-    if(!response.ok)throw new Error('HTTP '+response.status);
-    manifest=await response.json()
-  }catch(error){
-    if(interactive)alert('Impossible de vérifier les mises à jour pour le moment.');
-    return{available:false,error}
+
+const MOBILE_UPDATE_RELEASE_LABELS=new Map([[362,'v1.46.13'],[361,'v1.46.12'],[360,'v1.46.11'],[359,'v1.46.10'],[358,'v1.46.9'],[357,'v1.46.8']]);
+let mobileUpdateSnapshot=null;
+
+function mobileUpdateEsc(value){
+  return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))
+}
+function mobileUpdateVersionLabel(value,manifest={},latest=false){
+  const n=Math.max(0,Math.trunc(Number(value)||0));
+  const label=String(manifest?.label||'').trim();
+  if(n&&latest&&label)return label;
+  if(n&&n===Number(manifest?.version||0)&&label)return label;
+  return MOBILE_UPDATE_RELEASE_LABELS.get(n)||(n?'Build '+n:'—')
+}
+function mobileUpdateSvg(kind){
+  const common='viewBox="0 0 24 24" aria-hidden="true" focusable="false"';
+  if(kind==='check')return '<svg '+common+'><path d="m6.5 12.4 3.3 3.3 7.7-8"/></svg>';
+  if(kind==='up')return '<svg '+common+'><path d="M12 18V6m0 0-4.2 4.2M12 6l4.2 4.2"/></svg>';
+  if(kind==='alert')return '<svg '+common+'><path d="M12 7.2v6.1"/><path d="M12 17.1h.01"/></svg>';
+  if(kind==='refresh')return '<svg '+common+'><path d="M20 11a8 8 0 0 0-14.7-4.4L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.7 4.4L20 15"/><path d="M20 20v-5h-5"/></svg>';
+  if(kind==='download')return '<svg '+common+'><path d="M12 3v11"/><path d="m8 10 4 4 4-4"/><path d="M5 18v2h14v-2"/></svg>';
+  if(kind==='document')return '<svg '+common+'><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="M10 12h5M10 16h5"/></svg>';
+  if(kind==='warning')return '<svg '+common+'><path d="M12 3 2.8 19h18.4z"/><path d="M12 8.5v5"/><path d="M12 16.8h.01"/></svg>';
+  return '<svg '+common+'><path d="M5 12h14"/><path d="m14 7 5 5-5 5"/></svg>'
+}
+function mobileUpdateLogo(manifest={}){
+  const custom=String(state.siteConfig?.platform_ui?.mobile?.update_logo?.url||'').trim();
+  return custom||String(manifest?.icon||'assets/app-icon-v63.svg')
+}
+function mobileUpdateNotes(manifest={}){
+  const direct=Array.isArray(manifest.notes)?manifest.notes:(Array.isArray(manifest.changes)?manifest.changes:[]);
+  const notes=direct.map(x=>String(x||'').trim()).filter(Boolean);
+  if(!notes.length&&manifest.title)notes.push(String(manifest.title).trim());
+  if(notes.length<3&&manifest.message){
+    const message=String(manifest.message).trim();
+    if(message&&!notes.includes(message))notes.push(message)
   }
+  return notes.slice(0,3)
+}
+function ensureMobileUpdateModalStyles(){
+  if(document.getElementById('nethorMobileUpdateStyles'))return;
+  const style=document.createElement('style');style.id='nethorMobileUpdateStyles';
+  style.textContent=[
+    '.nmuBackdrop{position:fixed;inset:0;z-index:2147483400;display:grid;place-items:center;padding:calc(18px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom));background:rgba(11,14,18,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}',
+    '.nmuCard{position:relative;width:min(calc(100vw - 32px),350px);max-height:calc(100dvh - 44px);overflow:auto;overscroll-behavior:contain;background:#fff;color:#151a20;border:1px solid rgba(255,255,255,.82);border-radius:24px;box-shadow:0 26px 78px rgba(0,0,0,.34);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}',
+    '.nmuHandle{width:42px;height:4px;border-radius:99px;background:#d7dade;margin:10px auto 3px}',
+    '.nmuHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:9px 16px 6px}.nmuHeadTitle{display:flex;align-items:flex-start;gap:10px;min-width:0}.nmuHeadTitle>i{width:4px;height:38px;border-radius:99px;background:linear-gradient(180deg,#ff3e27,#ff8a29);flex:none}.nmuHeadTitle strong{display:block;font-size:16px;line-height:1.2;font-weight:900;letter-spacing:-.35px}.nmuHeadTitle small{display:block;margin-top:4px;font-size:10px;color:#6f7883}.nmuClose{width:34px;height:34px;border:0;border-radius:50%;background:#f0f2f4;color:#232931;font-size:23px;font-weight:300;line-height:1;display:grid;place-items:center;padding:0}',
+    '.nmuBody{padding:2px 17px 16px}.nmuMain{text-align:center}.nmuLogoWrap{position:relative;width:74px;height:74px;margin:8px auto 12px}.nmuLogoWrap>img{display:block;width:74px;height:74px;border-radius:18px;object-fit:cover;background:#22272d;box-shadow:0 9px 22px rgba(0,0,0,.14)}.nmuBadge{position:absolute;right:-9px;bottom:-5px;width:38px;height:38px;border:4px solid #fff;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.14)}.nmuBadge.success{background:#27ba5d}.nmuBadge.available{background:linear-gradient(135deg,#ff7040,#ff913f)}.nmuBadge.error{background:#ff4d48}.nmuBadge svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}',
+    '.nmuMain h2{margin:0;font-size:18px;line-height:1.18;font-weight:930;letter-spacing:-.45px;color:#10161d}.nmuLead{margin:6px auto 0;max-width:290px;color:#69727d;font-size:11px;line-height:1.45}',
+    '.nmuVersions{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);align-items:center;gap:4px;margin-top:15px;padding:12px 10px;border-radius:15px;background:linear-gradient(180deg,#f7f8f9,#f3f5f6);min-height:68px}.nmuVersions>div{min-width:0}.nmuVersions span:not(.nmuArrow){display:block;font-size:9.5px;color:#7a8490}.nmuVersions strong{display:block;margin-top:4px;font-size:16px;line-height:1.1;font-weight:900;color:#111820;letter-spacing:-.3px}.nmuVersions strong.isNew{color:#ff5a22}.nmuArrow{display:grid;place-items:center;color:#717b86}.nmuArrow svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}',
+    '.nmuLast{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 15px;color:#69737e;font-size:10px}.nmuLast i{width:9px;height:9px;border-radius:50%;background:#2cbb5d}',
+    '.nmuAction,.nmuLater{min-height:47px;border:0;border-radius:14px;font:850 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}.nmuAction{width:100%}.nmuAction svg,.nmuLater svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.nmuAction.outline{background:#fff;border:1px solid #d9dde2;color:#242a31}.nmuAction.primary{background:linear-gradient(105deg,#ff3d26,#ff8a29);color:#fff;box-shadow:0 9px 20px rgba(255,83,31,.18)}.nmuAction.disabled{background:#e4e7ea;color:#8b939c}.nmuAction:disabled,.nmuLater:disabled{opacity:.7}',
+    '.nmuChecking{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px;padding:12px 13px;border-radius:14px;background:linear-gradient(180deg,#f7f8f9,#f3f5f6);color:#20262d}.nmuChecking strong{font-size:10.5px;font-weight:850}.nmuSpinner{width:25px;height:25px;border-radius:50%;border:3px solid #d9dde1;border-right-color:#ff5d24;animation:nmuSpin .72s linear infinite;flex:none}@keyframes nmuSpin{to{transform:rotate(360deg)}}.nmuChecking+.nmuVersions{margin-top:10px}.nmuChecking~.nmuAction{margin-top:11px}',
+    '.nmuNews{display:grid;grid-template-columns:31px minmax(0,1fr);gap:9px;text-align:left;margin-top:11px;padding:11px 12px;border-radius:14px;background:linear-gradient(180deg,#f7f8f9,#f3f5f6);color:#252b32}.nmuNewsIcon{display:grid;place-items:start center;color:#515b67}.nmuNewsIcon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.nmuNews strong{display:block;font-size:10.5px;font-weight:900}.nmuNews ul{margin:4px 0 0;padding-left:16px;color:#68717d;font-size:9.8px;line-height:1.45}.nmuSplit{display:grid;grid-template-columns:.82fr 1.18fr;gap:9px;margin-top:11px}.nmuLater{background:#eff1f3;color:#30363d}',
+    '.nmuWarning{display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:10px;text-align:left;margin-top:16px;padding:12px 13px;border-radius:14px;background:#fff1ef;color:#5e6873}.nmuWarning>span{width:27px;height:27px;border-radius:50%;background:#ff5c50;color:#fff;display:grid;place-items:center}.nmuWarning svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.nmuWarning p{margin:0;font-size:10px;line-height:1.4}.nmuWarning+.nmuAction{margin-top:16px}',
+    '@media(max-width:360px){.nmuCard{width:calc(100vw - 20px)}.nmuBody{padding-left:13px;padding-right:13px}.nmuHead{padding-left:13px;padding-right:13px}.nmuHeadTitle strong{font-size:15px}.nmuMain h2{font-size:17px}}'
+  ].join('');
+  document.head.appendChild(style)
+}
+function closeMobileUpdateModal(){
+  document.getElementById('nethorMobileUpdateBackdrop')?.remove();
+  document.documentElement.classList.remove('nethorMobileUpdateOpen')
+}
+function openMobileUpdateModal(){
+  ensureMobileUpdateModalStyles();
+  closeMobileUpdateModal();
+  const bg=document.createElement('div');bg.id='nethorMobileUpdateBackdrop';bg.className='nmuBackdrop';
+  bg.innerHTML='<section class="nmuCard" role="dialog" aria-modal="true" aria-labelledby="nmuTitle"><div class="nmuHandle" aria-hidden="true"></div><header class="nmuHead"><div class="nmuHeadTitle"><i></i><div><strong id="nmuTitle">Mise à jour Nethor</strong><small>Version et état de l’application</small></div></div><button type="button" class="nmuClose" aria-label="Fermer">×</button></header><div id="nmuBody" class="nmuBody"></div></section>';
+  document.body.appendChild(bg);document.documentElement.classList.add('nethorMobileUpdateOpen');
+  bg.querySelector('.nmuClose').onclick=closeMobileUpdateModal;
+  bg.onclick=e=>{if(e.target===bg)closeMobileUpdateModal()};
+  return bg
+}
+function mobileUpdateVersionStrip(snapshot,checking=false){
+  const manifest=snapshot?.manifest||{},current=Number(snapshot?.current)||0,latest=Number(manifest?.version)||Number(snapshot?.latest)||current;
+  return '<div class="nmuVersions"><div><span>Version installée</span><strong>'+mobileUpdateEsc(mobileUpdateVersionLabel(current,manifest,false))+'</strong></div><span class="nmuArrow">'+mobileUpdateSvg('arrow')+'</span><div><span>'+(snapshot?.available?'Nouvelle version':'Dernière version')+'</span><strong class="'+(snapshot?.available?'isNew':'')+'">'+(checking?'—':mobileUpdateEsc(mobileUpdateVersionLabel(latest,manifest,true)))+'</strong></div></div>'
+}
+function mobileUpdateLogoHtml(snapshot,view){
+  const manifest=snapshot?.manifest||{},badge=view==='ready'?'<span class="nmuBadge success">'+mobileUpdateSvg('check')+'</span>':view==='available'?'<span class="nmuBadge available">'+mobileUpdateSvg('up')+'</span>':view==='error'?'<span class="nmuBadge error">'+mobileUpdateSvg('alert')+'</span>':'';
+  return '<div class="nmuLogoWrap"><img src="'+mobileUpdateEsc(mobileUpdateLogo(manifest))+'" alt="Logo Nethor">'+badge+'</div>'
+}
+function renderMobileUpdateModal(snapshot={},view='ready'){
+  const host=document.getElementById('nmuBody');if(!host)return;
+  mobileUpdateSnapshot=snapshot;
+  if(view==='checking'){
+    host.innerHTML='<div class="nmuMain">'+mobileUpdateLogoHtml(snapshot,view)+'<h2>Vérification en cours...</h2><p class="nmuLead">Recherche de la dernière version disponible.</p><div class="nmuChecking"><span class="nmuSpinner"></span><strong>Vérification de la dernière version...</strong></div>'+mobileUpdateVersionStrip(snapshot,true)+'<button type="button" class="nmuAction disabled" disabled>'+mobileUpdateSvg('refresh')+'Vérification en cours...</button></div>';
+    return
+  }
+  if(view==='error'){
+    host.innerHTML='<div class="nmuMain">'+mobileUpdateLogoHtml(snapshot,view)+'<h2>Impossible de vérifier<br>les mises à jour</h2><p class="nmuLead">Une erreur est survenue lors de la vérification.<br>Veuillez réessayer dans quelques instants.</p><div class="nmuWarning"><span>'+mobileUpdateSvg('warning')+'</span><p>Vérifiez votre connexion internet<br>ou réessayez plus tard.</p></div><button type="button" class="nmuAction primary" id="nmuRetry">'+mobileUpdateSvg('refresh')+'Réessayer</button></div>';
+    document.getElementById('nmuRetry').onclick=()=>runMobileUpdateCheck(snapshot);
+    return
+  }
+  if(view==='available'){
+    const notes=mobileUpdateNotes(snapshot.manifest||{});
+    host.innerHTML='<div class="nmuMain">'+mobileUpdateLogoHtml(snapshot,view)+'<h2>Une mise à jour est disponible</h2><p class="nmuLead">Une nouvelle version de Nethor est<br>prête à être installée.</p>'+mobileUpdateVersionStrip(snapshot,false)+'<div class="nmuNews"><span class="nmuNewsIcon">'+mobileUpdateSvg('document')+'</span><div><strong>Nouveautés</strong><ul>'+(notes.length?notes.map(x=>'<li>'+mobileUpdateEsc(x)+'</li>').join(''):'<li>Améliorations et optimisations de Nethor</li>')+'</ul></div></div><div class="nmuSplit"><button type="button" class="nmuLater" id="nmuLater">Plus tard</button><button type="button" class="nmuAction primary" id="nmuInstall">'+mobileUpdateSvg('download')+'Mettre à jour</button></div></div>';
+    document.getElementById('nmuLater').onclick=closeMobileUpdateModal;
+    const install=document.getElementById('nmuInstall');
+    install.onclick=async()=>{
+      if(install.disabled)return;
+      install.disabled=true;install.innerHTML=mobileUpdateSvg('download')+'Mise à jour...';
+      try{await activateMobileUpdate(snapshot.registration,snapshot.manifest)}
+      catch(error){
+        console.warn('[Nethor MobileServices] installation update',error);
+        renderMobileUpdateModal(snapshot,'error')
+      }
+    };
+    return
+  }
+  host.innerHTML='<div class="nmuMain">'+mobileUpdateLogoHtml(snapshot,'ready')+'<h2>Nethor est à jour</h2><p class="nmuLead">Vous utilisez la dernière version<br>disponible.</p>'+mobileUpdateVersionStrip(snapshot,false)+'<div class="nmuLast"><i></i><span>Dernière vérification : à l’instant</span></div><button type="button" class="nmuAction outline" id="nmuCheckAgain">'+mobileUpdateSvg('refresh')+'Vérifier à nouveau</button></div>';
+  document.getElementById('nmuCheckAgain').onclick=()=>runMobileUpdateCheck(snapshot)
+}
+async function mobileUpdateFetchSnapshot(){
+  const response=await fetch('app-version.json?mobile_update='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const manifest=await response.json();
   const registration=await ensureMobileServiceWorker({update:true});
   const current=await activeServiceWorkerVersion(registration);
-  const available=current>0&&Number(manifest?.version||0)>Number(current||0);
-  if(!interactive)return{available,current,manifest};
-  if(!current){
-    alert('La vérification automatique des mises à jour sera disponible après l’activation du Service Worker.');
-    return{available:false,current,manifest}
-  }
-  if(!available){
-    alert('Nethor est à jour'+(manifest?.label?' · '+manifest.label:'')+'.');
-    return{available,current,manifest}
-  }
-  const accepted=confirm('Une mise à jour de Nethor est disponible'+(manifest?.label?' ('+manifest.label+')':'')+'.\n\nL’installer maintenant ?');
-  if(!accepted)return{available,current,manifest,accepted:false};
-  try{
-    await activateMobileUpdate(registration,manifest)
-  }catch(error){
-    console.warn('[Nethor MobileServices] installation update',error);
-    if(interactive)alert('La mise à jour a été détectée mais son installation n’est pas encore terminée. Réessaie dans quelques instants.');
-    return{available:true,current,manifest,accepted:true,error}
-  }
-  return{available,current,manifest,accepted:true}
+  if(!current)throw new Error('Service Worker non actif');
+  const latest=Number(manifest?.version)||0;
+  return{registration,current,latest,manifest,available:latest>Number(current||0)}
 }
+async function runMobileUpdateCheck(seed={}){
+  renderMobileUpdateModal(seed,'checking');
+  try{
+    const snapshot=await mobileUpdateFetchSnapshot();
+    renderMobileUpdateModal(snapshot,snapshot.available?'available':'ready');
+    return snapshot
+  }catch(error){
+    console.warn('[Nethor MobileServices] check update',error);
+    renderMobileUpdateModal(seed,'error');
+    return{...seed,available:false,error}
+  }
+}
+async function checkForUpdates({interactive=true}={}){
+  if(!interactive){
+    try{return await mobileUpdateFetchSnapshot()}
+    catch(error){return{available:false,error}}
+  }
+  openMobileUpdateModal();
+  return runMobileUpdateCheck(mobileUpdateSnapshot||{})
+}
+
 async function markNotificationRead(id){
   if(!client||!state.session||!id)return false;
   const {error}=await client.from('planning_notifications')
