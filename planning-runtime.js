@@ -1103,6 +1103,7 @@ async function syncFreshPlanningAccess(fresh=(planningSharedServices()?.profile|
   currentUser={id:shared?.session?.user?.id||api?.session?.user?.id||currentUser?.id,name:fresh.display_name||currentUser?.name||'Utilisateur'};
   await applyPlanningWidgetPermissions(role,shared?.siteConfig||api?.siteConfig||{},planningPermissionLevel);
   updatePlanningRoleActions();
+  await loadPlanningReadStatusWeek({render:false});startPlanningReadStatusPolling();
   if(document.documentElement.dataset.planningLogs==='1')loadPlanningLogs().catch(()=>{});
   renderAll()
  }catch(e){console.warn('Actualisation accès planning:',e)}
