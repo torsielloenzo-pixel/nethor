@@ -47,6 +47,9 @@ function desktopDashboardConfig(site={}){
    show_datetime:header.show_datetime!==false,
    show_notifications:header.show_notifications!==false,
    show_user:header.show_user!==false,
+   show_update:header.show_update!==false,
+   show_mobile_preview:header.show_mobile_preview!==false,
+   show_admin_logs:header.show_admin_logs!==false,
    show_store_image:header.show_store_image!==false
   },
   sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalized},
@@ -96,7 +99,7 @@ function buildDesktopSidebar(page){
  const active=sidebarActiveKey(page);
  const mainKeys=['home','activity','planning','team','tasks','receptions','articles','chat','incidents','reports'];
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
-  '<button class="nethorSidebarBrand nethorDesktopBrandButton" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
+  '<button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
   '<nav class="nethorDesktopSidebarNav">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key)).join('')+'</nav>'+
   '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+'</div>'+
  '</aside>'
@@ -126,6 +129,9 @@ function applyDesktopShellConfig(site={}){
  document.documentElement.dataset.nethorDesktopDatetime=c.header.show_datetime?'1':'0';
  document.documentElement.dataset.nethorDesktopNotifications=c.header.show_notifications?'1':'0';
  document.documentElement.dataset.nethorDesktopUser=c.header.show_user?'1':'0';
+ document.documentElement.dataset.nethorDesktopUpdate=c.header.show_update?'1':'0';
+ document.documentElement.dataset.nethorDesktopMobilePreview=c.header.show_mobile_preview?'1':'0';
+ document.documentElement.dataset.nethorDesktopAdminLogs=c.header.show_admin_logs?'1':'0';
  const store=document.querySelector('.nethorDesktopStoreSwitch');if(store){store.dataset.desktopStoreUrl=c.header.store_url||'home.html';const n=store.querySelector('[data-nethor-store-name]'),s=store.querySelector('[data-nethor-store-subtitle]');if(n)n.textContent=c.header.store_name;if(s)s.textContent=c.header.store_subtitle;const thumb=store.querySelector('.nethorStoreThumb'),photo=c.header.show_store_image?String(site?.store_info_widget?.photo_url||'').trim():'';if(thumb){thumb.classList.toggle('hasPhoto',!!photo);thumb.style.backgroundImage=photo?'url("'+photo.replace(/"/g,'%22')+'")':''}}
  const sidebar=document.querySelector('.nethorDesktopSidebar');
  if(sidebar){
@@ -143,25 +149,32 @@ function buildPageLayout(page){
   planning:{title:'Planning équipe',subtitle:'Organisation du magasin',back:true},
   settings:{title:'Personnalisation',subtitle:'Mon affichage et mes raccourcis',back:true},
   'notification-settings':{title:'Notifications',subtitle:'Préférences et canaux',back:true},
-  'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true,chrome:false},
+  'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true},
   notifications:{title:'Notifications',subtitle:'Centre d’activité Nethor',back:true},
-  scanner:{title:'Scanner',subtitle:'Lecture EAN13',back:true,chrome:false},
+  scanner:{title:'Scanner',subtitle:'Lecture EAN13',back:true},
   articles:{title:'Fiches articles',subtitle:'Référentiel produit interne',back:true},
   accounts:{title:'Gestion des comptes',subtitle:'Administration · Accès · Journal',back:true},
-  'admin-portal':{title:'Gestion',subtitle:'Administration Nethor',back:true,chrome:false},
-  'fl-assistant':{title:'Assistant Précommande F&L',subtitle:'Analyse dédiée',back:true,chrome:false},
-  bakery:{title:'Boulangerie',subtitle:'Stock interne',back:true,chrome:false},
-  rewards:{title:'Défis & Boutique',subtitle:'Missions et récompenses',back:true,chrome:false},
-  chat:{title:'Chat',subtitle:'Messagerie interne',back:true,chrome:false}
+  'admin-portal':{title:'Gestion',subtitle:'Administration Nethor',back:true},
+  'fl-assistant':{title:'Assistant Précommande F&L',subtitle:'Analyse dédiée',back:true},
+  bakery:{title:'Boulangerie',subtitle:'Stock interne',back:true},
+  rewards:{title:'Défis & Boutique',subtitle:'Missions et récompenses',back:true},
+  chat:{title:'Chat',subtitle:'Messagerie interne',back:true},
+  'user-menu':{title:'Menu utilisateur',subtitle:'Compte et raccourcis',back:true},
+  stock:{title:'Stock Fruits & Légumes',subtitle:'Gestion opérationnelle',back:true}
  };
  const cfg=pages[id];if(!cfg)return null;
  if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'desktop',handlesBack:true,header:'',lead:''};
- const sidebar=buildDesktopSidebar(id);
- const header=(cfg.chrome===false?'':'<header data-nethor-page-chrome="desktop"><div class="top nethorDesktopReferenceHeader">'+desktopHeaderStore()+desktopHeaderDateTime()+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>')+sidebar;
- setTimeout(()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}),0);
+ const header=buildDesktopChrome(id);
  return {platform:'desktop',handlesBack:!!cfg.back,header,lead:''}
+}
+function buildDesktopChrome(page){
+ const id=String(page||'home').toLowerCase();
+ const sidebar=buildDesktopSidebar(id);
+ const header='<header data-nethor-page-chrome="desktop"><div class="top nethorDesktopReferenceHeader">'+desktopHeaderStore()+desktopHeaderDateTime()+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>'+sidebar;
+ setTimeout(()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}),0);
+ return header
 }
 window.addEventListener('netto:profile',e=>applyDesktopShellConfig(e.detail?.siteConfig||window.NettoProfileUI?.siteConfig||{}));
 document.addEventListener('nethor:page-layout-ready',()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}));
-window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout,applyDesktopShellConfig,desktopDashboardConfig});
+window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout,buildDesktopChrome,applyDesktopShellConfig,desktopDashboardConfig});
 })();
