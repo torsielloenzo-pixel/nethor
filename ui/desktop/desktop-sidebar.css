@@ -1,149 +1,101 @@
-/* Nethor — navigation latérale Desktop */
+/* Nethor — navigation et entête Desktop inspirés du tableau de bord de référence */
 html[data-nethor-page-layout="desktop"]{
-  --nethor-sidebar-accent:#ff5a2a;
-  --nethor-sidebar-bg:rgba(255,255,255,.94);
-  --nethor-sidebar-border:#e3e7eb;
-  --nethor-sidebar-text:#3b424b;
-  --nethor-sidebar-muted:#8a919a;
-  --nethor-sidebar-hover:#f5f6f8;
-  --nethor-sidebar-active:#fff0e9;
+ --nethor-sidebar-w:210px;
+ --nethor-sidebar-accent:#ff5a2a;
+ --nethor-shell-bg:#f7f9fc;
+ --nethor-sidebar-bg:#fff;
+ --nethor-shell-card:#fff;
+ --nethor-sidebar-border:#eef0f3;
+ --nethor-sidebar-text:#5f6d83;
+ --nethor-sidebar-strong:#182235;
+ --nethor-sidebar-hover:#f7f8fa;
+ --nethor-sidebar-active:#fff0eb;
 }
 html[data-theme="dark"][data-nethor-page-layout="desktop"]{
-  --nethor-sidebar-bg:rgba(26,29,34,.95);
-  --nethor-sidebar-border:#343941;
-  --nethor-sidebar-text:#e7eaee;
-  --nethor-sidebar-muted:#989fa8;
-  --nethor-sidebar-hover:#252a30;
-  --nethor-sidebar-active:#382820;
+ --nethor-shell-bg:#171a1f;--nethor-sidebar-bg:#1d2127;--nethor-shell-card:#21252b;
+ --nethor-sidebar-border:#31363e;--nethor-sidebar-text:#a8b0bd;--nethor-sidebar-strong:#f1f3f6;
+ --nethor-sidebar-hover:#262b32;--nethor-sidebar-active:#38261f
 }
+html[data-nethor-page-layout="desktop"] body{
+ box-sizing:border-box!important;
+ padding-left:var(--nethor-sidebar-w)!important;
+ background:var(--nethor-shell-bg)
+}
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-sidebar="0"] body{padding-left:0!important}
 html[data-nethor-page-layout="desktop"] .nethorDesktopSidebar{
-  position:fixed;
-  z-index:54;
-  top:96px;
-  bottom:18px;
-  left:14px;
-  width:106px;
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-  padding:9px 8px;
-  border:1px solid var(--nethor-sidebar-border);
-  border-radius:20px;
-  background:var(--nethor-sidebar-bg);
-  box-shadow:0 14px 38px rgba(18,27,38,.09);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
+ position:fixed;z-index:110;inset:0 auto 0 0;width:var(--nethor-sidebar-w);
+ display:flex;flex-direction:column;padding:18px 10px 14px;border-right:1px solid var(--nethor-sidebar-border);
+ background:var(--nethor-sidebar-bg);box-shadow:none;overflow:hidden
 }
-html[data-nethor-page-layout="desktop"] .nethorDesktopSidebarNav{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-sidebar="0"] .nethorDesktopSidebar{display:none!important}
+.nethorSidebarBrand{
+ height:48px;padding:0 12px;margin:0 0 14px;border:0;background:transparent;display:flex;align-items:center;justify-content:flex-start;cursor:pointer
 }
-html[data-nethor-page-layout="desktop"] .nethorDesktopSidebarBottom{
-  margin-top:auto;
-  padding-top:9px;
-  border-top:1px solid var(--nethor-sidebar-border);
+.nethorSidebarWordmark{display:inline-flex;align-items:center;font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:31px;font-weight:950;letter-spacing:-2px;line-height:1}
+.nethorSidebarWordmark span{color:#ff5a00}.nethorSidebarWordmark b{color:#ff8a00;font-weight:950}
+html[data-theme="dark"] .nethorSidebarWordmark b{color:#fff}
+.nethorDesktopSidebarNav{display:flex;flex-direction:column;gap:3px;min-height:0;overflow:auto;scrollbar-width:none}.nethorDesktopSidebarNav::-webkit-scrollbar{display:none}
+.nethorDesktopSidebarBottom{margin-top:auto;padding-top:10px;border-top:0}
+.nethorSidebarItem{
+ position:relative;width:100%;min-height:42px;padding:7px 10px;border:0;border-radius:10px;background:transparent;color:var(--nethor-sidebar-text);
+ display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:8px;text-align:left;cursor:pointer;font:inherit;transition:background .14s ease,color .14s ease
 }
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem{
-  position:relative;
-  width:100%;
-  min-height:70px;
-  padding:8px 5px 7px;
-  border:0;
-  border-radius:15px;
-  background:transparent;
-  color:var(--nethor-sidebar-text);
-  cursor:pointer;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  font:inherit;
-  transition:background .16s ease,color .16s ease,transform .16s ease;
+.nethorSidebarItem:hover{background:var(--nethor-sidebar-hover);color:var(--nethor-sidebar-strong)}
+.nethorSidebarItem.active{background:var(--nethor-sidebar-active);color:#f14d25}
+.nethorSidebarItem.hidden{display:none!important}
+.nethorSidebarIcon{width:27px;height:27px;display:grid;place-items:center;color:currentColor}
+.nethorSidebarIcon svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nethorSidebarLabel{min-width:0;font-size:11px;line-height:1.1;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nethorSidebarItem.active .nethorSidebarLabel{font-weight:820}
+.nethorSidebarBadge{min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;border-radius:999px;background:#ff4d13;color:#fff;font-size:8px;font-weight:900}
+.nethorSidebarBadge.hidden{display:none}
+
+/* Entête : uniquement point de vente, date/heure, notifications et compte */
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]{
+ position:sticky!important;top:0!important;z-index:90!important;width:100%!important;min-height:72px!important;height:72px!important;
+ border-bottom:1px solid var(--nethor-sidebar-border)!important;background:color-mix(in srgb,var(--nethor-sidebar-bg) 94%,transparent)!important;
+ backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
 }
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem:hover{
-  background:var(--nethor-sidebar-hover);
-  transform:translateY(-1px);
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]>.top.nethorDesktopReferenceHeader{
+ width:100%!important;max-width:none!important;min-height:72px!important;height:72px!important;margin:0!important;padding:8px 18px!important;gap:14px!important
 }
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem.active{
-  color:var(--nethor-sidebar-accent);
-  background:var(--nethor-sidebar-active);
+.nethorDesktopStoreSwitch{
+ width:min(290px,28vw);min-width:220px;height:54px;border:1px solid var(--nethor-sidebar-border);border-radius:13px;background:var(--nethor-shell-card);color:var(--nethor-sidebar-strong);
+ display:grid;grid-template-columns:42px minmax(0,1fr) 16px;gap:9px;align-items:center;padding:5px 9px;text-align:left;cursor:pointer;box-shadow:0 3px 10px rgba(20,28,40,.025)
 }
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem.active:before{
-  content:"";
-  position:absolute;
-  left:-8px;
-  top:17px;
-  bottom:17px;
-  width:3px;
-  border-radius:999px;
-  background:var(--nethor-sidebar-accent);
-  box-shadow:0 0 14px color-mix(in srgb,var(--nethor-sidebar-accent) 42%,transparent);
+.nethorStoreThumb{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,#2b313b,#101318);position:relative;overflow:hidden;background-size:cover;background-position:center}
+.nethorStoreThumb:not(.hasPhoto):after{content:"N";position:absolute;inset:0;display:grid;place-items:center;color:#ff6a26;font-size:21px;font-weight:950}
+.nethorStoreCopy{min-width:0;display:flex;flex-direction:column;gap:2px}.nethorStoreCopy strong{font-size:12px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nethorStoreCopy small{font-size:8.5px;color:var(--nethor-sidebar-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nethorStoreChevron{font-size:13px;color:#738096}
+.nethorDesktopDateTime{height:54px;display:flex;align-items:center;gap:11px;padding:0 4px 0 12px;border-left:1px solid var(--nethor-sidebar-border);color:var(--nethor-sidebar-strong)}
+.nethorDateIcon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#f8f9fb;color:#67758b}
+html[data-theme="dark"] .nethorDateIcon{background:#292e35}.nethorDateIcon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nethorDesktopDateTime>span:last-child{display:flex;flex-direction:column}.nethorDesktopDateTime small{font-size:8px;color:var(--nethor-sidebar-text);line-height:1.2}.nethorDesktopDateTime strong{font-size:18px;line-height:1.05;margin-top:2px}
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-store="0"] .nethorDesktopStoreSwitch{display:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-datetime="0"] .nethorDesktopDateTime{display:none!important}
+
+/* Les outils qui ne figurent pas dans la référence restent accessibles depuis le menu utilisateur / Gestion. */
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoLoginWrap,
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoMobilePreviewWrap,
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUpdateWrap{display:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-notifications="0"] header[data-nethor-page-chrome="desktop"] .nettoBellWrap{display:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-user="0"] header[data-nethor-page-chrome="desktop"] .nettoUserWrap{display:none!important}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoGlobalTools{margin-left:auto!important;gap:10px!important}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoBellBtn{
+ width:48px!important;min-width:48px!important;height:48px!important;border-radius:13px!important
 }
-html[data-nethor-page-layout="desktop"] .nethorSidebarIcon{
-  width:31px;
-  height:31px;
-  display:grid;
-  place-items:center;
-  border-radius:10px;
-  color:currentColor;
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUserBtn{
+ height:48px!important;min-width:190px!important;max-width:250px!important;border-radius:13px!important;padding:5px 9px!important
 }
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem.active .nethorSidebarIcon{
-  background:linear-gradient(145deg,#ff6b39,#ff4d25);
-  color:#fff;
-  box-shadow:0 7px 16px rgba(255,90,42,.24);
-}
-html[data-nethor-page-layout="desktop"] .nethorSidebarIcon svg{
-  width:22px;
-  height:22px;
-  display:block;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.9;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-html[data-nethor-page-layout="desktop"] .nethorSidebarLabel{
-  max-width:90px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:11px;
-  line-height:1;
-  font-weight:820;
-  letter-spacing:-.1px;
-}
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem[aria-disabled="true"]{
-  cursor:default;
-  color:var(--nethor-sidebar-muted);
-}
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem[aria-disabled="true"]:hover{
-  transform:none;
-  background:transparent;
-}
-html[data-nethor-page-layout="desktop"] .nethorSidebarItem[aria-disabled="true"] .nethorSidebarIcon{
-  opacity:.72;
-}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoTopAvatar{width:36px!important;height:36px!important;border-radius:50%!important}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUserText strong{font-size:11px!important}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUserText small{font-size:8px!important}
+
+/* Ancien mot-symbole d'entête : le logo vit désormais uniquement dans la barre latérale. */
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .brand,
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .navActions{display:none!important}
+
 @media(max-width:1180px) and (min-width:901px){
-  html[data-nethor-page-layout="desktop"] .nethorDesktopSidebar{
-    top:92px;
-    bottom:12px;
-    left:10px;
-    width:82px;
-    padding:7px 6px;
-    border-radius:17px;
-  }
-  html[data-nethor-page-layout="desktop"] .nethorSidebarItem{
-    min-height:62px;
-    padding:6px 4px;
-  }
-  html[data-nethor-page-layout="desktop"] .nethorSidebarLabel{font-size:9px}
-  html[data-nethor-page-layout="desktop"] .nethorSidebarIcon{width:28px;height:28px}
-  html[data-nethor-page-layout="desktop"] .nethorSidebarIcon svg{width:20px;height:20px}
-  html[data-nethor-page-layout="desktop"] body>main{padding-left:72px!important}
-  html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] [data-nethor-chat-layout]{margin-left:72px}
+ html[data-nethor-page-layout="desktop"]{--nethor-sidebar-w:184px}
+ .nethorSidebarLabel{font-size:10px}.nethorDesktopStoreSwitch{min-width:195px;width:235px}.nethorDesktopDateTime small{display:none}
 }
-@media(max-width:900px){
-  .nethorDesktopSidebar{display:none!important}
-}
+@media(max-width:900px){.nethorDesktopSidebar{display:none!important}}
