@@ -75,8 +75,8 @@ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"
  margin:0!important;padding:8px 18px!important;gap:14px!important
 }
 .nethorDesktopStoreSwitch{
- width:min(290px,28vw);min-width:220px;height:54px;border:1px solid var(--nethor-sidebar-border);border-radius:13px;background:var(--nethor-shell-card);color:var(--nethor-sidebar-strong);
- display:grid;grid-template-columns:42px minmax(0,1fr) 16px;gap:9px;align-items:center;padding:5px 9px;text-align:left;cursor:pointer;box-shadow:0 3px 10px rgba(20,28,40,.025)
+ width:clamp(350px,32vw,430px);min-width:350px;max-width:430px;height:54px;border:1px solid var(--nethor-sidebar-border);border-radius:13px;background:var(--nethor-shell-card);color:var(--nethor-sidebar-strong);
+ display:grid;grid-template-columns:42px minmax(0,1fr) 18px;gap:10px;align-items:center;padding:5px 11px;text-align:left;cursor:pointer;box-shadow:0 3px 10px rgba(20,28,40,.025)
 }
 .nethorStoreThumb{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,#2b313b,#101318);position:relative;overflow:hidden;background-size:cover;background-position:center}
 .nethorStoreThumb:not(.hasPhoto):after{content:"N";position:absolute;inset:0;display:grid;place-items:center;color:#ff6a26;font-size:21px;font-weight:950}
@@ -116,7 +116,7 @@ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"
 
 @media(max-width:1180px) and (min-width:901px){
  html[data-nethor-page-layout="desktop"]{--nethor-sidebar-w:184px}
- .nethorSidebarLabel{font-size:10px}.nethorDesktopStoreSwitch{min-width:195px;width:235px}.nethorDesktopDateTime small{display:none}
+ .nethorSidebarLabel{font-size:10px}.nethorDesktopStoreSwitch{min-width:290px;width:310px;max-width:330px}.nethorDesktopDateTime small{display:none}
 }
 @media(max-width:900px){.nethorDesktopSidebar{display:none!important}}
 
