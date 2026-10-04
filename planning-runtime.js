@@ -3,7 +3,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_p
 const PLANNING_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
 let planningRuntimeActive=false,planningViewportBound=false;
 let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null;
-let planningReadStatusByDay=new Map(),planningReadStatusWeekKey='',planningReadStatusSeq=0,planningReadStatusTimer=null;
+let planningReadStatusByDay=new Map(),planningReadStatusWeekKey='',planningReadStatusSeq=0,planningReadStatusTimer=null,planningReadMarkKey='';
 function planningSharedServices(){return PLANNING_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
 function planningPermissionFromShared(profile,config){
  const roleKey=profile?.role||'',page=config?.pages?.planning||{},levels={none:0,view:1,operate:2,manage:3};
@@ -170,14 +170,14 @@ function planningReadWeekSummaryHtml(name,start=currentWeekStart){
 function clearPlanningReadStatuses(weekKey=''){
  planningReadStatusSeq++;
  planningReadStatusByDay=new Map();
- planningReadStatusWeekKey=weekKey
+ planningReadStatusWeekKey=weekKey;
+ planningReadMarkKey=''
 }
 async function loadPlanningReadStatusDay(date,opts={}){
  if(!planningReadStatusEnabled()||!db||!currentUser||!model)return false;
- const week=currentPlanningWeekKey(),weekEnd=isoDate(addDays(currentWeekStart,6)),today=planningParisDateKey();
+ const week=currentPlanningWeekKey(),weekEnd=isoDate(addDays(currentWeekStart,6));
  if(date<week||date>weekEnd)return false;
  if(planningReadStatusWeekKey!==week)clearPlanningReadStatuses(week);
- if(date>today){planningReadStatusByDay.delete(date);return true}
  const seq=planningReadStatusSeq,requestWeek=week;
  const {data,error}=await db.rpc('planning_day_read_status',{p_week_start:week,p_day:date});
  if(seq!==planningReadStatusSeq||requestWeek!==currentPlanningWeekKey())return false;
@@ -191,20 +191,17 @@ async function loadPlanningReadStatusDay(date,opts={}){
 async function loadPlanningReadStatusWeek(opts={}){
  const week=currentPlanningWeekKey();
  if(!planningReadStatusEnabled()||!db||!currentUser||!model){clearPlanningReadStatuses(week);return false}
- const today=planningParisDateKey(),weekEnd=isoDate(addDays(currentWeekStart,6));
  clearPlanningReadStatuses(week);
- if(week>today)return true;
- const dates=[];
- for(let i=0;i<7;i++){const date=isoDate(addDays(currentWeekStart,i));if(date<=today&&date<=weekEnd)dates.push(date)}
  const seq=planningReadStatusSeq,requestWeek=week;
- const results=await Promise.all(dates.map(date=>db.rpc('planning_day_read_status',{p_week_start:week,p_day:date}).then(result=>({date,...result}))));
+ const {data,error}=await db.rpc('planning_week_read_status',{p_week_start:week});
  if(seq!==planningReadStatusSeq||requestWeek!==currentPlanningWeekKey())return false;
+ if(error){console.warn('Suivi lecture planning:',error);return false}
  const nextByDay=new Map();
- for(const result of results){
-  if(result.error){console.warn('Suivi lecture planning:',result.error);continue}
-  const rows=new Map();
-  for(const row of result.data||[])rows.set(String(row.user_id),row);
-  nextByDay.set(result.date,rows)
+ for(let i=0;i<7;i++)nextByDay.set(isoDate(addDays(currentWeekStart,i)),new Map());
+ for(const row of data||[]){
+  const date=String(row.day_date||'');
+  if(!nextByDay.has(date))nextByDay.set(date,new Map());
+  nextByDay.get(date).set(String(row.user_id),row)
  }
  planningReadStatusByDay=nextByDay;
  planningReadStatusWeekKey=week;
@@ -216,10 +213,23 @@ function startPlanningReadStatusPolling(){
  if(!planningReadStatusEnabled())return;
  planningReadStatusTimer=setInterval(()=>{
   if(!planningRuntimeActive||!model)return;
-  const today=planningParisDateKey(),from=currentPlanningWeekKey(),to=isoDate(addDays(currentWeekStart,6));
-  if(today<from||today>to)return;
-  loadPlanningReadStatusDay(today,{render:true}).catch(()=>{})
+  loadPlanningReadStatusWeek({render:true}).catch(()=>{})
  },15000)
+}
+async function markPlanningDayRead(date=dayKey(),source=''){
+ if(!db||!currentUser||!model||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(date||'')))return false;
+ const markSource=source||(PLANNING_SPA_MODE?'planning_mobile':'planning_desktop');
+ const revision=String(model?.updatedAt||model?.importedAt||'');
+ const key=String(currentUser.id)+'|'+date+'|'+revision+'|'+markSource;
+ if(planningReadMarkKey===key)return true;
+ const {data,error}=await db.rpc('planning_mark_day_read',{p_day:date,p_source:markSource});
+ if(error){console.warn('Lecture planning:',error);return false}
+ if(data===true){
+  planningReadMarkKey=key;
+  if(planningReadStatusEnabled())await loadPlanningReadStatusDay(date,{render:false});
+  return true
+ }
+ return false
 }
 function planningAbsenceTouchesCurrentWeek(payload){
  const from=currentPlanningWeekKey(),to=isoDate(addDays(currentWeekStart,6));
@@ -676,7 +686,7 @@ function renderWeekHeader(){
 function weeklyEmployeeTotals(){if(!model)return[];const employees=model.employees||[],a=currentWeekStart;return employees.map((emp,ri)=>{let total=0;for(let di=0;di<7;di++){const d=model.days?.[isoDate(addDays(a,di))];total+=totalForRow(d?.cells?.[ri]||[])}const p=planningProfileFor(emp.name);return{name:p?.display_name||emp.name,total}}).filter(x=>x.total>0)}
 function openWeekTotals(){const modal=document.getElementById('weekTotalsModal'),list=document.getElementById('weekTotalsList'),sub=document.getElementById('weekTotalsSubtitle');if(!modal||!list)return;const rows=weeklyEmployeeTotals(),a=currentWeekStart,b=addDays(a,6);if(sub)sub.textContent='Du '+frDate(a)+' au '+frDate(b);list.innerHTML=rows.length?rows.map(x=>'<div class="weekTotalRow"><span>'+esc(x.name)+'</span><b>'+String(Math.round(x.total*100)/100).replace('.',',')+' h</b></div>').join(''):'<div class="weekTotalsEmpty">Aucun horaire enregistré sur cette semaine.</div>';modal.classList.remove('hidden');document.body.style.overflow='hidden'}
 function closeWeekTotals(){document.getElementById('weekTotalsModal')?.classList.add('hidden');document.body.style.overflow=''}
-function selectDay(i){currentDay=i;renderAll();playUISound()}
+function selectDay(i){currentDay=i;renderAll();markPlanningDayRead(dayKey()).then(()=>{if(planningReadStatusEnabled())renderAll()}).catch(()=>{});playUISound()}
 
 function renderReader(){
  const dt=addDays(currentWeekStart,currentDay),day=modelDay();
@@ -684,6 +694,7 @@ function renderReader(){
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
  if(!model||!day){meta.textContent='Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=false;empty.classList.add('hidden');viewport.classList.remove('hidden');
+ markPlanningDayRead(dayKey()).catch(()=>{});
  meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime);
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
@@ -1261,6 +1272,7 @@ window.NethorPlanningRuntime=Object.freeze({
  prewarm:prewarmPlanningRuntime,
  reset:()=>unmountPlanningRuntime({hard:true}),
  render:()=>renderAll(),
+ markRead:(value,source)=>markPlanningDayRead(value||dayKey(),source),
  loadWeek:(value)=>loadWeek(value?parseISO(value):currentWeekStart),
  get active(){return planningRuntimeActive},
  get cached(){return planningCacheReady},
