@@ -1024,7 +1024,4 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .desktop
   html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .xlsTable col.slotCol{
     width:calc((100% - 252px) / 58)!important
   }
-  html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] body:not(.agendaLayout) .planningReadCellState b{
-    display:none
-  }
 }
