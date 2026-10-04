@@ -276,10 +276,11 @@ function normalizeQuickPlanningWidgetConfig(raw){
 }
 
 
+const DESKTOP_STORE_GOOGLE_URL='https://www.google.com/maps/search/?api=1&query=Netto%20Le%20Thor&query_place_id=ChIJSY7JsE71tRIRRSih3toBniY&utm_source=nethor&utm_campaign=place_details_search';
 const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
  enabled:true,legacy_operations_hub:false,
  management:{platform:'desktop',category:'home'},
- header:{store_name:'Netto Le Thor',store_subtitle:'Point de vente',store_url:'home.html',store_image_url:'',store_image_path:'',store_image_name:'',show_store:true,show_datetime:true,show_notifications:true,show_user:true,show_update:true,show_mobile_preview:true,show_admin_logs:true,show_store_image:true},
+ header:{store_name:'Netto Le Thor',store_subtitle:'Point de vente',store_url:DESKTOP_STORE_GOOGLE_URL,store_image_url:'',store_image_path:'',store_image_name:'',show_store:true,show_datetime:true,show_notifications:true,show_user:true,show_update:true,show_mobile_preview:true,show_admin_logs:true,show_store_image:true},
  sidebar:{enabled:true,width:210,items:{
   home:{enabled:true,label:'Accueil',url:'home.html'},
   activity:{enabled:true,label:'Activité magasin',url:'home.html#nethorDesktopStatsRow'},
@@ -313,7 +314,7 @@ const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
   planning:{enabled:true,label:'Importer planning',url:'planning.html',icon:'calendar'},
   scanner:{enabled:true,label:'Ouvrir le scanner',url:'scanner.html',icon:'scan'}
  },
- style:{accent:'#ff5a2a',radius:16,gap:14}
+ style:{accent:'#ff5a2a',radius:16,gap:14,sidebar_text_scale:100,widget_text_scale:100}
 };
 function normalizeDesktopDashboardWidgetConfig(raw){
  raw=raw&&typeof raw==='object'?raw:{};
@@ -340,13 +341,13 @@ function normalizeDesktopDashboardWidgetConfig(raw){
   header:{
    store_name:String(header.store_name||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_name),
    store_subtitle:String(header.store_subtitle||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_subtitle),
-   store_url:String(header.store_url||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_url),
+   store_url:String(!header.store_url||header.store_url==='home.html'?DESKTOP_STORE_GOOGLE_URL:header.store_url),
    store_image_url:String(header.store_image_url||''),store_image_path:String(header.store_image_path||''),store_image_name:String(header.store_image_name||''),
    show_store:header.show_store!==false,show_datetime:header.show_datetime!==false,show_notifications:header.show_notifications!==false,show_user:header.show_user!==false,show_update:header.show_update!==false,show_mobile_preview:header.show_mobile_preview!==false,show_admin_logs:header.show_admin_logs!==false,show_store_image:header.show_store_image!==false
   },
   sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalizedItems},
   widgets:normalizedWidgets,quick_actions:normalizedActions,
-  style:{accent:validColor(style.accent,DESKTOP_DASHBOARD_WIDGET_DEFAULTS.style.accent),radius:Math.max(10,Math.min(28,Number(style.radius)||16)),gap:Math.max(8,Math.min(24,Number(style.gap)||14))}
+  style:{accent:validColor(style.accent,DESKTOP_DASHBOARD_WIDGET_DEFAULTS.style.accent),radius:Math.max(10,Math.min(28,Number(style.radius)||16)),gap:Math.max(8,Math.min(24,Number(style.gap)||14)),sidebar_text_scale:Math.max(70,Math.min(160,Number(style.sidebar_text_scale)||100)),widget_text_scale:Math.max(70,Math.min(160,Number(style.widget_text_scale)||100))}
  }
 }
 
@@ -881,7 +882,7 @@ function renderDesktopDashboardWidgetEditor(){
    '<div class="ddWidgetEditor">'+Object.entries(DESKTOP_DASHBOARD_WIDGET_LABELS).map(([key,label])=>{const x=w.widgets[key];return'<div class="ddWidgetRow"><label class="ddEnabled"><input type="checkbox" data-dd-widget="'+key+'" data-dd-widget-key="enabled" '+(x.enabled?'checked':'')+'><span>'+esc(label)+'</span></label><input aria-label="Titre '+attr(label)+'" value="'+attr(x.label)+'" data-dd-widget="'+key+'" data-dd-widget-key="label">'+(('max_items' in x)?'<input class="ddMax" type="number" min="1" max="12" aria-label="Nombre maximum" value="'+attr(x.max_items)+'" data-dd-widget="'+key+'" data-dd-widget-key="max_items">':key==='planning_view'?'<label class="ddTinyToggle"><input type="checkbox" data-dd-widget="'+key+'" data-dd-widget-key="show_all_day" '+(x.show_all_day!==false?'checked':'')+'> Journée</label>':'<span class="ddMaxSpacer"></span>')+'</div>'}).join('')+'</div><label class="operationsWidgetToggle ddPlanningModeToggle"><span><strong>Vue planning · journée complète</strong><small>Affiche les personnes planifiées sur la journée, même lorsqu’elles ne sont pas encore en poste ou ont déjà terminé.</small></span><input type="checkbox" data-dd-widget="planning_view" data-dd-widget-key="show_all_day" '+(w.widgets.planning_view.show_all_day!==false?'checked':'')+'></label></div>'+
   '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Actions rapides</strong><small>Libellé, destination et visibilité de chaque raccourci.</small></div>'+
    '<div class="ddSidebarEditor">'+Object.entries(w.quick_actions).map(([key,x])=>'<div class="ddSidebarRow"><label class="ddEnabled"><input type="checkbox" data-dd-action="'+key+'" data-dd-action-key="enabled" '+(x.enabled?'checked':'')+'><span>'+esc(key)+'</span></label><input aria-label="Libellé action" value="'+attr(x.label)+'" data-dd-action="'+key+'" data-dd-action-key="label"><input aria-label="Destination action" value="'+attr(x.url)+'" data-dd-action="'+key+'" data-dd-action-key="url"></div>').join('')+'</div></div>'+
-  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Style général</strong><small>Réglages partagés entre tous les widgets du tableau de bord.</small></div><div class="ddAdminGrid"><div class="field"><label>Couleur d’accent</label><input type="color" value="'+attr(w.style.accent)+'" data-dd-style="accent"></div><div class="field"><label>Arrondi</label><input type="number" min="10" max="28" value="'+attr(w.style.radius)+'" data-dd-style="radius"></div><div class="field"><label>Espacement</label><input type="number" min="8" max="24" value="'+attr(w.style.gap)+'" data-dd-style="gap"></div></div>'+
+  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Style général</strong><small>Réglages partagés entre le tableau de bord et sa navigation Desktop.</small></div><div class="ddAdminGrid"><div class="field"><label>Couleur d’accent</label><input type="color" value="'+attr(w.style.accent)+'" data-dd-style="accent"></div><div class="field"><label>Arrondi</label><input type="number" min="10" max="28" value="'+attr(w.style.radius)+'" data-dd-style="radius"></div><div class="field"><label>Espacement</label><input type="number" min="8" max="24" value="'+attr(w.style.gap)+'" data-dd-style="gap"></div><div class="field"><label>Texte barre latérale</label><input type="number" min="70" max="160" step="5" value="'+attr(w.style.sidebar_text_scale)+'" data-dd-style="sidebar_text_scale"><small>% · 100 = taille actuelle</small></div><div class="field"><label>Texte widgets + contenu</label><input type="number" min="70" max="160" step="5" value="'+attr(w.style.widget_text_scale)+'" data-dd-style="widget_text_scale"><small>% · 100 = taille actuelle</small></div></div>'+
    '<label class="operationsWidgetToggle ddLegacyToggle"><span><strong>Afficher aussi l’ancien module Pilotage magasin</strong><small>Désactivé par défaut car ses informations sont désormais réparties dans les nouveaux widgets.</small></span><input type="checkbox" data-dd-root="legacy_operations_hub" '+(w.legacy_operations_hub?'checked':'')+'></label></div>'+
   '<div class="operationsWidgetAdminNote"><b>Architecture :</b> les réglages de cette carte ne donnent aucun droit supplémentaire. Les destinations protégées continuent d’être contrôlées par Rôles & permissions et par les politiques serveur.</div>'+
  '</div>';
@@ -891,7 +892,15 @@ function renderDesktopDashboardWidgetEditor(){
  host.querySelectorAll('[data-dd-sidebar-item]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),item=node.sidebar.items[el.dataset.ddSidebarItem],key=el.dataset.ddSidebarKey;item[key]=el.type==='checkbox'?el.checked:el.value;markDirty()});
  host.querySelectorAll('[data-dd-widget]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),item=node.widgets[el.dataset.ddWidget],key=el.dataset.ddWidgetKey;item[key]=el.type==='checkbox'?el.checked:key==='max_items'?Math.max(1,Math.min(12,Number(el.value)||1)):el.value;markDirty()});
  host.querySelectorAll('[data-dd-action]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),item=node.quick_actions[el.dataset.ddAction],key=el.dataset.ddActionKey;item[key]=el.type==='checkbox'?el.checked:el.value;markDirty()});
- host.querySelectorAll('[data-dd-style]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),key=el.dataset.ddStyle;node.style[key]=key==='accent'?el.value:key==='radius'?Math.max(10,Math.min(28,Number(el.value)||16)):Math.max(8,Math.min(24,Number(el.value)||14));markDirty()})
+ host.querySelectorAll('[data-dd-style]').forEach(el=>el.oninput=el.onchange=()=>{
+  const node=ensureDesktopDashboardWidgetConfig(),key=el.dataset.ddStyle;
+  if(key==='accent')node.style[key]=el.value;
+  else if(key==='radius')node.style[key]=Math.max(10,Math.min(28,Number(el.value)||16));
+  else if(key==='gap')node.style[key]=Math.max(8,Math.min(24,Number(el.value)||14));
+  else if(key==='sidebar_text_scale'||key==='widget_text_scale')node.style[key]=Math.max(70,Math.min(160,Number(el.value)||100));
+  markDirty();
+  try{window.NethorDesktopShell?.applyDesktopShellConfig?.(config)}catch(_){}
+ })
 }
 
 const MOBILE_HOME_WIDGET_DEFS=[
