@@ -91,6 +91,8 @@ html[data-nethor-page-layout="desktop"][data-nethor-desktop-update="0"] header[d
 html[data-nethor-page-layout="desktop"][data-nethor-desktop-notifications="0"] header[data-nethor-page-chrome="desktop"] .nettoBellWrap,
 html[data-nethor-page-layout="desktop"][data-nethor-desktop-user="0"] header[data-nethor-page-chrome="desktop"] .nettoUserWrap{display:none!important}
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoGlobalTools{margin-left:auto!important;gap:7px!important}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] :is(.nettoLoginWrap,.nettoMobilePreviewWrap,.nettoUpdateWrap,.nettoBellWrap,.nettoUserWrap){flex:none!important}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoUpdateLabel{display:none!important}
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoBellBtn{
  width:48px!important;min-width:48px!important;height:48px!important;border-radius:13px!important
 }
