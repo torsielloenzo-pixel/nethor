@@ -38,7 +38,9 @@ const state={
  tasks:[],
  assignees:[],
  completions:[],
- afternoonUserIds:[]
+ afternoonUserIds:[],
+ preloaded:null,
+ preloadPromise:null
 };
 
 function services(){return window.NethorMobileServices||window.MobileServices||null}
@@ -333,7 +335,7 @@ async function publishTasks(button){
    const assigned=await state.db.from('daily_task_assignees').insert(assignments);
    if(assigned.error){await state.db.from('daily_tasks').delete().in('id',ids);throw assigned.error}
   }
-  await render()
+  state.preloaded=null;await render()
  }catch(error){
   console.error('[Nethor HomeView] passation',error);
   if(message)message.textContent='Publication impossible : '+(error?.message||'erreur')
@@ -345,7 +347,7 @@ async function deleteTask(id,button){
  try{
   const {error}=await state.db.from('daily_tasks').delete().eq('id',id);
   if(error)throw error;
-  await render()
+  state.preloaded=null;await render()
  }catch(error){alert('Suppression impossible : '+error.message);if(button)button.disabled=false}
  finally{state.busy=false}
 }
@@ -355,7 +357,7 @@ async function resetTasks(button){
  try{
   const {error}=await state.db.from('daily_tasks').delete().eq('task_date',state.todayKey);
   if(error)throw error;
-  await render()
+  state.preloaded=null;await render()
  }catch(error){alert('Réinitialisation impossible : '+error.message);if(button)button.disabled=false}
  finally{state.busy=false}
 }
@@ -368,7 +370,7 @@ async function toggleTask(id,button){
     ?await state.db.from('daily_task_completions').delete().eq('task_id',id).eq('user_id',uid)
     :await state.db.from('daily_task_completions').insert({task_id:id,user_id:uid});
   if(result.error)throw result.error;
-  await render()
+  state.preloaded=null;await render()
  }catch(error){console.error('[Nethor HomeView] task validation',error);if(button)button.disabled=false}
  finally{state.busy=false}
 }
@@ -390,6 +392,59 @@ async function paintTeamAvatars(rows){
  }
 }
 
+async function loadHomeSnapshot(shared){
+ await shared?.ready?.();
+ const profile=shared?.profile||null,config=shared?.siteConfig||{},session=shared?.session||null,db=shared?.client||null;
+ if(!profile||!session||!db)return null;
+ const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today)),weekEnd=isoDate(addDays(startOfWeek(today),84));
+ const [weeksRes,profilesRes,taskCatalogRes,taskRowsRes]=await Promise.all([
+  db.from('planning_weeks').select('week_start,data').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
+  db.rpc('list_team_members'),
+  db.from('daily_task_catalog').select('key,section_key,section_label,title,sort_order').eq('active',true).order('sort_order'),
+  db.from('daily_tasks').select('id,task_date,catalog_key,source_keys,title,section_key,section_label,detail,all_users,sort_order,created_by,created_at').eq('task_date',todayKey).order('sort_order').order('created_at')
+ ]);
+ const tasks=taskRowsRes.error?[]:(taskRowsRes.data||[]);
+ let assignees=[],completions=[];
+ if(tasks.length){
+  const ids=tasks.map(x=>x.id),[aRes,cRes]=await Promise.all([
+   db.from('daily_task_assignees').select('task_id,user_id').in('task_id',ids),
+   db.from('daily_task_completions').select('task_id,user_id,completed_at').in('task_id',ids)
+  ]);
+  assignees=aRes.error?[]:(aRes.data||[]);
+  completions=cRes.error?[]:(cRes.data||[])
+ }
+ return{
+  loadedAt:Date.now(),userId:String(session.user.id||''),todayKey,weekStart,
+  profile,config,session,db,
+  weeks:(weeksRes.data||[]).map(x=>x.data).filter(Boolean),
+  team:profilesRes.error?[]:(profilesRes.data||[]),
+  taskCatalog:taskCatalogRes.error?[]:(taskCatalogRes.data||[]),
+  tasks,assignees,completions,
+  taskLoadError:!!(taskCatalogRes.error||taskRowsRes.error)
+ }
+}
+function applyHomeSnapshot(snapshot){
+ if(!snapshot)return false;
+ state.profile=snapshot.profile;state.config=snapshot.config;state.session=snapshot.session;state.db=snapshot.db;
+ state.todayKey=snapshot.todayKey;state.weeks=snapshot.weeks;state.team=snapshot.team;state.taskCatalog=snapshot.taskCatalog;
+ state.tasks=snapshot.tasks;state.assignees=snapshot.assignees;state.completions=snapshot.completions;
+ state.name=state.profile?.display_name||state.session?.user?.email?.split('@')[0]||'';
+ return true
+}
+async function preload(){
+ const shared=services();
+ if(!shared)return false;
+ const uid=String(shared?.session?.user?.id||'');
+ if(state.preloaded&&state.preloaded.userId===uid&&Date.now()-state.preloaded.loadedAt<45000)return true;
+ if(state.preloadPromise)return state.preloadPromise;
+ state.preloadPromise=loadHomeSnapshot(shared).then(snapshot=>{
+  if(!snapshot)return false;
+  state.preloaded=snapshot;
+  return true
+ }).catch(error=>{console.warn('[Nethor HomeView] preload',error);return false}).finally(()=>{state.preloadPromise=null});
+ return state.preloadPromise
+}
+
 async function render(){
  if(!state.mounted||!state.dashboard)return;
  const token=++state.renderToken,shared=services();
@@ -406,30 +461,18 @@ async function render(){
  state.name=state.profile.display_name||state.session.user?.email?.split('@')[0]||'';
  state.dashboard.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
 
- const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today)),weekEnd=isoDate(addDays(startOfWeek(today),84));
- state.todayKey=todayKey;
- const [weeksRes,profilesRes,taskCatalogRes,taskRowsRes]=await Promise.all([
-  state.db.from('planning_weeks').select('week_start,data').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
-  state.db.rpc('list_team_members'),
-  state.db.from('daily_task_catalog').select('key,section_key,section_label,title,sort_order').eq('active',true).order('sort_order'),
-  state.db.from('daily_tasks').select('id,task_date,catalog_key,source_keys,title,section_key,section_label,detail,all_users,sort_order,created_by,created_at').eq('task_date',todayKey).order('sort_order').order('created_at')
- ]);
+ const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today));
+ const uid=String(state.session.user.id||'');
+ let snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&Date.now()-state.preloaded.loadedAt<45000?state.preloaded:null;
+ if(!snapshot)snapshot=await loadHomeSnapshot(shared);
  if(!state.mounted||token!==state.renderToken)return;
- state.weeks=(weeksRes.data||[]).map(x=>x.data).filter(Boolean);
- state.team=profilesRes.error?[]:(profilesRes.data||[]);
- state.taskCatalog=taskCatalogRes.error?[]:(taskCatalogRes.data||[]);
- state.tasks=taskRowsRes.error?[]:(taskRowsRes.data||[]);
- state.assignees=[];state.completions=[];
- if(widgetVisible('tasks')&&state.tasks.length){
-  const ids=state.tasks.map(x=>x.id),[aRes,cRes]=await Promise.all([
-   state.db.from('daily_task_assignees').select('task_id,user_id').in('task_id',ids),
-   state.db.from('daily_task_completions').select('task_id,user_id,completed_at').in('task_id',ids)
-  ]);
-  if(!state.mounted||token!==state.renderToken)return;
-  state.assignees=aRes.error?[]:(aRes.data||[]);
-  state.completions=cRes.error?[]:(cRes.data||[])
+ if(!snapshot){
+  state.dashboard.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Impossible de charger ton espace de travail.</div></div>';
+  return
  }
- const taskLoadError=!!(taskCatalogRes.error||taskRowsRes.error);
+ state.preloaded=snapshot;
+ applyHomeSnapshot(snapshot);
+ const taskLoadError=!!snapshot.taskLoadError;
  const weeks=state.weeks,currentWeek=weeks.find(w=>String(w.weekStart||w.week_start||'')===weekStart)||weeks[0]||null;
  const allDays=[];
  for(const model of weeks)for(const dateKey of Object.keys(model?.days||{}))if(dateKey>=todayKey)allDays.push({dateKey,model});
@@ -579,6 +622,7 @@ async function render(){
 
 function scheduleRender(){
  clearTimeout(state.refreshTimer);
+ state.preloaded=null;
  state.refreshTimer=setTimeout(()=>{if(state.mounted)render().catch(error=>console.error('[Nethor HomeView] refresh',error))},120)
 }
 function startRealtime(){
@@ -647,7 +691,7 @@ async function mount(host){
  state.unsubscribe=shared?.subscribe?.(onServiceChange,{immediate:false})||null;
  state.session=shared?.session||null;state.db=shared?.client||null;
  startRealtime();
- await render();
+ state.preloaded=null;await render();
  return true
 }
 async function unmount(){
@@ -663,11 +707,11 @@ async function unmount(){
   state.host.innerHTML=''
  }
  state.host=null;state.dashboard=null;state.profile=null;state.session=null;state.db=null;
- state.weeks=[];state.team=[];state.taskCatalog=[];state.tasks=[];state.assignees=[];state.completions=[];state.afternoonUserIds=[];
+ state.afternoonUserIds=[];
  return true
 }
 
-const api=Object.freeze({mount,unmount,render,navigate});
+const api=Object.freeze({mount,unmount,preload,render,navigate});
 window.NethorMobileHomeView=api;
 const mobileRouter=router();
 if(mobileRouter?.register)mobileRouter.register('home',api);
