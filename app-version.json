@@ -1,16 +1,16 @@
 {
-  "version": 358,
-  "label": "v1.46.9",
-  "important": true,
+  "version": 362,
+  "label": "v1.46.13",
+  "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Desktop adaptatif au zoom",
-  "message": "Les widgets Desktop s’adaptent désormais à la réduction de fenêtre et au zoom navigateur : grilles reflow, hauteurs non forcées, planning et bannière redimensionnés, barre latérale compacte et entête sans chevauchement.",
-  "published_at": "2026-10-05T00:45:00+02:00",
+  "title": "Mises à jour Nethor plus rapides",
+  "message": "Le moteur de mise à jour a été optimisé pour réduire les vérifications inutiles, réutiliser les ressources inchangées et accélérer l’activation d’une nouvelle version.",
+  "published_at": "2026-10-05T01:24:00+02:00",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Le logo de mise à jour Desktop est maintenant conservé lors de l’enregistrement",
-    "Le logo personnalisé est relu correctement par la fenêtre de mise à jour",
-    "Aucun autre logo de Nethor n’est modifié"
+    "Vérification de version parallélisée et sans requêtes en doublon",
+    "Réutilisation locale des fichiers inchangés pendant l’installation",
+    "Activation plus rapide sans désinscrire inutilement le Service Worker"
   ]
 }
