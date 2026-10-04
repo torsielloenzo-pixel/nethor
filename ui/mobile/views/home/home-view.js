@@ -476,6 +476,7 @@ async function render(){
  }
  state.preloaded=snapshot;
  applyHomeSnapshot(snapshot);
+ services()?.markPlanningDayRead?.(todayKey,'mobile_home').catch?.(()=>{});
  const taskLoadError=!!snapshot.taskLoadError;
  const weeks=state.weeks,currentWeek=weeks.find(w=>String(w.weekStart||w.week_start||'')===weekStart)||weeks[0]||null;
  const allDays=[];
