@@ -109,3 +109,22 @@
  .managementArchitectureRule,.mobileWidgetGrid,.autoWidgetGrid{grid-template-columns:1fr}
  .widgetPlatformHead{align-items:flex-start;flex-direction:column}
 }
+
+
+/* Desktop dashboard configurator */
+.desktopDashboardWidgetAdmin{order:-10}
+.ddAdminSection{margin-top:14px;padding:14px;border:1px solid #eceff2;border-radius:14px;background:#fbfcfd}
+html[data-theme="dark"] .ddAdminSection{border-color:#353b43;background:#1f2329}
+.ddAdminTitle{display:flex;flex-direction:column;gap:3px;margin-bottom:11px}.ddAdminTitle strong{font-size:12px}.ddAdminTitle small{font-size:8.5px;color:#7b8593}
+.ddAdminGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end}.ddAdminGrid .full{grid-column:1/-1}.ddSidebarToggle{align-self:center;justify-self:start}
+.ddSidebarEditor,.ddWidgetEditor{display:flex;flex-direction:column;border:1px solid #edf0f3;border-radius:12px;overflow:hidden;background:#fff}
+html[data-theme="dark"] .ddSidebarEditor,html[data-theme="dark"] .ddWidgetEditor{border-color:#343a42;background:#23272d}
+.ddSidebarRow,.ddWidgetRow{display:grid;grid-template-columns:190px minmax(150px,.8fr) minmax(230px,1.3fr);gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid #edf0f3}
+.ddWidgetRow{grid-template-columns:210px minmax(180px,1fr) 72px}
+.ddSidebarRow:last-child,.ddWidgetRow:last-child{border-bottom:0}
+html[data-theme="dark"] .ddSidebarRow,html[data-theme="dark"] .ddWidgetRow{border-color:#343a42}
+.ddSidebarRow input:not([type="checkbox"]),.ddWidgetRow input:not([type="checkbox"]){width:100%;min-height:34px;border:1px solid #dde2e8;border-radius:9px;padding:6px 8px;background:#fff;color:#1e2937;font:inherit;font-size:9px}
+html[data-theme="dark"] .ddSidebarRow input:not([type="checkbox"]),html[data-theme="dark"] .ddWidgetRow input:not([type="checkbox"]){background:#1c2025;border-color:#3d444d;color:#eef1f4}
+.ddEnabled{display:flex;align-items:center;gap:8px;font-size:9px;font-weight:800;color:#394657}.ddEnabled input{accent-color:#ff5a2a}.ddMax{max-width:72px}.ddMaxSpacer{display:block}.ddLegacyToggle{margin-top:10px}
+@media(max-width:980px){.ddAdminGrid{grid-template-columns:1fr 1fr}.ddSidebarRow{grid-template-columns:150px 1fr}.ddSidebarRow>input:last-child{grid-column:1/-1}.ddWidgetRow{grid-template-columns:170px 1fr 64px}}
+@media(max-width:700px){.ddAdminGrid{grid-template-columns:1fr}.ddSidebarRow,.ddWidgetRow{grid-template-columns:1fr}.ddSidebarRow>input:last-child{grid-column:auto}.ddMax{max-width:none}}
