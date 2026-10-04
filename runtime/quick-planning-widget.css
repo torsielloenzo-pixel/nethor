@@ -62,10 +62,10 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTimeli
   position:relative;min-width:0;min-height:0;overflow:visible;display:flex;flex-direction:column
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanAxis{
-  position:relative;height:21px;flex:0 0 21px;border-bottom:1px solid var(--qp-grid)
+  position:static;height:21px;flex:0 0 21px;border-bottom:1px solid var(--qp-grid)
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick{
-  position:absolute;top:1px;bottom:calc(-100% * var(--qp-count,1));width:1px;background:color-mix(in srgb,var(--qp-grid) 78%,transparent);pointer-events:none
+  position:absolute;top:1px;bottom:0;width:1px;background:color-mix(in srgb,var(--qp-grid) 78%,transparent);pointer-events:none
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanTick>span{
   position:absolute;top:0;left:0;transform:translateX(-50%);padding:0 3px;background:var(--qp-surface);
