@@ -1,7 +1,7 @@
 <div id="discussionMenu" class="chatMenu hidden" role="menu" aria-label="Gérer les discussions">
  <div class="chatMenuTitle"><strong>Gérer les discussions</strong><small>Actions générales de la messagerie</small></div>
  <button class="chatMenuItem" type="button" onclick="openNewChat();closeDiscussionMenu()">
-  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Nouvelle discussion</strong><small>Privée ou en groupe</small></span>
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Nouveau groupe</strong><small>Créer une discussion de groupe</small></span>
  </button>
  <button class="chatMenuItem" type="button" onclick="markAllRead()">
   <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="m3.5 12.5 4 4 7-8"/><path d="m10 14 2.5 2.5 8-9"/></svg></span><span><strong>Tout marquer comme lu</strong><small>Réinitialiser les non-lus</small></span>
@@ -26,7 +26,7 @@
   <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.5 2.5-5.3 5.5-5.3s4.9 1.8 5.5 5.3"/><path d="M18 7v7M14.5 10.5h7"/></svg></span><span><strong>Ajouter des membres</strong><small id="conversationAddMembersHint">Ajouter au groupe</small></span>
  </button>
  <button id="conversationSettingsItem" class="chatMenuItem hidden" type="button" onclick="openConversationInfoFromManageMenu()">
-  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></span><span><strong>Paramètres du groupe</strong><small>Nom, membres et notifications</small></span>
+  <span class="chatMenuIcon"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></span><span><strong>Paramètres de la discussion</strong><small>Réglages du canal ou du groupe</small></span>
  </button>
  <div id="conversationDangerDivider" class="chatMenuDivider hidden"></div>
  <button id="conversationLeaveItem" class="chatMenuItem chatMenuDanger hidden" type="button" onclick="leaveGroupFromMenu()">
@@ -47,8 +47,7 @@
 
 <div id="newChatModal" class="modalBackdrop hidden" onclick="if(event.target===this)closeNewChat()">
  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="newChatTitle">
-  <div class="modalHead"><div><strong id="newChatTitle">Nouvelle discussion</strong><small>Conversation privée ou groupe</small></div><button class="modalClose" type="button" onclick="closeNewChat()">×</button></div>
-  <div class="modeTabs"><button class="active" data-chat-mode="direct" type="button" onclick="setNewChatMode('direct')">Discussion privée</button><button data-chat-mode="group" type="button" onclick="setNewChatMode('group')">Nouveau groupe</button></div>
+  <div class="modalHead"><div><strong id="newChatTitle">Nouveau groupe</strong><small>Choisis les personnes à ajouter à la discussion</small></div><button class="modalClose" type="button" onclick="closeNewChat()">×</button></div>
   <input id="groupName" class="groupNameInput hidden" type="text" maxlength="80" placeholder="Nom du groupe">
   <input id="newChatSearch" class="modalSearch" type="search" placeholder="Rechercher un membre…" oninput="renderNewChatMembers()" autocomplete="off">
   <div id="newChatMembers" class="modalMembers"></div>
