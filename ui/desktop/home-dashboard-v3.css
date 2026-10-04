@@ -7,13 +7,13 @@ html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] body{background:var(--nd-bg)!important}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] body>main{
- width:auto!important;max-width:none!important;margin:0!important;padding:18px 24px 44px!important
+ width:100%!important;max-width:none!important;margin:0!important;padding:14px 18px 18px!important;box-sizing:border-box!important
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopDashboard .mhdStack{display:block!important;width:100%!important;max-width:none!important}\nhtml[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopLayout,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopDashboard{width:100%!important;max-width:none!important;margin:0!important}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] #homePages,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] #status{display:none!important}
-.nethorDesktopReferenceDashboard{display:flex;flex-direction:column;gap:var(--nd-gap);width:100%;max-width:1600px;margin:0 auto;color:var(--nd-text)}
+.nethorDesktopReferenceDashboard{display:flex;flex-direction:column;gap:var(--nd-gap);width:100%;max-width:none;margin:0;color:var(--nd-text);min-height:calc(100dvh - 104px)}
 .nethorDesktopReferenceDashboard button{font:inherit}
 .ndHeroSlot{width:100%}
 .nethorDesktopReferenceDashboard .nsiw{margin:0!important;min-height:184px!important;border-radius:var(--nd-radius)!important;overflow:hidden!important}
@@ -26,10 +26,10 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] #status{disp
 .ndKpi-staff .ndKpiIcon{background:#e9fbf0;color:#14a95b}.ndKpi-coverage .ndKpiIcon{background:#eaf3ff;color:#1977e8}.ndKpi-tasks .ndKpiIcon{background:#fff3e5;color:#ff7a00}.ndKpi-alerts .ndKpiIcon{background:#ffe9e8;color:#ef342c}.ndKpi-deliveries .ndKpiIcon{background:#f1ebff;color:#7b4de8}
 .ndKpiBody{min-width:0;display:flex;flex-direction:column}.ndKpiBody>span{font-size:11px;font-weight:760;color:var(--nd-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ndKpiBody strong{font-size:23px;line-height:1.05;margin:3px 0;color:var(--nd-text)}.ndKpiBody small{font-size:9px;color:var(--nd-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ndKpiArrow{color:#94a0b2;font-size:18px}.ndKpiProgress{height:5px;background:#edf0f4;border-radius:99px;margin-top:8px;overflow:hidden}.ndKpiProgress i{display:block;height:100%;border-radius:inherit;background:currentColor}.ndKpi-staff .ndKpiProgress{color:#16ad61}.ndKpi-coverage .ndKpiProgress{color:#1977e8}.ndKpi-tasks .ndKpiProgress{color:#ff8500}.ndKpi-alerts .ndKpiProgress{color:#ef342c}
-.ndMainRow{display:grid;grid-template-columns:minmax(380px,.88fr) minmax(580px,1.42fr);gap:var(--nd-gap);align-items:stretch}
-.ndLowerRow{display:grid;grid-template-columns:1.05fr .92fr .9fr;gap:var(--nd-gap);align-items:stretch}
-.ndSideStack{display:grid;grid-template-rows:minmax(0,1fr) auto;gap:var(--nd-gap);min-width:0}
-.ndCard,.ndPlanningSlot>.qplan{border:1px solid var(--nd-line)!important;border-radius:var(--nd-radius)!important;background:var(--nd-card)!important;box-shadow:0 4px 14px rgba(20,28,40,.035)!important;overflow:hidden}
+.ndMainRow{display:grid;grid-template-columns:minmax(380px,.88fr) minmax(580px,1.42fr);gap:var(--nd-gap);align-items:stretch;flex:1 1 0;min-height:210px}
+.ndLowerRow{display:grid;grid-template-columns:1.05fr .92fr .9fr;gap:var(--nd-gap);align-items:stretch;flex:1.15 1 0;min-height:250px}
+.ndSideStack{display:grid;grid-template-rows:minmax(0,1fr) auto;gap:var(--nd-gap);min-width:0;height:100%}
+.ndCard,.ndPlanningSlot>.qplan{border:1px solid var(--nd-line)!important;border-radius:var(--nd-radius)!important;background:var(--nd-card)!important;box-shadow:0 4px 14px rgba(20,28,40,.035)!important;overflow:hidden;height:100%}
 .ndSectionHead{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;padding:10px 14px;border-bottom:1px solid var(--nd-line)}
 .ndSectionTitle{display:flex;align-items:center;gap:9px;min-width:0}.ndSectionTitle strong{font-size:14px;color:var(--nd-text);white-space:nowrap}.ndSectionTitle b{min-width:24px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;background:var(--nd-accent);color:#fff;font-size:10px}
 .ndSectionIcon{width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--nd-accent) 10%,#fff);color:var(--nd-accent)}.ndSectionIcon svg{width:18px;height:18px}
