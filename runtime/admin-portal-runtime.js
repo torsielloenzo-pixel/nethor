@@ -275,6 +275,80 @@ function normalizeQuickPlanningWidgetConfig(raw){
  }
 }
 
+
+const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
+ enabled:true,legacy_operations_hub:false,
+ management:{platform:'desktop',category:'home'},
+ header:{store_name:'Netto Le Thor',store_subtitle:'Point de vente',store_url:'home.html',show_store:true,show_datetime:true,show_notifications:true,show_user:true,show_store_image:true},
+ sidebar:{enabled:true,width:210,items:{
+  home:{enabled:true,label:'Accueil',url:'home.html'},
+  activity:{enabled:true,label:'Activité magasin',url:'home.html#nethorDesktopStatsRow'},
+  planning:{enabled:true,label:'Planning',url:'planning.html'},
+  team:{enabled:true,label:'Équipe',url:'home.html#nethorDesktopTeamWidget'},
+  tasks:{enabled:true,label:'Tâches',url:'home.html#nethorDesktopPriorities'},
+  receptions:{enabled:true,label:'Réceptions',url:'home.html#nethorDesktopDeliveriesKpi'},
+  articles:{enabled:true,label:'Fiches articles',url:'articles.html'},
+  chat:{enabled:true,label:'Chat',url:'chat.html'},
+  incidents:{enabled:true,label:'Incidents',url:'report-problem.html'},
+  reports:{enabled:true,label:'Rapports',url:'admin-portal.html?tab=logs'},
+  settings:{enabled:true,label:'Paramètres',url:'settings.html'}
+ }},
+ widgets:{
+  store_banner:{enabled:true,label:'Point de vente'},
+  present_staff:{enabled:true,label:'Effectif présent'},
+  planning_coverage:{enabled:true,label:'Couverture planning'},
+  daily_tasks:{enabled:true,label:'Tâches du jour'},
+  critical_alerts:{enabled:true,label:'Alertes critiques'},
+  deliveries:{enabled:true,label:'Livraisons attendues'},
+  priorities:{enabled:true,label:'Priorités immédiates',max_items:5},
+  planning_view:{enabled:true,label:'Vue magasin aujourd’hui'},
+  team_service:{enabled:true,label:'Équipe en service',max_items:5},
+  operations_followup:{enabled:true,label:'Suivi opérationnel',max_items:6},
+  priority_messages:{enabled:true,label:'Messages prioritaires',max_items:4},
+  quick_actions:{enabled:true,label:'Actions rapides'}
+ },
+ quick_actions:{
+  incident:{enabled:true,label:'Nouveau signalement',url:'report-problem.html',icon:'alert'},
+  task:{enabled:true,label:'Nouvelle tâche',url:'home.html#nethorDesktopFollowupWidget',icon:'task'},
+  planning:{enabled:true,label:'Importer planning',url:'planning.html',icon:'calendar'},
+  scanner:{enabled:true,label:'Ouvrir le scanner',url:'scanner.html',icon:'scan'}
+ },
+ style:{accent:'#ff5a2a',radius:16,gap:14}
+};
+function normalizeDesktopDashboardWidgetConfig(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const header=raw.header&&typeof raw.header==='object'?raw.header:{},sidebar=raw.sidebar&&typeof raw.sidebar==='object'?raw.sidebar:{},widgets=raw.widgets&&typeof raw.widgets==='object'?raw.widgets:{},actions=raw.quick_actions&&typeof raw.quick_actions==='object'?raw.quick_actions:{},style=raw.style&&typeof raw.style==='object'?raw.style:{};
+ const items=sidebar.items&&typeof sidebar.items==='object'?sidebar.items:{},normalizedItems={};
+ for(const [key,def] of Object.entries(DESKTOP_DASHBOARD_WIDGET_DEFAULTS.sidebar.items)){
+  const x=items[key]&&typeof items[key]==='object'?items[key]:{};
+  normalizedItems[key]={enabled:x.enabled!==false,label:String(x.label||def.label),url:String(x.url||def.url)}
+ }
+ const normalizedWidgets={};
+ for(const [key,def] of Object.entries(DESKTOP_DASHBOARD_WIDGET_DEFAULTS.widgets)){
+  const x=widgets[key]&&typeof widgets[key]==='object'?widgets[key]:{};
+  normalizedWidgets[key]={...def,...x,enabled:x.enabled!==false,label:String(x.label||def.label)};
+  if('max_items' in def)normalizedWidgets[key].max_items=Math.max(1,Math.min(12,Number(x.max_items)||def.max_items))
+ }
+ const normalizedActions={};
+ for(const [key,def] of Object.entries(DESKTOP_DASHBOARD_WIDGET_DEFAULTS.quick_actions)){
+  const x=actions[key]&&typeof actions[key]==='object'?actions[key]:{};
+  normalizedActions[key]={...def,...x,enabled:x.enabled!==false,label:String(x.label||def.label),url:String(x.url||def.url),icon:String(x.icon||def.icon)}
+ }
+ return{
+  enabled:raw.enabled!==false,legacy_operations_hub:raw.legacy_operations_hub===true,
+  management:{platform:'desktop',category:'home'},
+  header:{
+   store_name:String(header.store_name||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_name),
+   store_subtitle:String(header.store_subtitle||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_subtitle),
+   store_url:String(header.store_url||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_url),
+   show_store:header.show_store!==false,show_datetime:header.show_datetime!==false,show_notifications:header.show_notifications!==false,show_user:header.show_user!==false,show_store_image:header.show_store_image!==false
+  },
+  sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalizedItems},
+  widgets:normalizedWidgets,quick_actions:normalizedActions,
+  style:{accent:validColor(style.accent,DESKTOP_DASHBOARD_WIDGET_DEFAULTS.style.accent),radius:Math.max(10,Math.min(28,Number(style.radius)||16)),gap:Math.max(8,Math.min(24,Number(style.gap)||14))}
+ }
+}
+
 function normalize(raw){
  const c=raw&&typeof raw==='object'?clone(raw):{};
  c.brand={name:c.brand?.name||'Nethor',subtitle:c.brand?.subtitle||'Espace outils',header_logo_url:String(c.brand?.header_logo_url||''),header_logo_path:String(c.brand?.header_logo_path||''),header_logo_name:String(c.brand?.header_logo_name||'')};
@@ -286,6 +360,7 @@ function normalize(raw){
  delete c.customMenus;
  c.store_info_widget=normalizeStoreInfoWidgetConfig(c.store_info_widget);
  c.quick_planning_widget=normalizeQuickPlanningWidgetConfig(c.quick_planning_widget);
+ c.desktop_dashboard_widget=normalizeDesktopDashboardWidgetConfig(c.desktop_dashboard_widget);
  c.personalization=c.personalization&&typeof c.personalization==='object'?c.personalization:{};
  c.personalization.home_menus_enabled=c.personalization.home_menus_enabled!==false;
  c.mobile_user_menu=c.mobile_user_menu&&typeof c.mobile_user_menu==='object'?c.mobile_user_menu:{};
@@ -743,6 +818,50 @@ function renderQuickPlanningWidgetEditor(){
 }
 
 
+
+function ensureDesktopDashboardWidgetConfig(){
+ config.desktop_dashboard_widget=normalizeDesktopDashboardWidgetConfig(config.desktop_dashboard_widget);
+ return config.desktop_dashboard_widget
+}
+const DESKTOP_DASHBOARD_WIDGET_LABELS={
+ store_banner:'Bannière point de vente',present_staff:'Effectif présent',planning_coverage:'Couverture planning',daily_tasks:'Tâches du jour',critical_alerts:'Alertes critiques',deliveries:'Livraisons attendues',priorities:'Priorités immédiates',planning_view:'Vue magasin aujourd’hui',team_service:'Équipe en service',operations_followup:'Suivi opérationnel',priority_messages:'Messages prioritaires',quick_actions:'Actions rapides'
+};
+function renderDesktopDashboardWidgetEditor(){
+ let host=$('desktopDashboardWidgetEditor');
+ if(!host){
+  const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
+  const block=document.createElement('div');block.className='operationsWidgetAdmin desktopDashboardWidgetAdmin';
+  block.innerHTML='<div class="quickPlanningAdminHead"><div><span class="eyebrow">DESKTOP · STRUCTURE COMPLÈTE</span><h3>Tableau de bord point de vente</h3><p>Entête, barre latérale, widgets, raccourcis et style. Les droits réels restent séparés dans Utilisateurs & accès.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderDesktopDashboardWidgetEditor()">↻ Actualiser</button></div><div id="desktopDashboardWidgetEditor"></div>';
+  panel.appendChild(block);host=$('desktopDashboardWidgetEditor')
+ }
+ const w=ensureDesktopDashboardWidgetConfig(),sidebarLabels={home:'Accueil',activity:'Activité magasin',planning:'Planning',team:'Équipe',tasks:'Tâches',receptions:'Réceptions',articles:'Fiches articles',chat:'Chat',incidents:'Incidents',reports:'Rapports',settings:'Paramètres'};
+ host.innerHTML='<div class="operationsWidgetAdminCard">'+
+  '<div class="operationsWidgetAdminSummary"><div><strong>Structure Desktop de référence</strong><small>Reproduit la hiérarchie visuelle de la maquette : navigation fixe, entête compact et tableau de bord opérationnel.</small></div><label class="toggleChip"><input type="checkbox" data-dd-root="enabled" '+(w.enabled?'checked':'')+'> Tableau de bord actif</label></div>'+
+  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Entête Desktop</strong><small>Uniquement les éléments de la référence : point de vente, date/heure, notifications et compte.</small></div>'+
+   '<div class="ddAdminGrid"><div class="field"><label>Nom du point de vente</label><input maxlength="90" value="'+attr(w.header.store_name)+'" data-dd-header="store_name"></div><div class="field"><label>Sous-titre</label><input maxlength="90" value="'+attr(w.header.store_subtitle)+'" data-dd-header="store_subtitle"></div><div class="field full"><label>Destination du sélecteur magasin</label><input maxlength="400" value="'+attr(w.header.store_url)+'" data-dd-header="store_url"></div></div>'+
+   '<div class="operationsWidgetAdminToggles">'+
+    [['show_store','Point de vente'],['show_store_image','Image du magasin'],['show_datetime','Date & heure'],['show_notifications','Notifications'],['show_user','Compte utilisateur']].map(x=>'<label class="operationsWidgetToggle"><span><strong>'+x[1]+'</strong><small>Afficher dans l’entête Desktop.</small></span><input type="checkbox" data-dd-header="'+x[0]+'" '+(w.header[x[0]]?'checked':'')+'></label>').join('')+
+   '</div></div>'+
+  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Barre latérale</strong><small>Le logo Nethor est fixé en haut. Chaque entrée peut être affichée, renommée et redirigée.</small></div>'+
+   '<div class="ddAdminGrid"><label class="toggleChip ddSidebarToggle"><input type="checkbox" data-dd-sidebar="enabled" '+(w.sidebar.enabled?'checked':'')+'> Afficher la barre latérale</label><div class="field"><label>Largeur</label><input type="number" min="180" max="280" value="'+attr(w.sidebar.width)+'" data-dd-sidebar="width"><small>px</small></div></div>'+
+   '<div class="ddSidebarEditor">'+Object.entries(sidebarLabels).map(([key,label])=>{const x=w.sidebar.items[key];return'<div class="ddSidebarRow"><label class="ddEnabled"><input type="checkbox" data-dd-sidebar-item="'+key+'" data-dd-sidebar-key="enabled" '+(x.enabled?'checked':'')+'><span>'+esc(label)+'</span></label><input aria-label="Libellé '+attr(label)+'" value="'+attr(x.label)+'" data-dd-sidebar-item="'+key+'" data-dd-sidebar-key="label"><input aria-label="Destination '+attr(label)+'" value="'+attr(x.url)+'" data-dd-sidebar-item="'+key+'" data-dd-sidebar-key="url"></div>'}).join('')+'</div></div>'+
+  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Widgets du tableau de bord</strong><small>Afficher/masquer et renommer chaque bloc sans modifier les permissions.</small></div>'+
+   '<div class="ddWidgetEditor">'+Object.entries(DESKTOP_DASHBOARD_WIDGET_LABELS).map(([key,label])=>{const x=w.widgets[key];return'<div class="ddWidgetRow"><label class="ddEnabled"><input type="checkbox" data-dd-widget="'+key+'" data-dd-widget-key="enabled" '+(x.enabled?'checked':'')+'><span>'+esc(label)+'</span></label><input aria-label="Titre '+attr(label)+'" value="'+attr(x.label)+'" data-dd-widget="'+key+'" data-dd-widget-key="label">'+(('max_items' in x)?'<input class="ddMax" type="number" min="1" max="12" aria-label="Nombre maximum" value="'+attr(x.max_items)+'" data-dd-widget="'+key+'" data-dd-widget-key="max_items">':'<span class="ddMaxSpacer"></span>')+'</div>'}).join('')+'</div></div>'+
+  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Actions rapides</strong><small>Libellé, destination et visibilité de chaque raccourci.</small></div>'+
+   '<div class="ddSidebarEditor">'+Object.entries(w.quick_actions).map(([key,x])=>'<div class="ddSidebarRow"><label class="ddEnabled"><input type="checkbox" data-dd-action="'+key+'" data-dd-action-key="enabled" '+(x.enabled?'checked':'')+'><span>'+esc(key)+'</span></label><input aria-label="Libellé action" value="'+attr(x.label)+'" data-dd-action="'+key+'" data-dd-action-key="label"><input aria-label="Destination action" value="'+attr(x.url)+'" data-dd-action="'+key+'" data-dd-action-key="url"></div>').join('')+'</div></div>'+
+  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Style général</strong><small>Réglages partagés entre tous les widgets du tableau de bord.</small></div><div class="ddAdminGrid"><div class="field"><label>Couleur d’accent</label><input type="color" value="'+attr(w.style.accent)+'" data-dd-style="accent"></div><div class="field"><label>Arrondi</label><input type="number" min="10" max="28" value="'+attr(w.style.radius)+'" data-dd-style="radius"></div><div class="field"><label>Espacement</label><input type="number" min="8" max="24" value="'+attr(w.style.gap)+'" data-dd-style="gap"></div></div>'+
+   '<label class="operationsWidgetToggle ddLegacyToggle"><span><strong>Afficher aussi l’ancien module Pilotage magasin</strong><small>Désactivé par défaut car ses informations sont désormais réparties dans les nouveaux widgets.</small></span><input type="checkbox" data-dd-root="legacy_operations_hub" '+(w.legacy_operations_hub?'checked':'')+'></label></div>'+
+  '<div class="operationsWidgetAdminNote"><b>Architecture :</b> les réglages de cette carte ne donnent aucun droit supplémentaire. Les destinations protégées continuent d’être contrôlées par Rôles & permissions et par les politiques serveur.</div>'+
+ '</div>';
+ host.querySelectorAll('[data-dd-root]').forEach(el=>el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig();node[el.dataset.ddRoot]=el.checked;markDirty()});
+ host.querySelectorAll('[data-dd-header]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),key=el.dataset.ddHeader;node.header[key]=el.type==='checkbox'?el.checked:el.value;markDirty()});
+ host.querySelectorAll('[data-dd-sidebar]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),key=el.dataset.ddSidebar;node.sidebar[key]=el.type==='checkbox'?el.checked:Math.max(180,Math.min(280,Number(el.value)||210));markDirty()});
+ host.querySelectorAll('[data-dd-sidebar-item]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),item=node.sidebar.items[el.dataset.ddSidebarItem],key=el.dataset.ddSidebarKey;item[key]=el.type==='checkbox'?el.checked:el.value;markDirty()});
+ host.querySelectorAll('[data-dd-widget]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),item=node.widgets[el.dataset.ddWidget],key=el.dataset.ddWidgetKey;item[key]=el.type==='checkbox'?el.checked:key==='max_items'?Math.max(1,Math.min(12,Number(el.value)||1)):el.value;markDirty()});
+ host.querySelectorAll('[data-dd-action]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),item=node.quick_actions[el.dataset.ddAction],key=el.dataset.ddActionKey;item[key]=el.type==='checkbox'?el.checked:el.value;markDirty()});
+ host.querySelectorAll('[data-dd-style]').forEach(el=>el.oninput=el.onchange=()=>{const node=ensureDesktopDashboardWidgetConfig(),key=el.dataset.ddStyle;node.style[key]=key==='accent'?el.value:key==='radius'?Math.max(10,Math.min(28,Number(el.value)||16)):Math.max(8,Math.min(24,Number(el.value)||14));markDirty()})
+}
+
 const MOBILE_HOME_WIDGET_DEFS=[
  {id:'welcome',label:'Bonjour / espace de travail',description:'Accueil personnalisé et date du jour.',icon:'home'},
  {id:'next_shift',label:'Prise de poste',description:'Prochaine plage horaire issue du planning.',icon:'planning'},
@@ -754,7 +873,7 @@ const MOBILE_HOME_WIDGET_DEFS=[
  {id:'team_today',label:'Équipe aujourd’hui',description:'Personnes planifiées sur la journée.',icon:'accounts'},
  {id:'quick_access',label:'Accès rapides',description:'Raccourcis vers les principaux outils.',icon:'home'}
 ];
-const KNOWN_MANAGED_WIDGET_KEYS=new Set(['store_info_widget','quick_planning_widget']);
+const KNOWN_MANAGED_WIDGET_KEYS=new Set(['store_info_widget','quick_planning_widget','desktop_dashboard_widget']);
 function ensureMobileHomeWidgetDisplayConfig(){
  config.home_widgets=config.home_widgets&&typeof config.home_widgets==='object'?config.home_widgets:{};
  for(const def of MOBILE_HOME_WIDGET_DEFS){
@@ -865,7 +984,8 @@ function organizeWidgetEditorDom(){
  };
  const desktop=ensureBucket('desktopWidgetBucket','ACCUEIL · DESKTOP','Widgets Desktop','Composants destinés uniquement à l’accueil ordinateur.','Desktop');
  const secured=ensureBucket('securedWidgetBucket','FONCTIONNALITÉ SÉCURISÉE','Pilotage magasin','Affichage global ici ; accès aux données et actions dans Utilisateurs & accès.','Accès contrôlé');
- const store=$('storeInfoWidgetEditor')?.closest('.storeInfoWidgetAdmin'),quick=$('quickPlanningWidgetEditor')?.closest('.quickPlanningWidgetAdmin'),ops=$('operationsWidgetEditor')?.closest('.operationsWidgetAdmin');
+ const dash=$('desktopDashboardWidgetEditor')?.closest('.desktopDashboardWidgetAdmin'),store=$('storeInfoWidgetEditor')?.closest('.storeInfoWidgetAdmin'),quick=$('quickPlanningWidgetEditor')?.closest('.quickPlanningWidgetAdmin'),ops=$('operationsWidgetEditor')?.closest('.operationsWidgetAdmin');
+ if(dash&&dash.parentElement!==desktop)desktop.prepend(dash);
  if(store&&store.parentElement!==desktop)desktop.appendChild(store);
  if(quick&&quick.parentElement!==desktop)desktop.appendChild(quick);
  if(ops&&ops.parentElement!==secured)secured.appendChild(ops);
@@ -905,6 +1025,7 @@ function renderSystem(){
  const host=$('systemModules'),mods=builtinModules();
  if(!host)return;
  renderOperationsWidgetEditor();
+ renderDesktopDashboardWidgetEditor();
  renderStoreInfoWidgetEditor();
  renderQuickPlanningWidgetEditor();
  renderMobileHomeWidgetEditor();
