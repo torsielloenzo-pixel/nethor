@@ -1,11 +1,11 @@
 {
-  "version": 353,
-  "label": "v1.46.4",
+  "version": 354,
+  "label": "v1.46.5",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Correctif Desktop Planning & Fruits/Légumes",
-  "message": "Suppression du texte visible \\\\n sur l’accueil, recalibrage strict de l’entête Desktop à 72 px, correction de la largeur du Planning et réparation de la page Fruits & Légumes avec le nouveau shell latéral.",
+  "title": "Ajustements Desktop",
+  "message": "Texte Desktop agrandi de 10 %, widget Vue magasin aujourd’hui étendu à tout son espace, horloge de l’entête synchronisée à la vraie heure avec actualisation discrète, et photo du point de vente configurable et téléchargeable depuis Gestion.",
   "published_at": "2026-10-04T19:21:00+02:00",
   "icon": "assets/app-icon-v63.svg"
 }
