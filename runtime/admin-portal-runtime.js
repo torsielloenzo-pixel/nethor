@@ -279,7 +279,7 @@ function normalizeQuickPlanningWidgetConfig(raw){
 const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
  enabled:true,legacy_operations_hub:false,
  management:{platform:'desktop',category:'home'},
- header:{store_name:'Netto Le Thor',store_subtitle:'Point de vente',store_url:'home.html',show_store:true,show_datetime:true,show_notifications:true,show_user:true,show_update:true,show_mobile_preview:true,show_admin_logs:true,show_store_image:true},
+ header:{store_name:'Netto Le Thor',store_subtitle:'Point de vente',store_url:'home.html',store_image_url:'',store_image_path:'',store_image_name:'',show_store:true,show_datetime:true,show_notifications:true,show_user:true,show_update:true,show_mobile_preview:true,show_admin_logs:true,show_store_image:true},
  sidebar:{enabled:true,width:210,items:{
   home:{enabled:true,label:'Accueil',url:'home.html'},
   activity:{enabled:true,label:'Activité magasin',url:'home.html#nethorDesktopStatsRow'},
@@ -341,6 +341,7 @@ function normalizeDesktopDashboardWidgetConfig(raw){
    store_name:String(header.store_name||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_name),
    store_subtitle:String(header.store_subtitle||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_subtitle),
    store_url:String(header.store_url||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_url),
+   store_image_url:String(header.store_image_url||''),store_image_path:String(header.store_image_path||''),store_image_name:String(header.store_image_name||''),
    show_store:header.show_store!==false,show_datetime:header.show_datetime!==false,show_notifications:header.show_notifications!==false,show_user:header.show_user!==false,show_update:header.show_update!==false,show_mobile_preview:header.show_mobile_preview!==false,show_admin_logs:header.show_admin_logs!==false,show_store_image:header.show_store_image!==false
   },
   sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalizedItems},
@@ -823,6 +824,36 @@ function ensureDesktopDashboardWidgetConfig(){
  config.desktop_dashboard_widget=normalizeDesktopDashboardWidgetConfig(config.desktop_dashboard_widget);
  return config.desktop_dashboard_widget
 }
+function chooseDesktopStoreImage(){$('desktopStoreImageFile')?.click()}
+function desktopStoreImageEffective(){
+ const node=ensureDesktopDashboardWidgetConfig(),own=String(node.header.store_image_url||'').trim();
+ return{url:own||String(config?.store_info_widget?.photo_url||'').trim(),name:String(node.header.store_image_name||config?.store_info_widget?.photo_name||'Netto-Le-Thor')}
+}
+async function uploadDesktopStoreImage(input){
+ const file=input?.files?.[0];if(!file)return;
+ const state=$('saveState');
+ try{
+  const ext=(file.name.split('.').pop()||'').toLowerCase().replace(/[^a-z0-9]/g,''),allowed=new Set(['jpg','jpeg','png','webp','avif']);
+  if(!allowed.has(ext))throw new Error('Format non pris en charge. Utilise JPG, PNG, WEBP ou AVIF.');
+  if(file.size>8*1024*1024)throw new Error('Image trop lourde : 8 Mo maximum.');
+  if(state){state.className='saveState';state.textContent='Import de la photo du point de vente…'}
+  const storagePath='desktop/header/store-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=ensureDesktopDashboardWidgetConfig();
+  node.header.store_image_url=data?.publicUrl||'';node.header.store_image_path=storagePath;node.header.store_image_name=file.name;
+  markDirty();renderDesktopDashboardWidgetEditor();if(state)state.textContent='Photo du point de vente prête à être enregistrée'
+ }catch(e){
+  if(state){state.className='saveState err';state.textContent='Erreur photo : '+(e?.message||e)}
+  alert('Import impossible : '+(e?.message||e))
+ }finally{if(input)input.value=''}
+}
+function downloadDesktopStoreImage(){
+ const asset=desktopStoreImageEffective();if(asset.url)downloadAssetUrl(asset.url,asset.name||'Netto-Le-Thor')
+}
+function removeDesktopStoreImage(){
+ const node=ensureDesktopDashboardWidgetConfig();node.header.store_image_url='';node.header.store_image_path='';node.header.store_image_name='';
+ markDirty();renderDesktopDashboardWidgetEditor()
+}
 const DESKTOP_DASHBOARD_WIDGET_LABELS={
  store_banner:'Bannière point de vente',present_staff:'Effectif présent',planning_coverage:'Couverture planning',daily_tasks:'Tâches du jour',critical_alerts:'Alertes critiques',deliveries:'Livraisons attendues',priorities:'Priorités immédiates',planning_view:'Vue magasin aujourd’hui',team_service:'Équipe en service',operations_followup:'Suivi opérationnel',priority_messages:'Messages prioritaires',quick_actions:'Actions rapides'
 };
@@ -839,6 +870,7 @@ function renderDesktopDashboardWidgetEditor(){
   '<div class="operationsWidgetAdminSummary"><div><strong>Structure Desktop de référence</strong><small>Reproduit la hiérarchie visuelle de la maquette : navigation fixe, entête compact et tableau de bord opérationnel.</small></div><label class="toggleChip"><input type="checkbox" data-dd-root="enabled" '+(w.enabled?'checked':'')+'> Tableau de bord actif</label></div>'+
   '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Entête Desktop</strong><small>Uniquement les éléments de la référence : point de vente, date/heure, notifications et compte.</small></div>'+
    '<div class="ddAdminGrid"><div class="field"><label>Nom du point de vente</label><input maxlength="90" value="'+attr(w.header.store_name)+'" data-dd-header="store_name"></div><div class="field"><label>Sous-titre</label><input maxlength="90" value="'+attr(w.header.store_subtitle)+'" data-dd-header="store_subtitle"></div><div class="field full"><label>Destination du sélecteur magasin</label><input maxlength="400" value="'+attr(w.header.store_url)+'" data-dd-header="store_url"></div></div>'+
+   (()=>{const asset=desktopStoreImageEffective(),own=!!String(w.header.store_image_url||'').trim();return '<div class="desktopStoreImageAdmin"><div class="desktopStoreImagePreview '+(asset.url?'hasImage':'')+'" '+(asset.url?'style="background-image:url(&quot;'+attr(asset.url)+'&quot;)"':'')+'></div><div class="desktopStoreImageCopy"><strong>Photo du point de vente</strong><small>Image affichée à gauche de « '+esc(w.header.store_name)+' ». Si aucune photo spécifique n’est définie, la bannière magasin reste utilisée en secours.</small><span>'+(own?esc(w.header.store_image_name||'Image personnalisée'):asset.url?'Photo de la bannière utilisée':'Aucune image')+'</span></div><div class="desktopStoreImageActions"><button class="btn secondaryBtn mini" type="button" onclick="chooseDesktopStoreImage()">Changer</button>'+(asset.url?'<button class="btn secondaryBtn mini" type="button" onclick="downloadDesktopStoreImage()">Télécharger</button>':'')+(own?'<button class="btn secondaryBtn mini" type="button" onclick="removeDesktopStoreImage()">Revenir à la bannière</button>':'')+'</div><input id="desktopStoreImageFile" type="file" accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadDesktopStoreImage(this)"></div>'})()+
    '<div class="operationsWidgetAdminToggles">'+
     [['show_store','Point de vente'],['show_store_image','Image du magasin'],['show_datetime','Date & heure'],['show_admin_logs','Logs connexions (admin)'],['show_mobile_preview','Visualiser mobile'],['show_update','Mise à jour Nethor'],['show_notifications','Notifications'],['show_user','Compte utilisateur']].map(x=>'<label class="operationsWidgetToggle"><span><strong>'+x[1]+'</strong><small>Afficher dans l’entête Desktop.</small></span><input type="checkbox" data-dd-header="'+x[0]+'" '+(w.header[x[0]]?'checked':'')+'></label>').join('')+
    '</div></div>'+
