@@ -667,7 +667,8 @@ async function boot(){
   syncLegacyLinks();
   syncActive();
   bindEnvironmentState();
-  bindMobileSwipeNavigation();
+  // Swipe horizontal temporairement désactivé : navigation par la barre uniquement.
+  viewHost.dataset.mobileSwipeReady='0';
   enforceShellGeometry();
   root.dataset.router='ready';
   root.dataset.ready='1';
