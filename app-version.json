@@ -1,16 +1,17 @@
 {
-  "version": 369,
-  "label": "v1.46.20",
+  "version": 370,
+  "label": "v1.46.21",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Photo du canal Général réellement corrigée",
-  "message": "Le problème venait des actions du nouvel éditeur photo qui n’étaient pas exposées à l’interface. La sélection, le cadrage, l’enregistrement et la réinitialisation sont maintenant correctement exécutables.",
-  "published_at": "2026-10-05T02:01:08+02:00",
+  "title": "Fluidité Desktop & Mobile",
+  "message": "Optimisations ciblées des recalculs CSS, du viewport mobile, des rafraîchissements de l’accueil et du cache du Chat, sans modifier la structure ni le rendu de Nethor.",
+  "published_at": "2026-10-05T00:15:06.971Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Correction du bouton Choisir / Remplacer la photo",
-    "Correction des réglages de zoom, position et validation",
-    "Correction de la réinitialisation du visuel du canal Général"
+    "Desktop : isolation CSS regroupée et timers du tableau de bord allégés",
+    "Mobile : suivi clavier/viewport moins coûteux et accueil moins souvent rechargé",
+    "Chat Mobile : styles conservés en cache chaud entre les ouvertures",
+    "Aucun changement de structure, navigation ou design"
   ]
 }
