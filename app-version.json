@@ -1,17 +1,17 @@
 {
-  "version": 370,
-  "label": "v1.46.21",
+  "version": 371,
+  "label": "v1.46.22",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Fluidité Desktop & Mobile",
-  "message": "Optimisations ciblées des recalculs CSS, du viewport mobile, des rafraîchissements de l’accueil et du cache du Chat, sans modifier la structure ni le rendu de Nethor.",
-  "published_at": "2026-10-05T00:15:06.971Z",
+  "title": "Historique des imports Planning",
+  "message": "Ajout sur Desktop d’un historique administrateur des fichiers Excel importés dans le planning, avec téléchargement, date, utilisateur et adresse IP lorsque disponible.",
+  "published_at": "2026-10-05T17:06:00.000Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Desktop : isolation CSS regroupée et timers du tableau de bord allégés",
-    "Mobile : suivi clavier/viewport moins coûteux et accueil moins souvent rechargé",
-    "Chat Mobile : styles conservés en cache chaud entre les ouvertures",
-    "Aucun changement de structure, navigation ou design"
+    "Desktop Admin : nouveau bouton « Fichiers Excel » à côté de Planning / Couverture / Analyse",
+    "Historique conservé lors des remplacements de planning, sans supprimer les anciens fichiers archivés",
+    "Liste : nom du fichier, date d’importation, utilisateur, IP et semaine concernée",
+    "Téléchargement direct des fichiers encore archivés ; les imports antérieurs à l’archivage restent listés comme indisponibles"
   ]
 }
