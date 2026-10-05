@@ -592,12 +592,22 @@ function syncEnvironmentState(){
   if(keyboard)requestAnimationFrame(keepFocusedEditableVisible)
 }
 function bindEnvironmentState(){
-  let raf=0,revealTimers=[];
-  const clearRevealTimers=()=>{revealTimers.forEach(clearTimeout);revealTimers=[]};
+  let raf=0,revealRaf=0,revealTimers=[];
+  const clearRevealTimers=()=>{
+    if(revealRaf){cancelAnimationFrame(revealRaf);revealRaf=0}
+    revealTimers.forEach(clearTimeout);revealTimers=[]
+  };
   const scheduleReveal=()=>{
-    clearRevealTimers();
-    keepFocusedEditableVisible();
-    [60,160,320].forEach(delay=>revealTimers.push(setTimeout(keepFocusedEditableVisible,delay)))
+    if(!editableTarget(document.activeElement)){clearRevealTimers();return}
+    if(revealRaf)cancelAnimationFrame(revealRaf);
+    revealRaf=requestAnimationFrame(()=>{
+      revealRaf=0;
+      revealTimers.forEach(clearTimeout);revealTimers=[];
+      keepFocusedEditableVisible();
+      [120,280].forEach(delay=>revealTimers.push(setTimeout(()=>{
+        if(editableTarget(document.activeElement))keepFocusedEditableVisible()
+      },delay)))
+    })
   };
   const sync=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(syncEnvironmentState)};
   window.addEventListener('resize',sync,{passive:true});
