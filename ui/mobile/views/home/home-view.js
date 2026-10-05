@@ -625,9 +625,9 @@ async function render(){
  paintTeamAvatars(avatarRows).catch(()=>{})
 }
 
-function scheduleRender(){
+function scheduleRender(options={}){
  clearTimeout(state.refreshTimer);
- state.preloaded=null;
+ if(options?.invalidate!==false)state.preloaded=null;
  state.refreshTimer=setTimeout(()=>{if(state.mounted)render().catch(error=>console.error('[Nethor HomeView] refresh',error))},120)
 }
 function startRealtime(){
@@ -650,7 +650,8 @@ function stopRealtime(){
 }
 function onServiceChange(detail){
  if(!state.mounted)return;
- if(['ready','core','permissions','notifications'].includes(detail?.type))scheduleRender()
+ if(detail?.type==='notifications'){scheduleRender({invalidate:false});return}
+ if(['ready','core','permissions'].includes(detail?.type))scheduleRender()
 }
 function onClick(event){
  const nav=event.target?.closest?.('[data-home-nav]');
