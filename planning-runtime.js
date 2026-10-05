@@ -883,6 +883,89 @@ async function downloadPlanningSource(){
  }catch(e){console.error(e);alert('Téléchargement impossible : '+e.message)}
  finally{if(btn)btn.disabled=false}
 }
+
+let planningImportHistoryRows=[],planningImportHistoryBusy=false,planningImportHistoryEscapeBound=false;
+function planningImportHistoryAllowed(){return role==='admin'&&planningPlatformKind()==='desktop'}
+function planningImportHistoryDate(value){
+ const d=new Date(value);if(Number.isNaN(d.getTime()))return'—';
+ return d.toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+}
+function planningImportHistorySize(value){
+ const n=Number(value);if(!Number.isFinite(n)||n<=0)return'';
+ if(n<1024)return n+' o';if(n<1048576)return (n/1024).toLocaleString('fr-FR',{maximumFractionDigits:1})+' Ko';
+ return (n/1048576).toLocaleString('fr-FR',{maximumFractionDigits:1})+' Mo'
+}
+function ensurePlanningImportHistoryModal(){
+ let modal=document.getElementById('planningImportHistoryModal');if(modal)return modal;
+ modal=document.createElement('div');modal.id='planningImportHistoryModal';modal.className='planningImportHistoryBackdrop hidden';
+ modal.innerHTML='<section class="planningImportHistoryPanel" role="dialog" aria-modal="true" aria-labelledby="planningImportHistoryTitle">'+
+  '<header class="planningImportHistoryHead"><div><span>ADMINISTRATION</span><h2 id="planningImportHistoryTitle">Fichiers Excel importés</h2><p>Historique des imports du planning, avec auteur et adresse IP lorsqu’elle a été enregistrée.</p></div><button type="button" class="planningImportHistoryClose" aria-label="Fermer" onclick="closePlanningImportHistory()">×</button></header>'+
+  '<div class="planningImportHistorySummary" id="planningImportHistorySummary">Chargement…</div>'+
+  '<div class="planningImportHistoryTableWrap"><table class="planningImportHistoryTable"><thead><tr><th>Fichier</th><th>Date d’importation</th><th>Utilisateur</th><th>IP</th><th>Semaine</th><th></th></tr></thead><tbody id="planningImportHistoryBody"></tbody></table></div>'+
+  '<div class="planningImportHistoryEmpty hidden" id="planningImportHistoryEmpty">Aucun import Excel enregistré.</div>'+
+  '</section>';
+ modal.addEventListener('click',e=>{if(e.target===modal)closePlanningImportHistory()});
+ document.body.appendChild(modal);
+ if(!planningImportHistoryEscapeBound){
+  planningImportHistoryEscapeBound=true;
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('planningImportHistoryModal')?.classList.contains('hidden'))closePlanningImportHistory()})
+ }
+ return modal
+}
+function renderPlanningImportHistory(){
+ const body=document.getElementById('planningImportHistoryBody'),empty=document.getElementById('planningImportHistoryEmpty'),summary=document.getElementById('planningImportHistorySummary');
+ if(!body||!empty||!summary)return;
+ const rows=planningImportHistoryRows||[];
+ summary.textContent=rows.length+' import'+(rows.length>1?'s':'')+' enregistré'+(rows.length>1?'s':'')+' depuis la mise en service du planning.';
+ empty.classList.toggle('hidden',rows.length>0);
+ body.innerHTML=rows.map(row=>{
+  const size=planningImportHistorySize(row.file_size),available=!!row.storage_path;
+  let week='—';try{week=row.week_start?frDate(parseISO(String(row.week_start))):'—'}catch(_){}
+  return '<tr><td><div class="planningImportHistoryFile"><strong title="'+esc(row.file_name||'Fichier Excel')+'">'+esc(row.file_name||'Fichier Excel')+'</strong><small>'+(size?esc(size):available?'Fichier archivé':'Source non archivée à cette date')+'</small></div></td>'+
+   '<td><span class="planningImportHistoryDate">'+esc(planningImportHistoryDate(row.imported_at))+'</span></td>'+
+   '<td><strong class="planningImportHistoryUser">'+esc(row.imported_by_name||'Utilisateur')+'</strong></td>'+
+   '<td><code class="planningImportHistoryIp">'+esc(row.ip_address||'Non disponible')+'</code></td>'+
+   '<td><span class="planningImportHistoryWeek">'+esc(week)+'</span></td>'+
+   '<td class="planningImportHistoryAction">'+(available?'<button type="button" onclick="downloadPlanningHistoryFile('+Number(row.id)+')">⇩ Télécharger</button>':'<button type="button" disabled title="Ce fichier a été importé avant l’archivage des sources Excel.">Indisponible</button>')+'</td></tr>'
+ }).join('')
+}
+async function loadPlanningImportHistory(){
+ if(!planningImportHistoryAllowed()||planningImportHistoryBusy)return;
+ planningImportHistoryBusy=true;
+ const summary=document.getElementById('planningImportHistorySummary');if(summary)summary.textContent='Chargement de l’historique…';
+ try{
+  const {data,error}=await db.from('planning_import_history').select('id,week_start,file_name,storage_path,imported_at,imported_by_name,ip_address,file_size,mime_type').order('imported_at',{ascending:false}).limit(500);
+  if(error)throw error;planningImportHistoryRows=data||[];renderPlanningImportHistory()
+ }catch(e){
+  console.error(e);if(summary)summary.textContent='Impossible de charger l’historique des imports.';
+  const body=document.getElementById('planningImportHistoryBody');if(body)body.innerHTML=''
+ }finally{planningImportHistoryBusy=false}
+}
+async function openPlanningImportHistory(){
+ if(!planningImportHistoryAllowed())return;
+ const modal=ensurePlanningImportHistoryModal();modal.classList.remove('hidden');document.body.classList.add('planningImportHistoryOpen');
+ await loadPlanningImportHistory()
+}
+function closePlanningImportHistory(){
+ document.getElementById('planningImportHistoryModal')?.classList.add('hidden');document.body.classList.remove('planningImportHistoryOpen')
+}
+async function downloadPlanningHistoryFile(id){
+ if(!planningImportHistoryAllowed())return;
+ const row=planningImportHistoryRows.find(x=>Number(x.id)===Number(id));if(!row?.storage_path)return;
+ const btns=[...document.querySelectorAll('.planningImportHistoryAction button')];btns.forEach(b=>b.disabled=true);
+ try{
+  const {data,error}=await db.storage.from('planning-files').download(row.storage_path);if(error)throw error;
+  const url=URL.createObjectURL(data),a=document.createElement('a');a.href=url;a.download=row.file_name||('planning-'+String(row.week_start||'archive')+'.'+planningFileExtension(row.storage_path));document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);showToast('Téléchargement du fichier Excel lancé')
+ }catch(e){console.error(e);alert('Téléchargement impossible : '+e.message)}
+ finally{btns.forEach(b=>{if(!b.textContent?.includes('Indisponible'))b.disabled=false})}
+}
+async function recordPlanningImportAudit(file,storagePath){
+ if(!db||!currentUser||!storagePath)return;
+ try{
+  const {error}=await db.functions.invoke('planning-import-audit',{body:{storage_path:storagePath,file_size:Number(file?.size||0)||null,mime_type:file?.type||null}});
+  if(error)throw error
+ }catch(e){console.warn('Historique import Planning : métadonnées réseau non enregistrées.',e)}
+}
 async function processPlanningFile(file,state){
  const next=await readPlanningFile(file),target=parseISO(next.weekStart),key=next.weekStart,{data:existing,error:checkErr}=await db.from('planning_weeks').select('week_start,source_path').eq('week_start',key).maybeSingle();if(checkErr)throw checkErr;
  const replacing=!!existing;
@@ -892,7 +975,7 @@ async function processPlanningFile(file,state){
   archivedPath=await archivePlanningSource(file,key);next.sourcePath=archivedPath;
   currentWeekStart=target;currentDay=0;model=next;
   const saved=await saveWeek();if(!saved)throw new Error('Le planning n’a pas pu être enregistré.');
-  if(existing?.source_path&&existing.source_path!==archivedPath){try{await db.storage.from('planning-files').remove([existing.source_path])}catch(_){}}
+  await recordPlanningImportAudit(file,archivedPath);
  }catch(e){
   if(archivedPath){try{await db.storage.from('planning-files').remove([archivedPath])}catch(_){}}
   throw e
@@ -1081,6 +1164,8 @@ function updatePlanningRoleActions(){
  document.getElementById('editPlanningBtn')?.classList.toggle('hidden',!canEdit);
  document.getElementById('importPanel')?.classList.toggle('hidden',!canEdit);
  document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin'||!model);
+ document.getElementById('planningImportHistoryBtn')?.classList.toggle('hidden',!planningImportHistoryAllowed());
+ if(role!=='admin')closePlanningImportHistory();
  document.getElementById('planningLogs')?.classList.toggle('hidden',!(canEdit||canManageAbsences));
  document.getElementById('clearPlanningLogs')?.classList.toggle('hidden',role!=='admin');
  document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden');
