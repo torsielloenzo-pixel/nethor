@@ -1,17 +1,16 @@
 {
-  "version": 368,
-  "label": "v1.46.19",
+  "version": 369,
+  "label": "v1.46.20",
   "important": false,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Lecture du planning unifiée",
-  "message": "Le statut Lu/Non lu est maintenant basé sur les journées réellement consultées depuis l’Accueil mobile ou le Planning mobile et desktop.",
-  "published_at": "2026-10-05T02:00:39+02:00",
+  "title": "Photo du canal Général réellement corrigée",
+  "message": "Le problème venait des actions du nouvel éditeur photo qui n’étaient pas exposées à l’interface. La sélection, le cadrage, l’enregistrement et la réinitialisation sont maintenant correctement exécutables.",
+  "published_at": "2026-10-05T02:01:08+02:00",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Accueil mobile : ouvrir l’accueil valide automatiquement le planning du jour courant",
-    "Planning mobile et desktop : chaque journée ouverte passe individuellement à Lu",
-    "Tous les jours d’une semaine sont affichés Non lu par défaut jusqu’à leur consultation",
-    "Toute modification, import ou remplacement du planning invalide les lectures de la semaine"
+    "Correction du bouton Choisir / Remplacer la photo",
+    "Correction des réglages de zoom, position et validation",
+    "Correction de la réinitialisation du visuel du canal Général"
   ]
 }
