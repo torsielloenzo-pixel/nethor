@@ -1025,3 +1025,96 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .desktop
     width:calc((100% - 252px) / 58)!important
   }
 }
+
+
+/* Historique des imports Excel — Desktop, administrateur uniquement. */
+@media(min-width:761px){
+  .planningImportHistoryBtn{margin-left:3px!important}
+  .planningImportHistoryBtn .workspaceTabIcon{background:#eef1f4!important;color:#5a626b!important}
+  .planningImportHistoryBtn:hover .workspaceTabIcon{background:#ffece4!important;color:#dd4f31!important}
+
+  body.planningImportHistoryOpen{overflow:hidden!important}
+  .planningImportHistoryBackdrop{
+    position:fixed!important;inset:0!important;z-index:1400!important;
+    display:grid!important;place-items:center!important;padding:28px!important;
+    background:rgba(21,25,30,.34)!important;backdrop-filter:blur(8px)!important
+  }
+  .planningImportHistoryBackdrop.hidden{display:none!important}
+  .planningImportHistoryPanel{
+    width:min(1120px,calc(100vw - 56px))!important;max-height:min(760px,calc(100vh - 56px))!important;
+    display:flex!important;flex-direction:column!important;overflow:hidden!important;
+    background:#fff!important;border:1px solid #dfe4e8!important;border-radius:20px!important;
+    box-shadow:0 28px 90px rgba(17,24,39,.24)!important
+  }
+  .planningImportHistoryHead{
+    display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:22px!important;
+    padding:22px 24px 18px!important;border-bottom:1px solid #edf0f2!important
+  }
+  .planningImportHistoryHead>div{min-width:0!important}
+  .planningImportHistoryHead span{
+    display:block!important;margin-bottom:5px!important;color:#e25a37!important;
+    font-size:8px!important;font-weight:900!important;letter-spacing:.1em!important
+  }
+  .planningImportHistoryHead h2{margin:0!important;font-size:20px!important;line-height:1.1!important;letter-spacing:-.35px!important;color:#252a30!important}
+  .planningImportHistoryHead p{margin:7px 0 0!important;font-size:10px!important;line-height:1.45!important;color:#7b838c!important}
+  .planningImportHistoryClose{
+    width:34px!important;height:34px!important;flex:none!important;border:1px solid #e0e4e8!important;border-radius:10px!important;
+    background:#f7f8f9!important;color:#5c646d!important;font-size:20px!important;line-height:1!important;cursor:pointer!important
+  }
+  .planningImportHistoryClose:hover{background:#eef1f3!important;color:#282d32!important}
+  .planningImportHistorySummary{
+    padding:10px 24px!important;background:#fafbfc!important;border-bottom:1px solid #edf0f2!important;
+    color:#717983!important;font-size:9px!important;font-weight:800!important
+  }
+  .planningImportHistoryTableWrap{overflow:auto!important;min-height:0!important;flex:1!important}
+  .planningImportHistoryTable{width:100%!important;border-collapse:separate!important;border-spacing:0!important;table-layout:fixed!important}
+  .planningImportHistoryTable th{
+    position:sticky!important;top:0!important;z-index:2!important;background:#f5f7f8!important;border-bottom:1px solid #dfe4e8!important;
+    padding:10px 12px!important;text-align:left!important;color:#7b838c!important;font-size:8px!important;font-weight:900!important;letter-spacing:.045em!important;text-transform:uppercase!important
+  }
+  .planningImportHistoryTable th:nth-child(1){width:29%!important}
+  .planningImportHistoryTable th:nth-child(2){width:15%!important}
+  .planningImportHistoryTable th:nth-child(3){width:15%!important}
+  .planningImportHistoryTable th:nth-child(4){width:14%!important}
+  .planningImportHistoryTable th:nth-child(5){width:17%!important}
+  .planningImportHistoryTable th:nth-child(6){width:10%!important}
+  .planningImportHistoryTable td{
+    padding:11px 12px!important;border-bottom:1px solid #edf0f2!important;vertical-align:middle!important;
+    background:#fff!important;color:#40474f!important;font-size:9.5px!important
+  }
+  .planningImportHistoryTable tr:last-child td{border-bottom:0!important}
+  .planningImportHistoryTable tbody tr:hover td{background:#fcfcfd!important}
+  .planningImportHistoryFile{min-width:0!important}
+  .planningImportHistoryFile strong{
+    display:block!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+    color:#2d3339!important;font-size:10px!important;font-weight:900!important
+  }
+  .planningImportHistoryFile small{display:block!important;margin-top:4px!important;color:#8a929b!important;font-size:8px!important}
+  .planningImportHistoryDate,.planningImportHistoryWeek{white-space:nowrap!important;color:#5f6871!important}
+  .planningImportHistoryUser{display:block!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#363d44!important;font-size:9.5px!important}
+  .planningImportHistoryIp{
+    display:inline-flex!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+    padding:4px 6px!important;border-radius:7px!important;background:#f1f3f5!important;color:#4c555e!important;font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important;font-size:8px!important
+  }
+  .planningImportHistoryAction{text-align:right!important}
+  .planningImportHistoryAction button{
+    min-height:31px!important;border:1px solid #dce1e5!important;border-radius:9px!important;background:#fff!important;color:#4e5760!important;
+    padding:0 9px!important;font-size:8px!important;font-weight:900!important;cursor:pointer!important;white-space:nowrap!important
+  }
+  .planningImportHistoryAction button:hover:not(:disabled){border-color:#f1b49f!important;background:#fff5f1!important;color:#d75232!important}
+  .planningImportHistoryAction button:disabled{opacity:.48!important;cursor:not-allowed!important}
+  .planningImportHistoryEmpty{padding:42px 24px!important;text-align:center!important;color:#8a929b!important;font-size:10px!important}
+}
+@media(min-width:761px) and (max-width:980px){
+  .planningImportHistoryPanel{width:calc(100vw - 30px)!important}
+  .planningImportHistoryTable{min-width:900px!important}
+}
+html[data-theme="dark"] .planningImportHistoryPanel{background:#1c2024!important;border-color:#343a40!important}
+html[data-theme="dark"] .planningImportHistoryHead{border-color:#30363c!important}
+html[data-theme="dark"] .planningImportHistoryHead h2{color:#f3f5f7!important}
+html[data-theme="dark"] .planningImportHistoryHead p,html[data-theme="dark"] .planningImportHistorySummary{color:#a4abb2!important}
+html[data-theme="dark"] .planningImportHistorySummary,html[data-theme="dark"] .planningImportHistoryTable th{background:#22272c!important;border-color:#343a40!important}
+html[data-theme="dark"] .planningImportHistoryTable td{background:#1c2024!important;border-color:#2f353b!important;color:#d9dde1!important}
+html[data-theme="dark"] .planningImportHistoryTable tbody tr:hover td{background:#22272c!important}
+html[data-theme="dark"] .planningImportHistoryFile strong,html[data-theme="dark"] .planningImportHistoryUser{color:#eef1f4!important}
+html[data-theme="dark"] .planningImportHistoryIp{background:#292f35!important;color:#cdd2d7!important}
