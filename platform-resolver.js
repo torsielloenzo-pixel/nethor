@@ -113,6 +113,7 @@ function disableDesktopMobileMediaRules(rules){
 }
 function enforceDesktopMediaIsolation(){
  if(state.kind!=='desktop')return;
+ let scanQueued=false;
  const scan=()=>{
   if(state.kind!=='desktop')return;
   for(const sheet of Array.from(document.styleSheets)){
@@ -120,11 +121,29 @@ function enforceDesktopMediaIsolation(){
   }
   ROOT.dataset.nethorDesktopMedia='isolated'
  };
+ const queueScan=()=>{
+  if(scanQueued||state.kind!=='desktop')return;
+  scanQueued=true;
+  const run=()=>{scanQueued=false;scan()};
+  if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:180});
+  else requestAnimationFrame(run)
+ };
  scan();
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan,{once:true});
- window.addEventListener('load',scan,{once:true});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueScan,{once:true});
+ window.addEventListener('load',queueScan,{once:true});
  if(document.head&&typeof MutationObserver!=='undefined'){
-  const observer=new MutationObserver(()=>queueMicrotask(scan));
+  const observer=new MutationObserver(mutations=>{
+   const relevant=mutations.some(m=>{
+    const targetTag=String(m.target?.tagName||'').toUpperCase();
+    if(targetTag==='STYLE')return true;
+    return [...m.addedNodes].some(node=>{
+     if(node.nodeType!==1)return false;
+     const tag=String(node.tagName||'').toUpperCase();
+     return tag==='STYLE'||(tag==='LINK'&&String(node.rel||'').toLowerCase()==='stylesheet')||!!node.querySelector?.('style,link[rel="stylesheet"]')
+    })
+   });
+   if(relevant)queueScan()
+  });
   observer.observe(document.head,{childList:true,subtree:true});
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true})
  }
