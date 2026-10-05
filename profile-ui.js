@@ -1053,8 +1053,8 @@ async function logoutFromNethor(){
 }
 
 
-const APP_RELEASE=367;
-const APP_RELEASE_LABEL='v1.46.18';
+const APP_RELEASE=369;
+const APP_RELEASE_LABEL='v1.46.20';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v74.svg';
 async function loadUpdateFeature(){return loadProfileFeature('update','profile-update.js?v=4')}
