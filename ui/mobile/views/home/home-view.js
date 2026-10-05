@@ -459,7 +459,6 @@ async function render(){
   return
  }
  state.name=state.profile.display_name||state.session.user?.email?.split('@')[0]||'';
- state.dashboard.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
 
  const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today));
  const uid=String(state.session.user.id||'');
