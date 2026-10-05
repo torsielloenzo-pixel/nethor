@@ -436,12 +436,13 @@ function homeRenderStoreInfoWidget(cfg,now,name){
 function homeStartStoreInfoClock(w,name){
  clearInterval(window.__nethorStoreInfoClockTimer);
  const tick=()=>{
+  if(document.hidden)return;
   const root=$('nethorStoreInfoWidget');if(!root)return;
   const now=new Date(),opening=homeStoreOpeningState(w.hours,now),prefix=root.querySelector('.nsiwGreetingPrefix'),hours=root.querySelector('.nsiwHours');
   if(prefix)prefix.textContent=homeStoreGreeting(w,now);
   if(hours)hours.textContent=homeStoreHoursLabel(opening.spec)
  };
- tick();window.__nethorStoreInfoClockTimer=setInterval(tick,30000)
+ tick();window.__nethorStoreInfoClockTimer=setInterval(tick,60000)
 }
 
 
@@ -584,13 +585,14 @@ function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,w
 function homeStartQuickPlanningClock(cfg,todayModel,todayKey,profileRows,weekStart){
  clearInterval(window.__nethorQuickPlanningTimer);
  const tick=()=>{
+  if(document.hidden)return;
   const root=$('nethorQuickPlanningWidget');if(!root)return;
   const now=new Date();
   if(homeParisDateKey(now)!==todayKey){clearInterval(window.__nethorQuickPlanningTimer);location.reload();return}
   const html=homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart);
   if(html)root.outerHTML=html
  };
- window.__nethorQuickPlanningTimer=setInterval(tick,30000)
+ window.__nethorQuickPlanningTimer=setInterval(tick,60000)
 }
 
 async function renderHomeDashboard(profile,name,cfg){
