@@ -30,7 +30,7 @@ function services(){return window.NethorMobileServices||window.MobileServices||n
 function ensureStyle(href){
  return new Promise((resolve,reject)=>{
   const existing=document.querySelector('link[data-nethor-chat-view-asset][href="'+href+'"]');
-  if(existing){resolve(existing);return}
+  if(existing){existing.disabled=false;resolve(existing);return}
   const link=document.createElement('link');
   link.rel='stylesheet';link.href=href;link.dataset.nethorChatViewAsset='1';
   link.onload=()=>resolve(link);link.onerror=()=>reject(new Error('Style Chat indisponible : '+href));
@@ -75,6 +75,7 @@ function restorePlatformMarkers(){
  state.previousLayout=null;state.previousPageId=null
 }
 function cleanupStyles(){for(const node of state.styleNodes){try{node.remove()}catch(_){}}state.styleNodes=[]}
+function suspendStyles(){for(const node of state.styleNodes){try{node.disabled=true}catch(_){}}}
 async function loadAssets(){
  await Promise.all(STYLE_ASSETS.map(ensureStyle));
  for(const src of SCRIPT_ASSETS)await ensureScript(src)
@@ -92,7 +93,7 @@ async function preload(){
   await loadAssets();
   await fragmentPromise;
   const warmed=await window.NethorChatRuntime?.prewarm?.();
-  cleanupStyles();
+  suspendStyles();
   return warmed!==false
  }catch(error){
   console.warn('[Nethor ChatView] preload',error);
@@ -144,7 +145,7 @@ async function unmount(){
  state.listScroll=list?.scrollTop||0;state.messageScroll=messages?.scrollTop||0;state.routeKey=routeKey();
  state.mounted=false;
  try{await window.NethorChatRuntime?.unmount?.()}catch(error){console.warn('[Nethor ChatView] runtime unmount',error)}
- cleanupStyles();restorePlatformMarkers();
+ suspendStyles();restorePlatformMarkers();
  document.body.classList.remove('mobileConversationOpen');
  if(state.host)state.host.innerHTML='';
  state.host=null;
