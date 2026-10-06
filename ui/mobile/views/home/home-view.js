@@ -400,6 +400,7 @@ async function loadHomeSnapshot(shared){
  const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today)),weekEnd=isoDate(addDays(startOfWeek(today),84));
  const sync=window.NethorMobileSync;
  const planningTicket=sync?.beginCheck?.('planning'),tasksTicket=sync?.beginCheck?.('tasks');
+ try{
  const [weeksRes,profilesRes,taskCatalogRes,taskRowsRes]=await Promise.all([
   db.from('planning_weeks').select('week_start,data,updated_at').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
   db.rpc('list_team_members'),
@@ -431,6 +432,11 @@ async function loadHomeSnapshot(shared){
   taskCatalog:taskCatalogRes.error?[]:(taskCatalogRes.data||[]),
   tasks,assignees,completions,
   taskLoadError:tasksFailed
+ }
+ }catch(error){
+  sync?.markFailed?.('planning',planningTicket);
+  sync?.markFailed?.('tasks',tasksTicket);
+  throw error
  }
 }
 function applyHomeSnapshot(snapshot){
