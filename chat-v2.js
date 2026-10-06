@@ -909,7 +909,7 @@ async function deleteConversation(){
  await loadConversations();renderConversationHeader();renderMessages();showToast('Groupe supprimé des discussions')
 }
 async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');syncChatRoute(null);await loadConversations();renderConversationHeader();renderMessages()}
-function scheduleChatSync(){
+function scheduleChatSync(detail={}){
  if(!chatRuntimeActive||!db||!state.session)return;
  clearTimeout(chatSyncTimer);
  const request=++chatSyncRequest;
@@ -920,7 +920,7 @@ function scheduleChatSync(){
    if(!chatRuntimeActive||request!==chatSyncRequest)return;
    if(state.activeId){
     await Promise.all([loadParticipants(),loadMessages()]);
-    if(chatRuntimeActive&&request===chatSyncRequest)await markRead()
+    if(chatRuntimeActive&&request===chatSyncRequest&&(detail.reason!=='realtime'||detail.table==='chat_messages'))await markRead()
    }
   }catch(error){console.warn('[Nethor Chat] synchronisation',error)}
  },180)
@@ -929,7 +929,7 @@ function startRealtime(){
  const sync=window.NethorMobileSync;
  if(CHAT_SPA_MODE&&sync?.active&&typeof sync.subscribe==='function'){
   if(chatSyncUnsubscribe)return;
-  chatSyncUnsubscribe=sync.subscribe(['chat','team','resume'],()=>scheduleChatSync());
+  chatSyncUnsubscribe=sync.subscribe(['chat','team','resume'],detail=>scheduleChatSync(detail));
   return
  }
  if(state.dataChannel)return;
