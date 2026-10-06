@@ -24,6 +24,7 @@ const state={
  renderToken:0,
  unsubscribe:null,
  channels:[],
+ unsubscribeSync:null,
  refreshTimer:null,
  busy:false,
  profile:null,
@@ -646,6 +647,11 @@ function scheduleRender(options={}){
 function startRealtime(){
  if(!state.db||!state.session)return;
  stopRealtime();
+ const sync=window.NethorMobileSync;
+ if(sync?.active&&typeof sync.subscribe==='function'){
+  state.unsubscribeSync=sync.subscribe(['planning','absences','tasks','team','resume'],()=>scheduleRender());
+  return
+ }
  const uid=state.session.user.id;
  const planning=state.db.channel('mobile-home-planning-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'planning_weeks'},scheduleRender).subscribe();
  const tasks=state.db.channel('mobile-home-tasks-'+uid)
@@ -657,11 +663,13 @@ function startRealtime(){
  state.channels=[planning,tasks,team]
 }
 function stopRealtime(){
+ if(typeof state.unsubscribeSync==='function')state.unsubscribeSync();
+ state.unsubscribeSync=null;
  if(!state.db)return;
  state.channels.forEach(channel=>{try{state.db.removeChannel(channel)}catch(_){}});
  state.channels=[]
 }
-function onReturnToApp(){if(state.mounted&&document.visibilityState!=='hidden')scheduleRender()}
+function onReturnToApp(){if(!window.NethorMobileSync?.active&&state.mounted&&document.visibilityState!=='hidden')scheduleRender()}
 function onServiceChange(detail){
  if(!state.mounted)return;
  if(detail?.type==='notifications'){scheduleRender({invalidate:false});return}
