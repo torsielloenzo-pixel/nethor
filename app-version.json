@@ -1,19 +1,19 @@
 {
-  "version": 376,
-  "label": "v1.46.27",
+  "version": 377,
+  "label": "v1.46.28",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Protection des modifications simultanées",
-  "message": "Nethor protège les plannings contre les écrasements concurrents, y compris les imports Excel et réinitialisations. Recharge la semaine si une modification extérieure est détectée.",
-  "published_at": "2026-10-06T21:32:17.775Z",
+  "title": "Sécurité des enregistrements et des données",
+  "message": "Les enregistrements simultanés du planning sont mieux protégés et les autorisations SQL dangereuses des comptes clients ont été supprimées.",
+  "published_at": "2026-10-06T21:42:02.064Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Les enregistrements du planning vérifient atomiquement la version active sur le serveur.",
-    "Un conflit empêche l’écrasement de la semaine publiée et conserve les modifications locales.",
-    "Imports Excel et réinitialisation d’une semaine respectent le même contrôle.",
-    "Les demandes de congés ne peuvent plus recevoir deux décisions concurrentes silencieuses.",
-    "Les anciens clients ne peuvent plus écrire directement dans les plannings : une mise à jour de Nethor est nécessaire.",
-    "Vérification multi-appareils réelle encore nécessaire."
+    "La protection atomique des plannings mise en place en phase 3 est conservée.",
+    "Les comptes clients ne disposent plus de TRUNCATE, TRIGGER ou REFERENCES sur les tables publiques.",
+    "Les doubles clics sur Enregistrer et les réinitialisations simultanées sont bloqués.",
+    "Un changement de semaine pendant un enregistrement est empêché pour conserver le bon contexte.",
+    "L'interface desktop et mobile utilise la nouvelle version du runtime Planning.",
+    "La validation réelle sur deux appareils connectés reste à effectuer."
   ]
 }
