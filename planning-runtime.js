@@ -2,7 +2,7 @@
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const PLANNING_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
 let planningRuntimeActive=false,planningViewportBound=false;
-let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningLoadedRevisionAt='',planningWeekLoadError=false,planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null;
+let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningLoadedRevisionAt='',planningWeekLoadError=false,planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null,planningDataSyncUnsubscribe=null;
 let planningReadStatusByDay=new Map(),planningReadStatusWeekKey='',planningReadStatusSeq=0,planningReadStatusTimer=null,planningReadMarkKey='';
 let planningLastSaveVerified=false;
 function planningSharedServices(){return PLANNING_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
@@ -252,7 +252,18 @@ function schedulePlanningDataRefresh(){
  },120)
 }
 function startPlanningDataRealtime(){
- if(planningDataChannel||!db)return;
+ if(!db)return;
+ const sync=window.NethorMobileSync;
+ if(PLANNING_SPA_MODE&&sync?.active&&typeof sync.subscribe==='function'){
+  if(planningDataSyncUnsubscribe)return;
+  planningDataSyncUnsubscribe=sync.subscribe(['planning','absences','resume'],detail=>{
+   if(!planningRuntimeActive)return;
+   if(detail.domain==='planning'&&detail.weekStart&&detail.weekStart!==currentPlanningWeekKey())return;
+   schedulePlanningDataRefresh()
+  });
+  return
+ }
+ if(planningDataChannel)return;
  const suffix=String(currentUser?.id||'shared').replace(/[^a-z0-9_-]/gi,'').slice(0,36)||'shared';
  planningDataChannel=db.channel('planning-data-cache-'+suffix)
   .on('postgres_changes',{event:'*',schema:'public',table:'planning_weeks'},payload=>{
@@ -266,13 +277,13 @@ function startPlanningDataRealtime(){
 }
 // Quand l'application revient au premier plan, revérifier la publication.
 document.addEventListener('visibilitychange',()=>{
- if(document.visibilityState==='visible'&&planningRuntimeActive)schedulePlanningDataRefresh()
+ if(document.visibilityState==='visible'&&planningRuntimeActive&&!(PLANNING_SPA_MODE&&window.NethorMobileSync?.active))schedulePlanningDataRefresh()
 });
 window.addEventListener('pageshow',event=>{
- if(event.persisted&&planningRuntimeActive)schedulePlanningDataRefresh()
+ if(event.persisted&&planningRuntimeActive&&!(PLANNING_SPA_MODE&&window.NethorMobileSync?.active))schedulePlanningDataRefresh()
 });
-window.addEventListener('online',()=>{if(planningRuntimeActive)schedulePlanningDataRefresh()});
-window.addEventListener('focus',()=>{if(planningRuntimeActive&&document.visibilityState==='visible')schedulePlanningDataRefresh()});
+window.addEventListener('online',()=>{if(planningRuntimeActive&&!(PLANNING_SPA_MODE&&window.NethorMobileSync?.active))schedulePlanningDataRefresh()});
+window.addEventListener('focus',()=>{if(planningRuntimeActive&&document.visibilityState==='visible'&&!(PLANNING_SPA_MODE&&window.NethorMobileSync?.active))schedulePlanningDataRefresh()});
 function workRangesFor(row,m){const out=[];let start=null;for(let i=0;i<=row.length;i++){const working=i<row.length&&(row[i]==='g'||row[i]==='b');if(working&&start===null)start=i;if(!working&&start!==null){out.push({a:(m.startTime??6)+start*.25,b:(m.startTime??6)+i*.25});start=null}}return out}
 function friendlyHour(t){const h=Math.floor(t),min=Math.round((t-h)*60);return min?h+'h'+String(min).padStart(2,'0'):h+'h'}
 function currentUserEmployeeIndex(m){if(!m||!currentUser)return-1;const p=teamProfiles.find(x=>x.id===currentUser.id)||{display_name:currentUser.name};return (m.employees||[]).findIndex(e=>planningProfileFor(e.name)?.id===p.id||norm(e.name)===norm(p.display_name)||norm(e.name).replace(/\s+[a-z]$/,'')===norm(p.display_name))}
@@ -1365,6 +1376,7 @@ async function unmountPlanningRuntime(options={}){
  if(PLANNING_SPA_MODE&&options.hard!==true)return true;
  clearTimeout(planningDataRefreshTimer);planningDataRefreshTimer=null;
  clearInterval(planningReadStatusTimer);planningReadStatusTimer=null;
+ if(typeof planningDataSyncUnsubscribe==='function')planningDataSyncUnsubscribe();planningDataSyncUnsubscribe=null;
  try{if(planningProfileChannel&&db)await db.removeChannel(planningProfileChannel)}catch(_){}
  try{if(planningDataChannel&&db)await db.removeChannel(planningDataChannel)}catch(_){}
  planningProfileChannel=null;planningDataChannel=null;

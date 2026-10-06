@@ -13,6 +13,7 @@ let refreshTimer=null;
 let notificationTimer=null;
 let permissionTimer=null;
 let preferenceTimer=null;
+let coreRequestSeq=0,notificationRequestSeq=0,permissionsRequestSeq=0,refreshAllPromise=null;
 let serviceWorkerRegistrationPromise=null;
 const listeners=new Set();
 
@@ -124,7 +125,7 @@ async function readNotificationPreferences(){
     return Array.isArray(data)?data:[]
   }catch(error){
     console.warn('[Nethor MobileServices] notification preferences',error);
-    return[]
+    return [...state.notificationPreferences]
   }
 }
 async function readNotifications(){
@@ -151,8 +152,10 @@ async function readPermissions(){
 }
 async function refreshPermissions({emitChange=true}={}){
   if(!state.session)return snapshot();
+  const uid=state.session.user.id,seq=++permissionsRequestSeq;
   try{
     const result=await readPermissions();
+    if(seq!==permissionsRequestSeq||state.session?.user?.id!==uid)return snapshot();
     state.subrolePermissions=result.subrolePermissions;
     state.subroleKeys=result.subroleKeys;
     if(emitChange)emit('permissions')
@@ -168,8 +171,11 @@ async function refreshNotificationPreferences({emitChange=true}={}){
 }
 async function refreshNotifications({emitChange=true}={}){
   if(!state.session)return snapshot();
+  const uid=state.session.user.id,seq=++notificationRequestSeq;
   try{
-    state.notifications=await readNotifications();
+    const list=await readNotifications();
+    if(seq!==notificationRequestSeq||state.session?.user?.id!==uid)return snapshot();
+    state.notifications=list;
     state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0);
     if(emitChange)emit('notifications')
   }catch(error){
@@ -179,12 +185,13 @@ async function refreshNotifications({emitChange=true}={}){
 }
 async function refreshCore({emitChange=true}={}){
   if(!client||!state.session)return snapshot();
-  const uid=state.session.user.id;
+  const uid=state.session.user.id,seq=++coreRequestSeq;
   const [profileResult,configResult,permissionResult]=await Promise.all([
     client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',uid).maybeSingle(),
     client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),
     readPermissions()
   ]);
+  if(seq!==coreRequestSeq||state.session?.user?.id!==uid)return snapshot();
   if(profileResult.error)throw profileResult.error;
   if(!profileResult.data)throw new Error('Profil utilisateur introuvable');
   state.profile=profileResult.data;
@@ -192,7 +199,9 @@ async function refreshCore({emitChange=true}={}){
   try{window.NettoSounds?.configure?.(state.siteConfig)}catch(error){console.warn('[Nethor MobileServices] configuration audio',error)}
   state.subrolePermissions=permissionResult.subrolePermissions;
   state.subroleKeys=permissionResult.subroleKeys;
-  state.avatarUrl=await avatarFor(state.profile);
+  const signedAvatar=await avatarFor(state.profile);
+  if(seq!==coreRequestSeq||state.session?.user?.id!==uid)return snapshot();
+  state.avatarUrl=signedAvatar;
   state.lastRefresh=Date.now();
   applyProfileTheme();
   if(emitChange)emit('core');
@@ -200,28 +209,32 @@ async function refreshCore({emitChange=true}={}){
 }
 async function refresh(){
   if(!state.session)return snapshot();
-  state.status='refreshing';
-  emit('refreshing');
-  try{
-    await refreshCore({emitChange:true});
-    const [preferences,notifications]=await Promise.all([
-      readNotificationPreferences(),
-      readNotifications().catch(error=>{console.warn('[Nethor MobileServices] notifications',error);return state.notifications})
-    ]);
-    state.notificationPreferences=preferences;
-    state.notifications=notifications;
-    state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0);
-    state.status='ready';
-    state.ready=true;
-    state.error=null;
-    emit('ready');
-  }catch(error){
-    state.status='error';
-    state.error=error;
-    emit('error',{error});
-    throw error
-  }
-  return snapshot()
+  if(refreshAllPromise)return refreshAllPromise;
+  const uid=state.session.user.id,notificationsSeq=++notificationRequestSeq;
+  refreshAllPromise=(async()=>{
+    state.status='refreshing';
+    emit('refreshing');
+    try{
+      await refreshCore({emitChange:true});
+      if(state.session?.user?.id!==uid)return snapshot();
+      const [preferences,notifications]=await Promise.all([
+        readNotificationPreferences(),
+        readNotifications().catch(error=>{console.warn('[Nethor MobileServices] notifications',error);return null})
+      ]);
+      if(state.session?.user?.id!==uid)return snapshot();
+      state.notificationPreferences=preferences;
+      if(notifications!==null&&notificationsSeq===notificationRequestSeq){
+        state.notifications=notifications;
+        state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0)
+      }
+      state.status='ready';state.ready=true;state.error=null;emit('ready');
+    }catch(error){
+      if(state.session?.user?.id===uid){state.status='error';state.error=error;emit('error',{error})}
+      throw error
+    }
+    return snapshot()
+  })();
+  try{return await refreshAllPromise}finally{refreshAllPromise=null}
 }
 function clearChannels(){
   if(!client)return;
@@ -270,6 +283,8 @@ function startRealtime(){
 function onAuthState(event,session){
   if(session)state.session=session;
   if(event==='SIGNED_OUT'||!session){
+    window.NethorMobileSync?.stop?.();
+    coreRequestSeq++;notificationRequestSeq++;permissionsRequestSeq++;
     state.session=null;
     state.profile=null;
     state.ready=false;
@@ -349,6 +364,7 @@ async function start(){
     authSubscription=auth?.data?.subscription||null;
     await refresh();
     startRealtime();
+    window.NethorMobileSync?.start?.({db:client,uid:state.session?.user?.id});
     return snapshot()
   })().catch(error=>{
     clearChannels();
@@ -774,6 +790,7 @@ async function signOut(){
   finally{redirectToLogin()}
 }
 function destroy(){
+ window.NethorMobileSync?.stop?.();
   clearTimeout(refreshTimer);
   clearTimeout(notificationTimer);
   clearTimeout(permissionTimer);

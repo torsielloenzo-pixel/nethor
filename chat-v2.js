@@ -6,6 +6,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 let db=CHAT_SPA_MODE?null:supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let chatRuntimeActive=false,chatPresenceListener=null,chatFocusListener=null,chatOwnPresenceChannel=null,chatPresenceTimer=null;
+let chatSyncUnsubscribe=null,chatSyncTimer=null,chatSyncRequest=0;
 let chatCacheReady=false,chatCacheUserId='',chatCacheConversationId='';
 function chatSharedServices(){return CHAT_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
 function chatPermissionFromShared(profile,config){
@@ -908,7 +909,29 @@ async function deleteConversation(){
  await loadConversations();renderConversationHeader();renderMessages();showToast('Groupe supprimé des discussions')
 }
 async function leaveGroup(){if(!confirm('Quitter ce groupe ?'))return;const {error}=await db.rpc('chat_leave_conversation',{p_conversation:state.activeId});if(error)return showToast(error.message.includes('owner')?'Le créateur doit supprimer le groupe':'Action impossible');closeConversationInfo();state.activeId=null;document.body.classList.remove('mobileConversationOpen');syncChatRoute(null);await loadConversations();renderConversationHeader();renderMessages()}
+function scheduleChatSync(detail={}){
+ if(!chatRuntimeActive||!db||!state.session)return;
+ clearTimeout(chatSyncTimer);
+ const request=++chatSyncRequest;
+ chatSyncTimer=setTimeout(async()=>{
+  if(!chatRuntimeActive||request!==chatSyncRequest)return;
+  try{
+   await Promise.all([loadMembers(),loadConversations()]);
+   if(!chatRuntimeActive||request!==chatSyncRequest)return;
+   if(state.activeId){
+    await Promise.all([loadParticipants(),loadMessages()]);
+    if(chatRuntimeActive&&request===chatSyncRequest&&(detail.reason!=='realtime'||detail.table==='chat_messages'))await markRead()
+   }
+  }catch(error){console.warn('[Nethor Chat] synchronisation',error)}
+ },180)
+}
 function startRealtime(){
+ const sync=window.NethorMobileSync;
+ if(CHAT_SPA_MODE&&sync?.active&&typeof sync.subscribe==='function'){
+  if(chatSyncUnsubscribe)return;
+  chatSyncUnsubscribe=sync.subscribe(['chat','team','resume'],detail=>scheduleChatSync(detail));
+  return
+ }
  if(state.dataChannel)return;
  let msgTimer=null,partTimer=null,convTimer=null,reactTimer=null;
  const conversationFromPayload=payload=>payload?.new?.conversation_id||payload?.old?.conversation_id||null;
@@ -923,7 +946,7 @@ function startRealtime(){
   .on('postgres_changes',{event:'*',schema:'public',table:'chat_participants'},onParticipants)
   .subscribe()
 }
-function startMemberRealtime(){if(state.memberChannel)return;state.memberChannel=db.channel('nethor-chat-members').on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>loadMembers()).subscribe()}
+function startMemberRealtime(){if(CHAT_SPA_MODE&&window.NethorMobileSync?.active)return;if(state.memberChannel)return;state.memberChannel=db.channel('nethor-chat-members').on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>loadMembers()).subscribe()}
 document.addEventListener('click',e=>{if(!e.target.closest('#reactionPicker')&&!e.target.closest('.msgActions'))closeReactionPicker();if(!e.target.closest('.messageRow'))document.querySelectorAll('.messageRow.actionsOpen').forEach(x=>x.classList.remove('actionsOpen'));if(!e.target.closest('#discussionMenu')&&!e.target.closest('#chatMenuListBtn'))closeDiscussionMenu();if(!e.target.closest('#conversationMenu')&&!e.target.closest('#conversationMenuBtn'))closeConversationMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReactionPicker();closeAllChatMenus();$('newChatModal')?.classList.add('hidden');$('infoModal')?.classList.add('hidden');$('archivesModal')?.classList.add('hidden');$('contactModal')?.classList.add('hidden');$('addMembersModal')?.classList.add('hidden');$('conversationActionSheet')?.classList.add('hidden');$('imageLightbox')?.classList.add('hidden')}});
 
@@ -1015,11 +1038,13 @@ async function boot(){
  }else if(initial)await openConversation(initial,{showMobile});
  else{state.activeId=null;renderConversationHeader();renderMessages()}
  chatCacheReady=true;chatCacheUserId=uid;chatCacheConversationId=state.activeId||'';
- if(!chatFocusListener){chatFocusListener=async()=>{if(!chatRuntimeActive)return;await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()};window.addEventListener('focus',chatFocusListener)}
+ if(!chatFocusListener&&!(CHAT_SPA_MODE&&window.NethorMobileSync?.active)){chatFocusListener=async()=>{if(!chatRuntimeActive)return;await Promise.all([loadMembers(),loadConversations()]);if(state.activeId)await markRead()};window.addEventListener('focus',chatFocusListener)}
  return true
 }
 async function unmountChatRuntime(){
  chatRuntimeActive=false;
+ chatSyncRequest++;clearTimeout(chatSyncTimer);chatSyncTimer=null;
+ if(typeof chatSyncUnsubscribe==='function')chatSyncUnsubscribe();chatSyncUnsubscribe=null;
  cancelConversationLongPress();
  clearTimeout(showToast.timer);
  for(const entry of state.typing.values())clearTimeout(entry?.timer);
