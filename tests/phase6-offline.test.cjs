@@ -116,5 +116,5 @@ test('le mode normal ne montre pas les confirmations techniques',()=>{
  assert.match(sync,/if\(!online\(\)\)return\{state:'offline'/);
  assert.match(sync,/return\{state:'hidden',label:''\}/);
  assert.doesNotMatch(home,/Planning récupéré du serveur/);
- assert.match(home,/if\(offline\|\|snapshot\.offlineCopy\|\|snapshot\.planningLoadError\)/);
+ assert.match(home,/if\(!offline&&\(snapshot\.offlineCopy\|\|snapshot\.planningLoadError\)\)/);
 });
