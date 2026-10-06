@@ -85,6 +85,7 @@ function showTab(name,btn,opts={}){
  if(name==='notifications')loadNotificationAdmin().catch(()=>{});
  if(name==='problems')loadReportedProblems().catch(()=>{});
  if(name==='logs')loadPortalLogs().catch(()=>{});
+ if(name==='maintenance')window.NethorHealthAdmin?.refresh?.();
  enhanceCompactPortal();
  if(opts.sound!==false)window.NettoSounds?.play?.('menuOpen')
 }
@@ -2889,7 +2890,7 @@ async function saveManagementArticle(id){
 
 async function boot(){
  const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');
- const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;
+ const {data:p,error}=await db.from('profiles').select('display_name,role').eq('id',s.user.id).maybeSingle();if(error||!p||p.role!=='admin')return location.replace('home.html');profile=p;window.NethorPortalHealthClient=db;
  await waitProfileUI();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];ensurePortalPlatformStructure();bindGlobal();await loadConfig();await ensureAdminGlobalTools();ROLES=[...(window.NettoProfileUI?.allRoles||ROLES)];applyNotificationPreset();enhanceCompactPortal();
  const qs=new URLSearchParams(location.search),saved=qs.get('tab')||localStorage.getItem('nettoManagementTab')||'overview';
  const validTabs=['overview','general','system','mobile','desktop','sounds','blocks','accounts','articles','media','notifications','problems','maintenance','logs'];
@@ -2897,7 +2898,8 @@ async function boot(){
  const requestedAccountView=qs.get('sub')||localStorage.getItem('nettoManagementAccountsView')||'accounts';
  accountSubview=['accounts','roles','logs'].includes(requestedAccountView)?requestedAccountView:'accounts';
  if(tab==='accounts')showAccountsView(accountSubview,managementButtonFor('accounts'),{sound:false});
- else showTab(tab,managementButtonFor(tab),{sound:false})
+ else showTab(tab,managementButtonFor(tab),{sound:false});
+ window.dispatchEvent(new Event('nethor:admin-ready'))
 }
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 setTimeout(boot,0);

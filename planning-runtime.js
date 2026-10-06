@@ -827,12 +827,14 @@ async function saveWeek(options={}){
  if(error){
   planningSaveInFlight=false;
   console.warn('Publication planning non confirmée',error);
+  void window.NethorClientHealth?.record?.('planning','SAVE_UNCONFIRMED');
   setSaveState('Enregistrement non confirmé • vérifier avant de réessayer');
   return false
  }
  if(result?.status==='conflict'){
   planningSaveInFlight=false;
   planningConflictDetected=true;planningLastSaveOutcome='conflict';
+  void window.NethorClientHealth?.record?.('planning','SAVE_CONFLICT');
   setSaveState('Conflit : planning modifié par une autre personne');
   alert('Ce planning a été modifié depuis son ouverture. Tes modifications locales ne sont pas enregistrées. Annule les modifications puis recharge la semaine avant de recommencer.');
   return false
@@ -1424,6 +1426,7 @@ async function init(){
   const auth=await db.auth.getSession();session=auth?.data?.session||null
  }
  if(!session){if(PLANNING_SPA_MODE)planningGoHome();else location.href='index.html';return}
+ if(!PLANNING_SPA_MODE)window.NethorClientHealth?.bindClient?.(db,'desktop');
  const sameCachedUser=PLANNING_SPA_MODE&&planningCacheReady&&planningCacheUserId===String(session.user.id);
  if(!sameCachedUser){
   currentWeekStart=startOfWeek(new Date());

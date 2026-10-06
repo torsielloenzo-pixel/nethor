@@ -293,6 +293,7 @@ function onAuthState(event,session){
   if(event==='SIGNED_OUT'||!session){
     window.NethorMobileSync?.stop?.();
     coreRequestSeq++;notificationRequestSeq++;permissionsRequestSeq++;
+    window.NethorClientHealth?.clear?.();
     state.session=null;
     state.profile=null;
     state.ready=false;
@@ -371,6 +372,7 @@ async function start(){
     const auth=client.auth.onAuthStateChange(onAuthState);
     authSubscription=auth?.data?.subscription||null;
     await refresh();
+    window.NethorClientHealth?.bindClient?.(client,'mobile');
     startRealtime();
     window.NethorMobileSync?.start?.({db:client,uid:state.session?.user?.id});
     return snapshot()

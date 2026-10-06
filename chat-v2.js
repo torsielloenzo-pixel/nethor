@@ -1017,6 +1017,7 @@ async function boot(){
   }
  }
  state.session=session;if(!session){if(CHAT_SPA_MODE)chatGoHome();else location.replace('index.html');return false}
+ if(!CHAT_SPA_MODE)window.NethorClientHealth?.bindClient?.(db,'desktop');
  if(!p){if(CHAT_SPA_MODE)chatGoHome();else location.replace('index.html');return false}
  state.profile=p;window.currentRole=p.role;
  if(permission==='none'){chatGoHome();return false}

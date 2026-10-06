@@ -1,0 +1,35 @@
+name: Nethor — Tests de fiabilité
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reliability:
+    name: Tests non destructifs — Node 22
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Préparer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Valider la syntaxe des scripts critiques
+        run: |
+          node --check ui/mobile/mobile-sync.js
+          node --check ui/mobile/mobile-services.js
+          node --check ui/mobile/views/home/home-view.js
+          node --check planning-runtime.js
+          node --check chat-v2.js
+          node --check runtime/client-health.js
+          node --check runtime/client-health-admin.js
+          node --check runtime/admin-portal-runtime.js
+          node --check sw.js
+      - name: Exécuter la suite de non-régression
+        run: node --test tests/phase5-regression.test.cjs

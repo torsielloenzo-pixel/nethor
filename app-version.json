@@ -1,20 +1,19 @@
 {
-  "version": 378,
-  "label": "v1.46.29",
+  "version": 379,
+  "label": "v1.46.30",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Fiabilité des données hors connexion",
-  "message": "Nethor distingue maintenant les données vérifiées des données anciennes, avec un état clair en cas de perte de réseau et une revalidation au retour de connexion.",
-  "published_at": "2026-10-06T22:04:57.542Z",
+  "title": "Surveillance et tests de fiabilité",
+  "message": "Nethor dispose de contrôles de non-régression et d’un journal technique dans Gestion > Maintenance pour détecter les incidents de synchronisation.",
+  "published_at": "2026-10-06T22:27:00.398Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Bandeau mobile indiquant « Données vérifiées », « Non vérifiées » ou « Hors connexion ».",
-    "Planning : une ancienne version reste consultable dans la session mais ne peut pas être modifiée ni marquée comme lue.",
-    "Accueil : réutilisation uniquement de données de la même journée et du même compte, signalées comme non vérifiées hors ligne.",
-    "Chat et notifications : une réponse réseau en échec ne doit pas être interprétée comme une liste réellement vide.",
-    "Synchronisation après reconnexion et rejet des confirmations de requêtes devenues obsolètes.",
-    "Aucune donnée privée de planning ou de chat n'est ajoutée au cache du Service Worker.",
-    "Tests sur un iPhone et plusieurs sessions encore nécessaires."
+    "Tests automatisés des mécanismes de synchronisation, hors connexion et isolation des sessions.",
+    "Vérification des fichiers Desktop/Mobile et des ressources PWA avant publication.",
+    "Gestion > Maintenance : suivi des erreurs techniques par catégorie, version et plateforme, réservé à l’administrateur.",
+    "Données techniques limitées à des codes préétablis : ni contenu de chat, ni planning, ni message d'erreur brut.",
+    "Les incidents répétés sont limités dans le navigateur et sur le serveur.",
+    "Les tests multi-comptes sont simulés ; une campagne sur iPhone et ordinateur réels reste nécessaire."
   ]
 }
