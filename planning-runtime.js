@@ -705,8 +705,12 @@ function renderPlanningInsights(){renderCoverage();renderPersonalStats();renderA
 async function reviewAbsence(id,status){
  if(absenceAccess!=='manage'||!['approved','rejected'].includes(status))return;const a=planningAbsences.find(x=>x.id===id);if(!a)return;
  const verb=status==='approved'?'valider':'refuser';if(!confirm((verb[0].toUpperCase()+verb.slice(1))+' la demande de '+a.display_name+' ?'))return;
- const reviewedAt=new Date().toISOString(),{error}=await db.from('planning_absences').update({status,reviewed_by:currentUser.id,reviewed_at:reviewedAt,updated_at:reviewedAt}).eq('id',id);
+ const reviewedAt=new Date().toISOString();
+ const {data:updated,error}=await db.from('planning_absences')
+  .update({status,reviewed_by:currentUser.id,reviewed_at:reviewedAt,updated_at:reviewedAt})
+  .eq('id',id).eq('status','pending').eq('updated_at',a.updated_at).select('id').maybeSingle();
  if(error){alert('Impossible de mettre à jour la demande : '+error.message);return}
+ if(!updated){alert('Cette demande a déjà été traitée ou modifiée par une autre personne. Elle n’a pas été écrasée.');await loadPlanningAbsences();renderPlanningInsights();return}
  await addPlanningLog('absence_review',logDetails({kind:'absence_review',absence_id:a.id,target_user_id:a.user_id,target_name:a.display_name,type:a.type,start_date:a.start_date,end_date:a.end_date,status}));
  const target='profile.html';
  const isLeave=a.type==='leave',accepted=status==='approved';
@@ -766,7 +770,8 @@ async function loadWeek(start=currentWeekStart,opts={}){
   planningAbsences=absences;
   planningLoadedWeekKey=key;
   planningCacheReady=true;
-  planningCacheUserId=String(currentUser?.id||planningCacheUserId||'')
+  planningCacheUserId=String(currentUser?.id||planningCacheUserId||'');
+  planningConflictDetected=false
  }
  if(!opts.silent)setSaveState(error?'Synchronisation impossible':'Lecture seule');
  if(opts.render!==false){renderAll();loadPlanningReadStatusWeek({render:true}).catch(()=>{})}
@@ -1057,17 +1062,17 @@ async function recordPlanningImportAudit(file,storagePath){
  }catch(e){console.warn('Historique import Planning : métadonnées réseau non enregistrées.',e)}
 }
 async function processPlanningFile(file,state){
- const next=await readPlanningFile(file),target=parseISO(next.weekStart),key=next.weekStart,{data:existing,error:checkErr}=await db.from('planning_weeks').select('week_start,source_path').eq('week_start',key).maybeSingle();if(checkErr)throw checkErr;
+ const next=await readPlanningFile(file),target=parseISO(next.weekStart),key=next.weekStart,{data:existing,error:checkErr}=await db.from('planning_weeks').select('week_start,source_path,updated_at').eq('week_start',key).maybeSingle();if(checkErr)throw checkErr;
  const replacing=!!existing;
  if(replacing&&!confirm('Remplacer le planning actuel de la semaine du '+frDate(target)+' avec « '+file.name+' » ?\n\nLe fichier Excel remplacera entièrement cette semaine.'))return{status:'cancelled',file};
  let archivedPath=null;
  try{
   archivedPath=await archivePlanningSource(file,key);next.sourcePath=archivedPath;
   currentWeekStart=target;currentDay=0;model=next;
-  const saved=await saveWeek();if(!saved)throw new Error('Le planning n’a pas pu être enregistré.');
+  const saved=await saveWeek({expectedRevision:existing?.updated_at||null});if(!saved)throw new Error(planningLastSaveOutcome==='conflict'?'Import refusé : la semaine a été modifiée par une autre personne.':'Le planning n’a pas pu être enregistré ou confirmé.');
   await recordPlanningImportAudit(file,archivedPath);
  }catch(e){
-  if(archivedPath){try{await db.storage.from('planning-files').remove([archivedPath])}catch(_){}}
+  if(archivedPath&&['conflict','rejected'].includes(planningLastSaveOutcome)){try{await db.storage.from('planning-files').remove([archivedPath])}catch(_){}}
   throw e
  }
  await addPlanningLog('import',logDetails({kind:replacing?'import_replace':'import_new',week_start:key,source:file.name}));
@@ -1111,7 +1116,39 @@ async function saveAndFinishEdit(){if(!canEdit||!model)return;const dates=change
 function paintCell(td){if(!editMode||!model)return;const row=+td.dataset.row,slot=+td.dataset.slot;if(drag.row!==null&&row!==drag.row)return;const key=row+'|'+slot;if(drag.changed.has(key))return;drag.changed.add(key);const d=modelDay(),value=paintColor==='erase'?null:paintColor;if(d.cells[row][slot]===value)return;d.cells[row][slot]=value;markPlanningChange(currentDay,row);td.style.background=value?COLOR[value]:'';drag.first=drag.first||{row,slot};drag.last={row,slot}}
 function bindEditing(){const table=document.getElementById('xlsTable');if(!table)return;table.onpointerdown=e=>{const td=e.target.closest('.slot.editable');if(!td||e.button>0)return;e.preventDefault();drag={active:true,row:+td.dataset.row,pointerId:e.pointerId,changed:new Set(),first:null,last:null};try{table.setPointerCapture(e.pointerId)}catch(_){}paintCell(td)};table.onpointermove=e=>{if(!drag.active||e.pointerId!==drag.pointerId)return;e.preventDefault();const td=document.elementFromPoint(e.clientX,e.clientY)?.closest('.slot.editable');if(td&&table.contains(td))paintCell(td)};const end=e=>{if(!drag.active)return;drag.active=false;if(drag.changed.size){renderReader();renderPlanningInsights()}drag.row=null;drag.changed.clear()};table.onpointerup=end;table.onpointercancel=end;table.onlostpointercapture=end}
 async function resetDay(){if(!canEdit||!editMode||!model)return;const date=dayKey();if(!confirm('Réinitialiser entièrement '+DAYS[currentDay][1]+' '+frDate(addDays(currentWeekStart,currentDay))+' ?'))return;const d=modelDay(),affected=[];d.cells.forEach((r,i)=>{if(r.some(Boolean)){affected.push(model.employees[i]?.name);markPlanningChange(currentDay,i)}});d.cells=d.cells.map(r=>r.map(()=>null));const saved=await saveWeek();if(!saved){showToast('Réinitialisation non enregistrée. Réessaie.');return}await addPlanningLog('modify',logDetails({kind:'reset_day',dates:[date]}));const ids=[...new Set(affected.map(n=>planningProfileFor(n)?.id).filter(Boolean))];await notifyUsers(ids.map(id=>({user_id:id,kind:'reset_day',title:'Planning du '+shortDate(date)+' modifié',message:'La journée du '+shortDate(date)+' a été réinitialisée. Merci de reconsulter tes horaires.',planning_date:date,week_start:isoDate(startOfWeek(parseISO(date))),target_url:'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseISO(date))))+'&day='+encodeURIComponent(date)})));resetEditChanges();editSnapshot=clonePlanningModel(model);renderAll();if(planningLastSaveVerified)window.NettoSounds?.play?.('delete');showToast(planningLastSaveVerified?'Planning du jour réinitialisé':'Enregistré • version à vérifier')}
-async function resetWeek(){if(!canEdit||!editMode||!model)return;if(!confirm('Réinitialiser entièrement le planning de la semaine du '+frDate(currentWeekStart)+' ?'))return;const key=isoDate(currentWeekStart),ids=[...new Set((model.employees||[]).map(e=>planningProfileFor(e.name)?.id).filter(Boolean))],{error}=await db.from('planning_weeks').delete().eq('week_start',key);if(error){alert('Impossible de réinitialiser la semaine.');return}await addPlanningLog('modify',logDetails({kind:'reset_week',week_start:key}));await notifyUsers(ids.map(id=>({user_id:id,kind:'reset_week',title:'Planning de la semaine réinitialisé',message:'Le planning de la semaine du '+frDate(currentWeekStart)+' a été réinitialisé. Merci de reconsulter tes horaires.',week_start:key,target_url:'planning.html?week='+encodeURIComponent(key)+'&day='+encodeURIComponent(key)})));model=null;editSnapshot=null;editMode=false;resetEditChanges();document.getElementById('editTools').classList.add('hidden');document.getElementById('editSaveBar').classList.add('hidden');document.getElementById('editPlanningBtn').textContent='✎ Modifier le planning';renderAll();window.NettoSounds?.play?.('delete');showToast('Planning de la semaine réinitialisé')}
+async function resetWeek(){
+ if(!canEdit||!editMode||!model)return;
+ if(!confirm('Réinitialiser entièrement le planning de la semaine du '+frDate(currentWeekStart)+' ?'))return;
+ const key=isoDate(currentWeekStart);
+ const revision=planningLoadedRevisionAt;
+ if(!revision){setSaveState('Version du planning inconnue • recharge la semaine');return}
+ const ids=[...new Set((model.employees||[]).map(e=>planningProfileFor(e.name)?.id).filter(Boolean))];
+ let result,error;
+ try{({data:result,error}=await db.rpc('planning_delete_week_if_revision',{p_week_start:key,p_expected_revision:revision}))}
+ catch(e){error=e}
+ if(error){
+  setSaveState('Suppression non confirmée • vérifier la semaine');
+  console.warn('Réinitialisation semaine non confirmée',error);
+  return
+ }
+ if(result?.status==='conflict'){
+  planningConflictDetected=true;
+  setSaveState('Conflit : la semaine a été modifiée ailleurs');
+  alert('La semaine a changé depuis son ouverture. Elle n’a pas été supprimée. Annule tes modifications et recharge le planning avant de recommencer.');
+  return
+ }
+ if(result?.status!=='ok'){
+  setSaveState('Suppression de semaine refusée');
+  return
+ }
+ await addPlanningLog('modify',logDetails({kind:'reset_week',week_start:key}));
+ await notifyUsers(ids.map(id=>({user_id:id,kind:'reset_week',title:'Planning de la semaine réinitialisé',message:'Le planning de la semaine du '+frDate(currentWeekStart)+' a été réinitialisé. Merci de reconsulter tes horaires.',week_start:key,target_url:'planning.html?week='+encodeURIComponent(key)+'&day='+encodeURIComponent(key)})));
+ model=null;editSnapshot=null;editMode=false;resetEditChanges();planningLoadedRevisionAt='';planningLoadedWeekKey='';planningCacheReady=false;planningConflictDetected=false;
+ document.getElementById('editTools').classList.add('hidden');
+ document.getElementById('editSaveBar').classList.add('hidden');
+ document.getElementById('editPlanningBtn').textContent='✎ Modifier le planning';
+ renderAll();window.NettoSounds?.play?.('delete');showToast('Planning de la semaine réinitialisé')
+}
 
 async function addPlanningLog(action,details){try{if(!db||!currentUser)return;await db.from('planning_logs').insert({user_id:currentUser.id,display_name:currentUser.name,action,details});await loadPlanningLogs()}catch(e){console.warn(e)}}
 function renderPlanningLog(x){
