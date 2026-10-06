@@ -16,7 +16,8 @@ create index if not exists nethor_health_created_idx on public.nethor_client_hea
 create index if not exists nethor_health_user_recent_idx on public.nethor_client_health_events(user_id,created_at desc);
 alter table public.nethor_client_health_events enable row level security;
 revoke all on public.nethor_client_health_events from public,anon,authenticated;
-grant insert,select on public.nethor_client_health_events to authenticated;
+grant select on public.nethor_client_health_events to authenticated;
+grant insert(domain,code,platform,build) on public.nethor_client_health_events to authenticated;
 
 -- Un compte valide peut declarer ses propres codes predefinis, pas ceux d'un tiers.
 drop policy if exists nethor_health_insert_own on public.nethor_client_health_events;
@@ -34,6 +35,9 @@ create policy nethor_health_admin_select on public.nethor_client_health_events
 create or replace function private.nethor_limit_client_health()
 returns trigger language plpgsql security definer set search_path='' as $$
 begin
+  -- Purge progressive : si personne n'envoie de signal, aucune requête inutile.
+  delete from public.nethor_client_health_events
+   where created_at<pg_catalog.now()-interval '30 days';
   if new.user_id is distinct from (select auth.uid())
      or not (select private.session_is_active()) then
     raise exception 'invalid session' using errcode='42501';
