@@ -754,7 +754,7 @@ async function saveWeek(){
  const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'Synchronisation…');if(error){console.warn(error);return false}
  // Une écriture acceptée ne doit pas être annulée en supprimant le fichier source
  // uniquement parce que la vérification réseau ultérieure est indisponible.
- const synced=await loadWeek(currentWeekStart,{render:false,silent:true});
+ const synced=await loadWeek(currentWeekStart,{render:false,silent:true}).catch(error=>{planningWeekLoadError=true;console.warn('Planning publié mais non vérifiable :',error);return false});
  if(!synced||!model||!planningLoadedRevisionAt||String(model.updatedAt||'')!==savedAt){
   setSaveState('Enregistré • version non confirmée');
   return true
@@ -762,7 +762,7 @@ async function saveWeek(){
  planningLastSaveVerified=true;
  setSaveState('✓ Enregistré et synchronisé');
  clearPlanningReadStatuses(planningLoadedWeekKey);
- await loadPlanningReadStatusWeek({render:false});
+ await loadPlanningReadStatusWeek({render:false}).catch(error=>console.warn('Statuts de lecture à actualiser :',error));
  setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
 }
 
