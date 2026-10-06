@@ -4,7 +4,7 @@ const PLANNING_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
 let planningRuntimeActive=false,planningViewportBound=false;
 let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningLoadedRevisionAt='',planningWeekLoadError=false,planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null,planningDataSyncUnsubscribe=null;
 let planningReadStatusByDay=new Map(),planningReadStatusWeekKey='',planningReadStatusSeq=0,planningReadStatusTimer=null,planningReadMarkKey='';
-let planningLastSaveVerified=false;
+let planningLastSaveVerified=false,planningLastSaveOutcome='none',planningSaveInFlight=false,planningConflictDetected=false;
 function planningSharedServices(){return PLANNING_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
 function planningPermissionFromShared(profile,config){
  const roleKey=profile?.role||'',page=config?.pages?.planning||{},levels={none:0,view:1,operate:2,manage:3};
@@ -246,6 +246,19 @@ function schedulePlanningDataRefresh(){
  planningDataRefreshTimer=setTimeout(async()=>{
   if(key!==currentPlanningWeekKey()||!db||!currentUser)return;
   try{
+   if(planningSaveInFlight)return;
+   if(editMode&&changedDates().length){
+    const {data,error}=await db.from('planning_weeks').select('updated_at').eq('week_start',key).maybeSingle();
+    if(error){console.warn('Version du planning pendant édition :',error);return}
+    if(!data||String(data.updated_at||'')!==String(planningLoadedRevisionAt||'')){
+     if(!planningConflictDetected){
+      planningConflictDetected=true;
+      setSaveState('Conflit : planning modifié ailleurs');
+      showToast('Planning modifié ailleurs : vos modifications locales sont conservées')
+     }
+    }
+    return
+   }
    const refreshed=await loadWeek(parseISO(key),{render:false,silent:true});
    if(refreshed!==false&&planningRuntimeActive&&key===currentPlanningWeekKey()){await loadPlanningReadStatusWeek({render:false});renderAll()}
   }catch(e){console.warn('Actualisation Planning temps réel:',e)}
@@ -717,7 +730,7 @@ function renderReader(){
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
  if(!model||!day){meta.textContent=planningWeekLoadError?'Impossible de vérifier la dernière version du planning. Réessaie en rouvrant la page.':'Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=false;empty.classList.add('hidden');viewport.classList.remove('hidden');
- meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(planningLoadedRevisionAt?' • Version vérifiée':'');
+ meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(planningLoadedRevisionAt&&!planningWeekLoadError?' • Version vérifiée':'');
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
  let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol"><col class="readCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Utilisateur</th><th class="readHead" title="Consultation du planning pour cette journée">Lu</th>';
@@ -759,22 +772,65 @@ async function loadWeek(start=currentWeekStart,opts={}){
  if(opts.render!==false){renderAll();loadPlanningReadStatusWeek({render:true}).catch(()=>{})}
  return !error
 }
-async function saveWeek(){
- if(!canEdit||!model)return false;planningLastSaveVerified=false;setSaveState('Enregistrement…');const savedAt=new Date().toISOString();model.updatedAt=savedAt;
- const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,source_path:model.sourcePath||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:savedAt,updated_by:currentUser?.id||null};
- const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'Synchronisation…');if(error){console.warn(error);return false}
- // Une écriture acceptée ne doit pas être annulée en supprimant le fichier source
- // uniquement parce que la vérification réseau ultérieure est indisponible.
- const synced=await loadWeek(currentWeekStart,{render:false,silent:true}).catch(error=>{planningWeekLoadError=true;console.warn('Planning publié mais non vérifiable :',error);return false});
- if(!synced||!model||!planningLoadedRevisionAt||String(model.updatedAt||'')!==savedAt){
+async function saveWeek(options={}){
+ if(!canEdit||!model)return false;
+ const weekKey=isoDate(currentWeekStart);
+ const expectedRevision=Object.prototype.hasOwnProperty.call(options,'expectedRevision')?options.expectedRevision:planningLoadedRevisionAt;
+ planningLastSaveVerified=false;planningLastSaveOutcome='unknown';planningSaveInFlight=true;
+ setSaveState('Enregistrement…');
+ const savedAt=new Date().toISOString();
+ model.updatedAt=savedAt;
+ const localDraft=clonePlanningModel(model);
+ const params={
+  p_week_start:weekKey,
+  p_expected_revision:expectedRevision||null,
+  p_data:localDraft,
+  p_employee_order:(model.employees||[]).map(x=>x.name),
+  p_week_label:model.weekLabel||null,
+  p_source_file:model.sourceFile||null,
+  p_source_path:model.sourcePath||null,
+  p_imported_at:model.importedAt||savedAt
+ };
+ let result,error;
+ try{({data:result,error}=await db.rpc('planning_save_week_if_revision',params))}
+ catch(e){error=e}
+ finally{planningSaveInFlight=false}
+ if(error){
+  console.warn('Publication planning non confirmée',error);
+  setSaveState('Enregistrement non confirmé • vérifier avant de réessayer');
+  return false
+ }
+ if(result?.status==='conflict'){
+  planningConflictDetected=true;planningLastSaveOutcome='conflict';
+  setSaveState('Conflit : planning modifié par une autre personne');
+  alert('Ce planning a été modifié depuis son ouverture. Tes modifications locales ne sont pas enregistrées. Annule les modifications puis recharge la semaine avant de recommencer.');
+  return false
+ }
+ if(result?.status!=='ok'||!result.revision){
+  planningLastSaveOutcome='rejected';
+  setSaveState('Enregistrement refusé');
+  console.warn('Écriture planning refusée',result);
+  return false
+ }
+ planningLastSaveOutcome='accepted';
+ const revision=String(result.revision);
+ const readOk=await loadWeek(currentWeekStart,{render:false,silent:true}).catch(e=>{console.warn('Relecture du planning indisponible',e);return false});
+ if(!readOk||!model||!planningLoadedRevisionAt||String(planningLoadedRevisionAt)!==revision||String(model.updatedAt||'')!==savedAt){
+  if(!readOk||!model){
+   model=localDraft;
+   planningLoadedWeekKey=weekKey;
+   planningLoadedRevisionAt=revision
+  }
+  planningWeekLoadError=true;
   setSaveState('Enregistré • version non confirmée');
   return true
  }
- planningLastSaveVerified=true;
+ planningLastSaveVerified=true;planningConflictDetected=false;
  setSaveState('✓ Enregistré et synchronisé');
  clearPlanningReadStatuses(planningLoadedWeekKey);
- await loadPlanningReadStatusWeek({render:false}).catch(error=>console.warn('Statuts de lecture à actualiser :',error));
- setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
+ await loadPlanningReadStatusWeek({render:false}).catch(e=>console.warn('Statuts de lecture à actualiser',e));
+ setTimeout(()=>{if(!planningConflictDetected)setSaveState(editMode?'Mode modification':'Lecture seule')},850);
+ return true
 }
 
 
