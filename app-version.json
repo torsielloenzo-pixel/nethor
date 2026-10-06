@@ -1,18 +1,18 @@
 {
-  "version": 372,
-  "label": "v1.46.23",
+  "version": 373,
+  "label": "v1.46.24",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Planning à jour et lectures fiables",
-  "message": "Synchronisation du dernier planning importé sur mobile. Le statut Lu correspond désormais exclusivement à la version du planning réellement consultée.",
-  "published_at": "2026-10-06T10:58:24.277Z",
+  "title": "Fiabilité et synchronisation des plannings",
+  "message": "Contrôle de toutes les semaines chargées, reprise après reconnexion et confirmation serveur après publication.",
+  "published_at": "2026-10-06T20:08:16.810Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Mobile : vérification du dernier import de la semaine à chaque ouverture du planning.",
-    "Accueil mobile : contrôle de la version avant de compter une consultation.",
-    "Lu / Non lu : un nouveau planning invalide les lectures de l’ancien.",
-    "Toute lecture issue d’une ancienne version est refusée côté serveur.",
-    "En cas d’échec de synchronisation, l’ancien planning n’est plus présenté comme le dernier."
+    "Accueil : toutes les semaines préchargées sont validées avec les versions serveur.",
+    "Planning : la version enregistrée est relue après import ou modification.",
+    "Mobile : retour en ligne et réouverture déclenchent une revalidation.",
+    "Les erreurs de synchronisation ne sont plus présentées comme des heures planifiées.",
+    "Migration SQL pour horodater officiellement les plannings côté serveur."
   ]
 }
