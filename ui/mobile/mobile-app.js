@@ -685,6 +685,12 @@ async function boot(){
 
   const serviceState=await bootServices();
   if(services()?.status==='signed-out')return;
+  if(navigator.onLine===false&&services()?.isReady!==true){
+    viewHost.innerHTML='<section class="nethorMobileBootstrap"><strong>Mode hors connexion indisponible</strong><span>Ouvre Nethor une fois avec une connexion et consulte ton Planning pour enregistrer une copie sur cet appareil.</span></section>';
+    window.addEventListener('online',()=>location.reload(),{once:true});
+    if(launchStarted!==null)await finishMobileLaunchWelcome(launchStarted);
+    return
+  }
   const liveConfig=services()?.siteConfig||serviceState?.siteConfig||{};
   if(liveConfig&&Object.keys(liveConfig).length)rememberMobileLaunchConfig(liveConfig,services()?.profile||serviceState?.profile);
   applyConfiguredChrome(liveConfig);
