@@ -10,7 +10,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=2',
- 'planning-runtime.js?v=9',
+ 'planning-runtime.js?v=10',
  'planning-agenda-v2.js?v=23'
 ];
 const state={
@@ -158,10 +158,11 @@ async function mount(host,ctx={}){
   if(!state.mounted)return false;
   host.innerHTML='<div class="nethorPlanningView"><div id="planningApp">'+fragment+'</div></div>';
   applyMobileLayout();
-  window.NethorPlanningAgenda?.mount?.();
   const mounted=await window.NethorPlanningRuntime?.mount?.();
   if(!state.mounted)return false;
   if(mounted===false)return false;
+  // N'afficher l'agenda qu'une fois le dernier import contrôlé.
+  window.NethorPlanningAgenda?.mount?.();
   if(state.scrollKey===state.routeKey&&!hasFocus(ctx.params)&&state.scrollTop>0){
    requestAnimationFrame(()=>{if(state.mounted&&state.host)state.host.scrollTop=state.scrollTop})
   }else if(!hasFocus(ctx.params)){
