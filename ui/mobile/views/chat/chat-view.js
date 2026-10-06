@@ -8,7 +8,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/chat-layout.js?v=2',
- 'chat-v2.js?v=33'
+ 'chat-v2.js?v=34'
 ];
 const state={
  host:null,
