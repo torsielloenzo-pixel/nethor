@@ -568,8 +568,8 @@ async function render(){
  }).filter(Boolean))];
 
  const sections=[],role=roleLabel(state.profile.role);
- if(offline||snapshot.offlineCopy||snapshot.planningLoadError){
-  const message=offline?'Mode hors connexion · dernière consultation enregistrée':snapshot.offlineCopy?'Connexion indisponible · dernière copie enregistrée':'Planning temporairement indisponible';
+ if(!offline&&(snapshot.offlineCopy||snapshot.planningLoadError)){
+  const message=snapshot.offlineCopy?'Connexion indisponible · dernière copie enregistrée':'Planning temporairement indisponible';
   sections.push('<div class="mhdPlanningSyncState error" role="status">'+esc(message)+'</div>')
  }
  const dateText=today.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
