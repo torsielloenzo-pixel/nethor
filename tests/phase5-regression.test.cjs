@@ -165,3 +165,46 @@ test('le panneau administrateur ne charge pas d’identifiant personnel',()=>{
  assert.doesNotMatch(js,/select\('[^']*user_id/);
  assert.doesNotMatch(js,/\.select\('[^']*body/);
 });
+
+test('deux responsables ne peuvent pas publier successivement le même brouillon',async()=>{
+ const js=source('planning-runtime.js');
+ const start=js.indexOf('async function saveWeek(options={}){');
+ const end=js.indexOf('\n}\n',start);
+ assert.ok(start>=0&&end>start,'saveWeek absent');
+ const actualSource=js.slice(start,end+2);
+ const ledger={revision:'rev-1',data:null};
+ function editor(){
+  const original={version:4,weekStart:'2026-10-05',employees:[],days:{},updatedAt:'draft'};
+  const env={
+   canEdit:true,model:structuredClone(original),planningSaveInFlight:false,
+   planningLoadedRevisionAt:'rev-1',planningLoadedWeekKey:'2026-10-05',
+   planningLastSaveVerified:false,planningLastSaveOutcome:'none',planningConflictDetected:false,
+   planningWeekLoadError:false,planningReadStatusWeekKey:'',currentWeekStart:new Date(2026,9,5),
+   editMode:true,currentUser:{id:'test-user'},
+   isoDate:d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-'),
+   setSaveState:()=>{},clonePlanningModel:x=>structuredClone(x),clearPlanningReadStatuses:()=>{},
+   loadPlanningReadStatusWeek:async()=>{},setTimeout:()=>{},alert:()=>{},console:{warn:()=>{}},
+   db:{rpc:async(name,args)=>{
+    assert.equal(name,'planning_save_week_if_revision');
+    if(args.p_expected_revision!==ledger.revision)return{data:{status:'conflict',current_revision:ledger.revision},error:null};
+    ledger.revision='rev-2';ledger.data=structuredClone(args.p_data);
+    return{data:{status:'ok',revision:ledger.revision},error:null}
+   }},
+   loadWeek:async()=>{
+    env.planningLoadedRevisionAt=ledger.revision;
+    env.model=structuredClone(ledger.data);
+    return true
+   }
+  };
+  const save=vm.runInNewContext(actualSource+'\nsaveWeek',env);
+  return{env,save}
+ }
+ const a=editor(),b=editor();
+ assert.equal(await a.save(),true);
+ assert.equal(await b.save(),false);
+ assert.equal(a.env.planningLastSaveVerified,true);
+ assert.equal(b.env.planningConflictDetected,true);
+ assert.equal(b.env.planningLastSaveOutcome,'conflict');
+ assert.equal(b.env.model.weekStart,'2026-10-05');
+ assert.equal(ledger.revision,'rev-2');
+});
