@@ -136,12 +136,12 @@ test('les incidents ne transmettent jamais de messages libres',async()=>{
 test('mise à jour PWA et scripts exécutables cohérents',()=>{
  const page=source('mobile.html'),worker=source('sw.js'),version=JSON.parse(source('app-version.json'));
  assert.ok(Number.isInteger(version.version)&&version.version>0);
- const declared=worker.match(/const APP_VERSION=(\\d+);/);
- const cached=worker.match(/const CACHE='netto-tools-v(\\d+)';/);
+ const declared=worker.match(/const APP_VERSION=(\d+);/);
+ const cached=worker.match(/const CACHE='netto-tools-v(\d+)';/);
  assert.ok(declared&&cached,'version ou cache PWA manquant');
  assert.equal(Number(declared[1]),version.version,'version appli différente du Service Worker');
  assert.equal(Number(cached[1]),version.version,'cache incorrect');
- const mobileAssets=[...page.matchAll(/(?:src|href)="([^"]+\\.(?:js|css)\\?v=\\d+)"/g)]
+ const mobileAssets=[...page.matchAll(/(?:src|href)="([^"]+\.(?:js|css)\?v=\d+)"/g)]
    .map(match=>match[1]).filter(asset=>!/^https?:/.test(asset));
  assert.ok(mobileAssets.length>=12,'manifeste mobile incomplet');
  for(const asset of mobileAssets){
@@ -151,12 +151,12 @@ test('mise à jour PWA et scripts exécutables cohérents',()=>{
   ['ui/mobile/views/planning/planning-view.js','planning-runtime.js'],
   ['ui/mobile/views/chat/chat-view.js','chat-v2.js']
  ]){
-  const nested=source(viewFile).match(new RegExp(runtimeFile.replace(/\\./g,'\\\\.')+'\\\\?v=\\\\d+'));
+  const nested=source(viewFile).match(new RegExp(runtimeFile.replace(/\./g,'\\.')+'\\?v=\\d+'));
   assert.ok(nested,'runtime absent de '+viewFile);
   assert.ok(worker.includes('./'+nested[0]),'runtime non mis à jour dans le cache : '+nested[0])
  }
  for(const [htmlFile,runtime] of [['planning.html','planning-runtime.js'],['chat.html','chat-v2.js']]){
-  const script=source(htmlFile).match(new RegExp(runtime.replace(/\\./g,'\\\\.')+'\\\\?v=\\\\d+'));
+  const script=source(htmlFile).match(new RegExp(runtime.replace(/\./g,'\\.')+'\\?v=\\d+'));
   assert.ok(script,htmlFile+' sans runtime');
   assert.ok(worker.includes('./'+script[0]),htmlFile+' et cache désynchronisés')
  }
