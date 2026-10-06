@@ -10,7 +10,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=2',
- 'planning-runtime.js?v=15',
+ 'planning-runtime.js?v=16',
  'planning-agenda-v2.js?v=24'
 ];
 const state={
