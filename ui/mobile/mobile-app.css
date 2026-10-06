@@ -173,6 +173,24 @@ html[data-theme="dark"] .nethorMobileTopAction[aria-current="page"]{color:var(--
 .nethorMobileApp.nethorMobileNavDisabled .nethorMobileAppNav{display:none!important}
 
 
+/* Les panneaux du Chat s'arrêtent à la barre inférieure. Le masque flouté
+   ne doit jamais recouvrir les onglets Accueil, Planning et Chat. */
+html[data-nethor-mobile-app="1"] .nethorMobileView[data-mobile-view="chat"] .nethorChatView :is(.conversationActionBackdrop,.modalBackdrop){
+  bottom:calc(var(--mobile-app-nav-h,60px) + env(safe-area-inset-bottom))!important;
+  padding-bottom:8px!important;
+}
+/* Le panneau étant déjà au-dessus de la barre, il n'a plus besoin d'un
+   deuxième dégagement pour la zone de sécurité de l'iPhone. */
+html[data-nethor-mobile-app="1"] .nethorMobileView[data-mobile-view="chat"] .nethorChatView .conversationActionSheet{
+  padding-bottom:12px!important;
+}
+/* Si la barre est volontairement masquée (clavier, plein écran),
+   les panneaux peuvent à nouveau occuper toute la hauteur disponible. */
+html.nettoKeyboardOpen[data-nethor-mobile-app="1"] .nethorMobileView[data-mobile-view="chat"] .nethorChatView :is(.conversationActionBackdrop,.modalBackdrop),
+html[data-nethor-mobile-app="1"] .nethorMobileApp.nethorMobileNavDisabled .nethorMobileView[data-mobile-view="chat"] .nethorChatView :is(.conversationActionBackdrop,.modalBackdrop){
+  bottom:0!important;
+}
+
 /* Ouverture Mobile — écran de bienvenue avant le chargement de la SPA. */
 .nethorMobileLaunchWelcome{
   position:fixed;inset:0;z-index:1000;display:grid;place-items:center;
