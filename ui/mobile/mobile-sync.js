@@ -160,6 +160,7 @@ function onChannelStatus(value){
     if(hasSubscribed&&previous!=='SUBSCRIBED')revalidate('realtime-reconnected',{force:true});
     hasSubscribed=true
   }else if(value==='CHANNEL_ERROR'||value==='TIMED_OUT'||value==='CLOSED'){
+    for(const domain of REVALIDATE_DOMAINS)markDirty(domain);
     status(online()?'degraded':'offline');paintStatus()
   }
 }
@@ -179,7 +180,10 @@ function onRoute(event){
 }
 function onOnline(){status('degraded');paintStatus();revalidate('online',{force:true})}
 function onOffline(){status('offline');dirty.add('resume');paintStatus()}
-function onVisibility(){if(visible())revalidate('visible')}
+function onVisibility(){
+ if(!visible()){for(const domain of REVALIDATE_DOMAINS)markDirty(domain);return}
+ revalidate('visible',{force:true})
+}
 function onPageshow(event){if(event.persisted)revalidate('page-restored',{force:true})}
 function onFocus(){if(visible())revalidate('focus')}
 async function performRefresh(reason,token){
