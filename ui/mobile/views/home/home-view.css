@@ -344,3 +344,10 @@
 .mhdPlanningSyncState.error::before{background:#e58b21}
 :root[data-theme="dark"] .mhdPlanningSyncState{color:#b2c0ce}
 :root[data-theme="dark"] .mhdPlanningSyncState.error{color:#f5bc69}
+
+/* Nethor Offline : lecture seule, aucune action métier hors réseau. */
+html[data-nethor-sync-state="offline"] [data-home-action="task-composer"],
+html[data-nethor-sync-state="offline"] [data-home-action="task-publish"],
+html[data-nethor-sync-state="offline"] [data-home-action="task-delete"],
+html[data-nethor-sync-state="offline"] [data-home-action="task-reset"],
+html[data-nethor-sync-state="offline"] [data-home-action="task-toggle"]{display:none!important}
