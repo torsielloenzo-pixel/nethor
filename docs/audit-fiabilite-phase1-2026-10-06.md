@@ -43,6 +43,8 @@ Une écriture `upsert` pouvait réussir puis la relecture réseau échouer. La f
 ## Tests non destructifs de la phase 1
 
 - Vérification du code chargé depuis le dépôt GitHub, de la syntaxe JS et du versionnement des ressources PWA.
+- 13 contrôles statiques de cohérence passés (ressources, cache, accusés de lecture, import, publication Realtime).
+- 5 scénarios simulés de `saveWeek()` validés : refus d'écriture, écriture confirmée, lecture serveur en échec, lecture serveur interrompue, remplacement concurrent immédiatement après publication. Ces scénarios utilisent des doublures et n'écrivent aucune donnée en base.
 - Vérification SQL des politiques RLS, des déclencheurs, de la publication `supabase_realtime`, et des fonctions de lecture.
 - Comparaison des révisions et des reçus par agrégats, sans lire de données personnelles ni modifier les plannings.
 - **Limite :** les notifications Realtime en temps réel ne sont pas testées de bout en bout avec une session d'employé.
