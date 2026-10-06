@@ -30,7 +30,7 @@ const freshness=new Map();
 let uiInterval=null,currentView='';
 const PRIMARY_DOMAINS=Object.freeze({home:['planning','tasks'],planning:['planning'],chat:['chat'],notifications:['notifications']});
 function domainRecord(domain){
- if(!freshness.has(domain))freshness.set(domain,{sequence:0,verifiedAt:0,failed:false,checking:false});
+ if(!freshness.has(domain))freshness.set(domain,{sequence:0,checkId:0,verifiedAt:0,failed:false,checking:false});
  return freshness.get(domain)
 }
 function statusOf(domain){
@@ -73,14 +73,14 @@ function paintStatus(){
 }
 function beginCheck(domain){
  const record=domainRecord(domain);
- record.checking=true;record.failed=false;
+ record.checking=true;record.failed=false;record.checkId++;
  paintStatus();
- return{userId,generation,sequence:record.sequence}
+ return{userId,generation,sequence:record.sequence,checkId:record.checkId}
 }
 function finishCheck(domain,token,success){
  if(!enabled()||!token||token.userId!==userId||token.generation!==generation)return false;
  const record=domainRecord(domain);
- if(token.sequence!==record.sequence)return false;
+ if(token.sequence!==record.sequence||token.checkId!==record.checkId)return false;
  record.checking=false;record.failed=!success;
  if(success)record.verifiedAt=Date.now();
  paintStatus();
@@ -90,7 +90,7 @@ function markVerified(domain,token){return finishCheck(domain,token,true)}
 function markFailed(domain,token){return finishCheck(domain,token,false)}
 function markDirty(domain){
  const record=domainRecord(domain);
- record.sequence++;record.verifiedAt=0;record.checking=false;record.failed=false;
+ record.sequence++;record.checkId++;record.verifiedAt=0;record.checking=false;record.failed=false;
  paintStatus()
 }
 function initBanner(){
