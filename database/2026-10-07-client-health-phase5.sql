@@ -2,7 +2,7 @@
 -- Les evenements ne contiennent ni messages d'erreur bruts, ni URL, ni donnees metier.
 create table if not exists public.nethor_client_health_events(
   id bigint generated always as identity primary key,
-  user_id uuid not null default (select auth.uid()) references auth.users(id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   domain text not null check(domain in ('planning','chat','notifications','tasks','sync','app')),
   code text not null check(code in (
     'FETCH_FAILED','SYNC_TIMEOUT','REALTIME_DISCONNECTED','STALE_DATA',
