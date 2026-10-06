@@ -31,11 +31,11 @@ begin
   if p_week_start is null
      or extract(isodow from p_week_start)::integer <> 1
      or p_data is null
-     or p_data->>'version' not in ('3','4')
+     or coalesce(p_data->>'version','') not in ('3','4')
      or p_data->>'weekStart' is distinct from p_week_start::text
-     or pg_catalog.jsonb_typeof(p_data->'employees') <> 'array'
-     or pg_catalog.jsonb_typeof(p_data->'days') <> 'object'
-     or pg_catalog.jsonb_typeof(p_employee_order) <> 'array' then
+     or pg_catalog.jsonb_typeof(p_data->'employees') is distinct from 'array'
+     or pg_catalog.jsonb_typeof(p_data->'days') is distinct from 'object'
+     or pg_catalog.jsonb_typeof(p_employee_order) is distinct from 'array' then
     return pg_catalog.jsonb_build_object('status','invalid');
   end if;
 
