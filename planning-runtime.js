@@ -1197,6 +1197,7 @@ async function deletePlanningLog(id){
 async function clearPlanningLogs(){if(role!=='admin'||!confirm('Effacer tout l’historique du planning ?'))return;const {error}=await db.from('planning_logs').delete().gte('id',0);if(error)alert('Impossible d’effacer les logs.');else loadPlanningLogs()}
 
 function discardEditsBeforeNavigation(){
+ if(planningSaveInFlight){showToast('Publication en cours : termine l’enregistrement avant de changer de semaine');return false}
  if(!editMode)return true;
  if(changedDates().length&&!confirm('Tu as des modifications non enregistrées. Les abandonner pour changer de semaine ?'))return false;
  editMode=false;editSnapshot=null;resetEditChanges();
@@ -1254,7 +1255,7 @@ async function renderYear(){
  }
  document.getElementById('yearGrid').innerHTML=html
 }
-async function openYearDate(k){const d=parseISO(k);currentWeekStart=startOfWeek(d);currentDay=(d.getDay()+6)%7;setPlanningView('week');await loadWeek(currentWeekStart)}
+async function openYearDate(k){if(!discardEditsBeforeNavigation())return;const d=parseISO(k);currentWeekStart=startOfWeek(d);currentDay=(d.getDay()+6)%7;setPlanningView('week');await loadWeek(currentWeekStart)}
 
 function applyPlanningDeepLink(){const q=new URLSearchParams(location.search),week=q.get('week'),day=q.get('day'),focus=q.get('focus');planningDeepLinkFocus=focus==='rest'||focus==='leave'?focus:'';if(week&&/^\d{4}-\d{2}-\d{2}$/.test(week))currentWeekStart=startOfWeek(parseISO(week));if(day&&/^\d{4}-\d{2}-\d{2}$/.test(day)){const d=parseISO(day),ws=startOfWeek(d);currentWeekStart=ws;currentDay=Math.max(0,Math.min(6,(d.getDay()+6)%7))}}
 async function waitForSupabase(ms=8000){const s=Date.now();while(Date.now()-s<ms){if(window.supabase?.createClient)return;await new Promise(r=>setTimeout(r,100))}throw new Error('Supabase indisponible')}
