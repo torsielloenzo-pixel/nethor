@@ -15,3 +15,8 @@ body.planningYearOpen .nethorMobileAppTop,body.planningYearOpen .nethorMobileApp
 @keyframes nethorPlanningSpin{to{transform:rotate(360deg)}}
 @media(orientation:landscape) and (max-height:520px){.nethorPlanningView #planningApp{padding-top:5px!important}}
 @media(prefers-reduced-motion:reduce){.nethorPlanningViewLoading span{animation:none}}
+
+/* Nethor Offline : les plannings conservés localement sont consultables seulement. */
+html[data-nethor-sync-state="offline"] #editPlanningBtn,
+html[data-nethor-sync-state="offline"] #importPanel,
+html[data-nethor-sync-state="offline"] #downloadSourceBtn{display:none!important}
