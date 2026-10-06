@@ -741,9 +741,9 @@ async function checkForUpdates({interactive=true}={}){
   return runMobileUpdateCheck(mobileUpdateSnapshot||{})
 }
 
-async function markPlanningDayRead(day,source='mobile_home'){
-  if(!client||!state.session||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(day||'')))return false;
-  const {data,error}=await client.rpc('planning_mark_day_read',{p_day:String(day),p_source:String(source||'mobile_home')});
+async function markPlanningDayRead(day,source='mobile_home',revisionAt=''){
+  if(!client||!state.session||!revisionAt||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(day||'')))return false;
+  const {data,error}=await client.rpc('planning_mark_day_read',{p_day:String(day),p_source:String(source||'mobile_home'),p_revision_at:String(revisionAt)});
   if(error){console.warn('[Nethor MobileServices] planning read',error);return false}
   return data===true
 }
