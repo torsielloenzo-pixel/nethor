@@ -733,7 +733,7 @@ function renderReader(){
  document.getElementById('dateTitle').textContent=DAYS[currentDay][1]+' '+frDate(dt);
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
  if(!model||!day){meta.textContent=planningWeekLoadError?'Impossible de vérifier la dernière version du planning. Réessaie en rouvrant la page.':'Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
- document.getElementById('editPlanningBtn').disabled=planningWeekLoadError||navigator.onLine===false;empty.classList.add('hidden');viewport.classList.remove('hidden');
+ document.getElementById('editPlanningBtn').disabled=(planningWeekLoadError||navigator.onLine===false)&&!(navigator.onLine!==false&&editMode&&changedDates().length&&!!planningLoadedRevisionAt);empty.classList.add('hidden');viewport.classList.remove('hidden');
  meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(planningWeekLoadError||navigator.onLine===false?' • Dernière copie consultée, non vérifiée':editMode&&changedDates().length?' • Brouillon local non publié':planningLoadedRevisionAt&&!planningConflictDetected?' • Version vérifiée':' • Version non vérifiée');
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
@@ -803,7 +803,7 @@ async function loadWeek(start=currentWeekStart,opts={}){
  return !error
 }
 async function saveWeek(options={}){
- if(!canEdit||!model||planningSaveInFlight||navigator.onLine===false||(planningWeekLoadError&&!Object.prototype.hasOwnProperty.call(options,'expectedRevision')))return false;
+ if(!canEdit||!model||planningSaveInFlight||navigator.onLine===false||(planningWeekLoadError&&!Object.prototype.hasOwnProperty.call(options,'expectedRevision')&&!(editMode&&changedDates().length&&planningLoadedRevisionAt&&planningLoadedWeekKey===isoDate(currentWeekStart))))return false;
  const weekKey=isoDate(currentWeekStart);
  const expectedRevision=Object.prototype.hasOwnProperty.call(options,'expectedRevision')?options.expectedRevision:planningLoadedRevisionAt;
  planningLastSaveVerified=false;planningLastSaveOutcome='unknown';planningSaveInFlight=true;
@@ -1140,7 +1140,7 @@ async function importPlanningFiles(fileList){
 
 function setPaintColor(c){paintColor=c;document.querySelectorAll('.paintChoice').forEach(b=>b.classList.toggle('active',b.dataset.color===c))}
 function clonePlanningModel(value){if(!value)return value;try{return typeof structuredClone==='function'?structuredClone(value):JSON.parse(JSON.stringify(value))}catch(_){return JSON.parse(JSON.stringify(value))}}
-function toggleEditMode(){if(!canEdit||!model||planningWeekLoadError||navigator.onLine===false)return;if(editMode){saveAndFinishEdit();return}if(coverageModeActive)setCoverageMode(false);resetEditChanges();editSnapshot=clonePlanningModel(model);editMode=true;document.getElementById('editTools').classList.remove('hidden');document.getElementById('editSaveBar').classList.remove('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✓ Enregistrer';b.classList.add('editing');setSaveState('Mode modification');renderReader()}
+function toggleEditMode(){if(!canEdit||!model)return;if(editMode){if(navigator.onLine!==false)saveAndFinishEdit();else showToast('Connexion nécessaire pour enregistrer les modifications');return}if(planningWeekLoadError||navigator.onLine===false)return;if(coverageModeActive)setCoverageMode(false);resetEditChanges();editSnapshot=clonePlanningModel(model);editMode=true;document.getElementById('editTools').classList.remove('hidden');document.getElementById('editSaveBar').classList.remove('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✓ Enregistrer';b.classList.add('editing');setSaveState('Mode modification');renderReader()}
 function cancelPlanningEdit(){
  if(!canEdit||!editMode)return;
  const hasChanges=changedDates().length>0;
