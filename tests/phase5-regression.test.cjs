@@ -134,16 +134,31 @@ test('les incidents ne transmettent jamais de messages libres',async()=>{
 });
 
 test('mise à jour PWA et scripts exécutables cohérents',()=>{
- const page=source('mobile.html'),worker=source('sw.js');
- const version=JSON.parse(source('app-version.json'));
- assert.equal(version.version,379);
- assert.match(worker,/APP_VERSION=379/);
- assert.match(worker,/netto-tools-v379/);
- for(const filename of ['runtime/client-health.js?v=1','ui/mobile/mobile-sync.js?v=3',
-  'ui/mobile/mobile-services.js?v=14','ui/mobile/views/home/home-view.js?v=15',
-  'ui/mobile/views/planning/planning-view.js?v=17']){
-  assert.ok(page.includes(filename),'mobile missing '+filename);
-  assert.ok(worker.includes('./'+filename),'service worker missing '+filename)
+ const page=source('mobile.html'),worker=source('sw.js'),version=JSON.parse(source('app-version.json'));
+ assert.ok(Number.isInteger(version.version)&&version.version>0);
+ const declared=worker.match(/const APP_VERSION=(\d+);/);
+ const cached=worker.match(/const CACHE='netto-tools-v(\d+)';/);
+ assert.ok(declared&&cached,'version ou cache PWA manquant');
+ assert.equal(Number(declared[1]),version.version,'version appli différente du Service Worker');
+ assert.equal(Number(cached[1]),version.version,'cache incorrect');
+ const mobileAssets=[...page.matchAll(/(?:src|href)="([^"]+\.(?:js|css)\?v=\d+)"/g)]
+   .map(match=>match[1]).filter(asset=>!/^https?:/.test(asset));
+ assert.ok(mobileAssets.length>=12,'manifeste mobile incomplet');
+ for(const asset of mobileAssets){
+  assert.ok(worker.includes('./'+asset),'ressource mobile absente du cache : '+asset)
+ }
+ for(const [viewFile,runtimeFile] of [
+  ['ui/mobile/views/planning/planning-view.js','planning-runtime.js'],
+  ['ui/mobile/views/chat/chat-view.js','chat-v2.js']
+ ]){
+  const nested=source(viewFile).match(new RegExp(runtimeFile.replace(/\./g,'\\.')+'\\?v=\\d+'));
+  assert.ok(nested,'runtime absent de '+viewFile);
+  assert.ok(worker.includes('./'+nested[0]),'runtime non mis à jour dans le cache : '+nested[0])
+ }
+ for(const [htmlFile,runtime] of [['planning.html','planning-runtime.js'],['chat.html','chat-v2.js']]){
+  const script=source(htmlFile).match(new RegExp(runtime.replace(/\./g,'\\.')+'\\?v=\\d+'));
+  assert.ok(script,htmlFile+' sans runtime');
+  assert.ok(worker.includes('./'+script[0]),htmlFile+' et cache désynchronisés')
  }
 });
 
@@ -207,4 +222,86 @@ test('deux responsables ne peuvent pas publier successivement le même brouillon
  assert.equal(b.env.planningLastSaveOutcome,'conflict');
  assert.equal(b.env.model.weekStart,'2026-10-05');
  assert.equal(ledger.revision,'rev-2');
+});
+
+function mockedPlanningRead({offline=false,day=5,user='employee-a',networkError=false,draft=false}={}){
+ const js=source('planning-runtime.js');
+ const begin=js.indexOf('async function loadWeek(start=currentWeekStart,opts={}){');
+ const end=js.indexOf('\n}\n',begin);
+ assert.ok(begin>=0&&end>begin,'loadWeek manquant');
+ const stored={version:4,weekStart:'2026-10-05',employees:[],days:{},updatedAt:'local'};
+ const calls={db:0,verified:0,failed:0,stale:0};
+ const env={
+  model:stored,currentWeekStart:new Date(2026,9,5),currentUser:{id:user},
+  planningWeekLoadSeq:0,planningReadStatusWeekKey:'2026-10-05',
+  planningCacheUserId:'employee-a',planningCacheReady:true,
+  planningLoadedWeekKey:'2026-10-05',planningLoadedRevisionAt:'rev-old',
+  planningWeekLoadError:false,planningConflictDetected:false,planningAbsences:[],
+  PLANNING_SPA_MODE:true,
+  window:{NethorMobileSync:{
+   beginCheck:()=>({ticket:1}),
+   markVerified:()=>calls.verified++,markFailed:()=>calls.failed++,
+   markStale:()=>calls.stale++
+  }},
+  navigator:{onLine:!offline},
+  startOfWeek:d=>d,
+  isoDate:d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-'),
+  clearPlanningReadStatuses:()=>{},setSaveState:()=>{},renderAll:()=>{},
+  fetchPlanningAbsences:async()=>[],loadPlanningReadStatusWeek:async()=>{},
+  changedDates:()=>draft?['2026-10-05']:[],editMode:draft,console:{warn:()=>{}},
+  db:{from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>{
+   calls.db++;
+   if(networkError)return{data:null,error:new Error('simulated transport failure')};
+   return{data:{data:{version:4,weekStart:'2026-10-05',employees:[],days:{},updatedAt:'published'},updated_at:'rev-new'},error:null}
+  }})})})}
+ };
+ const load=vm.runInNewContext(js.slice(begin,end+2)+'\nloadWeek',env);
+ return{env,stored,calls,load:()=>load(new Date(2026,9,day),{render:false})}
+}
+
+test('planning hors connexion : copie limitée à la semaine et au compte actifs',async()=>{
+ const same=mockedPlanningRead({offline:true});
+ assert.equal(await same.load(),false);
+ assert.equal(same.env.model,same.stored);
+ assert.equal(same.env.planningWeekLoadError,true);
+ assert.equal(same.calls.db,0);
+ assert.equal(same.calls.verified,0);
+ assert.equal(same.calls.stale,1);
+ const otherWeek=mockedPlanningRead({offline:true,day:12});
+ assert.equal(await otherWeek.load(),false);
+ assert.equal(otherWeek.env.model,null);
+ assert.equal(otherWeek.env.planningLoadedRevisionAt,'');
+ const otherUser=mockedPlanningRead({offline:true,user:'employee-b'});
+ assert.equal(await otherUser.load(),false);
+ assert.equal(otherUser.env.model,null);
+});
+
+test('planning : échec réseau et brouillon ne produisent jamais de lecture vérifiée',async()=>{
+ const failed=mockedPlanningRead({networkError:true});
+ assert.equal(await failed.load(),false);
+ assert.equal(failed.env.model,failed.stored);
+ assert.equal(failed.env.planningWeekLoadError,true);
+ assert.equal(failed.calls.failed,1);
+ assert.equal(failed.calls.verified,0);
+ const draft=mockedPlanningRead({draft:true});
+ assert.equal(await draft.load(),false);
+ assert.equal(draft.env.model,draft.stored);
+ assert.equal(draft.calls.stale,1);
+ assert.equal(draft.calls.verified,0);
+ const recovered=mockedPlanningRead();
+ assert.equal(await recovered.load(),true);
+ assert.notEqual(recovered.env.model,recovered.stored);
+ assert.equal(recovered.env.planningLoadedRevisionAt,'rev-new');
+ assert.equal(recovered.calls.verified,1);
+});
+
+test('journal technique : lecture strictement réservée au rôle admin avec session active',()=>{
+ const migration=source('database/2026-10-07-client-health-strict-admin-phase5.sql');
+ assert.match(migration,/nethor_health_admin_select/);
+ assert.match(migration,/private\.session_is_active\(\)/);
+ assert.match(migration,/private\.can_module/);
+ assert.match(migration,/p\.role='admin'/);
+ const js=source('runtime/client-health-admin.js');
+ assert.match(js,/select\('domain,code,platform,build,created_at'\)/);
+ assert.doesNotMatch(js,/\.select\('[^']*user_id/);
 });

@@ -61,3 +61,16 @@ Enregistrer le **résultat réel**, le type d'appareil, le navigateur/PWA, la da
 La version 379 introduit une surveillance, mais **pas de supervision automatique 24 h/24** ni de garantie de disponibilité. Les modules qui ne passent pas encore par les états de fraîcheur du shell mobile doivent être audités séparément. Tester également le comportement des anciens clients PWA lors des mises à jour.
 
 La certification multi-appareils sera possible seulement après l'exécution et la réussite documentée de cette campagne physique.
+
+## Vérification CI et renforcement des droits — 7 octobre 2026
+
+La première exécution réelle GitHub Actions de la phase 5 sur la PR n°14 (**run `37541064185`**) a été vérifiée : **10 tests réussis, 0 échec**, et étape de validation syntaxique réussie.
+
+### Suivi de l'audit
+
+- Le test de cohérence PWA utilise désormais le numéro de version depuis `app-version.json`, les références réelles de `mobile.html` et le manifeste du Service Worker. Un changement futur de version ne doit pas nécessiter de réécrire les assertions ; les décalages de scripts restent détectés.
+- Des scénarios supplémentaires vérifient directement le chargeur `loadWeek()` réel : cache de la même semaine conservé uniquement pour le même compte, rejet de la copie d'une autre semaine, coupure réseau, brouillon local, retour d'une lecture autoritaire. Aucun reçu de lecture n'est émis par ces tests.
+- Le journal était consultable via la permission `portal_admin/manage`, ce qui pourrait être trop large si cette permission est déléguée. La migration `database/2026-10-07-client-health-strict-admin-phase5.sql` exige désormais **également `profiles.role='admin'` et une session active**. Les quatre colonnes de télémétrie et les politiques d'insertion restent inchangées.
+- La table `public.nethor_client_health_events` était vide lors de la vérification (aucune donnée test injectée). Les privilèges à l'insertion sont limités aux colonnes `domain`, `code`, `platform`, `build`. Les comptes anonymes ne peuvent pas lire les données et les utilisateurs connectés ne peuvent pas forger `user_id`.
+
+**Limite maintenue :** la réussite CI prouve des scénarios simulés et des contrôles statiques, pas la livraison effective d'un message Realtime sur deux appareils physiques ni l'installation du Service Worker sur un iPhone donné.
