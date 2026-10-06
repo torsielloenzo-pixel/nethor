@@ -132,11 +132,12 @@ async function loadConversations(){
   db.from('chat_conversations').select('avatar_url,avatar_path').eq('type','general').maybeSingle(),
   db.from('chat_conversations').select('id,pinned_at').not('pinned_at','is',null)
  ]);
- const {data,error}=conversationResult;if(error){console.error('Conversations:',error);showToast('Impossible de charger les discussions');return}
+ const {data,error}=conversationResult;if(error){console.error('Conversations:',error);showToast('Impossible de charger les discussions');return false}
  if(!generalResult.error){state.generalAvatarUrl=String(generalResult.data?.avatar_url||'');state.generalAvatarPath=String(generalResult.data?.avatar_path||'')}
  const pinMap=new Map((pinsResult.data||[]).map(row=>[row.id,row.pinned_at]));
  state.conversations=(data||[]).map(row=>({...row,pinned_at:pinMap.get(row.conversation_id)||null}));renderConversations();
  if(state.activeId&&!state.conversations.some(c=>c.conversation_id===state.activeId)){state.activeId=null;state.messages=[];state.participants=[];renderConversationHeader();renderMessages()}
+ return !generalResult.error&&!pinsResult.error
 }
 function renderConversations(){
  const box=$('conversationList');if(!box)return;
@@ -283,19 +284,20 @@ function renderConversationHeader(){
  av.innerHTML=conversationAvatar(c,true);if(avatarBtn)avatarBtn.disabled=false;title.textContent=conversationTitle(c);sub.textContent=conversationPresence(c);info.disabled=false;search.disabled=false;composer.classList.remove('hidden');renderDesktopDetails()
 }
 async function loadMessages(){
- if(!state.activeId){state.messages=[];state.reactions=[];state.lastMessageRenderKey='';renderMessages();return}
+ if(!state.activeId){state.messages=[];state.reactions=[];state.lastMessageRenderKey='';renderMessages();return true}
  const conversationId=state.activeId,seq=++state.messageLoadSeq;
  const {data,error}=await db.from('chat_messages').select('id,user_id,display_name,body,attachment_path,attachment_name,attachment_type,attachment_size,created_at,conversation_id,reply_to,edited_at,deleted_at').eq('conversation_id',conversationId).order('created_at',{ascending:true}).limit(400);
- if(seq!==state.messageLoadSeq||state.activeId!==conversationId)return;
- if(error){console.error(error);$('messages').innerHTML='<div class="listEmpty">Impossible de charger les messages.</div>';return}
- state.messages=data||[];await loadReactions();
- if(seq!==state.messageLoadSeq||state.activeId!==conversationId)return;
- await renderMessages();renderDesktopDetails()
+ if(seq!==state.messageLoadSeq||state.activeId!==conversationId)return false;
+ if(error){console.error(error);if(!state.messages.length)$('messages').innerHTML='<div class="listEmpty">Impossible de charger les messages.</div>';return false}
+ state.messages=data||[];const reactionsOk=await loadReactions();
+ if(seq!==state.messageLoadSeq||state.activeId!==conversationId)return false;
+ await renderMessages();renderDesktopDetails();return reactionsOk!==false
 }
 async function loadReactions(){
- const ids=state.messages.map(m=>m.id);if(!ids.length){state.reactions=[];return}
+ const ids=state.messages.map(m=>m.id);if(!ids.length){state.reactions=[];return true}
  const {data,error}=await db.from('chat_reactions').select('message_id,user_id,emoji,created_at').in('message_id',ids);
- state.reactions=error?[]:(data||[])
+ if(error){console.warn('[Nethor Chat] reactions',error);return false}
+ state.reactions=data||[];return true
 }
 async function attachmentHtml(m){
  if(!m.attachment_path||m.deleted_at)return'';const url=await signed(m.attachment_path);if(!url)return'';
@@ -915,14 +917,19 @@ function scheduleChatSync(detail={}){
  const request=++chatSyncRequest;
  chatSyncTimer=setTimeout(async()=>{
   if(!chatRuntimeActive||request!==chatSyncRequest)return;
+  const sync=window.NethorMobileSync,ticket=sync?.beginCheck?.('chat');
   try{
-   await Promise.all([loadMembers(),loadConversations()]);
+   const [,conversationsOk]=await Promise.all([loadMembers(),loadConversations()]);
    if(!chatRuntimeActive||request!==chatSyncRequest)return;
+   let messagesOk=true;
    if(state.activeId){
-    await Promise.all([loadParticipants(),loadMessages()]);
-    if(chatRuntimeActive&&request===chatSyncRequest&&(detail.reason!=='realtime'||detail.table==='chat_messages'))await markRead()
+    const [,result]=await Promise.all([loadParticipants(),loadMessages()]);
+    messagesOk=result!==false;
+    if(chatRuntimeActive&&request===chatSyncRequest&&conversationsOk!==false&&messagesOk&&(detail.reason!=='realtime'||detail.table==='chat_messages')&&navigator.onLine!==false)await markRead()
    }
-  }catch(error){console.warn('[Nethor Chat] synchronisation',error)}
+   if(conversationsOk!==false&&messagesOk)sync?.markVerified?.('chat',ticket);
+   else sync?.markFailed?.('chat',ticket)
+  }catch(error){sync?.markFailed?.('chat',ticket);console.warn('[Nethor Chat] synchronisation',error)}
  },180)
 }
 function startRealtime(){
