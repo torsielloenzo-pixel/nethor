@@ -613,7 +613,7 @@ async function render(){
     const id='team-'+index;
     if(item.profile)avatarRows.push({id,profile:item.profile});
     return '<div class="mhdPerson"><span class="mhdAvatar" data-home-team-avatar="'+id+'" style="background-color:'+esc(item.profile?.profile_color||'#ff5a2a')+'">'+esc(avatarInitials(item.name))+'</span><strong>'+esc(item.name)+'</strong><small>'+esc(item.profile?roleLabel(item.profile.role):'Équipe')+'</small></div>'
-  }).join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">Aucun membre planifié aujourd’hui.</div>')+'</section>')
+  }).join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">'+(snapshot.planningLoadError?'Impossible de vérifier l’équipe du jour.':'Aucun membre planifié aujourd’hui.')+'</div>')+'</section>')
  }
 
  if(widgetVisible('quick_access')){
