@@ -47,8 +47,9 @@ function currentViewId(){
 }
 function freshnessSummary(){
  const domains=PRIMARY_DOMAINS[currentViewId()]||[];
+ if(!enabled())return{state:'hidden',label:''};
  if(!online())return{state:'offline',label:'Hors connexion · données non vérifiées'};
- if(!enabled()||!domains.length)return{state:'hidden',label:''};
+ if(!domains.length)return{state:'hidden',label:''};
  const states=domains.map(statusOf);
  if(states.includes('error'))return{state:'error',label:'Données non vérifiées · actualisation impossible'};
  if(states.includes('checking'))return{state:'checking',label:'Vérification des données…'};
