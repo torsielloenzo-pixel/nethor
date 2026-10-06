@@ -479,11 +479,15 @@ async function render(){
  const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today));
  const uid=String(state.session.user.id||'');
  const offline=navigator.onLine===false;
+ const sync=window.NethorMobileSync;
+ const needsRefresh=!offline&&sync?.active&&(['planning','tasks'].some(domain=>sync.statusOf(domain)!=='fresh'));
  let snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&(offline||Date.now()-state.preloaded.loadedAt<45000)?state.preloaded:null;
  if(!snapshot&&state.preloadPromise&&!offline){
   await state.preloadPromise;
   snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&Date.now()-state.preloaded.loadedAt<45000?state.preloaded:null
  }
+ // Realtime ou retour au premier plan ont pu invalider le préchargement.
+ if(needsRefresh||snapshot?.planningLoadError||snapshot?.taskLoadError)snapshot=offline?snapshot:null;
  // Les données préchargées ne sont réutilisées que si la version serveur est inchangée.
  if(snapshot&&!offline){
   const end=isoDate(addDays(startOfWeek(today),84));
