@@ -16,7 +16,7 @@ function render(start,ctx){
   const days=dates.map(d=>{
    const cells=model.days?.[d.key]?.cells?.[index]||[];
    const ranges=rowRanges(cells).filter(r=>r.c==='g'||r.c==='b');
-   const status=ranges.length?'work':cells.includes('y')?'leave':cells.includes('r')?'red':cells.includes('o')?'orange':cells.includes('w')?'unavailable':'off';
+   const status=ranges.length?'work':cells.includes('y')?'leave':cells.includes('w')?'unavailable':'off';
    return {ranges,status,total:ranges.reduce((sum,r)=>sum+r.b-r.a,0)}
   });
   const totalFromExcel=numeric(employee.excelWeekTotalHours),contract=numeric(employee.excelContractHours),diff=numeric(employee.excelContractDifference);
@@ -49,16 +49,16 @@ function render(start,ctx){
   out+='<div class="nthWeekSlots" aria-label="Horaires de '+escapeHtml(info.label)+'">';
   for(let i=0;i<7;i++){
    const d=days[i],c=d.status==='work'?(d.ranges[0]?.c||'g'):d.status;
-   const label=d.status==='leave'?'Congé':d.status==='red'?'Rouge':d.status==='orange'?'Orange':d.status==='unavailable'?'Indispo.':'Non planifié';
+   const label=d.status==='leave'?'Congé':d.status==='unavailable'?'Indispo.':'Repos';
    const tooltip=dates[i].label+' '+dates[i].number+' : '+(d.ranges.length?d.ranges.map(r=>time(r.a)+'–'+time(r.b)).join(', '):label);
    out+='<div class="nthWeekSlot'+(i===selected?' active':'')+'" data-status="'+c+'" title="'+escapeHtml(tooltip)+'">';
    if(d.ranges.length){for(const r of d.ranges)out+='<span class="nthWeekShift" data-shift="'+r.c+'"><strong>'+time(r.a)+'</strong><strong>'+time(r.b)+'</strong></span>'}
-   else out+='<span class="nthWeekOff">'+(d.status==='off'?'—':escapeHtml(label))+'</span>';
+   else out+='<span class="nthWeekOff">'+escapeHtml(label)+'</span>';
    out+='</div>';
   }
   out+='</div></article>';
  }
- out+='</div><div class="nthWeekLegend"><span><i class="g"></i>Vert</span><span><i class="b"></i>Bleu</span><span><i class="y"></i>Congé</span><span><i class="n"></i>Non planifié</span><span><i class="r"></i>Statut coloré</span></div>';
+ out+='</div><div class="nthWeekLegend"><span><i class="g"></i>Vert</span><span><i class="b"></i>Bleu</span><span><i class="y"></i>Congé</span><span><i class="n"></i>Repos</span><span><i class="r"></i>Indisponibilité</span></div>';
  return out;
 }
 window.NethorMobileWeekCards=Object.freeze({render,setFilter(value){filter=['all','working','off','mine'].includes(value)?value:'all'},reset(){filter='all'},numberOfWeek});
