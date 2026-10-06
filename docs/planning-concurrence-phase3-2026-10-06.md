@@ -46,3 +46,20 @@ Les autres ressources modifiables (tâches, paramètres, fiches articles, etc.) 
 ## Durcissement de l'exposition API
 
 Les implémentations `SECURITY DEFINER` sont déplacées dans le schéma non exposé `private`. Les fonctions `public.planning_save_week_if_revision` et `public.planning_delete_week_if_revision` conservent leur API et leurs paramètres, mais deviennent des façades `SECURITY INVOKER`. Les vérifications de session et de permission restent dans les fonctions privées ; les accès anonymes ne sont pas accordés. Aucun changement côté interface n'est nécessaire.
+
+## Vérification complémentaire — privilèges clients et double enregistrement
+
+**Correctif v1.46.28 — PWA 377, 6 octobre 2026.**
+
+L'audit de fin de phase 3 a découvert des privilèges SQL administratifs restants sur les tables publiques malgré les protections RLS :
+
+- `anon` avait le droit `TRUNCATE` sur 35 tables publiques ;
+- `authenticated` disposait de `TRUNCATE` sur 39 tables publiques, parmi 53 tables examinées.
+
+La commande `TRUNCATE` n'est pas soumise aux règles RLS de filtrage des lignes. La migration `database/2026-10-06-revoke-client-destructive-table-privileges.sql` révoque donc `TRUNCATE`, `TRIGGER` et `REFERENCES` des rôles clients sur les tables publiques. Elle conserve les permissions métier `SELECT`, `INSERT`, `UPDATE` et `DELETE` et leurs contrôles RLS. Le rôle serveur `service_role` n'est pas modifié.
+
+Le Planning empêche aussi le double envoi simultané d'un même enregistrement, d'une modification ou d'une réinitialisation. Le changement de semaine est bloqué pendant la publication afin que la confirmation d'une opération ne se rapporte jamais à une autre semaine.
+
+**Vérifications sans toucher aux horaires réels :** 11 contrôles de cohérence du code et du cache, 6 scénarios de publication simulés (succès, conflit, droits refusés, coupure réseau, double soumission, changement de semaine). Après application de la migration, vérifier les privilèges effectifs depuis Supabase.
+
+**Limites :** ni les simulations ni les requêtes d'audit ne remplacent un véritable essai simultané avec deux comptes de responsables. Les droits des rôles serveurs et des schémas hors `public` ne relèvent pas de ce correctif.
