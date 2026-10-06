@@ -46,19 +46,13 @@ function currentViewId(){
  return currentView||String(window.NethorMobileRouter?.current?.()||'home')
 }
 function freshnessSummary(){
- const domains=PRIMARY_DOMAINS[currentViewId()]||[];
+ // L'utilisateur n'a pas besoin d'un journal de synchronisation quand tout va bien.
  if(!enabled())return{state:'hidden',label:''};
- if(!online())return{state:'offline',label:'Hors connexion · données non vérifiées'};
- if(!domains.length)return{state:'hidden',label:''};
- const states=domains.map(statusOf);
- if(states.includes('error'))return{state:'error',label:'Données non vérifiées · actualisation impossible'};
- if(states.includes('checking'))return{state:'checking',label:'Vérification des données…'};
- if(states.every(s=>s==='fresh')){
-  const oldest=Math.min(...domains.map(d=>domainRecord(d).verifiedAt));
-  const when=new Date(oldest).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  return{state:'fresh',label:'Données vérifiées à '+when}
- }
- return{state:'stale',label:'Données non vérifiées · actualisation nécessaire'}
+ if(!online())return{state:'offline',label:'Mode hors connexion · consultation uniquement'};
+ const domains=PRIMARY_DOMAINS[currentViewId()]||[];
+ if(domains.some(domain=>statusOf(domain)==='error'))
+  return{state:'error',label:'Connexion au serveur indisponible · données non actualisées'};
+ return{state:'hidden',label:''}
 }
 function paintStatus(){
  const bar=document.querySelector('[data-mobile-sync-banner]');
