@@ -47,7 +47,7 @@ begin
   if not (select private.session_is_active()) then return false; end if;
   if not (select private.can_module(v_user,'planning','view')) then return false; end if;
 
-  v_week := p_day - (pg_catalog.extract(isodow from p_day)::integer - 1);
+  v_week := p_day - (extract(isodow from p_day)::integer - 1);
   if v_source not in ('mobile_home','planning_mobile','planning_desktop','planning') then
     v_source := 'planning';
   end if;
