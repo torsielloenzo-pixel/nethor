@@ -125,7 +125,7 @@ async function readNotificationPreferences(){
     return Array.isArray(data)?data:[]
   }catch(error){
     console.warn('[Nethor MobileServices] notification preferences',error);
-    return[]
+    return [...state.notificationPreferences]
   }
 }
 async function readNotifications(){
@@ -210,7 +210,7 @@ async function refreshCore({emitChange=true}={}){
 async function refresh(){
   if(!state.session)return snapshot();
   if(refreshAllPromise)return refreshAllPromise;
-  const uid=state.session.user.id;
+  const uid=state.session.user.id,notificationsSeq=++notificationRequestSeq;
   refreshAllPromise=(async()=>{
     state.status='refreshing';
     emit('refreshing');
@@ -223,7 +223,7 @@ async function refresh(){
       ]);
       if(state.session?.user?.id!==uid)return snapshot();
       state.notificationPreferences=preferences;
-      if(notifications!==null){
+      if(notifications!==null&&notificationsSeq===notificationRequestSeq){
         state.notifications=notifications;
         state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0)
       }
