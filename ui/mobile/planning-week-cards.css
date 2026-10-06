@@ -32,7 +32,7 @@ body.agendaLayout .agendaMount.nthWeekHost{width:100%!important;max-width:100%!i
 .nthWeekOff{font-size:9px;font-weight:800;line-height:1.25;padding:2px;overflow-wrap:anywhere}
 .nthWeekLegend{display:flex;gap:9px 12px;flex-wrap:wrap;padding:13px 2px 4px;font-size:10px;color:#65758b}
 .nthWeekLegend span{display:flex;align-items:center;gap:4px}.nthWeekLegend i{width:10px;height:10px;border-radius:3px;background:#e6eaf0}
-.nthWeekLegend i.g{background:#74d0a4}.nthWeekLegend i.b{background:#86b2f1}.nthWeekLegend i.y{background:#efc35b}.nthWeekLegend i.r{background:#ee8f7a}
+.nthWeekLegend i.g{background:#74d0a4}.nthWeekLegend i.b{background:#86b2f1}.nthWeekLegend i.y{background:#efc35b}.nthWeekLegend i.r{background:#ba9cdd}
 .nthWeekEmpty{padding:25px 12px;background:#fff;border:1px solid #e1e8f0;border-radius:12px;text-align:center;color:#667892;font-size:12px}
 @media(max-width:360px){.nthWeekCard{padding:10px 7px}.nthWeekSlots,.nthWeekDays{gap:3px}.nthWeekShift strong{font-size:8.6px}.nthWeekSummary>div{padding:9px 6px}.nthWeekFilters button{padding:0 10px}}
 html[data-theme="dark"] .nthWeekDay,html[data-theme="dark"] .nthWeekSummary>div,html[data-theme="dark"] .nthWeekCard,html[data-theme="dark"] .nthWeekFilters button,html[data-theme="dark"] .nthWeekEmpty{background:#1a222b;border-color:#354355;color:#dce8f7}
