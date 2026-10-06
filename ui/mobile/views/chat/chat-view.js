@@ -116,6 +116,10 @@ function restoreScroll(){
 }
 async function mount(host){
  state.host=host;state.mounted=true;state.routeKey=routeKey();
+ if(navigator.onLine===false){
+  host.innerHTML='<div class="nethorChatViewLoading"><strong>Chat indisponible hors connexion</strong><small>La consultation des messages nécessite une connexion. Le Planning et l’Accueil restent accessibles hors ligne.</small></div>';
+  return true
+ }
  host.innerHTML='<div class="nethorChatViewLoading"><span></span><strong>Chargement du Chat…</strong><small>Connexion aux discussions de l’équipe.</small></div>';
  setPlatformMarkers();
  try{
