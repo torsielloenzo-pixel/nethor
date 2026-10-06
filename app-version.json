@@ -1,17 +1,18 @@
 {
-  "version": 371,
-  "label": "v1.46.22",
-  "important": false,
+  "version": 372,
+  "label": "v1.46.23",
+  "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Historique des imports Planning",
-  "message": "Ajout sur Desktop d’un historique administrateur des fichiers Excel importés dans le planning, avec téléchargement, date, utilisateur et adresse IP lorsque disponible.",
-  "published_at": "2026-10-05T17:06:00.000Z",
+  "title": "Planning à jour et lectures fiables",
+  "message": "Synchronisation du dernier planning importé sur mobile. Le statut Lu correspond désormais exclusivement à la version du planning réellement consultée.",
+  "published_at": "2026-10-06T10:58:24.277Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Desktop Admin : nouveau bouton « Fichiers Excel » à côté de Planning / Couverture / Analyse",
-    "Historique conservé lors des remplacements de planning, sans supprimer les anciens fichiers archivés",
-    "Liste : nom du fichier, date d’importation, utilisateur, IP et semaine concernée",
-    "Téléchargement direct des fichiers encore archivés ; les imports antérieurs à l’archivage restent listés comme indisponibles"
+    "Mobile : vérification du dernier import de la semaine à chaque ouverture du planning.",
+    "Accueil mobile : contrôle de la version avant de compter une consultation.",
+    "Lu / Non lu : un nouveau planning invalide les lectures de l’ancien.",
+    "Toute lecture issue d’une ancienne version est refusée côté serveur.",
+    "En cas d’échec de synchronisation, l’ancien planning n’est plus présenté comme le dernier."
   ]
 }
