@@ -398,6 +398,8 @@ async function loadHomeSnapshot(shared){
  const profile=shared?.profile||null,config=shared?.siteConfig||{},session=shared?.session||null,db=shared?.client||null;
  if(!profile||!session||!db)return null;
  const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today)),weekEnd=isoDate(addDays(startOfWeek(today),84));
+ const sync=window.NethorMobileSync;
+ const planningTicket=sync?.beginCheck?.('planning'),tasksTicket=sync?.beginCheck?.('tasks');
  const [weeksRes,profilesRes,taskCatalogRes,taskRowsRes]=await Promise.all([
   db.from('planning_weeks').select('week_start,data,updated_at').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
   db.rpc('list_team_members'),
@@ -405,15 +407,21 @@ async function loadHomeSnapshot(shared){
   db.from('daily_tasks').select('id,task_date,catalog_key,source_keys,title,section_key,section_label,detail,all_users,sort_order,created_by,created_at').eq('task_date',todayKey).order('sort_order').order('created_at')
  ]);
  const tasks=taskRowsRes.error?[]:(taskRowsRes.data||[]);
- let assignees=[],completions=[];
+ let assignees=[],completions=[],relatedTasksError=false;
  if(tasks.length){
   const ids=tasks.map(x=>x.id),[aRes,cRes]=await Promise.all([
    db.from('daily_task_assignees').select('task_id,user_id').in('task_id',ids),
    db.from('daily_task_completions').select('task_id,user_id,completed_at').in('task_id',ids)
   ]);
   assignees=aRes.error?[]:(aRes.data||[]);
-  completions=cRes.error?[]:(cRes.data||[])
+  completions=cRes.error?[]:(cRes.data||[]);
+  relatedTasksError=!!(aRes.error||cRes.error)
  }
+ const tasksFailed=!!(taskCatalogRes.error||taskRowsRes.error||relatedTasksError);
+ if(weeksRes.error)sync?.markFailed?.('planning',planningTicket);
+ else sync?.markVerified?.('planning',planningTicket);
+ if(tasksFailed)sync?.markFailed?.('tasks',tasksTicket);
+ else sync?.markVerified?.('tasks',tasksTicket);
  return{
   loadedAt:Date.now(),userId:String(session.user.id||''),todayKey,weekStart,
   profile,config,session,db,
@@ -422,7 +430,7 @@ async function loadHomeSnapshot(shared){
   team:profilesRes.error?[]:(profilesRes.data||[]),
   taskCatalog:taskCatalogRes.error?[]:(taskCatalogRes.data||[]),
   tasks,assignees,completions,
-  taskLoadError:!!(taskCatalogRes.error||taskRowsRes.error)
+  taskLoadError:tasksFailed
  }
 }
 function applyHomeSnapshot(snapshot){
@@ -464,22 +472,23 @@ async function render(){
 
  const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today));
  const uid=String(state.session.user.id||'');
- let snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&Date.now()-state.preloaded.loadedAt<45000?state.preloaded:null;
- if(!snapshot&&state.preloadPromise){
+ const offline=navigator.onLine===false;
+ let snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&(offline||Date.now()-state.preloaded.loadedAt<45000)?state.preloaded:null;
+ if(!snapshot&&state.preloadPromise&&!offline){
   await state.preloadPromise;
   snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&Date.now()-state.preloaded.loadedAt<45000?state.preloaded:null
  }
  // Les données préchargées ne sont réutilisées que si la version serveur est inchangée.
- if(snapshot){
+ if(snapshot&&!offline){
   const end=isoDate(addDays(startOfWeek(today),84));
   const {data:published,error:versionError}=await state.db.from('planning_weeks').select('week_start,updated_at').gte('week_start',weekStart).lte('week_start',end).order('week_start');
   const cached=new Map((snapshot.weeks||[]).map(w=>[String(w.__planningWeekStart||w.weekStart||w.week_start||''),String(w.__planningRevisionAt||'')]));
   if(versionError||!Array.isArray(published)||published.length!==cached.size||published.some(w=>cached.get(String(w.week_start))!==String(w.updated_at||'')))snapshot=null;
  }
- if(!snapshot)snapshot=await loadHomeSnapshot(shared);
+ if(!snapshot&&!offline)snapshot=await loadHomeSnapshot(shared);
  if(!state.mounted||token!==state.renderToken)return;
  if(!snapshot){
-  state.dashboard.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Impossible de charger ton espace de travail.</div></div>';
+  state.dashboard.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">'+(offline?'Hors connexion · aucune donnée de cette journée n’est disponible dans la session.':'Impossible de charger ton espace de travail.')+'</div></div>';
   return
  }
  state.preloaded=snapshot;
@@ -532,8 +541,8 @@ async function render(){
  }).filter(Boolean))];
 
  const sections=[],role=roleLabel(state.profile.role);
- const syncState=snapshot.planningLoadError?'error':(exactCurrentWeek?'ok':'missing');
- const syncText=snapshot.planningLoadError?'Planning indisponible : vérification impossible':(exactCurrentWeek?'Planning récupéré du serveur':'Aucun planning publié cette semaine');
+ const syncState=offline?'error':(snapshot.planningLoadError?'error':(exactCurrentWeek?'ok':'missing'));
+ const syncText=offline?'Dernières données consultées · non vérifiées hors connexion':(snapshot.planningLoadError?'Planning indisponible : vérification impossible':(exactCurrentWeek?'Planning récupéré du serveur':'Aucun planning publié cette semaine'));
  sections.push('<div class="mhdPlanningSyncState '+syncState+'" role="status">'+esc(syncText)+'</div>');
  const dateText=today.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
  const welcomeName=state.name||role;
@@ -624,7 +633,7 @@ async function render(){
 
  if(!state.mounted||token!==state.renderToken)return;
  state.dashboard.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
- if(exactCurrentWeek?.__planningRevisionAt&&!snapshot.planningLoadError){
+ if(!offline&&exactCurrentWeek?.__planningRevisionAt&&!snapshot.planningLoadError){
   services()?.markPlanningDayRead?.(todayKey,'mobile_home',exactCurrentWeek.__planningRevisionAt).catch?.(()=>{});
  }
  const todaySelf=todayModel?dayFacts(todayModel,todayKey,state.name):{hours:0,ranges:[]};
