@@ -398,7 +398,7 @@ async function loadHomeSnapshot(shared){
  if(!profile||!session||!db)return null;
  const today=new Date(),todayKey=parisDateKey(today),weekStart=isoDate(startOfWeek(today)),weekEnd=isoDate(addDays(startOfWeek(today),84));
  const [weeksRes,profilesRes,taskCatalogRes,taskRowsRes]=await Promise.all([
-  db.from('planning_weeks').select('week_start,data').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
+  db.from('planning_weeks').select('week_start,data,updated_at').gte('week_start',weekStart).lte('week_start',weekEnd).order('week_start'),
   db.rpc('list_team_members'),
   db.from('daily_task_catalog').select('key,section_key,section_label,title,sort_order').eq('active',true).order('sort_order'),
   db.from('daily_tasks').select('id,task_date,catalog_key,source_keys,title,section_key,section_label,detail,all_users,sort_order,created_by,created_at').eq('task_date',todayKey).order('sort_order').order('created_at')
@@ -416,7 +416,8 @@ async function loadHomeSnapshot(shared){
  return{
   loadedAt:Date.now(),userId:String(session.user.id||''),todayKey,weekStart,
   profile,config,session,db,
-  weeks:(weeksRes.data||[]).map(x=>x.data).filter(Boolean),
+  weeks:(weeksRes.data||[]).filter(x=>x.data).map(x=>({...x.data,__planningRevisionAt:x.updated_at})),
+   planningLoadError:!!weeksRes.error,
   team:profilesRes.error?[]:(profilesRes.data||[]),
   taskCatalog:taskCatalogRes.error?[]:(taskCatalogRes.data||[]),
   tasks,assignees,completions,
@@ -467,6 +468,12 @@ async function render(){
   await state.preloadPromise;
   snapshot=state.preloaded&&state.preloaded.userId===uid&&state.preloaded.todayKey===todayKey&&Date.now()-state.preloaded.loadedAt<45000?state.preloaded:null
  }
+ // Les données préchargées ne sont réutilisées que si la version serveur est inchangée.
+ if(snapshot){
+  const previous=snapshot.weeks?.find(w=>String(w.weekStart||w.week_start||'')===weekStart);
+  const {data:published,error:versionError}=await state.db.from('planning_weeks').select('updated_at').eq('week_start',weekStart).maybeSingle();
+  if(versionError||String(published?.updated_at||'')!==String(previous?.__planningRevisionAt||''))snapshot=null;
+ }
  if(!snapshot)snapshot=await loadHomeSnapshot(shared);
  if(!state.mounted||token!==state.renderToken)return;
  if(!snapshot){
@@ -475,9 +482,9 @@ async function render(){
  }
  state.preloaded=snapshot;
  applyHomeSnapshot(snapshot);
- services()?.markPlanningDayRead?.(todayKey,'mobile_home').catch?.(()=>{});
+
  const taskLoadError=!!snapshot.taskLoadError;
- const weeks=state.weeks,currentWeek=weeks.find(w=>String(w.weekStart||w.week_start||'')===weekStart)||weeks[0]||null;
+ const weeks=state.weeks,exactCurrentWeek=weeks.find(w=>String(w.weekStart||w.week_start||'')===weekStart)||null,currentWeek=exactCurrentWeek||weeks[0]||null;
  const allDays=[];
  for(const model of weeks)for(const dateKey of Object.keys(model?.days||{}))if(dateKey>=todayKey)allDays.push({dateKey,model});
  allDays.sort((a,b)=>a.dateKey.localeCompare(b.dateKey));
@@ -612,6 +619,9 @@ async function render(){
 
  if(!state.mounted||token!==state.renderToken)return;
  state.dashboard.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
+ if(exactCurrentWeek?.__planningRevisionAt&&!snapshot.planningLoadError){
+  services()?.markPlanningDayRead?.(todayKey,'mobile_home',exactCurrentWeek.__planningRevisionAt).catch?.(()=>{});
+ }
  const todaySelf=todayModel?dayFacts(todayModel,todayKey,state.name):{hours:0,ranges:[]};
  if(window.NethorOperationsWidget?.mount){
   await window.NethorOperationsWidget.mount({
