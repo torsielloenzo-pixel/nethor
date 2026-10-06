@@ -250,7 +250,7 @@ function stop(){
   paintStatus()
 }
 window.NethorMobileSync=Object.freeze({
- start,stop,subscribe,invalidate,revalidate,beginCheck,markVerified,markFailed,statusOf,freshnessSummary,
+ start,stop,subscribe,invalidate,revalidate,beginCheck,markVerified,markFailed,markStale:markDirty,statusOf,freshnessSummary,
  get active(){return enabled()},
  get status(){return online()?lastChannelStatus:'offline'},
  get userId(){return userId}
