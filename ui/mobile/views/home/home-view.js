@@ -311,6 +311,7 @@ function mergeTaskPair(rows,keyA,keyB,title){
 }
 async function publishTasks(button){
  if(state.busy||!state.session||!state.db)return;
+ if(navigator.onLine===false){alert('Connexion nécessaire pour publier les tâches.');return}
  const box=state.dashboard?.querySelector('#mhdTaskComposer'),message=box?.querySelector('#mhdTaskComposerState');if(!box)return;
  const keys=[...box.querySelectorAll('[data-task-template].selected:not(:disabled)')].map(x=>x.dataset.taskTemplate),custom=String(box.querySelector('[data-home-task-custom]')?.value||'').trim();
  if(!keys.length&&!custom){if(message)message.textContent='Sélectionne au moins une mission ou ajoute une mission ponctuelle.';return}
@@ -343,6 +344,7 @@ async function publishTasks(button){
  }finally{state.busy=false;if(button)button.disabled=false}
 }
 async function deleteTask(id,button){
+ if(navigator.onLine===false){alert('Connexion nécessaire pour supprimer une tâche.');return}
  if(state.busy||!id||!confirm('Supprimer cette tâche de la journée ?'))return;
  state.busy=true;if(button)button.disabled=true;
  try{
@@ -353,6 +355,7 @@ async function deleteTask(id,button){
  finally{state.busy=false}
 }
 async function resetTasks(button){
+ if(navigator.onLine===false){alert('Connexion nécessaire pour réinitialiser les tâches.');return}
  if(state.busy||!state.tasks.length||!confirm('Réinitialiser toutes les tâches du jour ?\n\nLes missions, affectations et validations d’aujourd’hui seront supprimées.'))return;
  state.busy=true;if(button)button.disabled=true;
  try{
@@ -364,6 +367,7 @@ async function resetTasks(button){
 }
 async function toggleTask(id,button){
  if(state.busy||!state.session||!id)return;
+ if(navigator.onLine===false){alert('Connexion nécessaire pour valider une tâche.');return}
  state.busy=true;if(button)button.disabled=true;
  try{
   const uid=state.session.user.id,done=state.completions.some(x=>x.task_id===id&&x.user_id===uid);
