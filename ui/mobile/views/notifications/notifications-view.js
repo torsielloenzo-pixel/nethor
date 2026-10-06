@@ -93,7 +93,8 @@ function render(){
   list.innerHTML='<div class="npEmpty"><div><div class="npEmptyIcon">🔔</div><strong>Chargement…</strong><span>Récupération de tes notifications.</span></div></div>';return
  }
  if(!rows.length){
-  list.innerHTML='<div class="npEmpty"><div><div class="npEmptyIcon">'+(state.search?'⌕':'✓')+'</div><strong>'+(state.search?'Aucun résultat':'Aucune notification')+'</strong><span>'+(state.search?'Essaie avec un autre terme.':'Tu as tout consulté pour le moment.')+'</span></div></div>';return
+  const unverified=!state.search&&window.NethorMobileSync?.active&&window.NethorMobileSync?.statusOf?.('notifications')!=='fresh';
+  list.innerHTML='<div class="npEmpty"><div><div class="npEmptyIcon">'+(unverified?'!':state.search?'⌕':'✓')+'</div><strong>'+(unverified?'Notifications non vérifiées':state.search?'Aucun résultat':'Aucune notification')+'</strong><span>'+(unverified?'La dernière liste disponible ne permet pas de confirmer qu’il n’y a aucun message.':state.search?'Essaie avec un autre terme.':'Tu as tout consulté pour le moment.')+'</span></div></div>';return
  }
  let previous='',html='';
  for(const n of rows){
