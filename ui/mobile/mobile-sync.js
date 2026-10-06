@@ -25,6 +25,82 @@ let flushTimer=null,refreshTimer=null,heartbeat=null,refreshPromise=null;
 let lastRefresh=0,lastChannelStatus='idle',hasSubscribed=false;
 const IDLE_REFRESH_MS=90000;
 const MIN_RESUME_REFRESH_MS=12000;
+const FRESH_MS=180000;
+const freshness=new Map();
+let uiInterval=null,currentView='';
+const PRIMARY_DOMAINS=Object.freeze({home:['planning','tasks'],planning:['planning'],chat:['chat'],notifications:['notifications']});
+function domainRecord(domain){
+ if(!freshness.has(domain))freshness.set(domain,{sequence:0,verifiedAt:0,failed:false,checking:false});
+ return freshness.get(domain)
+}
+function statusOf(domain){
+ if(!online())return'offline';
+ const row=freshness.get(domain);
+ if(!row)return'unknown';
+ if(row.failed)return'error';
+ if(row.checking)return'checking';
+ if(!row.verifiedAt||Date.now()-row.verifiedAt>FRESH_MS)return'stale';
+ return'fresh'
+}
+function currentViewId(){
+ return currentView||String(window.NethorMobileRouter?.current?.()||'home')
+}
+function freshnessSummary(){
+ const domains=PRIMARY_DOMAINS[currentViewId()]||[];
+ if(!online())return{state:'offline',label:'Hors connexion · données non vérifiées'};
+ if(!enabled()||!domains.length)return{state:'hidden',label:''};
+ const states=domains.map(statusOf);
+ if(states.includes('error'))return{state:'error',label:'Données non vérifiées · actualisation impossible'};
+ if(states.includes('checking'))return{state:'checking',label:'Vérification des données…'};
+ if(states.every(s=>s==='fresh')){
+  const oldest=Math.min(...domains.map(d=>domainRecord(d).verifiedAt));
+  const when=new Date(oldest).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  return{state:'fresh',label:'Données vérifiées à '+when}
+ }
+ return{state:'stale',label:'Données non vérifiées · actualisation nécessaire'}
+}
+function paintStatus(){
+ const bar=document.querySelector('[data-mobile-sync-banner]');
+ if(!bar)return;
+ const result=freshnessSummary();
+ bar.hidden=result.state==='hidden';
+ bar.dataset.state=result.state;
+ const label=bar.querySelector('[data-mobile-sync-label]');
+ if(label)label.textContent=result.label;
+ const retry=bar.querySelector('[data-mobile-sync-retry]');
+ if(retry)retry.hidden=result.state==='fresh'||result.state==='checking'||result.state==='hidden'||result.state==='offline'
+}
+function beginCheck(domain){
+ const record=domainRecord(domain);
+ record.checking=true;record.failed=false;
+ paintStatus();
+ return{userId,generation,sequence:record.sequence}
+}
+function finishCheck(domain,token,success){
+ if(!enabled()||!token||token.userId!==userId||token.generation!==generation)return false;
+ const record=domainRecord(domain);
+ if(token.sequence!==record.sequence)return false;
+ record.checking=false;record.failed=!success;
+ if(success)record.verifiedAt=Date.now();
+ paintStatus();
+ return true
+}
+function markVerified(domain,token){return finishCheck(domain,token,true)}
+function markFailed(domain,token){return finishCheck(domain,token,false)}
+function markDirty(domain){
+ const record=domainRecord(domain);
+ record.sequence++;record.verifiedAt=0;record.checking=false;record.failed=false;
+ paintStatus()
+}
+function initBanner(){
+ const bar=document.querySelector('[data-mobile-sync-banner]');
+ const retry=bar?.querySelector('[data-mobile-sync-retry]');
+ if(retry&&!retry.dataset.bound){
+  retry.dataset.bound='1';
+  retry.addEventListener('click',()=>revalidate('manual',{force:true}))
+ }
+ paintStatus()
+}
 
 function online(){return navigator.onLine!==false}
 function visible(){return document.visibilityState!=='hidden'}
@@ -34,6 +110,7 @@ function status(value){
 }
 function dispatch(domain,reason='change',metadata={}){
   if(!enabled())return;
+  markDirty(domain);
   if(!online()){
     dirty.add(domain);status('offline');return
   }
@@ -78,11 +155,11 @@ function onChannelStatus(value){
   const previous=lastChannelStatus;
   lastChannelStatus=value;
   if(value==='SUBSCRIBED'){
-    status('ready');
+    status('ready');paintStatus();
     if(hasSubscribed&&previous!=='SUBSCRIBED')revalidate('realtime-reconnected',{force:true});
     hasSubscribed=true
   }else if(value==='CHANNEL_ERROR'||value==='TIMED_OUT'||value==='CLOSED'){
-    status(online()?'degraded':'offline')
+    status(online()?'degraded':'offline');paintStatus()
   }
 }
 function routeDomains(view){
@@ -93,12 +170,14 @@ function routeDomains(view){
   return[]
 }
 function onRoute(event){
+  currentView=String(event?.detail?.view||'');
+  paintStatus();
   const domains=routeDomains(String(event?.detail?.view||''));
   if(domains.length)invalidate(domains,'route')
   if(domains.includes('notifications'))revalidate('notifications-route')
 }
-function onOnline(){status('degraded');revalidate('online',{force:true})}
-function onOffline(){status('offline');dirty.add('resume')}
+function onOnline(){status('degraded');paintStatus();revalidate('online',{force:true})}
+function onOffline(){status('offline');dirty.add('resume');paintStatus()}
 function onVisibility(){if(visible())revalidate('visible')}
 function onPageshow(event){if(event.persisted)revalidate('page-restored',{force:true})}
 function onFocus(){if(visible())revalidate('focus')}
@@ -136,6 +215,8 @@ function start({db,uid}={}){
   client=db;userId=nextId;started=true;generation++;
   hasSubscribed=false;lastChannelStatus='connecting';
   status(online()?'degraded':'offline');
+  initBanner();
+  uiInterval=setInterval(paintStatus,30000);
   channel=client.channel('nethor-mobile-sync-'+nextId);
   for(const table of Object.keys(DOMAIN_BY_TABLE)){
     channel=channel.on('postgres_changes',{event:'*',schema:'public',table},payload=>onDatabaseChange(table,payload))
@@ -154,9 +235,9 @@ function stop(){
   generation++;
   const oldChannel=channel,oldClient=client;
   channel=null;client=null;userId='';started=false;
-  clearTimeout(flushTimer);clearTimeout(refreshTimer);clearInterval(heartbeat);
-  flushTimer=refreshTimer=heartbeat=null;refreshPromise=null;lastRefresh=0;hasSubscribed=false;
-  pending.clear();dirty.clear();
+  clearTimeout(flushTimer);clearTimeout(refreshTimer);clearInterval(heartbeat);clearInterval(uiInterval);
+  flushTimer=refreshTimer=heartbeat=uiInterval=null;refreshPromise=null;lastRefresh=0;hasSubscribed=false;
+  pending.clear();dirty.clear();freshness.clear();currentView='';
   window.removeEventListener('online',onOnline);
   window.removeEventListener('offline',onOffline);
   window.removeEventListener('pageshow',onPageshow);
@@ -164,10 +245,11 @@ function stop(){
   window.removeEventListener('nethor:mobile-route-change',onRoute);
   document.removeEventListener('visibilitychange',onVisibility);
   if(oldChannel&&oldClient){try{oldClient.removeChannel(oldChannel)}catch(_){}}
-  delete document.documentElement.dataset.nethorSyncState
+  delete document.documentElement.dataset.nethorSyncState;
+  paintStatus()
 }
 window.NethorMobileSync=Object.freeze({
- start,stop,subscribe,invalidate,revalidate,
+ start,stop,subscribe,invalidate,revalidate,beginCheck,markVerified,markFailed,statusOf,freshnessSummary,
  get active(){return enabled()},
  get status(){return online()?lastChannelStatus:'offline'},
  get userId(){return userId}
