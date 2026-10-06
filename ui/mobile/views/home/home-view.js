@@ -416,7 +416,7 @@ async function loadHomeSnapshot(shared){
  return{
   loadedAt:Date.now(),userId:String(session.user.id||''),todayKey,weekStart,
   profile,config,session,db,
-  weeks:(weeksRes.data||[]).filter(x=>x.data).map(x=>({...x.data,__planningRevisionAt:x.updated_at})),
+  weeks:(weeksRes.data||[]).filter(x=>x.data).map(x=>({...x.data,__planningWeekStart:x.week_start,__planningRevisionAt:x.updated_at})),
    planningLoadError:!!weeksRes.error,
   team:profilesRes.error?[]:(profilesRes.data||[]),
   taskCatalog:taskCatalogRes.error?[]:(taskCatalogRes.data||[]),
@@ -470,9 +470,10 @@ async function render(){
  }
  // Les données préchargées ne sont réutilisées que si la version serveur est inchangée.
  if(snapshot){
-  const previous=snapshot.weeks?.find(w=>String(w.weekStart||w.week_start||'')===weekStart);
-  const {data:published,error:versionError}=await state.db.from('planning_weeks').select('updated_at').eq('week_start',weekStart).maybeSingle();
-  if(versionError||String(published?.updated_at||'')!==String(previous?.__planningRevisionAt||''))snapshot=null;
+  const end=isoDate(addDays(startOfWeek(today),84));
+  const {data:published,error:versionError}=await state.db.from('planning_weeks').select('week_start,updated_at').gte('week_start',weekStart).lte('week_start',end).order('week_start');
+  const cached=new Map((snapshot.weeks||[]).map(w=>[String(w.__planningWeekStart||w.weekStart||w.week_start||''),String(w.__planningRevisionAt||'')]));
+  if(versionError||!Array.isArray(published)||published.length!==cached.size||published.some(w=>cached.get(String(w.week_start))!==String(w.updated_at||'')))snapshot=null;
  }
  if(!snapshot)snapshot=await loadHomeSnapshot(shared);
  if(!state.mounted||token!==state.renderToken)return;
@@ -484,7 +485,7 @@ async function render(){
  applyHomeSnapshot(snapshot);
 
  const taskLoadError=!!snapshot.taskLoadError;
- const weeks=state.weeks,exactCurrentWeek=weeks.find(w=>String(w.weekStart||w.week_start||'')===weekStart)||null,currentWeek=exactCurrentWeek||weeks[0]||null;
+ const weeks=state.weeks,exactCurrentWeek=weeks.find(w=>String(w.__planningWeekStart||w.weekStart||w.week_start||'')===weekStart)||null,currentWeek=exactCurrentWeek;
  const allDays=[];
  for(const model of weeks)for(const dateKey of Object.keys(model?.days||{}))if(dateKey>=todayKey)allDays.push({dateKey,model});
  allDays.sort((a,b)=>a.dateKey.localeCompare(b.dateKey));
@@ -530,6 +531,9 @@ async function render(){
  }).filter(Boolean))];
 
  const sections=[],role=roleLabel(state.profile.role);
+ const syncState=snapshot.planningLoadError?'error':(exactCurrentWeek?'ok':'missing');
+ const syncText=snapshot.planningLoadError?'Planning indisponible : vérification impossible':(exactCurrentWeek?'Planning récupéré du serveur':'Aucun planning publié cette semaine');
+ sections.push('<div class="mhdPlanningSyncState '+syncState+'" role="status">'+esc(syncText)+'</div>');
  const dateText=today.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
  const welcomeName=state.name||role;
  const todayPersonal=todayModel?dayFacts(todayModel,todayKey,state.name):null;
@@ -568,7 +572,7 @@ async function render(){
 
  let nextShiftHtml='';
  if(widgetVisible('next_shift')){
-  const shiftText=nextShift?.ranges?.length?nextShift.ranges.map(r=>clock(r.a)+' - '+clock(r.b)).join(' • '):'Aucune prise de poste à venir',when=nextShift?dateLabel(nextShift.dateKey,todayKey):'—';
+  const shiftText=snapshot.planningLoadError?'Planning indisponible':(nextShift?.ranges?.length?nextShift.ranges.map(r=>clock(r.a)+' - '+clock(r.b)).join(' • '):'Aucune prise de poste à venir'),when=nextShift?dateLabel(nextShift.dateKey,todayKey):'—';
   const target=nextShift?'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseDate(nextShift.dateKey))))+'&day='+encodeURIComponent(nextShift.dateKey):'planning.html';
   nextShiftHtml='<button class="mhdCard mhdNext" type="button" data-home-nav="'+esc(target)+'"><div class="mhdNextHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+dashboardIcon('next_shift')+'</span><strong>Prise de poste</strong></div><span class="mhdWhen">'+esc(when)+'</span></div><div class="mhdShiftLine"><b>'+esc(shiftText)+'</b><span class="mhdChevron">›</span></div><div class="mhdShiftMeta"><span class="mhdTag green">Planning personnel</span>'+(nextShift?.hours?'<span class="mhdTag amber">'+esc(String(nextShift.hours).replace('.',','))+' h</span>':'')+'</div></button>'
  }
@@ -657,6 +661,7 @@ function stopRealtime(){
  state.channels.forEach(channel=>{try{state.db.removeChannel(channel)}catch(_){}});
  state.channels=[]
 }
+function onReturnToApp(){if(state.mounted&&document.visibilityState!=='hidden')scheduleRender()}
 function onServiceChange(detail){
  if(!state.mounted)return;
  if(detail?.type==='notifications'){scheduleRender({invalidate:false});return}
@@ -706,6 +711,9 @@ async function mount(host){
  state.unsubscribe=shared?.subscribe?.(onServiceChange,{immediate:false})||null;
  state.session=shared?.session||null;state.db=shared?.client||null;
  startRealtime();
+ document.addEventListener('visibilitychange',onReturnToApp);
+ window.addEventListener('online',onReturnToApp);
+ window.addEventListener('pageshow',onReturnToApp);
  await render();
  return true
 }
@@ -715,6 +723,9 @@ async function unmount(){
  if(typeof state.unsubscribe==='function')state.unsubscribe();
  state.unsubscribe=null;
  stopRealtime();
+ document.removeEventListener('visibilitychange',onReturnToApp);
+ window.removeEventListener('online',onReturnToApp);
+ window.removeEventListener('pageshow',onReturnToApp);
  try{await window.NethorOperationsWidget?.unmount?.()}catch(_){}
  if(state.host){
   state.host.removeEventListener('click',onClick);
