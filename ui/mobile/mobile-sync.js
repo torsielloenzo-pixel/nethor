@@ -83,6 +83,7 @@ function finishCheck(domain,token,success){
  if(token.sequence!==record.sequence||token.checkId!==record.checkId)return false;
  record.checking=false;record.failed=!success;
  if(success)record.verifiedAt=Date.now();
+ else void window.NethorClientHealth?.record?.(domain,'FETCH_FAILED');
  paintStatus();
  return true
 }
@@ -160,6 +161,7 @@ function onChannelStatus(value){
     if(hasSubscribed&&previous!=='SUBSCRIBED')revalidate('realtime-reconnected',{force:true});
     hasSubscribed=true
   }else if(value==='CHANNEL_ERROR'||value==='TIMED_OUT'||value==='CLOSED'){
+    void window.NethorClientHealth?.record?.('sync','REALTIME_DISCONNECTED');
     for(const domain of REVALIDATE_DOMAINS)markDirty(domain);
     status(online()?'degraded':'offline');paintStatus()
   }
