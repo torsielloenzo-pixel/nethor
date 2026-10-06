@@ -7,13 +7,15 @@ const STYLE_ASSETS=[
  'ui/mobile/planning-agenda.css?v=2',
  'ui/mobile/planning-week-cards.css?v=2',
  'ui/mobile/planning-layout.css?v=4',
- 'ui/mobile/views/planning/planning-view.css?v=2'
+ 'ui/mobile/views/planning/planning-view.css?v=2',
+ 'ui/mobile/planning-day-cards.css?v=1'
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=2',
  'planning-runtime.js?v=18',
  'ui/mobile/planning-week-cards.js?v=2',
- 'planning-agenda-v2.js?v=25'
+ 'ui/mobile/planning-day-cards.js?v=1',
+ 'planning-agenda-v2.js?v=26'
 ];
 const state={
  host:null,
