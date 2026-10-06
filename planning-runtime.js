@@ -734,7 +734,7 @@ function renderReader(){
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
  if(!model||!day){meta.textContent=planningWeekLoadError?'Impossible de vérifier la dernière version du planning. Réessaie en rouvrant la page.':'Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=(planningWeekLoadError||navigator.onLine===false)&&!(navigator.onLine!==false&&editMode&&changedDates().length&&!!planningLoadedRevisionAt);empty.classList.add('hidden');viewport.classList.remove('hidden');
- meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(planningWeekLoadError||navigator.onLine===false?' • Dernière copie consultée, non vérifiée':editMode&&changedDates().length?' • Brouillon local non publié':planningLoadedRevisionAt&&!planningConflictDetected?' • Version vérifiée':' • Version non vérifiée');
+ meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(planningWeekLoadError||navigator.onLine===false?' • Copie enregistrée, non actualisée':editMode&&changedDates().length?' • Brouillon local non publié':'');
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
  let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol"><col class="readCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Utilisateur</th><th class="readHead" title="Consultation du planning pour cette journée">Lu</th>';
@@ -753,8 +753,22 @@ async function loadWeek(start=currentWeekStart,opts={}){
  if(planningReadStatusWeekKey!==key)clearPlanningReadStatuses(key);
  if(!opts.silent)setSaveState('Chargement…');
  const sameCachedWeek=!!(model&&planningLoadedWeekKey===key&&planningCacheUserId===String(currentUser?.id||''));
+ const offlineStore=PLANNING_SPA_MODE?window.NethorOfflineStore:null;
+ async function restoreCopy(){
+  if(editMode&&changedDates().length)return false;
+  if(sameCachedWeek)return true;
+  const uid=String(currentUser?.id||''),cached=await offlineStore?.get?.(uid,'planning',key);
+  const previous=cached?.data?.model;
+  if(!previous||![3,4].includes(Number(previous.version)))return false;
+  model=previous;
+  planningLoadedRevisionAt=String(cached.data.revision||'');
+  planningLoadedWeekKey=key;
+  planningCacheReady=true;planningCacheUserId=uid;
+  planningAbsences=[];
+  return true
+ }
  if(navigator.onLine===false){
-  if(!sameCachedWeek){
+  if(!await restoreCopy()&&!sameCachedWeek){
    model=null;planningCacheReady=false;planningLoadedWeekKey='';planningLoadedRevisionAt='';
   }
   planningWeekLoadError=true;
@@ -778,11 +792,11 @@ async function loadWeek(start=currentWeekStart,opts={}){
  const {data,error}=weekResult;
  if(error){
   console.warn('Dernière version du planning indisponible :',error);
-  if(!sameCachedWeek){
+  if(!await restoreCopy()&&!sameCachedWeek){
    model=null;planningCacheReady=false;planningLoadedWeekKey='';planningLoadedRevisionAt='';
    clearPlanningReadStatuses(key)
   }
-  planningAbsences=absences;planningWeekLoadError=true;
+  planningAbsences=[];planningWeekLoadError=true;
   sync?.markFailed?.('planning',ticket);
  }else{
   const storedModel=data?.data||null,storedVersion=Number(storedModel?.version||0);
@@ -796,6 +810,13 @@ async function loadWeek(start=currentWeekStart,opts={}){
   planningCacheReady=true;
   planningCacheUserId=String(currentUser?.id||planningCacheUserId||'');
   planningConflictDetected=false;
+  if(model&&offlineStore){
+   const published=JSON.parse(JSON.stringify(model));
+   delete published.sourcePath;delete published.sourceFile;
+   void offlineStore.put(String(currentUser?.id||''),'planning',key,{model:published,revision:planningLoadedRevisionAt})
+  }else if(!model&&offlineStore){
+   void offlineStore.remove(String(currentUser?.id||''),'planning',key)
+  }
   sync?.markVerified?.('planning',ticket)
  }
  if(!opts.silent)setSaveState(error?'Synchronisation impossible':'Lecture seule');
