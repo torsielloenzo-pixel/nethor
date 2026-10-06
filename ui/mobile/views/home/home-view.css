@@ -335,3 +335,12 @@
   .mhdWelcomeShiftGroup .mhdShiftLine,
   .mhdWelcomeShiftGroup .mhdShiftMeta{margin-left:38px}
 }
+
+/* Indicateur discret de verification serveur du planning. */
+.mhdPlanningSyncState{display:flex;align-items:center;gap:7px;padding:0 4px;font-size:11px;line-height:1.45;font-weight:650;color:#607184}
+.mhdPlanningSyncState::before{content:"";display:block;width:7px;height:7px;border-radius:50%;background:#17845e;flex:0 0 7px}
+.mhdPlanningSyncState.missing::before{background:#83919e}
+.mhdPlanningSyncState.error{color:#b45309}
+.mhdPlanningSyncState.error::before{background:#e58b21}
+:root[data-theme="dark"] .mhdPlanningSyncState{color:#b2c0ce}
+:root[data-theme="dark"] .mhdPlanningSyncState.error{color:#f5bc69}

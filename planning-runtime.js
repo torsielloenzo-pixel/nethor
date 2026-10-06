@@ -270,6 +270,8 @@ document.addEventListener('visibilitychange',()=>{
 window.addEventListener('pageshow',event=>{
  if(event.persisted&&planningRuntimeActive)schedulePlanningDataRefresh()
 });
+window.addEventListener('online',()=>{if(planningRuntimeActive)schedulePlanningDataRefresh()});
+window.addEventListener('focus',()=>{if(planningRuntimeActive&&document.visibilityState==='visible')schedulePlanningDataRefresh()});
 function workRangesFor(row,m){const out=[];let start=null;for(let i=0;i<=row.length;i++){const working=i<row.length&&(row[i]==='g'||row[i]==='b');if(working&&start===null)start=i;if(!working&&start!==null){out.push({a:(m.startTime??6)+start*.25,b:(m.startTime??6)+i*.25});start=null}}return out}
 function friendlyHour(t){const h=Math.floor(t),min=Math.round((t-h)*60);return min?h+'h'+String(min).padStart(2,'0'):h+'h'}
 function currentUserEmployeeIndex(m){if(!m||!currentUser)return-1;const p=teamProfiles.find(x=>x.id===currentUser.id)||{display_name:currentUser.name};return (m.employees||[]).findIndex(e=>planningProfileFor(e.name)?.id===p.id||norm(e.name)===norm(p.display_name)||norm(e.name).replace(/\s+[a-z]$/,'')===norm(p.display_name))}
@@ -703,7 +705,7 @@ function renderReader(){
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
  if(!model||!day){meta.textContent=planningWeekLoadError?'Impossible de vérifier la dernière version du planning. Réessaie en rouvrant la page.':'Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=false;empty.classList.add('hidden');viewport.classList.remove('hidden');
- meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime);
+ meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(planningLoadedRevisionAt?' • Version vérifiée':'');
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
  let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol"><col class="readCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Utilisateur</th><th class="readHead" title="Consultation du planning pour cette journée">Lu</th>';
@@ -748,8 +750,8 @@ async function loadWeek(start=currentWeekStart,opts={}){
 async function saveWeek(){
  if(!canEdit||!model)return false;setSaveState('Enregistrement…');const savedAt=new Date().toISOString();model.updatedAt=savedAt;
  const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,source_path:model.sourcePath||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:savedAt,updated_by:currentUser?.id||null};
- const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'✓ Enregistré');if(error){console.warn(error);return false}
- planningLoadedWeekKey=isoDate(currentWeekStart);planningLoadedRevisionAt=savedAt;planningWeekLoadError=false;planningCacheReady=true;planningCacheUserId=String(currentUser?.id||planningCacheUserId||'');
+ const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'Synchronisation…');if(error){console.warn(error);return false}
+ const synced=await loadWeek(currentWeekStart,{render:false,silent:true});if(!synced||!model||!planningLoadedRevisionAt){setSaveState('Synchronisation impossible');return false}setSaveState('✓ Enregistré et synchronisé');
  clearPlanningReadStatuses(planningLoadedWeekKey);
  await loadPlanningReadStatusWeek({render:false});
  setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
