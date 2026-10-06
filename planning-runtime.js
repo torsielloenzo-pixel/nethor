@@ -2,7 +2,7 @@
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const PLANNING_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
 let planningRuntimeActive=false,planningViewportBound=false;
-let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null;
+let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningLoadedRevisionAt='',planningWeekLoadError=false,planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null;
 let planningReadStatusByDay=new Map(),planningReadStatusWeekKey='',planningReadStatusSeq=0,planningReadStatusTimer=null,planningReadMarkKey='';
 function planningSharedServices(){return PLANNING_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
 function planningPermissionFromShared(profile,config){
@@ -219,10 +219,12 @@ function startPlanningReadStatusPolling(){
 async function markPlanningDayRead(date=dayKey(),source=''){
  if(!db||!currentUser||!model||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(date||'')))return false;
  const markSource=source||(PLANNING_SPA_MODE?'planning_mobile':'planning_desktop');
- const revision=String(model?.updatedAt||model?.importedAt||'');
+ const revision=planningLoadedRevisionAt;
+ const week=currentPlanningWeekKey();
+ if(!revision||planningLoadedWeekKey!==week||planningWeekLoadError||date<week||date>isoDate(addDays(currentWeekStart,6)))return false;
  const key=String(currentUser.id)+'|'+date+'|'+revision+'|'+markSource;
  if(planningReadMarkKey===key)return true;
- const {data,error}=await db.rpc('planning_mark_day_read',{p_day:date,p_source:markSource});
+ const {data,error}=await db.rpc('planning_mark_day_read',{p_day:date,p_source:markSource,p_revision_at:revision});
  if(error){console.warn('Lecture planning:',error);return false}
  if(data===true){
   planningReadMarkKey=key;
@@ -261,6 +263,13 @@ function startPlanningDataRealtime(){
   })
   .subscribe()
 }
+// Quand l'application revient au premier plan, revérifier la publication.
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='visible'&&planningRuntimeActive)schedulePlanningDataRefresh()
+});
+window.addEventListener('pageshow',event=>{
+ if(event.persisted&&planningRuntimeActive)schedulePlanningDataRefresh()
+});
 function workRangesFor(row,m){const out=[];let start=null;for(let i=0;i<=row.length;i++){const working=i<row.length&&(row[i]==='g'||row[i]==='b');if(working&&start===null)start=i;if(!working&&start!==null){out.push({a:(m.startTime??6)+start*.25,b:(m.startTime??6)+i*.25});start=null}}return out}
 function friendlyHour(t){const h=Math.floor(t),min=Math.round((t-h)*60);return min?h+'h'+String(min).padStart(2,'0'):h+'h'}
 function currentUserEmployeeIndex(m){if(!m||!currentUser)return-1;const p=teamProfiles.find(x=>x.id===currentUser.id)||{display_name:currentUser.name};return (m.employees||[]).findIndex(e=>planningProfileFor(e.name)?.id===p.id||norm(e.name)===norm(p.display_name)||norm(e.name).replace(/\s+[a-z]$/,'')===norm(p.display_name))}
@@ -692,9 +701,8 @@ function renderReader(){
  const dt=addDays(currentWeekStart,currentDay),day=modelDay();
  document.getElementById('dateTitle').textContent=DAYS[currentDay][1]+' '+frDate(dt);
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
- if(!model||!day){meta.textContent='Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
+ if(!model||!day){meta.textContent=planningWeekLoadError?'Impossible de vérifier la dernière version du planning. Réessaie en rouvrant la page.':'Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=false;empty.classList.add('hidden');viewport.classList.remove('hidden');
- markPlanningDayRead(dayKey()).catch(()=>{});
  meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning issu du fichier Excel • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime);
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
@@ -702,7 +710,7 @@ function renderReader(){
  ss.forEach((t,i)=>{const major=i%2===0,label=major?(Number.isInteger(t)?String(Math.floor(t)):fmtTime(t)):'',cls=(i%4===0?'hourStart ':'')+(i%2===0?'halfStart':'blankQuarter');h+='<th class="timeHead '+cls+'" title="'+fmtTime(t)+'–'+fmtTime(t+.25)+'">'+label+'</th>'});
  h+='<th class="totalHead">Total</th></tr></thead><tbody>';
  visibleEmployees.forEach(({emp,ri,row})=>{const profile=planningProfileFor(emp.name);h+='<tr><th class="nameCell" title="Ligne Excel '+(emp.excelRow||ri+4)+'">'+identityHtml(emp.name)+'</th><td class="readCell">'+planningReadCellHtml(profile,dayKey())+'</td>';ss.forEach((t,si)=>{const v=row[si]||null,cls=(si%4===0?'hourStart ':'')+(si%2===0?'halfStart ':'')+(editMode?'editable ':'');h+='<td class="slot '+cls+'" data-color="'+(v||'')+'" data-row="'+ri+'" data-slot="'+si+'" title="'+esc(emp.name)+' • '+fmtTime(t)+'–'+fmtTime(t+.25)+'" style="'+(v?'background:'+COLOR[v]+';':'')+'"></td>'});h+='<td class="totalCell" data-total-row="'+ri+'">'+String(totalForRow(row)).replace('.',',')+' h</td></tr>'});
- h+='</tbody></table>';document.getElementById('sheetMount').innerHTML=h;renderMobileSchedule(day,visibleEmployees.map(x=>x.emp),visibleEmployees.map(x=>x.row));document.body.classList.toggle('planningEditing',editMode);if(editMode)bindEditing();
+ h+='</tbody></table>';document.getElementById('sheetMount').innerHTML=h;renderMobileSchedule(day,visibleEmployees.map(x=>x.emp),visibleEmployees.map(x=>x.row));document.body.classList.toggle('planningEditing',editMode);if(editMode)bindEditing();markPlanningDayRead(dayKey()).catch(()=>{});
 }
 function renderAll(){renderWeekHeader();renderReader();renderPlanningInsights()}
 
@@ -718,27 +726,31 @@ async function loadWeek(start=currentWeekStart,opts={}){
  if(requestId!==planningWeekLoadSeq)return false;
  const {data,error}=weekResult;
  if(error){
-  console.warn(error);
-  if(!planningCacheReady)model=null
+  console.warn('Dernière version du planning indisponible :',error);
+  model=null;planningAbsences=absences;planningCacheReady=false;planningLoadedWeekKey='';planningLoadedRevisionAt='';planningWeekLoadError=true;
+  clearPlanningReadStatuses(key);
  }else{
   const storedModel=data?.data||null,storedVersion=Number(storedModel?.version||0);
   model=storedModel&&(storedVersion===3||storedVersion===4)?storedModel:null;
   if(storedModel&&!model)console.warn('Version planning non prise en charge:',storedVersion);
   if(model){model.weekLabel=data.week_label||model.weekLabel||'';model.sourceFile=data.source_file||model.sourceFile||'';model.sourcePath=data.source_path||model.sourcePath||null}
+  planningLoadedRevisionAt=model?String(data.updated_at||''):'';
+  planningWeekLoadError=false;
   planningAbsences=absences;
   planningLoadedWeekKey=key;
   planningCacheReady=true;
   planningCacheUserId=String(currentUser?.id||planningCacheUserId||'')
  }
- if(!opts.silent)setSaveState('Lecture seule');
+ if(!opts.silent)setSaveState(error?'Synchronisation impossible':'Lecture seule');
  if(opts.render!==false){renderAll();loadPlanningReadStatusWeek({render:true}).catch(()=>{})}
  return !error
 }
 async function saveWeek(){
- if(!canEdit||!model)return false;setSaveState('Enregistrement…');model.updatedAt=new Date().toISOString();
- const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,source_path:model.sourcePath||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:new Date().toISOString(),updated_by:currentUser?.id||null};
+ if(!canEdit||!model)return false;setSaveState('Enregistrement…');const savedAt=new Date().toISOString();model.updatedAt=savedAt;
+ const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,source_path:model.sourcePath||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:savedAt,updated_by:currentUser?.id||null};
  const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'✓ Enregistré');if(error){console.warn(error);return false}
- planningLoadedWeekKey=isoDate(currentWeekStart);planningCacheReady=true;planningCacheUserId=String(currentUser?.id||planningCacheUserId||'');
+ planningLoadedWeekKey=isoDate(currentWeekStart);planningLoadedRevisionAt=savedAt;planningWeekLoadError=false;planningCacheReady=true;planningCacheUserId=String(currentUser?.id||planningCacheUserId||'');
+ clearPlanningReadStatuses(planningLoadedWeekKey);
  await loadPlanningReadStatusWeek({render:false});
  setTimeout(()=>setSaveState(editMode?'Mode modification':'Lecture seule'),850);return true
 }
@@ -1287,9 +1299,8 @@ async function init(){
   applyPlanningAccessDataset(initialConfig,role,planningPermissionLevel,absenceAccess);
   updatePlanningRoleActions();
   restorePersonalStatsState();restorePlanningInsightStates();syncPlanningWorkspaceTabs(planningWorkspaceMode||'planning');
-  if(currentPlanningWeekKey()!==planningLoadedWeekKey){
-   await loadWeek(currentWeekStart,{render:false})
-  }
+  // Toujours revalider auprès du serveur : le préchargement mobile peut être ancien.
+  await loadWeek(currentWeekStart,{render:false,silent:true});
   await loadPlanningReadStatusWeek({render:false});
   startPlanningProfileRealtime();startPlanningDataRealtime();startPlanningReadStatusPolling();
   document.body.classList.add('planningReady');
@@ -1347,7 +1358,7 @@ async function unmountPlanningRuntime(options={}){
  try{if(planningDataChannel&&db)await db.removeChannel(planningDataChannel)}catch(_){}
  planningProfileChannel=null;planningDataChannel=null;
  editMode=false;resetEditChanges();editSnapshot=null;model=null;planningAbsences=[];teamProfiles=[];
- planningCacheReady=false;planningCacheUserId='';planningLoadedWeekKey='';planningWeekLoadSeq++;clearPlanningReadStatuses('');
+ planningCacheReady=false;planningCacheUserId='';planningLoadedWeekKey='';planningLoadedRevisionAt='';planningWeekLoadError=false;planningWeekLoadSeq++;clearPlanningReadStatuses('');
  return true
 }
 async function mountPlanningRuntime(){return init()}
@@ -1362,6 +1373,8 @@ window.NethorPlanningRuntime=Object.freeze({
  get active(){return planningRuntimeActive},
  get cached(){return planningCacheReady},
  get cacheWeek(){return planningLoadedWeekKey},
+ get loadError(){return planningWeekLoadError},
+ get revision(){return planningLoadedRevisionAt},
  get week(){return isoDate(currentWeekStart)},
  get day(){return dayKey()}
 });
