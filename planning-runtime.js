@@ -734,7 +734,7 @@ function renderReader(){
  const meta=document.getElementById('readerMeta'),badge=document.getElementById('sourceBadge'),empty=document.getElementById('emptyState'),viewport=document.getElementById('sheetViewport');
  if(!model||!day){meta.textContent=planningWeekLoadError?'Impossible de vérifier la dernière version du planning. Réessaie en rouvrant la page.':'Aucun fichier Excel pour cette semaine.';badge.classList.add('hidden');document.getElementById('downloadSourceBtn')?.classList.add('hidden');empty.classList.remove('hidden');viewport.classList.add('hidden');document.getElementById('mobileSchedule')?.classList.add('hidden');document.getElementById('editPlanningBtn').disabled=true;return}
  document.getElementById('editPlanningBtn').disabled=(planningWeekLoadError||navigator.onLine===false)&&!(navigator.onLine!==false&&editMode&&changedDates().length&&!!planningLoadedRevisionAt);empty.classList.add('hidden');viewport.classList.remove('hidden');
- meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(planningWeekLoadError||navigator.onLine===false?' • Copie enregistrée, non actualisée':editMode&&changedDates().length?' • Brouillon local non publié':'');
+ meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(editMode&&changedDates().length?' • Brouillon non publié':'');
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
  const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
  let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol"><col class="readCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Utilisateur</th><th class="readHead" title="Consultation du planning pour cette journée">Lu</th>';
@@ -1364,8 +1364,9 @@ async function applyPlanningWidgetPermissions(userRole,configOverride=null,permi
 }
 function updatePlanningRoleActions(){
  const canManageAbsences=absenceAccess==='manage';
- document.getElementById('editPlanningBtn')?.classList.toggle('hidden',!canEdit);
- document.getElementById('importPanel')?.classList.toggle('hidden',!canEdit);
+ const offlineReadOnly=PLANNING_SPA_MODE&&navigator.onLine===false;
+ document.getElementById('editPlanningBtn')?.classList.toggle('hidden',!canEdit||offlineReadOnly);
+ document.getElementById('importPanel')?.classList.toggle('hidden',!canEdit||offlineReadOnly);
  document.getElementById('downloadSourceBtn')?.classList.toggle('hidden',role!=='admin'||!model);
  document.getElementById('planningImportHistoryBtn')?.classList.toggle('hidden',!planningImportHistoryAllowed());
  if(role!=='admin')closePlanningImportHistory();
