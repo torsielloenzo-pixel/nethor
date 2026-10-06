@@ -415,7 +415,7 @@ function renderAgenda(){
    const title=document.getElementById('agendaTitle'),sub=document.getElementById('agendaSubtitle');
    if(title)title.textContent='Agenda de la semaine';
    if(sub)sub.textContent='Du '+frDate(a)+' au '+frDate(addDays(a,6));
-   host.innerHTML='<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return
+   host.innerHTML=window.NethorPlanningRuntime?.loadError?'<div class="agendaDayEmpty"><strong>Vérification impossible</strong><span>La dernière version du planning n’a pas pu être chargée. Réessaie en rouvrant le planning.</span></div>':'<div class="agendaDayEmpty"><strong>Aucun planning importé</strong><span>Aucun planning n’est disponible pour cette semaine.</span></div>';return
   }
   try{
    const selected=isoDate(addDays(a,Math.max(0,Math.min(6,typeof currentDay==='number'?currentDay:0))));
