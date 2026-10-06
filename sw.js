@@ -1,4 +1,4 @@
-const APP_VERSION=373;
+const APP_VERSION=374;
 const CACHE='netto-tools-v373';
 const DEPENDENCY_CACHE='nethor-deps-v1';
 const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
