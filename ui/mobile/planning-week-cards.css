@@ -1,0 +1,44 @@
+/* Planning mobile — cartes hebdomadaires. Isolé de l'affichage desktop. */
+body.agendaLayout .agendaMount.nthWeekHost{width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.nthWeekDays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:0 0 10px}
+.nthWeekDay{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:49px;padding:5px 0;border:1px solid #e0e8f2;border-radius:11px;background:#fff;color:#274269;font:inherit;cursor:pointer}
+.nthWeekDay span{font-size:10px;font-weight:750;text-transform:capitalize}.nthWeekDay strong{font-size:14px;line-height:1}
+.nthWeekDay.today:not(.selected){border-color:#85aaea}.nthWeekDay.selected{background:#1556c1;border-color:#1556c1;color:white;box-shadow:0 4px 12px #165bc12b}
+.nthWeekSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 10px}
+.nthWeekSummary>div{min-width:0;display:flex;justify-content:space-between;align-items:center;gap:4px;background:#fff;border:1px solid #e1e8f0;padding:10px 8px;border-radius:11px}
+.nthWeekSummary small{font-size:10px;font-weight:750;color:#64738a}.nthWeekSummary strong{font-size:19px;color:#18345e}
+.nthWeekFilters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 13px;padding:2px 1px}
+.nthWeekFilters::-webkit-scrollbar{display:none}.nthWeekFilters button{flex:none;min-height:40px;padding:0 13px;border:1px solid #dce6f2;background:#fff;border-radius:10px;font-size:11px;font-weight:800;color:#345171;cursor:pointer}
+.nthWeekFilters button.selected{background:#e9f2ff;border-color:#2164ce;color:#1450b2}
+.nthWeekList{display:grid;gap:11px}.nthWeekCard{min-width:0;padding:12px 10px 11px;background:#fff;border:1px solid #e0e7f0;border-radius:16px;box-shadow:0 4px 14px #172f550a}
+.nthWeekCard.mine{border-color:#96b8f3;box-shadow:0 4px 14px #1754b515}
+.nthWeekCardHeader{display:flex;align-items:center;justify-content:space-between;min-width:0;gap:7px;margin-bottom:10px}
+.nthWeekPerson{display:flex;align-items:center;gap:8px;min-width:0;flex:1}.nthWeekPerson .planningIdentityAvatar{width:39px;height:39px;min-width:39px;border-radius:50%;font-size:12px}
+.nthWeekName{min-width:0}.nthWeekName>strong{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:850;color:#1a3155;line-height:1.25}
+.nthWeekName>small{display:block;margin-top:2px;color:#3c65a1;font-size:9px}
+.nthWeekTotal{flex:none;min-width:75px;text-align:right}.nthWeekTotal>strong{display:block;font-size:12px;color:#233e69;white-space:nowrap}.nthWeekTotal>strong span{font-size:10px;font-weight:650;color:#8290a7}
+.nthWeekTotal>small{display:block;color:#c74730;font-size:9px;font-weight:850}.nthWeekTotal.over>strong{color:#c74730}
+.nthWeekProgress{display:block;height:4px;margin-top:5px;border-radius:10px;background:#e6edf7;overflow:hidden}.nthWeekProgress>i{display:block;height:100%;border-radius:inherit;background:#216bdf}.nthWeekTotal.over .nthWeekProgress>i{background:#e35e43}
+.nthWeekSlots{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;min-width:0}
+.nthWeekSlot{min-width:0;min-height:54px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:2px;text-align:center;border-radius:8px;background:#edf1f5;color:#69778b;overflow:hidden}
+.nthWeekSlot.active{outline:2px solid #1556c1;outline-offset:-2px}
+.nthWeekSlot[data-status="g"]{background:#daf4e5;color:#166d3d}.nthWeekSlot[data-status="b"]{background:#dceaff;color:#1256b5}
+.nthWeekSlot[data-status="leave"]{background:#fff0be;color:#8a6514}.nthWeekSlot[data-status="red"]{background:#ffe0dd;color:#be332e}
+.nthWeekSlot[data-status="orange"]{background:#ffe9ca;color:#9b5c0b}.nthWeekSlot[data-status="unavailable"]{background:#e8e2f3;color:#614a86}
+.nthWeekShift{display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;min-height:48px;font-variant-numeric:tabular-nums}
+.nthWeekShift strong{font-size:9.2px;line-height:1.1;font-weight:850;white-space:nowrap;letter-spacing:-.2px}
+.nthWeekShift[data-shift="g"]{color:#166d3d}.nthWeekShift[data-shift="b"]{color:#1256b5}
+.nthWeekShift+.nthWeekShift{border-top:1px solid #ffffff9e}
+.nthWeekOff{font-size:9px;font-weight:800;line-height:1.25;padding:2px;overflow-wrap:anywhere}
+.nthWeekLegend{display:flex;gap:9px 12px;flex-wrap:wrap;padding:13px 2px 4px;font-size:10px;color:#65758b}
+.nthWeekLegend span{display:flex;align-items:center;gap:4px}.nthWeekLegend i{width:10px;height:10px;border-radius:3px;background:#e6eaf0}
+.nthWeekLegend i.g{background:#74d0a4}.nthWeekLegend i.b{background:#86b2f1}.nthWeekLegend i.y{background:#efc35b}.nthWeekLegend i.r{background:#ee8f7a}
+.nthWeekEmpty{padding:25px 12px;background:#fff;border:1px solid #e1e8f0;border-radius:12px;text-align:center;color:#667892;font-size:12px}
+@media(max-width:360px){.nthWeekCard{padding:10px 7px}.nthWeekSlots,.nthWeekDays{gap:3px}.nthWeekShift strong{font-size:8.6px}.nthWeekSummary>div{padding:9px 6px}.nthWeekFilters button{padding:0 10px}}
+html[data-theme="dark"] .nthWeekDay,html[data-theme="dark"] .nthWeekSummary>div,html[data-theme="dark"] .nthWeekCard,html[data-theme="dark"] .nthWeekFilters button,html[data-theme="dark"] .nthWeekEmpty{background:#1a222b;border-color:#354355;color:#dce8f7}
+html[data-theme="dark"] .nthWeekDay.selected{background:#215bc1;color:#fff;border-color:#4483ea}
+html[data-theme="dark"] .nthWeekSummary small,html[data-theme="dark"] .nthWeekTotal>strong span{color:#acbcd1}
+html[data-theme="dark"] .nthWeekSummary strong,html[data-theme="dark"] .nthWeekName>strong,html[data-theme="dark"] .nthWeekTotal>strong{color:#e9f1fc}
+html[data-theme="dark"] .nthWeekFilters button.selected{background:#183b74;border-color:#4d86df;color:#e0edff}
+html[data-theme="dark"] .nthWeekSlot[data-status="off"]{background:#333d49;color:#ced7e2}
+html[data-theme="dark"] .nthWeekLegend{color:#bbc8d9}
