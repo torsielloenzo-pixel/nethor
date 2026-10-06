@@ -4,6 +4,7 @@ const PLANNING_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
 let planningRuntimeActive=false,planningViewportBound=false;
 let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningLoadedRevisionAt='',planningWeekLoadError=false,planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null;
 let planningReadStatusByDay=new Map(),planningReadStatusWeekKey='',planningReadStatusSeq=0,planningReadStatusTimer=null,planningReadMarkKey='';
+let planningLastSaveVerified=false;
 function planningSharedServices(){return PLANNING_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
 function planningPermissionFromShared(profile,config){
  const roleKey=profile?.role||'',page=config?.pages?.planning||{},levels={none:0,view:1,operate:2,manage:3};
@@ -748,16 +749,17 @@ async function loadWeek(start=currentWeekStart,opts={}){
  return !error
 }
 async function saveWeek(){
- if(!canEdit||!model)return false;setSaveState('Enregistrement…');const savedAt=new Date().toISOString();model.updatedAt=savedAt;
+ if(!canEdit||!model)return false;planningLastSaveVerified=false;setSaveState('Enregistrement…');const savedAt=new Date().toISOString();model.updatedAt=savedAt;
  const payload={week_start:isoDate(currentWeekStart),data:model,employee_order:(model.employees||[]).map(x=>x.name),week_label:model.weekLabel||null,source_file:model.sourceFile||null,source_path:model.sourcePath||null,imported:true,imported_at:model.importedAt||new Date().toISOString(),updated_at:savedAt,updated_by:currentUser?.id||null};
  const {error}=await db.from('planning_weeks').upsert(payload,{onConflict:'week_start'});setSaveState(error?'Erreur':'Synchronisation…');if(error){console.warn(error);return false}
  // Une écriture acceptée ne doit pas être annulée en supprimant le fichier source
  // uniquement parce que la vérification réseau ultérieure est indisponible.
  const synced=await loadWeek(currentWeekStart,{render:false,silent:true});
- if(!synced||!model||!planningLoadedRevisionAt){
-  setSaveState('Enregistré • vérification en attente');
+ if(!synced||!model||!planningLoadedRevisionAt||String(model.updatedAt||'')!==savedAt){
+  setSaveState('Enregistré • version non confirmée');
   return true
  }
+ planningLastSaveVerified=true;
  setSaveState('✓ Enregistré et synchronisé');
  clearPlanningReadStatuses(planningLoadedWeekKey);
  await loadPlanningReadStatusWeek({render:false});
@@ -1038,7 +1040,7 @@ function cancelPlanningEdit(){
  const b=document.getElementById('editPlanningBtn');b.textContent='✎ Modifier le planning';b.classList.remove('editing');
  setSaveState('Lecture seule');renderAll();window.NettoSounds?.play?.('menuClose');showToast(hasChanges?'Modifications annulées':'Mode modification fermé')
 }
-async function saveAndFinishEdit(){if(!canEdit||!model)return;const dates=changedDates();if(dates.length){const saved=await saveWeek();if(!saved){showToast('Enregistrement impossible : modifications conservées.');return}await addPlanningLog('modify',logDetails({kind:'manual_edit',dates}));await notifyChangedEmployees()}editSnapshot=null;editMode=false;document.getElementById('editTools').classList.add('hidden');document.getElementById('editSaveBar').classList.add('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✎ Modifier le planning';b.classList.remove('editing');setSaveState(dates.length?(planningWeekLoadError?'Enregistré • vérification en attente':'✓ Planning enregistré'):'Lecture seule');resetEditChanges();renderAll();if(dates.length&&!planningWeekLoadError)window.NettoSounds?.play?.('success');showToast(dates.length?(planningWeekLoadError?'Enregistré, synchronisation à revérifier':'✓ Modifications enregistrées'):'Aucune modification')}
+async function saveAndFinishEdit(){if(!canEdit||!model)return;const dates=changedDates();if(dates.length){const saved=await saveWeek();if(!saved){showToast('Enregistrement impossible : modifications conservées.');return}await addPlanningLog('modify',logDetails({kind:'manual_edit',dates}));await notifyChangedEmployees()}editSnapshot=null;editMode=false;document.getElementById('editTools').classList.add('hidden');document.getElementById('editSaveBar').classList.add('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✎ Modifier le planning';b.classList.remove('editing');setSaveState(dates.length?(planningLastSaveVerified?'✓ Planning enregistré':'Enregistré • version non confirmée'):'Lecture seule');resetEditChanges();renderAll();if(dates.length&&planningLastSaveVerified)window.NettoSounds?.play?.('success');showToast(dates.length?(!planningLastSaveVerified?'Enregistré, version à revérifier':'✓ Modifications enregistrées'):'Aucune modification')}
 function paintCell(td){if(!editMode||!model)return;const row=+td.dataset.row,slot=+td.dataset.slot;if(drag.row!==null&&row!==drag.row)return;const key=row+'|'+slot;if(drag.changed.has(key))return;drag.changed.add(key);const d=modelDay(),value=paintColor==='erase'?null:paintColor;if(d.cells[row][slot]===value)return;d.cells[row][slot]=value;markPlanningChange(currentDay,row);td.style.background=value?COLOR[value]:'';drag.first=drag.first||{row,slot};drag.last={row,slot}}
 function bindEditing(){const table=document.getElementById('xlsTable');if(!table)return;table.onpointerdown=e=>{const td=e.target.closest('.slot.editable');if(!td||e.button>0)return;e.preventDefault();drag={active:true,row:+td.dataset.row,pointerId:e.pointerId,changed:new Set(),first:null,last:null};try{table.setPointerCapture(e.pointerId)}catch(_){}paintCell(td)};table.onpointermove=e=>{if(!drag.active||e.pointerId!==drag.pointerId)return;e.preventDefault();const td=document.elementFromPoint(e.clientX,e.clientY)?.closest('.slot.editable');if(td&&table.contains(td))paintCell(td)};const end=e=>{if(!drag.active)return;drag.active=false;if(drag.changed.size){renderReader();renderPlanningInsights()}drag.row=null;drag.changed.clear()};table.onpointerup=end;table.onpointercancel=end;table.onlostpointercapture=end}
 async function resetDay(){if(!canEdit||!editMode||!model)return;const date=dayKey();if(!confirm('Réinitialiser entièrement '+DAYS[currentDay][1]+' '+frDate(addDays(currentWeekStart,currentDay))+' ?'))return;const d=modelDay(),affected=[];d.cells.forEach((r,i)=>{if(r.some(Boolean)){affected.push(model.employees[i]?.name);markPlanningChange(currentDay,i)}});d.cells=d.cells.map(r=>r.map(()=>null));const saved=await saveWeek();if(!saved){showToast('Réinitialisation non enregistrée. Réessaie.');return}await addPlanningLog('modify',logDetails({kind:'reset_day',dates:[date]}));const ids=[...new Set(affected.map(n=>planningProfileFor(n)?.id).filter(Boolean))];await notifyUsers(ids.map(id=>({user_id:id,kind:'reset_day',title:'Planning du '+shortDate(date)+' modifié',message:'La journée du '+shortDate(date)+' a été réinitialisée. Merci de reconsulter tes horaires.',planning_date:date,week_start:isoDate(startOfWeek(parseISO(date))),target_url:'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseISO(date))))+'&day='+encodeURIComponent(date)})));resetEditChanges();editSnapshot=clonePlanningModel(model);renderAll();window.NettoSounds?.play?.('delete');showToast('Planning du jour réinitialisé')}
