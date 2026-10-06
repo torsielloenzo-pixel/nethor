@@ -321,7 +321,7 @@ function onAuthState(event,session){
     void offlineStore()?.clearUser?.(previousUid);
     window.NethorMobileSync?.stop?.()
   }
-  if(session)state.session=session;
+  if(session){state.session=session;offlineStore()?.bind?.(session.user?.id)}
   if(event==='SIGNED_OUT'||!session){
     void offlineStore()?.clearUser?.(previousUid);
     window.NethorMobileSync?.stop?.();
