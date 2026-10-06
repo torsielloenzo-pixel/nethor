@@ -828,7 +828,7 @@ async function saveWeek(options={}){
  if(isoDate(currentWeekStart)!==weekKey){
   planningSaveInFlight=false;
   setSaveState('Enregistré • consultation changée, revalidation requise');
-  return true
+  return false
  }
  const readOk=await loadWeek(currentWeekStart,{render:false,silent:true,preserveDraft:false}).catch(e=>{console.warn('Relecture du planning indisponible',e);return false});
  planningSaveInFlight=false;
