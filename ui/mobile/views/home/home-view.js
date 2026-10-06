@@ -583,7 +583,7 @@ async function render(){
   if(nextShiftHtml)sections.push(nextShiftHtml)
  }
  const stats=[];
- if(widgetVisible('hours'))stats.push('<button class="mhdStat" type="button" data-home-nav="planning.html"><div class="mhdStatHead"><span class="mhdMiniIcon">'+statIcon('hours')+'</span>Mes heures</div><strong>'+esc(String(currentHours).replace('.',','))+' h</strong><small>planifiées cette semaine</small><div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div></button>');
+ if(widgetVisible('hours'))stats.push('<button class="mhdStat" type="button" data-home-nav="planning.html"><div class="mhdStatHead"><span class="mhdMiniIcon">'+statIcon('hours')+'</span>Mes heures</div><strong>'+(snapshot.planningLoadError||!currentWeek?'—':esc(String(currentHours).replace('.',','))+' h')+'</strong><small>'+(snapshot.planningLoadError?'horaires non vérifiés':(!currentWeek?'aucun planning publié':'planifiées cette semaine'))+'</small>'+(snapshot.planningLoadError||!currentWeek?'':'<div class="mhdProgress"><i style="width:'+Math.min(100,Math.round(currentHours/35*100))+'%"></i></div>')+'</button>');
  if(widgetVisible('absences')){
   const leaveStart=nextLeave?.start||'',leaveEnd=nextLeave?.end||'',leaveOngoing=!!leaveStart&&leaveStart<=todayKey&&todayKey<=leaveEnd,focusDate=leaveOngoing?todayKey:leaveStart;
   const target=focusDate?'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseDate(focusDate))))+'&day='+encodeURIComponent(focusDate)+'&focus=leave':'planning.html';
