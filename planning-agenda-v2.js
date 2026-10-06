@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-let layout='classic',mobileMode='week',booted=false,restFocusRevealed=false;
+let layout='classic',mobileMode='week',booted=false,restFocusRevealed=false,dayRefreshTimer=null;
 const escLocal=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function planningPlatformKind(){
  const kind=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'desktop').toLowerCase();
@@ -228,6 +228,20 @@ function inject(){
   const button=e.target.closest('button[data-nth-filter]');
   if(button&&mobileMode==='week'){window.NethorMobileWeekCards?.setFilter?.(button.dataset.nthFilter);renderAgenda()}
  });
+ view.addEventListener('click',e=>{
+  if(!isMobile()||mobileMode!=='day')return;
+  const day=e.target.closest('button[data-nthday-index]');
+  if(day){
+   const value=Number(day.dataset.nthdayIndex);
+   if(Number.isInteger(value)&&value>=0&&value<=6&&typeof selectDay==='function')selectDay(value);
+   return
+  }
+  const filter=e.target.closest('button[data-nthday-filter]');
+  if(filter){window.NethorMobileDayCards?.setFilter?.(filter.dataset.nthdayFilter);renderAgenda()}
+ });
+ view.addEventListener('toggle',e=>{
+  if(e.target?.matches?.('details[data-nthday-away]'))window.NethorMobileDayCards?.setAwayExpanded?.(e.target.open)
+ },true);
  document.getElementById('agendaTodayBtn')?.addEventListener('click',goToday)
 }
 function setLayout(v,sound){
@@ -292,7 +306,7 @@ function renderDayPicker(a){
  document.getElementById('mobileAgendaDayBtn')?.classList.toggle('active',isDay);
  document.getElementById('mobileAgendaWeekBtn')?.classList.toggle('active',!isDay);
  document.getElementById('mobileAgendaCalendarBtn')?.classList.remove('active');
- host.innerHTML='<button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="-1" aria-label="'+(isDay?'Jour précédent':'Semaine précédente')+'">‹</button><button class="mobilePlanningSelectBtn" type="button" id="mobilePlanningSelectBtn"><span class="mobilePlanningSelectIcon" aria-hidden="true">▣</span><span>'+(isDay?'Sélection date':'Semaine '+isoWeekNumber(a)+' · '+mobileWeekRangeLabel(a))+'</span></button><button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="1" aria-label="'+(isDay?'Jour suivant':'Semaine suivante')+'">›</button><input id="mobilePlanningDateInput" class="mobilePlanningDateInput" type="date" value="'+isoDate(isDay?selected:a)+'" aria-label="'+(isDay?'Choisir une date':'Choisir une semaine à partir d’une date')+'">';
+ host.innerHTML='<button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="-1" aria-label="'+(isDay?'Jour précédent':'Semaine précédente')+'">‹</button><button class="mobilePlanningSelectBtn" type="button" id="mobilePlanningSelectBtn"><span class="mobilePlanningSelectIcon" aria-hidden="true">▣</span><span>'+(isDay?selected.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'}):'Semaine '+isoWeekNumber(a)+' · '+mobileWeekRangeLabel(a))+'</span></button><button class="agendaDayArrow mobilePlanningSelectorArrow" type="button" data-move="1" aria-label="'+(isDay?'Jour suivant':'Semaine suivante')+'">›</button><input id="mobilePlanningDateInput" class="mobilePlanningDateInput" type="date" value="'+isoDate(isDay?selected:a)+'" aria-label="'+(isDay?'Choisir une date':'Choisir une semaine à partir d’une date')+'">';
  const input=document.getElementById('mobilePlanningDateInput');
  document.getElementById('mobilePlanningSelectBtn').onclick=()=>{try{if(typeof input?.showPicker==='function')input.showPicker();else input?.click?.()}catch(_){input?.click?.()}};
  if(input)input.onchange=async()=>{
@@ -412,6 +426,7 @@ function renderAgenda(){
  const host=document.getElementById('agendaMount');if(!host)return;
  host.classList.toggle('agendaMountWeekScroll',false);
  host.classList.toggle('nthWeekHost',isMobile()&&mobileMode==='week');
+ host.classList.toggle('nthDayHost',isMobile()&&mobileMode==='day');
  try{
   if(typeof model==='undefined'||(!document.body.classList.contains('planningReady')&&model==null)){
    host.innerHTML='<div class="agendaLoading"><span class="agendaLoadingSpinner" aria-hidden="true"></span><div><strong>Chargement du planning</strong><small>Préparation de la semaine…</small></div></div>';return
@@ -439,9 +454,13 @@ function renderAgenda(){
     if(subtitle)subtitle.textContent=mobileWeekRangeLabel(a);
     if(label)label.textContent='Équipe · semaine complète'
    }else{
-    const label=document.getElementById('mobileAgendaContentTitle');if(label)label.textContent='Équipe · journée'
+    const label=document.getElementById('mobileAgendaContentTitle');if(label)label.textContent='Organisation du jour'
    }
-   host.innerHTML=mobileMode==='day'?renderDayAgenda(a):(window.NethorMobileWeekCards?.render?.(a,{model,currentDay,addDays,isoDate,rowRanges,avatarFor,isCurrentAgendaEmployee,dayShort,dayFull})||renderWeekAgenda(a));
+   if(mobileMode==='day'){
+    const myIndex=typeof currentUserEmployeeIndex==='function'?currentUserEmployeeIndex(model):-1;
+    host.innerHTML=window.NethorMobileDayCards?.render?.(a,{model,currentDay,addDays,isoDate,rowRanges,avatarFor,
+     isCurrentAgendaEmployee:emp=>isCurrentAgendaEmployee(emp)||(myIndex>=0&&model.employees[myIndex]===emp),dayShort,dayFull})||renderDayAgenda(a)
+   }else host.innerHTML=window.NethorMobileWeekCards?.render?.(a,{model,currentDay,addDays,isoDate,rowRanges,avatarFor,isCurrentAgendaEmployee,dayShort,dayFull})||renderWeekAgenda(a);
    if(restFocusActive()&&!restFocusRevealed){
     const target=host.querySelector('.agendaRestFocusBlock,.agendaDayCardRest');
     if(target){restFocusRevealed=true;requestAnimationFrame(()=>target.scrollIntoView({behavior:'auto',block:'center',inline:'nearest'}))}
@@ -469,6 +488,15 @@ function boot(){
   try{mobileMode=localStorage.getItem('nettoAgendaMobileMode')==='day'?'day':'week'}catch(_){}
   if(restFocusActive())mobileMode='day';
   setLayout('agenda',false);
+  dayRefreshTimer=setInterval(()=>{
+   try{
+    if(document.hidden||layout!=='agenda'||mobileMode!=='day'||!model||!window.NethorMobileDayCards)return;
+    const myIndex=typeof currentUserEmployeeIndex==='function'?currentUserEmployeeIndex(model):-1;
+    const context={model,currentDay,addDays,isoDate,rowRanges,avatarFor,
+     isCurrentAgendaEmployee:emp=>isCurrentAgendaEmployee(emp)||(myIndex>=0&&model.employees[myIndex]===emp),dayShort,dayFull};
+    if(window.NethorMobileDayCards.signature(currentWeekStart,context)!==window.NethorMobileDayCards.previousSignature)renderAgenda()
+   }catch(e){console.warn('Planning jour : actualisation',e)}
+  },60000);
   return
  }
  setLayout('classic',false);
@@ -477,7 +505,9 @@ function mount(){
  booted=false;restFocusRevealed=false;boot();return true
 }
 function unmount(){
- booted=false;restFocusRevealed=false;layout='classic';mobileMode='week';window.NethorMobileWeekCards?.reset?.();
+ booted=false;restFocusRevealed=false;layout='classic';mobileMode='week';
+ if(dayRefreshTimer){clearInterval(dayRefreshTimer);dayRefreshTimer=null}
+ window.NethorMobileWeekCards?.reset?.();window.NethorMobileDayCards?.reset?.();
  document.getElementById('planningCenteredLayoutRuntime')?.remove();
  document.body.classList.remove('agendaLayout','mobileAgendaForced');
  return true
