@@ -41,8 +41,7 @@ function dispatch(domain,reason='change',metadata={}){
     dirty.add(domain);return
   }
   pending.set(domain,{domain,reason,table:metadata.table||'',weekStart:metadata.weekStart||'',at:Date.now()});
-  clearTimeout(flushTimer);
-  flushTimer=setTimeout(flush,100)
+  if(!flushTimer)flushTimer=setTimeout(flush,100)
 }
 function flush(){
   flushTimer=null;
