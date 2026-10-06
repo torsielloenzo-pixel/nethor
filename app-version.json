@@ -1,19 +1,22 @@
 {
-  "version": 379,
-  "label": "v1.46.30",
+  "version": 380,
+  "label": "v1.46.31",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Surveillance et tests de fiabilité",
-  "message": "Nethor dispose de contrôles de non-régression et d’un journal technique dans Gestion > Maintenance pour détecter les incidents de synchronisation.",
-  "published_at": "2026-10-06T22:27:00.398Z",
+  "title": "Nethor Offline · Consultation",
+  "message": "Le dernier Accueil et les plannings consultés peuvent être retrouvés hors connexion sur cet appareil. Les confirmations de synchronisation normales sont masquées ; seules les interruptions sont signalées.",
+  "published_at": "2026-10-06T22:56:47.322Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Tests automatisés des mécanismes de synchronisation, hors connexion et isolation des sessions.",
-    "Vérification des fichiers Desktop/Mobile et des ressources PWA avant publication.",
-    "Gestion > Maintenance : suivi des erreurs techniques par catégorie, version et plateforme, réservé à l’administrateur.",
-    "Données techniques limitées à des codes préétablis : ni contenu de chat, ni planning, ni message d'erreur brut.",
-    "Les incidents répétés sont limités dans le navigateur et sur le serveur.",
-    "Les tests multi-comptes sont simulés ; une campagne sur iPhone et ordinateur réels reste nécessaire."
+    "Mode hors connexion en lecture seule pour l'Accueil du jour et les semaines de Planning précédemment consultées.",
+    "Stockage IndexedDB local, distinct pour chaque compte ; données restaurées à la réouverture avec une session locale existante.",
+    "Cache limité dans le temps : Accueil 36 heures, Planning 7 jours, profil nécessaire à l'affichage 48 heures.",
+    "Aucune file de modifications : pas d'écriture métier ni de confirmation « Lu » hors connexion.",
+    "Suppression du cache du compte à la déconnexion ; aucun jeton de session conservé dans la base hors ligne Nethor.",
+    "Disparition des bandeaux de données vérifiées lorsque tout fonctionne ; mode hors connexion annoncé uniquement si nécessaire.",
+    "Chat et fonctions hors du noyau Accueil/Planning nécessitent encore le réseau.",
+    "La consultation après fermeture exige des fichiers PWA déjà installés et une session d'identification toujours accessible localement.",
+    "Tests sur iPhone réel après fermeture et expiration de session encore nécessaires."
   ]
 }
