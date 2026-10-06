@@ -172,13 +172,16 @@ async function refreshNotificationPreferences({emitChange=true}={}){
 async function refreshNotifications({emitChange=true}={}){
   if(!state.session)return snapshot();
   const uid=state.session.user.id,seq=++notificationRequestSeq;
+  const sync=window.NethorMobileSync,ticket=sync?.beginCheck?.('notifications');
   try{
     const list=await readNotifications();
     if(seq!==notificationRequestSeq||state.session?.user?.id!==uid)return snapshot();
     state.notifications=list;
     state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0);
+    sync?.markVerified?.('notifications',ticket);
     if(emitChange)emit('notifications')
   }catch(error){
+    sync?.markFailed?.('notifications',ticket);
     console.warn('[Nethor MobileServices] notifications',error)
   }
   return snapshot()
@@ -211,6 +214,7 @@ async function refresh(){
   if(!state.session)return snapshot();
   if(refreshAllPromise)return refreshAllPromise;
   const uid=state.session.user.id,notificationsSeq=++notificationRequestSeq;
+  const sync=window.NethorMobileSync,notificationsTicket=sync?.beginCheck?.('notifications');
   refreshAllPromise=(async()=>{
     state.status='refreshing';
     emit('refreshing');
@@ -223,12 +227,16 @@ async function refresh(){
       ]);
       if(state.session?.user?.id!==uid)return snapshot();
       state.notificationPreferences=preferences;
-      if(notifications!==null&&notificationsSeq===notificationRequestSeq){
-        state.notifications=notifications;
-        state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0)
+      if(notificationsSeq===notificationRequestSeq){
+        if(notifications!==null){
+          state.notifications=notifications;
+          state.unread=state.notifications.reduce((count,item)=>count+(item?.read_at?0:1),0);
+          sync?.markVerified?.('notifications',notificationsTicket)
+        }else sync?.markFailed?.('notifications',notificationsTicket)
       }
       state.status='ready';state.ready=true;state.error=null;emit('ready');
     }catch(error){
+      sync?.markFailed?.('notifications',notificationsTicket);
       if(state.session?.user?.id===uid){state.status='error';state.error=error;emit('error',{error})}
       throw error
     }
