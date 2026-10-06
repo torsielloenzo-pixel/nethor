@@ -755,6 +755,8 @@ async function loadWeek(start=currentWeekStart,opts={}){
   fetchPlanningAbsences(requestedStart)
  ]);
  if(requestId!==planningWeekLoadSeq)return false;
+ // Les réponses commencées avant une saisie ne doivent jamais effacer le brouillon.
+ if(opts.preserveDraft!==false&&editMode&&changedDates().length)return false;
  const {data,error}=weekResult;
  if(error){
   console.warn('Dernière version du planning indisponible :',error);
@@ -799,19 +801,21 @@ async function saveWeek(options={}){
  let result,error;
  try{({data:result,error}=await db.rpc('planning_save_week_if_revision',params))}
  catch(e){error=e}
- finally{planningSaveInFlight=false}
  if(error){
+  planningSaveInFlight=false;
   console.warn('Publication planning non confirmée',error);
   setSaveState('Enregistrement non confirmé • vérifier avant de réessayer');
   return false
  }
  if(result?.status==='conflict'){
+  planningSaveInFlight=false;
   planningConflictDetected=true;planningLastSaveOutcome='conflict';
   setSaveState('Conflit : planning modifié par une autre personne');
   alert('Ce planning a été modifié depuis son ouverture. Tes modifications locales ne sont pas enregistrées. Annule les modifications puis recharge la semaine avant de recommencer.');
   return false
  }
  if(result?.status!=='ok'||!result.revision){
+  planningSaveInFlight=false;
   planningLastSaveOutcome='rejected';
   setSaveState('Enregistrement refusé');
   console.warn('Écriture planning refusée',result);
@@ -819,7 +823,8 @@ async function saveWeek(options={}){
  }
  planningLastSaveOutcome='accepted';
  const revision=String(result.revision);
- const readOk=await loadWeek(currentWeekStart,{render:false,silent:true}).catch(e=>{console.warn('Relecture du planning indisponible',e);return false});
+ const readOk=await loadWeek(currentWeekStart,{render:false,silent:true,preserveDraft:false}).catch(e=>{console.warn('Relecture du planning indisponible',e);return false});
+ planningSaveInFlight=false;
  if(!readOk||!model||!planningLoadedRevisionAt||String(planningLoadedRevisionAt)!==revision||String(model.updatedAt||'')!==savedAt){
   if(!readOk||!model){
    model=localDraft;
