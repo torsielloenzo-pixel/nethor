@@ -141,7 +141,7 @@ test('mise à jour PWA et scripts exécutables cohérents',()=>{
  assert.match(worker,/netto-tools-v379/);
  for(const filename of ['runtime/client-health.js?v=1','ui/mobile/mobile-sync.js?v=3',
   'ui/mobile/mobile-services.js?v=14','ui/mobile/views/home/home-view.js?v=15',
-  'ui/mobile/views/planning/planning-view.js?v=16']){
+  'ui/mobile/views/planning/planning-view.js?v=17']){
   assert.ok(page.includes(filename),'mobile missing '+filename);
   assert.ok(worker.includes('./'+filename),'service worker missing '+filename)
  }
