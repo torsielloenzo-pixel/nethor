@@ -42,3 +42,7 @@ Ces simulations et vérifications statiques **ne remplacent pas** un test concur
 Les autres ressources modifiables (tâches, paramètres, fiches articles, etc.) n'ont pas encore reçu ce contrôle de version atomique et devront être traitées selon leur degré de risque.
 
 **Déploiement :** appliquer d'abord la version 376 au dépôt, puis la migration Supabase. Une session conservant une ancienne version de l'interface ne pourra plus écrire directement ; une actualisation de l'application est nécessaire.
+
+## Durcissement de l'exposition API
+
+Les implémentations `SECURITY DEFINER` sont déplacées dans le schéma non exposé `private`. Les fonctions `public.planning_save_week_if_revision` et `public.planning_delete_week_if_revision` conservent leur API et leurs paramètres, mais deviennent des façades `SECURITY INVOKER`. Les vérifications de session et de permission restent dans les fonctions privées ; les accès anonymes ne sont pas accordés. Aucun changement côté interface n'est nécessaire.
