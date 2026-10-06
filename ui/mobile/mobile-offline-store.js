@@ -71,6 +71,17 @@ async function put(uid,domain,id,payload){
   }catch(_){resolve(false)}
  })
 }
+async function remove(uid,domain,id){
+ if(!valid(uid,domain,id))return false;
+ const cacheKey=key(activeUser,domain,id);memory.delete(cacheKey);
+ const db=await open();if(!db)return false;
+ return new Promise(resolve=>{
+  try{
+   const request=db.transaction(STORE,'readwrite').objectStore(STORE).delete(cacheKey);
+   request.onsuccess=()=>resolve(true);request.onerror=()=>resolve(false)
+  }catch(_){resolve(false)}
+ })
+}
 async function clearUser(uid){
  const target=String(uid||'');
  if(!target)return false;
@@ -99,5 +110,5 @@ async function clearAll(){
   catch(_){resolve(false)}
  })
 }
-window.NethorOfflineStore=Object.freeze({bind,get,put,clearUser,clearAll,get activeUser(){return activeUser}});
+window.NethorOfflineStore=Object.freeze({bind,get,put,remove,clearUser,clearAll,get activeUser(){return activeUser}});
 })();
