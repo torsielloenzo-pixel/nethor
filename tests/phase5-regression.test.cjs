@@ -180,7 +180,7 @@ test('deux responsables ne peuvent pas publier successivement le même brouillon
    planningLoadedRevisionAt:'rev-1',planningLoadedWeekKey:'2026-10-05',
    planningLastSaveVerified:false,planningLastSaveOutcome:'none',planningConflictDetected:false,
    planningWeekLoadError:false,planningReadStatusWeekKey:'',currentWeekStart:new Date(2026,9,5),
-   editMode:true,currentUser:{id:'test-user'},navigator:{onLine:true},
+   editMode:true,currentUser:{id:'test-user'},navigator:{onLine:true},window:{NethorClientHealth:{record:async()=>true}},
    isoDate:d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-'),
    setSaveState:()=>{},clonePlanningModel:x=>structuredClone(x),clearPlanningReadStatuses:()=>{},
    loadPlanningReadStatusWeek:async()=>{},setTimeout:()=>{},alert:()=>{},console:{warn:()=>{}},
