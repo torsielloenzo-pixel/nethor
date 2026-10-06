@@ -1,18 +1,18 @@
 {
-  "version": 373,
-  "label": "v1.46.24",
+  "version": 374,
+  "label": "v1.46.25",
   "important": true,
   "clear_cache": true,
   "mode": "manual",
-  "title": "Fiabilité et synchronisation des plannings",
-  "message": "Contrôle de toutes les semaines chargées, reprise après reconnexion et confirmation serveur après publication.",
-  "published_at": "2026-10-06T20:08:16.810Z",
+  "title": "Fiabilité planning — Audit phase 1",
+  "message": "Synchronisation en temps réel des plannings rétablie, imports sécurisés et confirmations d'enregistrement contrôlées.",
+  "published_at": "2026-10-06T20:22:19.459Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Accueil : toutes les semaines préchargées sont validées avec les versions serveur.",
-    "Planning : la version enregistrée est relue après import ou modification.",
-    "Mobile : retour en ligne et réouverture déclenchent une revalidation.",
-    "Les erreurs de synchronisation ne sont plus présentées comme des heures planifiées.",
-    "Migration SQL pour horodater officiellement les plannings côté serveur."
+    "Planning : publication Realtime activée pour les semaines et les absences.",
+    "Imports : un échec de vérification ne peut plus supprimer le fichier Excel après une écriture acceptée.",
+    "Édition : aucun message de réussite si l'enregistrement a été refusé.",
+    "Une version enregistrée, mais non revérifiée, est clairement signalée.",
+    "Correctifs vérifiés sur le code et la configuration de la base ; tests réels multi-appareils encore nécessaires."
   ]
 }
