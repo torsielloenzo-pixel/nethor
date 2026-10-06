@@ -1,0 +1,83 @@
+/* Nethor mobile planning — Jour, visuellement aligné sur les cartes de Semaine. */
+body.agendaLayout #agendaMount.nthDayHost{width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.nthDayWeekStrip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:0 0 11px}
+.nthDayWeekPill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:49px;border:1px solid #e0e8f2;border-radius:11px;background:#fff;color:#274269;font:inherit;cursor:pointer}
+.nthDayWeekPill span{font-size:10px;font-weight:750;text-transform:capitalize}
+.nthDayWeekPill strong{font-size:14px;line-height:1}
+.nthDayWeekPill.today:not(.selected){border-color:#85aaea}
+.nthDayWeekPill.selected{background:#1556c1;border-color:#1556c1;color:#fff;box-shadow:0 4px 12px #165bc12b}
+.nthDaySummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 12px}
+.nthDaySummary>div{display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:0;padding:10px 8px;background:#fff;border:1px solid #e1e8f0;border-radius:11px}
+.nthDaySummary span{font-size:10px;font-weight:750;color:#64738a}
+.nthDaySummary strong{font-size:19px;color:#18345e}
+.nthDayMine,.nthDayTeamCard,.nthDayAway{background:#fff;border:1px solid #e0e7f0;border-radius:15px;box-shadow:0 4px 14px #172f550a}
+.nthDayMine{padding:13px;margin-bottom:16px;border-color:#9bbbf1;box-shadow:0 5px 16px #1656bc13}
+.nthDayBlockTop,.nthDaySectionTitle,.nthDayTeamHead{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.nthDayBlockTop>strong,.nthDaySectionTitle>strong{font-size:14px;font-weight:900;color:#1a3155}
+.nthDayMineProfile{display:flex;align-items:center;gap:9px;min-width:0;margin:13px 0 11px}
+.nthDayMineProfile>.planningIdentityAvatar{width:43px;height:43px;min-width:43px;border-radius:50%;font-size:12px}
+.nthDayMineProfile>div{min-width:0}
+.nthDayMineProfile>div>strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#172e54;font-size:13px}
+.nthDayMineProfile>div>small{display:block;margin-top:3px;font-size:10px;color:#7888a0}
+.nthDayBadge{max-width:49%;padding:5px 8px;border-radius:8px;background:#e9f2ff;color:#1452ac;font-size:10px;font-weight:800;text-align:center;line-height:1.2}
+.nthDayBadge[data-state="ongoing"]{background:#ddf4e6;color:#176940}
+.nthDayBadge[data-state="upcoming"]{background:#e4efff;color:#1757ae}
+.nthDayBadge[data-state="finished"]{background:#eef1f5;color:#66768d}
+.nthDayBadge[data-state="leave"]{background:#fff0bf;color:#89630e}
+.nthDayBadge[data-state="rest"],.nthDayBadge[data-state="empty"]{background:#eef1f5;color:#64758a}
+.nthDayBadge[data-state="unavailable"]{background:#eee6f9;color:#705296}
+.nthDayShiftList{display:grid;gap:6px}
+.nthDayShift{display:grid;grid-template-columns:7px minmax(0,1fr) auto;align-items:center;gap:9px;min-height:44px;padding:9px 11px;border-radius:10px;background:#f2f5fa}
+.nthDayShift>i{width:7px;height:26px;border-radius:4px;background:#1d65cc}
+.nthDayShift[data-shift="g"]{background:#e1f6e9;color:#176a40}
+.nthDayShift[data-shift="g"]>i{background:#2aaf70}
+.nthDayShift[data-shift="b"]{background:#e3eeff;color:#1659b1}
+.nthDayShift[data-shift="b"]>i{background:#367ee3}
+.nthDayShift>strong{font-size:14px;font-weight:880;white-space:nowrap;letter-spacing:-.15px;font-variant-numeric:tabular-nums}
+.nthDayShift>small{font-size:10px;font-weight:700;white-space:nowrap}
+.nthDayProgressLabel{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:11px;color:#697991;font-size:10px}
+.nthDayProgressLabel>strong{color:#2669ce}
+.nthDayProgress{height:5px;background:#e5ecf7;border-radius:99px;overflow:hidden;margin-top:6px}
+.nthDayProgress>i{display:block;height:100%;background:#246cdb;border-radius:inherit}
+.nthDayNoShift{padding:12px 11px;background:#f1f4f8;color:#63738c;font-size:12px;border-radius:10px}
+.nthDayTeam{margin-top:7px}
+.nthDaySectionTitle{margin:0 1px 9px}
+.nthDaySectionTitle>span{font-size:10px;color:#718199}
+.nthDayFilters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:11px;padding:2px 1px}
+.nthDayFilters::-webkit-scrollbar{display:none}
+.nthDayFilters button{flex:none;min-height:39px;padding:0 12px;border:1px solid #dce6f2;border-radius:10px;background:#fff;color:#345171;font-size:11px;font-weight:800;cursor:pointer}
+.nthDayFilters button.selected{background:#e9f2ff;border-color:#2164ce;color:#1450b2}
+.nthDayTeamList{display:grid;gap:9px}
+.nthDayTeamCard{padding:11px 10px}
+.nthDayTeamHead{margin-bottom:9px}
+.nthDayPerson{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.nthDayPerson>.planningIdentityAvatar{width:36px;height:36px;min-width:36px;border-radius:50%;font-size:11px}
+.nthDayPerson>strong{font-size:12.5px;line-height:1.25;color:#1a3155;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.nthDayTeamCard .nthDayShift{min-height:39px;padding:7px 10px}
+.nthDayTeamCard .nthDayShift>strong{font-size:12.5px}
+.nthDayEmpty{padding:20px 11px;background:#fff;border:1px solid #e1e8f0;border-radius:12px;text-align:center;font-size:12px;color:#677991}
+.nthDayAway{overflow:hidden;margin-top:13px}
+.nthDayAway summary{display:flex;align-items:center;gap:8px;list-style:none;min-height:52px;padding:10px 12px;font-size:12px;font-weight:850;color:#2c4569;cursor:pointer}
+.nthDayAway summary::-webkit-details-marker{display:none}
+.nthDayAway summary>span{flex:1}.nthDayAway summary>small{font-size:10px;color:#76869b;white-space:nowrap}
+.nthDayAway summary>i{font-style:normal;font-size:19px;color:#6d7f99;transition:transform .15s}
+.nthDayAway[open] summary>i{transform:rotate(180deg)}
+.nthDayAwayList{display:grid;gap:0;padding:0 11px 7px}
+.nthDayAwayList>p{color:#70829a;font-size:11px;margin:10px 0}
+.nthDayAwayPerson{display:flex;align-items:center;gap:8px;min-width:0;padding:9px 0;border-top:1px solid #e7ebf2}
+.nthDayAwayPerson>.planningIdentityAvatar{width:31px;height:31px;min-width:31px;border-radius:50%;font-size:10px}
+.nthDayAwayPerson>strong{flex:1;min-width:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#253f64}
+.nthDayAwayPerson>span{font-size:10px;font-weight:750;color:#6a7a8d;white-space:nowrap}
+.nthDayAwayPerson>span[data-off="leave"]{color:#a16c07}.nthDayAwayPerson>span[data-off="rest"]{color:#657184}.nthDayAwayPerson>span[data-off="unavailable"]{color:#78569c}
+.nthDayFootnote{margin:11px 2px 4px;color:#78879a;font-size:9.5px;line-height:1.35;text-align:center}
+@media(max-width:370px){.nthDayShift>strong{font-size:12px}.nthDayCard{padding:10px}.nthDayFilters button{padding:0 9px}.nthDayWeekStrip{gap:3px}.nthDayAway summary{font-size:11px}.nthDaySummary>div{padding:8px 5px}}
+html[data-theme="dark"] .nthDayWeekPill,html[data-theme="dark"] .nthDaySummary>div,html[data-theme="dark"] .nthDayMine,html[data-theme="dark"] .nthDayTeamCard,html[data-theme="dark"] .nthDayAway,html[data-theme="dark"] .nthDayFilters button,html[data-theme="dark"] .nthDayEmpty{background:#1a222b;border-color:#344254;color:#e0eafa}
+html[data-theme="dark"] .nthDayWeekPill.selected{background:#215bc1;border-color:#4483ea;color:#fff}
+html[data-theme="dark"] .nthDaySummary span,html[data-theme="dark"] .nthDaySectionTitle>span{color:#aebfd2}
+html[data-theme="dark"] .nthDaySummary strong,html[data-theme="dark"] .nthDayBlockTop>strong,html[data-theme="dark"] .nthDaySectionTitle>strong,html[data-theme="dark"] .nthDayMineProfile>div>strong,html[data-theme="dark"] .nthDayPerson>strong,html[data-theme="dark"] .nthDayAway summary,html[data-theme="dark"] .nthDayAwayPerson>strong{color:#e5effb}
+html[data-theme="dark"] .nthDayMineProfile>div>small,html[data-theme="dark"] .nthDayFootnote{color:#a7b7c8}
+html[data-theme="dark"] .nthDayFilters button.selected{background:#183b74;border-color:#4d86df;color:#e0edff}
+html[data-theme="dark"] .nthDayNoShift{background:#2b3542;color:#c8d3df}
+html[data-theme="dark"] .nthDayAwayPerson{border-top-color:#344254}
+html[data-theme="dark"] .nthDayBadge[data-state="finished"],html[data-theme="dark"] .nthDayBadge[data-state="rest"],html[data-theme="dark"] .nthDayBadge[data-state="empty"]{background:#303d4a;color:#cad6e5}
+@media(prefers-reduced-motion:reduce){.nthDayAway summary>i{transition:none}}
