@@ -1072,7 +1072,11 @@ async function processPlanningFile(file,state){
   const saved=await saveWeek({expectedRevision:existing?.updated_at||null});if(!saved)throw new Error(planningLastSaveOutcome==='conflict'?'Import refusé : la semaine a été modifiée par une autre personne.':'Le planning n’a pas pu être enregistré ou confirmé.');
   await recordPlanningImportAudit(file,archivedPath);
  }catch(e){
+  // Si le serveur a accepté l'écriture mais que le réseau a échoué après,
+  // ne jamais supprimer sa source. Reprendre l'état publié si possible.
   if(archivedPath&&['conflict','rejected'].includes(planningLastSaveOutcome)){try{await db.storage.from('planning-files').remove([archivedPath])}catch(_){}}
+  await loadWeek(target,{render:false,silent:true}).catch(error=>console.warn('Récupération du planning après import refusé :',error));
+  renderAll();
   throw e
  }
  await addPlanningLog('import',logDetails({kind:replacing?'import_replace':'import_new',week_start:key,source:file.name}));
@@ -1110,12 +1114,12 @@ function cancelPlanningEdit(){
  document.getElementById('editTools').classList.add('hidden');
  document.getElementById('editSaveBar').classList.add('hidden');
  const b=document.getElementById('editPlanningBtn');b.textContent='✎ Modifier le planning';b.classList.remove('editing');
- setSaveState('Lecture seule');renderAll();window.NettoSounds?.play?.('menuClose');showToast(hasChanges?'Modifications annulées':'Mode modification fermé')
+ setSaveState('Vérification de la semaine…');loadWeek(currentWeekStart).catch(e=>console.warn('Rechargement après abandon :',e));window.NettoSounds?.play?.('menuClose');showToast(hasChanges?'Modifications annulées':'Mode modification fermé')
 }
-async function saveAndFinishEdit(){if(!canEdit||!model)return;const dates=changedDates();if(dates.length){const saved=await saveWeek();if(!saved){showToast('Enregistrement impossible : modifications conservées.');return}await addPlanningLog('modify',logDetails({kind:'manual_edit',dates}));await notifyChangedEmployees()}editSnapshot=null;editMode=false;document.getElementById('editTools').classList.add('hidden');document.getElementById('editSaveBar').classList.add('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✎ Modifier le planning';b.classList.remove('editing');setSaveState(dates.length?(planningLastSaveVerified?'✓ Planning enregistré':'Enregistré • version non confirmée'):'Lecture seule');resetEditChanges();renderAll();if(dates.length&&planningLastSaveVerified)window.NettoSounds?.play?.('success');showToast(dates.length?(!planningLastSaveVerified?'Enregistré, version à revérifier':'✓ Modifications enregistrées'):'Aucune modification')}
+async function saveAndFinishEdit(){if(!canEdit||!model)return;const dates=changedDates();if(dates.length){const saved=await saveWeek();if(!saved){showToast(planningLastSaveOutcome==='conflict'?'Conflit : modifications locales conservées':'Enregistrement non confirmé : modifications conservées');return}await addPlanningLog('modify',logDetails({kind:'manual_edit',dates}));await notifyChangedEmployees()}editSnapshot=null;editMode=false;document.getElementById('editTools').classList.add('hidden');document.getElementById('editSaveBar').classList.add('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✎ Modifier le planning';b.classList.remove('editing');setSaveState(dates.length?(planningLastSaveVerified?'✓ Planning enregistré':'Enregistré • version non confirmée'):'Lecture seule');resetEditChanges();renderAll();if(dates.length&&planningLastSaveVerified)window.NettoSounds?.play?.('success');showToast(dates.length?(!planningLastSaveVerified?'Enregistré, version à revérifier':'✓ Modifications enregistrées'):'Aucune modification')}
 function paintCell(td){if(!editMode||!model)return;const row=+td.dataset.row,slot=+td.dataset.slot;if(drag.row!==null&&row!==drag.row)return;const key=row+'|'+slot;if(drag.changed.has(key))return;drag.changed.add(key);const d=modelDay(),value=paintColor==='erase'?null:paintColor;if(d.cells[row][slot]===value)return;d.cells[row][slot]=value;markPlanningChange(currentDay,row);td.style.background=value?COLOR[value]:'';drag.first=drag.first||{row,slot};drag.last={row,slot}}
 function bindEditing(){const table=document.getElementById('xlsTable');if(!table)return;table.onpointerdown=e=>{const td=e.target.closest('.slot.editable');if(!td||e.button>0)return;e.preventDefault();drag={active:true,row:+td.dataset.row,pointerId:e.pointerId,changed:new Set(),first:null,last:null};try{table.setPointerCapture(e.pointerId)}catch(_){}paintCell(td)};table.onpointermove=e=>{if(!drag.active||e.pointerId!==drag.pointerId)return;e.preventDefault();const td=document.elementFromPoint(e.clientX,e.clientY)?.closest('.slot.editable');if(td&&table.contains(td))paintCell(td)};const end=e=>{if(!drag.active)return;drag.active=false;if(drag.changed.size){renderReader();renderPlanningInsights()}drag.row=null;drag.changed.clear()};table.onpointerup=end;table.onpointercancel=end;table.onlostpointercapture=end}
-async function resetDay(){if(!canEdit||!editMode||!model)return;const date=dayKey();if(!confirm('Réinitialiser entièrement '+DAYS[currentDay][1]+' '+frDate(addDays(currentWeekStart,currentDay))+' ?'))return;const d=modelDay(),affected=[];d.cells.forEach((r,i)=>{if(r.some(Boolean)){affected.push(model.employees[i]?.name);markPlanningChange(currentDay,i)}});d.cells=d.cells.map(r=>r.map(()=>null));const saved=await saveWeek();if(!saved){showToast('Réinitialisation non enregistrée. Réessaie.');return}await addPlanningLog('modify',logDetails({kind:'reset_day',dates:[date]}));const ids=[...new Set(affected.map(n=>planningProfileFor(n)?.id).filter(Boolean))];await notifyUsers(ids.map(id=>({user_id:id,kind:'reset_day',title:'Planning du '+shortDate(date)+' modifié',message:'La journée du '+shortDate(date)+' a été réinitialisée. Merci de reconsulter tes horaires.',planning_date:date,week_start:isoDate(startOfWeek(parseISO(date))),target_url:'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseISO(date))))+'&day='+encodeURIComponent(date)})));resetEditChanges();editSnapshot=clonePlanningModel(model);renderAll();if(planningLastSaveVerified)window.NettoSounds?.play?.('delete');showToast(planningLastSaveVerified?'Planning du jour réinitialisé':'Enregistré • version à vérifier')}
+async function resetDay(){if(!canEdit||!editMode||!model)return;const date=dayKey();if(!confirm('Réinitialiser entièrement '+DAYS[currentDay][1]+' '+frDate(addDays(currentWeekStart,currentDay))+' ?'))return;const d=modelDay(),affected=[];d.cells.forEach((r,i)=>{if(r.some(Boolean)){affected.push(model.employees[i]?.name);markPlanningChange(currentDay,i)}});d.cells=d.cells.map(r=>r.map(()=>null));const saved=await saveWeek();if(!saved){showToast(planningLastSaveOutcome==='conflict'?'Conflit : la journée n’a pas été réinitialisée':'Réinitialisation non confirmée. Vérifie la semaine avant de réessayer.');return}await addPlanningLog('modify',logDetails({kind:'reset_day',dates:[date]}));const ids=[...new Set(affected.map(n=>planningProfileFor(n)?.id).filter(Boolean))];await notifyUsers(ids.map(id=>({user_id:id,kind:'reset_day',title:'Planning du '+shortDate(date)+' modifié',message:'La journée du '+shortDate(date)+' a été réinitialisée. Merci de reconsulter tes horaires.',planning_date:date,week_start:isoDate(startOfWeek(parseISO(date))),target_url:'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseISO(date))))+'&day='+encodeURIComponent(date)})));resetEditChanges();editSnapshot=clonePlanningModel(model);renderAll();if(planningLastSaveVerified)window.NettoSounds?.play?.('delete');showToast(planningLastSaveVerified?'Planning du jour réinitialisé':'Enregistré • version à vérifier')}
 async function resetWeek(){
  if(!canEdit||!editMode||!model)return;
  if(!confirm('Réinitialiser entièrement le planning de la semaine du '+frDate(currentWeekStart)+' ?'))return;
@@ -1178,8 +1182,18 @@ async function deletePlanningLog(id){
 }
 async function clearPlanningLogs(){if(role!=='admin'||!confirm('Effacer tout l’historique du planning ?'))return;const {error}=await db.from('planning_logs').delete().gte('id',0);if(error)alert('Impossible d’effacer les logs.');else loadPlanningLogs()}
 
-async function changeWeek(delta){currentWeekStart=addDays(currentWeekStart,delta*7);currentDay=0;await loadWeek(currentWeekStart);playUISound()}
-async function goCurrentWeek(){const now=new Date();currentWeekStart=startOfWeek(now);currentDay=Math.max(0,Math.min(6,(now.getDay()+6)%7));await loadWeek(currentWeekStart)}
+function discardEditsBeforeNavigation(){
+ if(!editMode)return true;
+ if(changedDates().length&&!confirm('Tu as des modifications non enregistrées. Les abandonner pour changer de semaine ?'))return false;
+ editMode=false;editSnapshot=null;resetEditChanges();
+ document.getElementById('editTools')?.classList.add('hidden');
+ document.getElementById('editSaveBar')?.classList.add('hidden');
+ const button=document.getElementById('editPlanningBtn');
+ if(button){button.textContent='✎ Modifier le planning';button.classList.remove('editing')}
+ return true
+}
+async function changeWeek(delta){if(!discardEditsBeforeNavigation())return;currentWeekStart=addDays(currentWeekStart,delta*7);currentDay=0;await loadWeek(currentWeekStart);playUISound()}
+async function goCurrentWeek(){if(!discardEditsBeforeNavigation())return;const now=new Date();currentWeekStart=startOfWeek(now);currentDay=Math.max(0,Math.min(6,(now.getDay()+6)%7));await loadWeek(currentWeekStart)}
 function setPlanningView(v,opts={}){
  planningView=v==='year'?'year':'week';
  const yearView=document.getElementById('yearView');
