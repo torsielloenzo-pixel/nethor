@@ -14,6 +14,31 @@ let notificationTimer=null;
 let permissionTimer=null;
 let preferenceTimer=null;
 let coreRequestSeq=0,notificationRequestSeq=0,permissionsRequestSeq=0,refreshAllPromise=null;
+function offlineStore(){return window.NethorOfflineStore}
+async function persistOfflineShell(){
+ if(navigator.onLine===false||!state.session?.user?.id||!state.profile||!state.ready)return;
+ const uid=state.session.user.id,profile=state.profile;
+ await offlineStore()?.put?.(uid,'shell','profile',{
+  profile:{display_name:profile.display_name,role:profile.role,profile_color:profile.profile_color,ui_preferences:{theme:profile.ui_preferences?.theme}},
+  subrolePermissions:{...state.subrolePermissions},subroleKeys:[...state.subroleKeys]
+ })
+}
+async function restoreOfflineShell(){
+ const uid=state.session?.user?.id;
+ if(!uid)return false;
+ const cached=await offlineStore()?.get?.(uid,'shell','profile');
+ if(!cached?.data?.profile?.role)return false;
+ state.profile=cached.data.profile;
+ state.subrolePermissions=cached.data.subrolePermissions||{};
+ state.subroleKeys=Array.isArray(cached.data.subroleKeys)?cached.data.subroleKeys:[];
+ state.siteConfig={};
+ state.notifications=[];state.unread=0;
+ state.ready=true;state.status='offline';state.error=null;
+ state.lastRefresh=0;
+ applyProfileTheme();
+ emit('ready');
+ return true
+}
 let serviceWorkerRegistrationPromise=null;
 const listeners=new Set();
 
@@ -235,6 +260,8 @@ async function refresh(){
         }else sync?.markFailed?.('notifications',notificationsTicket)
       }
       state.status='ready';state.ready=true;state.error=null;emit('ready');
+      void persistOfflineShell().catch(()=>{});
+      if(!channels.length)startRealtime();
     }catch(error){
       sync?.markFailed?.('notifications',notificationsTicket);
       if(state.session?.user?.id===uid){state.status='error';state.error=error;emit('error',{error})}
@@ -289,8 +316,14 @@ function startRealtime(){
   channels=[profileChannel,configChannel,notificationChannel,accessChannel,preferenceChannel]
 }
 function onAuthState(event,session){
-  if(session)state.session=session;
+  const previousUid=state.session?.user?.id||'';
+  if(session&&previousUid&&previousUid!==session.user?.id){
+    void offlineStore()?.clearUser?.(previousUid);
+    window.NethorMobileSync?.stop?.()
+  }
+  if(session){state.session=session;offlineStore()?.bind?.(session.user?.id)}
   if(event==='SIGNED_OUT'||!session){
+    void offlineStore()?.clearUser?.(previousUid);
     window.NethorMobileSync?.stop?.();
     coreRequestSeq++;notificationRequestSeq++;permissionsRequestSeq++;
     window.NethorClientHealth?.clear?.();
@@ -363,6 +396,7 @@ async function start(){
     const {data,error}=await client.auth.getSession();
     if(error)throw error;
     state.session=data?.session||null;
+    if(state.session)offlineStore()?.bind?.(state.session.user.id);
     if(!state.session){
       state.status='signed-out';
       emit('signed-out');
@@ -371,9 +405,19 @@ async function start(){
     }
     const auth=client.auth.onAuthStateChange(onAuthState);
     authSubscription=auth?.data?.subscription||null;
+    if(navigator.onLine===false){
+      if(!await restoreOfflineShell()){
+        state.status='error';
+        state.error=new Error('Connecte-toi une première fois en ligne pour activer Nethor Offline');
+        emit('error',{error:state.error});
+        return snapshot()
+      }
+      window.NethorMobileSync?.start?.({db:client,uid:state.session.user.id});
+      return snapshot()
+    }
     await refresh();
     window.NethorClientHealth?.bindClient?.(client,'mobile');
-    startRealtime();
+    if(!channels.length)startRealtime();
     window.NethorMobileSync?.start?.({db:client,uid:state.session?.user?.id});
     return snapshot()
   })().catch(error=>{
@@ -796,8 +840,12 @@ async function markAllNotificationsRead(){
 }
 async function signOut(){
   if(!client)return;
+  const uid=state.session?.user?.id;
   try{await client.auth.signOut({scope:'local'})}
-  finally{redirectToLogin()}
+  finally{
+    if(uid)await offlineStore()?.clearUser?.(uid);
+    redirectToLogin()
+  }
 }
 function destroy(){
  window.NethorMobileSync?.stop?.();

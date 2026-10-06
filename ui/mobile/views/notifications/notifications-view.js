@@ -110,22 +110,24 @@ function render(){
  list.innerHTML=html
 }
 async function markRead(id){
- if(!id)return;
+ if(!id||navigator.onLine===false)return;
  await services()?.markNotificationRead?.(id)
 }
 async function openRow(row){
+ if(navigator.onLine===false)return;
  const id=row?.dataset?.npId;if(id)await markRead(id);
  const raw=row?.dataset?.npUrl||'';if(raw)navigate(raw)
 }
 async function deleteOne(id){
- if(!id)return;
+ if(!id||navigator.onLine===false)return;
  try{await services()?.deleteNotification?.(id)}catch(error){console.error('[Nethor NotificationsView] delete',error)}
 }
 async function markAll(){
+ if(navigator.onLine===false)return;
  try{await services()?.markAllNotificationsRead?.()}catch(error){console.error('[Nethor NotificationsView] mark all',error)}
 }
 async function deleteAll(){
- if(!state.items.length)return;
+ if(navigator.onLine===false||!state.items.length)return;
  if(!confirm('Supprimer toutes tes notifications ?'))return;
  try{await services()?.deleteAllNotifications?.()}catch(error){console.error('[Nethor NotificationsView] delete all',error)}
 }

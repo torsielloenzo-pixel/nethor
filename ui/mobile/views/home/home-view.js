@@ -398,6 +398,7 @@ async function paintTeamAvatars(rows){
 }
 
 async function loadHomeSnapshot(shared){
+ if(navigator.onLine===false)return null;
  await shared?.ready?.();
  const profile=shared?.profile||null,config=shared?.siteConfig||{},session=shared?.session||null,db=shared?.client||null;
  if(!profile||!session||!db)return null;
@@ -422,12 +423,12 @@ async function loadHomeSnapshot(shared){
   completions=cRes.error?[]:(cRes.data||[]);
   relatedTasksError=!!(aRes.error||cRes.error)
  }
- const tasksFailed=!!(taskCatalogRes.error||taskRowsRes.error||relatedTasksError);
+ const tasksFailed=!!(taskCatalogRes.error||taskRowsRes.error||relatedTasksError||profilesRes.error);
  if(weeksRes.error)sync?.markFailed?.('planning',planningTicket);
  else sync?.markVerified?.('planning',planningTicket);
  if(tasksFailed)sync?.markFailed?.('tasks',tasksTicket);
  else sync?.markVerified?.('tasks',tasksTicket);
- return{
+ const result={
   loadedAt:Date.now(),userId:String(session.user.id||''),todayKey,weekStart,
   profile,config,session,db,
   weeks:(weeksRes.data||[]).filter(x=>x.data).map(x=>({...x.data,__planningWeekStart:x.week_start,__planningRevisionAt:x.updated_at})),
@@ -436,7 +437,12 @@ async function loadHomeSnapshot(shared){
   taskCatalog:taskCatalogRes.error?[]:(taskCatalogRes.data||[]),
   tasks,assignees,completions,
   taskLoadError:tasksFailed
+ };
+ if(!weeksRes.error&&!tasksFailed){
+  const {profile:_profile,config:_config,session:_session,db:_db,...safe}=result;
+  void window.NethorOfflineStore?.put?.(String(session.user.id),'home',todayKey,safe)
  }
+ return result
  }catch(error){
   sync?.markFailed?.('planning',planningTicket);
   sync?.markFailed?.('tasks',tasksTicket);
@@ -499,7 +505,14 @@ async function render(){
   const cached=new Map((snapshot.weeks||[]).map(w=>[String(w.__planningWeekStart||w.weekStart||w.week_start||''),String(w.__planningRevisionAt||'')]));
   if(versionError||!Array.isArray(published)||published.length!==cached.size||published.some(w=>cached.get(String(w.week_start))!==String(w.updated_at||'')))snapshot=null;
  }
- if(!snapshot&&!offline)snapshot=await loadHomeSnapshot(shared);
+ if(!snapshot&&!offline){
+  try{snapshot=await loadHomeSnapshot(shared)}
+  catch(error){console.warn('[Nethor HomeView] actualisation',error);window.NethorMobileSync?.markStale?.('planning')}
+ }
+ if(!snapshot||snapshot.planningLoadError||snapshot.taskLoadError){
+  const saved=await window.NethorOfflineStore?.get?.(uid,'home',todayKey);
+  if(saved?.data)snapshot={...saved.data,profile:state.profile,config:state.config,session:state.session,db:state.db,offlineCopy:true}
+ }
  if(!state.mounted||token!==state.renderToken)return;
  if(!snapshot){
   state.dashboard.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">'+(offline?'Hors connexion · aucune donnée de cette journée n’est disponible dans la session.':'Impossible de charger ton espace de travail.')+'</div></div>';
@@ -555,9 +568,10 @@ async function render(){
  }).filter(Boolean))];
 
  const sections=[],role=roleLabel(state.profile.role);
- const syncState=offline?'error':(snapshot.planningLoadError?'error':(exactCurrentWeek?'ok':'missing'));
- const syncText=offline?'Dernières données consultées · non vérifiées hors connexion':(snapshot.planningLoadError?'Planning indisponible : vérification impossible':(exactCurrentWeek?'Planning récupéré du serveur':'Aucun planning publié cette semaine'));
- sections.push('<div class="mhdPlanningSyncState '+syncState+'" role="status">'+esc(syncText)+'</div>');
+ if(!offline&&(snapshot.offlineCopy||snapshot.planningLoadError)){
+  const message=snapshot.offlineCopy?'Connexion indisponible · dernière copie enregistrée':'Planning temporairement indisponible';
+  sections.push('<div class="mhdPlanningSyncState error" role="status">'+esc(message)+'</div>')
+ }
  const dateText=today.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
  const welcomeName=state.name||role;
  const todayPersonal=todayModel?dayFacts(todayModel,todayKey,state.name):null;
@@ -647,11 +661,11 @@ async function render(){
 
  if(!state.mounted||token!==state.renderToken)return;
  state.dashboard.innerHTML='<div class="mhdStack">'+sections.join('')+'</div>';
- if(!offline&&exactCurrentWeek?.__planningRevisionAt&&!snapshot.planningLoadError){
+ if(!offline&&!snapshot.offlineCopy&&exactCurrentWeek?.__planningRevisionAt&&!snapshot.planningLoadError){
   services()?.markPlanningDayRead?.(todayKey,'mobile_home',exactCurrentWeek.__planningRevisionAt).catch?.(()=>{});
  }
  const todaySelf=todayModel?dayFacts(todayModel,todayKey,state.name):{hours:0,ranges:[]};
- if(window.NethorOperationsWidget?.mount){
+ if(!offline&&!snapshot.offlineCopy&&window.NethorOperationsWidget?.mount){
   await window.NethorOperationsWidget.mount({
    host:state.dashboard,db:state.db,session:state.session,profile:state.profile,config:state.config,
    subroleKeys:services()?.subroleKeys||[],todayKey,
@@ -659,7 +673,7 @@ async function render(){
    tasks:{rows:state.tasks,assignees:state.assignees,completions:state.completions,team:state.team}
   })
  }
- paintTeamAvatars(avatarRows).catch(()=>{})
+ if(!offline)paintTeamAvatars(avatarRows).catch(()=>{})
 }
 
 function scheduleRender(options={}){

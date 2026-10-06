@@ -6,11 +6,11 @@ const STYLE_ASSETS=[
  'planning-agenda-v2.css?v=15',
  'ui/mobile/planning-agenda.css?v=2',
  'ui/mobile/planning-layout.css?v=4',
- 'ui/mobile/views/planning/planning-view.css?v=1'
+ 'ui/mobile/views/planning/planning-view.css?v=2'
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=2',
- 'planning-runtime.js?v=17',
+ 'planning-runtime.js?v=18',
  'planning-agenda-v2.js?v=24'
 ];
 const state={

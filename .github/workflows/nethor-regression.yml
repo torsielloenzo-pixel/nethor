@@ -22,6 +22,7 @@ jobs:
           node-version: '22'
       - name: Valider la syntaxe des scripts critiques
         run: |
+          node --check ui/mobile/mobile-offline-store.js
           node --check ui/mobile/mobile-sync.js
           node --check ui/mobile/mobile-services.js
           node --check ui/mobile/views/home/home-view.js
@@ -32,4 +33,4 @@ jobs:
           node --check runtime/admin-portal-runtime.js
           node --check sw.js
       - name: Exécuter la suite de non-régression
-        run: node --test tests/phase5-regression.test.cjs
+        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs

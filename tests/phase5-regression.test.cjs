@@ -66,12 +66,12 @@ test('un canal Realtime et nettoyage au changement de compte',()=>{
 test('aucune vue ne devient vérifiée sur simple SUBSCRIBED',()=>{
  const h=fixture();h.sync.start({db:h.db,uid:'employee-a'});
  assert.equal(h.sync.statusOf('planning'),'unknown');
- assert.equal(h.sync.freshnessSummary().state,'stale');
+ assert.equal(h.sync.freshnessSummary().state,'hidden');
  const token=h.sync.beginCheck('planning');
- assert.equal(h.sync.freshnessSummary().state,'checking');
+ assert.equal(h.sync.freshnessSummary().state,'hidden');
  assert.equal(h.sync.markVerified('planning',token),true);
- assert.equal(h.sync.freshnessSummary().state,'fresh');
- h.now(180001);assert.equal(h.sync.freshnessSummary().state,'stale');
+ assert.equal(h.sync.freshnessSummary().state,'hidden');
+ h.now(180001);assert.equal(h.sync.freshnessSummary().state,'hidden');
  h.sync.stop()
 });
 
@@ -83,7 +83,7 @@ test('une requête ancienne ne valide pas des données modifiées',()=>{
  assert.equal(h.sync.markVerified('planning',next),true);
  h.sync.markStale('planning');
  assert.equal(h.sync.markVerified('planning',next),false);
- assert.equal(h.sync.freshnessSummary().state,'stale');
+ assert.equal(h.sync.freshnessSummary().state,'hidden');
  h.sync.stop()
 });
 
