@@ -218,7 +218,7 @@ function startPlanningReadStatusPolling(){
  },15000)
 }
 async function markPlanningDayRead(date=dayKey(),source=''){
- if(!db||!currentUser||!model||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(date||'')))return false;
+ if(!db||!currentUser||!model||(editMode&&changedDates().length)||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(date||'')))return false;
  const markSource=source||(PLANNING_SPA_MODE?'planning_mobile':'planning_desktop');
  const revision=planningLoadedRevisionAt;
  const week=currentPlanningWeekKey();
