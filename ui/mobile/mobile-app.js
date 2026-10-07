@@ -111,6 +111,16 @@ function applyProfileShortcut(link,config){
  syncHeaderProfileAvatar()
 }
 function mobileTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
+function mobileVisualTheme(){
+ const custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase();
+ return ['mineral','sage','plum','halloween'].includes(custom)?custom:mobileTheme()
+}
+function mobileThemeOpeningAsset(config){
+ const mobile=config?.platform_ui?.mobile||{},theme=mobileVisualTheme(),custom=mobile?.welcome_media_themes?.[theme];
+ if(custom&&typeof custom==='object'&&String(custom.url||'').trim())return{...custom,themeKey:theme};
+ const legacy=mobileThemedAssetNode(mobile?.welcome_media||{});
+ return{...legacy,type:mobile?.welcome_media?.type==='animation'?'animation':'image',themeKey:theme}
+}
 function mobileThemedAssetNode(node){
  if(!node||typeof node!=='object')return{};
  const theme=mobileTheme(),variant=node?.[theme],light=node?.light;
@@ -152,7 +162,10 @@ function rememberMobileLaunchConfig(config,profile=services()?.profile){
  const theme=prefs.theme==='dark'||prefs.theme==='light'?prefs.theme:mobileTheme();
  const compact={
   brand:config.brand&&typeof config.brand==='object'?{name:config.brand.name||'',subtitle:config.brand.subtitle||''}:{},
-  platform_ui:{mobile:{welcome_media:mobile.welcome_media&&typeof mobile.welcome_media==='object'?mobile.welcome_media:{}}},
+  platform_ui:{mobile:{
+   welcome_media:mobile.welcome_media&&typeof mobile.welcome_media==='object'?mobile.welcome_media:{},
+   welcome_media_themes:mobile.welcome_media_themes&&typeof mobile.welcome_media_themes==='object'?mobile.welcome_media_themes:{}
+  }},
   launch_theme:theme
  };
  try{localStorage.setItem(MOBILE_LAUNCH_CACHE_KEY,JSON.stringify({config:compact,at:Date.now()}))}catch(_){}
@@ -165,8 +178,8 @@ function renderMobileLaunchWelcome(state){
  if(text)text.textContent=name?'Bienvenue '+name+' 👋':'Bienvenue';
  if(sub)sub.textContent=brandName+' · '+brandSub;
  if(!mark)return overlay;
- const media=config?.platform_ui?.mobile?.welcome_media||{},variant=mobileThemedAssetNode(media),url=String(variant?.url||'').trim(),type=String(media.type||'image'),tag=String(variant?.tag||'');
- const signature=url?(type+'|'+url+'|'+tag+'|'+mobileTheme()):'fallback|'+mobileTheme();
+ const variant=mobileThemeOpeningAsset(config),url=String(variant?.url||'').trim(),type=String(variant?.type||'image'),tag=String(variant?.tag||''),visualTheme=String(variant?.themeKey||mobileVisualTheme());
+ const signature=url?(type+'|'+url+'|'+tag+'|'+visualTheme):'fallback|'+visualTheme;
  const bootstrapMedia=mark.dataset.bootstrapMedia==='1';
  if(mark.dataset.mediaSignature===signature&&!bootstrapMedia)return overlay;
  delete mark.dataset.bootstrapMedia;
