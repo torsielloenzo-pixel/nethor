@@ -52,10 +52,10 @@
 <script>
 (function(){
  try{
-  var raw=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),cfg=raw&&raw.config||{},brand=cfg.brand||{},mobile=cfg.platform_ui&&cfg.platform_ui.mobile||{},media=mobile.welcome_media||{},theme=document.documentElement.dataset.theme==='dark'?'dark':'light',variant=media[theme]&&media[theme].url?media[theme]:(theme==='dark'&&media.light&&media.light.url?media.light:media),url=String(variant&&variant.url||'').trim(),tag=String(variant&&variant.tag||''),mark=document.querySelector('[data-mobile-launch-welcome-mark]'),sub=document.querySelector('[data-mobile-launch-welcome-sub]');
+  var raw=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),cfg=raw&&raw.config||{},brand=cfg.brand||{},mobile=cfg.platform_ui&&cfg.platform_ui.mobile||{},media=mobile.welcome_media||{},theme=document.documentElement.dataset.theme==='dark'?'dark':'light',custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase(),visualTheme=['mineral','sage','plum','halloween'].includes(custom)?custom:theme,themed=mobile.welcome_media_themes&&mobile.welcome_media_themes[visualTheme],variant=(themed&&themed.url)?themed:(media[theme]&&media[theme].url?media[theme]:(theme==='dark'&&media.light&&media.light.url?media.light:media)),url=String(variant&&variant.url||'').trim(),tag=String(variant&&variant.tag||''),mark=document.querySelector('[data-mobile-launch-welcome-mark]'),sub=document.querySelector('[data-mobile-launch-welcome-sub]');
   if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
   if(!mark||!url)return;
-  var type=String(media.type||'image'),sig=type+'|'+url+'|'+tag+'|'+theme,safe=url.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  var type=String((themed&&themed.url?themed.type:media.type)||'image'),sig=type+'|'+url+'|'+tag+'|'+visualTheme,safe=url.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
   mark.dataset.mediaSignature=sig;mark.dataset.bootstrapMedia='1';mark.classList.add('hasMedia');
   if(type==='animation'&&/\.js(?:$|\?)/i.test(url)){
    var q=new URLSearchParams({src:url,theme:theme,mode:'media',name:'Utilisateur'});if(tag)q.set('tag',tag);
