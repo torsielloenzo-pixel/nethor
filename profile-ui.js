@@ -1024,7 +1024,7 @@ function ensureProfileStylesheet(id,href,match){
 function addStyle(){
  ensureProfileStylesheet('nettoProfileUIStyle','profile-ui.css?v=2','profile-ui.css')
 }
-function paint(el,url,name,color,frame){if(!el)return;el.style.setProperty('--profile-accent',color||'#ff5a2a');setAvatarFrame(el,frame);if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else{el.classList.remove('hasPhoto');el.style.backgroundImage='';el.textContent=initials(name)}}
+function paint(el,url,name,color,frame){if(!el)return;const accent=isMobileViewport()?'var(--nethor-profile-avatar-bg,#ff5a2a)':(color||'#ff5a2a');el.style.setProperty('--profile-accent',accent);if(isMobileViewport())el.style.color='var(--nethor-profile-avatar-fg,#fff)';setAvatarFrame(el,frame);if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else{el.classList.remove('hasPhoto');el.style.backgroundImage='';el.textContent=initials(name)}}
 function makeButton(icon,title,sub,url,cls=''){return '<button class="nettoNavBtn '+cls+'" data-url="'+esc(url||'')+'"><span>'+icon+'</span><span><strong>'+esc(title)+'</strong><small>'+esc(sub||'')+'</small></span></button>'}
 function mobileMenuRow(id,title,sub,url,extra=''){
  const icon=mobileNavIcon(id);
