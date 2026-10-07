@@ -95,8 +95,10 @@ function syncHeaderProfileAvatar(profile=services()?.profile,url=services()?.ava
  const avatar=headerHost?.querySelector('[data-mobile-profile-avatar]');
  if(!avatar)return;
  avatar.textContent=profileInitials(profile);
- avatar.style.backgroundColor=safeHex(profile?.profile_color)||'#ff5a2a';
+ avatar.style.backgroundColor='var(--nethor-profile-avatar-bg,#ff5a2a)';
+ avatar.style.color='var(--nethor-profile-avatar-fg,#fff)';
  avatar.style.backgroundImage='';
+ avatar.classList.toggle('hasPhoto',!!url);
  if(url){
   avatar.style.backgroundImage='url("'+String(url).replace(/"/g,'%22')+'")';
   avatar.textContent=''
