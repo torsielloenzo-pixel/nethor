@@ -238,3 +238,324 @@ html[data-nethor-mobile-theme] .scannerMobileLayout .page,
 html[data-nethor-mobile-theme] .scannerMobileLayout .title{color:var(--nmt-text)!important}
 html[data-nethor-mobile-theme] .scannerMobileLayout .back{background:var(--nmt-surface)!important;color:var(--nmt-text)!important;border-color:var(--nmt-line)!important}
 /* Les badges de danger, congé, absence, présence et validation métier gardent leurs couleurs. */
+
+/* =========================================================
+   HALLOWEEN — édition privée Enzo / Administrateur
+   Habillage uniquement : la structure, les tailles, les rôles,
+   les horaires et les couleurs métier du planning restent intacts.
+   ========================================================= */
+:root[data-nethor-mobile-theme="halloween"]{
+ --nmt-bg:#100b15;
+ --nmt-surface:#1d1522;
+ --nmt-soft:#2a1b32;
+ --nmt-text:#fff4e9;
+ --nmt-muted:#c8b8cb;
+ --nmt-line:#493252;
+ --nmt-accent:#ff7a1a;
+ --nmt-accent-strong:#d94a0d;
+ --nmt-on-accent:#fff8ef;
+ --nmt-hero:
+   radial-gradient(circle at 82% 20%,rgba(255,194,91,.96) 0 9%,rgba(255,194,91,.18) 10% 15%,transparent 16%),
+   radial-gradient(circle at 20% 120%,rgba(255,103,20,.22),transparent 42%),
+   linear-gradient(135deg,#211324 0%,#160f1c 52%,#2d1633 100%);
+ --nmt-shadow:rgba(0,0,0,.36);
+ --nmt-brand:#ff7417;
+ --halloween-purple:#9853bd;
+ --halloween-green:#9bc34f;
+ --halloween-cream:#fff0d7;
+ --halloween-ink:#100913;
+ --mobile-app-bg:var(--nmt-bg);
+ --mobile-app-surface:rgba(29,21,34,.965);
+ --mobile-app-text:var(--nmt-text);
+ --mobile-app-muted:var(--nmt-muted);
+ --mobile-app-line:var(--nmt-line);
+ --mobile-app-accent:var(--nmt-accent);
+ --nethor-mobile-item-accent:var(--nmt-accent);
+ --netto-gradient:linear-gradient(135deg,#ff7317,#9a4eb6);
+ color-scheme:dark
+}
+
+/* Atmosphère générale */
+html[data-nethor-mobile-theme="halloween"] body,
+html[data-nethor-mobile-theme="halloween"] .nethorMobileApp{
+ background:
+  radial-gradient(circle at 16% 8%,rgba(129,65,151,.16),transparent 24rem),
+  radial-gradient(circle at 88% 86%,rgba(255,103,20,.10),transparent 22rem),
+  linear-gradient(180deg,#0f0a14,#130d18 52%,#0e0912)!important
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileView{
+ background:
+  radial-gradient(circle at 100% 0,rgba(147,77,173,.10),transparent 20rem),
+  linear-gradient(180deg,#120d17,#0f0a14)!important
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop{
+ position:relative!important;
+ overflow:hidden!important;
+ background:
+  linear-gradient(180deg,rgba(32,21,37,.985),rgba(24,16,29,.97))!important;
+ border-bottom-color:#51345d!important;
+ box-shadow:0 10px 28px rgba(0,0,0,.26)!important
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop>*{position:relative;z-index:2}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop::before{
+ content:"";
+ position:absolute;
+ width:88px;height:88px;
+ right:58px;top:-44px;
+ border-radius:50%;
+ background:
+  radial-gradient(circle at 39% 38%,rgba(116,70,35,.16) 0 5%,transparent 6%),
+  radial-gradient(circle at 66% 61%,rgba(116,70,35,.13) 0 7%,transparent 8%),
+  #ffd18a;
+ box-shadow:0 0 32px rgba(255,161,54,.30);
+ opacity:.84;
+ pointer-events:none;
+ z-index:0
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop::after{
+ content:"";
+ position:absolute;
+ left:-26px;top:-36px;
+ width:118px;height:118px;
+ opacity:.28;
+ background:
+  repeating-conic-gradient(from 0deg at 0 0,transparent 0 14deg,rgba(255,255,255,.32) 15deg 16deg,transparent 17deg 29deg),
+  repeating-radial-gradient(circle at 0 0,transparent 0 15px,rgba(255,255,255,.25) 16px 17px,transparent 18px 29px);
+ border-radius:0 0 100% 0;
+ pointer-events:none;
+ z-index:0
+}
+
+/* Identité Nethor Halloween */
+html[data-nethor-mobile-theme="halloween"] .nethorMobileWordmark{
+ text-shadow:0 2px 14px rgba(255,105,17,.16)
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileWordmarkNe{color:#ff7417!important}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileWordmarkThor{color:#fff0da!important}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction{
+ color:#bcaec4!important
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction[aria-current="page"]{
+ background:#321f3a!important;color:#ff9a45!important;
+ box-shadow:inset 0 0 0 1px rgba(255,133,45,.16)
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction>.nethorMobileHeaderAvatar{
+ border-color:#563261!important;
+ box-shadow:0 0 0 1px rgba(255,122,26,.26),0 4px 14px rgba(0,0,0,.32)!important
+}
+
+/* Navigation basse */
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppNav{
+ background:rgba(26,18,31,.975)!important;
+ border-top-color:#4b3155!important;
+ box-shadow:0 -12px 30px rgba(0,0,0,.24)!important
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppNav a{
+ color:#a99caf!important
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppNav a[aria-current="page"]{
+ color:#ff963f!important;
+ background:linear-gradient(180deg,#36213c,#2b1a31)!important;
+ box-shadow:inset 0 0 0 1px rgba(255,133,45,.15),0 4px 12px rgba(0,0,0,.14)!important
+}
+
+/* Accueil : hero "nuit d'Halloween" */
+html[data-nethor-mobile-theme="halloween"] .mhdHero{
+ position:relative!important;
+ background:var(--nmt-hero)!important;
+ border-color:#684171!important;
+ box-shadow:0 12px 32px rgba(0,0,0,.30),inset 0 0 0 1px rgba(255,122,26,.05)!important
+}
+html[data-nethor-mobile-theme="halloween"] .mhdHero::before{
+ content:""!important;
+ position:absolute!important;
+ width:84px!important;height:84px!important;
+ right:14px!important;top:10px!important;bottom:auto!important;
+ border-radius:50%!important;
+ opacity:1!important;
+ background:
+  radial-gradient(circle at 35% 34%,rgba(119,71,34,.20) 0 5%,transparent 6%),
+  radial-gradient(circle at 67% 60%,rgba(119,71,34,.16) 0 7%,transparent 8%),
+  #ffd087!important;
+ box-shadow:0 0 28px rgba(255,165,62,.22)!important
+}
+html[data-nethor-mobile-theme="halloween"] .mhdHero::after{
+ content:"";
+ position:absolute;
+ inset:auto -10px -2px auto;
+ width:152px;height:72px;
+ opacity:.50;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 80'%3E%3Cpath fill='%230d0710' d='M0 76c18-20 32-20 48-5 12-25 34-31 54-9 19-24 38-19 48 3 11-10 20-12 30-5v20H0z'/%3E%3Cpath fill='%23130b17' d='M25 51c5-7 10-8 16-2-2-8 2-12 7-15 2 7 6 12 13 14-7 2-12 6-14 13-5-5-12-8-22-10zm86-16c5-8 11-9 17-2-2-9 2-14 8-17 2 8 7 13 14 16-8 2-13 6-15 14-5-6-13-9-24-11z'/%3E%3C/svg%3E");
+ background-size:contain;
+ background-repeat:no-repeat;
+ background-position:right bottom;
+ pointer-events:none
+}
+html[data-nethor-mobile-theme="halloween"] .mhdHero .mhdWelcome,
+html[data-nethor-mobile-theme="halloween"] .mhdHero .mhdWelcomeCopy{color:#fff5e9!important}
+html[data-nethor-mobile-theme="halloween"] .mhdWelcomeDate{color:#d8c0dd!important}
+
+/* Cartes et panneaux */
+html[data-nethor-mobile-theme="halloween"] .mhdCard,
+html[data-nethor-mobile-theme="halloween"] .mhdStat,
+html[data-nethor-mobile-theme="halloween"] .mhdQuick,
+html[data-nethor-mobile-theme="halloween"] .nsvPanel,
+html[data-nethor-mobile-theme="halloween"] .nsvItem,
+html[data-nethor-mobile-theme="halloween"] .npvCard,
+html[data-nethor-mobile-theme="halloween"] .nettoMobileMenuCard,
+html[data-nethor-mobile-theme="halloween"] .panel,
+html[data-nethor-mobile-theme="halloween"] .item,
+html[data-nethor-mobile-theme="halloween"] .nnsCard,
+html[data-nethor-mobile-theme="halloween"] .nrvCard,
+html[data-nethor-mobile-theme="halloween"] .npTopMenu{
+ background:linear-gradient(180deg,#211727,#1b131f)!important;
+ border-color:#493252!important;
+ box-shadow:0 9px 26px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.015)!important;
+ color:#fff2e8!important
+}
+html[data-nethor-mobile-theme="halloween"] .mhdQuickIcon,
+html[data-nethor-mobile-theme="halloween"] .mhdMiniIcon,
+html[data-nethor-mobile-theme="halloween"] .mhdIcon,
+html[data-nethor-mobile-theme="halloween"] .mhdRowIcon,
+html[data-nethor-mobile-theme="halloween"] .nettoMobileMenuIcon,
+html[data-nethor-mobile-theme="halloween"] .nnsIcon,
+html[data-nethor-mobile-theme="halloween"] .nrvIntro>span{
+ background:linear-gradient(145deg,#3a213d,#2c1c31)!important;
+ color:#ff8a2c!important;
+ border-color:#5c3763!important
+}
+html[data-nethor-mobile-theme="halloween"] .mhdSectionLink,
+html[data-nethor-mobile-theme="halloween"] .mhdValueBlue,
+html[data-nethor-mobile-theme="halloween"] .nrvCancel{color:#ff9140!important}
+
+/* Sélecteur Halloween */
+.nsvThemes [data-theme-choice="halloween"] .nsvThemeSwatch,
+.themeChoice[data-theme-choice="halloween"] .themeSwatch{
+ background:
+  radial-gradient(circle at 50% 57%,#ff8a24 0 31%,#d84c0e 32% 43%,transparent 44%),
+  linear-gradient(135deg,#28162f,#100b15)!important;
+ color:#fff4e8!important;
+ border-color:#70427a!important;
+ box-shadow:inset 0 0 0 1px rgba(255,149,67,.10),0 0 15px rgba(255,107,18,.14)!important
+}
+html[data-nethor-mobile-theme="halloween"] .nsvThemes button.active,
+html[data-nethor-mobile-theme="halloween"] .themeChoice.active{
+ background:linear-gradient(135deg,#35203d,#2a192f)!important;
+ border-color:#ef7120!important;
+ box-shadow:0 0 0 2px rgba(255,111,22,.12),0 9px 24px rgba(0,0,0,.18)!important
+}
+html[data-nethor-mobile-theme="halloween"] .nsvThemes button.active .nsvThemeCheck,
+html[data-nethor-mobile-theme="halloween"] .themeChoice.active .themeCheck{
+ background:#f06b18!important;border-color:#f06b18!important
+}
+
+/* Boutons */
+html[data-nethor-mobile-theme="halloween"] .nsvPrimary,
+html[data-nethor-mobile-theme="halloween"] .npvPrimary,
+html[data-nethor-mobile-theme="halloween"] .btn.primary,
+html[data-nethor-mobile-theme="halloween"] .nnsPrimary,
+html[data-nethor-mobile-theme="halloween"] .nrvSend,
+html[data-nethor-mobile-theme="halloween"] .mhdTaskPublishBtn{
+ background:linear-gradient(135deg,#f46d18,#8f48aa)!important;
+ color:#fff!important;
+ box-shadow:0 7px 18px rgba(214,79,12,.18)!important
+}
+html[data-nethor-mobile-theme="halloween"] .nsvToggle input:checked+i{
+ background:linear-gradient(90deg,#f46d18,#a357bc)!important
+}
+
+/* Chat : bulles hantées, lisibles et discrètes */
+html[data-nethor-mobile-theme="halloween"] .chatApp,
+html[data-nethor-mobile-theme="halloween"] .conversationPane,
+html[data-nethor-mobile-theme="halloween"] .conversationListPane,
+html[data-nethor-mobile-theme="halloween"] .messages,
+html[data-nethor-mobile-theme="halloween"] .chatHeader{
+ background:#120d17!important;color:#fff2e8!important;border-color:#493252!important
+}
+html[data-nethor-mobile-theme="halloween"] .conversationList,
+html[data-nethor-mobile-theme="halloween"] .conversationItem,
+html[data-nethor-mobile-theme="halloween"] .chatMenu,
+html[data-nethor-mobile-theme="halloween"] .conversationActionSheet{
+ background:#1d1522!important;color:#fff2e8!important;border-color:#493252!important
+}
+html[data-nethor-mobile-theme="halloween"] .messageRow.mine .bubble{
+ background:linear-gradient(135deg,#512a57,#38213f)!important;
+ border-color:#75427c!important;color:#fff7ef!important
+}
+html[data-nethor-mobile-theme="halloween"] .messageRow:not(.mine) .bubble{
+ background:#211727!important;border-color:#493252!important;color:#fff3e9!important
+}
+
+/* Planning : ambiance uniquement sur les surfaces neutres.
+   Les shifts, congés, repos, alertes et états gardent leurs couleurs métier. */
+html[data-nethor-mobile-theme="halloween"] .nethorPlanningView #planningApp,
+html[data-nethor-mobile-theme="halloween"] body.agendaLayout,
+html[data-nethor-mobile-theme="halloween"] .mobilePlanningViewGroup{
+ background:#100b15!important;color:#fff2e8!important
+}
+html[data-nethor-mobile-theme="halloween"] .mobilePlanningToolbar,
+html[data-nethor-mobile-theme="halloween"] .mobilePlanningActionsDock,
+html[data-nethor-mobile-theme="halloween"] .planningViewBar,
+html[data-nethor-mobile-theme="halloween"] .agendaHeader,
+html[data-nethor-mobile-theme="halloween"] .mobileAgendaModeBar{
+ background:#1d1522!important;border-color:#493252!important;color:#fff2e8!important
+}
+html[data-nethor-mobile-theme="halloween"] .agendaDayArrow,
+html[data-nethor-mobile-theme="halloween"] .agendaStat,
+html[data-nethor-mobile-theme="halloween"] .mobileAgendaDay:not(.active){
+ background:#2a1b32!important;border-color:#493252!important;color:#fff2e8!important
+}
+html[data-nethor-mobile-theme="halloween"] .mobileAgendaDay.active{
+ border-color:#ff7a1a!important;
+ box-shadow:0 0 0 2px rgba(255,122,26,.09)!important
+}
+
+/* Profil, notifications, scanner, signalement */
+html[data-nethor-mobile-theme="halloween"] .npvBack,
+html[data-nethor-mobile-theme="halloween"] .nsvBack,
+html[data-nethor-mobile-theme="halloween"] .nnsBack,
+html[data-nethor-mobile-theme="halloween"] .settingsMobileBack,
+html[data-nethor-mobile-theme="halloween"] .scannerMobileLayout .back,
+html[data-nethor-mobile-theme="halloween"] .npCircleBtn{
+ background:#281a2e!important;color:#ff9b49!important;border-color:#55345e!important
+}
+html[data-nethor-mobile-theme="halloween"] .nsvRole,
+html[data-nethor-mobile-theme="halloween"] .roleBadge{
+ background:#382039!important;color:#ff9a43!important;border-color:#603765!important
+}
+html[data-nethor-mobile-theme="halloween"] .nnsPush,
+html[data-nethor-mobile-theme="halloween"] .nnsChannels,
+html[data-nethor-mobile-theme="halloween"] .nrvLabel select,
+html[data-nethor-mobile-theme="halloween"] .nrvLabel textarea,
+html[data-nethor-mobile-theme="halloween"] .npvField input,
+html[data-nethor-mobile-theme="halloween"] .npvField select,
+html[data-nethor-mobile-theme="halloween"] .npvField textarea,
+html[data-nethor-mobile-theme="halloween"] .rpText,
+html[data-nethor-mobile-theme="halloween"] .rpSourceSelect{
+ background:#17101c!important;border-color:#513359!important;color:#fff2e8!important
+}
+html[data-nethor-mobile-theme="halloween"] .scannerMobileLayout .cameraCard{
+ border:1px solid #65406e!important;
+ box-shadow:0 18px 42px rgba(0,0,0,.34),0 0 28px rgba(120,62,142,.10)!important
+}
+html[data-nethor-mobile-theme="halloween"] .scannerMobileLayout .beta{
+ background:#3d213a!important;color:#ff9a47!important;border-color:#70416d!important
+}
+
+/* Brume très légère : purement décorative et sans interaction. */
+html[data-nethor-mobile-theme="halloween"] .mhdHero,
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop{
+ background-blend-mode:normal
+}
+@media(prefers-reduced-motion:no-preference){
+ html[data-nethor-mobile-theme="halloween"] .mhdHero::before{
+  animation:nethorHalloweenMoon 7s ease-in-out infinite
+ }
+}
+@keyframes nethorHalloweenMoon{
+ 0%,100%{filter:brightness(1);transform:translateY(0)}
+ 50%{filter:brightness(1.08);transform:translateY(-2px)}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-nethor-mobile-theme="halloween"] .mhdHero::before{animation:none!important}
+}
