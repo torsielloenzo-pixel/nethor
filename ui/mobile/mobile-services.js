@@ -124,15 +124,31 @@ function syncHalloweenEligibilityCache(profile=state.profile){
  try{localStorage.setItem('nethorHalloweenEligibleV1',allowed?'1':'0')}catch(_){}
  return allowed
 }
+function normalizedFavoriteMobileTheme(value){
+ const theme=String(value||'').trim().toLowerCase();
+ return ['mineral','sage','plum'].includes(theme)?theme:''
+}
 function normalizedMobileTheme(value,profile=state.profile){
  const theme=String(value||'').trim().toLowerCase();
- if(['mineral','sage','plum'].includes(theme))return theme;
+ if(normalizedFavoriteMobileTheme(theme))return theme;
  if(theme==='halloween'&&halloweenThemeAllowed(profile))return theme;
  return''
 }
+function mobileFavoriteTheme(prefs=state.profile?.ui_preferences){
+ prefs=prefs&&typeof prefs==='object'?prefs:{};
+ return normalizedFavoriteMobileTheme(prefs.mobile_theme)
+}
+function mobileMode(prefs=state.profile?.ui_preferences,profile=state.profile){
+ prefs=prefs&&typeof prefs==='object'?prefs:{};
+ if(prefs.mobile_theme==='halloween'&&halloweenThemeAllowed(profile))return'halloween';
+ return prefs.mobile_mode==='halloween'&&halloweenThemeAllowed(profile)?'halloween':'favorite'
+}
+function activeMobileTheme(prefs=state.profile?.ui_preferences,profile=state.profile){
+ return mobileMode(prefs,profile)==='halloween'?'halloween':mobileFavoriteTheme(prefs)
+}
 function previewTheme(mobileTheme='',baseTheme='light'){
  const custom=normalizedMobileTheme(mobileTheme);
- const theme=['plum','halloween'].includes(custom)?'dark':custom?'light':baseTheme==='dark'?'dark':'light';
+ const theme=['plum','halloween'].includes(custom)?'dark':custom?'light':'light';
  const root=document.documentElement;root.dataset.theme=theme;
  if(custom)root.dataset.nethorMobileTheme=custom;else delete root.dataset.nethorMobileTheme;
  root.style.colorScheme=theme;
@@ -144,7 +160,7 @@ function previewTheme(mobileTheme='',baseTheme='light'){
 function applyProfileTheme(){
  syncHalloweenEligibilityCache(state.profile);
  const prefs=state.profile?.ui_preferences||{};
- previewTheme(prefs.mobile_theme,prefs.theme==='dark'?'dark':'light')
+ previewTheme(activeMobileTheme(prefs,state.profile),'light')
 }
 async function avatarFor(profile){
   if(!profile?.avatar_path||!client)return null;
@@ -486,7 +502,12 @@ async function updateProfile(fields={}){
 }
 async function savePreferences(prefs){
   const value=prefs&&typeof prefs==='object'&&!Array.isArray(prefs)?JSON.parse(JSON.stringify(prefs)):{};
-  if(value.mobile_theme==='halloween'&&!halloweenThemeAllowed())value.mobile_theme='';
+  if(value.mobile_theme==='halloween'){
+    value.mobile_mode=halloweenThemeAllowed()?'halloween':'favorite';
+    value.mobile_theme=''
+  }
+  value.mobile_theme=normalizedFavoriteMobileTheme(value.mobile_theme);
+  value.mobile_mode=value.mobile_mode==='halloween'&&halloweenThemeAllowed()?'halloween':'favorite';
   await updateProfile({ui_preferences:value});
   return value
 }
@@ -548,19 +569,22 @@ async function submitProblem(payload){
   if(error)throw error;
   return true
 }
-async function setThemePreference(theme){
-  theme=theme==='dark'?'dark':'light';
-  previewTheme('',theme);
-  if(!state.profile)return theme;
-  const current=state.profile.ui_preferences&&typeof state.profile.ui_preferences==='object'&&!Array.isArray(state.profile.ui_preferences)?state.profile.ui_preferences:{};
-  const prefs={...current,theme,mobile_theme:''};
+async function setMobileMode(mode){
+  const current=state.profile?.ui_preferences&&typeof state.profile.ui_preferences==='object'&&!Array.isArray(state.profile.ui_preferences)?state.profile.ui_preferences:{};
+  mode=mode==='halloween'&&halloweenThemeAllowed()?'halloween':'favorite';
+  const prefs={...current,mobile_theme:mobileFavoriteTheme(current),mobile_mode:mode};
+  previewTheme(mode==='halloween'?'halloween':prefs.mobile_theme,'light');
+  if(!state.profile)return mode;
   state.profile={...state.profile,ui_preferences:prefs};
   emit('core');
   if(client&&state.session){
     const {error}=await client.from('profiles').update({ui_preferences:prefs}).eq('id',state.session.user.id);
-    if(error)console.warn('[Nethor MobileServices] theme preference',error)
+    if(error)console.warn('[Nethor MobileServices] mobile mode',error)
   }
-  return theme
+  return mode
+}
+async function setThemePreference(){
+  return setMobileMode('favorite')
 }
 async function deleteNotification(id){
   if(!client||!state.session||!id)return false;
@@ -900,6 +924,10 @@ const api={
   savePreferences,
   previewTheme,
   halloweenThemeAllowed,
+  mobileFavoriteTheme,
+  mobileMode,
+  activeMobileTheme,
+  setMobileMode,
   changePassword,
   uploadAvatar,
   removeAvatar,
