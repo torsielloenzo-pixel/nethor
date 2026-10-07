@@ -665,3 +665,10 @@ html[data-nethor-platform="mobile"] .npvThemeIdentitySwatch{
  color:var(--nethor-profile-avatar-fg)!important;
  box-shadow:0 0 0 4px color-mix(in srgb,var(--nethor-profile-avatar-ring) 60%,transparent);
 }
+
+
+/* Cadres de profil personnalisés : invisibles hors du thème auquel ils appartiennent. */
+html[data-nethor-platform="mobile"] [data-avatar-frame^="themeframe_"]::before,
+html[data-nethor-platform="mobile"] [data-avatar-frame^="themeframe_"]::after{
+ display:none!important;
+}
