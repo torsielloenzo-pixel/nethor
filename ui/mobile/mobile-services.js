@@ -19,7 +19,7 @@ async function persistOfflineShell(){
  if(navigator.onLine===false||!state.session?.user?.id||!state.profile||!state.ready)return;
  const uid=state.session.user.id,profile=state.profile;
  await offlineStore()?.put?.(uid,'shell','profile',{
-  profile:{display_name:profile.display_name,role:profile.role,profile_color:profile.profile_color,ui_preferences:{theme:profile.ui_preferences?.theme}},
+  profile:{display_name:profile.display_name,role:profile.role,profile_color:profile.profile_color,ui_preferences:{theme:profile.ui_preferences?.theme,mobile_theme:profile.ui_preferences?.mobile_theme}},
   subrolePermissions:{...state.subrolePermissions},subroleKeys:[...state.subroleKeys]
  })
 }
@@ -114,12 +114,21 @@ function subscribe(fn,{immediate=true}={}){
   if(immediate){try{fn({type:'snapshot',...snapshot()})}catch(_){}}
   return()=>listeners.delete(fn)
 }
+function normalizedMobileTheme(value){return ['mineral','sage','plum'].includes(value)?value:''}
+function previewTheme(mobileTheme='',baseTheme='light'){
+ const custom=normalizedMobileTheme(mobileTheme);
+ const theme=custom==='plum'?'dark':custom?'light':baseTheme==='dark'?'dark':'light';
+ const root=document.documentElement;root.dataset.theme=theme;
+ if(custom)root.dataset.nethorMobileTheme=custom;else delete root.dataset.nethorMobileTheme;
+ root.style.colorScheme=theme;
+ const colors={mineral:'#edf3f8',sage:'#eef3ef',plum:'#171623'};
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=colors[custom]||(theme==='dark'?'#17191d':'#f6f6f8');
+ try{localStorage.setItem('nettoTheme',theme);localStorage.setItem('nethorMobileTheme',custom)}catch(_){}
+ return custom||theme
+}
 function applyProfileTheme(){
-  const prefs=state.profile?.ui_preferences;
-  const theme=prefs&&typeof prefs==='object'&&(prefs.theme==='dark'||prefs.theme==='light')?prefs.theme:'';
-  if(!theme)return;
-  document.documentElement.dataset.theme=theme;
-  try{localStorage.setItem('nettoTheme',theme)}catch(_){}
+ const prefs=state.profile?.ui_preferences||{};
+ previewTheme(prefs.mobile_theme,prefs.theme==='dark'?'dark':'light')
 }
 async function avatarFor(profile){
   if(!profile?.avatar_path||!client)return null;
@@ -524,11 +533,10 @@ async function submitProblem(payload){
 }
 async function setThemePreference(theme){
   theme=theme==='dark'?'dark':'light';
-  document.documentElement.dataset.theme=theme;
-  try{localStorage.setItem('nettoTheme',theme)}catch(_){}
+  previewTheme('',theme);
   if(!state.profile)return theme;
   const current=state.profile.ui_preferences&&typeof state.profile.ui_preferences==='object'&&!Array.isArray(state.profile.ui_preferences)?state.profile.ui_preferences:{};
-  const prefs={...current,theme};
+  const prefs={...current,theme,mobile_theme:''};
   state.profile={...state.profile,ui_preferences:prefs};
   emit('core');
   if(client&&state.session){
@@ -873,6 +881,7 @@ const api={
   hasSubrolePermission,
   updateProfile,
   savePreferences,
+  previewTheme,
   changePassword,
   uploadAvatar,
   removeAvatar,
