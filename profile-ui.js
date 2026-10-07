@@ -817,12 +817,12 @@ function loadProfileFeature(name,url){
 }
 async function openUserCard(user,opts={}){
  if(!user?.id)return;
- const feature=await loadProfileFeature('userCard','profile-user-card.js?v=1');
+ const feature=await loadProfileFeature('userCard','profile-user-card.js?v=3');
  return feature.open(user,opts)
 }
 function closeUserCard(){return window.NethorProfileFeatures?.userCard?.close?.()}
 async function userPresenceLabel(userId){
- const feature=await loadProfileFeature('userCard','profile-user-card.js?v=1');
+ const feature=await loadProfileFeature('userCard','profile-user-card.js?v=3');
  return feature.presenceLabel(userId)
 }
 
