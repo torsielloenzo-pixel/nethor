@@ -4,6 +4,7 @@ let ROLES=['admin','responsable','employe','lecture'];const ROLE_LABEL={admin:'A
 function roleName(r){return config?.role_definitions?.[r]?.label||ROLE_LABEL[r]||r||'Compte'}
 let session=null,profile=null,config={},dirty=false,notificationUsers=[],notificationRules=[],portalLogs=[],reportedProblems=[],logSourceFilter='all',logTypeFilter='all',problemStatusFilter='all',problemPageFilter='all',problemSearchFilter='',accountSubview='accounts';
 let managementArticles=[],managementFamilies=[],managementCategories=[],managementArticleSort={key:null,direction:'asc'};
+let mobileThemeProfileFramesCache={light:[],dark:[],mineral:[],sage:[],plum:[],halloween:[]};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const attr=esc;
@@ -2086,12 +2087,25 @@ function normalizeMobileProfileFrames(raw){
  }
  return{themes}
 }
+function emptyMobileThemeProfileFrames(){return{light:[],dark:[],mineral:[],sage:[],plum:[],halloween:[]}}
+async function loadMobileThemeProfileFrames(){
+ const {data,error}=await db.from('mobile_theme_profile_frames').select('id,theme,name,asset_url,storage_path,file_name,created_at').order('created_at',{ascending:true});
+ if(error){console.warn('[Nethor Gestion] cadres profil',error);return mobileThemeProfileFramesCache}
+ const next=emptyMobileThemeProfileFrames();
+ for(const row of Array.isArray(data)?data:[]){
+  const theme=MOBILE_PROFILE_FRAME_THEME_KEYS.includes(row?.theme)?row.theme:'light';
+  if(!row?.id||!row?.asset_url)continue;
+  next[theme].push({id:String(row.id),name:String(row.name||'Cadre'),url:String(row.asset_url),path:String(row.storage_path||''),file_name:String(row.file_name||'')})
+ }
+ mobileThemeProfileFramesCache=next;
+ return next
+}
 function mobileProfileFramesNode(){
- const ui=platformUiNode('mobile');ui.profile_frames=normalizeMobileProfileFrames(ui.profile_frames);return ui.profile_frames
+ return{themes:mobileThemeProfileFramesCache}
 }
 function mobileProfileFramesFor(theme){
  const key=MOBILE_PROFILE_FRAME_THEME_KEYS.includes(theme)?theme:'light';
- return mobileProfileFramesNode().themes[key]||[]
+ return mobileThemeProfileFramesCache[key]||[]
 }
 const MOBILE_HEADER_THEME_KEYS=Object.freeze(['light','dark','mineral','sage','plum','halloween']);
 function normalizeMobileHeaderThemeAsset(raw){
@@ -2551,55 +2565,33 @@ function mobileAppearanceProfileFramesSection(theme){
   '<div class="mobileProfileFrameGrid">'+cards+'</div>'+
  '</section>'
 }
-async function persistMobileProfileFramesTheme(theme){
- const key=mobileAppearanceThemeKey(theme),localFrames=clone(mobileProfileFramesFor(key));
- const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
- if(error)throw error;
- const remote=normalize(data?.value||{});
- remote.platform_ui=remote.platform_ui&&typeof remote.platform_ui==='object'?remote.platform_ui:{};
- remote.platform_ui.mobile=remote.platform_ui.mobile&&typeof remote.platform_ui.mobile==='object'?remote.platform_ui.mobile:{};
- remote.platform_ui.mobile.profile_frames=normalizeMobileProfileFrames(remote.platform_ui.mobile.profile_frames);
- remote.platform_ui.mobile.profile_frames.themes[key]=localFrames;
- const saved=await db.from('app_settings').upsert({
-  key:'site_config',
-  value:remote,
-  updated_by:session.user.id,
-  updated_at:new Date().toISOString()
- },{onConflict:'key'});
- if(saved.error)throw saved.error;
- const local=mobileProfileFramesNode();local.themes[key]=clone(localFrames);
- return true
-}
-function mobileProfileFrameSaveMessage(message){
- const state=$('saveState');if(!state)return;
- state.className=dirty?'saveState':'saveState ok';
- state.textContent=dirty?message+' · autres modifications non enregistrées':message
-}
 async function createMobileProfileFrame(theme){
  const host=$('mobileAppearanceThemeEditor'),nameInput=host?.querySelector('[data-mobile-profile-frame-name]'),fileInput=host?.querySelector('[data-mobile-profile-frame-file]'),state=$('saveState'),createBtn=host?.querySelector('.mobileProfileFrameCreate .primaryBtn');
  const name=String(nameInput?.value||'').trim(),file=fileInput?.files?.[0],key=mobileAppearanceThemeKey(theme);
  if(!name){state.className='saveState err';state.textContent='Donne un nom au cadre.';nameInput?.focus();return}
  if(!file){state.className='saveState err';state.textContent='Importe une image pour créer le cadre.';fileInput?.click();return}
- let storagePath='',frame=null,list=null;
+ let storagePath='',row=null;
  if(createBtn)createBtn.disabled=true;
  try{
   const ext=platformAssetExtension(file),allowed=['png','webp','svg'];
   if(!ext||!allowed.includes(ext))throw new Error('Format refusé. Utilise PNG, WebP ou SVG.');
   if(file.size>5*1024*1024)throw new Error('Cadre trop lourd : 5 Mo maximum.');
-  state.className='saveState';state.textContent='Création et sauvegarde du cadre « '+name+' »…';
+  state.className='saveState';state.textContent='Création du cadre « '+name+' »…';
   const id='themeframe_'+key+'_'+Date.now().toString(36);
   storagePath='platform/mobile/profile-frames/'+key+'/'+id+'.'+ext;
   const uploaded=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(uploaded.error)throw uploaded.error;
-  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath);
-  frame={id,name:name.slice(0,60),url:data?.publicUrl||'',path:storagePath,file_name:file.name};
-  list=mobileProfileFramesFor(key);list.push(frame);
-  await persistMobileProfileFramesTheme(key);
+  const {data:publicData}=db.storage.from('portal-assets').getPublicUrl(storagePath);
+  const assetUrl=String(publicData?.publicUrl||'').trim();if(!assetUrl)throw new Error('URL du cadre indisponible après import.');
+  const inserted=await db.from('mobile_theme_profile_frames').insert({
+   id,theme:key,name:name.slice(0,60),asset_url:assetUrl,storage_path:storagePath,file_name:file.name,created_by:session.user.id
+  }).select('id,theme,name,asset_url,storage_path,file_name,created_at').single();
+  if(inserted.error)throw inserted.error;
+  row=inserted.data;
+  await loadMobileThemeProfileFrames();
   renderMobileAppearanceThemeEditor();
-  mobileProfileFrameSaveMessage('✓ Cadre « '+name+' » créé et sauvegardé')
+  state.className='saveState ok';state.textContent='✓ Cadre « '+name+' » créé et sauvegardé'
  }catch(e){
-  if(frame&&list){const index=list.findIndex(x=>x.id===frame.id);if(index>=0)list.splice(index,1)}
-  if(storagePath){try{await db.storage.from('portal-assets').remove([storagePath])}catch(_){}}
-  renderMobileAppearanceThemeEditor();
+  if(!row&&storagePath){try{await db.storage.from('portal-assets').remove([storagePath])}catch(_){}}
   state.className='saveState err';state.textContent='Erreur cadre : '+(e?.message||e)
  }finally{if(createBtn?.isConnected)createBtn.disabled=false}
 }
@@ -2608,18 +2600,17 @@ function downloadMobileProfileFrame(theme,id){
  downloadAssetUrl(frame.url,frame.file_name||('Nethor-cadre-'+theme+'-'+id+'.png'))
 }
 async function deleteMobileProfileFrame(theme,id){
- const key=mobileAppearanceThemeKey(theme),frames=mobileProfileFramesFor(key),index=frames.findIndex(x=>x.id===id);if(index<0)return;
- const frame=frames[index],state=$('saveState');
+ const key=mobileAppearanceThemeKey(theme),frame=mobileProfileFramesFor(key).find(x=>x.id===id),state=$('saveState');if(!frame)return;
  if(!confirm('Supprimer le cadre « '+frame.name+' » du thème '+mobileHomeBannerThemeDef(key).label+' ?'))return;
- frames.splice(index,1);state.className='saveState';state.textContent='Suppression et sauvegarde du cadre…';
+ state.className='saveState';state.textContent='Suppression du cadre…';
  try{
-  await persistMobileProfileFramesTheme(key);
+  const removed=await db.from('mobile_theme_profile_frames').delete().eq('id',id).eq('theme',key);
+  if(removed.error)throw removed.error;
   if(frame.path){try{await db.storage.from('portal-assets').remove([frame.path])}catch(_){}}
+  await loadMobileThemeProfileFrames();
   renderMobileAppearanceThemeEditor();
-  mobileProfileFrameSaveMessage('✓ Cadre « '+frame.name+' » supprimé et sauvegardé')
+  state.className='saveState ok';state.textContent='✓ Cadre « '+frame.name+' » supprimé'
  }catch(e){
-  frames.splice(Math.min(index,frames.length),0,frame);
-  renderMobileAppearanceThemeEditor();
   state.className='saveState err';state.textContent='Erreur suppression : '+(e?.message||e)
  }
 }
@@ -2718,7 +2709,6 @@ function resetMobileAppearanceTheme(theme){
  ui.header_themes[theme]={layout:'',text:'',logo1:normalizeMobileHeaderThemeAsset(null),logo2:normalizeMobileHeaderThemeAsset(null)};
  const freshBanner=normalizeMobileHomeBanner(null);mobileHomeBannerNode().themes[theme]=freshBanner.themes[theme];
  const opening=mobileWelcomeThemeNode(theme);opening.url='';opening.path='';opening.name='';opening.tag='';opening.api='';opening.type='animation';
- mobileProfileFramesNode().themes[theme]=[];
  markDirty();renderMobileAppearanceThemeEditor();applyPlatformHeaderPreview('mobile');$('saveState').textContent='Thème « '+mobileHomeBannerThemeDef(theme).label+' » réinitialisé — enregistrer pour confirmer'
 }
 
@@ -2872,7 +2862,7 @@ async function saveConfig(){
  try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
 }
 async function reloadConfig(){if(dirty&&!confirm('Annuler les modifications non enregistrées ?'))return;await loadConfig();window.NettoSounds?.play?.('confirm')}
-async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
+async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});await loadMobileThemeProfileFrames();ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
 
 
 function logDate(value){const d=new Date(value);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
