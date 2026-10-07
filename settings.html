@@ -31,7 +31,7 @@ function canUseHalloweenTheme(){
  const firstName=String(profile?.display_name||'').trim().toLowerCase().split(/\s+/)[0]||'';
  return role==='admin'||firstName==='enzo'
 }
-function ensurePrefs(v){const p=v&&typeof v==='object'?JSON.parse(JSON.stringify(v)):{};p.home=p.home&&typeof p.home==='object'?p.home:{};p.home_widgets=p.home_widgets&&typeof p.home_widgets==='object'?p.home_widgets:{};p.user_menu=p.user_menu&&typeof p.user_menu==='object'?p.user_menu:{};p.theme=p.theme==='dark'||p.theme==='light'?p.theme:'light';p.mobile_theme=['mineral','sage','plum','halloween'].includes(p.mobile_theme)?p.mobile_theme:'';if(p.mobile_theme==='halloween'&&!canUseHalloweenTheme())p.mobile_theme='';return p}
+function ensurePrefs(v){const p=v&&typeof v==='object'?JSON.parse(JSON.stringify(v)):{};p.home=p.home&&typeof p.home==='object'?p.home:{};p.home_widgets=p.home_widgets&&typeof p.home_widgets==='object'?p.home_widgets:{};p.user_menu=p.user_menu&&typeof p.user_menu==='object'?p.user_menu:{};p.theme=p.theme==='dark'||p.theme==='light'?p.theme:'light';if(settingsIsMobile()){if(p.mobile_theme==='halloween'){p.mobile_mode=canUseHalloweenTheme()?'halloween':'favorite';p.mobile_theme=''}p.mobile_theme=['mineral','sage','plum'].includes(p.mobile_theme)?p.mobile_theme:'';p.mobile_mode=p.mobile_mode==='halloween'&&canUseHalloweenTheme()?'halloween':'favorite'}return p}
 function waitUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI?.profile||n++>80){clearInterval(t);resolve()}},50)})}
 function modules(){return window.NettoProfileUI?.modules||[]}
 function prefProfile(){return {...profile,ui_preferences:prefs}}
@@ -82,10 +82,11 @@ function renderHomeWidgets(){
  host.querySelectorAll('input[data-home-widget]').forEach(x=>x.onchange=()=>{prefs.home_widgets[x.dataset.homeWidget]=x.checked;markDirty()})
 }
 function setHomeWidgets(value){HOME_WIDGETS.filter(x=>homeWidgetAllowed(x.id)).forEach(x=>prefs.home_widgets[x.id]=value);renderHomeWidgets();markDirty()}
-function validMobileTheme(theme){if(['mineral','sage','plum'].includes(theme))return theme;if(theme==='halloween'&&canUseHalloweenTheme())return theme;return''}
+function validMobileTheme(theme){return ['mineral','sage','plum'].includes(theme)?theme:''}
+function activeMobileTheme(){return prefs.mobile_mode==='halloween'&&canUseHalloweenTheme()?'halloween':validMobileTheme(prefs.mobile_theme)}
 function applyLocalTheme(theme){
- const custom=settingsIsMobile()?validMobileTheme(prefs.mobile_theme):'';
- const effective=['plum','halloween'].includes(custom)?'dark':custom?'light':(theme==='dark'?'dark':'light');
+ const mobile=settingsIsMobile(),custom=mobile?activeMobileTheme():'';
+ const effective=mobile?(['plum','halloween'].includes(custom)?'dark':custom?'light':'light'):(theme==='dark'?'dark':'light');
  const root=document.documentElement;root.dataset.theme=effective;
  if(settingsIsMobile()){
   if(custom)root.dataset.nethorMobileTheme=custom;else delete root.dataset.nethorMobileTheme;
@@ -98,17 +99,20 @@ function applyLocalTheme(theme){
  if(meta)meta.content=colors[custom]||(effective==='dark'?'#17191d':'#ffffff')
 }
 function renderThemeChoice(){
- const value=settingsIsMobile()?(validMobileTheme(prefs.mobile_theme)||prefs.theme):prefs.theme;
- const halloween=$('themeHalloween');if(halloween)halloween.classList.toggle('hidden',!canUseHalloweenTheme());
- [['themeLight','light'],['themeDark','dark'],['themeMineral','mineral'],['themeSage','sage'],['themePlum','plum'],['themeHalloween','halloween']].forEach(([id,theme])=>{
+ const mobile=settingsIsMobile(),value=mobile?(validMobileTheme(prefs.mobile_theme)||'light'):prefs.theme;
+ const choices=mobile?[['themeLight','light'],['themeMineral','mineral'],['themeSage','sage'],['themePlum','plum']]:[['themeLight','light'],['themeDark','dark']];
+ choices.forEach(([id,theme])=>{
   const btn=$(id);if(!btn)return;const active=value===theme;
   btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active))
  })
 }
 function chooseTheme(theme){
- if(['light','dark'].includes(theme)){
-  prefs.theme=theme;if(settingsIsMobile())prefs.mobile_theme='';
- }else if(settingsIsMobile()&&validMobileTheme(theme))prefs.mobile_theme=theme;
+ if(settingsIsMobile()){
+  if(theme==='light')prefs.mobile_theme='';
+  else if(validMobileTheme(theme))prefs.mobile_theme=theme;
+  else return;
+  prefs.mobile_mode='favorite'
+ }else if(['light','dark'].includes(theme))prefs.theme=theme;
  else return;
  applyLocalTheme(prefs.theme);renderThemeChoice();markDirty();window.NettoSounds?.play?.('switch')
 }
@@ -134,8 +138,8 @@ function setArea(area,value){
  if(area==='home'&&!homeMenusEditorAllowed())return;
  available(area).forEach(m=>prefs[area][m.id]=value);render();markDirty()
 }
-async function savePersonal(){const b=$('saveBtn');b.disabled=true;$('saveState').textContent='Enregistrement…';if(prefs.mobile_theme==='halloween'&&!canUseHalloweenTheme())prefs.mobile_theme='';const {error}=await db.from('profiles').update({ui_preferences:prefs}).eq('id',session.user.id);if(error){$('saveState').className='saveState err';$('saveState').textContent='Erreur : '+error.message;window.NettoSounds?.play?.('error')}else{profile.ui_preferences=JSON.parse(JSON.stringify(prefs));$('saveState').className='saveState ok';$('saveState').textContent='✓ Personnalisation enregistrée';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.()}b.disabled=false}
-async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;const keepHome=homeMenusEditorAllowed()?{}:JSON.parse(JSON.stringify(prefs.home||{}));prefs={home:keepHome,home_widgets:{},user_menu:{},theme:prefs.theme,mobile_theme:settingsIsMobile()?'':prefs.mobile_theme};applyLocalTheme(prefs.theme);render();await savePersonal()}
+async function savePersonal(){const b=$('saveBtn');b.disabled=true;$('saveState').textContent='Enregistrement…';if(settingsIsMobile()){if(prefs.mobile_theme==='halloween'){prefs.mobile_mode=canUseHalloweenTheme()?'halloween':'favorite';prefs.mobile_theme=''}prefs.mobile_theme=validMobileTheme(prefs.mobile_theme);prefs.mobile_mode=prefs.mobile_mode==='halloween'&&canUseHalloweenTheme()?'halloween':'favorite'}const {error}=await db.from('profiles').update({ui_preferences:prefs}).eq('id',session.user.id);if(error){$('saveState').className='saveState err';$('saveState').textContent='Erreur : '+error.message;window.NettoSounds?.play?.('error')}else{profile.ui_preferences=JSON.parse(JSON.stringify(prefs));$('saveState').className='saveState ok';$('saveState').textContent='✓ Personnalisation enregistrée';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.()}b.disabled=false}
+async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;const keepHome=homeMenusEditorAllowed()?{}:JSON.parse(JSON.stringify(prefs.home||{}));prefs={home:keepHome,home_widgets:{},user_menu:{},theme:prefs.theme,mobile_theme:settingsIsMobile()?'':prefs.mobile_theme,mobile_mode:settingsIsMobile()?'favorite':prefs.mobile_mode};applyLocalTheme(prefs.theme);render();await savePersonal()}
 async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');const [{data:p,error},subRes]=await Promise.all([db.from('profiles').select('display_name,role,ui_preferences').eq('id',s.user.id).maybeSingle(),Promise.resolve(db.rpc('my_subrole_keys')).catch(()=>({data:[]}))]);if(error||!p)return location.replace('index.html');profile=p;subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean);prefs=ensurePrefs(p.ui_preferences);applyLocalTheme(prefs.theme);$('roleBadge').textContent=window.NettoProfileUI?.roleLabel?.(p.role)||ROLE_LABEL[p.role]||p.role;if(p.role==='admin')$('adminShortcut').classList.remove('hidden');await waitUI();render();$('saveState').textContent='À jour'}
 boot();
 </script>
