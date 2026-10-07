@@ -777,3 +777,22 @@ html[data-theme="dark"] .platformHeaderLogoSizeNumber{background:#1f252b;border-
  .mobileLaunchThemePreview{height:122px}
  .mobileLaunchThemeMeta{align-items:flex-start;flex-direction:column}
 }
+
+
+/* En-tête — compositions Logo/Texte */
+.platformHeaderComposition{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,430px);gap:18px;align-items:center;
+ padding:13px 15px;border:1px solid var(--line,#e4e7ec);border-radius:15px;
+ background:color-mix(in srgb,var(--panel,#fff) 94%,var(--bg,#f5f6f8))
+}
+.platformHeaderCompositionCopy strong{display:block;font-size:12px;color:var(--ink,#20262d)}
+.platformHeaderCompositionCopy span{display:block;margin-top:4px;font-size:9.5px;line-height:1.45;color:var(--muted,#777f89)}
+.platformHeaderCompositionFields{display:grid;grid-template-columns:minmax(150px,.9fr) minmax(160px,1.1fr);gap:9px;align-items:end}
+.platformHeaderCompositionFields .field{margin:0}
+.platformHeaderComposition>.platformMediaHint{grid-column:1/-1;margin-top:-7px}
+html[data-theme="dark"] .platformHeaderComposition{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.1)}
+@media(max-width:760px){
+ .platformHeaderComposition{grid-template-columns:1fr}
+ .platformHeaderCompositionFields{grid-template-columns:1fr}
+ .platformHeaderComposition>.platformMediaHint{margin-top:0}
+}
