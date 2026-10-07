@@ -24,7 +24,13 @@
     content:"";position:absolute;right:38px;bottom:-74px;width:118px;height:118px;border-radius:50%;
     background:#ff7a3a12;pointer-events:none
   }
-  .mhdWelcomeCopy{position:relative;z-index:1;max-width:82%}
+  .mhdHero.mhdBannerManaged:before,.mhdHero.mhdBannerManaged:after{display:none!important}
+  .mhdBannerLayer{
+    position:absolute;left:var(--mhd-banner-x);top:var(--mhd-banner-y);width:var(--mhd-banner-width);height:auto;max-width:none;
+    opacity:var(--mhd-banner-opacity);transform:translate(-50%,-50%);z-index:var(--mhd-banner-z);pointer-events:none;user-select:none
+  }
+  .mhdBannerLayer-background{min-width:100%}
+  .mhdWelcomeCopy{position:relative;z-index:4;max-width:82%}
   .mhdHero h1{margin:0;color:#171d24!important;font-size:25px;line-height:1.05;letter-spacing:-.75px;font-weight:950}
   .mhdWelcomeDate{display:block;margin-top:7px;color:#7d8793;font-size:9.5px;font-weight:750;text-transform:none}
   .mhdHero p{margin:5px 0 0;color:#606b77;font-size:10.5px;line-height:1.35;font-weight:650}
