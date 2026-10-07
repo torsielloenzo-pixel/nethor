@@ -418,7 +418,8 @@ function normalize(raw){
    update_logo:simpleAsset('update_logo'),
    controls,
    notification_visuals:kind==='mobile'?notificationVisuals:{},
-   home_banner:kind==='mobile'?normalizeMobileHomeBanner(current.home_banner):{}
+   home_banner:kind==='mobile'?normalizeMobileHomeBanner(current.home_banner):{},
+   profile_frames:kind==='mobile'?normalizeMobileProfileFrames(current.profile_frames):{}
   }
  }
  return c
@@ -2071,6 +2072,27 @@ function resetPortalSound(key){
 
 
 
+const MOBILE_PROFILE_FRAME_THEME_KEYS=Object.freeze(['light','dark','mineral','sage','plum','halloween']);
+function normalizeMobileProfileFrames(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const src=raw.themes&&typeof raw.themes==='object'?raw.themes:{},themes={};
+ for(const theme of MOBILE_PROFILE_FRAME_THEME_KEYS){
+  const list=Array.isArray(src[theme])?src[theme]:[];
+  themes[theme]=list.slice(0,40).map(item=>{
+   item=item&&typeof item==='object'?item:{};
+   const id=String(item.id||'').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,80);
+   return{id,name:String(item.name||'Cadre').trim().slice(0,60),url:String(item.url||''),path:String(item.path||''),file_name:String(item.file_name||'')}
+  }).filter(x=>x.id&&x.url)
+ }
+ return{themes}
+}
+function mobileProfileFramesNode(){
+ const ui=platformUiNode('mobile');ui.profile_frames=normalizeMobileProfileFrames(ui.profile_frames);return ui.profile_frames
+}
+function mobileProfileFramesFor(theme){
+ const key=MOBILE_PROFILE_FRAME_THEME_KEYS.includes(theme)?theme:'light';
+ return mobileProfileFramesNode().themes[key]||[]
+}
 const MOBILE_HEADER_THEME_KEYS=Object.freeze(['light','dark','mineral','sage','plum','halloween']);
 function normalizeMobileHeaderThemeAsset(raw){
  raw=raw&&typeof raw==='object'?raw:{};
