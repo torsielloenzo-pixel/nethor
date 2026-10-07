@@ -103,6 +103,8 @@ function syncHeaderProfileAvatar(profile=services()?.profile,url=services()?.ava
   avatar.style.backgroundImage='url("'+String(url).replace(/"/g,'%22')+'")';
   avatar.textContent=''
  }
+ const frame=String(profile?.avatar_frame||'').trim();
+ if(frame)avatar.dataset.avatarFrame=frame;else delete avatar.dataset.avatarFrame
 }
 function applyProfileShortcut(link,config){
  if(!link)return;
@@ -116,6 +118,18 @@ function mobileTheme(){return document.documentElement.dataset.theme==='dark'?'d
 function mobileVisualTheme(){
  const custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase();
  return ['mineral','sage','plum','halloween'].includes(custom)?custom:mobileTheme()
+}
+function installMobileProfileFrameStyles(config={}){
+ let style=document.getElementById('nethorMobileProfileFrameStyles');
+ if(!style){style=document.createElement('style');style.id='nethorMobileProfileFrameStyles';document.head?.appendChild(style)}
+ const theme=mobileVisualTheme(),frames=config?.platform_ui?.mobile?.profile_frames?.themes?.[theme];
+ const list=Array.isArray(frames)?frames:[];
+ style.textContent=list.map(frame=>{
+  const id=String(frame?.id||'').replace(/[^a-zA-Z0-9_-]/g,''),url=String(frame?.url||'').trim();
+  if(!id||!url)return'';
+  return '[data-avatar-frame="'+id+'"]::before{content:""!important;display:block!important;position:absolute!important;inset:-12%!important;width:124%!important;height:124%!important;min-width:0!important;max-width:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;background-image:url('+JSON.stringify(url)+')!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;z-index:8!important;pointer-events:none!important}'+
+   '[data-avatar-frame="'+id+'"]::after{display:none!important}'
+ }).join('\n')
 }
 function mobileThemeOpeningAsset(config){
  const mobile=config?.platform_ui?.mobile||{},theme=mobileVisualTheme(),custom=mobile?.welcome_media_themes?.[theme];
@@ -327,6 +341,7 @@ function renderMobileHeaderIdentity(config={}){
 }
 function applyConfiguredChrome(config={}){
  configuredSiteConfig=config&&typeof config==='object'?config:{};
+ installMobileProfileFrameStyles(config);
  renderMobileHeaderIdentity(config);
  const allowed=['home','planning','chat'],raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[],order=[],seen=new Set();
  raw.forEach(item=>{const id=String(item?.id||'');if(allowed.includes(id)&&!seen.has(id)){seen.add(id);order.push(id)}});
