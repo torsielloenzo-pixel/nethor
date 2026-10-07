@@ -252,3 +252,34 @@ main{padding-top:30px}.profileTop{grid-template-columns:1fr;text-align:center}.a
   .avatarWrap,.avatar{width:80px!important;height:80px!important}
   .name{font-size:18px!important}
 }
+
+
+.profileThemeLinkedRow{
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  min-height:66px!important;
+  padding:11px 12px!important;
+  border:1px solid #e2e6ea!important;
+  border-radius:14px!important;
+  background:#f7f8fa!important
+}
+.profileThemeLinkedSwatch{
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  border-radius:14px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:var(--nethor-profile-avatar-bg,#ff5a2a)!important;
+  color:var(--nethor-profile-avatar-fg,#fff)!important;
+  font-size:13px!important;
+  font-weight:950!important;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--nethor-profile-avatar-ring,#ffd9cd) 55%,transparent)!important
+}
+.profileThemeLinkedRow strong{display:block!important;font-size:11px!important}
+.profileThemeLinkedRow .fieldHelp{display:block!important;margin-top:4px!important;line-height:1.35!important}
+html[data-nethor-mobile-theme] .profileThemeLinkedRow{
+  background:var(--nmt-soft)!important;
+  border-color:var(--nmt-line)!important
+}
