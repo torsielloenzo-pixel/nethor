@@ -252,19 +252,35 @@ async function refreshNotifications({emitChange=true}={}){
   }
   return snapshot()
 }
+function mergeThemeProfileFramesIntoConfig(config,rows){
+ config=config&&typeof config==='object'?config:{};
+ config.platform_ui=config.platform_ui&&typeof config.platform_ui==='object'?config.platform_ui:{};
+ config.platform_ui.mobile=config.platform_ui.mobile&&typeof config.platform_ui.mobile==='object'?config.platform_ui.mobile:{};
+ const themes={light:[],dark:[],mineral:[],sage:[],plum:[],halloween:[]};
+ for(const row of Array.isArray(rows)?rows:[]){
+  const theme=Object.prototype.hasOwnProperty.call(themes,row?.theme)?row.theme:'light';
+  if(!row?.id||!row?.asset_url)continue;
+  themes[theme].push({id:String(row.id),name:String(row.name||'Cadre'),url:String(row.asset_url),path:String(row.storage_path||''),file_name:String(row.file_name||'')})
+ }
+ config.platform_ui.mobile.profile_frames={themes};
+ return config
+}
 async function refreshCore({emitChange=true}={}){
   if(!client||!state.session)return snapshot();
   const uid=state.session.user.id,seq=++coreRequestSeq;
-  const [profileResult,configResult,permissionResult]=await Promise.all([
+  const [profileResult,configResult,frameResult,permissionResult]=await Promise.all([
     client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',uid).maybeSingle(),
     client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),
+    client.from('mobile_theme_profile_frames').select('id,theme,name,asset_url,storage_path,file_name,created_at').order('created_at',{ascending:true}),
     readPermissions()
   ]);
   if(seq!==coreRequestSeq||state.session?.user?.id!==uid)return snapshot();
   if(profileResult.error)throw profileResult.error;
   if(!profileResult.data)throw new Error('Profil utilisateur introuvable');
   state.profile=profileResult.data;
-  state.siteConfig=configResult.error?state.siteConfig:(configResult.data?.value&&typeof configResult.data.value==='object'?configResult.data.value:{});
+  const baseConfig=configResult.error?state.siteConfig:(configResult.data?.value&&typeof configResult.data.value==='object'?configResult.data.value:{});
+  state.siteConfig=mergeThemeProfileFramesIntoConfig(baseConfig,frameResult.error?[]:frameResult.data);
+  if(frameResult.error)console.warn('[Nethor MobileServices] cadres profil',frameResult.error);
   try{window.NettoSounds?.configure?.(state.siteConfig)}catch(error){console.warn('[Nethor MobileServices] configuration audio',error)}
   state.subrolePermissions=permissionResult.subrolePermissions;
   state.subroleKeys=permissionResult.subroleKeys;
@@ -342,6 +358,7 @@ function startRealtime(){
     .subscribe();
   const configChannel=client.channel('mobile-services-config')
     .on('postgres_changes',{event:'*',schema:'public',table:'app_settings',filter:'key=eq.site_config'},scheduleCoreRefresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'mobile_theme_profile_frames'},scheduleCoreRefresh)
     .subscribe();
   const notificationChannel=client.channel('mobile-services-notifications-'+uid)
     .on('postgres_changes',{event:'*',schema:'public',table:'planning_notifications',filter:'user_id=eq.'+uid},scheduleNotificationRefresh)
