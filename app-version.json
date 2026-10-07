@@ -1,19 +1,18 @@
 {
-  "version": 387,
-  "label": "v1.46.38",
+  "version": 388,
+  "label": "v1.46.39",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile · Ouverture par thème",
-  "message": "L’animation d’ouverture Mobile peut désormais être personnalisée indépendamment pour chaque thème.",
-  "published_at": "2026-10-07T15:58:21.274Z",
+  "title": "Halloween · Citrouille d’ouverture",
+  "message": "La citrouille de l’animation d’ouverture du thème Halloween Mobile est remplacée par le visuel fourni.",
+  "published_at": "2026-10-07T17:51:38.373Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Gestion → Mobile : nouvelle section « Animation d’ouverture par thème ».",
-    "Six thèmes indépendants : Clair, Sombre, Bleu minéral, Sauge, Prune nocturne et Halloween.",
-    "Pour chaque thème : Importer, Télécharger et Réinitialiser.",
-    "Formats pris en charge : JS, GIF, MP4, WebM, PNG, WebP et SVG.",
-    "Sans média personnalisé, le thème hérite automatiquement de l’animation Nethor claire ou sombre existante.",
-    "La sélection est appliquée dès le tout premier affichage du splash Mobile, sans flash d’un autre thème."
+    "Mobile · Thème Halloween uniquement : remplacement de l’ancienne citrouille de l’écran d’ouverture.",
+    "Le nouveau visuel provient directement de l’image fournie, sans génération d’image.",
+    "L’animation flottante existante est conservée autour de la nouvelle citrouille.",
+    "La bannière d’accueil Halloween et les autres thèmes ne sont pas modifiés.",
+    "Le nouvel asset est précaché pour rester disponible avec le shell PWA."
   ]
 }
