@@ -1997,6 +1997,161 @@ function resetPortalSound(key){
  markDirty();renderSoundEditor();$('saveState').textContent='Son « '+def.label+' » réinitialisé — enregistrer pour confirmer'
 }
 
+
+const MOBILE_HOME_BANNER_THEMES=Object.freeze([
+ {key:'light',label:'Clair',description:'Thème clair classique',bg1:'#ffffff',bg2:'#fff1e9',accent:'#ff6a3d',secondary:'#ffb18e'},
+ {key:'dark',label:'Sombre',description:'Mode sombre classique',bg1:'#1d2228',bg2:'#30221e',accent:'#ff5b2a',secondary:'#7c2d20'},
+ {key:'mineral',label:'Bleu minéral',description:'Bleu ardoise professionnel',bg1:'#ffffff',bg2:'#d9eaf7',accent:'#245f8c',secondary:'#9ebfd7'},
+ {key:'sage',label:'Sauge',description:'Vert doux et naturel',bg1:'#ffffff',bg2:'#e0eddf',accent:'#356d53',secondary:'#a8c7b0'},
+ {key:'plum',label:'Prune nocturne',description:'Violet profond et feutré',bg1:'#29253d',bg2:'#473259',accent:'#cbb8f4',secondary:'#79548d'},
+ {key:'halloween',label:'Halloween',description:'Thème privé saisonnier',bg1:'#2b111c',bg2:'#18101d',accent:'#ff7a1a',secondary:'#7f3d8e',private:true}
+]);
+const MOBILE_HOME_BANNER_LAYER_DEFS=Object.freeze([
+ {key:'background',label:'Fond',description:'Image ou texture qui couvre la bannière.',x:50,y:50,width:116,opacity:100},
+ {key:'back',label:'Décor arrière',description:'Décor secondaire derrière le contenu principal.',x:87,y:56,width:42,opacity:58},
+ {key:'main',label:'Décor principal',description:'Élément visuel principal à droite de la bannière.',x:87,y:62,width:42,opacity:100}
+]);
+let mobileHomeBannerEditorTheme='light';
+function mobileHomeBannerThemeDef(theme){return MOBILE_HOME_BANNER_THEMES.find(x=>x.key===theme)||MOBILE_HOME_BANNER_THEMES[0]}
+function mobileHomeBannerLayerDef(layer){return MOBILE_HOME_BANNER_LAYER_DEFS.find(x=>x.key===layer)||MOBILE_HOME_BANNER_LAYER_DEFS[0]}
+function mobileHomeBannerLayerDefaults(theme,layer){
+ const d=mobileHomeBannerLayerDef(layer),h=theme==='halloween';
+ if(layer==='background')return{url:'',path:'',name:'',x:50,y:50,width:116,opacity:100,visible:true};
+ if(layer==='back')return{url:'',path:'',name:'',x:h?82:87,y:h?27:56,width:h?34:42,opacity:h?62:58,visible:true};
+ return{url:'',path:'',name:'',x:h?86:87,y:h?66:62,width:h?46:42,opacity:100,visible:true}
+}
+function normalizeMobileHomeBannerLayer(raw,theme,layer){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const d=mobileHomeBannerLayerDefaults(theme,layer);
+ return{
+  url:String(raw.url||''),path:String(raw.path||''),name:String(raw.name||''),
+  x:Math.max(0,Math.min(100,Number.isFinite(Number(raw.x))?Number(raw.x):d.x)),
+  y:Math.max(0,Math.min(100,Number.isFinite(Number(raw.y))?Number(raw.y):d.y)),
+  width:Math.max(layer==='background'?70:8,Math.min(layer==='background'?240:140,Number.isFinite(Number(raw.width))?Number(raw.width):d.width)),
+  opacity:Math.max(0,Math.min(100,Number.isFinite(Number(raw.opacity))?Number(raw.opacity):d.opacity)),
+  visible:raw.visible!==false
+ }
+}
+function normalizeMobileHomeBanner(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const source=raw.themes&&typeof raw.themes==='object'?raw.themes:{},themes={};
+ for(const theme of MOBILE_HOME_BANNER_THEMES){
+  const node=source[theme.key]&&typeof source[theme.key]==='object'?source[theme.key]:{},layers=node.layers&&typeof node.layers==='object'?node.layers:{};
+  themes[theme.key]={enabled:node.enabled!==false,layers:{}};
+  for(const layer of MOBILE_HOME_BANNER_LAYER_DEFS)themes[theme.key].layers[layer.key]=normalizeMobileHomeBannerLayer(layers[layer.key],theme.key,layer.key)
+ }
+ return{enabled:raw.enabled!==false,themes}
+}
+function mobileHomeBannerNode(){
+ ensurePlatformUiConfig();
+ const ui=platformUiNode('mobile');ui.home_banner=normalizeMobileHomeBanner(ui.home_banner);return ui.home_banner
+}
+function mobileHomeBannerThemeNode(theme){
+ const banner=mobileHomeBannerNode(),key=mobileHomeBannerThemeDef(theme).key;
+ banner.themes[key]=banner.themes[key]||normalizeMobileHomeBanner({}).themes[key];
+ return banner.themes[key]
+}
+function mobileHomeBannerLayerNode(theme,layer){
+ const t=mobileHomeBannerThemeNode(theme),key=mobileHomeBannerLayerDef(layer).key;
+ t.layers[key]=normalizeMobileHomeBannerLayer(t.layers[key],theme,key);
+ return t.layers[key]
+}
+function mobileHomeBannerDefaultSvg(theme,layer){
+ const t=mobileHomeBannerThemeDef(theme),safe=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+ if(layer==='background')return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+safe(t.bg1)+'"/><stop offset="1" stop-color="'+safe(t.bg2)+'"/></linearGradient><radialGradient id="r" cx=".84" cy=".38" r=".48"><stop stop-color="'+safe(t.accent)+'" stop-opacity=".16"/><stop offset="1" stop-color="'+safe(t.accent)+'" stop-opacity="0"/></radialGradient></defs><rect width="1200" height="360" fill="url(#g)"/><rect width="1200" height="360" fill="url(#r)"/></svg>';
+ if(theme==='halloween'&&layer==='back')return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220"><g fill="#09060c" opacity=".95"><path d="M25 96c24-32 51-42 83-35-12 12-15 27-8 45 14-13 31-17 51-10-20 12-31 30-33 54-19-15-37-18-55-8-5-18-18-33-38-46z"/><path d="M205 45c18-24 39-31 63-26-9 9-11 21-6 34 11-10 24-13 39-7-15 9-23 22-25 40-14-11-28-13-41-6-4-14-13-25-30-35z"/><path d="M293 127c13-18 28-23 46-19-7 7-8 15-4 25 8-7 18-9 29-5-11 7-17 16-18 29-11-8-21-10-31-4-3-10-10-19-22-26z"/></g></svg>';
+ if(layer==='back')return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300"><circle cx="210" cy="174" r="112" fill="'+safe(t.secondary)+'" opacity=".66"/><circle cx="120" cy="230" r="72" fill="'+safe(t.accent)+'" opacity=".20"/></svg>';
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300"><circle cx="190" cy="154" r="118" fill="'+safe(t.accent)+'" opacity=".72"/><circle cx="226" cy="118" r="82" fill="'+safe(t.secondary)+'" opacity=".38"/></svg>'
+}
+function mobileHomeBannerDefaultUrl(theme,layer){
+ if(theme==='halloween'&&layer==='main')return'assets/halloween-pumpkin.svg';
+ return'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(mobileHomeBannerDefaultSvg(theme,layer))
+}
+function mobileHomeBannerEffectiveUrl(theme,layer){
+ const node=mobileHomeBannerLayerNode(theme,layer);
+ return String(node.url||'').trim()||mobileHomeBannerDefaultUrl(theme,layer)
+}
+function mobileHomeBannerPreviewLayer(theme,layer,index){
+ const node=mobileHomeBannerLayerNode(theme,layer);if(node.visible===false)return'';
+ const url=mobileHomeBannerEffectiveUrl(theme,layer),z=layer==='background'?0:index+1;
+ return '<img class="mobileHomeBannerPreviewLayer layer-'+attr(layer)+'" src="'+attr(url)+'" alt="" style="--mb-x:'+node.x+'%;--mb-y:'+node.y+'%;--mb-w:'+node.width+'%;--mb-o:'+(node.opacity/100).toFixed(2)+';--mb-z:'+z+'">'
+}
+function mobileHomeBannerPreviewHtml(theme){
+ const def=mobileHomeBannerThemeDef(theme),layers=MOBILE_HOME_BANNER_LAYER_DEFS.map((x,i)=>mobileHomeBannerPreviewLayer(theme,x.key,i)).join('');
+ return '<div class="mobileHomeBannerPreview theme-'+attr(theme)+'">'+layers+'<div class="mobileHomeBannerPreviewCopy"><strong>Bon après-midi Enzo 👋</strong><span>mercredi 07 octobre 2026</span><small>Ta journée de travail est terminée.</small></div><b>'+esc(def.label)+'</b></div>'
+}
+function mobileHomeBannerLayerCard(theme,layer){
+ const def=mobileHomeBannerLayerDef(layer),node=mobileHomeBannerLayerNode(theme,layer),url=mobileHomeBannerEffectiveUrl(theme,layer),custom=!!node.url;
+ const min=layer==='background'?70:8,max=layer==='background'?240:140;
+ return '<article class="mobileHomeBannerLayerCard" data-mobile-banner-layer-card="'+attr(layer)+'">'+
+  '<div class="mobileHomeBannerLayerHead"><div class="mobileHomeBannerLayerThumb"><img src="'+attr(url)+'" alt=""></div><div><strong>'+esc(def.label)+'</strong><small>'+esc(def.description)+'</small><em>'+(custom?esc(node.name||'Image personnalisée'):'Visuel Nethor par défaut')+'</em></div><label class="adminSwitch" title="Afficher ce calque"><input type="checkbox" data-mobile-banner-visible="'+attr(layer)+'" '+(node.visible!==false?'checked':'')+'><span></span></label></div>'+
+  '<div class="mobileHomeBannerLayerActions"><button class="btn secondaryBtn mini" type="button" onclick="chooseMobileHomeBannerLayer(\''+attr(theme)+'\',\''+attr(layer)+'\')">Changer l’image</button><button class="btn secondaryBtn mini" type="button" onclick="downloadMobileHomeBannerLayer(\''+attr(theme)+'\',\''+attr(layer)+'\')">Télécharger</button><button class="btn secondaryBtn mini" type="button" onclick="resetMobileHomeBannerLayer(\''+attr(theme)+'\',\''+attr(layer)+'\')">Réinitialiser</button></div>'+
+  '<input id="mobileHomeBannerFile_'+attr(theme)+'_'+attr(layer)+'" type="file" accept=".jpg,.jpeg,.png,.webp,.svg,.gif,.avif,image/jpeg,image/png,image/webp,image/svg+xml,image/gif,image/avif" hidden onchange="uploadMobileHomeBannerLayer(\''+attr(theme)+'\',\''+attr(layer)+'\',this)">'+
+  '<div class="mobileHomeBannerLayerControls">'+
+   '<label><span>Taille</span><div><input type="range" min="'+min+'" max="'+max+'" step="1" value="'+node.width+'" data-mobile-banner-field="width" data-mobile-banner-layer="'+attr(layer)+'"><output>'+Math.round(node.width)+' %</output></div></label>'+
+   '<label><span>Position X</span><div><input type="range" min="0" max="100" step="1" value="'+node.x+'" data-mobile-banner-field="x" data-mobile-banner-layer="'+attr(layer)+'"><output>'+Math.round(node.x)+' %</output></div></label>'+
+   '<label><span>Position Y</span><div><input type="range" min="0" max="100" step="1" value="'+node.y+'" data-mobile-banner-field="y" data-mobile-banner-layer="'+attr(layer)+'"><output>'+Math.round(node.y)+' %</output></div></label>'+
+   '<label><span>Opacité</span><div><input type="range" min="0" max="100" step="1" value="'+node.opacity+'" data-mobile-banner-field="opacity" data-mobile-banner-layer="'+attr(layer)+'"><output>'+Math.round(node.opacity)+' %</output></div></label>'+
+  '</div>'+
+ '</article>'
+}
+function renderMobileHomeBannerEditor(){
+ const host=$('mobileHomeBannerEditor');if(!host)return;
+ const banner=mobileHomeBannerNode(),theme=mobileHomeBannerThemeDef(mobileHomeBannerEditorTheme).key,node=mobileHomeBannerThemeNode(theme),def=mobileHomeBannerThemeDef(theme);
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Bannière d’accueil Mobile</h2><p>Édite la bannière par thème, calque par calque. Les réglages d’un thème n’affectent jamais les autres.</p></div><label class="toggleChip"><input type="checkbox" data-mobile-banner-master '+(banner.enabled!==false?'checked':'')+'> Activer</label></div>'+
+  '<div class="mobileHomeBannerThemeTabs">'+MOBILE_HOME_BANNER_THEMES.map(x=>'<button type="button" class="'+(x.key===theme?'active':'')+'" onclick="setMobileHomeBannerEditorTheme(\''+attr(x.key)+'\')"><strong>'+esc(x.label)+'</strong><small>'+esc(x.description)+(x.private?' · Privé':'')+'</small></button>').join('')+'</div>'+
+  '<div class="mobileHomeBannerThemeHead"><div><span class="eyebrow">THÈME · '+esc(def.label.toUpperCase())+'</span><h3>Composition de la bannière</h3><p>Fond → décor arrière → décor principal → texte. Tu peux masquer, déplacer ou remplacer chaque image.</p></div><div><label class="toggleChip"><input type="checkbox" data-mobile-banner-theme-enabled '+(node.enabled!==false?'checked':'')+'> Thème actif</label><button class="btn secondaryBtn mini" type="button" onclick="resetMobileHomeBannerTheme(\''+attr(theme)+'\')">Réinitialiser le thème</button></div></div>'+
+  '<div id="mobileHomeBannerLivePreview">'+mobileHomeBannerPreviewHtml(theme)+'</div>'+
+  '<div class="mobileHomeBannerLayerGrid">'+MOBILE_HOME_BANNER_LAYER_DEFS.map(x=>mobileHomeBannerLayerCard(theme,x.key)).join('')+'</div>';
+ const master=host.querySelector('[data-mobile-banner-master]');if(master)master.onchange=()=>{mobileHomeBannerNode().enabled=master.checked;markDirty()};
+ const enabled=host.querySelector('[data-mobile-banner-theme-enabled]');if(enabled)enabled.onchange=()=>{mobileHomeBannerThemeNode(theme).enabled=enabled.checked;markDirty()};
+ host.querySelectorAll('[data-mobile-banner-visible]').forEach(el=>el.onchange=()=>{mobileHomeBannerLayerNode(theme,el.dataset.mobileBannerVisible).visible=el.checked;markDirty();renderMobileHomeBannerPreview(theme)});
+ host.querySelectorAll('[data-mobile-banner-field]').forEach(el=>el.oninput=()=>{
+  const layer=el.dataset.mobileBannerLayer,field=el.dataset.mobileBannerField,node=mobileHomeBannerLayerNode(theme,layer);
+  node[field]=Number(el.value);
+  const output=el.parentElement?.querySelector('output');if(output)output.textContent=Math.round(Number(el.value))+' %';
+  markDirty();renderMobileHomeBannerPreview(theme)
+ })
+}
+function renderMobileHomeBannerPreview(theme=mobileHomeBannerEditorTheme){
+ const host=$('mobileHomeBannerLivePreview');if(host)host.innerHTML=mobileHomeBannerPreviewHtml(theme)
+}
+function setMobileHomeBannerEditorTheme(theme){
+ mobileHomeBannerEditorTheme=mobileHomeBannerThemeDef(theme).key;renderMobileHomeBannerEditor()
+}
+function chooseMobileHomeBannerLayer(theme,layer){$('mobileHomeBannerFile_'+theme+'_'+layer)?.click()}
+function mobileHomeBannerAssetExtension(file){
+ const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
+ return ['jpg','jpeg','png','webp','svg','gif','avif'].includes(ext)?ext:''
+}
+async function uploadMobileHomeBannerLayer(theme,layer,input){
+ const file=input?.files?.[0],state=$('saveState');if(!file)return;
+ try{
+  const ext=mobileHomeBannerAssetExtension(file);if(!ext)throw new Error('Format refusé. Utilise JPG, PNG, WebP, SVG, GIF ou AVIF.');
+  if(file.size>12*1024*1024)throw new Error('Image trop lourde : 12 Mo maximum.');
+  state.className='saveState';state.textContent='Import du calque « '+mobileHomeBannerLayerDef(layer).label+' »…';
+  const storagePath='platform/mobile/home-banner/'+theme+'/'+layer+'-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=mobileHomeBannerLayerNode(theme,layer);
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.visible=true;
+  markDirty();renderMobileHomeBannerEditor();state.className='saveState';state.textContent='Calque prêt à être enregistré'
+ }catch(e){state.className='saveState err';state.textContent='Erreur bannière : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+function downloadMobileHomeBannerLayer(theme,layer){
+ const node=mobileHomeBannerLayerNode(theme,layer),url=String(node.url||'').trim()||mobileHomeBannerDefaultUrl(theme,layer);
+ downloadAssetUrl(url,node.name||('Nethor-banniere-'+theme+'-'+layer+'.svg'))
+}
+function resetMobileHomeBannerLayer(theme,layer){
+ mobileHomeBannerThemeNode(theme).layers[layer]=normalizeMobileHomeBannerLayer(null,theme,layer);
+ markDirty();renderMobileHomeBannerEditor();$('saveState').textContent='Calque réinitialisé — enregistrer pour confirmer'
+}
+function resetMobileHomeBannerTheme(theme){
+ if(!confirm('Réinitialiser les trois calques de la bannière « '+mobileHomeBannerThemeDef(theme).label+' » ?'))return;
+ const fresh=normalizeMobileHomeBanner(null);mobileHomeBannerNode().themes[theme]=fresh.themes[theme];
+ markDirty();renderMobileHomeBannerEditor();$('saveState').textContent='Bannière '+mobileHomeBannerThemeDef(theme).label+' réinitialisée — enregistrer pour confirmer'
+}
+
 function mobileNotificationVisualNode(kind){
  ensurePlatformUiConfig();
  const defs=platformUiNode('mobile').notification_visuals||{};
