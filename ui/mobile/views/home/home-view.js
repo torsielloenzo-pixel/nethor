@@ -446,7 +446,8 @@ async function paintTeamAvatars(rows){
  for(const row of rows){
   if(!state.mounted)return;
   const el=state.dashboard?.querySelector('[data-home-team-avatar="'+row.id+'"]');if(!el)continue;
-  const url=await signedAvatar(row.profile);
+  const url=await signedAvatar(row.profile),frame=String(row.profile?.avatar_frame||'').trim();
+  if(frame)el.dataset.avatarFrame=frame;else delete el.dataset.avatarFrame;
   if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else el.classList.remove('hasPhoto')
  }
 }
