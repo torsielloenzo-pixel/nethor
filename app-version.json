@@ -1,18 +1,18 @@
 {
-  "version": 398,
-  "label": "v1.46.49",
+  "version": 399,
+  "label": "v1.46.50",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Gestion · Sauvegarde des cadres",
-  "message": "La création et la suppression des cadres de profil par thème sont désormais enregistrées immédiatement dans la configuration Nethor.",
-  "published_at": "2026-10-07T19:54:42.284Z",
+  "title": "Gestion · Cadres de profil fiabilisés",
+  "message": "Les cadres de profil par thème utilisent désormais une table dédiée et ne peuvent plus être écrasés par une sauvegarde de site_config.",
+  "published_at": "2026-10-07T20:07:20.929Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Créer un cadre dans Gestion l’enregistre immédiatement, sans dépendre du bouton général Enregistrer.",
-    "La sauvegarde fusionne uniquement la bibliothèque de cadres du thème concerné afin de ne pas enregistrer d’autres modifications en attente.",
-    "En cas d’échec de sauvegarde, le cadre est retiré de l’interface et le fichier importé est nettoyé.",
-    "La suppression d’un cadre est elle aussi persistée immédiatement.",
-    "Les autres modifications non enregistrées de Gestion restent intactes."
+    "Nouvelle table dédiée mobile_theme_profile_frames pour les cadres Mobile par thème.",
+    "Gestion charge, crée et supprime les cadres directement dans cette table.",
+    "Mon profil Mobile charge cette bibliothèque via MobileServices, indépendamment de site_config.",
+    "Les cadres ne peuvent plus disparaître lorsqu’une autre modification de Gestion enregistre site_config.",
+    "Les derniers imports retrouvés pour Clair et Halloween ont été récupérés dans la nouvelle bibliothèque."
   ]
 }
