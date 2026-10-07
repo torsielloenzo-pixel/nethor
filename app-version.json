@@ -1,18 +1,18 @@
 {
-  "version": 383,
-  "label": "v1.46.34",
+  "version": 384,
+  "label": "v1.46.35",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Personnalisation mobile · 3 thèmes",
-  "message": "Trois nouvelles ambiances visuelles mobiles : Bleu minéral, Sauge et Prune nocturne, sans modifier la structure des pages ni le thème du bureau.",
-  "published_at": "2026-10-07T00:20:29.897Z",
+  "title": "Halloween · Thème privé",
+  "message": "Nouveau thème Halloween mobile immersif, visible et applicable uniquement par Enzo et les comptes Administrateur.",
+  "published_at": "2026-10-07T10:30:20.019Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Bleu minéral : bleu ardoise sobre pour une interface professionnelle.",
-    "Sauge : fond clair et accents vert doux.",
-    "Prune nocturne : palette sombre violette.",
-    "Sélection depuis Personnalisation > Apparence, mémorisée avec le profil.",
-    "Les mêmes palettes couvrent aussi notifications, signalements, scanner et pages secondaires ; fonctionnalités et accès inchangés."
+    "Thème Halloween privé : nuit noire, orange citrouille, violet, lune, toile et détails hantés.",
+    "Disponible dans Personnalisation > Apparence uniquement pour Enzo et les Administrateurs.",
+    "Le contrôle d’éligibilité est aussi appliqué lors du chargement et de l’enregistrement de la préférence.",
+    "Les couleurs métier du planning, des congés, repos, alertes et validations restent inchangées.",
+    "Aucune modification de l’architecture, des fonctionnalités ou du thème Desktop."
   ]
 }
