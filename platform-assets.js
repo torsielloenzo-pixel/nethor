@@ -47,9 +47,15 @@ function installMobileVisualThemes(){
   if(theme==='halloween'&&halloweenAllowed(profile))return theme;
   return''
  };
- function apply(value,base,profile=activeProfile){
+ const activeTheme=(profile=activeProfile)=>{
+  const prefs=profile?.ui_preferences&&typeof profile.ui_preferences==='object'?profile.ui_preferences:{};
+  const legacyHalloween=prefs.mobile_theme==='halloween'&&halloweenAllowed(profile);
+  const halloween=(legacyHalloween||prefs.mobile_mode==='halloween')&&halloweenAllowed(profile);
+  return halloween?'halloween':normalize(prefs.mobile_theme,profile)
+ };
+ function apply(value,profile=activeProfile){
   const custom=normalize(value,profile);
-  const theme=['plum','halloween'].includes(custom)?'dark':custom?'light':base==='dark'?'dark':base==='light'?'light':root.dataset.theme==='dark'?'dark':'light';
+  const theme=['plum','halloween'].includes(custom)?'dark':'light';
   if(custom)root.dataset.nethorMobileTheme=custom;else delete root.dataset.nethorMobileTheme;
   if(root.dataset.theme!==theme)root.dataset.theme=theme;
   root.style.colorScheme=theme;
@@ -60,20 +66,19 @@ function installMobileVisualThemes(){
  try{
   const cached=localStorage.getItem('nethorMobileTheme');
   if(publicThemes.includes(cached))apply(cached)
- }catch(_){}
+  else if(root.dataset.theme==='dark')root.dataset.theme='light'
+ }catch(_){if(root.dataset.theme==='dark')root.dataset.theme='light'}
  const onProfile=e=>{
   const profile=e?.detail?.profile;
   if(!profile)return;
   activeProfile=profile;
-  const prefs=profile.ui_preferences;
-  if(prefs&&typeof prefs==='object')apply(prefs.mobile_theme,prefs.theme,profile)
+  apply(activeTheme(profile),profile)
  };
  window.addEventListener('netto:profile',onProfile);
- window.addEventListener('netto:theme-preference',e=>apply('',e?.detail?.theme,activeProfile));
+ window.addEventListener('netto:theme-preference',()=>apply(activeTheme(activeProfile),activeProfile));
  if(typeof MutationObserver==='function'){
   new MutationObserver(()=>{
    const custom=normalize(root.dataset.nethorMobileTheme,activeProfile);
-   if(!custom)return;
    const required=['plum','halloween'].includes(custom)?'dark':'light';
    if(root.dataset.theme!==required)root.dataset.theme=required
   }).observe(root,{attributes:true,attributeFilter:['data-theme']})
