@@ -339,6 +339,13 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction[aria-current="
  background:#321f3a!important;color:#ff9a45!important;
  box-shadow:inset 0 0 0 1px rgba(255,133,45,.16)
 }
+/* Halloween Mobile uniquement : la cloche de notifications reste orange pour conserver son contraste dans l'entête sombre. */
+html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction[data-mobile-destination="notifications"]{
+ color:#ff7a1a!important
+}
+html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction[data-mobile-destination="notifications"] svg{
+ stroke:#ff7a1a!important
+}
 html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction>.nethorMobileHeaderAvatar{
  border-color:#563261!important;
  box-shadow:0 0 0 1px rgba(255,122,26,.26),0 4px 14px rgba(0,0,0,.32)!important
