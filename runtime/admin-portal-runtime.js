@@ -2604,16 +2604,16 @@ function resetMobileAppearanceTheme(theme){
 }
 
 function renderPlatformEditors(){
- ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileHomeBannerEditor();renderMobileWelcomeThemeEditor();renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
+ ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileAppearanceThemeEditor();renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
 }
 function ensurePortalPlatformStructure(){
  restructureManagementOverview();
  const mobileTab=$('tab-mobile');
  if(mobileTab){
   if(!$('platformIdentity_mobile')){const p=document.createElement('div');p.id='platformIdentity_mobile';p.className='panel platformIdentityPanel';mobileTab.prepend(p)}
-  if(!$('mobileHomeBannerEditor')){const p=document.createElement('div');p.id='mobileHomeBannerEditor';p.className='panel mobileHomeBannerEditorPanel';const identity=$('platformIdentity_mobile');identity?.insertAdjacentElement('afterend',p)}
-  if(!$('mobileWelcomeThemeEditor')){const p=document.createElement('div');p.id='mobileWelcomeThemeEditor';p.className='panel mobileWelcomeThemeEditorPanel';const banner=$('mobileHomeBannerEditor')||$('platformIdentity_mobile');banner?.insertAdjacentElement('afterend',p)}
-  if(!$('mobileNotificationVisuals')){const p=document.createElement('div');p.id='mobileNotificationVisuals';p.className='panel mobileNotificationVisualPanel';const welcome=$('mobileWelcomeThemeEditor')||$('mobileHomeBannerEditor')||$('platformIdentity_mobile');welcome?.insertAdjacentElement('afterend',p)}
+  $('mobileHomeBannerEditor')?.remove();$('mobileWelcomeThemeEditor')?.remove();
+  if(!$('mobileAppearanceThemeEditor')){const p=document.createElement('div');p.id='mobileAppearanceThemeEditor';p.className='panel mobileAppearanceThemeEditorPanel';const identity=$('platformIdentity_mobile');identity?.insertAdjacentElement('afterend',p)}
+  if(!$('mobileNotificationVisuals')){const p=document.createElement('div');p.id='mobileNotificationVisuals';p.className='panel mobileNotificationVisualPanel';const appearance=$('mobileAppearanceThemeEditor')||$('platformIdentity_mobile');appearance?.insertAdjacentElement('afterend',p)}
   if(!$('platformComponents_mobile')){const p=document.createElement('div');p.id='platformComponents_mobile';p.className='panel platformComponentsPanel';mobileTab.appendChild(p)}
   const barPanel=$('mobileBarEditor')?.closest('.panel'),bar=barPanel?.querySelector('.toolbar h2'),barDesc=barPanel?.querySelector('.toolbar p');
   if(bar)bar.textContent='Navigation mobile';
