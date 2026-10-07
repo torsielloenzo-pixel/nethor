@@ -2444,6 +2444,165 @@ function resetMobileNotificationVisual(kind){
  markDirty();renderMobileNotificationVisualEditor();$('saveState').textContent='Visuel « '+def.label+' » réinitialisé — enregistrer pour confirmer'
 }
 
+
+let mobileAppearanceEditorTheme='light';
+function mobileAppearanceThemeKey(theme){return MOBILE_HOME_BANNER_THEMES.some(x=>x.key===theme)?theme:'light'}
+function mobileAppearanceThemeTabs(theme){
+ return '<div class="mobileAppearanceThemeTabs">'+MOBILE_HOME_BANNER_THEMES.map(def=>
+  '<button type="button" class="'+(def.key===theme?'active':'')+'" onclick="setMobileAppearanceEditorTheme(\''+attr(def.key)+'\')" style="--theme-accent:'+attr(def.accent)+';--theme-bg:'+attr(def.bg1)+'">'+
+   '<i></i><span><strong>'+esc(def.label)+'</strong><small>'+esc(def.description)+(def.private?' · Privé':'')+'</small></span>'+
+  '</button>'
+ ).join('')+'</div>'
+}
+function mobileHeaderThemePreviewHtml(theme){
+ const def=mobileHomeBannerThemeDef(theme),eff=mobileHeaderThemeEffective(theme);
+ const logo1=eff.logo1.url?'<img src="'+attr(eff.logo1.url)+'" alt="">':'<span class="mobileAppearanceHeaderFallback">nethor</span>';
+ const logo2=eff.logo2.url?'<img src="'+attr(eff.logo2.url)+'" alt="">':'';
+ const text='<span class="mobileAppearanceHeaderText">'+esc(eff.text)+'</span>';
+ const nodes=eff.layout==='logo_logo'?[logo1,logo2]:eff.layout==='text_logo'?[text,logo1]:eff.layout==='logo_text'?[logo1,text]:[logo1];
+ return '<div class="mobileAppearanceHeaderPreview" style="--appearance-bg:'+attr(def.bg1)+';--appearance-accent:'+attr(def.accent)+'">'+
+  '<span class="mobileAppearanceMenuGlyph">☰</span><div class="mobileAppearanceHeaderBrand" data-layout="'+attr(eff.layout)+'">'+nodes.filter(Boolean).join('')+'</div>'+
+  '<span class="mobileAppearanceBell">♢</span><span class="mobileAppearanceAvatar">E</span>'+
+ '</div>'
+}
+function mobileHeaderThemeAssetCard(theme,slot){
+ const label=slot==='logo2'?'Logo 2':'Logo 1',eff=mobileHeaderThemeEffective(theme),item=slot==='logo2'?eff.logo2:eff.logo1,node=mobileHeaderThemeAssetNode(theme,slot),custom=!!String(node.url||'').trim();
+ return '<article class="mobileAppearanceAssetCard">'+
+  '<div class="mobileAppearanceAssetHead"><div><strong>'+label+'</strong><small>'+(slot==='logo2'?'Deuxième emplacement pour « Logo + Logo ».':'Logo principal de l’entête.')+'</small></div><span class="'+(custom?'custom':'')+'">'+(custom?'Personnalisé':'Hérité')+'</span></div>'+
+  '<div class="mobileAppearanceAssetPreview">'+(item.url?'<img src="'+attr(item.url)+'" alt="">':'<em>Aucun visuel</em>')+'</div>'+
+  '<div class="platformAssetActions"><button class="btn secondaryBtn mini" type="button" onclick="chooseMobileHeaderThemeAsset(\''+attr(theme)+'\',\''+attr(slot)+'\')">Importer</button>'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="downloadMobileHeaderThemeAsset(\''+attr(theme)+'\',\''+attr(slot)+'\')">Télécharger</button>'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="resetMobileHeaderThemeAsset(\''+attr(theme)+'\',\''+attr(slot)+'\')">Réinitialiser</button></div>'+
+  '<input id="mobileHeaderThemeFile_'+attr(theme)+'_'+attr(slot)+'" type="file" accept=".png,.webp,.svg,.ico,image/png,image/webp,image/svg+xml,image/x-icon,image/vnd.microsoft.icon" hidden onchange="uploadMobileHeaderThemeAsset(\''+attr(theme)+'\',\''+attr(slot)+'\',this)">'+
+ '</article>'
+}
+function mobileHeaderThemeSection(theme){
+ const node=mobileHeaderThemeNode(theme),eff=mobileHeaderThemeEffective(theme);
+ return '<section class="mobileAppearanceGroup">'+
+  '<div class="mobileAppearanceGroupHead"><div><span>ENTÊTE</span><h3>Logo + identité</h3><p>Logo 1, Logo 2 et composition sont propres au thème sélectionné.</p></div><button class="btn secondaryBtn mini" type="button" onclick="resetMobileHeaderTheme(\''+attr(theme)+'\')">Réinitialiser l’entête</button></div>'+
+  '<div id="mobileAppearanceHeaderPreview">'+mobileHeaderThemePreviewHtml(theme)+'</div>'+
+  '<div class="mobileAppearanceComposition">'+
+   '<label class="field"><span>Composition</span><select data-mobile-theme-header-layout>'+
+    '<option value="logo_only" '+(eff.layout==='logo_only'?'selected':'')+'>Logo seul</option>'+
+    '<option value="logo_logo" '+(eff.layout==='logo_logo'?'selected':'')+'>Logo + Logo</option>'+
+    '<option value="text_logo" '+(eff.layout==='text_logo'?'selected':'')+'>Texte + Logo</option>'+
+    '<option value="logo_text" '+(eff.layout==='logo_text'?'selected':'')+'>Logo + Texte</option>'+
+   '</select></label>'+
+   '<label class="field"><span>Texte</span><input type="text" maxlength="80" value="'+attr(eff.text)+'" placeholder="Nethor" data-mobile-theme-header-text></label>'+
+   '<small>'+(node.layout||node.text?'Réglage spécifique à ce thème.':'Hérite actuellement de l’identité Mobile générale.')+'</small>'+
+  '</div>'+
+  '<div class="mobileAppearanceAssetGrid">'+mobileHeaderThemeAssetCard(theme,'logo1')+mobileHeaderThemeAssetCard(theme,'logo2')+'</div>'+
+ '</section>'
+}
+function mobileAppearanceBannerSection(theme){
+ const banner=mobileHomeBannerNode(),node=mobileHomeBannerThemeNode(theme);
+ return '<section class="mobileAppearanceGroup">'+
+  '<div class="mobileAppearanceGroupHead"><div><span>BANNIÈRE</span><h3>Accueil Mobile</h3><p>Modifie les trois calques de la bannière pour ce thème uniquement.</p></div><div class="mobileAppearanceGroupActions">'+
+   '<label class="toggleChip"><input type="checkbox" data-mobile-appearance-banner-master '+(banner.enabled!==false?'checked':'')+'> Bannière</label>'+
+   '<label class="toggleChip"><input type="checkbox" data-mobile-appearance-banner-enabled '+(node.enabled!==false?'checked':'')+'> Thème actif</label>'+
+   '<button class="btn secondaryBtn mini" type="button" onclick="resetMobileHomeBannerTheme(\''+attr(theme)+'\')">Réinitialiser</button></div></div>'+
+  '<div id="mobileAppearanceBannerPreview">'+mobileHomeBannerPreviewHtml(theme)+'</div>'+
+  '<div class="mobileHomeBannerLayerGrid">'+MOBILE_HOME_BANNER_LAYER_DEFS.map(x=>mobileHomeBannerLayerCard(theme,x.key)).join('')+'</div>'+
+ '</section>'
+}
+function mobileAppearanceOpeningSection(theme){
+ const item=mobileWelcomeThemeEffective(theme);
+ return '<section class="mobileAppearanceGroup">'+
+  '<div class="mobileAppearanceGroupHead"><div><span>OUVERTURE</span><h3>Animation d’ouverture</h3><p>Média affiché au lancement de Nethor avec ce thème.</p></div><span class="mobileLaunchThemeBadge '+(item.custom?'custom':'')+'">'+(item.custom?'Personnalisée':'Héritée '+(item.inheritedFrom==='dark'?'sombre':'claire'))+'</span></div>'+
+  '<div class="mobileAppearanceOpeningGrid"><div class="mobileLaunchThemePreview">'+mobileWelcomeThemePreview(theme)+'</div><div class="mobileAppearanceOpeningInfo">'+
+   '<strong>'+(item.custom?esc(item.name||'Média personnalisé'):'Animation Nethor '+(item.inheritedFrom==='dark'?'sombre':'claire'))+'</strong>'+
+   '<small>JS · GIF · MP4 · WebM · PNG · WebP · SVG</small>'+
+   '<div class="platformAssetActions"><button class="btn secondaryBtn mini" type="button" onclick="chooseMobileWelcomeThemeAsset(\''+attr(theme)+'\')">Importer</button>'+
+    '<button class="btn secondaryBtn mini" type="button" onclick="downloadMobileWelcomeThemeAsset(\''+attr(theme)+'\')">Télécharger</button>'+
+    '<button class="btn secondaryBtn mini" type="button" onclick="resetMobileWelcomeThemeAsset(\''+attr(theme)+'\')">Réinitialiser</button></div>'+
+   '<input id="mobileWelcomeThemeFile_'+attr(theme)+'" type="file" accept=".js,.gif,.mp4,.webm,.png,.webp,.svg,application/javascript,text/javascript,image/gif,video/mp4,video/webm,image/png,image/webp,image/svg+xml" hidden onchange="uploadMobileWelcomeThemeAsset(\''+attr(theme)+'\',this)">'+
+  '</div></div>'+
+ '</section>'
+}
+function renderMobileAppearanceThemeEditor(){
+ const host=$('mobileAppearanceThemeEditor');if(!host)return;
+ ensurePlatformUiConfig();
+ const theme=mobileAppearanceThemeKey(mobileAppearanceEditorTheme),def=mobileHomeBannerThemeDef(theme);
+ mobileAppearanceEditorTheme=theme;mobileHomeBannerEditorTheme=theme;
+ host.innerHTML='<div class="toolbar platformEditorHead mobileAppearanceEditorHead"><div><h2>Apparence par thème · Mobile</h2><p>Choisis un thème puis règle tous ses éléments visuels au même endroit. Chaque thème reste totalement indépendant.</p></div><button class="btn secondaryBtn mini" type="button" onclick="resetMobileAppearanceTheme(\''+attr(theme)+'\')">Réinitialiser « '+esc(def.label)+' »</button></div>'+
+  mobileAppearanceThemeTabs(theme)+
+  '<div class="mobileAppearanceSelectedTheme"><i style="background:'+attr(def.accent)+'"></i><div><span>THÈME SÉLECTIONNÉ</span><strong>'+esc(def.label)+'</strong><small>'+esc(def.description)+(def.private?' · Visible uniquement pour les comptes autorisés':'')+'</small></div></div>'+
+  mobileHeaderThemeSection(theme)+mobileAppearanceBannerSection(theme)+mobileAppearanceOpeningSection(theme);
+ bindMobileAppearanceThemeEditor(host,theme)
+}
+function bindMobileAppearanceThemeEditor(host,theme){
+ const layout=host.querySelector('[data-mobile-theme-header-layout]'),textInput=host.querySelector('[data-mobile-theme-header-text]');
+ const updateHeader=()=>{
+  const node=mobileHeaderThemeNode(theme);
+  if(layout)node.layout=['logo_only','logo_logo','text_logo','logo_text'].includes(layout.value)?layout.value:'';
+  if(textInput)node.text=String(textInput.value||'').slice(0,80);
+  markDirty();renderMobileAppearanceHeaderPreview(theme);applyPlatformHeaderPreview('mobile')
+ };
+ if(layout)layout.onchange=updateHeader;
+ if(textInput){textInput.oninput=updateHeader;textInput.onchange=updateHeader}
+ const bannerMaster=host.querySelector('[data-mobile-appearance-banner-master]');
+ if(bannerMaster)bannerMaster.onchange=()=>{mobileHomeBannerNode().enabled=bannerMaster.checked;markDirty()};
+ const bannerEnabled=host.querySelector('[data-mobile-appearance-banner-enabled]');
+ if(bannerEnabled)bannerEnabled.onchange=()=>{mobileHomeBannerThemeNode(theme).enabled=bannerEnabled.checked;markDirty()};
+ host.querySelectorAll('[data-mobile-banner-visible]').forEach(el=>el.onchange=()=>{mobileHomeBannerLayerNode(theme,el.dataset.mobileBannerVisible).visible=el.checked;markDirty();renderMobileAppearanceBannerPreview(theme)});
+ host.querySelectorAll('[data-mobile-banner-field]').forEach(el=>el.oninput=()=>{
+  const layer=el.dataset.mobileBannerLayer,field=el.dataset.mobileBannerField,node=mobileHomeBannerLayerNode(theme,layer);
+  node[field]=Number(el.value);
+  const output=el.parentElement?.querySelector('output');if(output)output.textContent=Math.round(Number(el.value))+' %';
+  markDirty();renderMobileAppearanceBannerPreview(theme)
+ })
+}
+function renderMobileAppearanceHeaderPreview(theme=mobileAppearanceEditorTheme){
+ const host=$('mobileAppearanceHeaderPreview');if(host)host.innerHTML=mobileHeaderThemePreviewHtml(theme)
+}
+function renderMobileAppearanceBannerPreview(theme=mobileAppearanceEditorTheme){
+ const host=$('mobileAppearanceBannerPreview');if(host)host.innerHTML=mobileHomeBannerPreviewHtml(theme)
+}
+function setMobileAppearanceEditorTheme(theme){
+ mobileAppearanceEditorTheme=mobileAppearanceThemeKey(theme);
+ mobileHomeBannerEditorTheme=mobileAppearanceEditorTheme;
+ renderMobileAppearanceThemeEditor()
+}
+function chooseMobileHeaderThemeAsset(theme,slot){$('mobileHeaderThemeFile_'+theme+'_'+slot)?.click()}
+async function uploadMobileHeaderThemeAsset(theme,slot,input){
+ const file=input?.files?.[0],state=$('saveState');if(!file)return;
+ try{
+  const ext=platformAssetExtension(file),allowed=['png','webp','svg','ico'];
+  if(!ext||!allowed.includes(ext))throw new Error('Format refusé. Utilise PNG, WebP, SVG ou ICO.');
+  if(file.size>5*1024*1024)throw new Error('Logo trop lourd : 5 Mo maximum.');
+  state.className='saveState';state.textContent='Import '+mobileHomeBannerThemeDef(theme).label+' · '+(slot==='logo2'?'Logo 2':'Logo 1')+'…';
+  const storagePath='platform/mobile/header-theme/'+theme+'/'+slot+'-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=mobileHeaderThemeAssetNode(theme,slot);
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;
+  markDirty();renderMobileAppearanceThemeEditor();applyPlatformHeaderPreview('mobile');state.className='saveState';state.textContent='Logo prêt à être enregistré'
+ }catch(e){state.className='saveState err';state.textContent='Erreur logo : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+function downloadMobileHeaderThemeAsset(theme,slot){
+ const eff=mobileHeaderThemeEffective(theme),item=slot==='logo2'?eff.logo2:eff.logo1;if(!item.url)return;
+ downloadAssetUrl(item.url,item.name||('Nethor-mobile-'+theme+'-'+slot+'.svg'))
+}
+function resetMobileHeaderThemeAsset(theme,slot){
+ const node=mobileHeaderThemeAssetNode(theme,slot);node.url='';node.path='';node.name='';
+ markDirty();renderMobileAppearanceThemeEditor();applyPlatformHeaderPreview('mobile');$('saveState').textContent='Logo réinitialisé — enregistrer pour confirmer'
+}
+function resetMobileHeaderTheme(theme){
+ const ui=platformUiNode('mobile');ui.header_themes=normalizeMobileHeaderThemes(ui.header_themes);
+ ui.header_themes[mobileAppearanceThemeKey(theme)]={layout:'',text:'',logo1:normalizeMobileHeaderThemeAsset(null),logo2:normalizeMobileHeaderThemeAsset(null)};
+ markDirty();renderMobileAppearanceThemeEditor();applyPlatformHeaderPreview('mobile');$('saveState').textContent='Entête '+mobileHomeBannerThemeDef(theme).label+' réinitialisé — enregistrer pour confirmer'
+}
+function resetMobileAppearanceTheme(theme){
+ theme=mobileAppearanceThemeKey(theme);
+ if(!confirm('Réinitialiser l’entête, la bannière et l’animation d’ouverture du thème « '+mobileHomeBannerThemeDef(theme).label+' » ?'))return;
+ const ui=platformUiNode('mobile');
+ ui.header_themes=normalizeMobileHeaderThemes(ui.header_themes);
+ ui.header_themes[theme]={layout:'',text:'',logo1:normalizeMobileHeaderThemeAsset(null),logo2:normalizeMobileHeaderThemeAsset(null)};
+ const freshBanner=normalizeMobileHomeBanner(null);mobileHomeBannerNode().themes[theme]=freshBanner.themes[theme];
+ const opening=mobileWelcomeThemeNode(theme);opening.url='';opening.path='';opening.name='';opening.tag='';opening.api='';opening.type='animation';
+ markDirty();renderMobileAppearanceThemeEditor();applyPlatformHeaderPreview('mobile');$('saveState').textContent='Thème « '+mobileHomeBannerThemeDef(theme).label+' » réinitialisé — enregistrer pour confirmer'
+}
+
 function renderPlatformEditors(){
  ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileHomeBannerEditor();renderMobileWelcomeThemeEditor();renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
 }
