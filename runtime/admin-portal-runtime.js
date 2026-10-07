@@ -1624,12 +1624,20 @@ function bindPlatformHeaderLogoSize(host,kind){
 }
 function renderPlatformIdentity(kind){
  const host=$('platformIdentity_'+kind);if(!host)return;
- host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent maintenant d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
+ if(kind==='mobile'){
+  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Réglages Mobile généraux</h2><p>Ces éléments sont communs à tous les thèmes. L’entête, la bannière et l’animation d’ouverture se règlent désormais dans « Apparence par thème ».</p></div></div>'+
+  '<div class="platformAssetList">'+
+   platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion Mobile. Sans fichier personnalisé, Nethor utilise son icône officielle.')+
+  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
+  bindPlatformControlFields(host);
+  return
+ }
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
  '<div class="platformAssetList">'+
  platformAssetRow(kind,'header_logo','Emplacement Logo 1','Premier emplacement de l’identité d’en-tête '+platformLabel(kind)+'. Ce logo reste entièrement indépendant de l’autre plateforme.')+
  platformAssetRow(kind,'header_logo_secondary','Emplacement Logo 2','Deuxième emplacement, utilisé avec « Logo + Logo ». Il est propre à '+platformLabel(kind)+' et possède ses variantes claire et sombre.')+
  platformHeaderCompositionControl(kind)+
- (kind==='desktop'?platformHeaderLogoAnimationControl(kind)+platformHeaderLogoSizeControl(kind):'')+
+ platformHeaderLogoAnimationControl(kind)+platformHeaderLogoSizeControl(kind)+
  platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion '+platformLabel(kind)+'. Sans fichier personnalisé, Nethor utilise automatiquement son icône officielle de connexion.')+
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
  '</div>'+renderPlatformSystemAssets(kind)+renderPlatformControls(kind);
@@ -1638,7 +1646,7 @@ function renderPlatformIdentity(kind){
  if(headerMode)headerMode.onchange=()=>{
   const ui=platformUiNode('desktop');ui.header_logo_mode=headerMode.value==='animation'?'animation':'image';
   markDirty();
-  applyPlatformHeaderPreview(kind)
+  applyPlatformHeaderPreview(kind);
   renderPlatformIdentity(kind)
  };
  bindPlatformControlFields(host);
