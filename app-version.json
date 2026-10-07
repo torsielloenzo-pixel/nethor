@@ -1,19 +1,21 @@
 {
-  "version": 390,
-  "label": "v1.46.41",
+  "version": 391,
+  "label": "v1.46.42",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile · Favori / Halloween",
-  "message": "Le mode sombre générique disparaît du Mobile. Le Menu utilisateur bascule désormais entre le thème favori et Halloween.",
-  "published_at": "2026-10-07T18:13:29.940Z",
+  "title": "Gestion · Apparence par thème",
+  "message": "La personnalisation Mobile est désormais organisée thème par thème dans Gestion : entête, bannière et animation d’ouverture sont regroupés dans un seul éditeur.",
+  "published_at": "2026-10-07T18:35:18.765Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Mobile : suppression du Mode sombre du Menu utilisateur et de Personnalisation → Apparence.",
-    "Personnalisation → Apparence contient désormais uniquement le favori : Clair, Bleu minéral, Sauge ou Prune nocturne.",
-    "Halloween n’apparaît plus dans Apparence ; il devient un mode séparé accessible depuis le Menu utilisateur pour Enzo et les Administrateurs.",
-    "Le bouton du Menu utilisateur affiche « Mode Halloween » depuis le favori et « Mode favori » lorsque Halloween est actif.",
-    "Les anciens comptes restés en mode sombre Mobile reviennent automatiquement sur leur favori ou sur Clair.",
-    "Le mode sombre interne reste utilisé uniquement comme base technique des thèmes Prune nocturne et Halloween."
+    "Gestion → Mobile : nouvel éditeur central « Apparence par thème ».",
+    "Sélecteur unique : Clair, Sombre, Bleu minéral, Sauge, Prune nocturne et Halloween.",
+    "Chaque thème possède désormais son propre Logo 1, Logo 2, composition d’entête et texte d’entête.",
+    "La bannière du thème sélectionné est éditée dans la même vue, avec ses trois calques, taille, position, opacité, import, téléchargement et réinitialisation.",
+    "L’animation d’ouverture du thème sélectionné est également regroupée dans cette vue avec Importer, Télécharger et Réinitialiser.",
+    "Les anciens réglages d’identité Mobile restent utilisés comme valeurs de secours afin de préserver l’existant.",
+    "Les réglages généraux non liés à un thème (connexion, icônes système, commandes, notifications) restent séparés.",
+    "L’entête réel Mobile et les pages mobiles héritées appliquent maintenant l’identité correspondant au thème actif."
   ]
 }
