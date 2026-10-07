@@ -170,3 +170,23 @@
 .npvThemeIdentitySwatch{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;flex:none;font-size:14px;font-weight:950}
 .npvThemeIdentityRow strong{display:block;font-size:11px}
 .npvThemeIdentityRow small{display:block;margin-top:4px;color:#7d858e;font-size:8.5px;line-height:1.4}
+
+
+.npvFrameSection{margin-top:14px;padding-top:13px;border-top:1px solid #e6e9ed}
+.npvFrameSectionHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px}
+.npvFrameSectionHead strong{font-size:10px}
+.npvFrameSectionHead small{color:#8a9199;font-size:8px;text-align:right}
+.npvFrameChoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.npvFrameChoice{appearance:none;min-width:0;border:1px solid #e1e5e9;border-radius:14px;background:#fafbfc;padding:9px;display:grid;gap:7px;justify-items:center;color:inherit}
+.npvFrameChoice.active{border-color:#ff762d;box-shadow:0 0 0 3px #ff762d18;background:#fff8f3}
+.npvFrameChoice strong{max-width:100%;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.npvFramePreview,.npvFrameNone{position:relative;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--nethor-profile-avatar-bg,#ff5a2a);color:var(--nethor-profile-avatar-fg,#fff);font-size:11px;font-weight:950}
+.npvFramePreview b{position:relative;z-index:1}
+.npvFramePreview img{position:absolute;inset:-7px;width:68px;height:68px;object-fit:contain;z-index:2;pointer-events:none}
+.npvFrameNone{background:#eef1f4;color:#717982;font-size:18px}
+.npvFrameEmpty{padding:13px;border:1px dashed #dfe3e7;border-radius:12px;color:#8a929a;font-size:8.5px;text-align:center}
+:root[data-theme="dark"] .npvFrameSection{border-top-color:#373d44}
+:root[data-theme="dark"] .npvFrameChoice{background:#1b1f23;border-color:#3a4047}
+:root[data-theme="dark"] .npvFrameChoice.active{background:#2b211b;border-color:#ff8b49}
+:root[data-theme="dark"] .npvFrameNone{background:#2c3238;color:#c2c8cf}
+@media(max-width:420px){.npvFrameChoices{grid-template-columns:repeat(2,minmax(0,1fr))}}
