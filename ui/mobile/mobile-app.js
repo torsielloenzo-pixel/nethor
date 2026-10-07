@@ -304,17 +304,24 @@ function mobileHeaderSecondaryNode(url){
  if(!url)return null;
  const img=document.createElement('img');img.src=url;img.alt='';img.draggable=false;img.className='nethorHeaderLogoSecondary';return img
 }
+function mobileHeaderThemeConfig(config={},ui={}){
+ const visual=mobileVisualTheme(),themes=ui?.header_themes&&typeof ui.header_themes==='object'?ui.header_themes:{},node=themes?.[visual]&&typeof themes[visual]==='object'?themes[visual]:{};
+ const layout=['logo_only','logo_logo','text_logo','logo_text'].includes(node.layout)?node.layout:mobileHeaderLayout(ui);
+ const text=String(node.text||mobileHeaderText(config,ui)).trim().slice(0,80)||'Nethor';
+ const primaryUrl=String(node.logo1?.url||'').trim()||mobileThemedAsset(ui?.header_logo,String(config?.brand?.header_logo_url||'').trim());
+ const secondaryUrl=String(node.logo2?.url||'').trim()||mobileThemedAsset(ui?.header_logo_secondary,'');
+ return{visual,layout,text,primaryUrl,secondaryUrl}
+}
 function renderMobileHeaderIdentity(config={}){
  if(!mobileWordmark)return;
- const ui=config?.platform_ui?.mobile||{},layout=mobileHeaderLayout(ui);
- const primaryUrl=mobileThemedAsset(ui?.header_logo,String(config?.brand?.header_logo_url||'').trim());
- const secondaryUrl=mobileThemedAsset(ui?.header_logo_secondary,'');
- const primary=mobileHeaderPrimaryNode(primaryUrl),secondary=mobileHeaderSecondaryNode(secondaryUrl),textNode=mobileHeaderTextNode(mobileHeaderText(config,ui));
+ const ui=config?.platform_ui?.mobile||{},themed=mobileHeaderThemeConfig(config,ui),layout=themed.layout;
+ const primary=mobileHeaderPrimaryNode(themed.primaryUrl),secondary=mobileHeaderSecondaryNode(themed.secondaryUrl),textNode=mobileHeaderTextNode(themed.text);
  const nodes=layout==='logo_logo'?[primary,secondary]:layout==='text_logo'?[textNode,primary]:layout==='logo_text'?[primary,textNode]:[primary];
  mobileWordmark.replaceChildren(...nodes.filter(Boolean));
  mobileWordmark.classList.add('configured','nethorHeaderIdentity');
  mobileWordmark.dataset.headerLayout=layout;
- mobileWordmark.classList.toggle('hasSecondary',!!secondaryUrl)
+ mobileWordmark.dataset.appearanceTheme=themed.visual;
+ mobileWordmark.classList.toggle('hasSecondary',!!themed.secondaryUrl)
 }
 function applyConfiguredChrome(config={}){
  configuredSiteConfig=config&&typeof config==='object'?config:{};
@@ -332,8 +339,8 @@ function applyConfiguredChrome(config={}){
  applyMobileSystemIcons(config)
 }
 
-const mobileBrandThemeObserver=typeof MutationObserver!=='undefined'?new MutationObserver(list=>{if(list.some(x=>x.attributeName==='data-theme'))applyConfiguredChrome(configuredSiteConfig)}):null;
-mobileBrandThemeObserver?.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+const mobileBrandThemeObserver=typeof MutationObserver!=='undefined'?new MutationObserver(list=>{if(list.some(x=>x.attributeName==='data-theme'||x.attributeName==='data-nethor-mobile-theme'))applyConfiguredChrome(configuredSiteConfig)}):null;
+mobileBrandThemeObserver?.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','data-nethor-mobile-theme']});
 
 function navigationLinks(){
   return [...new Set([...navHost.querySelectorAll('[data-mobile-destination]'),...headerHost.querySelectorAll('[data-mobile-destination]')])]
