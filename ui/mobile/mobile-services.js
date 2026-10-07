@@ -114,14 +114,24 @@ function subscribe(fn,{immediate=true}={}){
   if(immediate){try{fn({type:'snapshot',...snapshot()})}catch(_){}}
   return()=>listeners.delete(fn)
 }
-function normalizedMobileTheme(value){return ['mineral','sage','plum'].includes(value)?value:''}
+function halloweenThemeAllowed(profile=state.profile){
+ const role=String(profile?.role||'').trim().toLowerCase();
+ const firstName=String(profile?.display_name||'').trim().toLowerCase().split(/\s+/)[0]||'';
+ return role==='admin'||firstName==='enzo'
+}
+function normalizedMobileTheme(value,profile=state.profile){
+ const theme=String(value||'').trim().toLowerCase();
+ if(['mineral','sage','plum'].includes(theme))return theme;
+ if(theme==='halloween'&&halloweenThemeAllowed(profile))return theme;
+ return''
+}
 function previewTheme(mobileTheme='',baseTheme='light'){
  const custom=normalizedMobileTheme(mobileTheme);
- const theme=custom==='plum'?'dark':custom?'light':baseTheme==='dark'?'dark':'light';
+ const theme=['plum','halloween'].includes(custom)?'dark':custom?'light':baseTheme==='dark'?'dark':'light';
  const root=document.documentElement;root.dataset.theme=theme;
  if(custom)root.dataset.nethorMobileTheme=custom;else delete root.dataset.nethorMobileTheme;
  root.style.colorScheme=theme;
- const colors={mineral:'#edf3f8',sage:'#eef3ef',plum:'#171623'};
+ const colors={mineral:'#edf3f8',sage:'#eef3ef',plum:'#171623',halloween:'#120e17'};
  const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=colors[custom]||(theme==='dark'?'#17191d':'#f6f6f8');
  try{localStorage.setItem('nettoTheme',theme);localStorage.setItem('nethorMobileTheme',custom)}catch(_){}
  return custom||theme
@@ -469,7 +479,8 @@ async function updateProfile(fields={}){
   return true
 }
 async function savePreferences(prefs){
-  const value=prefs&&typeof prefs==='object'&&!Array.isArray(prefs)?prefs:{};
+  const value=prefs&&typeof prefs==='object'&&!Array.isArray(prefs)?JSON.parse(JSON.stringify(prefs)):{};
+  if(value.mobile_theme==='halloween'&&!halloweenThemeAllowed())value.mobile_theme='';
   await updateProfile({ui_preferences:value});
   return value
 }
@@ -882,6 +893,7 @@ const api={
   updateProfile,
   savePreferences,
   previewTheme,
+  halloweenThemeAllowed,
   changePassword,
   uploadAvatar,
   removeAvatar,
