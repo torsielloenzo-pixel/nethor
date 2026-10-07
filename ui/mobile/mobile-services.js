@@ -119,6 +119,11 @@ function halloweenThemeAllowed(profile=state.profile){
  const firstName=String(profile?.display_name||'').trim().toLowerCase().split(/\s+/)[0]||'';
  return role==='admin'||firstName==='enzo'
 }
+function syncHalloweenEligibilityCache(profile=state.profile){
+ const allowed=halloweenThemeAllowed(profile);
+ try{localStorage.setItem('nethorHalloweenEligibleV1',allowed?'1':'0')}catch(_){}
+ return allowed
+}
 function normalizedMobileTheme(value,profile=state.profile){
  const theme=String(value||'').trim().toLowerCase();
  if(['mineral','sage','plum'].includes(theme))return theme;
@@ -137,6 +142,7 @@ function previewTheme(mobileTheme='',baseTheme='light'){
  return custom||theme
 }
 function applyProfileTheme(){
+ syncHalloweenEligibilityCache(state.profile);
  const prefs=state.profile?.ui_preferences||{};
  previewTheme(prefs.mobile_theme,prefs.theme==='dark'?'dark':'light')
 }
