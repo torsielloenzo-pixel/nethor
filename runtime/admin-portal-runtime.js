@@ -398,8 +398,13 @@ function normalize(raw){
    for(const def of MOBILE_NOTIFICATION_VISUAL_DEFS)notificationVisuals[def.key]=normalizeMobileNotificationVisual(source[def.key])
   }
   const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
+  const headerLayout=['logo_only','logo_logo','text_logo','logo_text'].includes(current.header_layout)?current.header_layout:'logo_only';
+  const headerText=String(current.header_text||'').slice(0,80);
   c.platform_ui[kind]={
+   header_layout:headerLayout,
+   header_text:headerText,
    header_logo:themedAsset('header_logo'),
+   header_logo_secondary:themedAsset('header_logo_secondary'),
    header_logo_mode:kind==='desktop'&&current.header_logo_mode==='animation'?'animation':'image',
    header_logo_animation:themedAsset('header_logo_animation'),
    header_logo_scale:kind==='desktop'?headerLogoScale:100,
@@ -1523,6 +1528,35 @@ function removePlatformControlAsset(kind,key){
  const node=platformControlNode(kind,key);node.url='';node.path='';node.name='';markDirty();renderPlatformIdentity(kind)
 }
 
+function platformHeaderCompositionControl(kind){
+ const ui=platformUiNode(kind),layout=['logo_only','logo_logo','text_logo','logo_text'].includes(ui.header_layout)?ui.header_layout:'logo_only',textValue=String(ui.header_text||'');
+ return '<div class="platformHeaderComposition">'+
+  '<div class="platformHeaderCompositionCopy"><strong>Composition de l’en-tête</strong><span>Choisis la combinaison affichée dans la zone d’identité '+platformLabel(kind)+'. « Logo seul » conserve l’affichage actuel.</span></div>'+
+  '<div class="platformHeaderCompositionFields">'+
+   '<label class="field"><span>Disposition</span><select data-platform-header-layout="'+esc(kind)+'">'+
+    '<option value="logo_only" '+(layout==='logo_only'?'selected':'')+'>Logo seul</option>'+
+    '<option value="logo_logo" '+(layout==='logo_logo'?'selected':'')+'>Logo + Logo</option>'+
+    '<option value="text_logo" '+(layout==='text_logo'?'selected':'')+'>Texte + Logo</option>'+
+    '<option value="logo_text" '+(layout==='logo_text'?'selected':'')+'>Logo + Texte</option>'+
+   '</select></label>'+
+   '<label class="field"><span>Texte d’en-tête</span><input type="text" maxlength="80" value="'+esc(textValue)+'" placeholder="'+esc(config?.brand?.name||'Nethor')+'" data-platform-header-text="'+esc(kind)+'"></label>'+
+  '</div>'+
+  '<small class="platformMediaHint">Le deuxième logo ci-dessus est utilisé uniquement avec « Logo + Logo ». Sans texte personnalisé, le nom de marque est repris automatiquement.</small>'+
+ '</div>'
+}
+function bindPlatformHeaderComposition(host,kind){
+ const layout=host.querySelector('[data-platform-header-layout="'+CSS.escape(kind)+'"]'),textInput=host.querySelector('[data-platform-header-text="'+CSS.escape(kind)+'"]');
+ const apply=()=>{
+  const ui=platformUiNode(kind);
+  if(layout)ui.header_layout=['logo_only','logo_logo','text_logo','logo_text'].includes(layout.value)?layout.value:'logo_only';
+  if(textInput)ui.header_text=String(textInput.value||'').slice(0,80);
+  markDirty();
+  try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}
+ };
+ if(layout)layout.onchange=apply;
+ if(textInput){textInput.oninput=apply;textInput.onchange=apply}
+}
+
 function platformHeaderLogoAnimationControl(kind){
  if(kind!=='desktop')return'';
  const ui=platformUiNode('desktop'),mode=ui.header_logo_mode==='animation'?'animation':'image',animLight=String(ui.header_logo_animation?.light?.url||'').trim(),animDark=String(ui.header_logo_animation?.dark?.url||'').trim(),hasAnimation=!!(animLight||animDark);
@@ -1569,6 +1603,8 @@ function renderPlatformIdentity(kind){
  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent maintenant d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
  '<div class="platformAssetList">'+
  platformAssetRow(kind,'header_logo','Logo principal','Logo affiché au repos en haut de la barre latérale sur Desktop, et dans l’entête sur Mobile. Plateforme : '+platformLabel(kind)+'.')+
+ platformAssetRow(kind,'header_logo_secondary','Deuxième logo d’entête','Logo additionnel utilisé par la composition « Logo + Logo ». Il dispose lui aussi de variantes claire et sombre.')+
+ platformHeaderCompositionControl(kind)+
  (kind==='desktop'?platformHeaderLogoAnimationControl(kind)+platformHeaderLogoSizeControl(kind):'')+
  platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion '+platformLabel(kind)+'. Sans fichier personnalisé, Nethor utilise automatiquement son icône officielle de connexion.')+
  platformAssetRow(kind,'welcome_media','Après connexion · Bienvenue utilisateur','Logo ou animation affiché après authentification, avant l’ouverture du portail.')+
@@ -1582,6 +1618,7 @@ function renderPlatformIdentity(kind){
   renderPlatformIdentity(kind)
  };
  bindPlatformControlFields(host);
+ bindPlatformHeaderComposition(host,kind);
  bindPlatformHeaderLogoSize(host,kind)
 }
 function choosePlatformAsset(kind,key,theme){$('platformAssetFile_'+kind+'_'+key+'_'+(theme==='dark'?'dark':'light'))?.click()}
