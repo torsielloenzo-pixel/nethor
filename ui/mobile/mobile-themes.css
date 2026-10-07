@@ -416,9 +416,12 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileLaunchWelcomeMark{
 html[data-nethor-mobile-theme="halloween"] .nethorMobileLaunchWelcomeMark::after{
  content:"";
  position:absolute;
- width:70px;height:64px;
- right:-38px;bottom:-25px;
- background:url("../../assets/halloween-pumpkin.svg") center/contain no-repeat;
+ width:82px;height:82px;
+ right:-43px;bottom:-30px;
+ background-image:var(--nethor-halloween-opening-pumpkin,none);
+ background-position:center;
+ background-size:contain;
+ background-repeat:no-repeat;
  filter:drop-shadow(0 8px 14px rgba(0,0,0,.36)) drop-shadow(0 0 9px rgba(255,104,17,.22));
  pointer-events:none;
  z-index:4
