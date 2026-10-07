@@ -1,16 +1,17 @@
 {
-  "version": 392,
-  "label": "v1.46.43",
+  "version": 393,
+  "label": "v1.46.44",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Halloween Mobile · Cloche de notifications",
-  "message": "La cloche de notifications de l’entête est maintenant orange dans le thème Halloween Mobile pour rester bien visible.",
-  "published_at": "2026-10-07T18:48:00.000Z",
+  "title": "Halloween Mobile · Toit & chat noir",
+  "message": "L’entête Halloween Mobile intègre désormais le haut d’un toit sous la lune, avec un chat noir perché sur le faîtage.",
+  "published_at": "2026-10-07T18:58:00.000Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Modification visuelle limitée au thème Halloween sur Mobile.",
-    "La cloche de notifications de l’entête utilise désormais l’orange Halloween.",
-    "Aucun changement sur les autres thèmes ni sur Desktop."
+    "Décor ajouté uniquement au thème Halloween Mobile.",
+    "Le toit est positionné sous la lune avec un liseré orange discret.",
+    "Le chat noir est placé sur le faîtage devant la lune, avec de petits yeux jaunes.",
+    "La cloche, le profil, le logo et toutes les interactions de l’entête restent fonctionnels."
   ]
 }
