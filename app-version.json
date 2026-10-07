@@ -1,21 +1,18 @@
 {
-  "version": 397,
-  "label": "v1.46.48",
+  "version": 398,
+  "label": "v1.46.49",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile · Cadres de profil par thème",
-  "message": "Gestion peut désormais créer des cadres de profil propres à chaque thème Mobile, sélectionnables dans Mon profil uniquement lorsque le thème correspondant est actif.",
-  "published_at": "2026-10-07T19:49:28.225Z",
+  "title": "Gestion · Sauvegarde des cadres",
+  "message": "La création et la suppression des cadres de profil par thème sont désormais enregistrées immédiatement dans la configuration Nethor.",
+  "published_at": "2026-10-07T19:54:42.284Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Gestion → Accueil & Interface → Mobile → Apparence par thème : nouvelle section « Cadres de profil ».",
-    "Chaque cadre est créé avec un nom et une image PNG, WebP ou SVG transparente.",
-    "Les bibliothèques sont totalement séparées entre Clair, Sombre, Bleu minéral, Sauge, Prune nocturne et Halloween.",
-    "Un cadre créé pour un thème n’est ni proposé ni rendu lorsqu’un autre thème est actif.",
-    "Mobile → Mon profil → Apparence du profil : ajout d’un sélecteur de cadres avec l’option « Aucun cadre ».",
-    "Le cadre sélectionné est enregistré sur le profil et peut apparaître sur l’entête, l’Accueil, le Planning, le Chat et les fiches utilisateur Mobile.",
-    "Gestion permet également de télécharger ou supprimer chaque cadre créé.",
-    "Les cadres historiques de rôle restent compatibles."
+    "Créer un cadre dans Gestion l’enregistre immédiatement, sans dépendre du bouton général Enregistrer.",
+    "La sauvegarde fusionne uniquement la bibliothèque de cadres du thème concerné afin de ne pas enregistrer d’autres modifications en attente.",
+    "En cas d’échec de sauvegarde, le cadre est retiré de l’interface et le fichier importé est nettoyé.",
+    "La suppression d’un cadre est elle aussi persistée immédiatement.",
+    "Les autres modifications non enregistrées de Gestion restent intactes."
   ]
 }
