@@ -297,8 +297,8 @@ const AVATAR_FRAMES=Object.freeze({
  employe:'assets/avatar-frame-employe.svg',
  lecture:'assets/avatar-frame-lecture.svg'
 });
-function validAvatarFrame(v){v=String(v||'').trim();return Object.prototype.hasOwnProperty.call(AVATAR_FRAMES,v)?v:''}
-function avatarFrameAsset(v){v=validAvatarFrame(v);return v?AVATAR_FRAMES[v]:''}
+function validAvatarFrame(v){v=String(v||'').trim();if(Object.prototype.hasOwnProperty.call(AVATAR_FRAMES,v))return v;if(/^themeframe_[a-z0-9_-]+$/i.test(v)&&typeof isMobileViewport==='function'&&isMobileViewport())return v;return''}
+function avatarFrameAsset(v){v=String(v||'').trim();return Object.prototype.hasOwnProperty.call(AVATAR_FRAMES,v)?AVATAR_FRAMES[v]:''}
 function setAvatarFrame(el,frame){if(!el)return;const v=validAvatarFrame(frame);if(v)el.dataset.avatarFrame=v;else delete el.dataset.avatarFrame}
 const BASE_MODULES=Object.freeze([
  {id:'home',label:'Accueil',homeLabel:'Accueil',subtitle:'Retour au portail',url:'home.html',icon:'⌂',asset:'assets/logo-home.svg',roles:null,rolesLocked:true,enabledLocked:true,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'PORTAIL',description:'Revenir à l’accueil principal de Nethor.',action:'Ouvrir l’accueil',cardClass:'homeCard',group:'principal',platform:'all'},
