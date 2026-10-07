@@ -748,3 +748,32 @@ html[data-theme="dark"] .platformHeaderLogoSizeNumber{background:#1f252b;border-
  .mobileHomeBannerLayerThumb{width:54px;height:48px}
  .mobileHomeBannerLayerControls>label{grid-template-columns:64px minmax(0,1fr)}
 }
+
+
+/* Gestion > Mobile > Animation d'ouverture par thème */
+.mobileWelcomeThemeEditorPanel{overflow:hidden}
+.mobileLaunchThemeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.mobileLaunchThemeCard{min-width:0;border:1px solid var(--line,#e3e7eb);border-radius:16px;padding:12px;background:color-mix(in srgb,var(--panel,#fff) 96%,var(--bg,#f5f6f8));box-shadow:0 6px 18px rgba(20,28,38,.04)}
+.mobileLaunchThemeCardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.mobileLaunchThemeCardHead strong{display:block;font-size:10.5px}
+.mobileLaunchThemeCardHead small{display:block;margin-top:3px;color:var(--muted,#737c85);font-size:8.25px;line-height:1.35}
+.mobileLaunchThemeBadge{flex:none;padding:5px 7px;border-radius:999px;background:#eef1f4;color:#69737e;font-size:7.4px;font-weight:850;white-space:nowrap}
+.mobileLaunchThemeBadge.custom{background:#fff0e7;color:#d85c1c}
+.mobileLaunchThemePreview{display:grid;place-items:center;height:138px;margin:11px 0;border:1px solid var(--line,#dfe4e8);border-radius:13px;overflow:hidden;background:linear-gradient(145deg,#f5f6f8,#eceff2)}
+.mobileLaunchThemePreview img,.mobileLaunchThemePreview video,.mobileLaunchThemePreview iframe{display:block;width:100%;height:100%;object-fit:contain;border:0;background:transparent}
+.mobileLaunchThemeEmpty{color:var(--muted,#7a838d);font-size:9px;font-weight:800}
+.mobileLaunchThemeMeta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.mobileLaunchThemeMeta span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8.25px;font-weight:800}
+.mobileLaunchThemeMeta small{flex:none;color:var(--muted,#7a838d);font-size:7px}
+.mobileLaunchThemeActions{display:flex;gap:5px;flex-wrap:wrap}
+.mobileLaunchThemeActions .btn{flex:1 1 auto;min-width:82px}
+:root[data-theme="dark"] .mobileLaunchThemeCard{background:#20262c;border-color:#394149;color:#f1f3f5}
+:root[data-theme="dark"] .mobileLaunchThemePreview{background:linear-gradient(145deg,#171a1e,#111316);border-color:#3b4249}
+:root[data-theme="dark"] .mobileLaunchThemeBadge{background:#2b3238;color:#aeb7c0}
+:root[data-theme="dark"] .mobileLaunchThemeBadge.custom{background:#3a281f;color:#ff9a58}
+@media(max-width:1050px){.mobileLaunchThemeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){
+ .mobileLaunchThemeGrid{grid-template-columns:1fr}
+ .mobileLaunchThemePreview{height:122px}
+ .mobileLaunchThemeMeta{align-items:flex-start;flex-direction:column}
+}
