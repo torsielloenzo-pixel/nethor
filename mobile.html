@@ -10,6 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Nethor</title>
 <script>(function(){try{var cached=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),ct=cached&&cached.config&&cached.config.launch_theme,lt=localStorage.getItem('nettoTheme'),sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',t=(ct==='dark'||ct==='light')?ct:((lt==='dark'||lt==='light')?lt:sys);document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(_){}try{document.documentElement.dataset.nethorLaunchSplash=sessionStorage.getItem('nethorMobileLaunchShownV1')==='1'?'skip':'show'}catch(_){document.documentElement.dataset.nethorLaunchSplash='show'}})();</script>
+<script>(function(){try{var custom=localStorage.getItem('nethorMobileTheme');if(['mineral','sage','plum'].includes(custom)){var theme=custom==='plum'?'dark':'light';document.documentElement.dataset.nethorMobileTheme=custom;document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;var meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=({mineral:'#edf3f8',sage:'#eef3ef',plum:'#171623'})[custom];}}catch(_){}})();</script>
 <script src="platform-resolver.js?v=3"></script>
 <script>
 (function(){
@@ -34,9 +35,10 @@
 <link rel="stylesheet" href="ui/mobile/views/notifications/notifications-view.css?v=3" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/user-menu/user-menu-view.css?v=1" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/profile/profile-view.css?v=2" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="ui/mobile/views/settings/settings-view.css?v=1" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/views/settings/settings-view.css?v=2" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/notification-settings/notification-settings-view.css?v=1" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="ui/mobile/views/report-problem/report-problem-view.css?v=2" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="ui/mobile/mobile-themes.css?v=1">
 </head>
 <body>
 <section class="nethorMobileLaunchWelcome show" data-mobile-launch-welcome aria-live="polite" aria-hidden="false">
@@ -114,7 +116,7 @@
 <script src="runtime/client-health.js?v=1"></script>
 <script src="ui/mobile/mobile-offline-store.js?v=1"></script>
 <script src="ui/mobile/mobile-sync.js?v=4"></script>
-<script src="ui/mobile/mobile-services.js?v=15"></script>
+<script src="ui/mobile/mobile-services.js?v=16"></script>
 <script src="ui/mobile/mobile-router.js?v=4"></script>
 <script src="ui/mobile/mobile-shell.js?v=13"></script>
 <script src="operations-widget.js?v=4"></script>
@@ -122,7 +124,7 @@
 <script src="ui/mobile/views/notifications/notifications-view.js?v=5"></script>
 <script src="ui/mobile/views/user-menu/user-menu-view.js?v=4"></script>
 <script src="ui/mobile/views/profile/profile-view.js?v=3"></script>
-<script src="ui/mobile/views/settings/settings-view.js?v=1"></script>
+<script src="ui/mobile/views/settings/settings-view.js?v=2"></script>
 <script src="ui/mobile/views/notification-settings/notification-settings-view.js?v=1"></script>
 <script src="ui/mobile/views/report-problem/report-problem-view.js?v=1"></script>
 <script src="ui/mobile/views/scanner/scanner-view.js?v=4"></script>
