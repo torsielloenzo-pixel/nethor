@@ -1,18 +1,19 @@
 {
-  "version": 385,
-  "label": "v1.46.36",
+  "version": 386,
+  "label": "v1.46.37",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Halloween · Citrouilles",
-  "message": "Le thème Halloween mobile gagne une citrouille lumineuse dans l’ouverture de l’application et dans la bannière d’accueil.",
-  "published_at": "2026-10-07T10:52:10.415Z",
+  "title": "Mobile · Bannière par calques",
+  "message": "La bannière d’accueil Mobile devient entièrement personnalisable dans Gestion, thème par thème et calque par calque.",
+  "published_at": "2026-10-07T15:47:18.542Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Animation d’ouverture : ajout d’une citrouille lumineuse lorsque le thème Halloween est actif.",
-    "Accueil mobile : les anciennes bulles/lunes de la bannière de bienvenue sont remplacées par une grande citrouille sculptée.",
-    "Quelques chauves-souris décoratives restent discrètement en arrière-plan, comme sur la maquette validée.",
-    "Ces changements sont strictement limités au thème Halloween.",
-    "Aucune modification des autres thèmes, de l’architecture ou des fonctionnalités."
+    "Gestion → Mobile : nouvel éditeur « Bannière d’accueil Mobile », placé entre Identité et Notifications.",
+    "Six thèmes gérés indépendamment : Clair, Sombre, Bleu minéral, Sauge, Prune nocturne et Halloween.",
+    "Trois calques par thème : Fond, Décor arrière et Décor principal.",
+    "Chaque calque peut être masqué, remplacé, téléchargé, redimensionné et repositionné en X/Y avec opacité réglable.",
+    "Les réglages sont stockés dans site_config et appliqués directement à la bannière réelle de l’accueil Mobile.",
+    "Réinitialisation disponible par calque ou par thème, sans toucher à l’architecture ni aux données métier."
   ]
 }
