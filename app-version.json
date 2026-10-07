@@ -1,18 +1,17 @@
 {
-  "version": 388,
-  "label": "v1.46.39",
+  "version": 389,
+  "label": "v1.46.40",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Halloween · Citrouille d’ouverture",
-  "message": "La citrouille de l’animation d’ouverture du thème Halloween Mobile est remplacée par le visuel fourni.",
-  "published_at": "2026-10-07T17:51:38.373Z",
+  "title": "Entête · Mobile/Desktop indépendants",
+  "message": "Les compositions d’en-tête Mobile et Desktop sont maintenant strictement indépendantes, avec deux emplacements de logo persistants.",
+  "published_at": "2026-10-07T17:30:00.000Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Mobile · Thème Halloween uniquement : remplacement de l’ancienne citrouille de l’écran d’ouverture.",
-    "Le nouveau visuel provient directement de l’image fournie, sans génération d’image.",
-    "L’animation flottante existante est conservée autour de la nouvelle citrouille.",
-    "La bannière d’accueil Halloween et les autres thèmes ne sont pas modifiés.",
-    "Le nouvel asset est précaché pour rester disponible avec le shell PWA."
+    "Correction de la persistance du deuxième emplacement de logo.",
+    "Mobile et Desktop conservent désormais séparément Logo 1, Logo 2, texte et composition.",
+    "Modifier l’identité Mobile ne rafraîchit plus l’identité Desktop, et inversement.",
+    "Les emplacements sont maintenant affichés explicitement comme « Emplacement Logo 1 » et « Emplacement Logo 2 »."
   ]
 }
