@@ -13,7 +13,8 @@ function mobileFallbackApi(){
   roleLabel(role){return({admin:'Administrateur','role_point-de-vente':'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'})[role]||role||'Compte'},
   paintAvatar(el,url,name,color,frame){
    if(!el)return;
-   el.textContent='';el.style.backgroundColor=color||'#ff5a2a';el.style.backgroundImage='';
+   el.textContent='';el.style.backgroundColor='var(--nethor-profile-avatar-bg,#ff5a2a)';el.style.color='var(--nethor-profile-avatar-fg,#fff)';el.style.backgroundImage='';
+   el.classList.toggle('hasPhoto',!!url);
    if(url){el.style.backgroundImage='url("'+String(url).replace(/"/g,'%22')+'")';el.style.backgroundSize='cover';el.style.backgroundPosition='center'}
    else el.textContent=String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')||'U';
    if(frame)el.dataset.avatarFrame=frame;else delete el.dataset.avatarFrame
