@@ -133,15 +133,22 @@ function problemUrl(module){
  u.searchParams.set('from','user-menu.html');
  return (u.pathname.split('/').pop()||'report-problem.html')+u.search
 }
+function favoriteThemeLabel(){
+ const favorite=services()?.mobileFavoriteTheme?.(services()?.profile?.ui_preferences)||'';
+ return({mineral:'Bleu minéral',sage:'Sauge',plum:'Prune nocturne'})[favorite]||'Mode clair'
+}
 function syncThemeText(){
- const label=state.host?.querySelector('.nettoThemeLabel');
- if(label&&!label.hasAttribute('data-static-theme-label'))label.textContent=document.documentElement.dataset.theme==='dark'?'Mode clair':'Mode sombre'
+ const shared=services(),mode=shared?.mobileMode?.(shared?.profile?.ui_preferences)||'favorite';
+ const label=state.host?.querySelector('.nettoThemeLabel'),copy=label?.closest?.('.nettoMobileMenuCopy'),subtitle=copy?.querySelector('small'),icon=state.host?.querySelector('#nettoMobileThemeBtn .nettoThemeIconSvg');
+ if(label)label.textContent=mode==='halloween'?'Mode favori':'Mode Halloween';
+ if(subtitle)subtitle.textContent=mode==='halloween'?'Revenir à '+favoriteThemeLabel():'Activer le thème Halloween';
+ if(icon){icon.textContent=mode==='halloween'?'★':'🎃';icon.style.fontSize='18px'}
 }
 async function toggleTheme(button){
  if(button)button.disabled=true;
  try{
-  const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
-  await services()?.setThemePreference?.(next);
+  const shared=services(),current=shared?.mobileMode?.(shared?.profile?.ui_preferences)||'favorite',next=current==='halloween'?'favorite':'halloween';
+  await shared?.setMobileMode?.(next);
   syncThemeText()
  }finally{if(button)button.disabled=false}
 }
@@ -178,7 +185,7 @@ function render(){
   problemUrl:problemReport?problemUrl(problemReport):'',
   profileVisible:false,
   settingsVisible:menuSetting(profile,cfg,'settings',true),
-  themeVisible:menuSetting(profile,cfg,'theme',true),
+  themeVisible:menuSetting(profile,cfg,'theme',true)&&shared?.halloweenThemeAllowed?.()===true,
   updateVisible:menuSetting(profile,cfg,'update',true),
   controls:cfg?.platform_ui?.mobile?.controls||{},
   iconFor
