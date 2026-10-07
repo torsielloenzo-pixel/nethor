@@ -47,6 +47,17 @@ function installMobileVisualThemes(){
   if(theme==='halloween'&&halloweenAllowed(profile))return theme;
   return''
  };
+ const installProfileFrames=(config,profile=activeProfile)=>{
+  let style=document.getElementById('nethorMobileProfileFrameStyles');
+  if(!style){style=document.createElement('style');style.id='nethorMobileProfileFrameStyles';document.head?.appendChild(style)}
+  const theme=activeTheme(profile)||((document.documentElement.dataset.theme==='dark')?'dark':'light');
+  const frames=config?.platform_ui?.mobile?.profile_frames?.themes?.[theme],list=Array.isArray(frames)?frames:[];
+  style.textContent=list.map(frame=>{
+   const id=String(frame?.id||'').replace(/[^a-zA-Z0-9_-]/g,''),url=String(frame?.url||'').trim();
+   if(!id||!url)return'';
+   return '[data-avatar-frame="'+id+'"]::before{content:""!important;display:block!important;position:absolute!important;inset:-12%!important;width:124%!important;height:124%!important;min-width:0!important;max-width:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;background-image:url('+JSON.stringify(url)+')!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;z-index:8!important;pointer-events:none!important}[data-avatar-frame="'+id+'"]::after{display:none!important}'
+  }).join('\n')
+ };
  const activeTheme=(profile=activeProfile)=>{
   const prefs=profile?.ui_preferences&&typeof profile.ui_preferences==='object'?profile.ui_preferences:{};
   const legacyHalloween=prefs.mobile_theme==='halloween'&&halloweenAllowed(profile);
@@ -72,10 +83,11 @@ function installMobileVisualThemes(){
   const profile=e?.detail?.profile;
   if(!profile)return;
   activeProfile=profile;
-  apply(activeTheme(profile),profile)
+  apply(activeTheme(profile),profile);
+  installProfileFrames(e?.detail?.siteConfig||window.NettoProfileUI?.siteConfig||{},profile)
  };
  window.addEventListener('netto:profile',onProfile);
- window.addEventListener('netto:theme-preference',()=>apply(activeTheme(activeProfile),activeProfile));
+ window.addEventListener('netto:theme-preference',()=>{apply(activeTheme(activeProfile),activeProfile);installProfileFrames(window.NettoProfileUI?.siteConfig||{},activeProfile)});
  if(typeof MutationObserver==='function'){
   new MutationObserver(()=>{
    const custom=normalize(root.dataset.nethorMobileTheme,activeProfile);
