@@ -2,7 +2,19 @@
  * Habillage uniquement : aucune taille, grille, animation, statut métier ou disposition modifiés.
  * Le thème s'applique exclusivement si data-nethor-mobile-theme est présent.
  */
+:root{
+ --nethor-profile-avatar-bg:#ff5a2a;
+ --nethor-profile-avatar-fg:#ffffff;
+ --nethor-profile-avatar-ring:#ffd9cd;
+}
+:root[data-theme="dark"]:not([data-nethor-mobile-theme]){
+ --nethor-profile-avatar-bg:#9a4a32;
+ --nethor-profile-avatar-fg:#ffffff;
+ --nethor-profile-avatar-ring:#4a3029;
+}
+
 :root[data-nethor-mobile-theme="mineral"]{
+ --nethor-profile-avatar-bg:#245f8c;--nethor-profile-avatar-fg:#ffffff;--nethor-profile-avatar-ring:#b8d2e5;
  --nmt-bg:#edf3f8;--nmt-surface:#ffffff;--nmt-soft:#e4eef6;--nmt-text:#20364c;--nmt-muted:#62778a;--nmt-line:#d0dee9;
  --nmt-accent:#245f8c;--nmt-accent-strong:#17496e;--nmt-on-accent:#ffffff;--nmt-hero:linear-gradient(135deg,#ffffff 0%,#f5f9fd 62%,#d9eaf7 100%);
  --nmt-shadow:rgba(30,68,100,.08);--nmt-brand:#245f8c;
@@ -10,6 +22,7 @@
  --nethor-mobile-item-accent:var(--nmt-accent);
 }
 :root[data-nethor-mobile-theme="sage"]{
+ --nethor-profile-avatar-bg:#356d53;--nethor-profile-avatar-fg:#ffffff;--nethor-profile-avatar-ring:#bfd4c5;
  --nmt-bg:#eef3ef;--nmt-surface:#ffffff;--nmt-soft:#e3eee7;--nmt-text:#263c32;--nmt-muted:#637c6c;--nmt-line:#d2e0d5;
  --nmt-accent:#356d53;--nmt-accent-strong:#285640;--nmt-on-accent:#ffffff;--nmt-hero:linear-gradient(135deg,#ffffff 0%,#f6faf7 62%,#e0eddf 100%);
  --nmt-shadow:rgba(36,76,54,.08);--nmt-brand:#356d53;
@@ -17,6 +30,7 @@
  --nethor-mobile-item-accent:var(--nmt-accent);
 }
 :root[data-nethor-mobile-theme="plum"]{
+ --nethor-profile-avatar-bg:#644795;--nethor-profile-avatar-fg:#ffffff;--nethor-profile-avatar-ring:#5b4f70;
  --nmt-bg:#171623;--nmt-surface:#242238;--nmt-soft:#302c46;--nmt-text:#f6f2ff;--nmt-muted:#bbb4cd;--nmt-line:#453f59;
  --nmt-accent:#cbb8f4;--nmt-accent-strong:#644795;--nmt-on-accent:#ffffff;--nmt-hero:linear-gradient(135deg,#29253d 0%,#302840 64%,#473259 100%);
  --nmt-shadow:rgba(0,0,0,.24);--nmt-brand:#cbb8f4;
@@ -245,6 +259,7 @@ html[data-nethor-mobile-theme] .scannerMobileLayout .back{background:var(--nmt-s
    les horaires et les couleurs métier du planning restent intacts.
    ========================================================= */
 :root[data-nethor-mobile-theme="halloween"]{
+ --nethor-profile-avatar-bg:#d94a0d;--nethor-profile-avatar-fg:#fff8ef;--nethor-profile-avatar-ring:#6c3422;
  --nmt-bg:#100b15;
  --nmt-surface:#1d1522;
  --nmt-soft:#2a1b32;
@@ -616,4 +631,33 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop{
 @media(prefers-reduced-motion:reduce){
  html[data-nethor-mobile-theme="halloween"] .mhdHero::before,
  html[data-nethor-mobile-theme="halloween"] .nethorMobileLaunchWelcomeMark::after{animation:none!important}
+}
+
+
+/* Avatars Mobile : la couleur de secours appartient au thème actif, jamais au profil utilisateur. */
+html[data-nethor-platform="mobile"] .planningIdentityAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .mhdAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .convAvatar:not(.general):not(.hasPhoto),
+html[data-nethor-platform="mobile"] .activeAvatar:not(.general):not(.hasPhoto),
+html[data-nethor-platform="mobile"] .pickAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .contactAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .nettoTopAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .nethorMobileHeaderAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .npvAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .profileMobileLayout .avatar:not(.hasPhoto){
+ background-color:var(--nethor-profile-avatar-bg)!important;
+ color:var(--nethor-profile-avatar-fg)!important;
+}
+html[data-nethor-platform="mobile"] .planningIdentityAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .mhdAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .convAvatar:not(.general):not(.hasPhoto),
+html[data-nethor-platform="mobile"] .activeAvatar:not(.general):not(.hasPhoto),
+html[data-nethor-platform="mobile"] .pickAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .contactAvatar:not(.hasPhoto){
+ background-image:none!important;
+}
+html[data-nethor-platform="mobile"] .npvThemeIdentitySwatch{
+ background:var(--nethor-profile-avatar-bg)!important;
+ color:var(--nethor-profile-avatar-fg)!important;
+ box-shadow:0 0 0 4px color-mix(in srgb,var(--nethor-profile-avatar-ring) 60%,transparent);
 }
