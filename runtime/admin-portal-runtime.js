@@ -2195,7 +2195,7 @@ async function uploadMobileWelcomeThemeAsset(theme,input){
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=mobileWelcomeThemeNode(theme);
   node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag='';node.api='';
   node.type=['js','gif','mp4','webm'].includes(ext)?'animation':'image';
-  markDirty();renderMobileWelcomeThemeEditor();state.className='saveState';state.textContent='Animation prête à être enregistrée'
+  markDirty();renderMobileAppearanceThemeEditor();state.className='saveState';state.textContent='Animation prête à être enregistrée'
  }catch(e){state.className='saveState err';state.textContent='Erreur animation : '+(e?.message||e)}
  finally{if(input)input.value=''}
 }
@@ -2207,7 +2207,7 @@ function downloadMobileWelcomeThemeAsset(theme){
 }
 function resetMobileWelcomeThemeAsset(theme){
  const node=mobileWelcomeThemeNode(theme);node.url='';node.path='';node.name='';node.tag='';node.api='';node.type='animation';
- markDirty();renderMobileWelcomeThemeEditor();$('saveState').textContent='Animation « '+mobileHomeBannerThemeDef(theme).label+' » réinitialisée — enregistrer pour confirmer'
+ markDirty();renderMobileAppearanceThemeEditor();$('saveState').textContent='Animation « '+mobileHomeBannerThemeDef(theme).label+' » réinitialisée — enregistrer pour confirmer'
 }
 
 const MOBILE_HOME_BANNER_THEMES=Object.freeze([
@@ -2346,7 +2346,7 @@ async function uploadMobileHomeBannerLayer(theme,layer,input){
   const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=mobileHomeBannerLayerNode(theme,layer);
   node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.visible=true;
-  markDirty();renderMobileHomeBannerEditor();state.className='saveState';state.textContent='Calque prêt à être enregistré'
+  markDirty();renderMobileAppearanceThemeEditor();state.className='saveState';state.textContent='Calque prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur bannière : '+(e?.message||e)}
  finally{if(input)input.value=''}
 }
@@ -2356,12 +2356,12 @@ function downloadMobileHomeBannerLayer(theme,layer){
 }
 function resetMobileHomeBannerLayer(theme,layer){
  mobileHomeBannerThemeNode(theme).layers[layer]=normalizeMobileHomeBannerLayer(null,theme,layer);
- markDirty();renderMobileHomeBannerEditor();$('saveState').textContent='Calque réinitialisé — enregistrer pour confirmer'
+ markDirty();renderMobileAppearanceThemeEditor();$('saveState').textContent='Calque réinitialisé — enregistrer pour confirmer'
 }
 function resetMobileHomeBannerTheme(theme){
  if(!confirm('Réinitialiser les trois calques de la bannière « '+mobileHomeBannerThemeDef(theme).label+' » ?'))return;
  const fresh=normalizeMobileHomeBanner(null);mobileHomeBannerNode().themes[theme]=fresh.themes[theme];
- markDirty();renderMobileHomeBannerEditor();$('saveState').textContent='Bannière '+mobileHomeBannerThemeDef(theme).label+' réinitialisée — enregistrer pour confirmer'
+ markDirty();renderMobileAppearanceThemeEditor();$('saveState').textContent='Bannière '+mobileHomeBannerThemeDef(theme).label+' réinitialisée — enregistrer pour confirmer'
 }
 
 function mobileNotificationVisualNode(kind){
