@@ -122,8 +122,10 @@ function paintAvatar(el,profile,url){
  if(!el)return;
  const name=profile?.display_name||'Utilisateur';
  el.textContent=String(name).trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')||'U';
- el.style.backgroundColor=profile?.profile_color||'#ff5a2a';
+ el.style.backgroundColor='var(--nethor-profile-avatar-bg,#ff5a2a)';
+ el.style.color='var(--nethor-profile-avatar-fg,#fff)';
  el.style.backgroundImage='';
+ el.classList.toggle('hasPhoto',!!url);
  if(url){el.style.backgroundImage='url("'+String(url).replace(/"/g,'%22')+'")';el.textContent=''}
  const frame=String(profile?.avatar_frame||'').trim();
  if(frame)el.dataset.avatarFrame=frame;else delete el.dataset.avatarFrame
