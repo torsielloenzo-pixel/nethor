@@ -1,17 +1,21 @@
 {
-  "version": 396,
-  "label": "v1.46.47",
+  "version": 397,
+  "label": "v1.46.48",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile · Avatar profil rond",
-  "message": "Dans Mon profil Mobile, l’avatar et son cadre sont désormais parfaitement ronds, comme sur les autres interfaces.",
-  "published_at": "2026-10-07T19:32:21.020Z",
+  "title": "Mobile · Cadres de profil par thème",
+  "message": "Gestion peut désormais créer des cadres de profil propres à chaque thème Mobile, sélectionnables dans Mon profil uniquement lorsque le thème correspondant est actif.",
+  "published_at": "2026-10-07T19:49:28.225Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Avatar principal de Mon profil rendu circulaire.",
-    "Cadre décoratif et aperçu de recadrage alignés sur cette forme ronde.",
-    "Correction appliquée au profil SPA et à la page profil Mobile directe.",
-    "Aucune modification de structure ni de comportement."
+    "Gestion → Accueil & Interface → Mobile → Apparence par thème : nouvelle section « Cadres de profil ».",
+    "Chaque cadre est créé avec un nom et une image PNG, WebP ou SVG transparente.",
+    "Les bibliothèques sont totalement séparées entre Clair, Sombre, Bleu minéral, Sauge, Prune nocturne et Halloween.",
+    "Un cadre créé pour un thème n’est ni proposé ni rendu lorsqu’un autre thème est actif.",
+    "Mobile → Mon profil → Apparence du profil : ajout d’un sélecteur de cadres avec l’option « Aucun cadre ».",
+    "Le cadre sélectionné est enregistré sur le profil et peut apparaître sur l’entête, l’Accueil, le Planning, le Chat et les fiches utilisateur Mobile.",
+    "Gestion permet également de télécharger ou supprimer chaque cadre créé.",
+    "Les cadres historiques de rôle restent compatibles."
   ]
 }
