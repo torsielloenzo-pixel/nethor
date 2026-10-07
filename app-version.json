@@ -1,21 +1,17 @@
 {
-  "version": 395,
-  "label": "v1.46.46",
+  "version": 396,
+  "label": "v1.46.47",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile · Avatars liés au thème",
-  "message": "Sur Mobile, la couleur des avatars sans photo est désormais imposée par le thème actif et le choix manuel de couleur disparaît du profil.",
-  "published_at": "2026-10-07T19:23:17.645Z",
+  "title": "Mobile · Avatar profil rond",
+  "message": "Dans Mon profil Mobile, l’avatar et son cadre sont désormais parfaitement ronds, comme sur les autres interfaces.",
+  "published_at": "2026-10-07T19:32:21.020Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Mon profil Mobile : suppression de la palette de couleurs utilisateur et de l’ancien sélecteur Clair / Sombre.",
-    "La couleur d’un avatar sans photo est désormais définie automatiquement par le thème actif.",
-    "Clair utilise l’orange Nethor, Bleu minéral le bleu minéral, Sauge le vert sauge, Prune nocturne une prune profonde et Halloween l’orange citrouille.",
-    "Accueil : les vignettes de l’équipe suivent la palette du thème tant qu’aucune photo n’est définie.",
-    "Planning : toutes les identités sans photo suivent la palette du thème.",
-    "Chat : contacts, conversations et fiches utilisateur sans photo suivent la palette du thème.",
-    "Les photos réellement importées par les utilisateurs restent prioritaires et ne sont jamais recolorées.",
-    "La couleur profile_color historique reste conservée pour la compatibilité Desktop mais n’est plus utilisée comme choix visuel sur Mobile."
+    "Avatar principal de Mon profil rendu circulaire.",
+    "Cadre décoratif et aperçu de recadrage alignés sur cette forme ronde.",
+    "Correction appliquée au profil SPA et à la page profil Mobile directe.",
+    "Aucune modification de structure ni de comportement."
   ]
 }
