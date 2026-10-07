@@ -1,23 +1,15 @@
 (function(){
 'use strict';
-const PROFILE_COLORS=Object.freeze([
- {value:'#FF301F',label:'Rouge Nethor'},
- {value:'#FF6D18',label:'Orange Nethor'},
- {value:'#FFAD24',label:'Ambre Nethor'},
- {value:'#8B5E45',label:'Terre Nethor'},
- {value:'#1B1F24',label:'Graphite'},
- {value:'#70747B',label:'Ardoise'}
-]);
-const PROFILE_COLOR_ALIASES=Object.freeze({'#FF3B30':'#FF301F','#FF8A00':'#FF6D18','#1F2937':'#1B1F24','#6B7280':'#70747B'});
 const state={host:null,mounted:false,unsubscribe:null,selectedFile:null,objectUrl:null,crop:{img:null,base:1,zoom:1,x:0,y:0,drag:false,px:0,py:0},rewards:[],equipment:[],email:{loaded:false,configured:false,mode:'loading',busy:false}};
 function services(){return window.NethorMobileServices||window.MobileServices||null}
 function router(){return window.NethorMobileRouter||window.MobileRouter||null}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function roleLabel(role){return({admin:'Administrateur','role_point-de-vente':'Point de vente',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'})[role]||String(role||'Compte')}
 function initials(name){return String(name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')||'U'}
-function normalizeProfileColor(value){
- const raw=String(value||'').toUpperCase(),mapped=PROFILE_COLOR_ALIASES[raw]||raw;
- return PROFILE_COLORS.some(x=>x.value===mapped)?mapped:PROFILE_COLORS[0].value
+function activeProfileTheme(){
+ const custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase();
+ const key=['mineral','sage','plum','halloween'].includes(custom)?custom:(document.documentElement.dataset.theme==='dark'?'dark':'light');
+ return{key,label:({light:'Clair',dark:'Sombre',mineral:'Bleu minéral',sage:'Sauge',plum:'Prune nocturne',halloween:'Halloween'})[key]||'Clair'}
 }
 function emailCardHtml(){
  const email=state.email,loading=!email.loaded||email.mode==='loading';
@@ -32,11 +24,11 @@ function back(){router()?.replace?.('user-menu',{source:'profile-back'})}
 function root(){return state.host?.querySelector('[data-profile-view]')}
 function render(){
  const shared=services(),p=shared?.profile;if(!state.mounted||!state.host||!p)return;
- const theme=p.ui_preferences?.theme==='dark'?'dark':'light',color=normalizeProfileColor(p.profile_color);
+ const appearance=activeProfileTheme();
  state.host.innerHTML='<div class="nethorProfileView" data-profile-view>'+
  '<div class="npvTop"><button type="button" data-action="back" class="npvBack" aria-label="Retour">‹</button><div><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'+
- '<section class="npvCard npvIdentity"><div class="npvAvatarWrap"><div class="npvAvatar" data-avatar style="background:'+esc(color)+'">'+initials(p.display_name)+'</div><button class="npvAvatarEdit" data-action="avatar-open" type="button" aria-label="Modifier la photo">✎</button></div><div class="npvIdentityCopy"><h2>'+esc(p.display_name||'Utilisateur')+'</h2><span>'+esc(roleLabel(p.role))+'</span></div></section>'+
- '<section class="npvCard"><div class="npvCardHead"><h2>Apparence</h2><p>Ta couleur et ton thème te suivent sur tes appareils.</p></div><div class="npvField"><label>Couleur du profil</label><div class="npvColors">'+PROFILE_COLORS.map(item=>'<button type="button" data-color="'+item.value+'" class="'+(item.value===color?'active':'')+'" style="--c:'+item.value+'" title="'+esc(item.label)+'" aria-label="'+esc(item.label)+'"></button>').join('')+'</div><small class="npvColorHelp">Palette Nethor · utilisée quand aucune photo n’est définie.</small></div><div class="npvField"><label for="npvTheme">Thème</label><select id="npvTheme"><option value="light" '+(theme==='light'?'selected':'')+'>Mode clair</option><option value="dark" '+(theme==='dark'?'selected':'')+'>Mode sombre</option></select></div><button class="npvPrimary" data-action="save-profile" type="button">Enregistrer le profil</button><div class="npvState" data-profile-state></div></section>'+emailCardHtml()+
+ '<section class="npvCard npvIdentity"><div class="npvAvatarWrap"><div class="npvAvatar" data-avatar>'+initials(p.display_name)+'</div><button class="npvAvatarEdit" data-action="avatar-open" type="button" aria-label="Modifier la photo">✎</button></div><div class="npvIdentityCopy"><h2>'+esc(p.display_name||'Utilisateur')+'</h2><span>'+esc(roleLabel(p.role))+'</span></div></section>'+
+ '<section class="npvCard npvThemeIdentity"><div class="npvCardHead"><h2>Apparence du profil</h2><p>La couleur des avatars sans photo est définie automatiquement par le thème Mobile actif.</p></div><div class="npvThemeIdentityRow"><span class="npvThemeIdentitySwatch">'+initials(p.display_name)+'</span><div><strong>'+esc(appearance.label)+'</strong><small>Palette synchronisée avec le thème · aucun réglage utilisateur</small></div></div></section>'+emailCardHtml()+
  '<section class="npvCard"><div class="npvCardHead"><h2>Sécurité du compte</h2><p>Le mot de passe actuel est vérifié avant modification.</p></div><div class="npvPasswordGrid"><input data-current-password type="password" autocomplete="current-password" placeholder="Mot de passe actuel"><input data-new-password type="password" autocomplete="new-password" minlength="8" placeholder="Nouveau mot de passe"><input data-confirm-password type="password" autocomplete="new-password" minlength="8" placeholder="Confirmer le nouveau mot de passe"></div><button class="npvPrimary" data-action="change-password" type="button">Changer le mot de passe</button><div class="npvState" data-password-state></div></section>'+
  (p.role==='admin'?'<section class="npvCard"><div class="npvCardHead"><h2>Personnalisation avancée</h2><p>Avatar de poste, cadre, accessoire, titre et thème de récompense.</p></div><div class="npvRewardGrid" data-reward-grid><div class="npvState">Chargement…</div></div><button class="npvSecondary" data-action="open-rewards" type="button">Ouvrir Défis & Boutique</button><div class="npvState" data-reward-state></div></section><section class="npvCard" data-sound-card><div class="npvCardHead"><h2>Sons d’interface</h2><p>Réglages locaux à cet appareil.</p></div><label class="npvSwitch"><input data-sound-enabled type="checkbox"><span>Activer les sons</span></label><label class="npvVolume">Volume <b data-sound-value>72%</b><input data-sound-volume type="range" min="0" max="100" value="72"></label><button class="npvSecondary" data-action="sound-test" type="button">Tester</button></section>':'')+
  '<section class="npvCard"><div class="npvCardHead"><h2>Notifications</h2><p>Consulte ton centre d’activité complet.</p></div><button class="npvSecondary" data-action="open-notifications" type="button">Ouvrir les notifications</button></section>'+
@@ -48,35 +40,11 @@ function render(){
 }
 function paintAvatar(){
  const shared=services(),p=shared?.profile,el=root()?.querySelector('[data-avatar]');if(!p||!el)return;
- el.innerHTML='';el.style.background=normalizeProfileColor(p.profile_color);
+ el.innerHTML='';el.style.background='var(--nethor-profile-avatar-bg,#ff5a2a)';el.style.color='var(--nethor-profile-avatar-fg,#fff)';
  if(shared.avatarUrl){const img=document.createElement('img');img.src=shared.avatarUrl;img.alt='Photo de profil';el.appendChild(img)}
  else el.textContent=initials(p.display_name)
 }
 function stateText(sel,msg,type=''){const el=root()?.querySelector(sel);if(el){el.textContent=msg;el.className='npvState'+(type?' '+type:'')}}
-function selectProfileColor(button){
- const color=normalizeProfileColor(button?.dataset?.color),view=root();if(!view)return;
- view.querySelectorAll('.npvColors [data-color]').forEach(item=>{
-  const active=item===button||normalizeProfileColor(item.dataset.color)===color&&item===button;
-  item.classList.toggle('active',active);
-  item.setAttribute('aria-pressed',String(active))
- });
- const avatar=view.querySelector('[data-avatar]');
- if(avatar)avatar.style.background=color;
- window.NettoSounds?.play?.('tap')
-}
-async function saveProfile(button){
- const p=services()?.profile;if(!p)return;
- const color=normalizeProfileColor(root()?.querySelector('.npvColors button.active')?.dataset.color||p.profile_color);
- const theme=root()?.querySelector('#npvTheme')?.value==='dark'?'dark':'light';
- button.disabled=true;stateText('[data-profile-state]','Enregistrement…');
- try{
-  const prefs={...(p.ui_preferences||{}),theme};
-  await services().updateProfile({profile_color:color,ui_preferences:prefs});
-  document.documentElement.dataset.theme=theme;try{localStorage.setItem('nettoTheme',theme)}catch(_){}
-  stateText('[data-profile-state]','✓ Profil enregistré.','ok');paintAvatar()
- }catch(e){stateText('[data-profile-state]','Erreur : '+(e?.message||'enregistrement impossible'),'err')}
- finally{button.disabled=false}
-}
 async function invokeProfileEmail(body){
  const client=services()?.client;if(!client)throw new Error('Service indisponible');
  const {data,error}=await client.functions.invoke('profile-email',{body});
@@ -192,10 +160,8 @@ async function loadRewards(){
 async function equipReward(select){const kind=select.dataset.rewardKind;select.disabled=true;stateText('[data-reward-state]','Application…');try{const {error}=await services().client.rpc('reward_equip',{p_kind:kind,p_item:select.value||null});if(error)throw error;stateText('[data-reward-state]','✓ Personnalisation appliquée.','ok');await loadRewards()}catch(e){stateText('[data-reward-state]','Erreur : '+(e?.message||'application impossible'),'err')}finally{select.disabled=false}}
 function syncSounds(){const s=window.NettoSounds,card=root()?.querySelector('[data-sound-card]');if(!card||!s){card?.classList.add('hidden');return}const enabled=!!s.isEnabled?.(),volume=Math.round((s.getVolume?.()??.72)*100);const toggle=card.querySelector('[data-sound-enabled]'),range=card.querySelector('[data-sound-volume]'),label=card.querySelector('[data-sound-value]');if(toggle)toggle.checked=enabled;if(range)range.value=String(volume);if(label)label.textContent=volume+'%'}
 function onClick(e){
- const colorButton=e.target.closest('.npvColors [data-color]');
- if(colorButton){selectProfileColor(colorButton);return}
  const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action;
- if(a==='back')back();else if(a==='save-profile')void saveProfile(b);else if(a==='email-save')void saveRecoveryEmail(b,false);else if(a==='email-change')openRecoveryEmailChange();else if(a==='email-cancel')cancelRecoveryEmailChange();else if(a==='email-save-change')void saveRecoveryEmail(b,true);else if(a==='email-reset')void requestRecoveryEmailReset(b);else if(a==='change-password')void changePassword(b);else if(a==='avatar-open')openAvatar();else if(a==='avatar-close')cleanupAvatar();else if(a==='avatar-choose')root()?.querySelector('[data-avatar-input]')?.click();else if(a==='avatar-save')void saveAvatar(b);else if(a==='avatar-remove')void removeAvatar(b);else if(a==='zoom-out')setZoom(state.crop.zoom-.1);else if(a==='zoom-in')setZoom(state.crop.zoom+.1);else if(a==='open-rewards')router()?.open?.('rewards',{source:'profile'});else if(a==='open-notifications')router()?.open?.('notifications',{source:'profile'});else if(a==='sound-test')window.NettoSounds?.play?.('confirm')
+ if(a==='back')back();else if(a==='email-save')void saveRecoveryEmail(b,false);else if(a==='email-change')openRecoveryEmailChange();else if(a==='email-cancel')cancelRecoveryEmailChange();else if(a==='email-save-change')void saveRecoveryEmail(b,true);else if(a==='email-reset')void requestRecoveryEmailReset(b);else if(a==='change-password')void changePassword(b);else if(a==='avatar-open')openAvatar();else if(a==='avatar-close')cleanupAvatar();else if(a==='avatar-choose')root()?.querySelector('[data-avatar-input]')?.click();else if(a==='avatar-save')void saveAvatar(b);else if(a==='avatar-remove')void removeAvatar(b);else if(a==='zoom-out')setZoom(state.crop.zoom-.1);else if(a==='zoom-in')setZoom(state.crop.zoom+.1);else if(a==='open-rewards')router()?.open?.('rewards',{source:'profile'});else if(a==='open-notifications')router()?.open?.('notifications',{source:'profile'});else if(a==='sound-test')window.NettoSounds?.play?.('confirm')
 }
 function onChange(e){if(e.target.matches('[data-avatar-input]'))chooseFile(e.target);else if(e.target.matches('[data-crop-zoom]'))setZoom(e.target.value);else if(e.target.matches('[data-reward-kind]'))void equipReward(e.target);else if(e.target.matches('[data-sound-enabled]')){window.NettoSounds?.setEnabled?.(e.target.checked);syncSounds()}else if(e.target.matches('[data-sound-volume]')){const n=Math.max(0,Math.min(100,Number(e.target.value)||0));window.NettoSounds?.setVolume?.(n/100);syncSounds()}}
 function onProfile(detail){if(state.mounted&&['core','ready'].includes(detail?.type))render()}
