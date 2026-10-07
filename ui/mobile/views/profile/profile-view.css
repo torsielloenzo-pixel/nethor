@@ -165,3 +165,8 @@
 :root[data-theme="dark"] .nethorProfileView .npvEmailReset{
   color:#ef9f8a;
 }
+
+.npvThemeIdentityRow{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e6e9ed;border-radius:14px;background:#f8f9fa}
+.npvThemeIdentitySwatch{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;flex:none;font-size:14px;font-weight:950}
+.npvThemeIdentityRow strong{display:block;font-size:11px}
+.npvThemeIdentityRow small{display:block;margin-top:4px;color:#7d858e;font-size:8.5px;line-height:1.4}
