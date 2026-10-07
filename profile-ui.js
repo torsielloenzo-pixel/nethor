@@ -932,18 +932,27 @@ function renderDesktopHeaderIdentity(config,url,logoWidth,logoHeight,wordmarkSiz
  root.append(...nodes.filter(Boolean));button.replaceChildren(root);
  bindDesktopHeaderAnimation(button,config,primary)
 }
+function mobileHeaderAppearance(config){
+ const ui=config?.platform_ui?.mobile||{},custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase(),visual=['mineral','sage','plum','halloween'].includes(custom)?custom:(document.documentElement.dataset.theme==='dark'?'dark':'light'),node=ui.header_themes?.[visual]&&typeof ui.header_themes[visual]==='object'?ui.header_themes[visual]:{};
+ const layout=['logo_only','logo_logo','text_logo','logo_text'].includes(node.layout)?node.layout:headerIdentityLayout(config,'mobile');
+ const text=String(node.text||headerIdentityText(config,'mobile')).trim().slice(0,80)||'Nethor';
+ const primary=String(node.logo1?.url||'').trim()||themedPlatformAssetUrl(config,'mobile','header_logo',String(config?.brand?.header_logo_url||'').trim());
+ const secondary=String(node.logo2?.url||'').trim()||themedPlatformAssetUrl(config,'mobile','header_logo_secondary','');
+ return{visual,layout,text,primary,secondary}
+}
 function renderLegacyMobileHeaderIdentity(config,url){
  const host=document.querySelector('.nethorMobileAppBrand .nethorMobileWordmark');if(!host)return;
- const layout=headerIdentityLayout(config,'mobile'),secondaryUrl=themedPlatformAssetUrl(config,'mobile','header_logo_secondary','');
- const rootNodes=[],primary=headerIdentityPrimary(url,'mobile',104,30,34),secondary=headerIdentitySecondary(secondaryUrl),textNode=headerIdentityTextNode(headerIdentityText(config,'mobile'));
+ const themed=mobileHeaderAppearance(config),layout=themed.layout;
+ const rootNodes=[],primary=headerIdentityPrimary(themed.primary||url,'mobile',104,30,34),secondary=headerIdentitySecondary(themed.secondary),textNode=headerIdentityTextNode(themed.text);
  if(layout==='logo_logo')rootNodes.push(primary,secondary);else if(layout==='text_logo')rootNodes.push(textNode,primary);else if(layout==='logo_text')rootNodes.push(primary,textNode);else rootNodes.push(primary);
- host.replaceChildren(...rootNodes.filter(Boolean));host.classList.add('nethorHeaderIdentity');host.dataset.headerLayout=layout
+ host.replaceChildren(...rootNodes.filter(Boolean));host.classList.add('nethorHeaderIdentity');host.dataset.headerLayout=layout;host.dataset.appearanceTheme=themed.visual
 }
 function applyHeaderLogo(config={}){
  const platformKey=isMobileViewport()?'mobile':'desktop';
  const globalUrl=String(config?.brand?.header_logo_url||'').trim();
- const platformUrl=themedPlatformAssetUrl(config,platformKey,'header_logo','');
- const secondaryUrl=themedPlatformAssetUrl(config,platformKey,'header_logo_secondary','');
+ const mobileAppearance=platformKey==='mobile'?mobileHeaderAppearance(config):null;
+ const platformUrl=mobileAppearance?.primary||themedPlatformAssetUrl(config,platformKey,'header_logo','');
+ const secondaryUrl=mobileAppearance?.secondary||themedPlatformAssetUrl(config,platformKey,'header_logo_secondary','');
  const url=platformUrl||globalUrl||'';
  document.documentElement.style.setProperty('--nethor-header-logo','url('+JSON.stringify(url||'assets/nethor-mark.svg')+')');
  if(secondaryUrl)document.documentElement.style.setProperty('--nethor-header-logo-secondary','url('+JSON.stringify(secondaryUrl)+')');else document.documentElement.style.removeProperty('--nethor-header-logo-secondary');
