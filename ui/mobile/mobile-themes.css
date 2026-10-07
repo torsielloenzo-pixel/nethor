@@ -292,6 +292,7 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop{
  position:relative!important;
  overflow:hidden!important;
  background:
+  url("../../assets/halloween-rooftop-cat.svg?v=1") right 42px bottom -3px/145px 60px no-repeat,
   linear-gradient(180deg,rgba(32,21,37,.985),rgba(24,16,29,.97))!important;
  border-bottom-color:#51345d!important;
  box-shadow:0 10px 28px rgba(0,0,0,.26)!important
@@ -349,6 +350,14 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction[data-mobile-de
 html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction>.nethorMobileHeaderAvatar{
  border-color:#563261!important;
  box-shadow:0 0 0 1px rgba(255,122,26,.26),0 4px 14px rgba(0,0,0,.32)!important
+}
+
+@media (max-width:360px){
+ html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop{
+  background:
+   url("../../assets/halloween-rooftop-cat.svg?v=1") right 36px bottom -3px/132px 55px no-repeat,
+   linear-gradient(180deg,rgba(32,21,37,.985),rgba(24,16,29,.97))!important
+ }
 }
 
 /* Navigation basse */
