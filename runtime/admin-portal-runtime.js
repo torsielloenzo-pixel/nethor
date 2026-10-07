@@ -1346,8 +1346,13 @@ function ensurePlatformUiConfig(){
    for(const def of MOBILE_NOTIFICATION_VISUAL_DEFS)notificationVisuals[def.key]=normalizeMobileNotificationVisual(source[def.key])
   }
   const headerLogoScale=Math.max(60,Math.min(160,Math.round(Number(current.header_logo_scale)||100)));
+  const headerLayout=['logo_only','logo_logo','text_logo','logo_text'].includes(current.header_layout)?current.header_layout:'logo_only';
+  const headerText=String(current.header_text||'').slice(0,80);
   config.platform_ui[kind]={
+   header_layout:headerLayout,
+   header_text:headerText,
    header_logo:themedAsset('header_logo'),
+   header_logo_secondary:themedAsset('header_logo_secondary'),
    header_logo_mode:kind==='desktop'&&current.header_logo_mode==='animation'?'animation':'image',
    header_logo_animation:themedAsset('header_logo_animation'),
    header_logo_scale:kind==='desktop'?headerLogoScale:100,
@@ -1367,8 +1372,24 @@ function ensurePlatformUiConfig(){
 }
 function platformUiNode(kind){ensurePlatformUiConfig();return config.platform_ui[kind==='desktop'?'desktop':'mobile']}
 function platformLabel(kind){return kind==='desktop'?'Desktop':'Mobile'}
+function platformKindActiveInCurrentView(kind){
+ const expected=kind==='desktop'?'desktop':'mobile';
+ try{
+  const current=String(window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'').toLowerCase();
+  if(current==='mobile-preview')return expected==='mobile';
+  if(current==='mobile'||current==='desktop')return current===expected
+ }catch(_){}
+ return expected===(window.matchMedia?.('(max-width: 760px)')?.matches?'mobile':'desktop')
+}
+function applyPlatformHeaderPreview(kind){
+ if(!platformKindActiveInCurrentView(kind))return;
+ try{
+  if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}
+ }catch(_){}
+}
 function platformDefaultAsset(kind,key){
  if(key==='header_logo')return String(config?.brand?.header_logo_url||'').trim()||'assets/nethor-mark.svg';
+ if(key==='header_logo_secondary')return '';
  if(key==='header_logo_animation')return '';
  if(key==='login_logo')return kind==='mobile'?'assets/app-icon-mobile-v71.svg?v=72':'assets/app-icon-v63.svg';
  if(key==='home_screen_icon')return 'assets/app-icon-mobile-v74.svg?v=74';
@@ -1404,6 +1425,7 @@ function platformAssetPreview(kind,key,theme){
  }
  if(animated&&platformAssetIsVideo(url))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
  if(!url&&animated)return '<span class="platformAssetEmptyPreview">Aucune animation</span>';
+ if(!url)return '<span class="platformAssetEmptyPreview">'+(key==='header_logo_secondary'?'Aucun logo 2':'Aucun visuel')+'</span>';
  return '<img src="'+attr(url)+'" alt="">'
 }
 function platformAssetAccept(key){
@@ -1551,7 +1573,7 @@ function bindPlatformHeaderComposition(host,kind){
   if(layout)ui.header_layout=['logo_only','logo_logo','text_logo','logo_text'].includes(layout.value)?layout.value:'logo_only';
   if(textInput)ui.header_text=String(textInput.value||'').slice(0,80);
   markDirty();
-  try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}
+  applyPlatformHeaderPreview(kind)
  };
  if(layout)layout.onchange=apply;
  if(textInput){textInput.oninput=apply;textInput.onchange=apply}
@@ -1591,7 +1613,7 @@ function bindPlatformHeaderLogoSize(host,kind){
   platformUiNode('desktop').header_logo_scale=value;
   range.value=String(value);number.value=String(value);
   markDirty();
-  try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}
+  applyPlatformHeaderPreview(kind)
  };
  range.oninput=()=>apply(range.value);
  number.oninput=()=>apply(number.value);
@@ -1602,8 +1624,8 @@ function renderPlatformIdentity(kind){
  const host=$('platformIdentity_'+kind);if(!host)return;
  host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Identité '+platformLabel(kind)+'</h2><p>Les logos principaux disposent maintenant d’une version Thème clair et Thème sombre. Sans variante sombre, Nethor reprend automatiquement la version claire.</p></div></div>'+
  '<div class="platformAssetList">'+
- platformAssetRow(kind,'header_logo','Logo principal','Logo affiché au repos en haut de la barre latérale sur Desktop, et dans l’entête sur Mobile. Plateforme : '+platformLabel(kind)+'.')+
- platformAssetRow(kind,'header_logo_secondary','Deuxième logo d’entête','Logo additionnel utilisé par la composition « Logo + Logo ». Il dispose lui aussi de variantes claire et sombre.')+
+ platformAssetRow(kind,'header_logo','Emplacement Logo 1','Premier emplacement de l’identité d’en-tête '+platformLabel(kind)+'. Ce logo reste entièrement indépendant de l’autre plateforme.')+
+ platformAssetRow(kind,'header_logo_secondary','Emplacement Logo 2','Deuxième emplacement, utilisé avec « Logo + Logo ». Il est propre à '+platformLabel(kind)+' et possède ses variantes claire et sombre.')+
  platformHeaderCompositionControl(kind)+
  (kind==='desktop'?platformHeaderLogoAnimationControl(kind)+platformHeaderLogoSizeControl(kind):'')+
  platformAssetRow(kind,'login_logo','Logo de connexion','Icône carrée affichée à gauche de « Nethor » sur la page de connexion '+platformLabel(kind)+'. Sans fichier personnalisé, Nethor utilise automatiquement son icône officielle de connexion.')+
@@ -1614,7 +1636,7 @@ function renderPlatformIdentity(kind){
  if(headerMode)headerMode.onchange=()=>{
   const ui=platformUiNode('desktop');ui.header_logo_mode=headerMode.value==='animation'?'animation':'image';
   markDirty();
-  try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}
+  applyPlatformHeaderPreview(kind)
   renderPlatformIdentity(kind)
  };
  bindPlatformControlFields(host);
@@ -1661,7 +1683,7 @@ async function uploadPlatformAsset(kind,key,theme,input){
   node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag=scriptMeta?.tag||'';node.api=scriptMeta?.api||'';
   if(welcome&&['js','gif','mp4','webm'].includes(ext))platformAssetNode(kind,key).type='animation';
   if(headerAnimation&&kind==='desktop')platformUiNode('desktop').header_logo_mode='animation';
-  markDirty();renderPlatformIdentity(kind);try{if(window.NettoProfileUI){window.NettoProfileUI.siteConfig=config;window.NettoProfileUI.applyHeaderLogo?.(config)}}catch(_){}state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
+  markDirty();renderPlatformIdentity(kind);applyPlatformHeaderPreview(kind)state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur média : '+(e?.message||e)}
  finally{if(input)input.value=''}
 }
@@ -1676,7 +1698,7 @@ function downloadPlatformAsset(kind,key,theme='light'){
  const node=platformAssetVariantNode(kind,key,theme),url=platformAssetUrl(kind,key,theme),name=node?.name||('Nethor-'+kind+'-'+key+'-'+theme+'.svg');downloadAssetUrl(url,name)
 }
 function removePlatformAsset(kind,key,theme='light'){
- const node=platformAssetVariantNode(kind,key,theme);node.url='';node.path='';node.name='';node.tag='';node.api='';markDirty();renderPlatformIdentity(kind)
+ const node=platformAssetVariantNode(kind,key,theme);node.url='';node.path='';node.name='';node.tag='';node.api='';markDirty();renderPlatformIdentity(kind);applyPlatformHeaderPreview(kind)
 }
 function choosePlatformSimpleAsset(kind,key){$('platformSimpleAssetFile_'+kind+'_'+key)?.click()}
 async function uploadPlatformSimpleAsset(kind,key,input){
