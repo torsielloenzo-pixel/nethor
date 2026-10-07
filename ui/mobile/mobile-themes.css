@@ -307,12 +307,15 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop{
  position:relative!important;
  overflow:hidden!important;
  background:
-  url("../../assets/halloween-rooftop-cat.svg?v=1") right 42px bottom -3px/145px 60px no-repeat,
+  repeating-conic-gradient(from 0deg at 0 0,transparent 0 14deg,rgba(255,255,255,.09) 15deg 16deg,transparent 17deg 29deg) -26px -36px/118px 118px no-repeat,
+  repeating-radial-gradient(circle at 0 0,transparent 0 15px,rgba(255,255,255,.07) 16px 17px,transparent 18px 29px) -26px -36px/118px 118px no-repeat,
   linear-gradient(180deg,rgba(32,21,37,.985),rgba(24,16,29,.97))!important;
  border-bottom-color:#51345d!important;
- box-shadow:0 10px 28px rgba(0,0,0,.26)!important
+ box-shadow:0 10px 28px rgba(0,0,0,.26)!important;
+ isolation:isolate
 }
-html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop>*{position:relative;z-index:2}
+/* Ordre Halloween Mobile : fond < lune < toit/chat < interface. */
+html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop>*{position:relative;z-index:3}
 html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop::before{
  content:"";
  position:absolute;
@@ -331,15 +334,14 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop::before{
 html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop::after{
  content:"";
  position:absolute;
- left:-26px;top:-36px;
- width:118px;height:118px;
- opacity:.28;
- background:
-  repeating-conic-gradient(from 0deg at 0 0,transparent 0 14deg,rgba(255,255,255,.32) 15deg 16deg,transparent 17deg 29deg),
-  repeating-radial-gradient(circle at 0 0,transparent 0 15px,rgba(255,255,255,.25) 16px 17px,transparent 18px 29px);
- border-radius:0 0 100% 0;
+ right:42px;
+ bottom:-3px;
+ width:145px;
+ height:65px;
+ background:url("../../assets/halloween-rooftop-cat.webp?v=1") center bottom/contain no-repeat;
+ opacity:1;
  pointer-events:none;
- z-index:0
+ z-index:1
 }
 
 /* Identité Nethor Halloween */
@@ -368,10 +370,11 @@ html[data-nethor-mobile-theme="halloween"] .nethorMobileTopAction>.nethorMobileH
 }
 
 @media (max-width:360px){
- html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop{
-  background:
-   url("../../assets/halloween-rooftop-cat.svg?v=1") right 36px bottom -3px/132px 55px no-repeat,
-   linear-gradient(180deg,rgba(32,21,37,.985),rgba(24,16,29,.97))!important
+ html[data-nethor-mobile-theme="halloween"] .nethorMobileAppTop::after{
+  right:36px;
+  bottom:-3px;
+  width:132px;
+  height:60px
  }
 }
 
