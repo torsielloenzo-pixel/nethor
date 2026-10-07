@@ -127,7 +127,8 @@ function installMobileProfileFrameStyles(config={}){
  style.textContent=list.map(frame=>{
   const id=String(frame?.id||'').replace(/[^a-zA-Z0-9_-]/g,''),url=String(frame?.url||'').trim();
   if(!id||!url)return'';
-  return '[data-avatar-frame="'+id+'"]::before{content:""!important;display:block!important;position:absolute!important;inset:-12%!important;width:124%!important;height:124%!important;min-width:0!important;max-width:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;background-image:url('+JSON.stringify(url)+')!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;z-index:8!important;pointer-events:none!important}'+
+  return '[data-avatar-frame="'+id+'"]{position:relative!important;overflow:visible!important;isolation:isolate!important}'+
+   '[data-avatar-frame="'+id+'"]::before{content:""!important;display:block!important;position:absolute!important;inset:-12%!important;width:124%!important;height:124%!important;min-width:0!important;max-width:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;background-image:url('+JSON.stringify(url)+')!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;z-index:8!important;pointer-events:none!important}'+
    '[data-avatar-frame="'+id+'"]::after{display:none!important}'
  }).join('\n')
 }
