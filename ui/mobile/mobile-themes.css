@@ -179,3 +179,62 @@ html[data-nethor-mobile-theme] .conversationFilter.active{color:var(--nmt-accent
 .themeChoice[data-theme-choice="sage"] .themeSwatch{background:linear-gradient(135deg,#356d53 0 50%,#e3eee7 50% 100%)!important;color:#fff!important}
 .nsvThemes [data-theme-choice="plum"] .nsvThemeSwatch,
 .themeChoice[data-theme-choice="plum"] .themeSwatch{background:linear-gradient(135deg,#463460 0 50%,#221d32 50% 100%)!important;color:#f6f2ff!important}
+
+/* Couverture des sous-pages mobiles : notifications, préférences Push, signalements et scanner. */
+html[data-nethor-mobile-theme]{
+ --bg:var(--nmt-bg);--card:var(--nmt-surface);--ink:var(--nmt-text);--muted:var(--nmt-muted);--line:var(--nmt-line);
+ --netto-gradient:linear-gradient(135deg,var(--nmt-accent-strong),var(--nmt-accent));
+}
+html[data-nethor-mobile-theme] .nethorNotificationsView{
+ --np-bg:var(--nmt-bg);--np-surface:var(--nmt-surface);--np-text:var(--nmt-text);
+ --np-muted:var(--nmt-muted);--np-line:var(--nmt-line);--np-accent:var(--nmt-accent);
+ --np-accent-soft:var(--nmt-soft);--np-unread:var(--nmt-soft)
+}
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="notifications"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="user-menu"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="notification-settings"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="report-problem"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="scanner"]{background:var(--nmt-bg)!important}
+html[data-nethor-mobile-theme] .nethorUserMenuView,
+html[data-nethor-mobile-theme] .nethorNotificationSettingsView,
+html[data-nethor-mobile-theme] .nethorReportView,
+html[data-nethor-mobile-theme] .nethorNotificationsView{color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileMenuHeader h2,
+html[data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileMenuRow,
+html[data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileProfileMain{color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileMenuRow,
+html[data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileProfileMain,
+html[data-nethor-mobile-theme] .nnsRule{border-color:var(--nmt-line)!important}
+html[data-nethor-mobile-theme] .nnsCard,
+html[data-nethor-mobile-theme] .nrvCard,
+html[data-nethor-mobile-theme] .npTopMenu{
+ background:var(--nmt-surface)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-theme] .nnsBack,
+html[data-nethor-mobile-theme] .npCircleBtn,
+html[data-nethor-mobile-theme] .nnsPush,
+html[data-nethor-mobile-theme] .nnsChannels,
+html[data-nethor-mobile-theme] .nnsIcon,
+html[data-nethor-mobile-theme] .nrvIntro>span,
+html[data-nethor-mobile-theme] .nrvLabel select,
+html[data-nethor-mobile-theme] .nrvLabel textarea{
+ background:var(--nmt-soft)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-theme] .nnsPrimary,
+html[data-nethor-mobile-theme] .nrvSend{background:var(--nmt-accent-strong)!important;color:#fff!important}
+html[data-nethor-mobile-theme] .nrvCancel,
+html[data-nethor-mobile-theme] .nnsChannels button.active,
+html[data-nethor-mobile-theme] .npFilterState.active{color:var(--nmt-accent)!important}
+html[data-nethor-mobile-theme] .nnsTop p,
+html[data-nethor-mobile-theme] .nnsHead p,
+html[data-nethor-mobile-theme] .nrvIntro p,
+html[data-nethor-mobile-theme] .nrvHelp{color:var(--nmt-muted)!important}
+html[data-nethor-mobile-theme] .notificationSettingsMobileLayout{
+ --ns-bg:var(--nmt-bg);--ns-card:var(--nmt-surface);--ns-text:var(--nmt-text);
+ --ns-muted:var(--nmt-muted);--ns-line:var(--nmt-line);--ns-soft:var(--nmt-soft)
+}
+html[data-nethor-mobile-theme] .scannerMobileLayout,
+html[data-nethor-mobile-theme] .scannerMobileLayout .page,
+html[data-nethor-mobile-theme] .scannerMobileLayout .title{color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .scannerMobileLayout .back{background:var(--nmt-surface)!important;color:var(--nmt-text)!important;border-color:var(--nmt-line)!important}
+/* Les badges de danger, congé, absence, présence et validation métier gardent leurs couleurs. */
