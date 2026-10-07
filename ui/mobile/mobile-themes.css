@@ -1,0 +1,181 @@
+/* Nethor — thèmes chromatiques Mobile.
+ * Habillage uniquement : aucune taille, grille, animation, statut métier ou disposition modifiés.
+ * Le thème s'applique exclusivement si data-nethor-mobile-theme est présent.
+ */
+:root[data-nethor-mobile-theme="mineral"]{
+ --nmt-bg:#edf3f8;--nmt-surface:#ffffff;--nmt-soft:#e4eef6;--nmt-text:#20364c;--nmt-muted:#62778a;--nmt-line:#d0dee9;
+ --nmt-accent:#245f8c;--nmt-accent-strong:#17496e;--nmt-on-accent:#ffffff;--nmt-hero:linear-gradient(135deg,#ffffff 0%,#f5f9fd 62%,#d9eaf7 100%);
+ --nmt-shadow:rgba(30,68,100,.08);--nmt-brand:#245f8c;
+ --mobile-app-bg:var(--nmt-bg);--mobile-app-surface:var(--nmt-surface);--mobile-app-text:var(--nmt-text);--mobile-app-muted:var(--nmt-muted);--mobile-app-line:var(--nmt-line);--mobile-app-accent:var(--nmt-accent);
+ --nethor-mobile-item-accent:var(--nmt-accent);
+}
+:root[data-nethor-mobile-theme="sage"]{
+ --nmt-bg:#eef3ef;--nmt-surface:#ffffff;--nmt-soft:#e3eee7;--nmt-text:#263c32;--nmt-muted:#637c6c;--nmt-line:#d2e0d5;
+ --nmt-accent:#356d53;--nmt-accent-strong:#285640;--nmt-on-accent:#ffffff;--nmt-hero:linear-gradient(135deg,#ffffff 0%,#f6faf7 62%,#e0eddf 100%);
+ --nmt-shadow:rgba(36,76,54,.08);--nmt-brand:#356d53;
+ --mobile-app-bg:var(--nmt-bg);--mobile-app-surface:var(--nmt-surface);--mobile-app-text:var(--nmt-text);--mobile-app-muted:var(--nmt-muted);--mobile-app-line:var(--nmt-line);--mobile-app-accent:var(--nmt-accent);
+ --nethor-mobile-item-accent:var(--nmt-accent);
+}
+:root[data-nethor-mobile-theme="plum"]{
+ --nmt-bg:#171623;--nmt-surface:#242238;--nmt-soft:#302c46;--nmt-text:#f6f2ff;--nmt-muted:#bbb4cd;--nmt-line:#453f59;
+ --nmt-accent:#cbb8f4;--nmt-accent-strong:#644795;--nmt-on-accent:#ffffff;--nmt-hero:linear-gradient(135deg,#29253d 0%,#302840 64%,#473259 100%);
+ --nmt-shadow:rgba(0,0,0,.24);--nmt-brand:#cbb8f4;
+ --mobile-app-bg:var(--nmt-bg);--mobile-app-surface:var(--nmt-surface);--mobile-app-text:var(--nmt-text);--mobile-app-muted:var(--nmt-muted);--mobile-app-line:var(--nmt-line);--mobile-app-accent:var(--nmt-accent);
+ --nethor-mobile-item-accent:var(--nmt-accent);
+}
+/* Surface et chrome communs aux nouvelles vues SPA et aux pages mobiles historiques. */
+:root[data-nethor-mobile-theme]{
+ --ui-surface:var(--nmt-surface);--ui-surface-2:var(--nmt-soft);--ui-line:var(--nmt-line);--ui-ink:var(--nmt-text);--ui-muted:var(--nmt-muted);
+ color-scheme:normal;
+}
+:root[data-nethor-mobile-theme="plum"]{color-scheme:dark}
+html[data-nethor-mobile-theme] body,
+html[data-nethor-mobile-theme] .nethorMobileApp,
+html[data-nethor-mobile-theme] .nethorMobileView,
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="home"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="planning"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="chat"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="settings"],
+html[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="profile"]{
+ background:var(--nmt-bg)!important;color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-theme] .nethorMobileAppTop,
+html[data-nethor-mobile-theme] .nethorMobileAppNav,
+html[data-nethor-mobile-theme] .nettoMobileQuickBar{
+ background:var(--nmt-surface)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-theme] .nethorMobileWordmarkNe{color:var(--nmt-brand)!important}
+html[data-nethor-mobile-theme] .nethorMobileWordmarkThor{color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .nethorMobileAppNav a,
+html[data-nethor-mobile-theme] .nethorMobileTopAction,
+html[data-nethor-mobile-theme] .nettoMobileQuickItem{color:var(--nmt-muted)!important}
+html[data-nethor-mobile-theme] .nethorMobileAppNav a[aria-current="page"],
+html[data-nethor-mobile-theme] .nethorMobileTopAction[aria-current="page"],
+html[data-nethor-mobile-theme] .nettoMobileQuickItem.active{
+ background:var(--nmt-soft)!important;color:var(--nmt-accent)!important
+}
+html[data-nethor-mobile-theme] .nethorMobileProfileAction[aria-current="page"]{background:transparent!important}
+html[data-nethor-mobile-theme] .nethorMobileBootstrapMark{background:var(--nmt-accent-strong)!important;color:#fff!important}
+/* Accueil : mêmes widgets, nouvel habillage. */
+html[data-nethor-mobile-theme] .mhdHero{background:var(--nmt-hero)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important;box-shadow:0 7px 22px var(--nmt-shadow)!important}
+html[data-nethor-mobile-theme] .mhdHero::before{background:var(--nmt-accent)!important;opacity:.10}
+html[data-nethor-mobile-theme] .mhdHero::after{background:var(--nmt-accent)!important;opacity:.055}
+html[data-nethor-mobile-theme] .mhdCard,
+html[data-nethor-mobile-theme] .mhdStat,
+html[data-nethor-mobile-theme] .mhdQuick,
+html[data-nethor-mobile-theme] .mhdTaskComposer,
+html[data-nethor-mobile-theme] .mhdTaskChip,
+html[data-nethor-mobile-theme] .mhdTaskPublishedRow{
+ background:var(--nmt-surface)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-theme] .mhdHero .mhdWelcome,
+html[data-nethor-mobile-theme] .mhdHero .mhdWelcomeCopy,
+html[data-nethor-mobile-theme] .mhdSectionHead,
+html[data-nethor-mobile-theme] .mhdRowCopy strong,
+html[data-nethor-mobile-theme] .mhdStat strong{color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .mhdRow,
+html[data-nethor-mobile-theme] .mhdSection,
+html[data-nethor-mobile-theme] .mhdTaskRow{border-color:var(--nmt-line)!important}
+html[data-nethor-mobile-theme] .mhdQuickIcon,
+html[data-nethor-mobile-theme] .mhdMiniIcon,
+html[data-nethor-mobile-theme] .mhdIcon,
+html[data-nethor-mobile-theme] .mhdRowIcon{background:var(--nmt-soft)!important;color:var(--nmt-accent)!important}
+html[data-nethor-mobile-theme] .mhdSectionLink,
+html[data-nethor-mobile-theme] .mhdValueBlue{color:var(--nmt-accent)!important}
+/* Préférences, menu utilisateur, profil et notifications : surfaces et commandes. */
+html[data-nethor-mobile-theme] .nsvPanel,
+html[data-nethor-mobile-theme] .nsvItem,
+html[data-nethor-mobile-theme] .npvCard,
+html[data-nethor-mobile-theme] .nettoMobileMenuCard,
+html[data-nethor-mobile-theme] .panel,
+html[data-nethor-mobile-theme] .item,
+html[data-nethor-mobile-theme] .nsCard,
+html[data-nethor-mobile-theme] .rpCard{
+ background:var(--nmt-surface)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important;box-shadow:0 8px 24px var(--nmt-shadow)!important
+}
+html[data-nethor-mobile-theme] .nethorSettingsView,
+html[data-nethor-mobile-theme] .nethorProfileView,
+html[data-nethor-mobile-theme] .nethorUserMenuView,
+html[data-nethor-mobile-theme] .settingsMobileLayout,
+html[data-nethor-mobile-theme] .settingsMobileTitle h1{color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .nsvBack,
+html[data-nethor-mobile-theme] .npvBack,
+html[data-nethor-mobile-theme] .settingsMobileBack,
+html[data-nethor-mobile-theme] .nsvThemes button,
+html[data-nethor-mobile-theme] .themeChoice,
+html[data-nethor-mobile-theme] .npvField input,
+html[data-nethor-mobile-theme] .npvField select,
+html[data-nethor-mobile-theme] .npvField textarea,
+html[data-nethor-mobile-theme] .mhdTaskInput,
+html[data-nethor-mobile-theme] .rpText,
+html[data-nethor-mobile-theme] .rpSourceSelect{
+ background:var(--nmt-soft)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-theme] .nsvThemes button.active,
+html[data-nethor-mobile-theme] .themeChoice.active{
+ background:var(--nmt-soft)!important;border-color:var(--nmt-accent)!important;box-shadow:0 0 0 2px var(--nmt-shadow)!important
+}
+html[data-nethor-mobile-theme] .nsvThemes button.active .nsvThemeCheck,
+html[data-nethor-mobile-theme] .themeChoice.active .themeCheck{background:var(--nmt-accent-strong)!important;border-color:var(--nmt-accent-strong)!important;color:#fff!important}
+html[data-nethor-mobile-theme] .nsvThemes b,
+html[data-nethor-mobile-theme] .nsvThemeSwatch,
+html[data-nethor-mobile-theme] .themeSwatch{border-color:var(--nmt-line)}
+html[data-nethor-mobile-theme] .nsvRole,
+html[data-nethor-mobile-theme] .roleBadge,
+html[data-nethor-mobile-theme] .nettoMobileMenuIcon{background:var(--nmt-soft)!important;color:var(--nmt-accent)!important;border-color:var(--nmt-line)!important}
+html[data-nethor-mobile-theme] .nsvPrimary,
+html[data-nethor-mobile-theme] .npvPrimary,
+html[data-nethor-mobile-theme] .btn.primary,
+html[data-nethor-mobile-theme] .mhdTaskPublishBtn{
+ background:var(--nmt-accent-strong)!important;color:var(--nmt-on-accent)!important;border-color:transparent!important
+}
+html[data-nethor-mobile-theme] .nsvToggle input:checked+i{background:var(--nmt-accent-strong)!important}
+html[data-nethor-mobile-theme] .nsvHead button,
+html[data-nethor-mobile-theme] .nsvDanger,
+html[data-nethor-mobile-theme] .mini,
+html[data-nethor-mobile-theme] .btn.secondary{background:var(--nmt-soft)!important;color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .nsvActions,
+html[data-nethor-mobile-theme] .actions{background:var(--nmt-bg)!important;border-color:var(--nmt-line)!important}
+html[data-nethor-mobile-theme] .nsvTop p,
+html[data-nethor-mobile-theme] .nsvHead p,
+html[data-nethor-mobile-theme] .nsvItemCopy small,
+html[data-nethor-mobile-theme] .npvTop p,
+html[data-nethor-mobile-theme] .npvCardHead p,
+html[data-nethor-mobile-theme] .nettoMobileMenuCopy small,
+html[data-nethor-mobile-theme] .panel p,
+html[data-nethor-mobile-theme] .info span{color:var(--nmt-muted)!important}
+/* Planning : fond et panneaux neutres uniquement, ne pas toucher aux états horaires, repos ou congés. */
+html[data-nethor-mobile-theme] .nethorPlanningView #planningApp,
+html[data-nethor-mobile-theme] body.agendaLayout,
+html[data-nethor-mobile-theme] .mobilePlanningViewGroup{background-color:var(--nmt-bg)!important;color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .mobilePlanningToolbar,
+html[data-nethor-mobile-theme] .mobilePlanningActionsDock,
+html[data-nethor-mobile-theme] .planningViewBar,
+html[data-nethor-mobile-theme] .agendaHeader,
+html[data-nethor-mobile-theme] .mobileAgendaModeBar{
+ background:var(--nmt-surface)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-theme] .agendaDayArrow,
+html[data-nethor-mobile-theme] .agendaStat,
+html[data-nethor-mobile-theme] .mobileAgendaDay:not(.active){background:var(--nmt-soft)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .mobileAgendaDay.active{border-color:var(--nmt-accent)!important}
+/* Chat : panneaux et bulles sans déplacer les conversations. */
+html[data-nethor-mobile-theme] .chatApp,
+html[data-nethor-mobile-theme] .conversationPane,
+html[data-nethor-mobile-theme] .conversationListPane,
+html[data-nethor-mobile-theme] .messages,
+html[data-nethor-mobile-theme] .chatHeader{background:var(--nmt-bg)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .conversationList,
+html[data-nethor-mobile-theme] .conversationItem,
+html[data-nethor-mobile-theme] .chatMenu,
+html[data-nethor-mobile-theme] .conversationActionSheet{background:var(--nmt-surface)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .messageRow.mine .bubble{background:var(--nmt-soft)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .messageRow:not(.mine) .bubble{background:var(--nmt-surface)!important;border-color:var(--nmt-line)!important;color:var(--nmt-text)!important}
+html[data-nethor-mobile-theme] .conversationFilter.active{color:var(--nmt-accent)!important;border-color:var(--nmt-accent)!important}
+/* Page de personnalisation : échantillons fidèles, quelle que soit la palette active. */
+.nsvThemes [data-theme-choice="mineral"] .nsvThemeSwatch,
+.themeChoice[data-theme-choice="mineral"] .themeSwatch{background:linear-gradient(135deg,#245f8c 0 50%,#dcebf6 50% 100%)!important;color:#fff!important}
+.nsvThemes [data-theme-choice="sage"] .nsvThemeSwatch,
+.themeChoice[data-theme-choice="sage"] .themeSwatch{background:linear-gradient(135deg,#356d53 0 50%,#e3eee7 50% 100%)!important;color:#fff!important}
+.nsvThemes [data-theme-choice="plum"] .nsvThemeSwatch,
+.themeChoice[data-theme-choice="plum"] .themeSwatch{background:linear-gradient(135deg,#463460 0 50%,#221d32 50% 100%)!important;color:#f6f2ff!important}
