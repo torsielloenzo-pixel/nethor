@@ -1,21 +1,16 @@
 {
-  "version": 391,
-  "label": "v1.46.42",
+  "version": 392,
+  "label": "v1.46.43",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Gestion · Apparence par thème",
-  "message": "La personnalisation Mobile est désormais organisée thème par thème dans Gestion : entête, bannière et animation d’ouverture sont regroupés dans un seul éditeur.",
-  "published_at": "2026-10-07T18:35:18.765Z",
+  "title": "Halloween Mobile · Cloche de notifications",
+  "message": "La cloche de notifications de l’entête est maintenant orange dans le thème Halloween Mobile pour rester bien visible.",
+  "published_at": "2026-10-07T18:48:00.000Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Gestion → Mobile : nouvel éditeur central « Apparence par thème ».",
-    "Sélecteur unique : Clair, Sombre, Bleu minéral, Sauge, Prune nocturne et Halloween.",
-    "Chaque thème possède désormais son propre Logo 1, Logo 2, composition d’entête et texte d’entête.",
-    "La bannière du thème sélectionné est éditée dans la même vue, avec ses trois calques, taille, position, opacité, import, téléchargement et réinitialisation.",
-    "L’animation d’ouverture du thème sélectionné est également regroupée dans cette vue avec Importer, Télécharger et Réinitialiser.",
-    "Les anciens réglages d’identité Mobile restent utilisés comme valeurs de secours afin de préserver l’existant.",
-    "Les réglages généraux non liés à un thème (connexion, icônes système, commandes, notifications) restent séparés.",
-    "L’entête réel Mobile et les pages mobiles héritées appliquent maintenant l’identité correspondant au thème actif."
+    "Modification visuelle limitée au thème Halloween sur Mobile.",
+    "La cloche de notifications de l’entête utilise désormais l’orange Halloween.",
+    "Aucun changement sur les autres thèmes ni sur Desktop."
   ]
 }
