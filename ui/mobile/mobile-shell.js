@@ -32,7 +32,7 @@ function buildUserMenu(ctx){
  const mobileProfileIcon=iconFor('settings');
  const control=(key,defaults)=>{const x=controls?.[key]&&typeof controls[key]==='object'?controls[key]:{};return{...defaults,...x,label:String(x.label||defaults.label),subtitle:String(x.subtitle||defaults.subtitle),url:String(x.url||'')}};
  const icon=(node,fallback)=>node.url?'<img src="'+esc(node.url)+'" alt="" style="display:block;width:100%;height:100%;object-fit:contain">':fallback;
- const theme=control('theme',{label:'Mode sombre',subtitle:'Changer l’apparence'}),update=control('update',{label:'Mise à jour',subtitle:'Rechercher une nouvelle version'}),logout=control('logout',{label:'Déconnexion',subtitle:'Quitter la session'}),menu=control('user_menu',{label:'Menu utilisateur',subtitle:'Profil, préférences et réglages'});
+ const theme=control('theme',{label:'Mode Halloween',subtitle:'Basculer entre favori et Halloween'}),update=control('update',{label:'Mise à jour',subtitle:'Rechercher une nouvelle version'}),logout=control('logout',{label:'Déconnexion',subtitle:'Quitter la session'}),menu=control('user_menu',{label:'Menu utilisateur',subtitle:'Profil, préférences et réglages'});
  const themeDefault='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z"/></svg>';
  const updateDefault='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v10"/><path d="m8.5 9.5 3.5 3.5 3.5-3.5"/><path d="M5 17.5V20h14v-2.5"/></svg>';
  const logoutDefault='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><path d="M14 8l4 4-4 4M18 12H9"/></svg>';
