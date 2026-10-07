@@ -2551,32 +2551,77 @@ function mobileAppearanceProfileFramesSection(theme){
   '<div class="mobileProfileFrameGrid">'+cards+'</div>'+
  '</section>'
 }
+async function persistMobileProfileFramesTheme(theme){
+ const key=mobileAppearanceThemeKey(theme),localFrames=clone(mobileProfileFramesFor(key));
+ const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();
+ if(error)throw error;
+ const remote=normalize(data?.value||{});
+ remote.platform_ui=remote.platform_ui&&typeof remote.platform_ui==='object'?remote.platform_ui:{};
+ remote.platform_ui.mobile=remote.platform_ui.mobile&&typeof remote.platform_ui.mobile==='object'?remote.platform_ui.mobile:{};
+ remote.platform_ui.mobile.profile_frames=normalizeMobileProfileFrames(remote.platform_ui.mobile.profile_frames);
+ remote.platform_ui.mobile.profile_frames.themes[key]=localFrames;
+ const saved=await db.from('app_settings').upsert({
+  key:'site_config',
+  value:remote,
+  updated_by:session.user.id,
+  updated_at:new Date().toISOString()
+ },{onConflict:'key'});
+ if(saved.error)throw saved.error;
+ const local=mobileProfileFramesNode();local.themes[key]=clone(localFrames);
+ return true
+}
+function mobileProfileFrameSaveMessage(message){
+ const state=$('saveState');if(!state)return;
+ state.className=dirty?'saveState':'saveState ok';
+ state.textContent=dirty?message+' · autres modifications non enregistrées':message
+}
 async function createMobileProfileFrame(theme){
- const host=$('mobileAppearanceThemeEditor'),nameInput=host?.querySelector('[data-mobile-profile-frame-name]'),fileInput=host?.querySelector('[data-mobile-profile-frame-file]'),state=$('saveState');
- const name=String(nameInput?.value||'').trim(),file=fileInput?.files?.[0];
+ const host=$('mobileAppearanceThemeEditor'),nameInput=host?.querySelector('[data-mobile-profile-frame-name]'),fileInput=host?.querySelector('[data-mobile-profile-frame-file]'),state=$('saveState'),createBtn=host?.querySelector('.mobileProfileFrameCreate .primaryBtn');
+ const name=String(nameInput?.value||'').trim(),file=fileInput?.files?.[0],key=mobileAppearanceThemeKey(theme);
  if(!name){state.className='saveState err';state.textContent='Donne un nom au cadre.';nameInput?.focus();return}
  if(!file){state.className='saveState err';state.textContent='Importe une image pour créer le cadre.';fileInput?.click();return}
+ let storagePath='',frame=null,list=null;
+ if(createBtn)createBtn.disabled=true;
  try{
   const ext=platformAssetExtension(file),allowed=['png','webp','svg'];
   if(!ext||!allowed.includes(ext))throw new Error('Format refusé. Utilise PNG, WebP ou SVG.');
   if(file.size>5*1024*1024)throw new Error('Cadre trop lourd : 5 Mo maximum.');
-  state.className='saveState';state.textContent='Import du cadre « '+name+' »…';
-  const id='themeframe_'+theme+'_'+Date.now().toString(36),storagePath='platform/mobile/profile-frames/'+theme+'/'+id+'.'+ext;
-  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  state.className='saveState';state.textContent='Création et sauvegarde du cadre « '+name+' »…';
+  const id='themeframe_'+key+'_'+Date.now().toString(36);
+  storagePath='platform/mobile/profile-frames/'+key+'/'+id+'.'+ext;
+  const uploaded=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(uploaded.error)throw uploaded.error;
   const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath);
-  mobileProfileFramesFor(theme).push({id,name:name.slice(0,60),url:data?.publicUrl||'',path:storagePath,file_name:file.name});
-  markDirty();renderMobileAppearanceThemeEditor();state.className='saveState';state.textContent='Cadre ajouté — enregistrer pour confirmer'
- }catch(e){state.className='saveState err';state.textContent='Erreur cadre : '+(e?.message||e)}
+  frame={id,name:name.slice(0,60),url:data?.publicUrl||'',path:storagePath,file_name:file.name};
+  list=mobileProfileFramesFor(key);list.push(frame);
+  await persistMobileProfileFramesTheme(key);
+  renderMobileAppearanceThemeEditor();
+  mobileProfileFrameSaveMessage('✓ Cadre « '+name+' » créé et sauvegardé')
+ }catch(e){
+  if(frame&&list){const index=list.findIndex(x=>x.id===frame.id);if(index>=0)list.splice(index,1)}
+  if(storagePath){try{await db.storage.from('portal-assets').remove([storagePath])}catch(_){}}
+  renderMobileAppearanceThemeEditor();
+  state.className='saveState err';state.textContent='Erreur cadre : '+(e?.message||e)
+ }finally{if(createBtn?.isConnected)createBtn.disabled=false}
 }
 function downloadMobileProfileFrame(theme,id){
  const frame=mobileProfileFramesFor(theme).find(x=>x.id===id);if(!frame?.url)return;
  downloadAssetUrl(frame.url,frame.file_name||('Nethor-cadre-'+theme+'-'+id+'.png'))
 }
-function deleteMobileProfileFrame(theme,id){
- const frames=mobileProfileFramesFor(theme),index=frames.findIndex(x=>x.id===id);if(index<0)return;
- const frame=frames[index];
- if(!confirm('Supprimer le cadre « '+frame.name+' » du thème '+mobileHomeBannerThemeDef(theme).label+' ?'))return;
- frames.splice(index,1);markDirty();renderMobileAppearanceThemeEditor();$('saveState').textContent='Cadre supprimé — enregistrer pour confirmer'
+async function deleteMobileProfileFrame(theme,id){
+ const key=mobileAppearanceThemeKey(theme),frames=mobileProfileFramesFor(key),index=frames.findIndex(x=>x.id===id);if(index<0)return;
+ const frame=frames[index],state=$('saveState');
+ if(!confirm('Supprimer le cadre « '+frame.name+' » du thème '+mobileHomeBannerThemeDef(key).label+' ?'))return;
+ frames.splice(index,1);state.className='saveState';state.textContent='Suppression et sauvegarde du cadre…';
+ try{
+  await persistMobileProfileFramesTheme(key);
+  if(frame.path){try{await db.storage.from('portal-assets').remove([frame.path])}catch(_){}}
+  renderMobileAppearanceThemeEditor();
+  mobileProfileFrameSaveMessage('✓ Cadre « '+frame.name+' » supprimé et sauvegardé')
+ }catch(e){
+  frames.splice(Math.min(index,frames.length),0,frame);
+  renderMobileAppearanceThemeEditor();
+  state.className='saveState err';state.textContent='Erreur suppression : '+(e?.message||e)
+ }
 }
 function mobileAppearanceOpeningSection(theme){
  const item=mobileWelcomeThemeEffective(theme);
