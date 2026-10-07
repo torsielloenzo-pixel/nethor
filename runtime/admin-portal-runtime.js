@@ -2000,6 +2000,102 @@ function resetPortalSound(key){
 }
 
 
+
+const MOBILE_WELCOME_THEME_KEYS=Object.freeze(['light','dark','mineral','sage','plum','halloween']);
+function normalizeMobileWelcomeThemeAssets(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const out={};
+ for(const key of MOBILE_WELCOME_THEME_KEYS){
+  const node=raw[key]&&typeof raw[key]==='object'?raw[key]:{};
+  out[key]={
+   url:String(node.url||''),path:String(node.path||''),name:String(node.name||''),
+   tag:String(node.tag||''),api:String(node.api||''),
+   type:String(node.type||'animation')==='image'?'image':'animation'
+  }
+ }
+ return out
+}
+function mobileWelcomeThemeBase(theme){return ['dark','plum','halloween'].includes(theme)?'dark':'light'}
+function mobileWelcomeThemeNode(theme){
+ ensurePlatformUiConfig();
+ const key=MOBILE_WELCOME_THEME_KEYS.includes(theme)?theme:'light',ui=platformUiNode('mobile');
+ ui.welcome_media_themes=normalizeMobileWelcomeThemeAssets(ui.welcome_media_themes);
+ return ui.welcome_media_themes[key]
+}
+function mobileWelcomeThemeEffective(theme){
+ const node=mobileWelcomeThemeNode(theme),base=mobileWelcomeThemeBase(theme),fallbackNode=platformAssetVariantNode('mobile','welcome_media',base);
+ const url=String(node.url||'').trim()||platformAssetUrl('mobile','welcome_media',base);
+ const fallbackType=platformAssetNode('mobile','welcome_media')?.type==='animation'?'animation':'image';
+ return{
+  url,
+  name:String(node.name||'').trim()||String(fallbackNode?.name||'').trim(),
+  tag:String(node.tag||'').trim()||String(fallbackNode?.tag||'').trim(),
+  api:String(node.api||'').trim()||String(fallbackNode?.api||'').trim(),
+  type:String(node.url||'').trim()?(node.type==='image'?'image':'animation'):fallbackType,
+  custom:!!String(node.url||'').trim(),
+  inheritedFrom:base
+ }
+}
+function mobileWelcomeThemePreview(theme){
+ const item=mobileWelcomeThemeEffective(theme),url=item.url;
+ if(!url)return'<div class="mobileLaunchThemeEmpty">Aucun média</div>';
+ if(platformAssetIsScript(url)){
+  const host=platformWelcomeAnimationHost(url,item.inheritedFrom,item.tag,'Utilisateur',item.api);
+  return '<iframe src="'+attr(host)+'" title="Aperçu animation '+attr(theme)+'" sandbox="allow-scripts" loading="lazy"></iframe>'
+ }
+ if(platformAssetIsVideo(url))return '<video src="'+attr(url)+'" autoplay muted loop playsinline></video>';
+ return '<img src="'+attr(url)+'" alt="" loading="lazy">'
+}
+function renderMobileWelcomeThemeEditor(){
+ const host=$('mobileWelcomeThemeEditor');if(!host)return;
+ ensurePlatformUiConfig();
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Animation d’ouverture par thème</h2><p>Attribue un média d’ouverture spécifique à chaque thème Mobile. Sans fichier personnalisé, le thème hérite automatiquement de l’animation claire ou sombre existante.</p></div></div>'+
+ '<div class="mobileLaunchThemeGrid">'+MOBILE_HOME_BANNER_THEMES.map(def=>{
+  const item=mobileWelcomeThemeEffective(def.key);
+  return '<article class="mobileLaunchThemeCard">'+
+   '<div class="mobileLaunchThemeCardHead"><div><strong>'+esc(def.label)+'</strong><small>'+esc(def.description)+(def.private?' · Privé':'')+'</small></div><span class="mobileLaunchThemeBadge '+(item.custom?'custom':'')+'">'+(item.custom?'Personnalisée':'Héritée '+(item.inheritedFrom==='dark'?'sombre':'claire'))+'</span></div>'+
+   '<div class="mobileLaunchThemePreview">'+mobileWelcomeThemePreview(def.key)+'</div>'+
+   '<div class="mobileLaunchThemeMeta"><span>'+(item.custom?esc(item.name||'Média personnalisé'):'Animation Nethor '+(item.inheritedFrom==='dark'?'sombre':'claire'))+'</span><small>JS · GIF · MP4 · WebM · PNG · WebP · SVG</small></div>'+
+   '<div class="platformAssetActions mobileLaunchThemeActions">'+
+    '<button class="btn secondaryBtn mini" type="button" onclick="chooseMobileWelcomeThemeAsset(\''+attr(def.key)+'\')">Importer</button>'+
+    '<button class="btn secondaryBtn mini" type="button" onclick="downloadMobileWelcomeThemeAsset(\''+attr(def.key)+'\')">Télécharger</button>'+
+    '<button class="btn secondaryBtn mini" type="button" onclick="resetMobileWelcomeThemeAsset(\''+attr(def.key)+'\')">Réinitialiser</button>'+
+   '</div>'+
+   '<input id="mobileWelcomeThemeFile_'+attr(def.key)+'" type="file" accept=".js,.gif,.mp4,.webm,.png,.webp,.svg,application/javascript,text/javascript,image/gif,video/mp4,video/webm,image/png,image/webp,image/svg+xml" hidden onchange="uploadMobileWelcomeThemeAsset(\''+attr(def.key)+'\',this)">'+
+  '</article>'
+ }).join('')+'</div>'
+}
+function chooseMobileWelcomeThemeAsset(theme){$('mobileWelcomeThemeFile_'+theme)?.click()}
+function mobileWelcomeThemeExtension(file){
+ const ext=(String(file?.name||'').split('.').pop()||'').toLowerCase();
+ return ['js','gif','mp4','webm','png','webp','svg'].includes(ext)?ext:''
+}
+async function uploadMobileWelcomeThemeAsset(theme,input){
+ const file=input?.files?.[0],state=$('saveState');if(!file)return;
+ try{
+  const ext=mobileWelcomeThemeExtension(file);if(!ext)throw new Error('Format refusé. Utilise JS, GIF, MP4, WebM, PNG, WebP ou SVG.');
+  if(file.size>15*1024*1024)throw new Error('Fichier trop lourd : 15 Mo maximum.');
+  state.className='saveState';state.textContent='Import de l’animation « '+mobileHomeBannerThemeDef(theme).label+' »…';
+  const storagePath='platform/mobile/welcome-theme/'+theme+'/opening-'+Date.now()+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath),node=mobileWelcomeThemeNode(theme);
+  node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag='';node.api='';
+  node.type=['js','gif','mp4','webm'].includes(ext)?'animation':'image';
+  markDirty();renderMobileWelcomeThemeEditor();state.className='saveState';state.textContent='Animation prête à être enregistrée'
+ }catch(e){state.className='saveState err';state.textContent='Erreur animation : '+(e?.message||e)}
+ finally{if(input)input.value=''}
+}
+function downloadMobileWelcomeThemeAsset(theme){
+ const item=mobileWelcomeThemeEffective(theme);
+ if(!item.url)return;
+ const fallback='Nethor-ouverture-'+theme+(platformAssetIsScript(item.url)?'.js':platformAssetIsVideo(item.url)?'.mp4':'.svg');
+ downloadAssetUrl(item.url,item.name||fallback)
+}
+function resetMobileWelcomeThemeAsset(theme){
+ const node=mobileWelcomeThemeNode(theme);node.url='';node.path='';node.name='';node.tag='';node.api='';node.type='animation';
+ markDirty();renderMobileWelcomeThemeEditor();$('saveState').textContent='Animation « '+mobileHomeBannerThemeDef(theme).label+' » réinitialisée — enregistrer pour confirmer'
+}
+
 const MOBILE_HOME_BANNER_THEMES=Object.freeze([
  {key:'light',label:'Clair',description:'Thème clair classique',bg1:'#ffffff',bg2:'#fff1e9',accent:'#ff6a3d',secondary:'#ffb18e'},
  {key:'dark',label:'Sombre',description:'Mode sombre classique',bg1:'#1d2228',bg2:'#30221e',accent:'#ff5b2a',secondary:'#7c2d20'},
