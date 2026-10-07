@@ -1683,7 +1683,7 @@ async function uploadPlatformAsset(kind,key,theme,input){
   node.path=storagePath;node.url=data?.publicUrl||'';node.name=file.name;node.tag=scriptMeta?.tag||'';node.api=scriptMeta?.api||'';
   if(welcome&&['js','gif','mp4','webm'].includes(ext))platformAssetNode(kind,key).type='animation';
   if(headerAnimation&&kind==='desktop')platformUiNode('desktop').header_logo_mode='animation';
-  markDirty();renderPlatformIdentity(kind);applyPlatformHeaderPreview(kind)state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
+  markDirty();renderPlatformIdentity(kind);applyPlatformHeaderPreview(kind);state.textContent='Média '+(theme==='dark'?'sombre':'clair')+' prêt à être enregistré'
  }catch(e){state.className='saveState err';state.textContent='Erreur média : '+(e?.message||e)}
  finally{if(input)input.value=''}
 }
