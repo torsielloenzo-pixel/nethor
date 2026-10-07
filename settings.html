@@ -26,7 +26,7 @@ const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:t
 let session=null,profile=null,subroleKeys=[],prefs={home:{},home_widgets:{},user_menu:{},theme:'light'};
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const ROLE_LABEL={admin:'Administrateur',responsable:'Responsable',employe:'Employé',lecture:'Lecture seule'};
-function ensurePrefs(v){const p=v&&typeof v==='object'?JSON.parse(JSON.stringify(v)):{};p.home=p.home&&typeof p.home==='object'?p.home:{};p.home_widgets=p.home_widgets&&typeof p.home_widgets==='object'?p.home_widgets:{};p.user_menu=p.user_menu&&typeof p.user_menu==='object'?p.user_menu:{};p.theme=p.theme==='dark'||p.theme==='light'?p.theme:(document.documentElement.dataset.theme==='dark'?'dark':'light');return p}
+function ensurePrefs(v){const p=v&&typeof v==='object'?JSON.parse(JSON.stringify(v)):{};p.home=p.home&&typeof p.home==='object'?p.home:{};p.home_widgets=p.home_widgets&&typeof p.home_widgets==='object'?p.home_widgets:{};p.user_menu=p.user_menu&&typeof p.user_menu==='object'?p.user_menu:{};p.theme=p.theme==='dark'||p.theme==='light'?p.theme:'light';p.mobile_theme=['mineral','sage','plum'].includes(p.mobile_theme)?p.mobile_theme:'';return p}
 function waitUI(){return new Promise(resolve=>{let n=0;const t=setInterval(()=>{if(window.NettoProfileUI?.profile||n++>80){clearInterval(t);resolve()}},50)})}
 function modules(){return window.NettoProfileUI?.modules||[]}
 function prefProfile(){return {...profile,ui_preferences:prefs}}
@@ -77,9 +77,35 @@ function renderHomeWidgets(){
  host.querySelectorAll('input[data-home-widget]').forEach(x=>x.onchange=()=>{prefs.home_widgets[x.dataset.homeWidget]=x.checked;markDirty()})
 }
 function setHomeWidgets(value){HOME_WIDGETS.filter(x=>homeWidgetAllowed(x.id)).forEach(x=>prefs.home_widgets[x.id]=value);renderHomeWidgets();markDirty()}
-function applyLocalTheme(theme){theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=theme;try{localStorage.setItem('nettoTheme',theme)}catch(_){};const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=theme==='dark'?'#17191d':'#ffffff'}
-function renderThemeChoice(){const t=prefs.theme==='dark'?'dark':'light';$('themeLight')?.classList.toggle('active',t==='light');$('themeDark')?.classList.toggle('active',t==='dark')}
-function chooseTheme(theme){prefs.theme=theme==='dark'?'dark':'light';applyLocalTheme(prefs.theme);renderThemeChoice();markDirty();window.NettoSounds?.play?.('switch')}
+function validMobileTheme(theme){return ['mineral','sage','plum'].includes(theme)?theme:''}
+function applyLocalTheme(theme){
+ const custom=settingsIsMobile()?validMobileTheme(prefs.mobile_theme):'';
+ const effective=custom==='plum'?'dark':custom?'light':(theme==='dark'?'dark':'light');
+ const root=document.documentElement;root.dataset.theme=effective;
+ if(settingsIsMobile()){
+  if(custom)root.dataset.nethorMobileTheme=custom;else delete root.dataset.nethorMobileTheme;
+  root.style.colorScheme=effective;
+  try{localStorage.setItem('nethorMobileTheme',custom)}catch(_){}
+ }
+ try{localStorage.setItem('nettoTheme',effective)}catch(_){}
+ const colors={mineral:'#edf3f8',sage:'#eef3ef',plum:'#171623'};
+ const meta=document.querySelector('meta[name="theme-color"]');
+ if(meta)meta.content=colors[custom]||(effective==='dark'?'#17191d':'#ffffff')
+}
+function renderThemeChoice(){
+ const value=settingsIsMobile()?(validMobileTheme(prefs.mobile_theme)||prefs.theme):prefs.theme;
+ [['themeLight','light'],['themeDark','dark'],['themeMineral','mineral'],['themeSage','sage'],['themePlum','plum']].forEach(([id,theme])=>{
+  const btn=$(id);if(!btn)return;const active=value===theme;
+  btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active))
+ })
+}
+function chooseTheme(theme){
+ if(['light','dark'].includes(theme)){
+  prefs.theme=theme;if(settingsIsMobile())prefs.mobile_theme='';
+ }else if(settingsIsMobile()&&validMobileTheme(theme))prefs.mobile_theme=theme;
+ else return;
+ applyLocalTheme(prefs.theme);renderThemeChoice();markDirty();window.NettoSounds?.play?.('switch')
+}
 function homeMenusEditorAllowed(){
  if(profile?.role==='admin')return true;
  const cfg=window.NettoProfileUI?.siteConfig;
@@ -103,7 +129,7 @@ function setArea(area,value){
  available(area).forEach(m=>prefs[area][m.id]=value);render();markDirty()
 }
 async function savePersonal(){const b=$('saveBtn');b.disabled=true;$('saveState').textContent='Enregistrement…';const {error}=await db.from('profiles').update({ui_preferences:prefs}).eq('id',session.user.id);if(error){$('saveState').className='saveState err';$('saveState').textContent='Erreur : '+error.message;window.NettoSounds?.play?.('error')}else{profile.ui_preferences=JSON.parse(JSON.stringify(prefs));$('saveState').className='saveState ok';$('saveState').textContent='✓ Personnalisation enregistrée';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.()}b.disabled=false}
-async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;const keepHome=homeMenusEditorAllowed()?{}:JSON.parse(JSON.stringify(prefs.home||{}));prefs={home:keepHome,home_widgets:{},user_menu:{},theme:document.documentElement.dataset.theme==='dark'?'dark':'light'};render();await savePersonal()}
+async function resetPersonal(){if(!confirm('Revenir à l’affichage par défaut prévu pour ton rôle ?'))return;const keepHome=homeMenusEditorAllowed()?{}:JSON.parse(JSON.stringify(prefs.home||{}));prefs={home:keepHome,home_widgets:{},user_menu:{},theme:prefs.theme,mobile_theme:settingsIsMobile()?'':prefs.mobile_theme};applyLocalTheme(prefs.theme);render();await savePersonal()}
 async function boot(){const {data:{session:s}}=await db.auth.getSession();session=s;if(!s)return location.replace('index.html');const [{data:p,error},subRes]=await Promise.all([db.from('profiles').select('display_name,role,ui_preferences').eq('id',s.user.id).maybeSingle(),Promise.resolve(db.rpc('my_subrole_keys')).catch(()=>({data:[]}))]);if(error||!p)return location.replace('index.html');profile=p;subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean);prefs=ensurePrefs(p.ui_preferences);applyLocalTheme(prefs.theme);$('roleBadge').textContent=window.NettoProfileUI?.roleLabel?.(p.role)||ROLE_LABEL[p.role]||p.role;if(p.role==='admin')$('adminShortcut').classList.remove('hidden');await waitUI();render();$('saveState').textContent='À jour'}
 boot();
 </script>
