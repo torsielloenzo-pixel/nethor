@@ -19,7 +19,7 @@ async function persistOfflineShell(){
  if(navigator.onLine===false||!state.session?.user?.id||!state.profile||!state.ready)return;
  const uid=state.session.user.id,profile=state.profile;
  await offlineStore()?.put?.(uid,'shell','profile',{
-  profile:{display_name:profile.display_name,role:profile.role,profile_color:profile.profile_color,ui_preferences:{theme:profile.ui_preferences?.theme,mobile_theme:profile.ui_preferences?.mobile_theme}},
+  profile:{display_name:profile.display_name,role:profile.role,profile_color:profile.profile_color,avatar_frame:profile.avatar_frame||'',ui_preferences:{theme:profile.ui_preferences?.theme,mobile_theme:profile.ui_preferences?.mobile_theme,mobile_mode:profile.ui_preferences?.mobile_mode}},
   subrolePermissions:{...state.subrolePermissions},subroleKeys:[...state.subroleKeys]
  })
 }
@@ -490,7 +490,7 @@ function hasSubrolePermission(moduleId,minimum='view'){
 async function updateProfile(fields={}){
   if(!client||!state.session)return false;
   const allowed={};
-  for(const key of ['profile_color','avatar_path','ui_preferences'])if(Object.prototype.hasOwnProperty.call(fields,key))allowed[key]=fields[key];
+  for(const key of ['profile_color','avatar_path','avatar_frame','ui_preferences'])if(Object.prototype.hasOwnProperty.call(fields,key))allowed[key]=fields[key];
   if(!Object.keys(allowed).length)return false;
   const {error}=await client.from('profiles').update(allowed).eq('id',state.session.user.id);
   if(error)throw error;
