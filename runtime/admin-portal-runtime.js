@@ -2527,6 +2527,57 @@ function mobileAppearanceBannerSection(theme){
   '<div class="mobileHomeBannerLayerGrid">'+MOBILE_HOME_BANNER_LAYER_DEFS.map(x=>mobileHomeBannerLayerCard(theme,x.key)).join('')+'</div>'+
  '</section>'
 }
+
+function mobileAppearanceProfileFramesSection(theme){
+ const frames=mobileProfileFramesFor(theme),def=mobileHomeBannerThemeDef(theme);
+ const cards=frames.length?frames.map(frame=>
+  '<article class="mobileProfileFrameCard">'+
+   '<div class="mobileProfileFramePreview"><span>ET</span><img src="'+attr(frame.url)+'" alt=""></div>'+
+   '<div class="mobileProfileFrameInfo"><strong>'+esc(frame.name)+'</strong><small>'+esc(def.label)+' uniquement</small></div>'+
+   '<div class="mobileProfileFrameActions">'+
+    '<button class="btn secondaryBtn mini" type="button" onclick="downloadMobileProfileFrame(\''+attr(theme)+'\',\''+attr(frame.id)+'\')">Télécharger</button>'+
+    '<button class="btn secondaryBtn mini dangerMini" type="button" onclick="deleteMobileProfileFrame(\''+attr(theme)+'\',\''+attr(frame.id)+'\')">Supprimer</button>'+
+   '</div>'+
+  '</article>'
+ ).join(''):'<div class="mobileProfileFramesEmpty">Aucun cadre créé pour ce thème.</div>';
+ return '<section class="mobileAppearanceGroup">'+
+  '<div class="mobileAppearanceGroupHead"><div><span>PROFIL</span><h3>Cadres de profil</h3><p>Les cadres créés ici sont visibles uniquement lorsque le thème « '+esc(def.label)+' » est actif.</p></div></div>'+
+  '<div class="mobileProfileFrameCreate">'+
+   '<label class="field"><span>Nom du cadre</span><input type="text" maxlength="60" placeholder="Ex. Cercle Halloween" data-mobile-profile-frame-name></label>'+
+   '<label class="field"><span>Image du cadre</span><input type="file" accept=".png,.webp,.svg,image/png,image/webp,image/svg+xml" data-mobile-profile-frame-file></label>'+
+   '<button class="btn primaryBtn" type="button" onclick="createMobileProfileFrame(\''+attr(theme)+'\')">Créer le cadre</button>'+
+   '<small>PNG, WebP ou SVG transparent · 5 Mo maximum. L’image est superposée autour de l’avatar rond.</small>'+
+  '</div>'+
+  '<div class="mobileProfileFrameGrid">'+cards+'</div>'+
+ '</section>'
+}
+async function createMobileProfileFrame(theme){
+ const host=$('mobileAppearanceThemeEditor'),nameInput=host?.querySelector('[data-mobile-profile-frame-name]'),fileInput=host?.querySelector('[data-mobile-profile-frame-file]'),state=$('saveState');
+ const name=String(nameInput?.value||'').trim(),file=fileInput?.files?.[0];
+ if(!name){state.className='saveState err';state.textContent='Donne un nom au cadre.';nameInput?.focus();return}
+ if(!file){state.className='saveState err';state.textContent='Importe une image pour créer le cadre.';fileInput?.click();return}
+ try{
+  const ext=platformAssetExtension(file),allowed=['png','webp','svg'];
+  if(!ext||!allowed.includes(ext))throw new Error('Format refusé. Utilise PNG, WebP ou SVG.');
+  if(file.size>5*1024*1024)throw new Error('Cadre trop lourd : 5 Mo maximum.');
+  state.className='saveState';state.textContent='Import du cadre « '+name+' »…';
+  const id='themeframe_'+theme+'_'+Date.now().toString(36),storagePath='platform/mobile/profile-frames/'+theme+'/'+id+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath);
+  mobileProfileFramesFor(theme).push({id,name:name.slice(0,60),url:data?.publicUrl||'',path:storagePath,file_name:file.name});
+  markDirty();renderMobileAppearanceThemeEditor();state.className='saveState';state.textContent='Cadre ajouté — enregistrer pour confirmer'
+ }catch(e){state.className='saveState err';state.textContent='Erreur cadre : '+(e?.message||e)}
+}
+function downloadMobileProfileFrame(theme,id){
+ const frame=mobileProfileFramesFor(theme).find(x=>x.id===id);if(!frame?.url)return;
+ downloadAssetUrl(frame.url,frame.file_name||('Nethor-cadre-'+theme+'-'+id+'.png'))
+}
+function deleteMobileProfileFrame(theme,id){
+ const frames=mobileProfileFramesFor(theme),index=frames.findIndex(x=>x.id===id);if(index<0)return;
+ const frame=frames[index];
+ if(!confirm('Supprimer le cadre « '+frame.name+' » du thème '+mobileHomeBannerThemeDef(theme).label+' ?'))return;
+ frames.splice(index,1);markDirty();renderMobileAppearanceThemeEditor();$('saveState').textContent='Cadre supprimé — enregistrer pour confirmer'
+}
 function mobileAppearanceOpeningSection(theme){
  const item=mobileWelcomeThemeEffective(theme);
  return '<section class="mobileAppearanceGroup">'+
@@ -2549,7 +2600,7 @@ function renderMobileAppearanceThemeEditor(){
  host.innerHTML='<div class="toolbar platformEditorHead mobileAppearanceEditorHead"><div><h2>Apparence par thème · Mobile</h2><p>Choisis un thème puis règle tous ses éléments visuels au même endroit. Chaque thème reste totalement indépendant.</p></div><button class="btn secondaryBtn mini" type="button" onclick="resetMobileAppearanceTheme(\''+attr(theme)+'\')">Réinitialiser « '+esc(def.label)+' »</button></div>'+
   mobileAppearanceThemeTabs(theme)+
   '<div class="mobileAppearanceSelectedTheme"><i style="background:'+attr(def.accent)+'"></i><div><span>THÈME SÉLECTIONNÉ</span><strong>'+esc(def.label)+'</strong><small>'+esc(def.description)+(def.private?' · Visible uniquement pour les comptes autorisés':'')+'</small></div></div>'+
-  mobileHeaderThemeSection(theme)+mobileAppearanceBannerSection(theme)+mobileAppearanceOpeningSection(theme);
+  mobileHeaderThemeSection(theme)+mobileAppearanceProfileFramesSection(theme)+mobileAppearanceBannerSection(theme)+mobileAppearanceOpeningSection(theme);
  bindMobileAppearanceThemeEditor(host,theme)
 }
 function bindMobileAppearanceThemeEditor(host,theme){
@@ -2622,6 +2673,7 @@ function resetMobileAppearanceTheme(theme){
  ui.header_themes[theme]={layout:'',text:'',logo1:normalizeMobileHeaderThemeAsset(null),logo2:normalizeMobileHeaderThemeAsset(null)};
  const freshBanner=normalizeMobileHomeBanner(null);mobileHomeBannerNode().themes[theme]=freshBanner.themes[theme];
  const opening=mobileWelcomeThemeNode(theme);opening.url='';opening.path='';opening.name='';opening.tag='';opening.api='';opening.type='animation';
+ mobileProfileFramesNode().themes[theme]=[];
  markDirty();renderMobileAppearanceThemeEditor();applyPlatformHeaderPreview('mobile');$('saveState').textContent='Thème « '+mobileHomeBannerThemeDef(theme).label+' » réinitialisé — enregistrer pour confirmer'
 }
 
