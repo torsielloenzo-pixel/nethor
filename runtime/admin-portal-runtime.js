@@ -2062,6 +2062,51 @@ function resetPortalSound(key){
 
 
 
+
+const MOBILE_HEADER_THEME_KEYS=Object.freeze(['light','dark','mineral','sage','plum','halloween']);
+function normalizeMobileHeaderThemeAsset(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ return{url:String(raw.url||''),path:String(raw.path||''),name:String(raw.name||'')}
+}
+function normalizeMobileHeaderThemes(raw){
+ raw=raw&&typeof raw==='object'?raw:{};
+ const out={};
+ for(const key of MOBILE_HEADER_THEME_KEYS){
+  const node=raw[key]&&typeof raw[key]==='object'?raw[key]:{};
+  out[key]={
+   layout:['logo_only','logo_logo','text_logo','logo_text'].includes(node.layout)?node.layout:'',
+   text:String(node.text||'').slice(0,80),
+   logo1:normalizeMobileHeaderThemeAsset(node.logo1),
+   logo2:normalizeMobileHeaderThemeAsset(node.logo2)
+  }
+ }
+ return out
+}
+function mobileHeaderThemeBase(theme){return ['dark','plum','halloween'].includes(theme)?'dark':'light'}
+function mobileHeaderThemeNode(theme){
+ const key=MOBILE_HEADER_THEME_KEYS.includes(theme)?theme:'light',ui=platformUiNode('mobile');
+ ui.header_themes=normalizeMobileHeaderThemes(ui.header_themes);
+ return ui.header_themes[key]
+}
+function mobileHeaderThemeEffective(theme){
+ const key=MOBILE_HEADER_THEME_KEYS.includes(theme)?theme:'light',ui=platformUiNode('mobile'),node=mobileHeaderThemeNode(key),base=mobileHeaderThemeBase(key);
+ const legacy1=platformAssetVariantNode('mobile','header_logo',base),legacy2=platformAssetVariantNode('mobile','header_logo_secondary',base);
+ const logo1Url=String(node.logo1?.url||'').trim()||platformAssetUrl('mobile','header_logo',base);
+ const logo2Url=String(node.logo2?.url||'').trim()||platformAssetUrl('mobile','header_logo_secondary',base);
+ return{
+  layout:node.layout||(['logo_only','logo_logo','text_logo','logo_text'].includes(ui.header_layout)?ui.header_layout:'logo_only'),
+  text:String(node.text||ui.header_text||config?.brand?.name||'Nethor').trim().slice(0,80)||'Nethor',
+  logo1:{...node.logo1,url:logo1Url,custom:!!String(node.logo1?.url||'').trim(),fallbackName:String(legacy1?.name||'')},
+  logo2:{...node.logo2,url:logo2Url,custom:!!String(node.logo2?.url||'').trim(),fallbackName:String(legacy2?.name||'')},
+  inheritedFrom:base
+ }
+}
+function mobileHeaderThemeAssetNode(theme,slot){
+ const node=mobileHeaderThemeNode(theme),key=slot==='logo2'?'logo2':'logo1';
+ node[key]=normalizeMobileHeaderThemeAsset(node[key]);
+ return node[key]
+}
+
 const MOBILE_WELCOME_THEME_KEYS=Object.freeze(['light','dark','mineral','sage','plum','halloween']);
 function normalizeMobileWelcomeThemeAssets(raw){
  raw=raw&&typeof raw==='object'?raw:{};
