@@ -37,9 +37,50 @@ function mobileUserMenuModules(api,profile){
   return explicit===true?true:m.defaultUser!==false
  })
 }
+function halloweenAllowed(profile){
+ const role=String(profile?.role||'').trim().toLowerCase();
+ const firstName=String(profile?.display_name||'').trim().toLowerCase().split(/\s+/)[0]||'';
+ return role==='admin'||firstName==='enzo'
+}
+function favoriteTheme(profile){
+ const value=String(profile?.ui_preferences?.mobile_theme||'').trim().toLowerCase();
+ return ['mineral','sage','plum'].includes(value)?value:''
+}
+function mobileMode(profile){
+ const prefs=profile?.ui_preferences||{};
+ if(prefs.mobile_theme==='halloween'&&halloweenAllowed(profile))return'halloween';
+ return prefs.mobile_mode==='halloween'&&halloweenAllowed(profile)?'halloween':'favorite'
+}
+function favoriteThemeLabel(profile){
+ return({mineral:'Bleu minéral',sage:'Sauge',plum:'Prune nocturne'})[favoriteTheme(profile)]||'Mode clair'
+}
+function applyMobileMode(profile,mode){
+ const favorite=favoriteTheme(profile),custom=mode==='halloween'&&halloweenAllowed(profile)?'halloween':favorite;
+ const theme=['plum','halloween'].includes(custom)?'dark':'light',root=document.documentElement;
+ if(custom)root.dataset.nethorMobileTheme=custom;else delete root.dataset.nethorMobileTheme;
+ root.dataset.theme=theme;root.style.colorScheme=theme;
+ try{localStorage.setItem('nethorMobileTheme',custom);localStorage.setItem('nettoTheme',theme)}catch(_){}
+}
 function syncThemeText(){
- const dark=document.documentElement.dataset.theme==='dark';
- document.querySelectorAll('.nettoThemeLabel').forEach(el=>el.textContent=dark?'Mode clair':'Mode sombre')
+ const profile=window.NettoProfileUI?.profile,mode=mobileMode(profile);
+ document.querySelectorAll('.nettoThemeLabel').forEach(el=>el.textContent=mode==='halloween'?'Mode favori':'Mode Halloween');
+ document.querySelectorAll('#nettoMobileThemeBtn .nettoMobileMenuCopy small').forEach(el=>el.textContent=mode==='halloween'?'Revenir à '+favoriteThemeLabel(profile):'Activer le thème Halloween');
+ document.querySelectorAll('#nettoMobileThemeBtn .nettoThemeIconSvg').forEach(el=>{el.textContent=mode==='halloween'?'★':'🎃';el.style.fontSize='18px'})
+}
+async function setMobileMode(mode){
+ const api=window.NettoProfileUI,profile=api?.profile;if(!api||!profile)return'favorite';
+ mode=mode==='halloween'&&halloweenAllowed(profile)?'halloween':'favorite';
+ const current=profile.ui_preferences&&typeof profile.ui_preferences==='object'?JSON.parse(JSON.stringify(profile.ui_preferences)):{};
+ const prefs={...current,mobile_theme:favoriteTheme(profile),mobile_mode:mode};
+ profile.ui_preferences=prefs;applyMobileMode(profile,mode);
+ try{
+  if(api.client&&api.session?.user?.id){
+   const {error}=await api.client.from('profiles').update({ui_preferences:prefs}).eq('id',api.session.user.id);
+   if(error)throw error
+  }
+  window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile}}))
+ }catch(error){console.warn('[Nethor UserMenu] mobile mode',error)}
+ return mode
 }
 function navigate(raw){
  if(window.NethorNavigation?.navigate)return window.NethorNavigation.navigate(raw);
@@ -67,10 +108,9 @@ function bindMenu(){
  const theme=document.getElementById('nettoMobileThemeBtn');
  if(theme)theme.onclick=async e=>{
   e.preventDefault();e.stopPropagation();
-  const api=window.NettoProfileUI,next=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  const profile=window.NettoProfileUI?.profile,current=mobileMode(profile),next=current==='halloween'?'favorite':'halloween';
   try{window.NettoSounds?.play?.('switch')}catch(_){}
-  if(api?.setThemePreference)await api.setThemePreference(next);
-  else{document.documentElement.dataset.theme=next;try{localStorage.setItem('nettoTheme',next)}catch(_){}}
+  await setMobileMode(next);
   syncThemeText()
  };
  const update=document.getElementById('nettoMobileUpdateBtn');
@@ -110,7 +150,7 @@ function render(){
   problemUrl,
   profileVisible:mobileMenuItemSetting(api,p,'profile',true)&&(p.role==='admin'||p?.ui_preferences?.user_menu?.profile!==false),
   settingsVisible:mobileMenuItemSetting(api,p,'settings',true),
-  themeVisible:mobileMenuItemSetting(api,p,'theme',true),
+  themeVisible:mobileMenuItemSetting(api,p,'theme',true)&&halloweenAllowed(p),
   updateVisible:mobileMenuItemSetting(api,p,'update',true),
   iconFor:api.mobileNavIcon
  });
