@@ -80,7 +80,7 @@ function installMobileVisualThemes(){
  }
  function stylesheet(){
   if(document.getElementById('nethorMobilePaletteStyles'))return;
-  const link=document.createElement('link');link.id='nethorMobilePaletteStyles';link.rel='stylesheet';link.href='ui/mobile/mobile-themes.css?v=3';document.head?.appendChild(link)
+  const link=document.createElement('link');link.id='nethorMobilePaletteStyles';link.rel='stylesheet';link.href='ui/mobile/mobile-themes.css?v=4';document.head?.appendChild(link)
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',stylesheet,{once:true});else stylesheet()
 }
