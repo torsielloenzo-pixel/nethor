@@ -643,6 +643,7 @@ html[data-nethor-platform="mobile"] .pickAvatar:not(.hasPhoto),
 html[data-nethor-platform="mobile"] .contactAvatar:not(.hasPhoto),
 html[data-nethor-platform="mobile"] .nettoTopAvatar:not(.hasPhoto),
 html[data-nethor-platform="mobile"] .nethorMobileHeaderAvatar:not(.hasPhoto),
+html[data-nethor-platform="mobile"] .nettoUserCardAvatar:not(.hasPhoto),
 html[data-nethor-platform="mobile"] .npvAvatar:not(.hasPhoto),
 html[data-nethor-platform="mobile"] .profileMobileLayout .avatar:not(.hasPhoto){
  background-color:var(--nethor-profile-avatar-bg)!important;
