@@ -1,17 +1,19 @@
 {
-  "version": 389,
-  "label": "v1.46.40",
+  "version": 390,
+  "label": "v1.46.41",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Entête · Mobile/Desktop indépendants",
-  "message": "Les compositions d’en-tête Mobile et Desktop sont maintenant strictement indépendantes, avec deux emplacements de logo persistants.",
-  "published_at": "2026-10-07T17:30:00.000Z",
+  "title": "Mobile · Favori / Halloween",
+  "message": "Le mode sombre générique disparaît du Mobile. Le Menu utilisateur bascule désormais entre le thème favori et Halloween.",
+  "published_at": "2026-10-07T18:13:29.940Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Correction de la persistance du deuxième emplacement de logo.",
-    "Mobile et Desktop conservent désormais séparément Logo 1, Logo 2, texte et composition.",
-    "Modifier l’identité Mobile ne rafraîchit plus l’identité Desktop, et inversement.",
-    "Les emplacements sont maintenant affichés explicitement comme « Emplacement Logo 1 » et « Emplacement Logo 2 »."
+    "Mobile : suppression du Mode sombre du Menu utilisateur et de Personnalisation → Apparence.",
+    "Personnalisation → Apparence contient désormais uniquement le favori : Clair, Bleu minéral, Sauge ou Prune nocturne.",
+    "Halloween n’apparaît plus dans Apparence ; il devient un mode séparé accessible depuis le Menu utilisateur pour Enzo et les Administrateurs.",
+    "Le bouton du Menu utilisateur affiche « Mode Halloween » depuis le favori et « Mode favori » lorsque Halloween est actif.",
+    "Les anciens comptes restés en mode sombre Mobile reviennent automatiquement sur leur favori ou sur Clair.",
+    "Le mode sombre interne reste utilisé uniquement comme base technique des thèmes Prune nocturne et Halloween."
   ]
 }
