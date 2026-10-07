@@ -1,19 +1,18 @@
 {
-  "version": 381,
-  "label": "v1.46.32",
+  "version": 382,
+  "label": "v1.46.33",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Planning mobile · Vue Jour",
-  "message": "Nouvelle vue Jour harmonisée avec la semaine : horaires personnels, cartes d’équipe, filtres et repères temporels basés sur le planning publié.",
-  "published_at": "2026-10-06T23:29:00.041Z",
+  "title": "Personnalisation mobile · 3 thèmes",
+  "message": "Trois nouvelles ambiances visuelles mobiles : Bleu minéral, Sauge et Prune nocturne, sans modifier la structure des pages ni le thème du bureau.",
+  "published_at": "2026-10-07T00:19:03.242Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Nouvelle présentation du Planning Jour mobile, dans le style de la Semaine.",
-    "Mes horaires en priorité ; autres collaborateurs groupés par créneaux en cours, à venir ou terminés.",
-    "Indicateurs calculés uniquement à partir des horaires planifiés, sans prétendre confirmer une présence.",
-    "Navigation rapide entre les jours et congés/repos dans une section dépliable.",
-    "Présentation des jours passés/futurs sans statuts de présence instantanée.",
-    "Lecture seule hors connexion conservée et aucune purge du stockage local."
+    "Bleu minéral : bleu ardoise sobre pour une interface professionnelle.",
+    "Sauge : fond clair et accents vert doux.",
+    "Prune nocturne : palette sombre violette.",
+    "Sélection depuis Personnalisation > Apparence, mémorisée avec le profil.",
+    "Organisation, planning, horaires, statuts et fonctionnalités inchangés ; mode hors ligne préservé."
   ]
 }
