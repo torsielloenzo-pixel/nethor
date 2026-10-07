@@ -284,14 +284,41 @@ function applyMobileSystemIcons(config={}){
   }else manifest.href=manifest.dataset.nethorDefaultHref
  }
 }
+function mobileHeaderLayout(ui={}){
+ const value=String(ui.header_layout||'logo_only');
+ return ['logo_only','logo_logo','text_logo','logo_text'].includes(value)?value:'logo_only'
+}
+function mobileHeaderText(config={},ui={}){
+ return String(ui.header_text||config?.brand?.name||'Nethor').trim().slice(0,80)||'Nethor'
+}
+function mobileHeaderPrimaryNode(url){
+ if(url){
+  const img=document.createElement('img');img.src=url;img.alt='';img.draggable=false;img.className='nethorMobileConfiguredBrand nethorHeaderLogoPrimary';return img
+ }
+ const word=document.createElement('span');word.className='nethorHeaderDefaultWordmark';word.innerHTML=defaultWordmarkHtml;return word
+}
+function mobileHeaderTextNode(value){
+ const node=document.createElement('span');node.className='nethorHeaderText';node.textContent=value;return node
+}
+function mobileHeaderSecondaryNode(url){
+ if(!url)return null;
+ const img=document.createElement('img');img.src=url;img.alt='';img.draggable=false;img.className='nethorHeaderLogoSecondary';return img
+}
+function renderMobileHeaderIdentity(config={}){
+ if(!mobileWordmark)return;
+ const ui=config?.platform_ui?.mobile||{},layout=mobileHeaderLayout(ui);
+ const primaryUrl=mobileThemedAsset(ui?.header_logo,String(config?.brand?.header_logo_url||'').trim());
+ const secondaryUrl=mobileThemedAsset(ui?.header_logo_secondary,'');
+ const primary=mobileHeaderPrimaryNode(primaryUrl),secondary=mobileHeaderSecondaryNode(secondaryUrl),textNode=mobileHeaderTextNode(mobileHeaderText(config,ui));
+ const nodes=layout==='logo_logo'?[primary,secondary]:layout==='text_logo'?[textNode,primary]:layout==='logo_text'?[primary,textNode]:[primary];
+ mobileWordmark.replaceChildren(...nodes.filter(Boolean));
+ mobileWordmark.classList.add('configured','nethorHeaderIdentity');
+ mobileWordmark.dataset.headerLayout=layout;
+ mobileWordmark.classList.toggle('hasSecondary',!!secondaryUrl)
+}
 function applyConfiguredChrome(config={}){
  configuredSiteConfig=config&&typeof config==='object'?config:{};
- const mobileUi=config?.platform_ui?.mobile||{},headerUrl=mobileThemedAsset(mobileUi?.header_logo,String(config?.brand?.header_logo_url||'').trim());
- if(mobileWordmark){
-  if(headerUrl){
-   mobileWordmark.innerHTML='';const img=document.createElement('img');img.src=headerUrl;img.alt='';img.draggable=false;img.className='nethorMobileConfiguredBrand';mobileWordmark.appendChild(img);mobileWordmark.classList.add('configured')
-  }else{if(mobileWordmark.innerHTML!==defaultWordmarkHtml)mobileWordmark.innerHTML=defaultWordmarkHtml;mobileWordmark.classList.remove('configured')}
- }
+ renderMobileHeaderIdentity(config);
  const allowed=['home','planning','chat'],raw=Array.isArray(config?.mobile_bar?.items)?config.mobile_bar.items:[],order=[],seen=new Set();
  raw.forEach(item=>{const id=String(item?.id||'');if(allowed.includes(id)&&!seen.has(id)){seen.add(id);order.push(id)}});
  allowed.forEach(id=>{if(!seen.has(id))order.push(id)});
