@@ -149,6 +149,60 @@ function widgetVisible(id){
  if(!allowed)return false;
  return typeof personal==='boolean'?personal:true
 }
+
+const HOME_BANNER_THEMES=Object.freeze({
+ light:{bg1:'#ffffff',bg2:'#fff1e9',accent:'#ff6a3d',secondary:'#ffb18e'},
+ dark:{bg1:'#1d2228',bg2:'#30221e',accent:'#ff5b2a',secondary:'#7c2d20'},
+ mineral:{bg1:'#ffffff',bg2:'#d9eaf7',accent:'#245f8c',secondary:'#9ebfd7'},
+ sage:{bg1:'#ffffff',bg2:'#e0eddf',accent:'#356d53',secondary:'#a8c7b0'},
+ plum:{bg1:'#29253d',bg2:'#473259',accent:'#cbb8f4',secondary:'#79548d'},
+ halloween:{bg1:'#2b111c',bg2:'#18101d',accent:'#ff7a1a',secondary:'#7f3d8e'}
+});
+function homeBannerThemeKey(){
+ const custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase();
+ if(['mineral','sage','plum','halloween'].includes(custom))return custom;
+ return document.documentElement.dataset.theme==='dark'?'dark':'light'
+}
+function homeBannerLayerDefaults(theme,layer){
+ const h=theme==='halloween';
+ if(layer==='background')return{x:50,y:50,width:116,opacity:100,visible:true};
+ if(layer==='back')return{x:h?82:87,y:h?27:56,width:h?34:42,opacity:h?62:58,visible:true};
+ return{x:h?86:87,y:h?66:62,width:h?46:42,opacity:100,visible:true}
+}
+function homeBannerLayer(theme,layer){
+ const raw=state.config?.platform_ui?.mobile?.home_banner?.themes?.[theme]?.layers?.[layer],d=homeBannerLayerDefaults(theme,layer),node=raw&&typeof raw==='object'?raw:{};
+ const min=layer==='background'?70:8,max=layer==='background'?240:140;
+ return{
+  url:String(node.url||'').trim(),
+  x:Math.max(0,Math.min(100,Number.isFinite(Number(node.x))?Number(node.x):d.x)),
+  y:Math.max(0,Math.min(100,Number.isFinite(Number(node.y))?Number(node.y):d.y)),
+  width:Math.max(min,Math.min(max,Number.isFinite(Number(node.width))?Number(node.width):d.width)),
+  opacity:Math.max(0,Math.min(100,Number.isFinite(Number(node.opacity))?Number(node.opacity):d.opacity)),
+  visible:node.visible!==false
+ }
+}
+function homeBannerDefaultSvg(theme,layer){
+ const t=HOME_BANNER_THEMES[theme]||HOME_BANNER_THEMES.light;
+ if(layer==='background')return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+t.bg1+'"/><stop offset="1" stop-color="'+t.bg2+'"/></linearGradient><radialGradient id="r" cx=".84" cy=".38" r=".48"><stop stop-color="'+t.accent+'" stop-opacity=".16"/><stop offset="1" stop-color="'+t.accent+'" stop-opacity="0"/></radialGradient></defs><rect width="1200" height="360" fill="url(#g)"/><rect width="1200" height="360" fill="url(#r)"/></svg>';
+ if(theme==='halloween'&&layer==='back')return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220"><g fill="#09060c" opacity=".95"><path d="M25 96c24-32 51-42 83-35-12 12-15 27-8 45 14-13 31-17 51-10-20 12-31 30-33 54-19-15-37-18-55-8-5-18-18-33-38-46z"/><path d="M205 45c18-24 39-31 63-26-9 9-11 21-6 34 11-10 24-13 39-7-15 9-23 22-25 40-14-11-28-13-41-6-4-14-13-25-30-35z"/><path d="M293 127c13-18 28-23 46-19-7 7-8 15-4 25 8-7 18-9 29-5-11 7-17 16-18 29-11-8-21-10-31-4-3-10-10-19-22-26z"/></g></svg>';
+ if(layer==='back')return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300"><circle cx="210" cy="174" r="112" fill="'+t.secondary+'" opacity=".66"/><circle cx="120" cy="230" r="72" fill="'+t.accent+'" opacity=".20"/></svg>';
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300"><circle cx="190" cy="154" r="118" fill="'+t.accent+'" opacity=".72"/><circle cx="226" cy="118" r="82" fill="'+t.secondary+'" opacity=".38"/></svg>'
+}
+function homeBannerDefaultUrl(theme,layer){
+ if(theme==='halloween'&&layer==='main')return'assets/halloween-pumpkin.svg';
+ return'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(homeBannerDefaultSvg(theme,layer))
+}
+function homeBannerComposition(){
+ const root=state.config?.platform_ui?.mobile?.home_banner,theme=homeBannerThemeKey(),themeNode=root?.themes?.[theme];
+ if(root?.enabled===false||themeNode?.enabled===false)return{managed:false,html:''};
+ const order=['background','back','main'],html=order.map((layer,index)=>{
+  const node=homeBannerLayer(theme,layer);if(node.visible===false)return'';
+  const url=node.url||homeBannerDefaultUrl(theme,layer),z=layer==='background'?0:index+1;
+  return '<img class="mhdBannerLayer mhdBannerLayer-'+layer+'" src="'+esc(url)+'" alt="" aria-hidden="true" draggable="false" style="--mhd-banner-x:'+node.x+'%;--mhd-banner-y:'+node.y+'%;--mhd-banner-width:'+node.width+'%;--mhd-banner-opacity:'+(node.opacity/100).toFixed(2)+';--mhd-banner-z:'+z+'">'
+ }).join('');
+ return{managed:true,html}
+}
+
 function routeIdForFile(file){
  const table=window.NethorNavigation?.mobileViewTable?.()||{};
  const target=String(file||'').toLowerCase();
@@ -604,8 +658,9 @@ async function render(){
   welcomeHint='Prochaine prise de poste demain.'
  }
 
+ const bannerComposition=homeBannerComposition();
  const welcomeHtml=widgetVisible('welcome')
-  ?'<section class="mhdHero mhdWelcome '+esc(welcomeTone)+'"><div class="mhdWelcomeCopy"><h1>'+esc(welcomeTitle)+'</h1><span class="mhdWelcomeDate">'+esc(dateText)+'</span><p>'+esc(welcomeHint)+'</p></div></section>'
+  ?'<section class="mhdHero mhdWelcome '+esc(welcomeTone)+(bannerComposition.managed?' mhdBannerManaged':'')+'">'+bannerComposition.html+'<div class="mhdWelcomeCopy"><h1>'+esc(welcomeTitle)+'</h1><span class="mhdWelcomeDate">'+esc(dateText)+'</span><p>'+esc(welcomeHint)+'</p></div></section>'
   :'';
 
  let nextShiftHtml='';
