@@ -220,8 +220,9 @@ function applyDesktopShellConfig(site={}){
  const store=document.querySelector('.nethorDesktopStoreSwitch');if(store){store.dataset.desktopStoreUrl=c.header.store_url||'home.html';const n=store.querySelector('[data-nethor-store-name]'),s=store.querySelector('[data-nethor-store-subtitle]');if(n)n.textContent=c.header.store_name;if(s)s.textContent=c.header.store_subtitle;const thumb=store.querySelector('.nethorStoreThumb'),photo=c.header.show_store_image?String(c.header.store_image_url||site?.store_info_widget?.photo_url||'').trim():'';if(thumb){thumb.classList.toggle('hasPhoto',!!photo);thumb.style.backgroundImage=photo?'url("'+photo.replace(/"/g,'%22')+'")':''}}
  const sidebar=document.querySelector('.nethorDesktopSidebar');
  if(sidebar){
-  const brand=sidebar.querySelector('.nethorSidebarBrand'),logoNode=site?.platform_ui?.desktop?.header_logo||{},hasCustomLogo=!!String(logoNode?.url||logoNode?.light?.url||logoNode?.dark?.url||site?.brand?.header_logo_url||'').trim();
-  if(brand){brand.classList.toggle('customLogo',hasCustomLogo);brand.style.backgroundImage=hasCustomLogo?'var(--nethor-header-logo)':''}
+  const brand=sidebar.querySelector('.nethorSidebarBrand');
+  if(brand){brand.classList.remove('customLogo');brand.style.removeProperty('background-image')}
+  try{window.NettoProfileUI?.applyHeaderLogo?.(site)}catch(_){}
  }
  if(sidebar)Object.entries(c.sidebar.items).forEach(([key,item])=>{const el=sidebar.querySelector('[data-sidebar-key="'+CSS.escape(key)+'"]');if(!el)return;el.classList.toggle('hidden',item.enabled===false);el.dataset.sidebarUrl=item.url||DESKTOP_SIDEBAR_DEFAULTS[key]?.url||'home.html';const label=el.querySelector('.nethorSidebarLabel');if(label)label.textContent=item.label||DESKTOP_SIDEBAR_DEFAULTS[key]?.label||key});
  startDesktopClock();scaleDesktopText(document.body)
