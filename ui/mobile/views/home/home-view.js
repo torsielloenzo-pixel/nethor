@@ -447,7 +447,7 @@ async function paintTeamAvatars(rows){
   if(!state.mounted)return;
   const el=state.dashboard?.querySelector('[data-home-team-avatar="'+row.id+'"]');if(!el)continue;
   const url=await signedAvatar(row.profile);
-  if(url){el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}
+  if(url){el.classList.add('hasPhoto');el.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';el.textContent=''}else el.classList.remove('hasPhoto')
  }
 }
 
@@ -705,7 +705,7 @@ async function render(){
   sections.push('<section class="mhdCard mhdSection mhdTeamSection'+(taskMode(state.profile.role)==='editor'?' editorCompanion':'')+'"><div class="mhdSectionHead"><div class="mhdTitleWithIcon"><span class="mhdIcon">'+dashboardIcon('team_today')+'</span><strong class="mhdTeamHeading">Équipe aujourd’hui</strong></div><button class="mhdSectionLink" type="button" data-home-nav="'+esc(target)+'">Voir le planning ›</button></div>'+(shown.length?'<div class="mhdTeam">'+shown.map((item,index)=>{
     const id='team-'+index;
     if(item.profile)avatarRows.push({id,profile:item.profile});
-    return '<div class="mhdPerson"><span class="mhdAvatar" data-home-team-avatar="'+id+'" style="background-color:'+esc(item.profile?.profile_color||'#ff5a2a')+'">'+esc(avatarInitials(item.name))+'</span><strong>'+esc(item.name)+'</strong><small>'+esc(item.profile?roleLabel(item.profile.role):'Équipe')+'</small></div>'
+    return '<div class="mhdPerson"><span class="mhdAvatar" data-home-team-avatar="'+id+'" style="background-color:var(--nethor-profile-avatar-bg,#ff5a2a);color:var(--nethor-profile-avatar-fg,#fff)">'+esc(avatarInitials(item.name))+'</span><strong>'+esc(item.name)+'</strong><small>'+esc(item.profile?roleLabel(item.profile.role):'Équipe')+'</small></div>'
   }).join('')+(extra?'<span class="mhdMorePeople">+'+extra+'</span>':'')+'</div>':'<div class="mhdEmpty">'+(snapshot.planningLoadError?'Impossible de vérifier l’équipe du jour.':'Aucun membre planifié aujourd’hui.')+'</div>')+'</section>')
  }
 
