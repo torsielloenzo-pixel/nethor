@@ -410,7 +410,8 @@ function normalize(raw){
    desktop_shortcut_icon:simpleAsset('desktop_shortcut_icon'),
    update_logo:simpleAsset('update_logo'),
    controls,
-   notification_visuals:kind==='mobile'?notificationVisuals:{}
+   notification_visuals:kind==='mobile'?notificationVisuals:{},
+   home_banner:kind==='mobile'?normalizeMobileHomeBanner(current.home_banner):{}
   }
  }
  return c
@@ -1351,7 +1352,8 @@ function ensurePlatformUiConfig(){
    desktop_shortcut_icon:simpleAsset('desktop_shortcut_icon'),
    update_logo:simpleAsset('update_logo'),
    controls,
-   notification_visuals:kind==='mobile'?notificationVisuals:{}
+   notification_visuals:kind==='mobile'?notificationVisuals:{},
+   home_banner:kind==='mobile'?normalizeMobileHomeBanner(current.home_banner):{}
   }
  }
  return config.platform_ui
