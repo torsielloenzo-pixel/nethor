@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 82" role="img" aria-label="Toit Halloween avec chat noir">
+  <defs>
+    <linearGradient id="roofFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24152a"/>
+      <stop offset="1" stop-color="#120d17"/>
+    </linearGradient>
+    <linearGradient id="roofEdge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b54e18" stop-opacity=".08"/>
+      <stop offset=".5" stop-color="#f07a22" stop-opacity=".88"/>
+      <stop offset="1" stop-color="#8d3b16" stop-opacity=".14"/>
+    </linearGradient>
+    <filter id="catGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.1" flood-color="#000" flood-opacity=".5"/>
+    </filter>
+  </defs>
+
+  <!-- Roof silhouette -->
+  <path d="M8 82 100 34 192 82Z" fill="url(#roofFace)"/>
+  <path d="M31 82 100 47 169 82Z" fill="#1b1120" opacity=".96"/>
+  <path d="M16 81 100 37 184 81" fill="none" stroke="url(#roofEdge)" stroke-width="3.1" stroke-linecap="round"/>
+  <path d="M57 81 100 58 143 81" fill="none" stroke="#312038" stroke-width="3" opacity=".68"/>
+
+  <!-- Chimney -->
+  <path d="M154 55h18v27h-18z" fill="#120d16"/>
+  <path d="M151 52h24v7h-24z" rx="2" fill="#211427"/>
+  <path d="M153 52h20" stroke="#c45a1d" stroke-opacity=".34" stroke-width="1.5"/>
+
+  <!-- Cat -->
+  <g filter="url(#catGlow)" fill="#090a0c">
+    <!-- tail -->
+    <path d="M121 43c14 1 15-16 7-18-7-2-8 5-4 7 2 1 4 0 4-2 0-1-.4-2-1-2 5 1 6 12-3 14-4 1-7-1-9-3z"/>
+    <!-- body -->
+    <ellipse cx="105" cy="41" rx="11.5" ry="16"/>
+    <!-- chest -->
+    <path d="M97 50c1 7 1 11-4 15h18c-3-4-4-9-3-15z"/>
+    <!-- head -->
+    <circle cx="102" cy="24" r="10.2"/>
+    <!-- ears -->
+    <path d="M94 18 96 8l6 7zM104 15l8-6-1 11z"/>
+    <!-- front legs -->
+    <path d="M98 45h4v19h-4zM105 45h4v19h-4z"/>
+    <!-- paws -->
+    <ellipse cx="100" cy="64" rx="4" ry="1.5"/>
+    <ellipse cx="108" cy="64" rx="4" ry="1.5"/>
+  </g>
+
+  <!-- eyes -->
+  <path d="M97.4 23.1c1.8-1 3.5-.7 4.7.2-1.6 2-3.2 2.1-4.7-.2Zm7.2.2c1.3-.9 3-.9 4.8.1-1.6 2.2-3.2 2.1-4.8-.1Z" fill="#ffd45e"/>
+  <circle cx="99.6" cy="23.2" r=".7" fill="#2b1608"/>
+  <circle cx="107.2" cy="23.3" r=".7" fill="#2b1608"/>
+</svg>
