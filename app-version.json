@@ -1,17 +1,17 @@
 {
-  "version": 393,
-  "label": "v1.46.44",
+  "version": 394,
+  "label": "v1.46.45",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Halloween Mobile · Toit & chat noir",
-  "message": "L’entête Halloween Mobile intègre désormais le haut d’un toit sous la lune, avec un chat noir perché sur le faîtage.",
-  "published_at": "2026-10-07T18:58:00.000Z",
+  "title": "Halloween Mobile · Toit & chat corrigés",
+  "message": "Le toit et le chat de l’entête Halloween reprennent exactement le visuel validé, et la lune passe désormais derrière eux.",
+  "published_at": "2026-10-07T19:19:00.000Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Décor ajouté uniquement au thème Halloween Mobile.",
-    "Le toit est positionné sous la lune avec un liseré orange discret.",
-    "Le chat noir est placé sur le faîtage devant la lune, avec de petits yeux jaunes.",
-    "La cloche, le profil, le logo et toutes les interactions de l’entête restent fonctionnels."
+    "Le toit et le chat utilisent directement l’extrait du visuel précédemment validé.",
+    "La lune est placée sur un calque inférieur au toit et au chat.",
+    "Les commandes de l’entête restent au premier plan et fonctionnelles.",
+    "Modification limitée au thème Halloween sur Mobile."
   ]
 }
