@@ -1,18 +1,19 @@
 {
-  "version": 399,
-  "label": "v1.46.50",
+  "version": 400,
+  "label": "v1.46.51",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Gestion · Cadres de profil fiabilisés",
-  "message": "Les cadres de profil par thème utilisent désormais une table dédiée et ne peuvent plus être écrasés par une sauvegarde de site_config.",
-  "published_at": "2026-10-07T20:07:20.929Z",
+  "title": "Gestion · Création de cadre corrigée",
+  "message": "Créer un cadre de profil par thème l’enregistre désormais réellement, l’affiche immédiatement sous le formulaire et le bouton général Enregistrer reconfirme la bibliothèque.",
+  "published_at": "2026-10-08T10:49:46.211Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Nouvelle table dédiée mobile_theme_profile_frames pour les cadres Mobile par thème.",
-    "Gestion charge, crée et supprime les cadres directement dans cette table.",
-    "Mon profil Mobile charge cette bibliothèque via MobileServices, indépendamment de site_config.",
-    "Les cadres ne peuvent plus disparaître lorsqu’une autre modification de Gestion enregistre site_config.",
-    "Les derniers imports retrouvés pour Clair et Halloween ont été récupérés dans la nouvelle bibliothèque."
+    "Correction SQL : le rôle authenticated possède désormais les droits SELECT, INSERT, UPDATE et DELETE sur mobile_theme_profile_frames.",
+    "Les règles RLS d’écriture utilisent la vérification administrateur déjà employée par Nethor.",
+    "Créer le cadre = enregistrement immédiat dans la table dédiée.",
+    "Après création, le cadre apparaît immédiatement avec son aperçu dans la liste du thème.",
+    "La suppression est immédiate et retire aussi l’aperçu.",
+    "Le bouton général « Enregistrer les modifications » recharge la bibliothèque pour confirmer l’état enregistré."
   ]
 }
