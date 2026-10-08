@@ -237,7 +237,7 @@ function authIsRevokedSessionError(error){
  const code=String(error?.code||'').toUpperCase(),message=String(error?.message||'');
  return code==='NETHOR_SESSION_REVOKED'||/session inactive ou révoquée/i.test(message)||(/401/.test(String(error?.status||''))&&/session/i.test(message))
 }
-async function loadSessionProfile(uid,fields='display_name,role,ui_preferences'){
+async function loadSessionProfile(uid,fields='display_name,role,ui_preferences,account_enabled'){
  let lastError=null;
  for(let attempt=0;attempt<3;attempt++){
   const {data,error}=await db.from('profiles').select(fields).eq('id',uid).maybeSingle();
@@ -269,7 +269,7 @@ async function boot(){
   }
   return showLogin('Connexion momentanément indisponible. Recharge la page : ta session est conservée.')
  }
- if(!data){await db.auth.signOut({scope:'local'});return showLogin('Compte non autorisé.')}
+ if(!data||data.account_enabled===false){await db.auth.signOut({scope:'local'});return showLogin(data?.account_enabled===false?'Ce compte a été désactivé par un administrateur.':'Compte non autorisé.')}
  profile=data;await syncProfileTheme(profile,session.user.id);window.currentRole=profile.role;const bootMaintenanceTarget=await maintenanceTargetForRole(profile.role,'');if(bootMaintenanceTarget==='maintenance.html'){location.replace('maintenance.html');return}await window.NettoProfileUI?.refresh?.();const stockPermission=window.NettoProfileUI?.permissionLevel?.('stock',profile)||'none';if(stockPermission==='none'){location.replace('home.html');return}canOperateFL=stockPermission==='operate'||stockPermission==='manage';canManageFL=stockPermission==='manage';window.canOperateFL=canOperateFL;window.canManageFL=canManageFL;const returnTo=safeReturnPath();if(returnTo&&profile.role==='admin'){location.replace(returnTo);return}$('login').classList.add('hidden');$('site').classList.remove('hidden');$('who').textContent=(profile.display_name||'Utilisateur')+' • '+(window.NettoProfileUI?.roleLabel?.(profile.role)||profile.role);
  const manager=canManageFL,isAdmin=profile.role==='admin';document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',!isAdmin));document.querySelectorAll('.stockModeBtn[data-mode="order"]').forEach(x=>x.classList.toggle('hidden',!canOperateFL));document.querySelectorAll('.stockModeBtn[data-mode="manage"]').forEach(x=>x.classList.toggle('hidden',!canManageFL));$('suggestBtn')?.classList.toggle('hidden',!canOperateFL);$('cartBtn')?.classList.toggle('hidden',!canOperateFL);$('manageBtn')?.classList.toggle('hidden',!canManageFL);
  const qs=new URLSearchParams(location.search),requested=qs.get('mode')||localStorage.getItem('nettoStockMode')||'stock';stockMode=(['stock','consult'].includes(requested)||(requested==='order'&&canOperateFL)||(requested==='manage'&&canManageFL))?requested:'stock';
