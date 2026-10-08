@@ -77,7 +77,7 @@ function dayKey(index=currentDay){return isoDate(addDays(currentWeekStart,index)
 function modelDay(index=currentDay){return model?.days?.[dayKey(index)]||null}
 function totalForRow(row){if(!row)return 0;let n=0;for(const v of row)if(v==='g'||v==='b')n++;return n*.25}
 function initials(n){return String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()).join('')}
-function planningProfileFor(name){const n=norm(name),base=n.replace(/\s+[a-z]$/,'');return teamProfiles.find(p=>norm(p.display_name)===n)||teamProfiles.find(p=>norm(p.display_name)===base)||null}
+function planningProfileFor(name){const n=norm(name),base=n.replace(/\s+[a-z]$/,'');return teamProfiles.find(p=>norm(p.planning_name)===n)||teamProfiles.find(p=>norm(p.planning_name)===base)||teamProfiles.find(p=>norm(p.display_name)===n)||teamProfiles.find(p=>norm(p.display_name)===base)||null}
 function canOpenPlanningUserCard(){return role==='admin'||role==='role_point-de-vente'}
 function identityAvatarHtml(p,name,cls='planningIdentityAvatar'){const photo=p?.avatar_url,frame=p?.avatar_frame||'',clickable=canOpenPlanningUserCard()&&!!p?.id,tag=clickable?'button':'span',attrs=clickable?' type="button" class="'+cls+(photo?' hasPhoto':'')+' planningAvatarButton" data-planning-user-id="'+esc(p.id)+'" aria-label="Ouvrir la fiche de '+esc(name)+'"':' class="'+cls+(photo?' hasPhoto':'')+'"';return '<'+tag+attrs+' '+(frame?'data-avatar-frame="'+esc(frame)+'" ':'')+'style="background:'+(photo?'url(&quot;'+esc(photo)+'&quot;) center/cover no-repeat':'var(--nethor-profile-avatar-bg,#ff5a2a)')+';color:var(--nethor-profile-avatar-fg,#fff)">'+(photo?'':esc(initials(name)))+'</'+tag+'>'}
 async function planningUserCardFeature(){
