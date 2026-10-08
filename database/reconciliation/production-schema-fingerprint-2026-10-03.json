@@ -1,0 +1,3483 @@
+{
+  "source": "live production catalog",
+  "project": "stock-fl",
+  "project_ref": "gioxrpaiwogqqtakjpnv",
+  "captured_at": "2026-10-03",
+  "purpose": "Detect schema drift without storing business data.",
+  "counts": {
+    "tables": 52,
+    "functions": 85,
+    "views": 1,
+    "policies": 191,
+    "triggers": 30,
+    "indexes": 139
+  },
+  "fingerprint": {
+    "views": [
+      {
+        "hash": "21e6425019dac4055a3896a840be2ce8",
+        "name": "admin_page_view_counts",
+        "schema": "public"
+      }
+    ],
+    "tables": [
+      {
+        "rls": true,
+        "hash": "980f401cd5fd0062d7bd6eaad090f0f3",
+        "name": "app_options",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "a95c4d251817190e1abd790e19ee3503",
+        "name": "app_roles",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "9ce8a6e486cbcb0582571db3095426c1",
+        "name": "app_settings",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "612665732e27f3034644f4f90bc532f6",
+        "name": "app_subroles",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "b130fbc832050f4d039d0abe2072df58",
+        "name": "audit_logs",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "30e47a050ad7d909a25d50401f916462",
+        "name": "chat_archive_logs",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "ba144cb7d996ef89d09628f5a6e4ba82",
+        "name": "chat_conversations",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "f74b26776b322529848398672bb926ab",
+        "name": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "b78b6e7ac5406a301412ccdb128a6a2b",
+        "name": "chat_participants",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "979dab29b688efe2089aa5a02d29f3c1",
+        "name": "chat_presence_history",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "63989f19c18d2353696230ad0b8e469a",
+        "name": "chat_reactions",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "06a76a6142d5b45d1054eb10d2ffbbed",
+        "name": "chat_user_conversation_state",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "969e30c603e297a52d12b6ff5f20bf71",
+        "name": "daily_task_assignees",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "c826a9fbff96b01647d67d60eddbd8cd",
+        "name": "daily_task_catalog",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "2e3434bac5e4097131f0e81480e13d9d",
+        "name": "daily_task_completions",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "5d63f11e4dd341e86ca45bc29b4bc917",
+        "name": "daily_tasks",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "96bdae281565cd211295c0cf54cc6eb9",
+        "name": "email_reset_requests",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "661574f643acd56dcbf8ae02aeba79ba",
+        "name": "fl_analysis_files",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "90375f629ed0594fadc87b673be6bcb5",
+        "name": "login_history",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "1cd53ac4383a07a00fada0499f41077f",
+        "name": "notification_controls",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "cb83dd27cbf97f4a4bb51b689e83d05c",
+        "name": "notification_preferences",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "9043d7e472cc4ec7283b6b1256a2cae3",
+        "name": "notification_rules",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "08f6b78c2617e5ba1814306673f8fb66",
+        "name": "operations_deliveries",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "277e60ab5089ffa0d0481bedafddfefd",
+        "name": "operations_flashes",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "7f459b1653459284eaf77145adc63ed1",
+        "name": "operations_orders",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "3e9c13c3a4f12cb43096cf89929fa465",
+        "name": "page_view_counter_resets",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "6ada8cbf24a7a688b5ab6269d640e305",
+        "name": "password_reset_requests",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "28bf38880dd3a24b43af2f9e7c93083f",
+        "name": "planning_absences",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "11f5e953b447e530b7c978d54613c52a",
+        "name": "planning_logs",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "8e6e3b2c0ce78f6c8eeaf0eb0234484d",
+        "name": "planning_notifications",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "b59a0ac1a5657a3d4f4787756681e4b8",
+        "name": "planning_weeks",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "d141ba8c853cc1bc0276100dadafd4ae",
+        "name": "portal_change_logs",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "b12128daaeedea59c977d279275c2927",
+        "name": "product_categories",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "a3621e572166c44c1874aa57645cdd75",
+        "name": "product_families",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "d8b26ddf411d49c3a2318b816fc61a17",
+        "name": "product_packagings",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "92936d5f07412f93318578cb7db85cdf",
+        "name": "products",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "46940d95228e85715fd5ab6786be3702",
+        "name": "profiles",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "d71443783b7cd6c3bc8b460158d7ab60",
+        "name": "push_server_config",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "639af221b0c97f2088baa775dbe5cf92",
+        "name": "push_subscriptions",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "43be570c33614c91b838855619ebbed0",
+        "name": "reported_problems",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "eaaeff019004667697639aa180ae4bd6",
+        "name": "reward_catalog",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "da4b2eaed9706c78b6db562fb8f81134",
+        "name": "reward_equipment",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "ebf9783b19d744fe514dd5e293b8aff3",
+        "name": "reward_inventory",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "805c3b04d1892018afd70094d76d8a56",
+        "name": "reward_ledger",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "29dbaab44f4e214ab25efd99cd96f699",
+        "name": "reward_missions",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "d988093d24cb4f2b50310992929b7bb1",
+        "name": "reward_wallets",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "4f0ab50eb934fca73e8a215abdb19d78",
+        "name": "rush_rayon_scores",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "4865ca42b2c963927c1f5bb5d5b28de8",
+        "name": "stock_history",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "2da8f0534250ce1ce645c563a8e44674",
+        "name": "subrole_module_permissions",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "11b44a61b113c05ad8f04775d5c10298",
+        "name": "user_module_permissions",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "d1d1d6894fab995279919e2b2db63e2f",
+        "name": "user_recovery_emails",
+        "schema": "public"
+      },
+      {
+        "rls": true,
+        "hash": "16217cb845182c6091b9b87fd295e316",
+        "name": "user_subroles",
+        "schema": "public"
+      }
+    ],
+    "indexes": [
+      {
+        "hash": "80d64baef35eb1351cac170d854ec571",
+        "name": "app_options_kind_name_key",
+        "table": "app_options",
+        "schema": "public"
+      },
+      {
+        "hash": "30bc24dc754188b48bbf55f04f2a939e",
+        "name": "app_options_pkey",
+        "table": "app_options",
+        "schema": "public"
+      },
+      {
+        "hash": "c274304437e17b657d94fc23d301c6c7",
+        "name": "app_roles_created_by_idx",
+        "table": "app_roles",
+        "schema": "public"
+      },
+      {
+        "hash": "072c8b3b62364ccc35da5af404024444",
+        "name": "app_roles_pkey",
+        "table": "app_roles",
+        "schema": "public"
+      },
+      {
+        "hash": "6d1258c1df3502dea98a1e37a51e5fa1",
+        "name": "app_settings_pkey",
+        "table": "app_settings",
+        "schema": "public"
+      },
+      {
+        "hash": "68374038109f0cec07d71efa8a56f300",
+        "name": "app_settings_updated_by_idx",
+        "table": "app_settings",
+        "schema": "public"
+      },
+      {
+        "hash": "4f836c7afb2d34af7726f97f2aa6a50f",
+        "name": "app_subroles_created_by_idx",
+        "table": "app_subroles",
+        "schema": "public"
+      },
+      {
+        "hash": "fa1c6b653acc0605b1b40505609622bd",
+        "name": "app_subroles_pkey",
+        "table": "app_subroles",
+        "schema": "public"
+      },
+      {
+        "hash": "b642e1cbb14929b396ae8763a24e3a5f",
+        "name": "audit_logs_actor_date_idx",
+        "table": "audit_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "5491bc4c9982a8bb05bad1b37ce1d8ea",
+        "name": "audit_logs_area_date_idx",
+        "table": "audit_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "35d8f4eb0217d5ca795bf70ee92e5a1c",
+        "name": "audit_logs_created_at_idx",
+        "table": "audit_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "317c79cee841cd6d7153250cf6d9e107",
+        "name": "audit_logs_pkey",
+        "table": "audit_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "be361a87c0e57b65b14dca12c0f1e0e2",
+        "name": "audit_logs_target_date_idx",
+        "table": "audit_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "02ac2e3a7ae9d54db2617566bfef76a2",
+        "name": "chat_archive_logs_pkey",
+        "table": "chat_archive_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "4f48b842fbeae5bfea1a451f347e6fc6",
+        "name": "chat_conversations_archived_by_idx",
+        "table": "chat_conversations",
+        "schema": "public"
+      },
+      {
+        "hash": "172042ba8c415bde5a2bf2c5f00ccd50",
+        "name": "chat_conversations_created_by_idx",
+        "table": "chat_conversations",
+        "schema": "public"
+      },
+      {
+        "hash": "37369f35a91df5a0eb5f9f76094e314c",
+        "name": "chat_conversations_pkey",
+        "table": "chat_conversations",
+        "schema": "public"
+      },
+      {
+        "hash": "834be2ee33c72e39c2e9fbc02f9cf4b4",
+        "name": "chat_one_general_idx",
+        "table": "chat_conversations",
+        "schema": "public"
+      },
+      {
+        "hash": "469bc6e1580d2d28bda795a89ddf5370",
+        "name": "chat_messages_conversation_created_idx",
+        "table": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "hash": "9c25340290b73b58ae38f0448542d28d",
+        "name": "chat_messages_pkey",
+        "table": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "hash": "dd8ffd26b503440220ecf27fceda0431",
+        "name": "chat_messages_reply_to_idx",
+        "table": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "hash": "c27cb13125bb8c11461bf0e75ac43e16",
+        "name": "chat_messages_user_id_idx",
+        "table": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "hash": "a1926e6229127989eccb95e463382a00",
+        "name": "chat_participants_pkey",
+        "table": "chat_participants",
+        "schema": "public"
+      },
+      {
+        "hash": "ec6324c88aac711a5f57937c7c34e3c3",
+        "name": "chat_participants_user_idx",
+        "table": "chat_participants",
+        "schema": "public"
+      },
+      {
+        "hash": "cfb6c7e6d5adb58226f8f47d01934277",
+        "name": "chat_presence_history_pkey",
+        "table": "chat_presence_history",
+        "schema": "public"
+      },
+      {
+        "hash": "8e35d46b47571b764525ac17e99ae9d0",
+        "name": "chat_presence_last_seen_idx",
+        "table": "chat_presence_history",
+        "schema": "public"
+      },
+      {
+        "hash": "0d9249f248d40d38aef63d906bef28bc",
+        "name": "chat_reactions_pkey",
+        "table": "chat_reactions",
+        "schema": "public"
+      },
+      {
+        "hash": "35253991600690ec5aa57a399c5abbf8",
+        "name": "chat_reactions_user_id_idx",
+        "table": "chat_reactions",
+        "schema": "public"
+      },
+      {
+        "hash": "22ff86ff08976ac7b5d22cdf181905de",
+        "name": "chat_user_conversation_state_pkey",
+        "table": "chat_user_conversation_state",
+        "schema": "public"
+      },
+      {
+        "hash": "e1041cbf8f5c8d5a66e6b500a3285c4e",
+        "name": "chat_user_state_conversation_idx",
+        "table": "chat_user_conversation_state",
+        "schema": "public"
+      },
+      {
+        "hash": "e0155748c67c3081d57bbad08e7e8430",
+        "name": "daily_task_assignees_pkey",
+        "table": "daily_task_assignees",
+        "schema": "public"
+      },
+      {
+        "hash": "b977d31079dbc6a3c0f59c9f405bc771",
+        "name": "daily_task_assignees_user_idx",
+        "table": "daily_task_assignees",
+        "schema": "public"
+      },
+      {
+        "hash": "7e8cdde37668ba8f863e506f69d7e7f6",
+        "name": "daily_task_catalog_pkey",
+        "table": "daily_task_catalog",
+        "schema": "public"
+      },
+      {
+        "hash": "4f605578fa867923b339f6cbff1519ce",
+        "name": "daily_task_completions_pkey",
+        "table": "daily_task_completions",
+        "schema": "public"
+      },
+      {
+        "hash": "5bc547ac268c4cbbc0ec1aaf20125314",
+        "name": "daily_task_completions_user_idx",
+        "table": "daily_task_completions",
+        "schema": "public"
+      },
+      {
+        "hash": "e4e1ec9400ec36750b8689a44502d405",
+        "name": "daily_tasks_catalog_key_idx",
+        "table": "daily_tasks",
+        "schema": "public"
+      },
+      {
+        "hash": "65fcdf3567d881ab13ea73cdca80d727",
+        "name": "daily_tasks_created_by_idx",
+        "table": "daily_tasks",
+        "schema": "public"
+      },
+      {
+        "hash": "40c8080dc29d7956c4f78e68985dd025",
+        "name": "daily_tasks_pkey",
+        "table": "daily_tasks",
+        "schema": "public"
+      },
+      {
+        "hash": "6a60145991b3cb717d56dc6e4d996951",
+        "name": "email_reset_requests_open_idx",
+        "table": "email_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "f3d0d9c43a39fb25abeabb81d9e283a2",
+        "name": "email_reset_requests_pkey",
+        "table": "email_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "cda6110332e9f6422dc64b07c8c6cbc4",
+        "name": "email_reset_requests_resolved_by_idx",
+        "table": "email_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "9fbc8ed1d90c4db095265dda68d48ecb",
+        "name": "email_reset_requests_user_date_idx",
+        "table": "email_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "e2f8cc482c9cb4f7a23fd12dc02c381d",
+        "name": "fl_analysis_files_category_idx",
+        "table": "fl_analysis_files",
+        "schema": "public"
+      },
+      {
+        "hash": "a014afd77a63beca3188e9193d3bcb1f",
+        "name": "fl_analysis_files_created_at_idx",
+        "table": "fl_analysis_files",
+        "schema": "public"
+      },
+      {
+        "hash": "431239ddecba562456091f7725db5200",
+        "name": "fl_analysis_files_pkey",
+        "table": "fl_analysis_files",
+        "schema": "public"
+      },
+      {
+        "hash": "c3690d242e473e6e304078de17fff13e",
+        "name": "fl_analysis_files_storage_path_key",
+        "table": "fl_analysis_files",
+        "schema": "public"
+      },
+      {
+        "hash": "96fa54e072fc09e2f7e785a5d084453e",
+        "name": "fl_analysis_files_uploaded_by_idx",
+        "table": "fl_analysis_files",
+        "schema": "public"
+      },
+      {
+        "hash": "459429a7992ff4a4cd090daeeb9fa226",
+        "name": "login_history_pkey",
+        "table": "login_history",
+        "schema": "public"
+      },
+      {
+        "hash": "786f1a3eeccbe7d3b491d787b8359846",
+        "name": "login_history_user_id_signed_in_at_key",
+        "table": "login_history",
+        "schema": "public"
+      },
+      {
+        "hash": "09ee6cefaa4d52247bc3ab37007f93c9",
+        "name": "notification_controls_pkey",
+        "table": "notification_controls",
+        "schema": "public"
+      },
+      {
+        "hash": "33e88d5ca4c959d2a9b8b05f5b1d23d8",
+        "name": "notification_controls_updated_by_idx",
+        "table": "notification_controls",
+        "schema": "public"
+      },
+      {
+        "hash": "aebd4edff315a99b19a78f4e60322447",
+        "name": "notification_preferences_pkey",
+        "table": "notification_preferences",
+        "schema": "public"
+      },
+      {
+        "hash": "6b8064ba50c8c905f5d8e919e361ff84",
+        "name": "notification_preferences_rule_key_idx",
+        "table": "notification_preferences",
+        "schema": "public"
+      },
+      {
+        "hash": "b71f5dc607a58f13d7bd776567828391",
+        "name": "notification_rules_pkey",
+        "table": "notification_rules",
+        "schema": "public"
+      },
+      {
+        "hash": "3f10e0dda0dd18fb37d41c6ea970d6ea",
+        "name": "notification_rules_updated_by_idx",
+        "table": "notification_rules",
+        "schema": "public"
+      },
+      {
+        "hash": "d85a27bdd50060518d1c3528ff8ae73e",
+        "name": "operations_deliveries_created_by_idx",
+        "table": "operations_deliveries",
+        "schema": "public"
+      },
+      {
+        "hash": "61a698cafa62950a1c93f8180ce1cd97",
+        "name": "operations_deliveries_day_status_idx",
+        "table": "operations_deliveries",
+        "schema": "public"
+      },
+      {
+        "hash": "cc54de483e19050e565abf85ef562cc5",
+        "name": "operations_deliveries_pkey",
+        "table": "operations_deliveries",
+        "schema": "public"
+      },
+      {
+        "hash": "68c878721d29749b75a88833657779d9",
+        "name": "operations_flashes_active_expiry_idx",
+        "table": "operations_flashes",
+        "schema": "public"
+      },
+      {
+        "hash": "5b05f789e5fc8e7dc91f379706abaa9b",
+        "name": "operations_flashes_created_by_idx",
+        "table": "operations_flashes",
+        "schema": "public"
+      },
+      {
+        "hash": "e858a832df61408fb3d292be839014ff",
+        "name": "operations_flashes_pkey",
+        "table": "operations_flashes",
+        "schema": "public"
+      },
+      {
+        "hash": "75728342fb66053f8fc13ae368b480e0",
+        "name": "operations_orders_created_by_idx",
+        "table": "operations_orders",
+        "schema": "public"
+      },
+      {
+        "hash": "ce68e5ded94f48f1149aad0dc64780eb",
+        "name": "operations_orders_pkey",
+        "table": "operations_orders",
+        "schema": "public"
+      },
+      {
+        "hash": "4c8b745fe6dbbf72eeaece5a2d9e879c",
+        "name": "operations_orders_status_pickup_idx",
+        "table": "operations_orders",
+        "schema": "public"
+      },
+      {
+        "hash": "9e2af10b79b0974356ead7bc61bd4324",
+        "name": "page_view_counter_resets_pkey",
+        "table": "page_view_counter_resets",
+        "schema": "public"
+      },
+      {
+        "hash": "6244b8a68cee2f0f5abe83502ddc296d",
+        "name": "page_view_counter_resets_reset_by_idx",
+        "table": "page_view_counter_resets",
+        "schema": "public"
+      },
+      {
+        "hash": "8cd75ef376fcb6be3691d342f12c5466",
+        "name": "password_reset_requests_open_idx",
+        "table": "password_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "ad9cf2804f7460ae1454ba1f83c7f059",
+        "name": "password_reset_requests_pkey",
+        "table": "password_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "2e6c97b6bcb8586d50ec450dfcdf67b9",
+        "name": "password_reset_requests_resolved_by_idx",
+        "table": "password_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "3a55ce6f7f12b31160b63863b9cc93c4",
+        "name": "password_reset_requests_user_date_idx",
+        "table": "password_reset_requests",
+        "schema": "public"
+      },
+      {
+        "hash": "b423c0bffca237fe412f9a07fa7f07e3",
+        "name": "planning_absences_dates_idx",
+        "table": "planning_absences",
+        "schema": "public"
+      },
+      {
+        "hash": "8c8745b9d9172faa3674e56f45a1b06f",
+        "name": "planning_absences_pkey",
+        "table": "planning_absences",
+        "schema": "public"
+      },
+      {
+        "hash": "d8380a19d466e0de812c2e7ca699b7aa",
+        "name": "planning_absences_reviewed_by_idx",
+        "table": "planning_absences",
+        "schema": "public"
+      },
+      {
+        "hash": "6e2ca5d0b90efa124715a7da3a5bd261",
+        "name": "planning_absences_status_idx",
+        "table": "planning_absences",
+        "schema": "public"
+      },
+      {
+        "hash": "04e04c7839397ad35ede894d8abd1b62",
+        "name": "planning_absences_user_idx",
+        "table": "planning_absences",
+        "schema": "public"
+      },
+      {
+        "hash": "436dca94d29db644f105b2f64b4058e4",
+        "name": "planning_logs_pkey",
+        "table": "planning_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "abb8329ddb1497a914621914cf1018ab",
+        "name": "planning_logs_user_id_idx",
+        "table": "planning_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "26b7e738259d3621827052edc2fbf562",
+        "name": "planning_notifications_created_by_idx",
+        "table": "planning_notifications",
+        "schema": "public"
+      },
+      {
+        "hash": "4a84b702d3801c004d39294a28260540",
+        "name": "planning_notifications_pkey",
+        "table": "planning_notifications",
+        "schema": "public"
+      },
+      {
+        "hash": "9ccf996fbec94095fff7b2da82dd551a",
+        "name": "planning_notifications_user_id_idx",
+        "table": "planning_notifications",
+        "schema": "public"
+      },
+      {
+        "hash": "64147a7fa07a5aa1adc7df79da2515bc",
+        "name": "planning_weeks_pkey",
+        "table": "planning_weeks",
+        "schema": "public"
+      },
+      {
+        "hash": "32fa5658889470836594a19344d495e6",
+        "name": "planning_weeks_updated_by_idx",
+        "table": "planning_weeks",
+        "schema": "public"
+      },
+      {
+        "hash": "d595acc1ceb87d9c851a2a7b93a20dd5",
+        "name": "portal_change_logs_actor_id_idx",
+        "table": "portal_change_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "8084e6ad7771586a4c72cad0593f813e",
+        "name": "portal_change_logs_created_at_idx",
+        "table": "portal_change_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "6811802565fd889ef96c08efebe6e9c5",
+        "name": "portal_change_logs_event_key_key",
+        "table": "portal_change_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "4a866fb6275c2cefebd352075d32b957",
+        "name": "portal_change_logs_pkey",
+        "table": "portal_change_logs",
+        "schema": "public"
+      },
+      {
+        "hash": "dad3d6fa771b584973e6a7f12dce20ba",
+        "name": "product_categories_family_id_idx",
+        "table": "product_categories",
+        "schema": "public"
+      },
+      {
+        "hash": "345f3b2aa98378590d8704504fa8c8ab",
+        "name": "product_categories_family_id_name_key",
+        "table": "product_categories",
+        "schema": "public"
+      },
+      {
+        "hash": "7d5db506800474df0167a3d84fae1db5",
+        "name": "product_categories_pkey",
+        "table": "product_categories",
+        "schema": "public"
+      },
+      {
+        "hash": "be66ccb4a70ce5628a5bfbbb6b33773e",
+        "name": "product_families_name_key",
+        "table": "product_families",
+        "schema": "public"
+      },
+      {
+        "hash": "ff4e0be5e8a4775c2cc33e5c67a2913a",
+        "name": "product_families_pkey",
+        "table": "product_families",
+        "schema": "public"
+      },
+      {
+        "hash": "7ea0848481dc6755d7e2f1d2b48939c4",
+        "name": "product_families_slug_key",
+        "table": "product_families",
+        "schema": "public"
+      },
+      {
+        "hash": "ff1892fbdf31adace12555572e9faf09",
+        "name": "product_packagings_name_key",
+        "table": "product_packagings",
+        "schema": "public"
+      },
+      {
+        "hash": "523572b7f3196cf182946ecf25b6f881",
+        "name": "product_packagings_pkey",
+        "table": "product_packagings",
+        "schema": "public"
+      },
+      {
+        "hash": "a5653e8931f6aa2c8f45764af99af1d2",
+        "name": "products_category_id_idx",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "48c46321863fd3becd53e510fc932425",
+        "name": "products_ean_unique_idx",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "b746ca6f1efbcc7b745249d5f369287e",
+        "name": "products_family_id_idx",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "f5561713576684ac4294bc9e5da7d4a2",
+        "name": "products_packaging_id_idx",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "365d71f4c98da1d65f9d0171c912d0d0",
+        "name": "products_pkey",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "b7142bbffc23de763c1bd9f00489ec05",
+        "name": "profiles_pkey",
+        "table": "profiles",
+        "schema": "public"
+      },
+      {
+        "hash": "c07a523f1ebc968ab6b32bd5c984f32b",
+        "name": "profiles_role_idx",
+        "table": "profiles",
+        "schema": "public"
+      },
+      {
+        "hash": "bdce422ad015940b601c2062243dbbde",
+        "name": "push_server_config_pkey",
+        "table": "push_server_config",
+        "schema": "public"
+      },
+      {
+        "hash": "a7b02382c1c7b1ba41985cd57caaccb5",
+        "name": "push_subscriptions_endpoint_key",
+        "table": "push_subscriptions",
+        "schema": "public"
+      },
+      {
+        "hash": "a6e461978b1291bcfa3c3f1da9a36870",
+        "name": "push_subscriptions_pkey",
+        "table": "push_subscriptions",
+        "schema": "public"
+      },
+      {
+        "hash": "e39e822788ee853a1fe14685f6984041",
+        "name": "push_subscriptions_user_id_idx",
+        "table": "push_subscriptions",
+        "schema": "public"
+      },
+      {
+        "hash": "25a9652488fc52d60d2743dccad4e882",
+        "name": "reported_problems_pkey",
+        "table": "reported_problems",
+        "schema": "public"
+      },
+      {
+        "hash": "99f2a67094dc2c0581110f5e2ecc576f",
+        "name": "reported_problems_reporter_idx",
+        "table": "reported_problems",
+        "schema": "public"
+      },
+      {
+        "hash": "d09e1b9278e0131e73b7d6360ceb09d8",
+        "name": "reported_problems_resolved_by_idx",
+        "table": "reported_problems",
+        "schema": "public"
+      },
+      {
+        "hash": "ab66b08d6d7a54ef12a7d535b7d88445",
+        "name": "reported_problems_status_created_idx",
+        "table": "reported_problems",
+        "schema": "public"
+      },
+      {
+        "hash": "672e2f4afc1c49f3b1a3549e9b93e971",
+        "name": "reward_catalog_id_kind_key",
+        "table": "reward_catalog",
+        "schema": "public"
+      },
+      {
+        "hash": "7426aa187d0a60c8a590cfe791f90108",
+        "name": "reward_catalog_pkey",
+        "table": "reward_catalog",
+        "schema": "public"
+      },
+      {
+        "hash": "946257d8f428ce14c4fa7532a8951512",
+        "name": "reward_equipment_item",
+        "table": "reward_equipment",
+        "schema": "public"
+      },
+      {
+        "hash": "b383a7213de73880d2fc4cd1f0b68431",
+        "name": "reward_equipment_pkey",
+        "table": "reward_equipment",
+        "schema": "public"
+      },
+      {
+        "hash": "e70d26327d6cbf5c94e56866099ede6e",
+        "name": "reward_equipment_user_item_idx",
+        "table": "reward_equipment",
+        "schema": "public"
+      },
+      {
+        "hash": "27f3a4f254cb53821509941705d5cfb6",
+        "name": "reward_inventory_item",
+        "table": "reward_inventory",
+        "schema": "public"
+      },
+      {
+        "hash": "dc2eebb5be13909a267bdb809e59146a",
+        "name": "reward_inventory_pkey",
+        "table": "reward_inventory",
+        "schema": "public"
+      },
+      {
+        "hash": "8c86e169ba4a6a54c6e2541a14aa3b41",
+        "name": "reward_ledger_item_id_idx",
+        "table": "reward_ledger",
+        "schema": "public"
+      },
+      {
+        "hash": "5bce87678544c21dacb717ebf6aa825b",
+        "name": "reward_ledger_mission_id_key",
+        "table": "reward_ledger",
+        "schema": "public"
+      },
+      {
+        "hash": "a43d6223a0f9b0d6d848a654edff0aeb",
+        "name": "reward_ledger_pkey",
+        "table": "reward_ledger",
+        "schema": "public"
+      },
+      {
+        "hash": "a1408ccb57c21c51d51fd9b74260044c",
+        "name": "reward_ledger_user_date",
+        "table": "reward_ledger",
+        "schema": "public"
+      },
+      {
+        "hash": "9dac58adc27f068c5e0aa6aaceab86ad",
+        "name": "reward_ledger_user_id_item_id_key",
+        "table": "reward_ledger",
+        "schema": "public"
+      },
+      {
+        "hash": "7e5c50f721e54d532d5aaca38a689060",
+        "name": "reward_missions_created_by_idx",
+        "table": "reward_missions",
+        "schema": "public"
+      },
+      {
+        "hash": "38039819e2bdbb7da15eebf7d48db916",
+        "name": "reward_missions_pkey",
+        "table": "reward_missions",
+        "schema": "public"
+      },
+      {
+        "hash": "f092a2b273286c0a386234c191e00aef",
+        "name": "reward_missions_reviewed_by_idx",
+        "table": "reward_missions",
+        "schema": "public"
+      },
+      {
+        "hash": "3fe0b630f9c90d52795d37c0a1c43697",
+        "name": "reward_missions_status_date",
+        "table": "reward_missions",
+        "schema": "public"
+      },
+      {
+        "hash": "584e92295363906892bf5dc7f7071709",
+        "name": "reward_one_active_mission",
+        "table": "reward_missions",
+        "schema": "public"
+      },
+      {
+        "hash": "ec0e4433ae4f09c63d70cad0c7f4e892",
+        "name": "reward_wallets_pkey",
+        "table": "reward_wallets",
+        "schema": "public"
+      },
+      {
+        "hash": "8b5d66e49decb2ea87aad9682f00e2f1",
+        "name": "rush_rayon_scores_pkey",
+        "table": "rush_rayon_scores",
+        "schema": "public"
+      },
+      {
+        "hash": "303ce5100cece2f4c171f072f05338bd",
+        "name": "stock_history_pkey",
+        "table": "stock_history",
+        "schema": "public"
+      },
+      {
+        "hash": "466c9ae27ce04174649ac61ffa8e1b46",
+        "name": "stock_history_product_id_idx",
+        "table": "stock_history",
+        "schema": "public"
+      },
+      {
+        "hash": "28fa0034cb0c38e90d3e6c070f51fe16",
+        "name": "stock_history_user_id_idx",
+        "table": "stock_history",
+        "schema": "public"
+      },
+      {
+        "hash": "e40fa70455bec78f54d57bb0083717fc",
+        "name": "subrole_module_permissions_pkey",
+        "table": "subrole_module_permissions",
+        "schema": "public"
+      },
+      {
+        "hash": "91d0f5919e4442f639afa3c5a2a9cc31",
+        "name": "user_module_permissions_created_by_idx",
+        "table": "user_module_permissions",
+        "schema": "public"
+      },
+      {
+        "hash": "a2f7bb9894faabbba0a7395254bb2089",
+        "name": "user_module_permissions_pkey",
+        "table": "user_module_permissions",
+        "schema": "public"
+      },
+      {
+        "hash": "6c6ffc064cb30668d0fcce21497b72e1",
+        "name": "user_recovery_emails_pkey",
+        "table": "user_recovery_emails",
+        "schema": "public"
+      },
+      {
+        "hash": "1556eb1012674c1575abd90634ce18f9",
+        "name": "user_recovery_emails_updated_by_idx",
+        "table": "user_recovery_emails",
+        "schema": "public"
+      },
+      {
+        "hash": "14404a85ff09eebfc7adbf897f7b6844",
+        "name": "user_subroles_assigned_by_idx",
+        "table": "user_subroles",
+        "schema": "public"
+      },
+      {
+        "hash": "eab172cbec5845a9efef617250d00927",
+        "name": "user_subroles_pkey",
+        "table": "user_subroles",
+        "schema": "public"
+      },
+      {
+        "hash": "db9ab472a60816646f94fe77a0066e4b",
+        "name": "user_subroles_subrole_key_idx",
+        "table": "user_subroles",
+        "schema": "public"
+      }
+    ],
+    "policies": [
+      {
+        "cmd": "DELETE",
+        "hash": "a58108794c0fc6daa5d28a1a11eb71d6",
+        "name": "Admin delete app options",
+        "table": "app_options",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "163454906638a8ac66f9f5c43ba24113",
+        "name": "Admin insert app options",
+        "table": "app_options",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "62ab13634a8a0d4c823a24a1a0edeb12",
+        "name": "Admin update app options",
+        "table": "app_options",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "eb28d87532d6edd9b635727493ef89f7",
+        "name": "Read app options",
+        "table": "app_options",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "app_options",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "91ecc260f2d76ff04b4fcba79d711da9",
+        "name": "app_roles_admin_delete",
+        "table": "app_roles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "426e9c70049e75cd9d61de6f1d9a77a0",
+        "name": "app_roles_admin_insert",
+        "table": "app_roles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "572f433ad380ac71b8ba630f13730c3d",
+        "name": "app_roles_admin_update",
+        "table": "app_roles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "eb28d87532d6edd9b635727493ef89f7",
+        "name": "app_roles_read",
+        "table": "app_roles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "app_roles",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "app_settings",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "settings_admin_delete",
+        "table": "app_settings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "4e52e9c13694b892d1ee0c489c993bcc",
+        "name": "settings_admin_insert",
+        "table": "app_settings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "settings_admin_update",
+        "table": "app_settings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "eb28d87532d6edd9b635727493ef89f7",
+        "name": "settings_read_authenticated",
+        "table": "app_settings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "app_subroles_admin_all",
+        "table": "app_subroles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "app_subroles",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "audit_admin_read",
+        "table": "audit_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "456f87b09500728737da90216a884653",
+        "name": "audit_self_view_insert",
+        "table": "audit_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "audit_logs",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "a58108794c0fc6daa5d28a1a11eb71d6",
+        "name": "chat archive admin read",
+        "table": "chat_archive_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "chat_archive_logs",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "43dff646cbf0611d46b29b29e8e6b882",
+        "name": "chat conversations read",
+        "table": "chat_conversations",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "chat_conversations",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "450d019c4127bda05bac5fee5f7a38df",
+        "name": "chat module delete",
+        "table": "chat_messages",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "22afad230e088979f8579b1a7c71a75b",
+        "name": "chat module insert",
+        "table": "chat_messages",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "571a7d3631ec7556ce7970ba37d2ac4f",
+        "name": "chat module read",
+        "table": "chat_messages",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5c53de9c1b48a94bcc597c2b8c8be174",
+        "name": "chat module update",
+        "table": "chat_messages",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "chat_messages",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "571a7d3631ec7556ce7970ba37d2ac4f",
+        "name": "chat participants read",
+        "table": "chat_participants",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "chat_participants",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "7cd913e62d7679569ac4978fe5496853",
+        "name": "chat presence read for chat users",
+        "table": "chat_presence_history",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "chat_presence_history",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "a7d7eb18352aa8797d6f9c34aa194875",
+        "name": "chat reactions delete",
+        "table": "chat_reactions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "d15979bbdf22e4c702aa4cc0bb4b40ea",
+        "name": "chat reactions insert",
+        "table": "chat_reactions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "524c22bb06335a73f0a1036240dfac9f",
+        "name": "chat reactions read",
+        "table": "chat_reactions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "chat_reactions",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "a7d7eb18352aa8797d6f9c34aa194875",
+        "name": "chat user state own delete",
+        "table": "chat_user_conversation_state",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "ec39efbadcef1b2337f4737c907d2e5d",
+        "name": "chat user state own insert",
+        "table": "chat_user_conversation_state",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "a7d7eb18352aa8797d6f9c34aa194875",
+        "name": "chat user state own read",
+        "table": "chat_user_conversation_state",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "a100217ac3a8d3b7a6076e34239d0012",
+        "name": "chat user state own update",
+        "table": "chat_user_conversation_state",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "chat_user_conversation_state",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "b729baac444887c4e51c36d939fbb6b1",
+        "name": "daily task assignees editor delete",
+        "table": "daily_task_assignees",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "6621695b635ea922d31e075fbb3a6ecf",
+        "name": "daily task assignees editor insert",
+        "table": "daily_task_assignees",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "9dce5c2adb0300f7e898ee0db2ca1c19",
+        "name": "daily task assignees relevant read",
+        "table": "daily_task_assignees",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "daily_task_assignees",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "97caa439c76824f55cc97930a41fb789",
+        "name": "daily task catalog authenticated read",
+        "table": "daily_task_catalog",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "daily_task_catalog",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "d21e54350384cc8716075d874db37f1b",
+        "name": "daily task completions own delete",
+        "table": "daily_task_completions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "f83c7a63b42322cf90ccf99a780093bc",
+        "name": "daily task completions own insert",
+        "table": "daily_task_completions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "9dce5c2adb0300f7e898ee0db2ca1c19",
+        "name": "daily task completions relevant read",
+        "table": "daily_task_completions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "daily_task_completions",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "b729baac444887c4e51c36d939fbb6b1",
+        "name": "daily tasks editor delete",
+        "table": "daily_tasks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "214fed4615c644478150e3fbaf960889",
+        "name": "daily tasks editor insert",
+        "table": "daily_tasks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "70bb5bb0ce0ed0d6c8e90bd9fb48ef6b",
+        "name": "daily tasks editor update",
+        "table": "daily_tasks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "34b47dfeddfbcf2b72ee418e29007f2a",
+        "name": "daily tasks relevant read",
+        "table": "daily_tasks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "daily_tasks",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "email_reset_requests_admin_read",
+        "table": "email_reset_requests",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "email_reset_requests_admin_update",
+        "table": "email_reset_requests",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "email_reset_requests",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "a8be097e78b8c8f2f680e9f6ff23e4d2",
+        "name": "fl analysis delete staff",
+        "table": "fl_analysis_files",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "77889789432c59d8237e0b1243458ece",
+        "name": "fl analysis insert staff",
+        "table": "fl_analysis_files",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "a8be097e78b8c8f2f680e9f6ff23e4d2",
+        "name": "fl analysis read staff",
+        "table": "fl_analysis_files",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "fl_analysis_files",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "login_history_admin_delete",
+        "table": "login_history",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "login_history_admin_select",
+        "table": "login_history",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "2d5ec54b2d00b1f20a53d465a1708c2b",
+        "name": "login_history_insert_own",
+        "table": "login_history",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "login_history",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "notification_controls",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "notification_controls_admin_delete",
+        "table": "notification_controls",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "4e52e9c13694b892d1ee0c489c993bcc",
+        "name": "notification_controls_admin_insert",
+        "table": "notification_controls",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "notification_controls_admin_update",
+        "table": "notification_controls",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "39387595f91e984e43d024968b25aa3d",
+        "name": "notification_controls_select",
+        "table": "notification_controls",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "notification_preferences",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "a7d7eb18352aa8797d6f9c34aa194875",
+        "name": "notification preferences own delete",
+        "table": "notification_preferences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "ec39efbadcef1b2337f4737c907d2e5d",
+        "name": "notification preferences own insert",
+        "table": "notification_preferences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "4b5c3a1d94907ba6ed71795485b8de97",
+        "name": "notification preferences own read",
+        "table": "notification_preferences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "a100217ac3a8d3b7a6076e34239d0012",
+        "name": "notification preferences own update",
+        "table": "notification_preferences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "notification_rules",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "notification rules admin update channels",
+        "table": "notification_rules",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "eb28d87532d6edd9b635727493ef89f7",
+        "name": "notification rules authenticated read",
+        "table": "notification_rules",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "operations_deliveries",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "68328ccb31586622c33dd0734be4c95c",
+        "name": "operations deliveries admin delete",
+        "table": "operations_deliveries",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "ac0b7383f53f7c4e42e4c47fb0487853",
+        "name": "operations deliveries admin insert",
+        "table": "operations_deliveries",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "944fd7de7995fd4ac34fae455d861b9f",
+        "name": "operations deliveries admin update",
+        "table": "operations_deliveries",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "1385fe985216eb2a8bac0cefdb8a6fd8",
+        "name": "operations deliveries widget read",
+        "table": "operations_deliveries",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "operations_flashes",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "68328ccb31586622c33dd0734be4c95c",
+        "name": "operations flashes admin delete",
+        "table": "operations_flashes",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "ac0b7383f53f7c4e42e4c47fb0487853",
+        "name": "operations flashes admin insert",
+        "table": "operations_flashes",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "944fd7de7995fd4ac34fae455d861b9f",
+        "name": "operations flashes admin update",
+        "table": "operations_flashes",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "1385fe985216eb2a8bac0cefdb8a6fd8",
+        "name": "operations flashes widget read",
+        "table": "operations_flashes",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "operations_orders",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "68328ccb31586622c33dd0734be4c95c",
+        "name": "operations orders admin delete",
+        "table": "operations_orders",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "ac0b7383f53f7c4e42e4c47fb0487853",
+        "name": "operations orders admin insert",
+        "table": "operations_orders",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "944fd7de7995fd4ac34fae455d861b9f",
+        "name": "operations orders admin update",
+        "table": "operations_orders",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "1385fe985216eb2a8bac0cefdb8a6fd8",
+        "name": "operations orders widget read",
+        "table": "operations_orders",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "page_view_counter_resets",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "b455fb98657614ba0565329248add852",
+        "name": "page_view_counter_resets_admin_insert",
+        "table": "page_view_counter_resets",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "page_view_counter_resets_admin_select",
+        "table": "page_view_counter_resets",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "b3dde0a6359f16c648e046ecbdd57c6a",
+        "name": "page_view_counter_resets_admin_update",
+        "table": "page_view_counter_resets",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "password_reset_requests",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "password_reset_requests_admin_read",
+        "table": "password_reset_requests",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "password_reset_requests_admin_update",
+        "table": "password_reset_requests",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "planning_absences",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "4669b906a60eb14e3ea1767be61805c7",
+        "name": "planning absences admin delete only",
+        "table": "planning_absences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "bca36b15832e541016f7c4f7dd4ea7e1",
+        "name": "planning absences change own pending",
+        "table": "planning_absences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "d1f8d451966c5fdb463745249171a8c4",
+        "name": "planning absences create own",
+        "table": "planning_absences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "b6d22a936583803602484eab3fdae6e1",
+        "name": "planning absences managers update",
+        "table": "planning_absences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "5b3c287e58bd2a4d68801bc1fa024778",
+        "name": "planning absences read allowed",
+        "table": "planning_absences",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "planning_logs",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "4669b906a60eb14e3ea1767be61805c7",
+        "name": "planning logs admin delete only",
+        "table": "planning_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "69f9d8dd1b67a9d207d11dfe4b2b4883",
+        "name": "planning logs permission insert",
+        "table": "planning_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "192dd30eda3d3e20952f8383ad41e08b",
+        "name": "planning logs permission read",
+        "table": "planning_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "planning_notifications",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "39387595f91e984e43d024968b25aa3d",
+        "name": "planning notifications delete own or admin",
+        "table": "planning_notifications",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "c4f442fd0f510a3756833c74d7f05cac",
+        "name": "planning notifications permission insert",
+        "table": "planning_notifications",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "a7d7eb18352aa8797d6f9c34aa194875",
+        "name": "planning notifications read own",
+        "table": "planning_notifications",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "a100217ac3a8d3b7a6076e34239d0012",
+        "name": "planning notifications update own",
+        "table": "planning_notifications",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "planning_weeks",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "c6e36df3f7a8d7c1c058d1bba75138bd",
+        "name": "planning weeks permission delete",
+        "table": "planning_weeks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "b7e14d09e5894e94a8dd3790e138a966",
+        "name": "planning weeks permission insert",
+        "table": "planning_weeks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "f30f123d6026449a77a8daa083cb0fa5",
+        "name": "planning weeks permission read",
+        "table": "planning_weeks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "d7229e963be460a87b508c345d31983a",
+        "name": "planning weeks permission update",
+        "table": "planning_weeks",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "portal_change_logs",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "be7bd397f92a85ec4309846ea4be50b0",
+        "name": "portal_change_logs_admin_manual_insert",
+        "table": "portal_change_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "portal_change_logs_admin_read",
+        "table": "portal_change_logs",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "product_categories",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "0244283650d381945165cdbb8444a1b4",
+        "name": "product categories module delete",
+        "table": "product_categories",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "700b6f23d92dac714245ba21238878d0",
+        "name": "product categories module insert",
+        "table": "product_categories",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "5bc0e01b9d43aa1e3cb171be88a81404",
+        "name": "product categories module read",
+        "table": "product_categories",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "a7120f7a99d85b2f9358353ad7dc9035",
+        "name": "product categories module update",
+        "table": "product_categories",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "a58108794c0fc6daa5d28a1a11eb71d6",
+        "name": "Admin delete product families",
+        "table": "product_families",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "163454906638a8ac66f9f5c43ba24113",
+        "name": "Admin insert product families",
+        "table": "product_families",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "62ab13634a8a0d4c823a24a1a0edeb12",
+        "name": "Admin update product families",
+        "table": "product_families",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "product_families",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "460bdd142958d49db25854dc20359074",
+        "name": "product families module read",
+        "table": "product_families",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "product_packagings",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "6adfd494a0355258669af831e499b8eb",
+        "name": "product packagings module delete",
+        "table": "product_packagings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "baa8e80b0a431fee8b8eade09b4e94db",
+        "name": "product packagings module insert",
+        "table": "product_packagings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "5782c678334a964b828c5b24546ec843",
+        "name": "product packagings module read",
+        "table": "product_packagings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "6ac30925a3a569e0d88e64f658eb366d",
+        "name": "product packagings module update",
+        "table": "product_packagings",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "products",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "0244283650d381945165cdbb8444a1b4",
+        "name": "products module delete",
+        "table": "products",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "700b6f23d92dac714245ba21238878d0",
+        "name": "products module insert",
+        "table": "products",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "5bc0e01b9d43aa1e3cb171be88a81404",
+        "name": "products module read",
+        "table": "products",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "a7120f7a99d85b2f9358353ad7dc9035",
+        "name": "products module update",
+        "table": "products",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "f0782c166ff84690417d82490256bc96",
+        "name": "Profiles read self or admin",
+        "table": "profiles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "7e8f0ccaf39b6f8f4b693541ab982da6",
+        "name": "Profiles update own preferences",
+        "table": "profiles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "profiles",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "push_server_config",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "18b6c82111707e214f8aaa30c5b6e717",
+        "name": "push server config deny client access",
+        "table": "push_server_config",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "push_subscriptions",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "18b6c82111707e214f8aaa30c5b6e717",
+        "name": "push subscriptions deny client access",
+        "table": "push_subscriptions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "reported_problems",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "reported_problems_admin_delete",
+        "table": "reported_problems",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "reported_problems_admin_update",
+        "table": "reported_problems",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "d6de4a2283fcfa209a89ef42c7e9237d",
+        "name": "reported_problems_insert_own",
+        "table": "reported_problems",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "4de531dfb3d2ab06ed3cd69035af963b",
+        "name": "reported_problems_select_own_or_admin",
+        "table": "reported_problems",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "9a9bf83e24c3d5fb2f30e9fd002b502a",
+        "name": "catalog_preview",
+        "table": "reward_catalog",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "reward_catalog",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "reward_catalog_admin_delete",
+        "table": "reward_catalog",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "4e52e9c13694b892d1ee0c489c993bcc",
+        "name": "reward_catalog_admin_insert",
+        "table": "reward_catalog",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "reward_catalog_admin_update",
+        "table": "reward_catalog",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "9a9bf83e24c3d5fb2f30e9fd002b502a",
+        "name": "equipment_preview",
+        "table": "reward_equipment",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "reward_equipment",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "reward_equipment_admin_delete",
+        "table": "reward_equipment",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "4e52e9c13694b892d1ee0c489c993bcc",
+        "name": "reward_equipment_admin_insert",
+        "table": "reward_equipment",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "reward_equipment_admin_update",
+        "table": "reward_equipment",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "admin_access",
+        "table": "reward_inventory",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "reward_inventory",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "admin_access",
+        "table": "reward_ledger",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "reward_ledger",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "admin_access",
+        "table": "reward_missions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "reward_missions",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "admin_access",
+        "table": "reward_wallets",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "reward_wallets",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "rush_rayon_scores",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "rush_rayon_scores_read_admin",
+        "table": "rush_rayon_scores",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "a58108794c0fc6daa5d28a1a11eb71d6",
+        "name": "Read stock history",
+        "table": "stock_history",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "stock_history",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "subrole_module_permissions",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "subrole_permissions_admin_all",
+        "table": "subrole_module_permissions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "DELETE",
+        "hash": "ecc3913cbb282bedf527782f4d3d8b52",
+        "name": "module permissions admin delete",
+        "table": "user_module_permissions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "hash": "4e52e9c13694b892d1ee0c489c993bcc",
+        "name": "module permissions admin insert",
+        "table": "user_module_permissions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "module permissions admin update",
+        "table": "user_module_permissions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "39387595f91e984e43d024968b25aa3d",
+        "name": "module permissions read own or admin",
+        "table": "user_module_permissions",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "user_module_permissions",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "user_recovery_emails",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "hash": "a1f94f5b6390b515dc6714c2ca6f51b9",
+        "name": "user_recovery_emails_no_direct_read",
+        "table": "user_recovery_emails",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "6e7df6fefa64e4b0e19a41a6f7e9203e",
+        "name": "nethor_active_session_guard",
+        "table": "user_subroles",
+        "schema": "public",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "cmd": "ALL",
+        "hash": "5ea82193a56992f868b2d90160b2d522",
+        "name": "user_subroles_admin_all",
+        "table": "user_subroles",
+        "schema": "public",
+        "permissive": "PERMISSIVE"
+      }
+    ],
+    "triggers": [
+      {
+        "hash": "2efc9abfa54800aa58db8c2f00d3e345",
+        "name": "audit_app_options_changes",
+        "table": "app_options",
+        "schema": "public"
+      },
+      {
+        "hash": "fb82a45481729f930672a6aa6c809058",
+        "name": "audit_app_settings_changes",
+        "table": "app_settings",
+        "schema": "public"
+      },
+      {
+        "hash": "4c7636917ee8eb31d02cf46d5a0be2fe",
+        "name": "log_site_config_changes",
+        "table": "app_settings",
+        "schema": "public"
+      },
+      {
+        "hash": "88708fcf95a2ee3b421c16a61783b4ee",
+        "name": "audit_chat_messages_changes",
+        "table": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "hash": "4e578e7ac2ea5d3129d34a7b33f80698",
+        "name": "chat_message_notify_trigger",
+        "table": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "hash": "a5ddd82ebc551f80035de8e9cbe975e4",
+        "name": "chat_touch_conversation_trigger",
+        "table": "chat_messages",
+        "schema": "public"
+      },
+      {
+        "hash": "3e2d86518e5e4f7579fd7b7f70ca677e",
+        "name": "enforce_notification_control",
+        "table": "planning_notifications",
+        "schema": "public"
+      },
+      {
+        "hash": "a1405fd912fee35b871533470e4cb60b",
+        "name": "planning_notification_preferences_filter",
+        "table": "planning_notifications",
+        "schema": "public"
+      },
+      {
+        "hash": "0ed148e75c03e69ddfc9c7942ddf3077",
+        "name": "planning_notifications_portal_filter",
+        "table": "planning_notifications",
+        "schema": "public"
+      },
+      {
+        "hash": "a74fb054ba6fdc2e06fd380dc257f0f2",
+        "name": "audit_planning_weeks_changes",
+        "table": "planning_weeks",
+        "schema": "public"
+      },
+      {
+        "hash": "aeaba575c649235d8aca607985152de4",
+        "name": "audit_product_categories_changes",
+        "table": "product_categories",
+        "schema": "public"
+      },
+      {
+        "hash": "410a2cf611419290d372496579d21718",
+        "name": "trg_mark_deleted_category_unlisted",
+        "table": "product_categories",
+        "schema": "public"
+      },
+      {
+        "hash": "192634167f8f3c13355a7288644e94f3",
+        "name": "trg_propagate_category_name",
+        "table": "product_categories",
+        "schema": "public"
+      },
+      {
+        "hash": "728728cabb6d4c67ec9708e93812fa30",
+        "name": "audit_product_families_changes",
+        "table": "product_families",
+        "schema": "public"
+      },
+      {
+        "hash": "b56d5771797af0f2791069956d424666",
+        "name": "audit_product_packagings_changes",
+        "table": "product_packagings",
+        "schema": "public"
+      },
+      {
+        "hash": "e26d8032f86eaef021592b66334a2ba3",
+        "name": "trg_mark_deleted_packaging_unlisted",
+        "table": "product_packagings",
+        "schema": "public"
+      },
+      {
+        "hash": "5f27d0bb9b90f80decd3464231faf330",
+        "name": "trg_propagate_packaging_name",
+        "table": "product_packagings",
+        "schema": "public"
+      },
+      {
+        "hash": "d6d643d102dd214e583763c10cb5639c",
+        "name": "audit_products_changes",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "3499d4ceb8256373f50ebfc886c5a624",
+        "name": "stock_change_history",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "a47e871e76daad66b0708e4f7731ec8f",
+        "name": "trg_sync_product_taxonomy_labels",
+        "table": "products",
+        "schema": "public"
+      },
+      {
+        "hash": "76cb1df52f0043dd01ff8b87612c89c8",
+        "name": "audit_profiles_changes",
+        "table": "profiles",
+        "schema": "public"
+      },
+      {
+        "hash": "e52b14bc813712cbf645e541d19f099a",
+        "name": "chat_profile_general_participant",
+        "table": "profiles",
+        "schema": "public"
+      },
+      {
+        "hash": "c4631168a1e48e658c2b12f7e354c032",
+        "name": "protect_profile_admin_fields_trigger",
+        "table": "profiles",
+        "schema": "public"
+      },
+      {
+        "hash": "4a97c999f0dfb1c3f91e615f4496fc21",
+        "name": "audit_reward_catalog_changes",
+        "table": "reward_catalog",
+        "schema": "public"
+      },
+      {
+        "hash": "c4682917adfa2a5ab9b4dd5fcbea9dff",
+        "name": "audit_reward_equipment_changes",
+        "table": "reward_equipment",
+        "schema": "public"
+      },
+      {
+        "hash": "c84d12bf1af079c46ee48e19b52f992d",
+        "name": "audit_reward_inventory_changes",
+        "table": "reward_inventory",
+        "schema": "public"
+      },
+      {
+        "hash": "b527a6a67e7fd73604904f7ae537a674",
+        "name": "audit_reward_ledger_changes",
+        "table": "reward_ledger",
+        "schema": "public"
+      },
+      {
+        "hash": "d8895a9f4284ebbf08e71ffadf401911",
+        "name": "audit_reward_missions_changes",
+        "table": "reward_missions",
+        "schema": "public"
+      },
+      {
+        "hash": "25910be0adf2b8d545d66d37378bc087",
+        "name": "audit_reward_wallets_changes",
+        "table": "reward_wallets",
+        "schema": "public"
+      },
+      {
+        "hash": "0e3ee0230dbcc63082eb5338db5d327b",
+        "name": "audit_stock_history_changes",
+        "table": "stock_history",
+        "schema": "public"
+      }
+    ],
+    "functions": [
+      {
+        "args": "uid uuid",
+        "hash": "7672cb6d4f536d09fc4be36a59262629",
+        "name": "can_manage_fruits_legumes",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "target_user uuid, target_module text, required_permission text",
+        "hash": "d06b8874c8ee0d45677a4978d475f712",
+        "name": "can_module",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "target_user uuid, target_page text",
+        "hash": "80df9bad68782bcf2478086dd9682a6c",
+        "name": "can_page_access",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid, p_user uuid",
+        "hash": "80b7d03e21b17bdc4b0df3cab9e9fece",
+        "name": "chat_can_manage",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid, p_user uuid",
+        "hash": "6806820d782427b2e721c9eebdce94ae",
+        "name": "chat_can_read",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid, p_user uuid",
+        "hash": "e7fdd23c99dab7741634b8f5fe9496b9",
+        "name": "chat_is_participant",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "2c220f75490d2bdda96b345fa9c1a3b0",
+        "name": "current_role",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "a text, b text",
+        "hash": "bcde8baf71ac27eeeb033c17ef3f73c5",
+        "name": "ean_edit_distance",
+        "schema": "private",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "39e305c2165a2004409dd1fa237e31d5",
+        "name": "enforce_notification_control",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "6f545e3f055bc54b060d02770c27e9e3",
+        "name": "filter_planning_notification_portal",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "required_role text",
+        "hash": "ecaea02d74323364461d0dd27ec100d0",
+        "name": "has_min_role",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "allowed_roles text[]",
+        "hash": "33951e547dcd3277b8becf0ab96b0119",
+        "name": "has_role",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "bd3eb7749d143469c389cd3e5effa465",
+        "name": "list_team_members_impl",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "1d791941b7a0190a68470baa45b65b35",
+        "name": "log_site_config_changes",
+        "schema": "private",
+        "security_definer": false
+      },
+      {
+        "args": "target_user uuid, target_module text",
+        "hash": "2905fe88c4f635357bf26e470f4c70bc",
+        "name": "module_permission",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "p_user_id uuid",
+        "hash": "28fe109e8cc96e1b03110458a7e6d957",
+        "name": "notification_allowed",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "p_user uuid, p_kind text",
+        "hash": "ba34b25c5c47424c1f3cc2497ac449a6",
+        "name": "notification_enabled_for",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "p_kind text",
+        "hash": "89aa942774e2e5750355363f77ec0b9f",
+        "name": "notification_rule_for_kind",
+        "schema": "private",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "52141fa27afe24c727f7efdd925fc2f5",
+        "name": "operations_widget_manage",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "8a90459d84f4bd7b189d35ca60e8af7d",
+        "name": "operations_widget_visible",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "target_user uuid",
+        "hash": "21a5a7aeaefcc3c67da8b8628a71aac9",
+        "name": "planning_absence_permission",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "ebf3bca4d3a6f775c4874044f7e6521b",
+        "name": "planning_absence_reviewer_ids_impl",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "role_key text",
+        "hash": "2392ad619e6e9a3827dc0d30fdf360a6",
+        "name": "role_rank",
+        "schema": "private",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "ef183a764771ef1ab9b38a993b33d78a",
+        "name": "session_is_active",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "82528dea95371d375eab10932b081bd3",
+        "name": "sync_nethor_release_manifest",
+        "schema": "private",
+        "security_definer": true
+      },
+      {
+        "args": "p_id bigint",
+        "hash": "f255b06acc361da78060c76ba1a1e87b",
+        "name": "admin_delete_login_history",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "8e4d4a5d6fa94fbb8aace3dd6b9c863c",
+        "name": "admin_notification_rules",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "869bdf6d4788274a2459f18e549cfebb",
+        "name": "admin_notification_users",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "target_user_ids uuid[], notif_title text, notif_message text, notif_target_url text",
+        "hash": "410ab8f2781262932fca08ac7d6f7e24",
+        "name": "admin_send_notification_test",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "p_rule_key text, p_portal_enabled boolean, p_push_enabled boolean",
+        "hash": "8f79b2dcbc264fe62a70958064668851",
+        "name": "admin_set_notification_channels",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "target_user uuid, new_enabled boolean",
+        "hash": "be762b08b4b6f05b22e8cf830a8a1c66",
+        "name": "admin_set_notification_control",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "p_rule_key text, p_enabled boolean",
+        "hash": "17ae78ce3fa5d5e8ff803bb47504e207",
+        "name": "admin_set_notification_rule",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "p_period text",
+        "hash": "ece7ca7772d6d0d4713e2fd9d24554f7",
+        "name": "admin_visit_stats",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_area text, p_path text, p_title text",
+        "hash": "98967e83e2f8446987a98c1b1ff833bb",
+        "name": "audit_page_view",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "be91830d62f5331e2d6cc311bdbe75f9",
+        "name": "audit_row_change",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "d108eabe63922d559d1f1312aec6cfd3",
+        "name": "chat_add_general_participant",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_message bigint",
+        "hash": "95bb54a7508575b7c3abe91c523538be",
+        "name": "chat_admin_delete_message",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid",
+        "hash": "0f38584b02c8d09b24cf1c1202813e54",
+        "name": "chat_archive_conversation",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid",
+        "hash": "8d40713f6f1d4a150234348698ccb0c9",
+        "name": "chat_delete_conversation",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid",
+        "hash": "d7dfdfa20a0490cd9f2a7c2e6e166836",
+        "name": "chat_leave_conversation",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "ae55a18512292d98baaea2a6137a8ac3",
+        "name": "chat_mark_all_read",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid",
+        "hash": "ef890c54cc73edda81e629e2878b3fee",
+        "name": "chat_mark_read",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_event text",
+        "hash": "6d8e2a317d78864d1c7d4c989501ba02",
+        "name": "chat_presence_ping",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid",
+        "hash": "6ba982dcfdef10d8ea1a584116706cd1",
+        "name": "chat_restore_conversation",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid, p_muted boolean",
+        "hash": "7bb166569683ce3b1192db669ad11ee6",
+        "name": "chat_set_muted",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid, p_action text",
+        "hash": "44e23dc0efac0941583778a2b52f9d0e",
+        "name": "chat_set_user_conversation_state",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "2f248fc0f955234fc1c931c9c82a86b0",
+        "name": "chat_touch_conversation",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_conversation uuid, p_name text, p_member_ids uuid[]",
+        "hash": "77c6256d5a300238742dda8abcb35b78",
+        "name": "chat_update_group",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_type text, p_name text, p_member_ids uuid[]",
+        "hash": "83bc49f469ba93afa1427ddc44e255c0",
+        "name": "create_chat_conversation",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "777bc5e0801659e30dab49af106adf13",
+        "name": "filter_notification_insert",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "71a7e2b4ff04e9b69382163d86c0b618",
+        "name": "get_public_login_config",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "13069e00872a3187f71dbc4bd1f2eb2f",
+        "name": "handle_new_user",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "ec10cfbff5d5e083e72395defc01ea5c",
+        "name": "list_chat_archives",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "da8380dd594ebe420d11535c2f1d9b54",
+        "name": "list_chat_conversations",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "1f422c5f1039320e700aaf730de18b8b",
+        "name": "list_my_archived_chat_conversations",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "5e575d541247456508c0eea3fcfffaa3",
+        "name": "list_team_members",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "fa25eb48afeea148ab1aa9ee51f1dfdf",
+        "name": "log_stock_change",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "5f76758cf7d367aac1f8357241cdec25",
+        "name": "mark_deleted_category_unlisted",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "bd430e7e537eee07780595376910ba83",
+        "name": "mark_deleted_packaging_unlisted",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "4bd5ba21cb07b34c378d9c6cbe92c368",
+        "name": "my_notification_channel_preferences",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "4ae53315a2413a29db5d9dc79626e062",
+        "name": "my_notification_preferences",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "4c67f89cb48a7ea207e784abf4599359",
+        "name": "my_subrole_keys",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "097563f07579756508ec586bb0dce1c8",
+        "name": "my_subrole_permissions",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "ab742ed5466241e5af14cc30f3a3062c",
+        "name": "nethor_data_architecture_health",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "f7879a379a25f461fd07423db3c2c803",
+        "name": "nethor_pre_request",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "f3429020745f24e450314bc606a632df",
+        "name": "nethor_security_context",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "d8e430cf42570c357a7efef4979c51be",
+        "name": "notify_chat_message",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "b393d169240d1d202cda8484bc777825",
+        "name": "planning_absence_my_permission",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "4d97dc94f9a8c88d180ceeaf096c1317",
+        "name": "planning_absence_reviewer_ids",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "ff0c4f2aceb5ed0bd6c68ea62055481e",
+        "name": "propagate_category_name",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "9aae78c64c894cce3f27f6db3f2b963d",
+        "name": "propagate_packaging_name",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "8312bdafb810de53be0d8254c85e9338",
+        "name": "protect_profile_admin_fields",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "target_category_ids bigint[]",
+        "hash": "7f64d98ed2abb7471b846e7d3a4a1236",
+        "name": "reset_fl_stock",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_item uuid",
+        "hash": "eb8129852d316df28011cb9c059280ac",
+        "name": "reward_buy",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "p_kind text, p_item uuid",
+        "hash": "bf49ad73ee3bbcb3e7e7fd1e1e0b6293",
+        "name": "reward_equip",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "p_id uuid, p_action text, p_note text",
+        "hash": "ca2f3312d95aee1b5d16f7030ad85e5c",
+        "name": "reward_mission_action",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "",
+        "hash": "6998ea6b4c2480f5d2e34b5dcf3f8d36",
+        "name": "rls_auto_enable",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "observed text, max_results integer",
+        "hash": "55086720d16058e8ed133a7ba65a6772",
+        "name": "scan_product_hypotheses",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "lookup_eans text[]",
+        "hash": "71513a9758ab2f3879fb92e001571ebb",
+        "name": "scan_products_by_ean",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "target_product uuid, new_quantity numeric",
+        "hash": "24b784b8d5fa8dea8359d9e42a454b7e",
+        "name": "set_fl_stock_quantity",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "p_rule_key text, p_push_enabled boolean, p_portal_enabled boolean",
+        "hash": "b4ce0d84143d829d2224dffbed1e3389",
+        "name": "set_my_notification_channels",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "p_rule_key text, p_enabled boolean",
+        "hash": "7eaf676e45819259637cad4132c13ff7",
+        "name": "set_my_notification_preference",
+        "schema": "public",
+        "security_definer": false
+      },
+      {
+        "args": "p_score integer, p_distance integer, p_articles integer",
+        "hash": "e2650422abc156e01f52897d2a066b0d",
+        "name": "submit_rush_rayon_score",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "15f463525cd164f17c2a32ab05ae5cee",
+        "name": "sync_nethor_release_manifest",
+        "schema": "public",
+        "security_definer": true
+      },
+      {
+        "args": "",
+        "hash": "7cad025e5ecf18735be26ab94b7eec20",
+        "name": "sync_product_taxonomy_labels",
+        "schema": "public",
+        "security_definer": false
+      }
+    ]
+  }
+}
