@@ -26,9 +26,9 @@ async function login(e){
  const uid=authData?.user?.id;if(!uid){await db.auth.signOut({scope:'local'});return showLogin('Compte non autorisé.')}
  try{localStorage.removeItem('nettoGlobalUI:'+uid)}catch(_){}
  applyCachedProfileTheme(uid);showProfileLoader('Chargement de ton profil et de tes accès…');
- const {data:p,error:pe}=await loadSessionProfile(uid,'display_name,email,role,ui_preferences');
+ const {data:p,error:pe}=await loadSessionProfile(uid,'display_name,email,role,ui_preferences,account_enabled');
  if(pe){await hideProfileLoader(180);return showLogin('Connexion momentanément indisponible. Ta session a bien été créée : recharge la page.')}
- if(!p){await db.auth.signOut({scope:'local'});await hideProfileLoader(180);return showLogin('Compte non autorisé.')}
+ if(!p||p.account_enabled===false){await db.auth.signOut({scope:'local'});await hideProfileLoader(180);return showLogin(p?.account_enabled===false?'Ce compte a été désactivé par un administrateur.':'Compte non autorisé.')}
  try{const {error:loginLogError}=await db.from('login_history').insert({user_id:uid,user_agent:String(navigator.userAgent||'').slice(0,500),source:'app'});if(loginLogError)console.warn('Historique connexion:',loginLogError)}catch(loginLogError){console.warn('Historique connexion:',loginLogError)}
  profile=p;const loaderTxt=$('profileLoaderText');if(loaderTxt)loaderTxt.textContent='Application de ton thème…';await syncProfileTheme(profile,uid);await loadAuthBrandingConfig(true);playLoginSound();$('login').classList.add('hidden');$('site').classList.add('hidden');
  await hideProfileLoader(380);await showWelcome();
