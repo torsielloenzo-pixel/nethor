@@ -1,0 +1,34 @@
+/* Nethor — mode édition admin des widgets */
+.nethorPageEditorButton{
+ position:fixed;right:20px;bottom:20px;z-index:2147483000;width:50px;height:50px;border:0;border-radius:50%;
+ display:grid;place-items:center;background:#171717;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;
+ transition:transform .18s ease,background .18s ease,box-shadow .18s ease
+}
+.nethorPageEditorButton:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.nethorPageEditorButton svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nethorPageEditorButton.is-active{background:#ff5a2a}
+.nethorPageEditorBar{
+ position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:2147482999;display:flex;align-items:center;gap:10px;
+ padding:9px 12px;border-radius:14px;background:rgba(23,23,23,.96);color:#fff;box-shadow:0 12px 34px rgba(0,0,0,.22);
+ font:600 13px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+.nethorPageEditorBar button{border:0;border-radius:9px;padding:8px 12px;font:inherit;cursor:pointer}
+.nethorPageEditorBar .save{background:#ff5a2a;color:#fff}.nethorPageEditorBar .cancel{background:#fff;color:#171717}
+.nethorPageEditorHint{opacity:.75;font-weight:500;margin-right:2px}
+.nethorPageEditorTarget{position:relative!important;outline:2px dashed rgba(255,90,42,.72)!important;outline-offset:4px!important;cursor:move!important}
+.nethorPageEditorTarget::after{
+ content:attr(data-nethor-editor-label);position:absolute;top:6px;left:6px;z-index:5;padding:4px 7px;border-radius:7px;
+ background:#171717;color:#fff;font:600 11px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;pointer-events:none
+}
+.nethorPageEditorTarget.is-selected{outline:2px solid #ff5a2a!important;box-shadow:0 0 0 5px rgba(255,90,42,.13)!important}
+.nethorPageEditorHandle{
+ position:absolute;right:-7px;bottom:-7px;width:16px;height:16px;border:2px solid #fff;border-radius:5px;background:#ff5a2a;
+ box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:nwse-resize;z-index:8
+}
+.nethorPageEditorTarget[data-nethor-editor-dragging="1"]{user-select:none}
+html.nethorPageEditorOpen,html.nethorPageEditorOpen body{overflow-x:hidden!important}
+@media(max-width:900px),(pointer:coarse){
+ .nethorPageEditorButton{right:14px;bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 14px)}
+ .nethorPageEditorBar{top:10px;max-width:calc(100vw - 20px);width:max-content}
+ .nethorPageEditorHint{display:none}
+}
