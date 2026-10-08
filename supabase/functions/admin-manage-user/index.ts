@@ -111,6 +111,10 @@ Deno.serve(async(req)=>{
       if(username.length<3) return json({error:"L’identifiant doit contenir au moins 3 caractères."},400);
       if(password.length<8) return json({error:"Le mot de passe temporaire doit contenir au moins 8 caractères."},400);
       if(avatarFrame && !["admin","responsable","point_vente","employe","lecture"].includes(avatarFrame)) return json({error:"Cadre d’avatar invalide."},400);
+      if(planningName){
+        const {data:linked}=await admin.from("profiles").select("id").ilike("planning_name",planningName).maybeSingle();
+        if(linked) return json({error:"Ce nom du planning est déjà lié à un autre compte."},409);
+      }
       const {data:roleRow,error:roleError}=await admin.from("app_roles").select("key").eq("key",role).maybeSingle();
       if(roleError||!roleRow) return json({error:"Rôle invalide."},400);
       const technicalEmail=`${username}@stock-fl.local`;
@@ -326,6 +330,10 @@ Deno.serve(async(req)=>{
       if(avatarFrame && !["admin","responsable","point_vente","employe","lecture"].includes(avatarFrame)) return json({error:"Cadre d’avatar invalide."},400);
 
       if(contractHours!==null && (!Number.isFinite(contractHours)||contractHours<0||contractHours>80)) return json({error:"Les heures contrat doivent être comprises entre 0 et 80 h."},400);
+      if(planningName){
+        const {data:linked}=await admin.from("profiles").select("id").ilike("planning_name",planningName).neq("id",userId).maybeSingle();
+        if(linked) return json({error:"Ce nom du planning est déjà lié à un autre compte."},409);
+      }
 
       const {data:existingProfile}=await admin.from("profiles").select("display_name,email,role,status_text,profile_color,avatar_frame,contract_hours,planning_name,account_enabled").eq("id",userId).maybeSingle();
       const {data:existingAuth,error:existingAuthError}=await admin.auth.admin.getUserById(userId);
