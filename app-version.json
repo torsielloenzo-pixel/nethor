@@ -1,19 +1,20 @@
 {
-  "version": 400,
-  "label": "v1.46.51",
-  "important": false,
+  "version": 401,
+  "label": "v1.46.52",
+  "important": true,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Gestion · Création de cadre corrigée",
-  "message": "Créer un cadre de profil par thème l’enregistre désormais réellement, l’affiche immédiatement sous le formulaire et le bouton général Enregistrer reconfirme la bibliothèque.",
-  "published_at": "2026-10-08T10:49:46.211Z",
+  "title": "Comptes · Liaison planning & désactivation",
+  "message": "La gestion des comptes retrouve la création d’utilisateur et ajoute la liaison au planning ainsi que la désactivation sécurisée avec révocation des sessions.",
+  "published_at": "2026-10-08T11:08:06.128Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Correction SQL : le rôle authenticated possède désormais les droits SELECT, INSERT, UPDATE et DELETE sur mobile_theme_profile_frames.",
-    "Les règles RLS d’écriture utilisent la vérification administrateur déjà employée par Nethor.",
-    "Créer le cadre = enregistrement immédiat dans la table dédiée.",
-    "Après création, le cadre apparaît immédiatement avec son aperçu dans la liste du thème.",
-    "La suppression est immédiate et retire aussi l’aperçu.",
-    "Le bouton général « Enregistrer les modifications » recharge la bibliothèque pour confirmer l’état enregistré."
+    "Le bouton « Créer un compte » est de nouveau visible dans Gestion → Utilisateurs & accès → Comptes.",
+    "Chaque compte peut être associé explicitement à un nom provenant des plannings importés.",
+    "Un nom du planning ne peut être associé qu’à un seul compte.",
+    "Un compte peut être désactivé puis réactivé par l’administrateur.",
+    "La désactivation bloque les nouvelles connexions, invalide l’accès serveur et révoque les sessions actives.",
+    "Les interfaces connectées vérifient régulièrement l’état de session et renvoient le compte désactivé vers la connexion.",
+    "Aucune purge du cache hors connexion n’est demandée par cette mise à jour."
   ]
 }
