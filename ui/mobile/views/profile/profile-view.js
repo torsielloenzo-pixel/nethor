@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const state={host:null,mounted:false,unsubscribe:null,selectedFile:null,objectUrl:null,crop:{img:null,base:1,zoom:1,x:0,y:0,drag:false,px:0,py:0},rewards:[],equipment:[],email:{loaded:false,configured:false,mode:'loading',busy:false}};
+const state={host:null,mounted:false,unsubscribe:null,selectedFile:null,objectUrl:null,crop:{img:null,base:1,zoom:1,x:0,y:0,drag:false,px:0,py:0},rewards:[],equipment:[],email:{loaded:false,configured:false,mode:'loading',busy:false},pendingFrame:null,frameSaving:false};
 function services(){return window.NethorMobileServices||window.MobileServices||null}
 function router(){return window.NethorMobileRouter||window.MobileRouter||null}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -16,7 +16,7 @@ function profileThemeFrames(){
  return{theme,frames:Array.isArray(raw)?raw.filter(x=>x&&x.id&&x.url):[]}
 }
 function profileFrameChoicesHtml(profile){
- const data=profileThemeFrames(),current=String(profile?.avatar_frame||''),themeLabel=activeProfileTheme().label;
+ const data=profileThemeFrames(),current=state.pendingFrame===null?String(profile?.avatar_frame||''):state.pendingFrame,themeLabel=activeProfileTheme().label;
  if(!data.frames.length)return '<div class="npvFrameEmpty">Aucun cadre disponible pour le thème '+esc(themeLabel)+'.</div>';
  const noneActive=!data.frames.some(x=>x.id===current);
  return '<div class="npvFrameChoices">'+
@@ -41,7 +41,7 @@ function render(){
  state.host.innerHTML='<div class="nethorProfileView" data-profile-view>'+
  '<div class="npvTop"><button type="button" data-action="back" class="npvBack" aria-label="Retour">‹</button><div><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'+
  '<section class="npvCard npvIdentity"><div class="npvAvatarWrap"><div class="npvAvatar" data-avatar>'+initials(p.display_name)+'</div><button class="npvAvatarEdit" data-action="avatar-open" type="button" aria-label="Modifier la photo">✎</button></div><div class="npvIdentityCopy"><h2>'+esc(p.display_name||'Utilisateur')+'</h2><span>'+esc(roleLabel(p.role))+'</span></div></section>'+
- '<section class="npvCard npvThemeIdentity"><div class="npvCardHead"><h2>Apparence du profil</h2><p>La couleur et les cadres proposés suivent automatiquement le thème Mobile actif.</p></div><div class="npvThemeIdentityRow"><span class="npvThemeIdentitySwatch">'+initials(p.display_name)+'</span><div><strong>'+esc(appearance.label)+'</strong><small>Palette synchronisée avec le thème · aucun choix de couleur manuel</small></div></div><div class="npvFrameSection"><div class="npvFrameSectionHead"><strong>Cadre du profil</strong><small>Cadres disponibles pour '+esc(appearance.label)+' uniquement</small></div>'+profileFrameChoicesHtml(p)+'<div class="npvState" data-frame-state></div></div></section>'+emailCardHtml()+
+ '<section class="npvCard npvThemeIdentity"><div class="npvCardHead"><h2>Apparence du profil</h2><p>La couleur et les cadres proposés suivent automatiquement le thème Mobile actif.</p></div><div class="npvThemeIdentityRow"><span class="npvThemeIdentitySwatch">'+initials(p.display_name)+'</span><div><strong>'+esc(appearance.label)+'</strong><small>Palette synchronisée avec le thème · aucun choix de couleur manuel</small></div></div><div class="npvFrameSection"><div class="npvFrameSectionHead"><strong>Cadre du profil</strong><small>Cadres disponibles pour '+esc(appearance.label)+' uniquement</small></div>'+profileFrameChoicesHtml(p)+'<button type="button" class="npvPrimary" data-action="frame-save">Enregistrer le cadre</button><div class="npvState" data-frame-state aria-live="polite"></div></div></section>'+emailCardHtml()+
  '<section class="npvCard"><div class="npvCardHead"><h2>Sécurité du compte</h2><p>Le mot de passe actuel est vérifié avant modification.</p></div><div class="npvPasswordGrid"><input data-current-password type="password" autocomplete="current-password" placeholder="Mot de passe actuel"><input data-new-password type="password" autocomplete="new-password" minlength="8" placeholder="Nouveau mot de passe"><input data-confirm-password type="password" autocomplete="new-password" minlength="8" placeholder="Confirmer le nouveau mot de passe"></div><button class="npvPrimary" data-action="change-password" type="button">Changer le mot de passe</button><div class="npvState" data-password-state></div></section>'+
  (p.role==='admin'?'<section class="npvCard"><div class="npvCardHead"><h2>Personnalisation avancée</h2><p>Avatar de poste, cadre, accessoire, titre et thème de récompense.</p></div><div class="npvRewardGrid" data-reward-grid><div class="npvState">Chargement…</div></div><button class="npvSecondary" data-action="open-rewards" type="button">Ouvrir Défis & Boutique</button><div class="npvState" data-reward-state></div></section><section class="npvCard" data-sound-card><div class="npvCardHead"><h2>Sons d’interface</h2><p>Réglages locaux à cet appareil.</p></div><label class="npvSwitch"><input data-sound-enabled type="checkbox"><span>Activer les sons</span></label><label class="npvVolume">Volume <b data-sound-value>72%</b><input data-sound-volume type="range" min="0" max="100" value="72"></label><button class="npvSecondary" data-action="sound-test" type="button">Tester</button></section>':'')+
  '<section class="npvCard"><div class="npvCardHead"><h2>Notifications</h2><p>Consulte ton centre d’activité complet.</p></div><button class="npvSecondary" data-action="open-notifications" type="button">Ouvrir les notifications</button></section>'+
@@ -174,28 +174,40 @@ async function loadRewards(){
 }
 async function equipReward(select){const kind=select.dataset.rewardKind;select.disabled=true;stateText('[data-reward-state]','Application…');try{const {error}=await services().client.rpc('reward_equip',{p_kind:kind,p_item:select.value||null});if(error)throw error;stateText('[data-reward-state]','✓ Personnalisation appliquée.','ok');await loadRewards()}catch(e){stateText('[data-reward-state]','Erreur : '+(e?.message||'application impossible'),'err')}finally{select.disabled=false}}
 function syncSounds(){const s=window.NettoSounds,card=root()?.querySelector('[data-sound-card]');if(!card||!s){card?.classList.add('hidden');return}const enabled=!!s.isEnabled?.(),volume=Math.round((s.getVolume?.()??.72)*100);const toggle=card.querySelector('[data-sound-enabled]'),range=card.querySelector('[data-sound-volume]'),label=card.querySelector('[data-sound-value]');if(toggle)toggle.checked=enabled;if(range)range.value=String(volume);if(label)label.textContent=volume+'%'}
-async function selectProfileFrame(button){
- const shared=services(),id=String(button?.dataset?.profileFrame||'').trim(),available=profileThemeFrames().frames;
+function selectProfileFrame(button){
+ const id=String(button?.dataset?.profileFrame||'').trim(),available=profileThemeFrames().frames;
  if(id&&!available.some(x=>x.id===id))return;
- root()?.querySelectorAll('[data-profile-frame]').forEach(x=>x.disabled=true);
+ state.pendingFrame=id;
+ root()?.querySelectorAll('[data-profile-frame]').forEach(x=>x.classList.toggle('active',x===button));
+ stateText('[data-frame-state]','Cadre sélectionné. Appuie sur Enregistrer pour confirmer.');
+}
+async function saveProfileFrame(button){
+ if(state.frameSaving)return;
+ const shared=services(),id=state.pendingFrame===null?String(shared?.profile?.avatar_frame||''):state.pendingFrame;
+ const available=profileThemeFrames().frames;
+ if(id&&!available.some(x=>x.id===id)){stateText('[data-frame-state]','Ce cadre n’est pas disponible avec ton thème.','err');return}
+ state.frameSaving=true;button.disabled=true;
  stateText('[data-frame-state]','Enregistrement…');
  try{
-  await shared?.updateProfile?.({avatar_frame:id||null});
-  stateText('[data-frame-state]',id?'✓ Cadre appliqué':'✓ Cadre retiré','ok');
-  render()
- }catch(e){
-  stateText('[data-frame-state]','Erreur : '+(e?.message||'enregistrement impossible'),'err');
-  root()?.querySelectorAll('[data-profile-frame]').forEach(x=>x.disabled=false)
- }
+  if(typeof shared?.updateProfile!=='function')throw new Error('Service profil indisponible');
+  await shared.updateProfile({avatar_frame:id||null});
+  const {data,error}=await shared.client.from('profiles').select('avatar_frame').eq('id',shared.session.user.id).single();
+  if(error)throw error;
+  if(String(data?.avatar_frame||'')!==id)throw new Error('Le cadre n’a pas été enregistré.');
+  state.pendingFrame=null;
+  render();
+  stateText('[data-frame-state]',id?'✓ Cadre enregistré sur ton profil':'✓ Cadre retiré de ton profil','ok');
+ }catch(e){stateText('[data-frame-state]','Erreur : '+(e?.message||'enregistrement impossible'),'err')}
+ finally{state.frameSaving=false;button.disabled=false}
 }
 function onClick(e){
- const frame=e.target.closest('[data-profile-frame]');if(frame){void selectProfileFrame(frame);return}
+ const frame=e.target.closest('[data-profile-frame]');if(frame){selectProfileFrame(frame);return}
  const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action;
- if(a==='back')back();else if(a==='email-save')void saveRecoveryEmail(b,false);else if(a==='email-change')openRecoveryEmailChange();else if(a==='email-cancel')cancelRecoveryEmailChange();else if(a==='email-save-change')void saveRecoveryEmail(b,true);else if(a==='email-reset')void requestRecoveryEmailReset(b);else if(a==='change-password')void changePassword(b);else if(a==='avatar-open')openAvatar();else if(a==='avatar-close')cleanupAvatar();else if(a==='avatar-choose')root()?.querySelector('[data-avatar-input]')?.click();else if(a==='avatar-save')void saveAvatar(b);else if(a==='avatar-remove')void removeAvatar(b);else if(a==='zoom-out')setZoom(state.crop.zoom-.1);else if(a==='zoom-in')setZoom(state.crop.zoom+.1);else if(a==='open-rewards')router()?.open?.('rewards',{source:'profile'});else if(a==='open-notifications')router()?.open?.('notifications',{source:'profile'});else if(a==='sound-test')window.NettoSounds?.play?.('confirm')
+ if(a==='back')back();else if(a==='frame-save')void saveProfileFrame(b);else if(a==='email-save')void saveRecoveryEmail(b,false);else if(a==='email-change')openRecoveryEmailChange();else if(a==='email-cancel')cancelRecoveryEmailChange();else if(a==='email-save-change')void saveRecoveryEmail(b,true);else if(a==='email-reset')void requestRecoveryEmailReset(b);else if(a==='change-password')void changePassword(b);else if(a==='avatar-open')openAvatar();else if(a==='avatar-close')cleanupAvatar();else if(a==='avatar-choose')root()?.querySelector('[data-avatar-input]')?.click();else if(a==='avatar-save')void saveAvatar(b);else if(a==='avatar-remove')void removeAvatar(b);else if(a==='zoom-out')setZoom(state.crop.zoom-.1);else if(a==='zoom-in')setZoom(state.crop.zoom+.1);else if(a==='open-rewards')router()?.open?.('rewards',{source:'profile'});else if(a==='open-notifications')router()?.open?.('notifications',{source:'profile'});else if(a==='sound-test')window.NettoSounds?.play?.('confirm')
 }
 function onChange(e){if(e.target.matches('[data-avatar-input]'))chooseFile(e.target);else if(e.target.matches('[data-crop-zoom]'))setZoom(e.target.value);else if(e.target.matches('[data-reward-kind]'))void equipReward(e.target);else if(e.target.matches('[data-sound-enabled]')){window.NettoSounds?.setEnabled?.(e.target.checked);syncSounds()}else if(e.target.matches('[data-sound-volume]')){const n=Math.max(0,Math.min(100,Number(e.target.value)||0));window.NettoSounds?.setVolume?.(n/100);syncSounds()}}
 function onProfile(detail){if(state.mounted&&['core','ready'].includes(detail?.type))render()}
-async function mount(host){state.host=host;state.mounted=true;state.email={loaded:false,configured:false,mode:'loading',busy:false};host.innerHTML='<div class="npvLoading">Chargement du profil…</div>';host.addEventListener('click',onClick);host.addEventListener('change',onChange);host.addEventListener('input',onChange);await services()?.ready?.();if(!state.mounted)return false;state.unsubscribe=services()?.subscribe?.(onProfile,{immediate:false})||null;render();void loadRecoveryEmailStatus();return true}
+async function mount(host){state.host=host;state.mounted=true;state.email={loaded:false,configured:false,mode:'loading',busy:false};state.pendingFrame=null;host.innerHTML='<div class="npvLoading">Chargement du profil…</div>';host.addEventListener('click',onClick);host.addEventListener('change',onChange);host.addEventListener('input',onChange);await services()?.ready?.();if(!state.mounted)return false;state.unsubscribe=services()?.subscribe?.(onProfile,{immediate:false})||null;render();void loadRecoveryEmailStatus();return true}
 async function unmount(){state.mounted=false;if(typeof state.unsubscribe==='function')state.unsubscribe();state.unsubscribe=null;cleanupAvatar();if(state.host){state.host.removeEventListener('click',onClick);state.host.removeEventListener('change',onChange);state.host.removeEventListener('input',onChange);state.host.innerHTML=''}state.host=null;return true}
 const api=Object.freeze({mount,unmount,render});
 window.NethorMobileProfileView=api;router()?.register?.('profile',api);
