@@ -1010,7 +1010,7 @@ async function readPlanningFile(file){
  for(let r=3;r<=scanLastRow;r++){
   const cell=mondayWs['B'+(r+1)],name=String(cell?.v??'').trim();
   if(!name)continue;
-  if(/^TOTAL\\b/i.test(name))break;
+  if(/^TOTAL\b/i.test(name))break;
   employees.push({excelRow:r+1,rowIndex:r,name})
  }
  if(!employees.length)throw new Error('Aucun employé trouvé dans la colonne B de la feuille LUNDI.');const legacy=/\.xls$/i.test(file.name)&&!/\.xlsx$/i.test(file.name)?legacyStyleReader(ab):null;
