@@ -119,19 +119,56 @@ function mobileVisualTheme(){
  const custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase();
  return ['mineral','sage','plum','halloween'].includes(custom)?custom:mobileTheme()
 }
+// One mobile frame renderer shared by the permanent header, planning, chat and profile.
+// Real DOM layers avoid ::before conflicts with legacy avatar styles.
+const activeMobileAvatarFrames=new Map();
+let mobileAvatarFramesObserver=null,mobileAvatarFrameSyncPending=false;
+function syncMobileAvatarFrameLayers(){
+ if(!isMobile())return;
+ document.querySelectorAll('[data-avatar-frame],.nethorHasThemeAvatarFrame').forEach(el=>{
+  const id=String(el.getAttribute('data-avatar-frame')||'').trim();
+  const asset=activeMobileAvatarFrames.get(id)||'';
+  let layer=el.querySelector(':scope > .nethorThemeAvatarFrameOverlay');
+  if(!asset){
+   if(layer)layer.remove();
+   el.classList.remove('nethorHasThemeAvatarFrame');
+   return
+  }
+  if(!layer){
+   layer=document.createElement('span');
+   layer.className='nethorThemeAvatarFrameOverlay';
+   layer.setAttribute('aria-hidden','true');
+   el.appendChild(layer)
+  }
+  if(layer.dataset.assetUrl!==asset){
+   layer.style.backgroundImage='url("'+asset.replace(/"/g,'%22')+'")';
+   layer.dataset.assetUrl=asset
+  }
+  el.classList.add('nethorHasThemeAvatarFrame')
+ })
+}
+function scheduleMobileAvatarFrameSync(){
+ if(mobileAvatarFrameSyncPending)return;
+ mobileAvatarFrameSyncPending=true;
+ requestAnimationFrame(()=>{mobileAvatarFrameSyncPending=false;syncMobileAvatarFrameLayers()})
+}
+function ensureMobileAvatarFrameObserver(){
+ if(mobileAvatarFramesObserver||typeof MutationObserver==='undefined'||!document.body)return;
+ mobileAvatarFramesObserver=new MutationObserver(records=>{
+  if(records.some(record=>record.type==='childList'||record.attributeName==='data-avatar-frame'))scheduleMobileAvatarFrameSync()
+ });
+ mobileAvatarFramesObserver.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-avatar-frame']})
+}
 function installMobileProfileFrameStyles(config={}){
- let style=document.getElementById('nethorMobileProfileFrameStyles');
- if(!style){style=document.createElement('style');style.id='nethorMobileProfileFrameStyles';document.head?.appendChild(style)}
  const theme=mobileVisualTheme(),frames=config?.platform_ui?.mobile?.profile_frames?.themes?.[theme];
- const list=Array.isArray(frames)?frames:[];
- style.textContent=list.map(frame=>{
-  const id=String(frame?.id||'').replace(/[^a-zA-Z0-9_-]/g,''),url=String(frame?.url||'').trim();
-  if(!id||!url)return'';
-  const selector='html[data-nethor-platform="mobile"] [data-avatar-frame="'+id+'"]';
-  return selector+'{position:relative!important;overflow:visible!important;isolation:isolate!important}'+
-   selector+'::before{content:""!important;display:block!important;position:absolute!important;inset:-12%!important;width:124%!important;height:124%!important;min-width:0!important;max-width:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;background-image:url('+JSON.stringify(url)+')!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;z-index:8!important;pointer-events:none!important}'+
-   selector+'::after{display:none!important}'
- }).join('\n')
+ activeMobileAvatarFrames.clear();
+ for(const frame of Array.isArray(frames)?frames:[]){
+  const id=String(frame?.id||'').trim(),url=String(frame?.url||'').trim();
+  // Only the active spectator theme can decorate a selected user's avatar.
+  if(/^themeframe_[a-z0-9_-]+$/i.test(id)&&/^https:\/\/[^\s"'<>]+$/i.test(url))activeMobileAvatarFrames.set(id,url)
+ }
+ ensureMobileAvatarFrameObserver();
+ scheduleMobileAvatarFrameSync()
 }
 function mobileThemeOpeningAsset(config){
  const mobile=config?.platform_ui?.mobile||{},theme=mobileVisualTheme(),custom=mobile?.welcome_media_themes?.[theme];
