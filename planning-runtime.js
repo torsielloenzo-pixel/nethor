@@ -736,7 +736,7 @@ function renderReader(){
  document.getElementById('editPlanningBtn').disabled=(planningWeekLoadError||navigator.onLine===false)&&!(navigator.onLine!==false&&editMode&&changedDates().length&&!!planningLoadedRevisionAt);empty.classList.add('hidden');viewport.classList.remove('hidden');
  meta.textContent=(model.weekLabel?model.weekLabel+' • ':'')+'Planning • '+fmtTime(model.startTime)+' → '+fmtTime(model.endTime)+(editMode&&changedDates().length?' • Brouillon non publié':'');
  const admin=role==='admin';badge.textContent=admin?(model.sourceFile||'Excel'):'';badge.classList.toggle('hidden',!admin||!model.sourceFile);const downloadBtn=document.getElementById('downloadSourceBtn');if(downloadBtn){downloadBtn.classList.toggle('hidden',!admin);downloadBtn.disabled=!model.sourcePath;downloadBtn.title=model.sourcePath?'Télécharger le fichier Excel source importé':'Ce planning a été importé avant l’archivage des fichiers source. Réimporte le fichier pour activer le téléchargement.'}
- const ss=slots(),employees=model.employees||[],rows=day.cells||[],focusEmployeeIndex=(planningDeepLinkFocus==='rest'||planningDeepLinkFocus==='leave')?currentUserEmployeeIndex(model):-1,visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)})).filter(x=>editMode||x.row.some(Boolean)||x.ri===focusEmployeeIndex);
+ const ss=slots(),employees=model.employees||[],rows=day.cells||[],visibleEmployees=employees.map((emp,ri)=>({emp,ri,row:rows[ri]||Array(ss.length).fill(null)}));
  let h='<table id="xlsTable" class="xlsTable '+(editMode?'editing':'')+'"><colgroup><col class="nameCol"><col class="readCol">'+ss.map(()=>'<col class="slotCol">').join('')+'<col class="totalCol"></colgroup><thead><tr><th class="nameHead">Utilisateur</th><th class="readHead" title="Consultation du planning pour cette journée">Lu</th>';
  ss.forEach((t,i)=>{const major=i%2===0,label=major?(Number.isInteger(t)?String(Math.floor(t)):fmtTime(t)):'',cls=(i%4===0?'hourStart ':'')+(i%2===0?'halfStart':'blankQuarter');h+='<th class="timeHead '+cls+'" title="'+fmtTime(t)+'–'+fmtTime(t+.25)+'">'+label+'</th>'});
  h+='<th class="totalHead">Total</th></tr></thead><tbody>';
@@ -1004,8 +1004,16 @@ function planningExcelWeeklySummary(wb,employees,mondayName){
 async function readPlanningFile(file){
  if(!window.XLSX)throw new Error('Le lecteur Excel n’est pas chargé.');const ab=await file.arrayBuffer(),wb=XLSX.read(ab,{type:'array',cellDates:true,cellStyles:true});
  const mondayName=findSheet(wb,'LUNDI');if(!mondayName)throw new Error('Feuille LUNDI introuvable.');const mondayWs=wb.Sheets[mondayName],mondayDate=cellDate(mondayWs.B2?.v);if(!mondayDate)throw new Error('Date du lundi introuvable en B2.');
- const weekLabel=String(mondayWs.C1?.v||'').trim(),employees=[];for(let r=3;r<=14;r++){const cell=mondayWs['B'+(r+1)],name=String(cell?.v??'').trim();if(name&&name.toUpperCase()!=='TOTAL')employees.push({excelRow:r+1,rowIndex:r,name})}
- if(!employees.length)throw new Error('Aucun employé trouvé dans B4:B15.');const legacy=/\.xls$/i.test(file.name)&&!/\.xlsx$/i.test(file.name)?legacyStyleReader(ab):null;
+ const weekLabel=String(mondayWs.C1?.v||'').trim(),employees=[];
+ const mondayRange=mondayWs['!ref']?XLSX.utils.decode_range(mondayWs['!ref']):{e:{r:14}};
+ const scanLastRow=Math.max(14,Number(mondayRange.e?.r)||14);
+ for(let r=3;r<=scanLastRow;r++){
+  const cell=mondayWs['B'+(r+1)],name=String(cell?.v??'').trim();
+  if(!name)continue;
+  if(/^TOTAL\\b/i.test(name))break;
+  employees.push({excelRow:r+1,rowIndex:r,name})
+ }
+ if(!employees.length)throw new Error('Aucun employé trouvé dans la colonne B de la feuille LUNDI.');const legacy=/\.xls$/i.test(file.name)&&!/\.xlsx$/i.test(file.name)?legacyStyleReader(ab):null;
  const days={};for(let di=0;di<7;di++){const [sheetKey,label]=DAYS[di],sheetName=findSheet(wb,sheetKey);if(!sheetName)throw new Error('Feuille '+sheetKey+' introuvable.');const ws=wb.Sheets[sheetName],key=isoDate(addDays(mondayDate,di)),matrix=[];for(const emp of employees){const row=[];for(let si=0;si<58;si++){const c=2+si,addr=XLSX.utils.encode_cell({r:emp.rowIndex,c}),cell=ws[addr],occupied=!!(cell&&cell.v!==null&&cell.v!==''&&cell.v!==0&&cell.v!==false);
       // Dans le planning Netto, Rouge / Jaune / Orange sont souvent des cellules uniquement colorées,
       // sans valeur "1". La couleur Excel prime donc toujours sur le contenu de la cellule.
