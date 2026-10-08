@@ -6,3 +6,9 @@ html.embeddedAccounts.externalAccountsNav .accountsEmbeddedLayout .tabs{display:
 html.embeddedAccounts.externalAccountsNav .accountsEmbeddedLayout .stats{margin-bottom:12px!important}
 html.embeddedAccounts .accountsEmbeddedLayout .workspace{grid-template-columns:320px minmax(0,1fr)}
 @media(max-width:900px){html.embeddedAccounts .accountsEmbeddedLayout .workspace{grid-template-columns:1fr}}
+
+html.embeddedAccounts .accountsEmbeddedActions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:12px 13px;background:#fff;border:1px solid #e5e9ef;border-radius:14px;box-shadow:0 4px 14px #14213d0a}
+html.embeddedAccounts .accountsEmbeddedActions>div:first-child strong{display:block;font-size:12px;color:#202936}
+html.embeddedAccounts .accountsEmbeddedActions>div:first-child small{display:block;margin-top:3px;font-size:8.5px;color:#8b929d}
+html.embeddedAccounts .accountsEmbeddedActions .createAccountVisible{background:#171717;color:#fff}
+@media(max-width:600px){html.embeddedAccounts .accountsEmbeddedActions{align-items:stretch;flex-direction:column}html.embeddedAccounts .accountsEmbeddedActions .heroActions{display:grid;grid-template-columns:1fr 1fr}html.embeddedAccounts .accountsEmbeddedActions .btn{min-height:42px}}
