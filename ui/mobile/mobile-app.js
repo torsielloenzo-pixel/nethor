@@ -155,19 +155,31 @@ function scheduleMobileAvatarFrameSync(){
 function ensureMobileAvatarFrameObserver(){
  if(mobileAvatarFramesObserver||typeof MutationObserver==='undefined'||!document.body)return;
  mobileAvatarFramesObserver=new MutationObserver(records=>{
-  if(records.some(record=>record.type==='childList'||record.attributeName==='data-avatar-frame'))scheduleMobileAvatarFrameSync()
+  const hasFrameChange=records.some(record=>{
+   if(record.type==='attributes')return record.attributeName==='data-avatar-frame';
+   if(record.target?.closest?.('[data-avatar-frame]'))return true;
+   for(const node of record.addedNodes){
+    if(node.nodeType===1&&(node.matches?.('[data-avatar-frame],.nethorHasThemeAvatarFrame')||node.querySelector?.('[data-avatar-frame],.nethorHasThemeAvatarFrame')))return true
+   }
+   return false
+  });
+  if(hasFrameChange)scheduleMobileAvatarFrameSync()
  });
  mobileAvatarFramesObserver.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-avatar-frame']})
 }
 function installMobileProfileFrameStyles(config={}){
  const theme=mobileVisualTheme(),frames=config?.platform_ui?.mobile?.profile_frames?.themes?.[theme];
- activeMobileAvatarFrames.clear();
+ const next=new Map();
  for(const frame of Array.isArray(frames)?frames:[]){
   const id=String(frame?.id||'').trim(),url=String(frame?.url||'').trim();
   // Only the active spectator theme can decorate a selected user's avatar.
-  if(/^themeframe_[a-z0-9_-]+$/i.test(id)&&/^https:\/\/[^\s"'<>]+$/i.test(url))activeMobileAvatarFrames.set(id,url)
+  if(/^themeframe_[a-z0-9_-]+$/i.test(id)&&/^https:\/\/[^\s"'<>]+$/i.test(url))next.set(id,url)
  }
+ const changed=next.size!==activeMobileAvatarFrames.size||[...next].some(([id,url])=>activeMobileAvatarFrames.get(id)!==url);
  ensureMobileAvatarFrameObserver();
+ if(!changed)return;
+ activeMobileAvatarFrames.clear();
+ next.forEach((url,id)=>activeMobileAvatarFrames.set(id,url));
  scheduleMobileAvatarFrameSync()
 }
 function mobileThemeOpeningAsset(config){
