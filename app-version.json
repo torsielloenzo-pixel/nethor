@@ -1,20 +1,18 @@
 {
-  "version": 401,
-  "label": "v1.46.52",
-  "important": true,
+  "version": 402,
+  "label": "v1.46.53",
+  "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Comptes · Liaison planning & désactivation",
-  "message": "La gestion des comptes retrouve la création d’utilisateur et ajoute la liaison au planning ainsi que la désactivation sécurisée avec révocation des sessions.",
-  "published_at": "2026-10-08T11:08:06.128Z",
+  "title": "Cadres de profil · Affichage mobile",
+  "message": "Le cadre d’avatar enregistré apparaît sur l’en-tête, le planning, le chat et Mon profil, lorsque le thème du spectateur correspond au thème du cadre.",
+  "published_at": "2026-10-08T11:32:36.103Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Le bouton « Créer un compte » est de nouveau visible dans Gestion → Utilisateurs & accès → Comptes.",
-    "Chaque compte peut être associé explicitement à un nom provenant des plannings importés.",
-    "Un nom du planning ne peut être associé qu’à un seul compte.",
-    "Un compte peut être désactivé puis réactivé par l’administrateur.",
-    "La désactivation bloque les nouvelles connexions, invalide l’accès serveur et révoque les sessions actives.",
-    "Les interfaces connectées vérifient régulièrement l’état de session et renvoient le compte désactivé vers la connexion.",
-    "Aucune purge du cache hors connexion n’est demandée par cette mise à jour."
+    "Le cadre enregistré reste associé au compte et suit ses avatars sur toutes les vues mobiles.",
+    "Seuls les cadres correspondant au thème actuellement utilisé par le spectateur sont visibles.",
+    "L’affichage utilise désormais un calque réel pour éviter les conflits des styles d’avatar.",
+    "Les avatars sont mis à jour lorsque les informations du profil ou les pages changent.",
+    "Rafraîchissement ciblé des ressources mobiles sans purge des données hors connexion."
   ]
 }
