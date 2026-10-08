@@ -13,6 +13,7 @@ let refreshTimer=null;
 let notificationTimer=null;
 let permissionTimer=null;
 let preferenceTimer=null;
+let securityTimer=null,securityBusy=false;
 let coreRequestSeq=0,notificationRequestSeq=0,permissionsRequestSeq=0,refreshAllPromise=null;
 function offlineStore(){return window.NethorOfflineStore}
 async function persistOfflineShell(){
@@ -269,7 +270,7 @@ async function refreshCore({emitChange=true}={}){
   if(!client||!state.session)return snapshot();
   const uid=state.session.user.id,seq=++coreRequestSeq;
   const [profileResult,configResult,frameResult,permissionResult]=await Promise.all([
-    client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',uid).maybeSingle(),
+    client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences,account_enabled').eq('id',uid).maybeSingle(),
     client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),
     client.from('mobile_theme_profile_frames').select('id,theme,name,asset_url,storage_path,file_name,created_at').order('created_at',{ascending:true}),
     readPermissions()
@@ -277,6 +278,7 @@ async function refreshCore({emitChange=true}={}){
   if(seq!==coreRequestSeq||state.session?.user?.id!==uid)return snapshot();
   if(profileResult.error)throw profileResult.error;
   if(!profileResult.data)throw new Error('Profil utilisateur introuvable');
+  if(profileResult.data.account_enabled===false){await forceDisabledAccountLogout();throw new Error('Compte désactivé')}
   state.profile=profileResult.data;
   const baseConfig=configResult.error?state.siteConfig:(configResult.data?.value&&typeof configResult.data.value==='object'?configResult.data.value:{});
   state.siteConfig=mergeThemeProfileFramesIntoConfig(baseConfig,frameResult.error?[]:frameResult.data);
@@ -319,6 +321,7 @@ async function refresh(){
       state.status='ready';state.ready=true;state.error=null;emit('ready');
       void persistOfflineShell().catch(()=>{});
       if(!channels.length)startRealtime();
+      startSecurityWatch();
     }catch(error){
       sync?.markFailed?.('notifications',notificationsTicket);
       if(state.session?.user?.id===uid){state.status='error';state.error=error;emit('error',{error})}
@@ -348,6 +351,30 @@ function schedulePermissionRefresh(){
 function schedulePreferenceRefresh(){
   clearTimeout(preferenceTimer);
   preferenceTimer=setTimeout(()=>{refreshNotificationPreferences().catch(()=>{})},100)
+}
+async function forceDisabledAccountLogout(){
+  const uid=state.session?.user?.id;
+  try{await client?.auth?.signOut?.({scope:'local'})}catch(_){}
+  if(uid)try{await offlineStore()?.clearUser?.(uid)}catch(_){}
+  state.session=null;state.profile=null;state.ready=false;state.status='signed-out';
+  clearChannels();emit('signed-out');redirectToLogin();return true
+}
+async function checkSecurityState(){
+  if(!client||!state.session||navigator.onLine===false||securityBusy)return true;
+  securityBusy=true;
+  try{
+    const {data,error}=await client.rpc('nethor_security_context');
+    if(error)return true;
+    if(data?.session_active===false){await forceDisabledAccountLogout();return false}
+    return true
+  }finally{securityBusy=false}
+}
+function startSecurityWatch(){
+  if(securityTimer||!state.session)return;
+  securityTimer=setInterval(()=>{if(!document.hidden)void checkSecurityState()},10000);
+  const check=()=>{if(!document.hidden)void checkSecurityState()};
+  window.addEventListener('focus',check,{passive:true});
+  document.addEventListener('visibilitychange',check,{passive:true})
 }
 function startRealtime(){
   clearChannels();
@@ -476,6 +503,7 @@ async function start(){
     await refresh();
     window.NethorClientHealth?.bindClient?.(client,'mobile');
     if(!channels.length)startRealtime();
+    startSecurityWatch();
     window.NethorMobileSync?.start?.({db:client,uid:state.session?.user?.id});
     return snapshot()
   })().catch(error=>{
@@ -919,6 +947,7 @@ function destroy(){
   clearTimeout(notificationTimer);
   clearTimeout(permissionTimer);
   clearTimeout(preferenceTimer);
+  clearInterval(securityTimer);securityTimer=null;
   clearChannels();
   try{authSubscription?.unsubscribe?.()}catch(_){}
   authSubscription=null;
