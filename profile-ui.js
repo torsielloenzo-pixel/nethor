@@ -1719,7 +1719,9 @@ async function setupAppUpdates(){
  try{
   const reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
   let lastCheck=0,checkPromise=null;
-  const show=()=>{if(reg.waiting&&navigator.serviceWorker.controller)void showUpdateAvailable(reg).catch(e=>console.warn('Mise à jour Nethor:',e))};
+  // La détection reste automatique, mais l'interface de mise à jour ne doit jamais
+  // s'ouvrir à la suite d'un scroll, d'un focus ou d'un changement de page.
+  // Le centre reste accessible uniquement via le bouton MAJ.
   const check=(force=false)=>{
    const now=Date.now();
    if(!force&&now-lastCheck<120000)return checkPromise||Promise.resolve();
@@ -1728,10 +1730,11 @@ async function setupAppUpdates(){
    checkPromise=reg.update().catch(e=>console.warn('Vérification mise à jour:',e)).finally(()=>{checkPromise=null});
    return checkPromise
   };
-  show();
   reg.addEventListener('updatefound',()=>{
    const worker=reg.installing;if(!worker)return;
-   worker.addEventListener('statechange',()=>{if(worker.state==='installed')show()})
+   worker.addEventListener('statechange',()=>{if(worker.state==='installed'){
+    // Disponible en arrière-plan ; aucune ouverture automatique du centre.
+   }})
   });
   void check(true);
   window.addEventListener('focus',()=>void check(false),{passive:true});
