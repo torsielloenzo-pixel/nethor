@@ -672,3 +672,33 @@ html[data-nethor-platform="mobile"] [data-avatar-frame^="themeframe_"]::before,
 html[data-nethor-platform="mobile"] [data-avatar-frame^="themeframe_"]::after{
  display:none!important;
 }
+
+/* Cadres thématiques: calque réel partagé par tous les avatars de la SPA mobile.
+   Seuls les identifiants du thème actif sont ajoutés par mobile-app.js. */
+:is(html[data-nethor-platform="mobile"],html[data-nethor-platform="mobile-preview"]) [data-avatar-frame].nethorHasThemeAvatarFrame{
+ position:relative!important;
+ overflow:visible!important;
+ isolation:isolate!important;
+}
+:is(html[data-nethor-platform="mobile"],html[data-nethor-platform="mobile-preview"]) [data-avatar-frame].nethorHasThemeAvatarFrame > .nethorThemeAvatarFrameOverlay{
+ content:none!important;
+ position:absolute!important;
+ display:block!important;
+ inset:-14%!important;
+ width:128%!important;
+ height:128%!important;
+ max-width:none!important;
+ min-width:0!important;
+ margin:0!important;
+ padding:0!important;
+ border:0!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+ opacity:1!important;
+ background-repeat:no-repeat!important;
+ background-position:center!important;
+ background-size:contain!important;
+ pointer-events:none!important;
+ z-index:30!important;
+ transform:none!important;
+}
