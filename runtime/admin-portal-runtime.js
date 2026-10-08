@@ -2107,6 +2107,18 @@ function mobileProfileFramesFor(theme){
  const key=MOBILE_PROFILE_FRAME_THEME_KEYS.includes(theme)?theme:'light';
  return mobileThemeProfileFramesCache[key]||[]
 }
+function cacheMobileThemeProfileFrame(row){
+ const theme=MOBILE_PROFILE_FRAME_THEME_KEYS.includes(row?.theme)?row.theme:'light';
+ const list=mobileThemeProfileFramesCache[theme]||(mobileThemeProfileFramesCache[theme]=[]);
+ const normalized={id:String(row?.id||''),name:String(row?.name||'Cadre'),url:String(row?.asset_url||row?.url||''),path:String(row?.storage_path||row?.path||''),file_name:String(row?.file_name||'')};
+ if(!normalized.id||!normalized.url)return;
+ const index=list.findIndex(x=>x.id===normalized.id);
+ if(index>=0)list[index]=normalized;else list.push(normalized)
+}
+function uncacheMobileThemeProfileFrame(theme,id){
+ const key=MOBILE_PROFILE_FRAME_THEME_KEYS.includes(theme)?theme:'light',list=mobileThemeProfileFramesCache[key]||[],index=list.findIndex(x=>x.id===id);
+ if(index>=0)list.splice(index,1)
+}
 const MOBILE_HEADER_THEME_KEYS=Object.freeze(['light','dark','mineral','sage','plum','halloween']);
 function normalizeMobileHeaderThemeAsset(raw){
  raw=raw&&typeof raw==='object'?raw:{};
@@ -2587,9 +2599,11 @@ async function createMobileProfileFrame(theme){
   }).select('id,theme,name,asset_url,storage_path,file_name,created_at').single();
   if(inserted.error)throw inserted.error;
   row=inserted.data;
-  await loadMobileThemeProfileFrames();
+  cacheMobileThemeProfileFrame(row);
   renderMobileAppearanceThemeEditor();
-  state.className='saveState ok';state.textContent='✓ Cadre « '+name+' » créé et sauvegardé'
+  state.className='saveState ok';state.textContent='✓ Cadre « '+name+' » créé et sauvegardé';
+  await loadMobileThemeProfileFrames();
+  renderMobileAppearanceThemeEditor()
  }catch(e){
   if(!row&&storagePath){try{await db.storage.from('portal-assets').remove([storagePath])}catch(_){}}
   state.className='saveState err';state.textContent='Erreur cadre : '+(e?.message||e)
@@ -2606,10 +2620,12 @@ async function deleteMobileProfileFrame(theme,id){
  try{
   const removed=await db.from('mobile_theme_profile_frames').delete().eq('id',id).eq('theme',key);
   if(removed.error)throw removed.error;
+  uncacheMobileThemeProfileFrame(key,id);
+  renderMobileAppearanceThemeEditor();
+  state.className='saveState ok';state.textContent='✓ Cadre « '+frame.name+' » supprimé';
   if(frame.path){try{await db.storage.from('portal-assets').remove([frame.path])}catch(_){}}
   await loadMobileThemeProfileFrames();
-  renderMobileAppearanceThemeEditor();
-  state.className='saveState ok';state.textContent='✓ Cadre « '+frame.name+' » supprimé'
+  renderMobileAppearanceThemeEditor()
  }catch(e){
   state.className='saveState err';state.textContent='Erreur suppression : '+(e?.message||e)
  }
@@ -2859,7 +2875,7 @@ function validateConfig(){
 }
 async function saveConfig(){
  const state=$('saveState');state.className='saveState';state.textContent='Enregistrement…';
- try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
+ try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;await loadMobileThemeProfileFrames();state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
 }
 async function reloadConfig(){if(dirty&&!confirm('Annuler les modifications non enregistrées ?'))return;await loadConfig();window.NettoSounds?.play?.('confirm')}
 async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});await loadMobileThemeProfileFrames();ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
