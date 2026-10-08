@@ -1828,7 +1828,12 @@ function scheduleNetworkTask(delay,task){
   else run()
  },Math.max(0,Number(delay)||0))
 }
-async function init(){addStyle();addLayoutHardening();promotePlatformShellStyles();syncGlobalDesignAsset();syncAppIconLinks();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{
+async function init(){addStyle();addPageEditorAssets();addLayoutHardening();promotePlatformShellStyles();
+function addPageEditorAssets(){
+ if(document.getElementById('nethorPageEditorStyle'))return;
+ const css=document.createElement('link');css.id='nethorPageEditorStyle';css.rel='stylesheet';css.href='runtime/page-editor.css?v=1';document.head.appendChild(css);
+ const js=document.createElement('script');js.src='runtime/page-editor.js?v=1';js.defer=true;document.head.appendChild(js);
+}syncGlobalDesignAsset();syncAppIconLinks();ensureAccessibleNames();startAccessibleNameObserver();if(!window.supabase?.createClient)return;api.client=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await api.client.auth.getSession();if(!session){setupAppUpdates();return}api.session=session;const rememberedTheme=cachedProfileTheme(session.user.id);if(rememberedTheme)localTheme(rememberedTheme);const cacheAge=globalCacheAge(),cached=hydrateGlobalCache(),shouldRefresh=!cached||cacheAge>GLOBAL_UI_REFRESH_TTL,fresh=shouldRefresh?refresh():Promise.resolve(api.profile);if(!cached)await fresh;else fresh.catch(()=>{});enforceLegacyAccessUI();rememberSiteBase();addBackButton();bindHomeMark();runAfterFirstPaint(()=>{
  if(!isMobileViewport())scheduleNetworkTask(450,()=>void bindMobilePreviewGlobal());
  scheduleNetworkTask(80,startPresence);
  scheduleNetworkTask(220,()=>{startProfileRealtime();startAccessRealtime();startSecurityWatch()});
