@@ -4,6 +4,7 @@ if(window.__nethorPageEditorLoaded)return;window.__nethorPageEditorLoaded=true;
 const U='https://gioxrpaiwogqqtakjpnv.supabase.co',K='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 let client=null,session=null,editing=false,dirty=false,layouts={},backupLayouts=null,observer=null,timer=0,interaction=null,lastView='',resizeTick=0;
 const originalInline=new WeakMap(),lastApplied=new WeakMap();
+let sizeObserver=null,observedRoot=null;
 const pageKey=()=>{const p=location.pathname.split('/').pop()||'home.html';return p.split('?')[0]||'home.html'};
 const platform=()=>String(document.documentElement.dataset.nethorPlatform||window.NethorPlatform?.current?.()||'desktop').toLowerCase()==='mobile'?'mobile':'desktop';
 const selector='[data-nethor-widget],[data-widget-id],.ndCard,.ndKpi,.ndHeroSlot,.ndPlanningSlot,.mhdCard,.mhdSection,.mhdWidget,.operationsWidgetAdminCard,.quickPlanningWidget,.storeInfoWidget';
@@ -244,7 +245,7 @@ function down(e){
  if(e.target.classList.contains('nethorPageEditorHandle')){resize(el,e);return}
  e.preventDefault();e.stopPropagation();
  interaction=el;selectWidget(el);hideGuides();
- const initial=el.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;
+ const dragView=viewKey(),initial=el.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;
  let bx=0,by=0;const t=getComputedStyle(el).transform;
  if(t&&t!=='none'){const m=new DOMMatrix(t);bx=m.m41;by=m.m42}
  const move=v=>{
@@ -261,7 +262,9 @@ function down(e){
   document.removeEventListener('pointermove',move);
   document.removeEventListener('pointerup',up);
   document.removeEventListener('pointercancel',up);
-  interaction=null;hideGuides();read(el);metric(el);
+  interaction=null;hideGuides();
+  if(viewKey()!==dragView){render();return}
+  read(el);metric(el);
  };
  document.addEventListener('pointermove',move);
  document.addEventListener('pointerup',up);
@@ -269,7 +272,7 @@ function down(e){
 }
 function resize(el,e){
  e.preventDefault();e.stopPropagation();interaction=el;selectWidget(el);hideGuides();
- const original=el.getBoundingClientRect(),sx=e.clientX,sy=e.clientY,bw=original.width,bh=original.height;
+ const dragView=viewKey(),original=el.getBoundingClientRect(),sx=e.clientX,sy=e.clientY,bw=original.width,bh=original.height;
  const move=v=>{
   if(!interaction)return;
   const width=Math.max(120,Math.round(bw+v.clientX-sx)),height=Math.max(60,Math.round(bh+v.clientY-sy));
@@ -290,7 +293,9 @@ function resize(el,e){
   document.removeEventListener('pointermove',move);
   document.removeEventListener('pointerup',up);
   document.removeEventListener('pointercancel',up);
-  interaction=null;hideGuides();read(el);metric(el);
+  interaction=null;hideGuides();
+  if(viewKey()!==dragView){render();return}
+  read(el);metric(el);
  };
  document.addEventListener('pointermove',move);
  document.addEventListener('pointerup',up);
@@ -298,7 +303,30 @@ function resize(el,e){
 }
 
 async function save(){const btn=document.querySelector('.nethorPageEditorBar .save');if(btn)btn.disabled=true;try{const {data,error}=await client.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;const cfg=data?.value&&typeof data.value==='object'?JSON.parse(JSON.stringify(data.value)):{};cfg.page_editor=cfg.page_editor&&typeof cfg.page_editor==='object'?cfg.page_editor:{};cfg.page_editor.layouts=cfg.page_editor.layouts&&typeof cfg.page_editor.layouts==='object'?cfg.page_editor.layouts:{};cfg.page_editor.layouts[pageKey()]=layouts[pageKey()];const {error:e}=await client.from('app_settings').upsert({key:'site_config',value:cfg,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(e)throw e;layouts=cfg.page_editor.layouts;window.NettoSounds?.play?.('success');finish(false)}catch(e){console.error(e);alert('Impossible d’enregistrer la mise en page.');if(btn)btn.disabled=false}}
-function watch(){if(interaction)return;clearTimeout(timer);timer=setTimeout(()=>{if(interaction)return;editing?render():apply()},250)}
-async function boot(){if(!window.supabase?.createClient)return;try{client=window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session:s}}=await client.auth.getSession();session=s;if(!session)return;const {data:p}=await client.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(p?.role!=='admin')return;const {data:setting}=await client.from('app_settings').select('value').eq('key','site_config').maybeSingle();layouts=setting?.value?.page_editor?.layouts||{};ensureUI();apply();observer=new MutationObserver(watch);observer.observe(document.body,{childList:true,subtree:true});window.addEventListener('resize',()=>{cancelAnimationFrame(resizeTick);resizeTick=requestAnimationFrame(()=>{if(interaction)return;if(editing)render();else apply()})},{passive:true});document.addEventListener('click',e=>{if(!editing)return;if(e.target.closest('#nethorPageEditorUI,#nethorPageEditorBar'))return;if(e.target.closest('.nethorPageEditorTarget')){e.preventDefault();e.stopImmediatePropagation()}},true)}catch(e){console.warn('Éditeur Nethor:',e)}}
+function onViewportChange(){
+ cancelAnimationFrame(resizeTick);
+ resizeTick=requestAnimationFrame(()=>{
+  if(interaction)return;
+  if(editing)render();else apply();
+ });
+}
+function ensureSizeObserver(){
+ if(!('ResizeObserver' in window))return;
+ const root=document.querySelector('.nethorDesktopReferenceDashboard')||document.querySelector('main')||document.body;
+ if(root===observedRoot)return;
+ if(!sizeObserver)sizeObserver=new ResizeObserver(onViewportChange);
+ if(observedRoot)sizeObserver.unobserve(observedRoot);
+ observedRoot=root;sizeObserver.observe(root);
+}
+function watch(){
+ if(interaction)return;
+ clearTimeout(timer);
+ timer=setTimeout(()=>{
+  if(interaction)return;
+  ensureSizeObserver();
+  if(editing)render();else apply();
+ },250);
+}
+async function boot(){if(!window.supabase?.createClient)return;try{client=window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session:s}}=await client.auth.getSession();session=s;if(!session)return;const {data:p}=await client.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(p?.role!=='admin')return;const {data:setting}=await client.from('app_settings').select('value').eq('key','site_config').maybeSingle();layouts=setting?.value?.page_editor?.layouts||{};ensureUI();apply();observer=new MutationObserver(watch);observer.observe(document.body,{childList:true,subtree:true});ensureSizeObserver();window.addEventListener('resize',onViewportChange,{passive:true});document.addEventListener('click',e=>{if(!editing)return;if(e.target.closest('#nethorPageEditorUI,#nethorPageEditorBar'))return;if(e.target.closest('.nethorPageEditorTarget')){e.preventDefault();e.stopImmediatePropagation()}},true)}catch(e){console.warn('Éditeur Nethor:',e)}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,900),{once:true});else setTimeout(boot,900);
 })();
