@@ -2,36 +2,115 @@
 'use strict';
 if(window.__nethorPageEditorLoaded)return;window.__nethorPageEditorLoaded=true;
 const U='https://gioxrpaiwogqqtakjpnv.supabase.co',K='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
-let client=null,session=null,editing=false,dirty=false,layouts={},backupLayouts=null,observer=null,timer=0,interaction=null;
+let client=null,session=null,editing=false,dirty=false,layouts={},backupLayouts=null,observer=null,timer=0,interaction=null,lastView='',resizeTick=0;
+const originalInline=new WeakMap(),lastApplied=new WeakMap();
 const pageKey=()=>{const p=location.pathname.split('/').pop()||'home.html';return p.split('?')[0]||'home.html'};
 const platform=()=>String(document.documentElement.dataset.nethorPlatform||window.NethorPlatform?.current?.()||'desktop').toLowerCase()==='mobile'?'mobile':'desktop';
-const selector='[data-nethor-widget],[data-widget-id],.ndCard,.ndKpi,.ndHeroSlot,.ndPlanningSlot,.ndSideStack,.mhdCard,.mhdSection,.mhdWidget,.operationsWidgetAdminCard,.quickPlanningWidget,.storeInfoWidget';
+const selector='[data-nethor-widget],[data-widget-id],.ndCard,.ndKpi,.ndHeroSlot,.ndPlanningSlot,.mhdCard,.mhdSection,.mhdWidget,.operationsWidgetAdminCard,.quickPlanningWidget,.storeInfoWidget';
 function candidate(el){if(!(el instanceof HTMLElement)||el.closest('#nethorPageEditorUI'))return false;if(el.matches('button,a,input,select,textarea,nav,header,footer'))return false;const r=el.getBoundingClientRect();return r.width>90&&r.height>45}
 function targets(){return [...document.querySelectorAll(selector)].filter(candidate).filter(el=>{const p=el.parentElement?.closest(selector);return !p||!candidate(p)})}
 function label(el,i){const v=el.dataset.nethorWidget||el.dataset.widgetId||el.id;if(v)return v.replace(/^nethorDesktop/,'').replace(/Widget$/,'').replace(/[-_]/g,' ');const h=el.querySelector('h1,h2,h3,strong,.ndSectionTitle,.mhdTitleWithIcon');return String(h?.textContent||'Widget '+(i+1)).replace(/\s+/g,' ').trim().slice(0,48)}
 function key(el,i){if(el.dataset.nethorEditorKey)return el.dataset.nethorEditorKey;const explicit=el.id||el.dataset.nethorWidget||el.dataset.widgetId;if(explicit)return 'id_'+explicit;const cls=[...el.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3).join('_')||'widget';const slug=label(el,i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');return 'auto_'+cls+'_'+slug}
-function map(){layouts[pageKey()]=layouts[pageKey()]||{};layouts[pageKey()][platform()]=layouts[pageKey()][platform()]||{};return layouts[pageKey()][platform()]}
+function dashboardRoot(el){
+ return el?.closest('.nethorDesktopReferenceDashboard')||document.querySelector('.nethorDesktopReferenceDashboard')||document.querySelector('main')||document.body;
+}
+function contentWidth(){
+ const root=dashboardRoot();const r=root.getBoundingClientRect();
+ return Math.max(1,Math.round(r.width||window.innerWidth));
+}
+// Each responsive grid has its own independent layout. The existing 'desktop'
+// data remains the wide-screen design; smaller widths never inherit its offsets.
+function viewKey(){
+ if(platform()==='mobile')return 'mobile';
+ const w=contentWidth();
+ if(w<=560)return 'desktop_tiny';
+ if(w<=820)return 'desktop_small';
+ if(w<=1180)return 'desktop_compact';
+ return 'desktop';
+}
+function map(){
+ layouts[pageKey()]=layouts[pageKey()]||{};
+ const view=viewKey();
+ layouts[pageKey()][view]=layouts[pageKey()][view]||{};
+ return layouts[pageKey()][view];
+}
+function rememberInline(el){
+ if(!originalInline.has(el))originalInline.set(el,{
+  width:el.style.width,height:el.style.height,transform:el.style.transform,
+  maxWidth:el.style.maxWidth,boxSizing:el.style.boxSizing
+ });
+}
+function clearEditorStyle(el){
+ rememberInline(el);
+ const o=originalInline.get(el);
+ for(const prop of ['width','height','transform','maxWidth','boxSizing'])el.style[prop]=o[prop]||'';
+ el.classList.remove('nethorPageEditorManaged');
+ lastApplied.delete(el);
+}
+function bounds(el,x,y){
+ const r=el.getBoundingClientRect(),trans=getComputedStyle(el).transform;
+ let tx=0,ty=0;
+ if(trans&&trans!=='none'){try{const m=new DOMMatrix(trans);tx=m.m41;ty=m.m42}catch(_){}}
+ const natural={left:r.left-tx,top:r.top-ty,width:r.width,height:r.height};
+ const outer=dashboardRoot(el).getBoundingClientRect(),pad=8;
+ const left=Math.max(4,outer.left+pad);
+ const right=Math.min(window.innerWidth-4,outer.right-pad);
+ const top=outer.top+pad;
+ const bottom=Math.max(top+natural.height,outer.bottom-pad);
+ const minX=left-natural.left,maxX=right-natural.left-natural.width;
+ const minY=top-natural.top,maxY=bottom-natural.top-natural.height;
+ return {
+  x:Math.round(Math.max(minX,Math.min(Math.max(minX,maxX),Number(x)||0))),
+  y:Math.round(Math.max(minY,Math.min(Math.max(minY,maxY),Number(y)||0)))
+ };
+}
+function setEditorStyle(el,s){
+ rememberInline(el);
+ clearEditorStyle(el);
+ if(!s||typeof s!=='object')return;
+ const w=Number(s.width),h=Number(s.height);
+ if(Number.isFinite(w)&&w>0){
+  el.style.boxSizing='border-box';
+  el.style.maxWidth='100%';
+  el.style.width='min(100%, '+Math.max(120,Math.round(w))+'px)';
+  el.classList.add('nethorPageEditorManaged');
+ }
+ if(Number.isFinite(h)&&h>0){
+  el.style.height=Math.max(60,Math.round(h))+'px';
+  el.classList.add('nethorPageEditorManaged');
+ }
+ const scale=Math.min(1.25,Math.max(.75,contentWidth()/Math.max(1,Number(s.cw)||contentWidth())));
+ const offset=bounds(el,(Number(s.x)||0)*scale,(Number(s.y)||0)*scale);
+ if(offset.x||offset.y){
+  el.style.transform='translate3d('+offset.x+'px,'+offset.y+'px,0)';
+  el.classList.add('nethorPageEditorManaged');
+ }
+}
 function apply(){
  if(editing)return;
- const m=map();targets().forEach((el,i)=>{const s=m[key(el,i)];if(el.dataset.nethorEditorApplied==='1')return;if(s?.width)el.style.width=s.width+'px';if(s?.height)el.style.height=s.height+'px';el.dataset.nethorEditorApplied='1';if(s&&(s.x||s.y))el.style.transform='translate3d('+Number(s.x||0)+'px,'+Number(s.y||0)+'px,0)'})
+ const view=viewKey(),m=map(),w=contentWidth();
+ targets().forEach((el,i)=>{
+  const k=key(el,i),s=m[k],signature=view+'|'+k+'|'+w+'|'+JSON.stringify(s||null);
+  if(lastApplied.get(el)===signature)return;
+  setEditorStyle(el,s);
+  lastApplied.set(el,signature);
+  el.dataset.nethorEditorApplied='1';
+ });
+ lastView=view;
 }
-function ensureUI(){if(document.getElementById('nethorPageEditorUI'))return;const w=document.createElement('div');w.id='nethorPageEditorUI';w.innerHTML='<button type="button" class="nethorPageEditorButton" id="nethorPageEditorButton" aria-label="Modifier la page" title="Modifier la page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.8 3.8 3.8-.8L18.7 7.8a2.7 2.7 0 0 0-3.8-3.8L3.2 16.2Z"/><path d="m13.5 5.7 4.8 4.8"/></svg></button>';document.body.appendChild(w);w.firstElementChild.onclick=()=>editing?finish(false):start()}
+function ensureUI(){if(document.getElementById('nethorPageEditorUI'))return;const w=document.createElement('div');w.id='nethorPageEditorUI';w.innerHTML='<button type="button" class="nethorPageEditorButton" id="nethorPageEditorButton" aria-label="Modifier la page" title="Modifier la page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.8 3.8 3.8-.8L18.7 7.8a2.7 2.7 0 0 0-3.8-3.8L3.2 16.2Z"/><path d="m13.5 5.7 4.8 4.8"/></svg></button>';document.body.appendChild(w);w.firstElementChild.onclick=()=>editing?finish(true):start()}
 function bar(){const b=document.createElement('div');b.className='nethorPageEditorBar';b.id='nethorPageEditorBar';b.innerHTML='<span class="nethorPageEditorHint">Mode édition · déplace ou redimensionne les widgets</span><button type="button" class="cancel">Annuler</button><button type="button" class="save">Enregistrer</button>';document.body.appendChild(b);b.querySelector('.cancel').onclick=()=>finish(true);b.querySelector('.save').onclick=save}
 function render(){
  if(interaction)return;
- const m=map(),seen=new Set();
+ const view=viewKey(),changed=view!==lastView,m=map(),seen=new Set();
+ if(changed)lastView=view;
  targets().forEach((el,i)=>{
   const k=key(el,i);seen.add(el);
   el.dataset.nethorEditorKey=k;el.dataset.nethorEditorLabel=label(el,i);
   const fresh=!el.classList.contains('nethorPageEditorTarget');
   el.classList.add('nethorPageEditorTarget');
-  if(fresh){
-   const st=m[k]||{};
-   if(st.width)el.style.width=st.width+'px';
-   if(st.height)el.style.height=st.height+'px';
-   if(st.x||st.y)el.style.transform='translate3d('+Number(st.x||0)+'px,'+Number(st.y||0)+'px,0)';
-   el.onpointerdown=down;
-  }
+  if(fresh||changed)setEditorStyle(el,m[k]);
+  el.onpointerdown=down;
   if(![...el.children].some(child=>child.classList.contains('nethorPageEditorHandle'))){
    const h=document.createElement('span');h.className='nethorPageEditorHandle';h.setAttribute('aria-hidden','true');el.appendChild(h);
   }
@@ -42,6 +121,7 @@ function render(){
   el.querySelectorAll('.nethorPageEditorHandle').forEach(h=>h.remove());
   el.onpointerdown=null;
  });
+ if(changed){hideGuides();document.querySelector('.nethorEditorMeasurement')?.classList.remove('is-visible')}
 }
 function editorOverlay(){
  let root=document.getElementById('nethorPageEditorOverlay');
@@ -101,9 +181,39 @@ function showGuides(s,rect){
  }else y.classList.remove('is-visible');
 }
 
-function start(){backupLayouts=JSON.parse(JSON.stringify(layouts));editing=true;dirty=false;document.documentElement.classList.add('nethorPageEditorOpen');document.getElementById('nethorPageEditorButton')?.classList.add('is-active');bar();editorOverlay();render()}
-function finish(cancel){editing=false;interaction=null;document.getElementById('nethorPageEditorOverlay')?.remove();document.documentElement.classList.remove('nethorPageEditorOpen');document.getElementById('nethorPageEditorBar')?.remove();document.getElementById('nethorPageEditorButton')?.classList.remove('is-active');document.querySelectorAll('.nethorPageEditorHandle').forEach(x=>x.remove());document.querySelectorAll('.nethorPageEditorTarget').forEach(x=>{x.classList.remove('nethorPageEditorTarget','is-selected');x.removeAttribute('data-nethor-editor-label')});if(cancel){layouts=backupLayouts||layouts;document.querySelectorAll('[data-nethor-editor-key]').forEach(el=>{el.dataset.nethorEditorApplied='';el.style.removeProperty('width');el.style.removeProperty('height');el.style.removeProperty('transform')});apply()}dirty=false;backupLayouts=null}
-function read(el){let x=0,y=0;const t=getComputedStyle(el).transform;if(t&&t!=='none'){const m=new DOMMatrix(t);x=m.m41;y=m.m42}const r=el.getBoundingClientRect();map()[el.dataset.nethorEditorKey]={x:Math.round(x),y:Math.round(y),width:Math.round(r.width),height:Math.round(r.height)};dirty=true}
+function start(){
+ backupLayouts=JSON.parse(JSON.stringify(layouts));editing=true;dirty=false;
+ lastView=viewKey();
+ document.documentElement.classList.add('nethorPageEditorOpen');
+ document.getElementById('nethorPageEditorButton')?.classList.add('is-active');
+ bar();editorOverlay();render();
+}
+function finish(cancel){
+ editing=false;interaction=null;
+ document.getElementById('nethorPageEditorOverlay')?.remove();
+ document.documentElement.classList.remove('nethorPageEditorOpen');
+ document.getElementById('nethorPageEditorBar')?.remove();
+ document.getElementById('nethorPageEditorButton')?.classList.remove('is-active');
+ document.querySelectorAll('.nethorPageEditorHandle').forEach(x=>x.remove());
+ document.querySelectorAll('.nethorPageEditorTarget').forEach(x=>{
+  x.classList.remove('nethorPageEditorTarget','is-selected');
+  x.removeAttribute('data-nethor-editor-label');x.onpointerdown=null;
+ });
+ if(cancel)layouts=backupLayouts||layouts;
+ document.querySelectorAll('[data-nethor-editor-key]').forEach(el=>clearEditorStyle(el));
+ apply();dirty=false;backupLayouts=null;
+}
+function read(el){
+ let x=0,y=0;const t=getComputedStyle(el).transform;
+ if(t&&t!=='none'){try{const m=new DOMMatrix(t);x=m.m41;y=m.m42}catch(_){}}
+ const bounded=bounds(el,x,y);
+ el.style.transform='translate3d('+bounded.x+'px,'+bounded.y+'px,0)';
+ const r=el.getBoundingClientRect();
+ map()[el.dataset.nethorEditorKey]={
+  x:bounded.x,y:bounded.y,width:Math.round(r.width),height:Math.round(r.height),cw:contentWidth()
+ };
+ dirty=true;
+}
 function down(e){
  if(!editing||e.button!==0)return;
  const el=e.currentTarget;
@@ -119,7 +229,8 @@ function down(e){
   const r={left:initial.left+dx,top:initial.top+dy,width:initial.width,height:initial.height};
   r.right=r.left+r.width;r.bottom=r.top+r.height;
   const snapped=snap(el,r,'move');
-  el.style.transform='translate3d('+Math.round(bx+dx+snapped.dx)+'px,'+Math.round(by+dy+snapped.dy)+'px,0)';
+  const bounded=bounds(el,bx+dx+snapped.dx,by+dy+snapped.dy);
+  el.style.transform='translate3d('+bounded.x+'px,'+bounded.y+'px,0)';
   showGuides(snapped,el.getBoundingClientRect());metric(el);dirty=true;
  };
  const up=()=>{
@@ -141,8 +252,14 @@ function resize(el,e){
   const r={left:original.left,top:original.top,width,height};
   r.right=r.left+r.width;r.bottom=r.top+r.height;
   const snapped=snap(el,r,'resize');
-  el.style.width=Math.max(120,width+snapped.dx)+'px';
+  el.style.width='min(100%, '+Math.max(120,width+snapped.dx)+'px)';
+  el.style.maxWidth='100%';el.style.boxSizing='border-box';
   el.style.height=Math.max(60,height+snapped.dy)+'px';
+  const t=getComputedStyle(el).transform;
+  if(t&&t!=='none'){
+   const m=new DOMMatrix(t),safe=bounds(el,m.m41,m.m42);
+   el.style.transform='translate3d('+safe.x+'px,'+safe.y+'px,0)';
+  }
   showGuides(snapped,el.getBoundingClientRect());metric(el);dirty=true;
  };
  const up=()=>{
@@ -158,6 +275,6 @@ function resize(el,e){
 
 async function save(){const btn=document.querySelector('.nethorPageEditorBar .save');if(btn)btn.disabled=true;try{const {data,error}=await client.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;const cfg=data?.value&&typeof data.value==='object'?JSON.parse(JSON.stringify(data.value)):{};cfg.page_editor=cfg.page_editor&&typeof cfg.page_editor==='object'?cfg.page_editor:{};cfg.page_editor.layouts=cfg.page_editor.layouts&&typeof cfg.page_editor.layouts==='object'?cfg.page_editor.layouts:{};cfg.page_editor.layouts[pageKey()]=layouts[pageKey()];const {error:e}=await client.from('app_settings').upsert({key:'site_config',value:cfg,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(e)throw e;layouts=cfg.page_editor.layouts;window.NettoSounds?.play?.('success');finish(false)}catch(e){console.error(e);alert('Impossible d’enregistrer la mise en page.');if(btn)btn.disabled=false}}
 function watch(){if(interaction)return;clearTimeout(timer);timer=setTimeout(()=>{if(interaction)return;editing?render():apply()},250)}
-async function boot(){if(!window.supabase?.createClient)return;try{client=window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session:s}}=await client.auth.getSession();session=s;if(!session)return;const {data:p}=await client.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(p?.role!=='admin')return;const {data:setting}=await client.from('app_settings').select('value').eq('key','site_config').maybeSingle();layouts=setting?.value?.page_editor?.layouts||{};ensureUI();apply();observer=new MutationObserver(watch);observer.observe(document.body,{childList:true,subtree:true});window.addEventListener('resize',()=>{if(!editing)watch()},{passive:true});document.addEventListener('click',e=>{if(!editing)return;if(e.target.closest('#nethorPageEditorUI,#nethorPageEditorBar'))return;if(e.target.closest('.nethorPageEditorTarget')){e.preventDefault();e.stopImmediatePropagation()}},true)}catch(e){console.warn('Éditeur Nethor:',e)}}
+async function boot(){if(!window.supabase?.createClient)return;try{client=window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session:s}}=await client.auth.getSession();session=s;if(!session)return;const {data:p}=await client.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(p?.role!=='admin')return;const {data:setting}=await client.from('app_settings').select('value').eq('key','site_config').maybeSingle();layouts=setting?.value?.page_editor?.layouts||{};ensureUI();apply();observer=new MutationObserver(watch);observer.observe(document.body,{childList:true,subtree:true});window.addEventListener('resize',()=>{cancelAnimationFrame(resizeTick);resizeTick=requestAnimationFrame(()=>{if(interaction)return;if(editing)render();else apply()})},{passive:true});document.addEventListener('click',e=>{if(!editing)return;if(e.target.closest('#nethorPageEditorUI,#nethorPageEditorBar'))return;if(e.target.closest('.nethorPageEditorTarget')){e.preventDefault();e.stopImmediatePropagation()}},true)}catch(e){console.warn('Éditeur Nethor:',e)}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,900),{once:true});else setTimeout(boot,900);
 })();
