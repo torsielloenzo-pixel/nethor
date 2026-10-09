@@ -26,7 +26,7 @@
  box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:nwse-resize;z-index:8
 }
 .nethorPageEditorTarget[data-nethor-editor-dragging="1"]{user-select:none}
-html.nethorPageEditorOpen,html.nethorPageEditorOpen body{overflow-x:hidden!important}
+/* Les débordements ne doivent pas masquer les widgets pendant l'édition. */
 @media(max-width:900px),(pointer:coarse){
  .nethorPageEditorButton{right:14px;bottom:calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 14px)}
  .nethorPageEditorBar{top:10px;max-width:calc(100vw - 20px);width:max-content}
@@ -53,3 +53,7 @@ html.nethorPageEditorOpen,html.nethorPageEditorOpen body{overflow-x:hidden!impor
 .nethorEditorMeasurement span{color:#9ecdeb}
 .nethorEditorMeasurement strong{font-size:12px;font-weight:700}
 .nethorPageEditorOpen .nethorPageEditorTarget{touch-action:none}
+
+/* L'éditeur respecte la largeur réelle des colonnes de la grille responsive. */
+.nethorPageEditorTarget,.nethorPageEditorManaged{box-sizing:border-box;min-width:0!important;max-width:100%}
+.nethorPageEditorTarget .nethorPageEditorHandle{touch-action:none}
