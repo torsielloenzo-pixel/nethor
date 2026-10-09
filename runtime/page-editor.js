@@ -10,7 +10,22 @@ const selector='[data-nethor-widget],[data-widget-id],.ndCard,.ndKpi,.ndHeroSlot
 function candidate(el){if(!(el instanceof HTMLElement)||el.closest('#nethorPageEditorUI'))return false;if(el.matches('button,a,input,select,textarea,nav,header,footer'))return false;const r=el.getBoundingClientRect();return r.width>90&&r.height>45}
 function targets(){return [...document.querySelectorAll(selector)].filter(candidate).filter(el=>{const p=el.parentElement?.closest(selector);return !p||!candidate(p)})}
 function label(el,i){const v=el.dataset.nethorWidget||el.dataset.widgetId||el.id;if(v)return v.replace(/^nethorDesktop/,'').replace(/Widget$/,'').replace(/[-_]/g,' ');const h=el.querySelector('h1,h2,h3,strong,.ndSectionTitle,.mhdTitleWithIcon');return String(h?.textContent||'Widget '+(i+1)).replace(/\s+/g,' ').trim().slice(0,48)}
-function key(el,i){if(el.dataset.nethorEditorKey)return el.dataset.nethorEditorKey;const explicit=el.id||el.dataset.nethorWidget||el.dataset.widgetId;if(explicit)return 'id_'+explicit;const cls=[...el.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3).join('_')||'widget';const slug=label(el,i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');return 'auto_'+cls+'_'+slug}
+function key(el,i){
+ if(el.dataset.nethorEditorKey)return el.dataset.nethorEditorKey;
+ const explicit=el.id||el.dataset.nethorWidget||el.dataset.widgetId;
+ if(explicit)return 'id_'+explicit;
+ const classes=[...el.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3);
+ const cls=classes.join('_')||'widget';
+ const slug=label(el,i).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+ const legacy='auto_'+cls+'_'+slug,stored=layouts[pageKey()]?.[viewKey()]||{};
+ if(Object.prototype.hasOwnProperty.call(stored,legacy))return legacy;
+ const previous=Object.keys(stored).filter(k=>k.startsWith('auto_'+cls+'_'));
+ if(previous.length===1)return previous[0];
+ // Stable key independent of changing counts, dates, or widget body text.
+ const peers=[...document.querySelectorAll(selector)].filter(node=>node instanceof HTMLElement&&classes.every(c=>node.classList.contains(c))&&[...node.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3).join('_')===cls);
+ const idx=peers.indexOf(el);
+ return 'auto_'+cls+'_item_'+Math.max(1,idx+1);
+}
 function dashboardRoot(el){
  return el?.closest('.nethorDesktopReferenceDashboard')||document.querySelector('.nethorDesktopReferenceDashboard')||document.querySelector('main')||document.body;
 }
@@ -57,8 +72,8 @@ function bounds(el,x,y){
  const right=Math.min(window.innerWidth-4,outer.right-pad);
  const top=outer.top+pad;
  const bottom=Math.max(top+natural.height,outer.bottom-pad);
- const minX=left-natural.left,maxX=right-natural.left-natural.width;
- const minY=top-natural.top,maxY=bottom-natural.top-natural.height;
+ const minX=Math.min(0,left-natural.left),maxX=Math.max(0,right-natural.left-natural.width);
+ const minY=Math.min(0,top-natural.top),maxY=Math.max(0,bottom-natural.top-natural.height);
  return {
   x:Math.round(Math.max(minX,Math.min(Math.max(minX,maxX),Number(x)||0))),
   y:Math.round(Math.max(minY,Math.min(Math.max(minY,maxY),Number(y)||0)))
