@@ -16,16 +16,25 @@ function key(el,i){
  if(explicit)return 'id_'+explicit;
  const classes=[...el.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3);
  const cls=classes.join('_')||'widget';
- const slug=label(el,i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
- const legacy='auto_'+cls+'_'+slug,stored=layouts[pageKey()]?.[viewKey()]||{};
- if(Object.prototype.hasOwnProperty.call(stored,legacy))return legacy;
- const previous=Object.keys(stored).filter(k=>k.startsWith('auto_'+cls+'_'));
- if(previous.length===1)return previous[0];
- // Stable key independent of changing counts, dates, or widget body text.
- const peers=[...document.querySelectorAll(selector)].filter(node=>node instanceof HTMLElement&&classes.every(c=>node.classList.contains(c))&&[...node.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3).join('_')===cls);
+ const peers=[...document.querySelectorAll(selector)].filter(node=>
+  node instanceof HTMLElement&&classes.every(c=>node.classList.contains(c))&&
+  [...node.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3).join('_')===cls
+ );
  const idx=peers.indexOf(el);
- return 'auto_'+cls+'_item_'+Math.max(1,idx+1);
+ const stable='auto_'+cls+'_item_'+Math.max(1,idx+1);
+ const stored=layouts[pageKey()]?.[viewKey()]||{};
+ if(Object.prototype.hasOwnProperty.call(stored,stable))return stable;
+ const slug=label(el,i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+ const legacy='auto_'+cls+'_'+slug;
+ if(Object.prototype.hasOwnProperty.call(stored,legacy))return legacy;
+ // Migrate a previous label-based key only when the class identifies one widget.
+ if(peers.length===1){
+  const previous=Object.keys(stored).filter(k=>k.startsWith('auto_'+cls+'_')&&!/^auto_.+_item_\d+$/.test(k));
+  if(previous.length===1)return previous[0];
+ }
+ return stable;
 }
+
 function dashboardRoot(el){
  return el?.closest('.nethorDesktopReferenceDashboard')||document.querySelector('.nethorDesktopReferenceDashboard')||document.querySelector('main')||document.body;
 }
