@@ -93,7 +93,7 @@ function setEditorStyle(el,s){
  // Leave unconfigured widgets completely untouched; live dashboard widgets
  // can update their own inline styles without interference from the editor.
  if(!s||typeof s!=='object'){
-  if(originalInline.has(el))clearEditorStyle(el);
+  if(el.classList.contains('nethorPageEditorManaged'))clearEditorStyle(el);
   return;
  }
  rememberInline(el);
@@ -231,7 +231,7 @@ function finish(cancel){
   x.removeAttribute('data-nethor-editor-label');x.onpointerdown=null;
  });
  if(cancel)layouts=backupLayouts||layouts;
- document.querySelectorAll('[data-nethor-editor-key]').forEach(el=>clearEditorStyle(el));
+ document.querySelectorAll('.nethorPageEditorManaged').forEach(el=>clearEditorStyle(el));
  apply();dirty=false;backupLayouts=null;
 }
 function read(el){
@@ -262,6 +262,7 @@ function down(e){
   const snapped=snap(el,r,'move');
   const bounded=bounds(el,bx+dx+snapped.dx,by+dy+snapped.dy);
   el.style.transform='translate3d('+bounded.x+'px,'+bounded.y+'px,0)';
+  el.classList.add('nethorPageEditorManaged');
   showGuides(snapped,el.getBoundingClientRect());metric(el);dirty=true;
  };
  const up=()=>{
@@ -288,6 +289,7 @@ function resize(el,e){
   el.style.width='min(100%, '+Math.max(120,width+snapped.dx)+'px)';
   el.style.maxWidth='100%';el.style.boxSizing='border-box';
   el.style.height=Math.max(60,height+snapped.dy)+'px';
+  el.classList.add('nethorPageEditorManaged');
   const t=getComputedStyle(el).transform;
   if(t&&t!=='none'){
    const m=new DOMMatrix(t),safe=bounds(el,m.m41,m.m42);
