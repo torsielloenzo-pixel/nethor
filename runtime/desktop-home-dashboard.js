@@ -65,6 +65,11 @@ function peopleNow(model,dateKey,profiles=[],now=new Date()){
  });
  return out.sort((a,b)=>a.current.a-b.current.a||a.name.localeCompare(b.name,'fr',{sensitivity:'base'}))
 }
+function peopleToday(model,dateKey,profiles=[]){
+ if(!model?.days?.[dateKey])return[];
+ return (model.employees||[]).flatMap((e,i)=>{const rs=ranges(model.days[dateKey].cells?.[i]||[],model);if(!rs.length)return[];const profile=personProfile(e?.name,profiles);return[{name:String(e?.name||profile?.display_name||'Utilisateur'),profile,current:rs[0],ranges:rs}]})
+ .sort((a,b)=>a.current.a-b.current.a||a.name.localeCompare(b.name,'fr',{sensitivity:'base'}))
+}
 function todayTeamCount(model,dateKey){
  if(!model?.days?.[dateKey])return 0;
  return (model.employees||[]).reduce((n,e,i)=>n+((model.days[dateKey].cells?.[i]||[]).some(v=>v==='g'||v==='b')?1:0),0)
@@ -155,7 +160,7 @@ function renderPriorities(ctx,w,chatRows,deliveries){
   '<div class="ndRows">'+(rows.length?rows.map(x=>'<button class="ndPriorityRow" type="button" data-desktop-home-url="'+attr(x.url)+'"><span class="ndRowIcon '+esc(x.cls)+'">'+icon(x.kind)+'</span><span class="ndRowCopy"><strong>'+esc(x.title)+'</strong><small>'+esc(x.sub)+'</small></span><span class="ndRowState '+esc(x.cls)+'">'+esc(x.state)+'</span><time>'+esc(x.time)+'</time><span class="ndRowArrow">›</span></button>').join(''):'<div class="ndEmpty">Aucune priorité immédiate détectée.</div>')+'</div></section>'
 }
 function renderTeam(ctx,w,people){
- const max=int(w.max_items,5,1,12),rows=people.slice(0,max);
+ const rows=people;
  return '<section class="ndCard ndTeam" id="nethorDesktopTeamWidget">'+sectionHead(w.label,people.length,'Voir toute l’équipe','planning.html','team')+
   '<div class="ndTeamRows">'+(rows.length?rows.map(x=>{const role=x.profile?.role?window.NettoProfileUI?.roleLabel?.(x.profile.role)||x.profile.role:'Équipe',initials=String(x.name).split(/\s+/).slice(0,2).map(p=>p[0]?.toUpperCase()).join('');return'<div class="ndTeamRow"><span class="ndAvatar" style="--nd-avatar:'+attr(x.profile?.profile_color||'#ff7a3d')+'">'+esc(initials||'U')+'</span><span class="ndTeamCopy"><strong>'+esc(x.name)+'</strong><small>'+esc(role)+'</small></span><span class="ndTeamShift">'+esc(clock(x.current.a)+' – '+clock(x.current.b))+'</span><span class="ndPresence">● Présent</span></div>'}).join(''):'<div class="ndEmpty">Aucun membre actuellement en poste.</div>')+'</div></section>'
 }
@@ -192,7 +197,7 @@ async function safeQueries(ctx){
 }
 async function render(ctx){
  const c=config(ctx.cfg||{});if(c.enabled===false)return{html:'',config:c};
- const ext=await safeQueries(ctx),now=new Date(),people=peopleNow(ctx.todayModel,ctx.todayKey,ctx.profileRows,now),teamTotal=todayTeamCount(ctx.todayModel,ctx.todayKey),cov=coverage(ctx.todayModel,ctx.todayKey),tasks=taskStats(ctx);
+ const ext=await safeQueries(ctx),now=new Date(),people=peopleToday(ctx.todayModel,ctx.todayKey,ctx.profileRows),teamTotal=todayTeamCount(ctx.todayModel,ctx.todayKey),cov=coverage(ctx.todayModel,ctx.todayKey),tasks=taskStats(ctx);
  const criticalKinds=new Set(['maintenance','password_reset_request','security','incident','problem']);
  const alertCount=(ctx.notifications||[]).filter(n=>!n.read_at&&criticalKinds.has(String(n.kind||''))).length+ext.flashes.filter(x=>['material','procedure'].includes(x.category)).length;
  const planningAnomalyCount=planningDayAnomalyCount(ctx.todayModel,ctx.todayKey,ctx.profileRows,ext.absences);
