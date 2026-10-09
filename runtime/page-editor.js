@@ -303,11 +303,23 @@ function resize(el,e){
 }
 
 async function save(){const btn=document.querySelector('.nethorPageEditorBar .save');if(btn)btn.disabled=true;try{const {data,error}=await client.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;const cfg=data?.value&&typeof data.value==='object'?JSON.parse(JSON.stringify(data.value)):{};cfg.page_editor=cfg.page_editor&&typeof cfg.page_editor==='object'?cfg.page_editor:{};cfg.page_editor.layouts=cfg.page_editor.layouts&&typeof cfg.page_editor.layouts==='object'?cfg.page_editor.layouts:{};cfg.page_editor.layouts[pageKey()]=layouts[pageKey()];const {error:e}=await client.from('app_settings').upsert({key:'site_config',value:cfg,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(e)throw e;layouts=cfg.page_editor.layouts;window.NettoSounds?.play?.('success');finish(false)}catch(e){console.error(e);alert('Impossible d’enregistrer la mise en page.');if(btn)btn.disabled=false}}
+function constrainOpenWidgets(){
+ document.querySelectorAll('.nethorPageEditorTarget').forEach(el=>{
+  if(!el.style.transform.startsWith('translate'))return;
+  let current;
+  try{current=new DOMMatrix(getComputedStyle(el).transform)}catch(_){return}
+  const safe=bounds(el,current.m41,current.m42);
+  if(Math.round(current.m41)!==safe.x||Math.round(current.m42)!==safe.y)
+   el.style.transform='translate3d('+safe.x+'px,'+safe.y+'px,0)';
+ });
+ const selected=document.querySelector('.nethorPageEditorTarget.is-selected');
+ if(selected)metric(selected);
+}
 function onViewportChange(){
  cancelAnimationFrame(resizeTick);
  resizeTick=requestAnimationFrame(()=>{
   if(interaction)return;
-  if(editing)render();else apply();
+  if(editing){render();constrainOpenWidgets()}else apply();
  });
 }
 function ensureSizeObserver(){
