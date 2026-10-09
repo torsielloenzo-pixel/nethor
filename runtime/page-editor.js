@@ -16,7 +16,7 @@ function key(el,i){
  if(explicit)return 'id_'+explicit;
  const classes=[...el.classList].filter(x=>/^nd|^mhd|Widget|widget/i.test(x)).slice(0,3);
  const cls=classes.join('_')||'widget';
- const slug=label(el,i).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+ const slug=label(el,i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
  const legacy='auto_'+cls+'_'+slug,stored=layouts[pageKey()]?.[viewKey()]||{};
  if(Object.prototype.hasOwnProperty.call(stored,legacy))return legacy;
  const previous=Object.keys(stored).filter(k=>k.startsWith('auto_'+cls+'_'));
