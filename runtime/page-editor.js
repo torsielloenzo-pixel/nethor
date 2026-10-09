@@ -90,9 +90,14 @@ function bounds(el,x,y){
  };
 }
 function setEditorStyle(el,s){
+ // Leave unconfigured widgets completely untouched; live dashboard widgets
+ // can update their own inline styles without interference from the editor.
+ if(!s||typeof s!=='object'){
+  if(originalInline.has(el))clearEditorStyle(el);
+  return;
+ }
  rememberInline(el);
  clearEditorStyle(el);
- if(!s||typeof s!=='object')return;
  const w=Number(s.width),h=Number(s.height);
  if(Number.isFinite(w)&&w>0){
   el.style.boxSizing='border-box';
@@ -133,6 +138,7 @@ function render(){
   const k=key(el,i);seen.add(el);
   el.dataset.nethorEditorKey=k;el.dataset.nethorEditorLabel=label(el,i);
   const fresh=!el.classList.contains('nethorPageEditorTarget');
+  if(fresh)rememberInline(el);
   el.classList.add('nethorPageEditorTarget');
   if(fresh||changed)setEditorStyle(el,m[k]);
   el.onpointerdown=down;
