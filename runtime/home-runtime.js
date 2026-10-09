@@ -473,7 +473,7 @@ function homeQuickPlanningConfig(cfg){
   enabled:raw.enabled!==false,
   title:String(cfg?.desktop_dashboard_widget?.widgets?.planning_view?.label||raw.title||HOME_QUICK_PLANNING_DEFAULTS.title),
   show_all_day:cfg?.desktop_dashboard_widget?.widgets?.planning_view?.show_all_day!==false,
-  max_people:Math.max(1,Math.min(12,Number(cfg?.desktop_dashboard_widget?.widgets?.planning_view?.max_items)||6)),
+  max_people:Number.MAX_SAFE_INTEGER,
   subtitle:String(raw.subtitle||HOME_QUICK_PLANNING_DEFAULTS.subtitle),
   action_label:String(raw.action_label||HOME_QUICK_PLANNING_DEFAULTS.action_label),
   empty_text:String(raw.empty_text||HOME_QUICK_PLANNING_DEFAULTS.empty_text),
@@ -556,7 +556,7 @@ function homeQuickPlanningCalendarIcon(){
 }
 function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart){
  const w=homeQuickPlanningConfig(cfg);if(!w.enabled)return'';
- const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(),allPeople=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,w),people=allPeople.slice(0,w.max_people);
+ const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(),allPeople=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,{...w,show_all_day:true}),people=allPeople;
  const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),nowInRange=nowHour>=bounds.start&&nowHour<=bounds.end,edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
  const ticks=homeQuickPlanningTicks(bounds),target='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
  const s=w.style,shadow=s.shadow?'0 10px 30px rgba(28,36,48,.07)':'none';
