@@ -1,244 +1,247 @@
-/* Nethor · Promotions : import PDF, relecture et catalogues Supabase. */
+/* Nethor Promotions — import PDF entièrement automatique, indexé par semaine ISO. */
 (function(){
 'use strict';
-const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
-const db=window.supabase.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
+const PUBLIC_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
+const db=window.supabase.createClient(SUPABASE_URL,PUBLIC_KEY,{
+ auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+});
 const $=id=>document.getElementById(id);
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const state={user:null,profile:null,file:null,originalUrl:null,products:[],reports:[],catalogs:[],filter:0,busy:false};
+const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const state={user:null,profile:null,busy:false,catalogs:[],last:null};
 const manager=()=>['admin','role_point-de-vente'].includes(state.profile?.role);
-function alertText(message,kind=''){const node=$('promoAlert');node.textContent=message;node.className='promoAlert '+kind;node.hidden=!message}
-function dateFr(date){if(!date)return'';try{return new Date(date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}catch(_){return date}}
-function busy(toggle){state.busy=toggle;for(const id of ['promoExtract','promoSave','promoAdd']){const b=$(id);if(b)b.disabled=toggle||id==='promoExtract'&&!state.file}if(!toggle)updateSaveState()}
+function notify(msg,type=''){
+ const el=$('promoAlert');el.textContent=msg;el.className='promoAlert '+type;el.hidden=!msg
+}
+function loading(title,message){
+ const el=$('promoAutoProgress');
+ el.hidden=false;$('promoProgressTitle').textContent=title;$('promoProgressText').textContent=message;
+}
+function dateFr(v){
+ if(!v)return'—';
+ try{return new Date(v+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}
+ catch(_){return v}
+}
+function dateRange(obj){return dateFr(obj.valid_from)+' → '+dateFr(obj.valid_until)}
+function isoWeekLabel(row){
+ const n=row.iso_week;return n?'Semaine '+String(n).padStart(2,'0')+(row.iso_year?' · '+row.iso_year:''):'Semaine non classée'
+}
 async function pdfJs(){
  if(window.pdfjsLib)return window.pdfjsLib;
- if(!window.__nethorPdfLoader){
-  window.__nethorPdfLoader=new Promise((resolve,reject)=>{
-   const s=document.createElement('script');
-   s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-   s.crossOrigin='anonymous';s.onload=()=>{
-    if(!window.pdfjsLib)return reject(new Error('Librairie PDF indisponible'));
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    resolve(window.pdfjsLib)
-   };
-   s.onerror=()=>reject(new Error('Impossible de charger la lecture PDF. Vérifie la connexion.'));
-   document.head.appendChild(s)
-  }).catch(e=>{window.__nethorPdfLoader=null;throw e})
- }
+ if(!window.__nethorPdfLoader)window.__nethorPdfLoader=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');
+  script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  script.crossOrigin='anonymous';script.onload=()=>{
+   if(!window.pdfjsLib)return reject(new Error('Moteur de lecture PDF non disponible'));
+   window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+   resolve(window.pdfjsLib)
+  };
+  script.onerror=()=>reject(new Error('Chargement du moteur PDF impossible. Vérifie ta connexion.'));
+  document.head.appendChild(script)
+ }).catch(e=>{window.__nethorPdfLoader=null;throw e});
  return window.__nethorPdfLoader
 }
-function pickFile(file){
- if(!file)return;
- if(!(/\.pdf$/i.test(file.name))||!['application/pdf',''].includes(file.type)){
-  alertText('Choisis un document PDF valide.','error');return
- }
- if(file.size>30*1024*1024){alertText('Le PDF dépasse la limite de 30 Mo.','error');return}
- if(state.originalUrl)URL.revokeObjectURL(state.originalUrl);
- state.file=file;state.originalUrl=URL.createObjectURL(file);
- $('promoDropTitle').textContent=file.name+' · '+(file.size/1024/1024).toFixed(1)+' Mo';
- if(!$('promoTitle').value.trim())$('promoTitle').value=file.name.replace(/\.pdf$/i,'').replace(/[_-]+/g,' ');
- $('promoExtract').disabled=false;resetReview();alertText('')
+async function sha256(bytes){
+ const digest=await crypto.subtle.digest('SHA-256',bytes);
+ return Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('')
 }
-function resetReview(){
- state.products=[];state.reports=[];state.filter=0;$('promoReview').hidden=true;updateSaveState()
-}
-async function extractPdf(){
- if(state.busy||!state.file)return;
- busy(true);resetReview();
+async function extractPDF(bytes){
+ const pdf=await pdfJs();
+ if(String.fromCharCode(...new Uint8Array(bytes).slice(0,5))!=='%PDF-')
+  throw new Error('Ce fichier ne présente pas un en-tête PDF valide.');
+ const task=pdf.getDocument({data:new Uint8Array(bytes.slice(0))});
  try{
-  alertText('Ouverture et analyse du PDF…');
-  const pdf=await pdfJs();
-  const bytes=new Uint8Array(await state.file.arrayBuffer());
-  if(String.fromCharCode(...bytes.slice(0,5))!=='%PDF-')throw Error('Le fichier ne contient pas une structure PDF reconnue.');
-  const task=pdf.getDocument({data:bytes});
   const doc=await task.promise;
-  if(doc.numPages<1||doc.numPages>150)throw Error('Ce premier module accepte les catalogues de 1 à 150 pages.');
-  const pages=[],topTexts=[];let chars=0;
-  for(let p=1;p<=doc.numPages;p++){
-   alertText('Lecture du PDF · page '+p+' / '+doc.numPages+'…');
-   const page=await doc.getPage(p),view=page.getViewport({scale:1}),text=await page.getTextContent();
-   const lines=window.NethorPromotionParser.linesForPage(text.items,view.width,view.height);
-   pages.push({number:p,lines});
-   const count=lines.reduce((n,x)=>n+x.text.length,0);chars+=count;
-   if(p<=3)topTexts.push(lines.map(x=>x.text).join(' '));
+  if(doc.numPages<1||doc.numPages>150)
+   throw new Error('Le module accepte les catalogues de 1 à 150 pages.');
+  const pages=[];
+  for(let n=1;n<=doc.numPages;n++){
+   loading('Extraction des références','Analyse de la page '+n+' sur '+doc.numPages+'…');
+   const page=await doc.getPage(n),viewport=page.getViewport({scale:1});
+   const {items}=await page.getTextContent();
+   const lines=window.NethorPromotionParser.linesForPage(items,viewport.width,viewport.height);
+   pages.push({number:n,lines});
    page.cleanup()
   }
-  await task.destroy();
-  if(chars<30||pages.every(p=>p.lines.length===0))throw Error('Ce PDF semble être un scan ou une image. L’extraction du texte est impossible sans OCR : aucune référence n’a été inventée.');
-  const parsed=window.NethorPromotionParser.parsePages(pages);
-  state.products=parsed.products;state.reports=parsed.reports;
-  const dates=window.NethorPromotionParser.suggestDates(topTexts.join(' '));
-  if(dates){if(!$('promoStart').value)$('promoStart').value=dates.from;if(!$('promoEnd').value)$('promoEnd').value=dates.until}
-  $('promoReview').hidden=false;
-  state.filter=1;renderReview();
-  const empty=parsed.reports.filter(p=>!p.hasText).map(p=>p.number);
-  alertText(empty.length
-   ?'Attention : pages sans texte détecté ('+empty.join(', ')+'). Un OCR est nécessaire pour garantir que ces pages ne contiennent pas de références oubliées. Enregistrement bloqué.':'Extraction terminée : '+parsed.products.length+' propositions de référence. Relis chaque page et complète les produits ou offres manquants avant enregistrement.',empty.length?'error':'');
-  $('promoReview').scrollIntoView({behavior:'smooth',block:'start'})
- }catch(error){resetReview();alertText(error.message||'Impossible de lire ce PDF.','error')}
- finally{busy(false)}
+  return pages
+ }finally{await task.destroy().catch(()=>{})}
 }
-function updateSaveState(){
- const good=state.reports.length>0&&state.reports.every(p=>p.checked&&p.hasText)
-  &&state.products.length>0&&state.products.every(p=>String(p.product_name).trim().length>=2&&String(p.price_or_benefit).trim().length>=1&&p.source_page>=1);
- $('promoSave').disabled=state.busy||!good;
- $('promoSave').title=good?'Enregistrer le catalogue et ses références':'Vérifie toutes les pages et renseigne le nom ainsi que le prix / avantage de chaque produit.'
+function autoSummary(result,meta,report){
+ const warnings=report.filter(x=>!x.hasText),unmatched=report.reduce((n,x)=>n+x.unmatched,0);
+ const el=$('promoAutoSummary');
+ el.hidden=false;
+ el.innerHTML='<div class="promoAutoSummaryHead"><strong>Catalogue enregistré automatiquement</strong><span class="promoAutoGood">✓</span></div>'+
+  '<h3>'+escapeHtml(result.title)+'</h3>'+
+  '<p><strong>Semaine de rattachement :</strong> '+dateFr(result.week_start)+' au '+dateFr(result.week_end)+'</p>'+
+  '<p><strong>Validité réelle :</strong> '+dateFr(meta.from)+' au '+dateFr(meta.until)+'</p>'+
+  '<div class="promoAutoMetrics"><span><strong>'+result.products+'</strong> références</span>'+
+  '<span><strong>'+result.uncertain+'</strong> à affiner</span><span><strong>'+report.length+'</strong> pages analysées</span></div>'+
+  (warnings.length?'<p class="promoAutoWarning">Pages sans texte : '+warnings.map(x=>x.number).join(', ')+'. Ces pages peuvent nécessiter un OCR.</p>':'')+
+  (unmatched?'<p class="promoAutoInfo">'+unmatched+' passages non associés à une référence : ces informations sont conservées dans le diagnostic du catalogue.</p>':'')
 }
-function renderReview(){
- const n=state.products.length,reviewed=state.reports.filter(p=>p.checked).length,total=state.reports.length;
- $('promoStats').innerHTML='<span class="promoStat"><strong>'+n+'</strong> références à vérifier</span>'+
-  '<span class="promoStat"><strong>'+reviewed+'/'+total+'</strong> pages vérifiées</span>'+
-  '<span class="promoStat"><strong>'+state.reports.reduce((s,p)=>s+p.review.length,0)+'</strong> passages non associés</span>';
- $('promoPages').innerHTML=state.reports.map(p=>'<label class="promoPageRow"><span>Page '+p.number+' · '+state.products.filter(x=>x.source_page===p.number).length+' réf.'+(p.hasText?'':' · OCR requis')+'</span><input type="checkbox" data-promo-review-page="'+p.number+'" '+(p.checked?'checked':'')+' '+(!p.hasText?'disabled':'')+' aria-label="Page '+p.number+' relue"></label>').join('');
- $('promoPageFilter').innerHTML=state.reports.map(p=>'<option value="'+p.number+'" '+(p.number===state.filter?'selected':'')+'>Page '+p.number+' · '+state.products.filter(x=>x.source_page===p.number).length+' référence(s)</option>').join('');
- renderItems();updateSaveState()
+function classifyDiagnostics(reports,products){
+ const textless=reports.filter(p=>!p.hasText);
+ return {
+  engine:'nethor-pdf-text-auto-v2',
+  total_pages:reports.length,textless_pages:textless.length,
+  textless_page_numbers:textless.map(p=>p.number),
+  candidate_count:products.length,
+  uncertain_count:products.filter(p=>p.auto_uncertain).length,
+  unmatched_passage_count:reports.reduce((n,p)=>n+p.unmatched,0),
+  pages:reports.map(p=>({page:p.number,lines:p.lines,products:p.detected,
+   uncertain:p.uncertain,unmatched:p.unmatched,has_text:p.hasText}))
+ }
 }
-function renderItems(){
- const filtered=state.products.map((p,i)=>({...p,i})).filter(p=>p.source_page===state.filter);
- $('promoItems').innerHTML=filtered.length?filtered.map(p=>
-  '<article class="promoItem" data-item="'+p.i+'">'+
-   '<div class="promoItemHead"><strong>Référence '+(p.i+1)+' · Page '+p.source_page+'</strong><span>'+({review:'Extraction à contrôler',manual:'Ajout manuel',high:'Extraction'}[p.extraction_confidence]||'À contrôler')+'</span></div>'+
-   '<div class="promoItemFields"><label>1. Référence · Nom complet<input data-promo-field="product_name" data-index="'+p.i+'" maxlength="500" value="'+esc(p.product_name)+'" aria-label="Nom du produit"></label>'+
-   '<label>2. Informations techniques · Grammage, prix au kilo…<textarea data-promo-field="technical_details" data-index="'+p.i+'" maxlength="1200">'+esc(p.technical_details)+'</textarea></label>'+
-   '<label>3. Prix ou avantage · Condition, caisse, carte…<textarea data-promo-field="price_or_benefit" data-index="'+p.i+'" maxlength="1200">'+esc(p.price_or_benefit)+'</textarea></label></div>'+
-   '<div class="promoItemActions"><span>Source PDF : page '+p.source_page+'</span><button type="button" class="promoDelete" data-promo-delete="'+p.i+'">Retirer cette proposition</button></div></article>').join('')
-   :'<p class="promoMuted">Aucune référence détectée sur cette page. Vérifie-la dans le PDF et ajoute les produits manuellement.</p>';
- const report=state.reports.find(p=>p.number===state.filter);
- const unresolved=report?.review||[];
- $('promoUnresolved').innerHTML=unresolved.slice(0,120).map((line,i)=>'<div class="promoReviewPassage"><span>'+esc(line.text)+'</span><button data-promo-from-line="'+i+'" type="button">Ajouter comme référence</button></div>').join('')+
-  (unresolved.length>120?'<p class="promoMuted">+'+(unresolved.length-120)+' autres passages : consulte le PDF original.</p>':'');
-}
-function addProduct(text='',page=state.filter){
- if(!state.reports.find(p=>p.number===page))return;
- state.products.push({product_name:text||'',technical_details:'',price_or_benefit:'',source_page:page,source_excerpt:text,
-  extraction_confidence:'manual'});
- const report=state.reports.find(x=>x.number===page);if(report)report.checked=false;
- state.filter=page;renderReview();
- $('promoItems').lastElementChild?.querySelector('input')?.focus();
-}
-function bindReview(){
- $('promoPageFilter').addEventListener('change',e=>{state.filter=Number(e.target.value);renderItems()});
- $('promoAdd').addEventListener('click',()=>addProduct());
- $('promoPages').addEventListener('change',e=>{
-  const n=Number(e.target.dataset.promoReviewPage);const p=state.reports.find(x=>x.number===n);
-  if(p&&p.hasText)p.checked=e.target.checked;renderReview()
- });
- $('promoItems').addEventListener('input',e=>{
-  const field=e.target.dataset.promoField,index=Number(e.target.dataset.index);
-  if(!['product_name','technical_details','price_or_benefit'].includes(field)||!state.products[index])return;
-  state.products[index][field]=e.target.value;state.products[index].extraction_confidence='manual';
-  const sourcePage=state.products[index].source_page;
-  state.reports.find(x=>x.number===sourcePage).checked=false;
-  const checkbox=document.querySelector('input[data-promo-review-page="'+sourcePage+'"]');
-  if(checkbox)checkbox.checked=false;
-  updateSaveState()
- });
- $('promoItems').addEventListener('click',e=>{
-  const button=e.target.closest('[data-promo-delete]');
-  if(!button)return;
-  state.products.splice(Number(button.dataset.promoDelete),1);const report=state.reports.find(x=>x.number===state.filter);
-  if(report)report.checked=false;renderReview()
- });
- $('promoUnresolved').addEventListener('click',e=>{
-  const button=e.target.closest('[data-promo-from-line]');if(!button)return;
-  const report=state.reports.find(p=>p.number===state.filter);const passage=report?.review.splice(Number(button.dataset.promoFromLine),1)[0];
-  if(passage)addProduct(passage.text,state.filter)
- });
- $('promoCancel').addEventListener('click',()=>{resetReview();alertText('Analyse annulée ; aucun produit n’a été enregistré.')});
- $('promoSourceView').addEventListener('click',()=>{if(state.originalUrl)window.open(state.originalUrl+'#page='+state.filter,'_blank','noopener')});
- $('promoSave').addEventListener('click',saveImport);
-}
-async function saveImport(){
+async function importAutomatic(file){
  if(state.busy||!manager())return;
- updateSaveState();if($('promoSave').disabled)return;
- const title=$('promoTitle').value.trim(),from=$('promoStart').value,to=$('promoEnd').value;
- if(title.length<2||!from||!to||to<from){alertText('Indique un nom de catalogue et des dates valides.','error');return}
- if(!window.confirm('As-tu bien contrôlé chaque page du PDF, les noms complets et toutes les conditions de prix ou de carte ? Confirmer l’enregistrement de '+state.products.length+' références ?'))return;
- busy(true);
+ if(!file||!/\.pdf$/i.test(file.name)||!['application/pdf',''].includes(file.type)){
+  notify('Le fichier doit être un PDF.','error');return
+ }
+ if(file.size>30*1024*1024){notify('PDF trop volumineux : 30 Mo maximum.','error');return}
+ state.busy=true;$('promoDrop').setAttribute('aria-busy','true');
+ $('promoDrop').classList.add('processing');
+ $('promoDropTitle').textContent=file.name;
+ $('promoAutoSummary').hidden=true;notify('');
+ let storagePath=null,imported=false;
  try{
-  const path=state.user.id+'/'+crypto.randomUUID()+'.pdf';
-  alertText('Enregistrement du PDF original dans l’espace privé…');
-  const upload=await db.storage.from('promotion-pdfs').upload(path,state.file,{contentType:'application/pdf',cacheControl:'3600',upsert:false});
-  if(upload.error)throw upload.error;
-  alertText('Création atomique du catalogue et de ses références…');
-  const payload=state.products.map(p=>({
-   product_name:p.product_name.trim(),technical_details:p.technical_details.trim(),
-   price_or_benefit:p.price_or_benefit.trim(),source_page:p.source_page,
-   source_excerpt:String(p.source_excerpt||'').slice(0,1500),
-   extraction_confidence:p.extraction_confidence||'review'
-  }));
-  const {data,error}=await db.rpc('import_promotion_catalog',{
-   p_title:title,p_filename:state.file.name,p_storage_path:path,
-   p_valid_from:from,p_valid_until:to,
-   p_pages:state.reports.length,p_unclassified:state.reports.reduce((n,r)=>n+r.review.length,0),
-   p_reviewed_pages:state.reports.map(r=>r.number),p_products:payload
+  loading('Analyse automatique','Lecture du catalogue et recherche des références…');
+  const bytes=await file.arrayBuffer();
+  const hash=await sha256(bytes);
+  // Empêche deux importations du même PDF, quel que soit son nom.
+  const previous=await db.from('promotion_catalogs').select('id,title')
+    .eq('file_sha256',hash).maybeSingle();
+  if(previous.error)throw previous.error;
+  if(previous.data){
+   notify('Ce PDF est déjà enregistré : '+previous.data.title+'.','ok');
+   await loadCatalogs();await openCatalog(previous.data.id);
+   return
+  }
+  const pages=await extractPDF(bytes);
+  if(!pages.some(page=>page.lines.some(x=>x.text.length>=4)))
+   throw new Error('Ce PDF ne contient pas de texte exploitable. Un OCR est nécessaire pour lire un catalogue scanné ; aucune référence fictive n’est créée.');
+  loading('Détection des dates','Recherche de la période de promotion dans le catalogue…');
+  const meta=window.NethorPromotionParser.extractMetadata(pages,file.name);
+  if(!meta)throw new Error('Impossible de trouver des dates de début et fin fiables dans ce catalogue. Aucun calendrier ou titre inventé : le PDF ne sera pas enregistré.');
+  const {products,reports}=window.NethorPromotionParser.parsePages(pages);
+  if(!products.length)throw new Error('Aucun produit identifiable dans ce PDF. Import interrompu sans créer de fausses références.');
+  if(products.length>2000)throw new Error('Plus de 2 000 références détectées : limite du module actuel.');
+  const diagnostics=classifyDiagnostics(reports,products);
+  loading('Catégorisation automatique',products.length+' produits détectés · '+meta.title);
+  storagePath=state.user.id+'/'+crypto.randomUUID()+'.pdf';
+  const saved=await db.storage.from('promotion-pdfs').upload(storagePath,file,{
+   contentType:'application/pdf',cacheControl:'3600',upsert:false
   });
-  if(error)throw error;
-  alertText('Catalogue enregistré : '+payload.length+' références dans la base Promotions.','ok');
-  resetReview();state.file=null;$('promoFile').value='';$('promoDropTitle').textContent='Glisser le catalogue PDF ici';
-  if(state.originalUrl)URL.revokeObjectURL(state.originalUrl);state.originalUrl=null;
+  if(saved.error)throw saved.error;
+  loading('Enregistrement sécurisé','Rattachement à la semaine '+meta.iso_week+' du '+dateFr(meta.week_start)+'…');
+  const result=await db.rpc('import_promotion_catalog_auto',{
+   p_filename:file.name,p_storage_path:storagePath,p_file_sha256:hash,
+   p_valid_from:meta.from,p_valid_until:meta.until,p_pages:reports.length,
+   p_products:products.map(p=>({
+    product_name:p.product_name,technical_details:p.technical_details,
+    price_or_benefit:p.price_or_benefit,source_page:p.source_page,
+    source_excerpt:p.source_excerpt,extraction_confidence:p.extraction_confidence,
+    category:p.category,auto_uncertain:p.auto_uncertain
+   })),
+   p_diagnostics:diagnostics
+  });
+  if(result.error)throw result.error;
+  imported=true;state.last=result.data;
+  autoSummary(result.data,meta,reports);
+  notify('Import terminé : '+result.data.products+' références enregistrées sous '+result.data.title+'.','ok');
   await loadCatalogs();
-  const item=state.catalogs.find(x=>x.id===data);
-  if(item)await openCatalog(item.id)
- }catch(error){alertText('Enregistrement impossible : '+(error.message||String(error))+'. Vérifie le catalogue et réessaie si nécessaire.','error')}
- finally{busy(false)}
+  await openCatalog(result.data.id)
+ }catch(error){
+  notify('Import interrompu : '+(error?.message||String(error)),'error');
+  // Ne laisser aucun fichier orphelin lorsqu'une transaction DB échoue.
+  if(storagePath&&!imported){try{await db.storage.from('promotion-pdfs').remove([storagePath])}catch(_){}}
+ }finally{
+  state.busy=false;$('promoAutoProgress').hidden=true;
+  $('promoDrop').classList.remove('processing');
+  $('promoDrop').removeAttribute('aria-busy');
+  $('promoFile').value='';
+  if(!imported)$('promoDropTitle').textContent='Dépose ton catalogue PDF pour lancer l’analyse'
+ }
 }
 async function loadCatalogs(){
- const {data,error}=await db.from('promotion_catalogs').select('id,title,source_filename,storage_path,valid_from,valid_until,pages_total,imported_at').order('imported_at',{ascending:false}).limit(80);
- if(error){$('promoCatalogList').innerHTML='<p class="promoMuted">Impossible de charger les catalogues : '+esc(error.message)+'</p>';return}
+ const {data,error}=await db.from('promotion_catalogs')
+  .select('id,title,source_filename,storage_path,valid_from,valid_until,week_start,week_end,iso_year,iso_week,extraction_state,unclassified_count,pages_total,imported_at')
+  .order('imported_at',{ascending:false}).limit(100);
+ if(error){$('promoCatalogList').innerHTML='<p class="promoMuted">Impossible de charger les promotions : '+escapeHtml(error.message)+'</p>';return}
  state.catalogs=data||[];
  $('promoCatalogList').innerHTML=state.catalogs.length?state.catalogs.map(p=>
-  '<div class="promoCatalog"><button type="button" data-promo-catalog="'+esc(p.id)+'"><span><strong>'+esc(p.title)+'</strong>'+
-  '<small>'+dateFr(p.valid_from)+' → '+dateFr(p.valid_until)+' · '+p.pages_total+' pages · '+esc(p.source_filename)+'</small></span><span class="promoCatalogCount" aria-hidden="true">%</span></button></div>').join(''):
-  '<p class="promoMuted">Aucun catalogue importé pour le moment. Les futures références apparaîtront ici.</p>'
+  '<div class="promoCatalog"><button type="button" data-promo-catalog="'+escapeHtml(p.id)+'"><span>'+
+  '<strong>'+escapeHtml(p.title)+'</strong>'+
+  '<small>'+escapeHtml(isoWeekLabel(p))+' · Lundi '+dateFr(p.week_start)+' au '+dateFr(p.week_end)+'</small>'+
+  '<small>Offres valables du '+dateRange(p)+' · '+p.pages_total+' pages'+
+   (p.extraction_state==='partial'?' · Extraction partielle':'')+
+   (p.unclassified_count?' · '+p.unclassified_count+' produit(s) incertain(s)':'')+
+   '</small></span><span class="promoCatalogCount" aria-hidden="true">%</span></button></div>').join(''):
+  '<p class="promoMuted">Aucun catalogue pour le moment. Dépose un PDF pour démarrer automatiquement l’analyse.</p>'
 }
 async function openCatalog(id){
- const p=state.catalogs.find(x=>x.id===id);if(!p)return;
+ const cat=state.catalogs.find(x=>x.id===id);if(!cat)return;
  $('promoCatalogDetail').hidden=false;
  $('promoCatalogDetail').innerHTML='<p class="promoMuted">Chargement des références…</p>';
  const {data,error}=await db.from('promotion_products')
-  .select('position,product_name,technical_details,price_or_benefit,source_page')
+  .select('position,product_name,technical_details,price_or_benefit,category,auto_uncertain,source_page')
   .eq('catalog_id',id).order('position').limit(2000);
  if(error){$('promoCatalogDetail').textContent='Erreur : '+error.message;return}
- const all=data||[];
- $('promoCatalogDetail').innerHTML='<div class="promoDetailsHead"><div><h3>'+esc(p.title)+'</h3>'+
-  '<p>'+all.length+' références · '+dateFr(p.valid_from)+' au '+dateFr(p.valid_until)+'</p></div>'+
-  '<div class="promoDetailsActions">'+(manager()?'<button type="button" class="promoSecondary" id="promoHistoricPdf">Voir le PDF ↗</button>':'')+'<input type="search" id="promoCatalogSearch" placeholder="Rechercher une référence…" aria-label="Rechercher dans ce catalogue"></div></div>'+
-  '<div style="overflow-x:auto"><table class="promoProductTable"><thead><tr><th>Référence / Nom complet</th><th>Informations techniques</th><th>Prix ou avantage</th><th>Page</th></tr></thead><tbody id="promoCatalogRows"></tbody></table></div>';
- const render=(q='')=>{
-  const needle=q.trim().toLocaleLowerCase('fr');
-  const filtered=all.filter(x=>[x.product_name,x.technical_details,x.price_or_benefit].some(s=>String(s||'').toLocaleLowerCase('fr').includes(needle)));
-  $('promoCatalogRows').innerHTML=filtered.map(x=>'<tr><td>'+esc(x.product_name)+'</td><td>'+esc(x.technical_details||'—')+'</td><td>'+esc(x.price_or_benefit)+'</td><td>'+x.source_page+'</td></tr>').join('')
- };
- render();$('promoCatalogSearch').addEventListener('input',e=>render(e.target.value));
+ const products=data||[];
+ $('promoCatalogDetail').innerHTML='<div class="promoDetailsHead"><div><h3>'+escapeHtml(cat.title)+'</h3>'+
+  '<p>'+products.length+' références · du '+dateRange(cat)+'</p>'+
+  '<p>Semaine '+cat.iso_week+' ('+dateFr(cat.week_start)+' au '+dateFr(cat.week_end)+')'+
+  (cat.extraction_state==='partial'?' · extraction partielle':'')+'</p></div>'+
+  '<div class="promoDetailsActions">'+(manager()?'<button type="button" class="promoSecondary" id="promoHistoricPdf">PDF source ↗</button>':'')+
+  '<input type="search" id="promoCatalogSearch" placeholder="Rechercher une référence…" aria-label="Rechercher une référence">'+
+  '<select id="promoCategoryFilter" aria-label="Filtrer par catégorie"><option value="">Toutes les catégories</option>'+
+  [...new Set(products.map(p=>p.category||'À classer'))].sort().map(category=>
+   '<option value="'+escapeHtml(category)+'">'+escapeHtml(category)+'</option>').join('')+
+  '</select></div></div>'+
+  '<div style="overflow-x:auto"><table class="promoProductTable"><thead><tr><th>Référence</th><th>Informations techniques</th>'+
+  '<th>Prix ou avantage</th><th>Catégorie</th><th>Page</th></tr></thead><tbody id="promoCatalogRows"></tbody></table></div>';
+ function render(){
+  const needle=$('promoCatalogSearch').value.trim().toLocaleLowerCase('fr');
+  const category=$('promoCategoryFilter').value;
+  const filtered=products.filter(x=>(!category||(x.category||'À classer')===category)&&
+   [x.product_name,x.technical_details,x.price_or_benefit].some(s=>String(s||'').toLocaleLowerCase('fr').includes(needle)));
+  $('promoCatalogRows').innerHTML=filtered.map(p=>'<tr><td>'+escapeHtml(p.product_name)+
+   (p.auto_uncertain?'<small class="promoUncertain">À affiner</small>':'')+
+   '</td><td>'+escapeHtml(p.technical_details||'—')+'</td><td>'+escapeHtml(p.price_or_benefit)+'</td>'+
+   '<td>'+escapeHtml(p.category||'À classer')+'</td><td>'+p.source_page+'</td></tr>').join('')||
+   '<tr><td colspan="5" class="promoMuted">Aucun résultat pour ce filtre.</td></tr>'
+ }
+ render();
+ $('promoCatalogSearch').addEventListener('input',render);
+ $('promoCategoryFilter').addEventListener('change',render);
  if(manager())$('promoHistoricPdf')?.addEventListener('click',async()=>{
-  const {data,error}=await db.storage.from('promotion-pdfs').createSignedUrl(p.storage_path,90);
-  if(error||!data?.signedUrl)return alertText('PDF privé indisponible : '+(error?.message||'lien impossible'),'error');
+  const {data,error}=await db.storage.from('promotion-pdfs').createSignedUrl(cat.storage_path,90);
+  if(error||!data?.signedUrl){notify('Impossible d’ouvrir le PDF original : '+(error?.message||'lien indisponible'),'error');return}
   window.open(data.signedUrl,'_blank','noopener')
- });
- $('promoCatalogDetail').scrollIntoView({behavior:'smooth',block:'nearest'})
+ })
 }
 async function boot(){
  if(window.NethorPlatform?.isMobile?.()){location.replace('mobile.html');return}
- if(!window.supabase||!window.NethorPromotionParser){alertText('Les composants Promotions n’ont pas été chargés. Recharge la page.','error');return}
- const {data:{session},error:authError}=await db.auth.getSession();
- if(authError||!session){location.replace('index.html');return}
+ if(!window.supabase||!window.NethorPromotionParser){notify('Le module Promotions n’a pas été chargé. Recharge la page.','error');return}
+ const {data:{session},error:sessionError}=await db.auth.getSession();
+ if(sessionError||!session){location.replace('index.html');return}
  state.user=session.user;
  const {data,error}=await db.from('profiles').select('display_name,role,account_enabled').eq('id',session.user.id).maybeSingle();
  if(error||!data||data.account_enabled===false){location.replace('home.html');return}
  state.profile=data;$('promoImport').hidden=!manager();
- bindReview();
- $('promoDrop').addEventListener('click',()=>{$('promoFile').click()});
- $('promoDrop').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('promoFile').click()}});
- $('promoDrop').addEventListener('dragover',e=>{e.preventDefault();$('promoDrop').classList.add('dragover')});
- $('promoDrop').addEventListener('dragleave',()=>{$('promoDrop').classList.remove('dragover')});
- $('promoDrop').addEventListener('drop',e=>{e.preventDefault();$('promoDrop').classList.remove('dragover');pickFile(e.dataTransfer?.files?.[0])});
- $('promoFile').addEventListener('change',e=>pickFile(e.target.files?.[0]));
- $('promoExtract').addEventListener('click',extractPdf);
- $('promoCatalogList').addEventListener('click',e=>{const btn=e.target.closest('[data-promo-catalog]');if(btn)openCatalog(btn.dataset.promoCatalog)});
+ if(manager()){
+  const drop=$('promoDrop');
+  drop.addEventListener('click',()=>{if(!state.busy)$('promoFile').click()});
+  drop.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&!state.busy){e.preventDefault();$('promoFile').click()}});
+  drop.addEventListener('dragover',e=>{e.preventDefault();if(!state.busy)drop.classList.add('dragover')});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('dragover'));
+  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragover');if(!state.busy)importAutomatic(e.dataTransfer?.files?.[0])});
+  $('promoFile').addEventListener('change',e=>{if(!state.busy)importAutomatic(e.target.files?.[0])})
+ }
+ $('promoCatalogList').addEventListener('click',e=>{
+  const button=e.target.closest('[data-promo-catalog]');if(button)openCatalog(button.dataset.promoCatalog)
+ });
  await loadCatalogs()
 }
-window.addEventListener('pagehide',()=>{if(state.originalUrl)URL.revokeObjectURL(state.originalUrl)});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot().catch(e=>alertText(e.message,'error')),{once:true});
-else boot().catch(e=>alertText(e.message,'error'))
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot().catch(e=>notify(e.message,'error')),{once:true});
+else boot().catch(e=>notify(e.message,'error'))
 })();

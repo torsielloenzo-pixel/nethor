@@ -81,3 +81,37 @@
 :root[data-theme="dark"] .promoAlert.ok{background:#203b30;color:#b4e8c9;border-color:#376952}
 @media(max-width:980px){.promoReviewLayout{grid-template-columns:1fr}.promoReviewAside{position:static}.promoImportGrid{grid-template-columns:1fr}.promoPage{padding-inline:16px!important}}
 @media(max-width:640px){.promoPage{padding:14px 11px 60px!important}.promoPanel{padding:14px}.promoTitleRow h1{font-size:26px}.promoTitleIcon{display:none}.promoReviewToolbar{align-items:stretch;flex-direction:column}.promoDates{grid-template-columns:1fr}.promoDetailsHead{align-items:stretch;flex-direction:column}.promoProductTable{font-size:10.5px}}
+
+/* Import autonome v2 — un seul dépôt, progression et récapitulatif, aucun formulaire de validation. */
+.promoImport .promoDrop{width:100%;min-height:180px;transition:border-color .18s,background-color .18s}
+.promoImport .promoDrop.processing{opacity:.75;cursor:progress;pointer-events:none}
+.promoAutoProgress{display:flex;align-items:center;gap:15px;padding:18px 20px;margin-top:15px;
+ background:var(--pm-soft);border:1px solid var(--pm-line);border-radius:14px}
+.promoAutoProgress strong{font-size:13px;color:var(--pm-ink)}
+.promoAutoProgress p{font-size:11.5px;color:var(--pm-muted);margin:5px 0 0}
+.promoSpinner{width:30px;height:30px;flex:none;border:3px solid var(--pm-line);
+ border-top-color:var(--pm-accent);border-radius:50%;animation:promoSpin .8s linear infinite}
+@keyframes promoSpin{to{transform:rotate(360deg)}}
+.promoAutoSummary{margin-top:16px;padding:19px;border-radius:15px;border:1px solid
+ color-mix(in srgb,var(--pm-green) 30%,var(--pm-line));background:var(--pm-soft)}
+.promoAutoSummaryHead{display:flex;justify-content:space-between;align-items:center;gap:10px;
+ color:var(--pm-green);font-size:11px;font-weight:850}
+.promoAutoGood{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+ background:color-mix(in srgb,var(--pm-green) 13%,var(--pm-surface))}
+.promoAutoSummary h3{margin:9px 0 11px;font-size:17px;line-height:1.35;color:var(--pm-ink)}
+.promoAutoSummary p{margin:7px 0;font-size:12px;color:var(--pm-muted);line-height:1.6}
+.promoAutoSummary p strong{color:var(--pm-ink)}
+.promoAutoMetrics{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.promoAutoMetrics span{display:flex;align-items:center;gap:5px;padding:10px 12px;
+ border:1px solid var(--pm-line);border-radius:10px;background:var(--pm-surface);
+ color:var(--pm-muted);font-size:11px}
+.promoAutoMetrics span strong{font-size:16px;font-weight:900;color:var(--pm-ink)}
+.promoAutoSummary .promoAutoWarning{color:#b45e2b;font-weight:750}
+.promoAutoSummary .promoAutoInfo{font-size:11px}
+.promoDetailsActions select{width:190px;max-width:100%}
+.promoUncertain{display:inline-block;margin:6px 0 0;padding:3px 6px;background:var(--pm-soft);
+ color:var(--pm-accent);border-radius:5px;font-size:10px;font-weight:750}
+.promoCatalogList .promoCatalog small+small{margin-top:4px}
+@media(max-width:640px){.promoAutoProgress{padding:12px}.promoAutoSummary{padding:13px}
+ .promoDetailsActions{width:100%}.promoDetailsActions input,.promoDetailsActions select{flex:1 1 100%;width:100%}}
+@media(prefers-reduced-motion:reduce){.promoSpinner{animation:none}}
