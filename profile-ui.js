@@ -1,5 +1,63 @@
 (function(){
 'use strict';
+/* Horodatages Nethor : données UTC serveur, affichage Europe/Paris (été/hiver).
+   Connexion authentifiée != dernière activité/présence du navigateur. */
+const CONNECTION_TIME_ZONE='Europe/Paris';
+function connectionDate(value){
+ if(!value)return null;
+ const d=new Date(value);
+ return Number.isFinite(d.getTime())?d:null
+}
+function connectionParisDateKey(date){
+ const p=new Intl.DateTimeFormat('en-GB',{timeZone:CONNECTION_TIME_ZONE,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);
+ const get=x=>p.find(item=>item.type===x)?.value||'';
+ return get('year')+'-'+get('month')+'-'+get('day')
+}
+function connectionDayLabel(date,{compact=false}={}){
+ const today=connectionParisDateKey(new Date()),target=connectionParisDateKey(date);
+ const previous=new Date(Date.parse(today+'T00:00:00Z')-86400000).toISOString().slice(0,10);
+ if(target===today)return"aujourd’hui";
+ if(target===previous)return"hier";
+ return date.toLocaleDateString('fr-FR',{timeZone:CONNECTION_TIME_ZONE,day:'2-digit',month:'2-digit',...(compact?{}:{year:'numeric'})})
+}
+function connectionClock(date,{seconds=false}={}){
+ return date.toLocaleTimeString('fr-FR',{timeZone:CONNECTION_TIME_ZONE,hour:'2-digit',minute:'2-digit',...(seconds?{second:'2-digit'}:{})})
+}
+function connectionStamp(value,{seconds=false,compact=false}={}){
+ const d=connectionDate(value);
+ if(!d)return'Date non disponible';
+ return d.toLocaleDateString('fr-FR',{timeZone:CONNECTION_TIME_ZONE,day:'2-digit',month:'2-digit',...(compact?{}:{year:'numeric'})})+
+  ' à '+connectionClock(d,{seconds})
+}
+function connectionRelative(value,kind='login',{compact=false}={}){
+ const d=connectionDate(value),type=kind==='activity'?'Dernière activité':'Dernière connexion';
+ if(!d)return kind==='activity'?'Activité non enregistrée':'Connexion non enregistrée';
+ const day=connectionDayLabel(d,{compact});
+ return type+' '+(/^(aujourd’hui|hier)$/.test(day)?day:'le '+day)+' à '+connectionClock(d)
+}
+const nethorConnectionTimes=(()=>{
+ let cache={user:'',rows:null,pending:null,at:0};
+ async function load(client,{force=false}={}){
+  if(!client?.rpc)throw new Error('Source de connexion indisponible');
+  const user=window.NettoProfileUI?.session?.user?.id||'mobile';
+  if(cache.user!==user)cache={user,rows:null,pending:null,at:0};
+  if(!force&&cache.rows&&Date.now()-cache.at<15000)return cache.rows;
+  if(cache.pending)return cache.pending;
+  const promise=(async()=>{
+   const {data,error}=await client.rpc('team_connection_times');
+   if(error)throw error;
+   if(!Array.isArray(data))throw new Error('Historique de connexion invalide');
+   cache.rows=data;cache.at=Date.now();
+   return data
+  })();
+  cache.pending=promise;
+  try{return await promise}finally{if(cache.pending===promise)cache.pending=null}
+ }
+ function clear(){cache={user:'',rows:null,pending:null,at:0}}
+ return Object.freeze({timeZone:CONNECTION_TIME_ZONE,stamp:connectionStamp,relative:connectionRelative,load,clear})
+})();
+window.NethorConnectionTimes=nethorConnectionTimes;
+
 function resolvedPlatformKind(){
  try{
   const kind=window.NethorPlatform?.current?.()||document.documentElement.dataset.nethorPlatform||'';
@@ -1189,7 +1247,7 @@ function buildGlobalHeader(){
   name,role,shortcuts,settingsUrl:settingsModule.url||'settings.html',settingsModule,settingsIcon:moduleIcon(settingsModule),controls:desktopControls
  })||''):'';
  const wrap=document.createElement('div');wrap.id='nettoGlobalTools';wrap.className='nettoGlobalTools';
- const adminLoginTool=p.role==='admin'?'<div class="nettoLoginWrap"><button id="nettoLoginBtn" class="nettoBellBtn nettoLoginBtn" aria-label="Historique des connexions" aria-expanded="false" title="Connexions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.41 3.3 1.9-1 1.73L11 13.59V7h2Z"/></svg></button><div id="nettoLoginDrop" class="nettoDrop nettoLoginDrop hidden"><div class="nettoNotifHead"><div class="nettoLoginHeadTitle"><strong>Connexions</strong><small>Qui s’est connecté et à quelle heure</small></div><div class="nettoNotifHeadActions"><button id="nettoLoginDeleteAll">Tout supprimer</button></div></div><div id="nettoLoginList" class="nettoLoginList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div>':'';
+ const adminLoginTool=p.role==='admin'?'<div class="nettoLoginWrap"><button id="nettoLoginBtn" class="nettoBellBtn nettoLoginBtn" aria-label="Historique des connexions" aria-expanded="false" title="Connexions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm1 10.41 3.3 1.9-1 1.73L11 13.59V7h2Z"/></svg></button><div id="nettoLoginDrop" class="nettoDrop nettoLoginDrop hidden"><div class="nettoNotifHead"><div class="nettoLoginHeadTitle"><strong>Connexions</strong><small>Dates et heures de connexion · Paris</small></div><div class="nettoNotifHeadActions"><button id="nettoLoginDeleteAll">Tout supprimer</button></div></div><div id="nettoLoginList" class="nettoLoginList"><div class="nettoNotifEmpty">Chargement…</div></div></div></div>':'';
  const inMobilePreview=new URLSearchParams(location.search).get('mobile_preview')==='1';
  const desktopMobileTool=!inMobilePreview&&!isMobileViewport()?'<div class="nettoMobilePreviewWrap"><button type="button" id="nettoMobilePreviewBtn" class="nettoBellBtn nettoMobilePreviewBtn" aria-label="Vision mobile" aria-pressed="false" title="Vision mobile"><svg class="nettoMobileIconNormal" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg><svg class="nettoMobileIconActive" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="nettoMobileIconGradient" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#ff2f1f"/><stop offset="1" stop-color="#ff8500"/></linearGradient></defs><path fill="url(#nettoMobileIconGradient)" d="M7 1.5h10A2.5 2.5 0 0 1 19.5 4v16A2.5 2.5 0 0 1 17 22.5H7A2.5 2.5 0 0 1 4.5 20V4A2.5 2.5 0 0 1 7 1.5Zm0 2A.5.5 0 0 0 6.5 4v16a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5H7Zm3.5 14h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2Z"/></svg></button></div>':'';
  const desktopNotifMode=!mobileShell;
@@ -1343,7 +1401,7 @@ if(!window.__nettoMobileNavLifecycleBound){
  },{capture:true});
  window.addEventListener('orientationchange',()=>setTimeout(()=>{if(!document.documentElement.classList.contains('nettoMobileUserMenuOpen'))resetMobileNavigationState()},80),{passive:true})
 }
-function loginDate(v){const d=new Date(v);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+function loginDate(v){return nethorConnectionTimes.stamp(v,{seconds:true})}
 function renderLoginHistory(){
  const list=document.getElementById('nettoLoginList');if(!list)return;
  if(!api.loginHistory.length){list.innerHTML='<div class="nettoNotifEmpty">Aucune connexion enregistrée.</div>';return}
