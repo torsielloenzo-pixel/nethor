@@ -23,7 +23,7 @@ test('Le panneau de semaine est transparent sur toutes les variantes de thème M
  assert.ok(css.lastIndexOf('html[data-nethor-mobile-app="1"] body.agendaLayout .agendaHeader')>halloween,
   'La règle transparente doit prendre le dessus sur le thème Halloween');
  assert.match(css,/html\[data-nethor-mobile-theme\] \.agendaHeader/);
- assert.ok(!rule[1].includes('color:'),'Conserver les couleurs de texte de chaque thème');
+ assert.doesNotMatch(rule[1],/(?:^|;)\s*color\s*:/,'Conserver les couleurs de texte de chaque thème');
 });
 test('Version mobile et cache du thème cohérents',()=>{
  const html=read('mobile.html'),sw=read('sw.js'),meta=JSON.parse(read('app-version.json'));
