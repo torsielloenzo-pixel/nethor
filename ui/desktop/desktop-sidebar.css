@@ -369,6 +369,9 @@ html[data-nethor-page-layout="desktop"][data-nethor-sidebar-mode="compact"] .net
 html[data-nethor-page-layout="desktop"][data-nethor-sidebar-mode="compact"] .nethorSidebarLabel{
  display:none!important
 }
+html[data-nethor-page-layout="desktop"][data-nethor-sidebar-mode="compact"] .nethorSidebarItem.hidden{
+ display:none!important
+}
 html[data-nethor-page-layout="desktop"][data-nethor-sidebar-mode="compact"] .nethorSidebarIcon{flex:0 0 42px}
 html[data-nethor-page-layout="desktop"][data-nethor-sidebar-mode="compact"] .nethorSidebarBadge{
  top:0;right:0
