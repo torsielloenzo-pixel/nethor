@@ -209,7 +209,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densi
 /* Desktop Accueil · lisibilité renforcée du suivi des équipes (vue magasin aujourd'hui).
    La couleur représente uniquement la prise de poste ; le pointeur conserve le suivi temps réel. */
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan{
- --qp-morning:#21875e;--qp-afternoon:#2677c3;--qp-axis-h:40px;--qp-row-h:52px;
+ --qp-morning:#2aaf70;--qp-afternoon:#2677c3;--qp-axis-h:40px;--qp-row-h:52px;
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densityCompact{--qp-row-h:46px}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplan.densityComfortable{--qp-row-h:52px}
@@ -332,7 +332,7 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanEmptyN
 }
 /* Prévisualisation gestion : couleurs et curseur identiques au widget réel. */
 .quickPlanningPreviewBar{height:16px;top:50%;bottom:auto;transform:translateY(-50%);
- background:linear-gradient(90deg,#21875e 0 48%,#2677c3 48% 100%)}
+ background:linear-gradient(90deg,#2aaf70 0 48%,#2677c3 48% 100%)}
 .quickPlanningPreviewNow{border-left:3px solid #ff5a2a}
 
 @container (max-width:820px){
@@ -369,6 +369,6 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .qplanEmptyN
 
 .quickPlanningTeamLegend{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:38px;padding:7px 10px;border:1px solid #dce5ec;border-radius:10px;background:#f5f8fa;color:#253c4e;font-size:12px;font-weight:800}
 .quickPlanningTeamLegend span{display:inline-flex;align-items:center;gap:7px}
-.quickPlanningTeamLegend span:before{content:"";width:20px;height:11px;border-radius:4px;background:#21875e}
+.quickPlanningTeamLegend span:before{content:"";width:20px;height:11px;border-radius:4px;background:#2aaf70}
 .quickPlanningTeamLegend .afternoon:before{background:#2677c3}
 :root[data-theme="dark"] .quickPlanningTeamLegend{background:#29323a;border-color:#414d56;color:#e7ebf1}
