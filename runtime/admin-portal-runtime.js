@@ -876,6 +876,99 @@ function ensureDesktopDashboardWidgetConfig(){
  config.desktop_dashboard_widget=normalizeDesktopDashboardWidgetConfig(config.desktop_dashboard_widget);
  return config.desktop_dashboard_widget
 }
+
+function desktopSidebarLogoNode(kind){
+ const sidebar=ensureDesktopDashboardWidgetConfig().sidebar;
+ const prefix=kind==='compact'?'logo_compact':'logo_full';
+ return {url:String(sidebar[prefix+'_url']||''),path:String(sidebar[prefix+'_path']||''),name:String(sidebar[prefix+'_name']||'')};
+}
+function chooseDesktopSidebarLogo(kind){
+ if(!['full','compact'].includes(kind))return;
+ $('desktopSidebarLogoInput_'+kind)?.click()
+}
+function previewDesktopSidebarLogoChanges(){
+ try{
+  // Updating the desktop shell also asks ProfileUI to paint both brand variants.
+  window.NethorDesktopShell?.applyDesktopShellConfig?.(config);
+ }catch(e){console.warn('Aperçu logo latéral',e)}
+}
+async function uploadDesktopSidebarLogo(kind,input){
+ const file=input?.files?.[0];if(!file)return;
+ const state=$('saveState');
+ try{
+  if(!['full','compact'].includes(kind))throw new Error('Emplacement de logo invalide');
+  const ext=String(file.name||'').split('.').pop().toLowerCase();
+  if(!['png','webp','svg'].includes(ext))throw new Error('Format accepté : PNG, WebP ou SVG.');
+  if(file.size>3*1024*1024)throw new Error('Logo trop volumineux : maximum 3 Mo.');
+  if(ext==='svg'){
+   const svg=await file.text();
+   // SVG stays an image asset: refuse embedded scripts, event handlers and external references.
+   if(!/<svg[\s>]/i.test(svg)||/<\s*(script|foreignObject|iframe|object|embed)\b/i.test(svg)||
+      /\bon[a-z]+\s*=/i.test(svg)||/javascript\s*:/i.test(svg)||/\b(?:href|xlink:href)\s*=\s*["']\s*(?:https?:|data:)/i.test(svg))
+    throw new Error('SVG non sécurisé : utilise un SVG graphique sans scripts ni ressources externes.');
+  }
+  if(state){state.className='saveState';state.textContent='Import du logo '+(kind==='full'?'complet':'compact')+'…'}
+  const storagePath='desktop/sidebar/'+kind+'-'+Date.now()+'.'+ext;
+  const contentType=ext==='svg'?'image/svg+xml':ext==='png'?'image/png':'image/webp';
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType});
+  if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath);
+  if(!data?.publicUrl)throw new Error('Lien public du logo indisponible.');
+  const side=ensureDesktopDashboardWidgetConfig().sidebar;
+  side['logo_'+kind+'_url']=data.publicUrl;
+  side['logo_'+kind+'_path']=storagePath;
+  side['logo_'+kind+'_name']=String(file.name||'Logo');
+  markDirty();renderDesktopSidebarLogoEditor();previewDesktopSidebarLogoChanges();
+  if(state)state.textContent='Logo '+(kind==='full'?'complet':'compact')+' prêt · clique Enregistrer pour publier'
+ }catch(e){
+  if(state){state.className='saveState err';state.textContent='Erreur logo latéral : '+(e?.message||e)}
+ }finally{if(input)input.value=''}
+}
+function removeDesktopSidebarLogo(kind){
+ if(!['full','compact'].includes(kind))return;
+ const side=ensureDesktopDashboardWidgetConfig().sidebar;
+ for(const field of ['url','path','name'])side['logo_'+kind+'_'+field]='';
+ markDirty();renderDesktopSidebarLogoEditor();previewDesktopSidebarLogoChanges()
+}
+function downloadDesktopSidebarLogo(kind){
+ if(!['full','compact'].includes(kind))return;
+ const asset=desktopSidebarLogoNode(kind);
+ if(asset.url)downloadAssetUrl(asset.url,asset.name||'logo-nethor-'+kind+'.svg')
+}
+function renderDesktopSidebarLogoEditor(){
+ if(!$('tab-desktop'))return;
+ let host=$('desktopSidebarLogoEditor');
+ if(!host){
+  host=document.createElement('section');
+  host.id='desktopSidebarLogoEditor';host.className='panel desktopSidebarLogoEditor';
+  const anchor=$('platformIdentity_desktop');
+  if(anchor)anchor.insertAdjacentElement('afterend',host);
+  else $('tab-desktop').prepend(host);
+ }
+ const sidebar=ensureDesktopDashboardWidgetConfig().sidebar;
+ const card=kind=>{
+  const compact=kind==='compact',item=desktopSidebarLogoNode(kind),label=compact?'Logo compact':'Logo complet';
+  const fallback=compact?'<span class="ddBrandDefaultCompact">n</span>':'<span class="ddBrandDefaultFull">nethor</span>';
+  return '<article class="ddBrandCard">'+
+    '<div class="ddBrandStage '+(compact?'ddBrandStageCompact':'ddBrandStageFull')+'">'+
+     (item.url?'<img src="'+attr(item.url)+'" alt="Aperçu '+label+'" loading="lazy">':fallback)+
+    '</div>'+
+    '<div class="ddBrandCopy"><strong>'+label+'</strong>'+
+     '<small>'+(compact?'Visible lorsque la navigation est rétractée. Format carré conseillé, par exemple 256 × 256 px.':'Visible lorsque la navigation est déployée. Format horizontal conseillé.')+'</small>'+
+     '<span>'+(item.url?esc(item.name||'Logo personnalisé'):'Identité Nethor par défaut')+'</span>'+
+    '</div>'+
+    '<div class="ddBrandActions">'+
+     '<button type="button" class="btn secondaryBtn mini" onclick="chooseDesktopSidebarLogo(\''+kind+'\')">Importer un logo</button>'+
+     (item.url?'<button type="button" class="btn secondaryBtn mini" onclick="downloadDesktopSidebarLogo(\''+kind+'\')">Télécharger</button><button type="button" class="btn secondaryBtn mini" onclick="removeDesktopSidebarLogo(\''+kind+'\')">Réinitialiser</button>':'')+
+    '</div>'+
+    '<input id="desktopSidebarLogoInput_'+kind+'" type="file" hidden accept=".png,.webp,.svg,image/png,image/webp,image/svg+xml" onchange="uploadDesktopSidebarLogo(\''+kind+'\',this)">'+
+   '</article>';
+ };
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Logos de la barre latérale Desktop</h2><p>Deux fichiers indépendants pour la barre complète et la barre compacte. Les logos mobiles ne sont pas modifiés.</p></div></div>'+
+  '<div class="ddBrandGrid">'+card('full')+card('compact')+'</div>'+
+  '<div class="ddBrandFootnote">Les fichiers sont conservés dans les médias sécurisés du portail. Clique <b>Enregistrer</b> après l’importation pour appliquer le logo à tous les comptes Desktop. Le choix « Complet / Compact » reste local à chaque navigateur.</div>';
+}
+
 function chooseDesktopStoreImage(){$('desktopStoreImageFile')?.click()}
 function desktopStoreImageEffective(){
  const node=ensureDesktopDashboardWidgetConfig(),own=String(node.header.store_image_url||'').trim();
@@ -2735,7 +2828,7 @@ function resetMobileAppearanceTheme(theme){
 }
 
 function renderPlatformEditors(){
- ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileAppearanceThemeEditor();renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
+ ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileAppearanceThemeEditor();renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderDesktopSidebarLogoEditor();renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
 }
 function ensurePortalPlatformStructure(){
  restructureManagementOverview();
