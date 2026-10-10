@@ -508,7 +508,7 @@ function homeActivePlanningOnly(raw,profiles=[]){
  }
  if(!disabled.size)return raw;
  const visible=raw.employees.map((employee,index)=>({employee,index})).filter(x=>{
-  const name=homeNorm(x.employee?.name),base=name.replace(/\\s+[a-z]$/,'');
+  const name=homeNorm(x.employee?.name),base=name.replace(/\s+[a-z]$/,'');
   return !disabled.has(name)&&!disabled.has(base)
  });
  if(visible.length===raw.employees.length)return raw;
