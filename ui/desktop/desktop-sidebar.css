@@ -420,3 +420,93 @@ html[data-nethor-page-layout="desktop"][data-nethor-desktop-wallpaper="1"] body{
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="index"] body:has(#site.hidden){
  background-image:none!important;
 }
+
+
+/* 10/10/2026 — Direction artistique Nethor : en-tête desktop uniquement.
+   Conserve les contrôles, les réglages de visibilité et la sidebar actuelle. */
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]{
+  background:
+    radial-gradient(ellipse 32% 125% at 81% -38%,rgba(255,176,109,.39) 0%,transparent 72%),
+    linear-gradient(128deg,rgba(255,255,255,.97) 0%,rgba(255,249,245,.97) 30%,rgba(255,218,190,.8) 55%,rgba(255,153,99,.43) 76%,rgba(255,255,255,.97) 96%)!important;
+  border-bottom:1px solid rgba(235,178,143,.4)!important;
+  box-shadow:0 3px 20px rgba(137,83,55,.06)!important;
+}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]>.top.nethorDesktopReferenceHeader{
+  gap:12px!important;
+}
+/* Marque dans l'entête, indépendante du logo personnalisable de la sidebar. */
+html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{
+  content:"Nethor";
+  position:relative;
+  display:inline-flex!important;align-items:center;flex:0 0 auto;
+  min-width:111px;height:46px;padding:0 2px 0 36px;
+  background:url("../../assets/nethor-login-mark.svg") left center / 29px 29px no-repeat;
+  color:#242831;font-size:19px;font-weight:850;letter-spacing:-.6px;
+  white-space:nowrap;box-sizing:border-box;pointer-events:none;
+}
+html[data-nethor-page-layout="desktop"] .nethorDesktopStoreSwitch{
+  width:clamp(220px,21vw,286px);min-width:220px;max-width:286px;
+  height:50px;border:1px solid rgba(250,182,142,.39);
+  border-radius:14px;background:rgba(255,255,255,.87);
+  box-shadow:0 4px 16px rgba(126,69,36,.065);
+  grid-template-columns:38px minmax(0,1fr) 18px;
+  gap:9px;padding:5px 9px;
+}
+html[data-nethor-page-layout="desktop"] .nethorDesktopStoreSwitch:hover{
+  border-color:rgba(251,126,60,.52);background:#fff;
+}
+html[data-nethor-page-layout="desktop"] .nethorStoreThumb{width:37px;height:37px;border-radius:11px}
+html[data-nethor-page-layout="desktop"] .nethorStoreCopy strong{font-size:12px;font-weight:850;letter-spacing:-.15px}
+html[data-nethor-page-layout="desktop"] .nethorStoreCopy small{font-size:9px}
+html[data-nethor-page-layout="desktop"] .nethorStoreChevron{font-size:17px;color:#8e8c94}
+html[data-nethor-page-layout="desktop"] .nethorDesktopDateTime{
+  height:50px;min-width:205px;gap:10px;
+  padding:4px 12px;border:1px solid rgba(250,182,142,.38);
+  border-radius:14px;background:rgba(255,251,247,.88);
+  box-shadow:0 4px 16px rgba(126,69,36,.055);
+}
+html[data-nethor-page-layout="desktop"] .nethorDateIcon{
+  width:36px;height:36px;border-radius:10px;
+  background:#fff1e7;color:#f36a2c;
+}
+html[data-nethor-page-layout="desktop"] .nethorDesktopDateTime small{font-size:9px;color:#757987}
+html[data-nethor-page-layout="desktop"] .nethorDesktopDateTime strong{font-size:18px;color:#252c36}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] .nettoGlobalTools{gap:8px!important}
+html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] :is(.nettoBellBtn,.nettoUserBtn,.nettoUpdateBtn,.nettoMobilePreviewBtn,.nettoLoginBtn){
+  border:1px solid rgba(245,203,179,.4)!important;
+  background:rgba(255,255,255,.94)!important;
+  box-shadow:0 4px 14px rgba(116,72,55,.06)!important;
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]{
+  background:linear-gradient(115deg,#20232b 0%,#2b2526 55%,#56352d 80%,#23252d 100%)!important;
+  border-bottom-color:#534036!important;
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{color:#f7f0e9}
+html[data-theme="dark"][data-nethor-page-layout="desktop"] :is(.nethorDesktopStoreSwitch,.nethorDesktopDateTime){
+  background:rgba(37,39,46,.91);border-color:#584036;color:#f3f2f0;
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"] .nethorDesktopDateTime strong{color:#f3f2f0}
+html[data-theme="dark"][data-nethor-page-layout="desktop"] .nethorDateIcon{background:#4a3028;color:#ff9661}
+html[data-theme="dark"][data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"] :is(.nettoBellBtn,.nettoUserBtn,.nettoUpdateBtn,.nettoMobilePreviewBtn,.nettoLoginBtn){
+  background:#2b2c34!important;border-color:#59443c!important;
+}
+@media(max-width:1250px){
+  html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{
+    min-width:40px;width:40px;padding:0;overflow:hidden;font-size:0;background-size:28px;
+  }
+  html[data-nethor-page-layout="desktop"] .nethorDesktopDateTime{min-width:110px}
+}
+@media(max-width:1000px){
+  html[data-nethor-page-layout="desktop"] .nethorDesktopStoreSwitch{
+    width:232px;min-width:185px;max-width:232px;height:48px;
+    grid-template-columns:34px minmax(0,1fr) 12px;
+  }
+  html[data-nethor-page-layout="desktop"] .nethorStoreThumb{width:33px;height:33px}
+  html[data-nethor-page-layout="desktop"] .nethorDesktopDateTime{height:48px;min-width:66px;padding:4px 8px}
+  html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{
+    min-width:34px;width:34px;background-size:26px;
+  }
+}
+@media(max-width:720px){
+  html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{display:none!important}
+}
