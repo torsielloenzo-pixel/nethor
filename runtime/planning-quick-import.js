@@ -148,7 +148,7 @@ function loadEngine(){
      stop(new Error('Accès au planning indisponible.'));return
     }
     if(!d.body?.classList.contains('planningReady'))return;
-    if(root.dataset.planningCanEdit!=='1'||typeof w.importPlanningFiles!=='function'||!d.getElementById('importPanel')){
+    if(root.dataset.planningCanEdit!=='1'||typeof w.importPlanningFiles!=='function'||!d.getElementById('importPanel')||!d.getElementById('excelFile')){
      stop(new Error('Votre compte ne dispose pas de l’autorisation de gérer les imports du planning.'));return
     }
     connectStatus();stop();
@@ -173,9 +173,9 @@ async function importFiles(files){
   const result=await w.importPlanningFiles(files);
   const state=frame.contentDocument?.getElementById('importState');
   const message=(state?.textContent||'').trim();
-  const imported=Number(result?.ok||0),failed=Number(result?.errors||0);
+  const imported=Number(result?.ok||0),failed=Number(result?.errors||0),cancelled=Number(result?.cancelled||0);
   if(imported>0)success=true;
-  if(message)setStatus(message,failed?'error':result?.unverified?'warn':'ok');
+  if(message)setStatus(message,failed?'error':result?.unverified||cancelled||!imported?'warn':'ok');
   else if(imported>0)setStatus('✓ Planning importé.','ok');
   else setStatus('Aucun planning importé.', 'warn');
  }catch(e){
