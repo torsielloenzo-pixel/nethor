@@ -1,0 +1,91 @@
+/* Desktop header — fiche Google du point de vente Nethor */
+.nethorDesktopStoreSwitch[aria-expanded="true"]{
+ border-color:color-mix(in srgb,#ff5a2a 45%,var(--nethor-sidebar-border,#e8ebef))!important;
+ box-shadow:0 0 0 3px rgba(255,90,42,.08),0 8px 20px rgba(25,35,50,.07)!important
+}
+.nethorDesktopStorePopover{
+ position:fixed;z-index:12100;box-sizing:border-box;
+ overflow-y:auto;overscroll-behavior:contain;
+ border:1px solid var(--nethor-sidebar-border,#e7ebf1);
+ border-radius:16px;background:var(--nethor-shell-card,#fff);
+ color:var(--nethor-sidebar-strong,#172033);
+ font:12px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
+ box-shadow:0 25px 70px rgba(17,25,39,.18),0 6px 20px rgba(17,25,39,.06);
+ animation:storePopupAppear .14s ease-out;
+}
+@keyframes storePopupAppear{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.nethorDesktopStorePopover *{box-sizing:border-box}
+.nethorDesktopStorePopover .storePopupHead{
+ display:flex;gap:10px;align-items:center;padding:15px 16px 13px;
+ border-bottom:1px solid var(--nethor-sidebar-border,#e8ebf1)
+}
+.storePopupSymbol{
+ width:39px;height:39px;flex:0 0 39px;display:grid;place-items:center;
+ border-radius:11px;background:linear-gradient(135deg,#ff9a30,#ed4b25);
+ color:white;font-size:23px;font-weight:950;text-shadow:0 2px 5px rgba(0,0,0,.16)
+}
+.storePopupTitle{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.storePopupTitle strong{font-size:14px;font-weight:820;letter-spacing:-.2px}
+.storePopupTitle small{font-size:10px;color:var(--nethor-sidebar-text,#788297)}
+.storePopupIconBtn{
+ width:29px;height:29px;flex:0 0 29px;display:grid;place-items:center;cursor:pointer;
+ border:1px solid var(--nethor-sidebar-border,#e4e8ef);border-radius:8px;
+ background:transparent;color:inherit;font-size:20px;line-height:1
+}
+.storePopupIconBtn:hover{background:rgba(255,90,42,.07);border-color:rgba(255,90,42,.3)}
+.storePopupIconBtn:disabled{opacity:.5;cursor:wait}
+.nethorDesktopStorePopover.is-loading [data-store-refresh]{animation:storePopupSpin 1s linear infinite}
+@keyframes storePopupSpin{to{rotate:360deg}}
+.storePopupBody{padding:14px 16px 13px}
+.storePopupStatus{
+ display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;
+ background:#f4f6f8;border:1px solid #e7eaef;margin-bottom:15px
+}
+.storePopupStatus>i{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#9aa3ae}
+.storePopupStatus[data-status="open"]{background:#eefaf3;border-color:#c9efd9;color:#137948}
+.storePopupStatus[data-status="open"]>i{background:#1bb76a;box-shadow:0 0 0 4px rgba(27,183,106,.11)}
+.storePopupStatus[data-status="closed"]{background:#fff1ef;border-color:#f8d8d5;color:#b34436}
+.storePopupStatus[data-status="closed"]>i{background:#df4e3c}
+.storePopupStatus>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+.storePopupStatus strong{font-size:13px;font-weight:850}
+.storePopupStatus small{font-size:10px;opacity:.82;line-height:1.4}
+.storePopupLine{display:grid;grid-template-columns:29px minmax(0,1fr);align-items:start;gap:7px;margin:12px 1px}
+.storePopupLineIcon{display:grid;place-items:center;background:#f3f5f8;color:#65758d;width:25px;height:25px;border-radius:8px;font-size:18px;font-weight:700}
+.storePopupLine>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+.storePopupLine small{font-size:10px;color:var(--nethor-sidebar-text,#7a8596)}
+.storePopupLine strong{font-size:11.7px;font-weight:720;overflow-wrap:anywhere}
+.storePopupLine a{color:inherit;text-decoration:none;width:fit-content}
+.storePopupLine a:hover{text-decoration:underline}
+.storePopupHours{font-size:10px;color:var(--nethor-sidebar-text,#738295);margin:12px 0;padding:0 1px}
+.storePopupBusy{
+ padding:12px 13px;margin-top:16px;display:flex;flex-direction:column;gap:10px;
+ background:color-mix(in srgb,#f4f7fc 88%,var(--nethor-shell-card,#fff));
+ border:1px solid var(--nethor-sidebar-border,#e6eaf1);border-radius:12px
+}
+.storePopupBusy strong{font-size:11.5px;font-weight:820}
+.storePopupBusy p{font-size:10px;line-height:1.5;margin:3px 0 0;color:var(--nethor-sidebar-text,#768397)}
+.storePopupBusy a{
+ width:fit-content;color:#e95629;text-decoration:none;font-weight:780;
+ padding:6px 10px;border:1px solid rgba(234,91,38,.23);border-radius:8px;background:rgba(255,90,42,.045)
+}
+.storePopupBusy a:hover,.storePopupLinks a:hover{text-decoration:underline}
+.storePopupFoot{
+ display:flex;flex-direction:column;gap:10px;
+ padding:11px 16px 13px;border-top:1px solid var(--nethor-sidebar-border,#e8ebf1);
+ background:color-mix(in srgb,var(--nethor-shell-card,#fff) 93%,#f2f5fa)
+}
+.storePopupFoot>div:first-child{display:flex;flex-direction:column;gap:2px;color:var(--nethor-sidebar-text,#778397);font-size:9px}
+.storePopupLinks{display:flex;gap:15px;align-items:center}
+.storePopupLinks a{font-size:10px;font-weight:750;text-decoration:none;color:#e95629}
+html[data-theme="dark"] .nethorDesktopStorePopover .storePopupStatus[data-status="unknown"]{background:#323943;border-color:#4b545e}
+html[data-theme="dark"] .nethorDesktopStorePopover .storePopupStatus[data-status="open"]{background:#203d31;border-color:#35664c;color:#9cf2c4}
+html[data-theme="dark"] .nethorDesktopStorePopover .storePopupStatus[data-status="closed"]{background:#452d2b;border-color:#634540;color:#ffb4a9}
+html[data-theme="dark"] .nethorDesktopStorePopover .storePopupLineIcon{background:#353b44;color:#b3bfcc}
+@media (max-width:600px){
+ .nethorDesktopStorePopover{border-radius:14px}
+ .nethorDesktopStorePopover .storePopupHead{padding:12px}
+ .nethorDesktopStorePopover .storePopupBody{padding:12px}
+}
+@media (prefers-reduced-motion:reduce){
+ .nethorDesktopStorePopover{animation:none!important}
+}
