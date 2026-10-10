@@ -140,7 +140,7 @@ function icon(kind){
  return m[kind]||m.task
 }
 function kpi(id,label,value,sub,kind,progress,extra=''){
- const interactive=id==='alerts'?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir les anomalies du planning par jour et sur la semaine" title="Détails des anomalies du planning"':
+ const interactive=(id==='staff'||id==='coverage')?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Ouvrir le détail : '+esc(label)+'" title="Voir le détail"':id==='alerts'?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir les anomalies du planning par jour et sur la semaine" title="Détails des anomalies du planning"':
   id==='deliveries'?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir le calendrier des livraisons par jour et par semaine" title="Détails du calendrier des livraisons"':'';
  const p=Number.isFinite(progress)?'<div class="ndKpiProgress"><i style="width:'+Math.max(0,Math.min(100,progress))+'%"></i></div>':'';
  return '<article class="ndKpi ndKpi-'+id+'" id="'+extra+'"'+interactive+'><span class="ndKpiIcon">'+icon(kind)+'</span><div class="ndKpiBody"><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong>'+(sub?'<small>'+esc(sub)+'</small>':'')+p+'</div><span class="ndKpiArrow">›</span></article>'
@@ -262,6 +262,7 @@ async function render(ctx){
  return{html:'<div class="nethorDesktopReferenceDashboard" style="'+style+'">'+parts.join('')+'</div>',
   config:c,people,ext,tasks,alertCount,planningAnomalyCount,anomalyReport,canInspectAnomalies,deliveryReport,
   deliveryContext:{db:ctx.db,weekStart:ctx.weekStart||ctx.todayKey,todayKey:ctx.todayKey,report:deliveryReport},
+  staffContext:{date:ctx.todayKey,model:ctx.todayModel},
   anomalyContext:{db:ctx.db,weekStart:ctx.weekStart,todayKey:ctx.todayKey,model:weekModel,profiles:ctx.profileRows,absences:ext.absences,absencesAvailable:ext.absenceAvailable}
  }
 }
@@ -311,6 +312,14 @@ function activate(result){
   anomalyTile.addEventListener('keydown',event=>{
    if(event.key==='Enter'||event.key===' '){event.preventDefault();open()}
   });
+ }
+ for(const type of ['staff','coverage']){
+  const tile=root.querySelector('.ndKpi-'+type+'[role="button"]');
+  if(!tile||tile.dataset.ndDetailBound)continue;
+  tile.dataset.ndDetailBound='1';
+  const open=()=>window.NethorHomeStaffDialog?.open?.(type,result.staffContext);
+  tile.addEventListener('click',open);
+  tile.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open()}});
  }
  const deliveryTile=root.querySelector('.ndKpi-deliveries[role="button"]');
  if(deliveryTile&&!deliveryTile.dataset.ndDeliveryBound){
