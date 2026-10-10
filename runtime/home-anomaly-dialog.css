@@ -1,0 +1,196 @@
+/* Nethor Accueil Desktop — fenêtre anomalies Jour / Semaine */
+.ndAnomalyDialog{
+ position:fixed;inset:0;margin:auto;padding:0;
+ width:min(740px,calc(100vw - 28px));max-height:min(88dvh,840px);
+ border:1px solid rgba(226,231,238,.95);
+ border-radius:20px;overflow:hidden;
+ color:var(--nethor-sidebar-strong,#1b2536);
+ background:var(--nethor-shell-card,#fff);
+ box-shadow:0 30px 90px rgba(15,24,45,.26),0 8px 22px rgba(15,24,45,.08);
+ font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+.ndAnomalyDialog::backdrop{
+ background:rgba(18,27,44,.53);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)
+}
+.ndaPanel{display:flex;flex-direction:column;max-height:min(88dvh,840px);min-height:0}
+.ndaHeader{
+ padding:19px 21px;display:flex;align-items:center;gap:12px;
+ border-bottom:1px solid var(--nethor-sidebar-border,#e8ebf0);
+ background:linear-gradient(135deg,rgba(255,88,52,.045),transparent 68%)
+}
+.ndaHeaderIcon{
+ display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;
+ background:#ffece9;color:#ec4b38;border-radius:12px;font-size:25px;font-weight:950
+}
+.ndaHeaderCopy{flex:1 1 auto;min-width:0}
+.ndaHeaderCopy>small{display:block;color:#e65f43;font-size:9px;font-weight:850;letter-spacing:.09em}
+.ndaHeaderCopy h2{margin:3px 0;font-size:19px;line-height:1.2;font-weight:860;letter-spacing:-.35px}
+.ndaHeaderCopy p{margin:2px 0 0;color:var(--nethor-sidebar-text,#718092);font-size:10px}
+.ndaClose{
+ width:33px;height:33px;flex:0 0 33px;
+ border:1px solid var(--nethor-sidebar-border,#e6e9ef);
+ border-radius:9px;background:transparent;color:inherit;
+ display:grid;place-items:center;font-size:22px;line-height:1;cursor:pointer
+}
+.ndaClose:hover{background:#fff1ed;color:#dd492f}
+.ndaSummary{
+ display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:10px;
+ padding:15px 19px 12px
+}
+.ndaStat,.ndaWeekRange{
+ min-width:0;padding:12px 14px;
+ background:color-mix(in srgb,var(--nethor-shell-card,#fff) 92%,#e8f0fa);
+ border:1px solid var(--nethor-sidebar-border,#edf0f4);
+ border-radius:12px
+}
+.ndaStat{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:baseline;column-gap:10px}
+.ndaStat span{grid-column:1/-1;color:var(--nethor-sidebar-text,#7b8696);font-size:10px;font-weight:700}
+.ndaStat strong{font-size:28px;font-weight:900;color:#ed553e;line-height:1.1}
+.ndaStat small{font-size:9px;color:var(--nethor-sidebar-text,#7b8696)}
+.ndaStat.isWeek strong{color:#7353df}
+.ndaWeekRange{display:flex;flex-direction:column;justify-content:center;gap:2px}
+.ndaWeekRange span{font-size:10px;color:var(--nethor-sidebar-text,#778395)}
+.ndaWeekRange strong{font-size:13px;font-weight:830}
+.ndaWeekRange small{font-size:11px;color:var(--nethor-sidebar-text,#778395)}
+.ndaTabs{
+ margin:1px 19px 0;padding:4px;display:flex;gap:5px;align-items:center;
+ border-radius:11px;background:color-mix(in srgb,var(--nethor-shell-card,#fff) 89%,#dce3ee)
+}
+.ndaTabs button{
+ flex:1 1 50%;border:0;background:transparent;color:var(--nethor-sidebar-text,#6e7a8b);
+ border-radius:8px;padding:10px 11px;cursor:pointer;
+ font-size:11px;font-weight:800;transition:background .14s,color .14s
+}
+.ndaTabs button:hover{color:#ea5432}
+.ndaTabs button.isActive{background:var(--nethor-shell-card,#fff);box-shadow:0 2px 6px rgba(16,33,56,.07);color:#e95535}
+.ndaStatus{min-height:0;padding:7px 20px 0;font-size:9px;color:#587f6c;font-weight:650}
+.ndaStatus.isWarn{color:#b07a21}
+.ndaStatus[hidden]{display:none!important}
+.ndaContent{
+ padding:14px 19px 19px;overflow-y:auto;overscroll-behavior:contain;
+ flex:1 1 auto;min-height:95px;scrollbar-width:thin
+}
+.ndaDays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-bottom:17px}
+.ndaDayButton{
+ display:flex;min-width:0;min-height:90px;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+ border:1px solid var(--nethor-sidebar-border,#e8edf3);background:transparent;
+ color:var(--nethor-sidebar-strong,#223047);border-radius:11px;cursor:pointer;
+ transition:background .15s,border-color .15s
+}
+.ndaDayButton span{font-size:10px;font-weight:750;text-transform:capitalize;color:var(--nethor-sidebar-text,#738096)}
+.ndaDayButton strong{font-size:10px;font-weight:780}
+.ndaDayButton b{
+ display:grid;place-items:center;min-width:23px;height:23px;
+ border-radius:7px;background:#eaf8ef;color:#218452;font-size:11px;
+}
+.ndaDayButton b.hasAnomalies{background:#ffebea;color:#db463a}
+.ndaDayButton b.isUnknown{background:#eef1f5;color:#91a0af}
+.ndaDayButton.isCurrent{border-color:#fb896e;background:#fff3ee;box-shadow:0 0 0 2px rgba(255,102,60,.06)}
+.ndaDayButton:hover{border-color:#eeaa93}
+.ndaContentHead{display:flex;align-items:center;justify-content:space-between;margin:1px 2px 11px}
+.ndaContentHead>div{display:flex;flex-direction:column;gap:4px}
+.ndaContentHead strong{font-size:13px;font-weight:850;text-transform:capitalize}
+.ndaContentHead small{font-size:10px;color:var(--nethor-sidebar-text,#778396)}
+.ndaItemList{display:flex;flex-direction:column;gap:8px}
+.ndaItem{
+ display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:flex-start;
+ padding:12px 14px;border:1px solid #efebe9;border-radius:12px;
+ background:color-mix(in srgb,var(--nethor-shell-card,#fff) 97%,#e96b55)
+}
+.ndaItem.isAlert{border-color:#f1c9c6;background:#fff5f2}
+.ndaItemIcon{
+ width:33px;height:33px;border-radius:9px;background:#ffefea;color:#eb5d41;
+ display:grid;place-items:center;font-size:17px;font-weight:900
+}
+.ndaItem.isAlert .ndaItemIcon{background:#ffe0db;color:#db4539}
+.ndaItemCopy{min-width:0}
+.ndaItemHeading{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ndaItemHeading strong{font-size:11px;font-weight:820}
+.ndaItemCopy p{margin:4px 0 0;font-size:10px;line-height:1.5;color:var(--nethor-sidebar-text,#657386)}
+.ndaContractDelta{font-size:12px;font-weight:900;color:#df533c;white-space:nowrap}
+.ndaContractHours{display:flex;gap:13px;flex-wrap:wrap;font-size:9px;color:var(--nethor-sidebar-text,#6d7887);margin-top:6px}
+.ndaZero{
+ display:flex;align-items:center;gap:12px;padding:22px 16px;
+ border:1px solid #cfeede;background:#f2fbf6;border-radius:12px;color:#247b55
+}
+.ndaZero>span{font-size:21px;font-weight:900}
+.ndaZero>div{display:flex;flex-direction:column;gap:3px}
+.ndaZero strong{font-size:12px}
+.ndaZero small{font-size:10px}
+.ndaNoData{
+ padding:22px 17px;border-radius:12px;background:#f4f6f8;
+ border:1px solid #e8edf2;color:#657286;font-size:11px;line-height:1.6
+}
+.ndaWeekRow{
+ display:grid;grid-template-columns:minmax(0,1fr) auto 12px;
+ align-items:center;gap:12px;width:100%;min-height:48px;
+ text-align:left;padding:10px 12px;margin-bottom:5px;
+ border:1px solid var(--nethor-sidebar-border,#e5ebf2);border-radius:10px;
+ background:var(--nethor-shell-card,#fff);color:inherit;cursor:pointer
+}
+.ndaWeekRow:hover{border-color:#f5b5a4;background:color-mix(in srgb,var(--nethor-shell-card,#fff) 95%,#ff8d72)}
+.ndaWeekDay{font-size:11px;font-weight:790}
+.ndaWeekDay small{margin-left:6px;color:var(--nethor-sidebar-text,#758195);font-size:9px;font-weight:600}
+.ndaWeekCount{
+ border-radius:7px;padding:5px 9px;font-size:9px;font-weight:800;
+ background:#eaf8ef;color:#208553;white-space:nowrap
+}
+.ndaWeekCount.hasIssues{background:#fff0eb;color:#e25835}
+.ndaWeekCount.notPublished{background:#eef1f5;color:#778597}
+.ndaWeekRow>span:last-child{font-size:20px;color:#a0aabd}
+.ndaWeekContracts{margin-top:13px}
+.ndaWeekContracts details{
+ border:1px solid var(--nethor-sidebar-border,#e6eaf0);
+ border-radius:12px;overflow:hidden;background:var(--nethor-shell-card,#fff)
+}
+.ndaWeekContracts summary{
+ padding:13px 14px;list-style:none;display:flex;justify-content:space-between;gap:12px;
+ align-items:center;cursor:pointer;background:color-mix(in srgb,var(--nethor-shell-card,#fff) 96%,#e5e9f3)
+}
+.ndaWeekContracts summary::-webkit-details-marker{display:none}
+.ndaWeekContracts summary>span{display:flex;flex-direction:column;gap:3px}
+.ndaWeekContracts summary b{font-size:11px}
+.ndaWeekContracts summary small{font-size:9px;color:var(--nethor-sidebar-text,#7b8695)}
+.ndaContractCount{background:#f1eafe;color:#7250cb;border-radius:7px;padding:5px 9px}
+.ndaWeekContracts .ndaItemList,.ndaWeekContracts .ndaWeeklyClear{margin:12px}
+.ndaFooter{
+ display:flex;justify-content:space-between;align-items:center;gap:12px;
+ padding:13px 19px 15px;border-top:1px solid var(--nethor-sidebar-border,#e8edf2)
+}
+.ndaFooter small{max-width:63%;font-size:9px;line-height:1.5;color:var(--nethor-sidebar-text,#778596)}
+.ndaFooter a{
+ text-decoration:none;white-space:nowrap;font-size:10px;font-weight:780;color:#e75b3e;
+ padding:9px 11px;border:1px solid #ffd0c3;border-radius:9px;background:#fff5ef
+}
+.ndaFooter a:hover{text-decoration:underline}
+.nethorDesktopReferenceDashboard .ndKpi-alerts[role="button"]{cursor:pointer}
+.nethorDesktopReferenceDashboard .ndKpi-alerts[role="button"]:hover{
+ border-color:#f9b8b2;box-shadow:0 8px 22px rgba(211,82,72,.10)
+}
+.nethorDesktopReferenceDashboard .ndKpi-alerts[role="button"]:focus-visible{
+ outline:3px solid rgba(231,83,64,.4);outline-offset:3px
+}
+html[data-theme="dark"] .ndAnomalyDialog .ndaDayButton.isCurrent{background:#422d2c}
+html[data-theme="dark"] .ndAnomalyDialog .ndaZero{background:#233a2f;border-color:#3c6b4f;color:#a9edc4}
+html[data-theme="dark"] .ndAnomalyDialog .ndaItem.isAlert{background:#3a2927;border-color:#63413d}
+html[data-theme="dark"] .ndAnomalyDialog .ndaNoData{background:#2a313b;border-color:#444b55;color:#c5ced8}
+html[data-theme="dark"] .ndAnomalyDialog .ndaFooter a{background:#432d27;border-color:#694232;color:#ffbaaa}
+@media(max-width:620px){
+ .ndAnomalyDialog{width:min(100vw - 16px,600px);max-height:94dvh;border-radius:14px}
+ .ndaPanel{max-height:94dvh}
+ .ndaHeader{padding:13px}.ndaHeaderCopy h2{font-size:17px}
+ .ndaSummary{padding:12px;gap:7px}
+ .ndaStat,.ndaWeekRange{padding:10px}
+ .ndaStat strong{font-size:23px}
+ .ndaTabs{margin-inline:12px}
+ .ndaContent{padding:12px}
+ .ndaDays{gap:4px}
+ .ndaDayButton{min-height:76px}
+ .ndaDayButton strong{font-size:8px}
+ .ndaDayButton span{font-size:8px}
+ .ndaFooter{padding:12px;align-items:flex-start;flex-direction:column}
+ .ndaFooter small{max-width:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .ndaTabs button,.ndaDayButton,.ndaWeekRow{transition:none}
+}
