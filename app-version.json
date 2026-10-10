@@ -1,17 +1,17 @@
 {
-  "version": 426,
-  "label": "v1.46.62",
+  "version": 427,
+  "label": "v1.46.63",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Connexion Desktop · Image personnalisable",
-  "message": "Correction de l'affichage du fond importé depuis Gestion et ajout de vrais textes HTML pour la présentation de Nethor sur desktop.",
-  "published_at": "2026-10-10T15:00:00+02:00",
+  "title": "Connexion Desktop · Fond sans calque",
+  "message": "Suppression du calque décoratif orange et rouge sur la partie gauche de la connexion Desktop. L'image choisie dans Gestion est directement visible derrière les éléments de l'interface.",
+  "published_at": "2026-10-10T13:39:25.589Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "L'image de fond importée dans Gestion s'affiche sur la connexion Desktop, selon le thème choisi.",
-    "Le contenu Outil interne, Bienvenue sur Nethor, Planning, Chat, Gestion et citation est rendu en HTML.",
-    "Le texte imprimé de l'ancien décor est recouvert par un habillage CSS sur la partie gauche.",
-    "L'écran de connexion Mobile, les horaires dynamiques et l'authentification restent inchangés."
+    "Calque CSS orange et rouge supprimé de la zone de bienvenue Desktop.",
+    "Image personnalisée claire ou sombre affichée sans ce recouvrement.",
+    "Textes HTML, carte de connexion et widget des horaires conservés.",
+    "Aucune modification du rendu de connexion mobile."
   ]
 }
