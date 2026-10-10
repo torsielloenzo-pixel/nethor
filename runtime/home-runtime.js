@@ -706,7 +706,7 @@ async function renderHomeDashboard(profile,name,cfg){
   const quickPlanningWidget=homeRenderQuickPlanningWidget(cfg,today,todayKey,todayModel,profileRows,weekStart);
   if(window.NethorDesktopHomeDashboard?.render){
    desktopDashboardResult=await window.NethorDesktopHomeDashboard.render({
-    db,session:homeSession,profile,name,cfg,today,todayKey,weekStart,todayModel,profileRows,
+    db,session:homeSession,profile,name,cfg,today,todayKey,weekStart,todayModel,currentWeek,profileRows,
     notifications,taskRows:homeTaskRows,taskAssignees:homeTaskAssignees,taskCompletions:homeTaskCompletions,taskTeam:homeTaskTeam,
     storeInfoHtml:storeInfoWidget,quickPlanningHtml:quickPlanningWidget
    });
