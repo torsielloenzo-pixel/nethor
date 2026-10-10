@@ -94,6 +94,9 @@ function injectFrameCSS(){
  try{
   const d=frame.contentDocument;
   if(!d?.head||d.getElementById('nethorHomeImportFrameCSS'))return;
+  // Browser dialogs inside an embedded document may be suppressed. Keep the
+  // Planning code's exact confirmation text, but show it in the main window.
+  frame.contentWindow.confirm=message=>window.confirm(String(message||''));
   const style=d.createElement('style');
   style.id='nethorHomeImportFrameCSS';
   style.textContent=frameContentCSS();
@@ -153,7 +156,7 @@ function loadEngine(){
   },120);
   const timeout=setTimeout(()=>stop(new Error('Impossible de préparer l’importateur Excel. Vérifiez votre connexion puis réessayez.')),28000);
   host.appendChild(frame);
- }).catch(err=>{enginePromise=null;throw err});
+ }).catch(err=>{frame?.remove();frame=null;enginePromise=null;throw err});
  return enginePromise;
 }
 async function importFiles(files){
