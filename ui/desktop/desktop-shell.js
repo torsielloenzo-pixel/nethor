@@ -35,12 +35,20 @@ const DESKTOP_SIDEBAR_DEFAULTS={
 };
 function desktopDashboardConfig(site={}){
  const raw=site?.desktop_dashboard_widget&&typeof site.desktop_dashboard_widget==='object'?site.desktop_dashboard_widget:{};
+ const background=raw.background&&typeof raw.background==='object'?raw.background:{};
  const header=raw.header&&typeof raw.header==='object'?raw.header:{};
  const sidebar=raw.sidebar&&typeof raw.sidebar==='object'?raw.sidebar:{},items=sidebar.items&&typeof sidebar.items==='object'?sidebar.items:{};
  const normalized={};
  Object.entries(DESKTOP_SIDEBAR_DEFAULTS).forEach(([key,def])=>normalized[key]={...def,...(items[key]&&typeof items[key]==='object'?items[key]:{})});
  return{
   enabled:raw.enabled!==false,
+  background:{
+   enabled:background.enabled===true,
+   image_url:String(background.image_url||''),
+   fit:background.fit==='contain'?'contain':'cover',
+   position:['top','bottom'].includes(background.position)?background.position:'center',
+   veil:Number.isFinite(Number(background.veil))?Math.min(75,Math.max(0,Math.round(Number(background.veil)))):14
+  },
   header:{
    store_name:String(header.store_name||site?.store_info_widget?.store_name||'Netto Le Thor'),
    store_subtitle:String(header.store_subtitle||'Point de vente'),
@@ -248,9 +256,28 @@ function startDesktopTextScaling(){
  const bind=()=>{if(document.body)observer.observe(document.body,{subtree:true,childList:true,characterData:true})};
  if(document.body)bind();else document.addEventListener('DOMContentLoaded',bind,{once:true})
 }
+function safeDesktopWallpaperUrl(value){
+ try{
+  const url=new URL(String(value||'').trim(),location.href);
+  // Only accept files previously uploaded to the Nethor wallpaper bucket.
+  if(url.protocol==='https:'&&url.hostname==='gioxrpaiwogqqtakjpnv.supabase.co'&&
+    url.pathname.startsWith('/storage/v1/object/public/portal-assets/desktop/background/'))return url.href;
+ }catch(_){}
+ return '';
+}
 function applyDesktopShellConfig(site={}){
  if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop')return;
  const c=desktopDashboardConfig(site);
+ const root=document.documentElement,wallpaper=c.background;
+ const wallpaperUrl=safeDesktopWallpaperUrl(wallpaper.image_url);
+ const wallpaperActive=!!(wallpaper.enabled&&wallpaperUrl);
+ root.dataset.nethorDesktopWallpaper=wallpaperActive?'1':'0';
+ root.style.setProperty('--nethor-desktop-wallpaper-image',wallpaperActive?'url('+JSON.stringify(wallpaperUrl)+')':'none');
+ root.style.setProperty('--nethor-desktop-wallpaper-fit',wallpaper.fit);
+ root.style.setProperty('--nethor-desktop-wallpaper-position',wallpaper.position==='top'?'center top':wallpaper.position==='bottom'?'center bottom':'center center');
+ const veil=(wallpaper.veil/100).toFixed(2);
+ root.style.setProperty('--nethor-desktop-wallpaper-overlay-light','rgba(247,249,252,'+veil+')');
+ root.style.setProperty('--nethor-desktop-wallpaper-overlay-dark','rgba(17,19,23,'+veil+')');
  applySidebarMode(document.documentElement.dataset.nethorSidebarMode||savedSidebarMode(),{fullWidth:c.sidebar.width});
  document.documentElement.style.setProperty('--nethor-sidebar-accent',c.style.accent||'#ff5a2a');
  document.documentElement.style.setProperty('--nethor-sidebar-text-scale',(c.style.sidebar_text_scale/100).toFixed(3));
