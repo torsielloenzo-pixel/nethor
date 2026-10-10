@@ -87,7 +87,7 @@ test('Protection côté serveur : rôles actifs, session, aucune écriture direc
  assert.match(sql,/source_key/);
  assert.match(sql,/grant execute on function public\.review_promotion_product/);
  assert.match(sql,/grant execute on function public\.delete_promotion_catalog/);
- assert.match(sql,/source_product_name,v_product\.source_excerpt/);
+ assert.match(sql,/v_product\.product_name,v_product\.source_excerpt/);
 });
 test('Cache, feuille CSS et compteur des versions identiques',()=>{
  const html=read('promotions.html'),sw=read('sw.js'),meta=JSON.parse(read('app-version.json'));
