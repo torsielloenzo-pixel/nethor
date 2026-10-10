@@ -6,6 +6,7 @@ const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
 const SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 let db=CHAT_SPA_MODE?null:supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let chatRuntimeActive=false,chatPresenceListener=null,chatFocusListener=null,chatOwnPresenceChannel=null,chatPresenceTimer=null;
+let chatConnectionRefreshTimer=null;
 let chatSyncUnsubscribe=null,chatSyncTimer=null,chatSyncRequest=0;
 let chatCacheReady=false,chatCacheUserId='',chatCacheConversationId='';
 function chatSharedServices(){return CHAT_SPA_MODE?(window.NethorMobileServices||window.MobileServices||null):null}
@@ -79,19 +80,62 @@ function conversationAvatar(c,active=false){const cls=active?'activeAvatar':'con
 function activeConversation(){return state.conversations.find(c=>c.conversation_id===state.activeId)||null}
 function conversationById(id){return state.conversations.find(c=>c.conversation_id===id)||state.archives.find(c=>c.conversation_id===id)||null}
 function lastSeenLabel(userId){
- const row=state.presenceHistory.get(userId);if(!row?.last_seen_at)return'Hors ligne';
- const d=new Date(row.last_seen_at),now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
- const time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
- if(d.toDateString()===now.toDateString())return'En ligne aujourd’hui à '+time;
- if(d.toDateString()===y.toDateString())return'En ligne hier à '+time;
- return'En ligne le '+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' à '+time
+ const row=state.presenceHistory.get(userId);
+ const date=window.NethorConnectionTimes;
+ if(row?.last_login_at){
+  if(date?.relative)return date.relative(row.last_login_at,'login',{compact:true});
+  const d=new Date(row.last_login_at);
+  if(Number.isFinite(d.getTime()))
+   return'Dernière connexion : '+d.toLocaleString('fr-FR',{
+    timeZone:'Europe/Paris',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'
+   })
+ }
+ if(row?.last_seen_at){
+  if(date?.relative)return date.relative(row.last_seen_at,'activity',{compact:true});
+  const d=new Date(row.last_seen_at);
+  if(Number.isFinite(d.getTime()))
+   return'Dernière activité : '+d.toLocaleString('fr-FR',{
+    timeZone:'Europe/Paris',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'
+   })
+ }
+ return'Connexion non enregistrée'
 }
-function conversationPresence(c){if(!c)return'';const ids=(c.member_ids||[]).filter(id=>id!==state.session?.user?.id);const online=ids.filter(id=>state.onlineIds.has(id)).length;if(c.conversation_type==='direct'){const other=ids[0];return online?'En ligne':lastSeenLabel(other)}return (c.member_ids||[]).length+' membre'+((c.member_ids||[]).length>1?'s':'')+(online?' · '+online+' en ligne':'')}
+function conversationPresence(c){
+ if(!c)return'';
+ const ids=(c.member_ids||[]).filter(id=>id!==state.session?.user?.id);
+ const online=ids.filter(id=>state.onlineIds.has(id)).length;
+ if(c.conversation_type==='direct'){
+  const other=ids[0];
+  if(online){
+   const lastLogin=state.presenceHistory.get(other)?.last_login_at;
+   const stamp=lastLogin?window.NethorConnectionTimes?.stamp?.(lastLogin,{compact:true}):null;
+   return stamp?'En ligne · connexion '+stamp:'En ligne'
+  }
+  return lastSeenLabel(other)
+ }
+ return (c.member_ids||[]).length+' membre'+((c.member_ids||[]).length>1?'s':'')+(online?' · '+online+' en ligne':'')
+}
 async function loadPresenceHistory(){
- const ids=state.members.map(m=>m.id);if(!ids.length){state.presenceHistory=new Map();return}
- const {data,error}=await db.from('chat_presence_history').select('user_id,online_since,last_seen_at,last_session_seconds,total_online_seconds').in('user_id',ids);
- if(error){console.warn('Présence chat:',error);return}
- state.presenceHistory=new Map((data||[]).map(r=>[r.user_id,r]));
+ const ids=state.members.map(m=>m.id);
+ if(!ids.length){state.presenceHistory=new Map();return}
+ let rows=null;
+ try{
+  const shared=window.NethorConnectionTimes;
+  const response=shared?.load?
+   await shared.load(db,{force:true}):
+   (await db.rpc('team_connection_times')).data;
+  if(!Array.isArray(response))throw new Error('Connexion non disponible');
+  rows=response
+ }catch(error){
+  console.warn('Dates de connexion du chat :',error);
+  const {data,error:presenceError}=await db.from('chat_presence_history')
+   .select('user_id,online_since,last_seen_at,last_session_seconds,total_online_seconds').in('user_id',ids);
+  if(presenceError){console.warn('Présence chat :',presenceError);return}
+  rows=data||[]
+ }
+ const allowed=new Set(ids),previous=state.presenceHistory;
+ state.presenceHistory=new Map((rows||[]).filter(row=>allowed.has(row.user_id))
+  .map(row=>[row.user_id,{...(previous.get(row.user_id)||{}),...row}]));
  renderConversationHeader();renderConversations()
 }
 async function loadMembers(){
@@ -100,7 +144,15 @@ async function loadMembers(){
  state.members=await Promise.all(rows.map(async m=>{if(m.avatar_path)m.avatar_url=await signedAvatar(m.avatar_path);return m}));
  await loadPresenceHistory();renderConversations();renderNewChatMembers();renderConversationHeader()
 }
-function syncPresence(ids){const before=new Set(state.onlineIds),next=new Set(ids||window.NettoProfileUI?.onlineIds||[]);const changed=before.size!==next.size||[...before].some(id=>!next.has(id));state.onlineIds=next;if(changed){state.lastConversationRenderKey='';renderConversations();renderConversationHeader()}renderTyping();const left=[...before].some(id=>!next.has(id));if(left)setTimeout(()=>loadPresenceHistory(),700)}
+function syncPresence(ids){const before=new Set(state.onlineIds),next=new Set(ids||window.NettoProfileUI?.onlineIds||[]);const changed=before.size!==next.size||[...before].some(id=>!next.has(id));state.onlineIds=next;if(changed){state.lastConversationRenderKey='';renderConversations();renderConversationHeader()}renderTyping();if(changed&&chatRuntimeActive){
+  // A new Realtime presence can correspond to an actual new sign-in.
+  // Refetch the server's connection timestamp rather than guessing from the event.
+  clearTimeout(chatConnectionRefreshTimer);
+  chatConnectionRefreshTimer=setTimeout(()=>{
+   chatConnectionRefreshTimer=null;
+   if(chatRuntimeActive)void loadPresenceHistory()
+  },750)
+ }}
 function syncOwnPresence(){
  if(!chatOwnPresenceChannel)return;
  const presence=chatOwnPresenceChannel.presenceState(),ids=new Set();
@@ -1051,6 +1103,7 @@ async function boot(){
 }
 async function unmountChatRuntime(){
  chatRuntimeActive=false;
+ clearTimeout(chatConnectionRefreshTimer);chatConnectionRefreshTimer=null;
  chatSyncRequest++;clearTimeout(chatSyncTimer);chatSyncTimer=null;
  if(typeof chatSyncUnsubscribe==='function')chatSyncUnsubscribe();chatSyncUnsubscribe=null;
  cancelConversationLongPress();
