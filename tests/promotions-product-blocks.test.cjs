@@ -51,8 +51,8 @@ test('Six encadrés géométriques, deux colonnes et trois rangées',()=>{
  assert.equal(products.length,6);
  assert.equal(reports[0].analysis_mode,'spatial-blocks');
  assert.equal(reports[0].blocks_detected,6);
- assert.deepEqual(products.map(p=>p.source_block.row+'-'+p.source_block.column),
-   ['0-0','0-1','1-0','1-1','2-0','2-1']);
+ assert.equal(Array.from(products,p=>p.source_block.row+'-'+p.source_block.column).join(','),
+   '0-0,0-1,1-0,1-1,2-0,2-1');
  assert.ok(products.every(p=>p.source_page===4));
 });
 test('Poireau : prix entier + centimes OCR, nom, calibre, catégorie et origine',()=>{
