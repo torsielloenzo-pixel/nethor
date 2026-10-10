@@ -87,6 +87,16 @@ function planningAccountHidden(name){
   return keys.some(key=>key===n||key===base);
  });
 }
+function planningVisibleModel(){
+ if(!model||!Array.isArray(model.employees))return model;
+ const active=model.employees.map((emp,index)=>({emp,index})).filter(x=>!planningAccountHidden(x.emp.name));
+ if(active.length===model.employees.length)return model;
+ const days={};
+ for(const [key,day] of Object.entries(model.days||{})){
+  days[key]={...day,cells:active.map(x=>day?.cells?.[x.index]||[])};
+ }
+ return {...model,employees:active.map(x=>x.emp),days};
+}
 function canOpenPlanningUserCard(){return role==='admin'||role==='role_point-de-vente'}
 function identityAvatarHtml(p,name,cls='planningIdentityAvatar'){const photo=p?.avatar_url,frame=p?.avatar_frame||'',clickable=canOpenPlanningUserCard()&&!!p?.id,tag=clickable?'button':'span',attrs=clickable?' type="button" class="'+cls+(photo?' hasPhoto':'')+' planningAvatarButton" data-planning-user-id="'+esc(p.id)+'" aria-label="Ouvrir la fiche de '+esc(name)+'"':' class="'+cls+(photo?' hasPhoto':'')+'"';return '<'+tag+attrs+' '+(frame?'data-avatar-frame="'+esc(frame)+'" ':'')+'style="background:'+(photo?'url(&quot;'+esc(photo)+'&quot;) center/cover no-repeat':'var(--nethor-profile-avatar-bg,#ff5a2a)')+';color:var(--nethor-profile-avatar-fg,#fff)">'+(photo?'':esc(initials(name)))+'</'+tag+'>'}
 async function planningUserCardFeature(){
@@ -402,7 +412,7 @@ function employeeAbsences(name,date,statuses=['approved','pending']){
 }
 function coverageForDay(day){
  const ss=slots(),rows=day?.cells||[];
- return ss.map((t,si)=>({time:t,count:rows.reduce((n,row)=>n+(((row?.[si]==='g'||row?.[si]==='b')?1:0)),0)}))
+ return ss.map((t,si)=>({time:t,count:rows.reduce((n,row,index)=>n+(planningAccountHidden(model?.employees?.[index]?.name)?0:((row?.[si]==='g'||row?.[si]==='b')?1:0)),0)}))
 }
 let coverageModeActive=false,coverageSelectedSlot=0;
 function coverageModeAvailable(){
@@ -485,6 +495,7 @@ function planningContractDifferenceAnomalies(){
  if(!model)return[];
  const out=[],employees=model.employees||[];
  employees.forEach(emp=>{
+  if(planningAccountHidden(emp.name))return;
   const total=planningNumberOrNull(emp.excelWeekTotalHours);
   const excelContract=planningNumberOrNull(emp.excelContractHours);
   const excelDifference=planningNumberOrNull(emp.excelContractDifference);
@@ -511,13 +522,14 @@ function planningAnomalies(){
  // The home KPI and planning analysis share exactly the same detection rules.
  // Keep the previous in-page implementation as a fallback for older mobile runtimes.
  if(window.NethorPlanningAnomalyCore?.analyze&&model){
-  const report=window.NethorPlanningAnomalyCore.analyze(model,isoDate(currentWeekStart),teamProfiles,planningAbsences);
+  const report=window.NethorPlanningAnomalyCore.analyze(planningVisibleModel(),isoDate(currentWeekStart),teamProfiles,planningAbsences);
   const day=report.days.find(x=>x.date===dayKey());
   return [...report.weekItems,...(day?.items||[])].slice(0,24)
  }
  const out=planningContractDifferenceAnomalies(),day=modelDay(),date=dayKey();if(!model||!day)return out;
  const rows=day.cells||[],employees=model.employees||[];
  employees.forEach((emp,ri)=>{
+  if(planningAccountHidden(emp.name))return;
   const row=rows[ri]||[],total=totalForRow(row),ranges=workRangesFor(row,model),label=planningProfileFor(emp.name)?.display_name||emp.name;
   if(total>10)out.push({level:'warn',icon:'↗',title:label+' • journée longue',detail:String(total).replace('.',',')+' h planifiées — à vérifier selon votre organisation.'});
   for(const r of ranges)if(r.b-r.a<=.5)out.push({level:'warn',icon:'⌁',title:label+' • créneau très court',detail:friendlyHour(r.a)+' à '+friendlyHour(r.b)+' ('+String((r.b-r.a)*60)+' min).'});
