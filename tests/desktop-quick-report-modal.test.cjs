@@ -97,8 +97,9 @@ test('La page embarquée conserve l’enregistrement officiel des problèmes et 
 
 test('Ressources et version PWA synchronisées',()=>{
  const home=read('home.html'),sw=read('sw.js'),ver=JSON.parse(read('app-version.json'));
- for(const asset of ['runtime/desktop-home-dashboard.js?v=6','ui/desktop/home-dashboard-v3.css?v=8']){
-  assert.ok(home.includes(asset),'Absent du HTML : '+asset);
+ for(const rx of [/runtime\/desktop-home-dashboard\.js\?v=\d+/,/ui\/desktop\/home-dashboard-v3\.css\?v=\d+/]){
+  const asset=home.match(rx)?.[0];
+  assert.ok(asset,'Ressource absente du HTML : '+rx);
   assert.ok(sw.includes('./'+asset),'Absent du cache : '+asset);
  }
  assert.equal(Number(sw.match(/const APP_VERSION=(\d+);/)[1]),ver.version);
