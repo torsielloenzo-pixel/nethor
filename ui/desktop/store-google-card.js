@@ -7,7 +7,12 @@ const VERIFIED_ADDRESS='150 chemin Saint-Michel, 84250 Le Thor';
 const VERIFIED_PHONE='04 90 01 34 23';
 const MUNICIPAL_URL='https://www.ville-lethor.fr/contacts/netto/';
 const FRESH_MS=60000;
-let popup=null,trigger=null,lastData=null,lastFetch=0,pending=null,revision=0,autoRefresh=null;
+// Paris local time; Sunday=0 ... Saturday=6. No Google status is inferred as live.
+const WEEKLY_HOURS=Object.freeze([
+ Object.freeze({open:'09:00',close:'12:30'}),  // dimanche
+ ...Array.from({length:6},()=>Object.freeze({open:'08:00',close:'20:00'})) // lundi - samedi
+]);
+let popup=null,trigger=null,lastData=null,lastFetch=0,pending=null,revision=0,autoRefresh=null,fallbackClock=null;
 
 function safeMapsUrl(value){
  try{
@@ -22,9 +27,26 @@ function parisTime(iso){
  if(!Number.isFinite(date.getTime()))return'';
  return new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date);
 }
+function parisOpeningState(now=new Date()){
+ const parts=new Intl.DateTimeFormat('en-US',{
+  timeZone:'Europe/Paris',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'
+ }).formatToParts(now);
+ const part=key=>parts.find(item=>item.type===key)?.value||'';
+ const dayIndex={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[part('weekday')];
+ const hour=Number(part('hour')),minute=Number(part('minute'));
+ if(dayIndex===undefined||!Number.isFinite(hour)||!Number.isFinite(minute))return null;
+ const today=WEEKLY_HOURS[dayIndex],tomorrow=WEEKLY_HOURS[(dayIndex+1)%7];
+ const toMinutes=value=>{const [h,m]=value.split(':').map(Number);return h*60+m};
+ const current=hour*60+minute,start=toMinutes(today.open),end=toMinutes(today.close);
+ const open=current>=start&&current<end;
+ return {
+  open,
+  today:today.open+' – '+today.close,
+  message:open?'Ferme à '+today.close:(current<start?'Ouvre aujourd’hui à '+today.open:'Ouvre demain à '+tomorrow.open)
+ };
+}
 function todayHours(){
- const day=new Intl.DateTimeFormat('en-US',{timeZone:'Europe/Paris',weekday:'short'}).format(new Date());
- return day==='Sun'?'09:00 – 12:30':'08:00 – 20:00';
+ return parisOpeningState()?.today||'Horaires indisponibles';
 }
 function googleTodayHours(weekdayDescriptions){
  if(!Array.isArray(weekdayDescriptions))return'';
@@ -59,12 +81,13 @@ function fallback(){
  text('[data-store-phone]',VERIFIED_PHONE);
  const phone=popup.querySelector('[data-store-phone-link]');
  if(phone)phone.href='tel:+33490013423';
- text('[data-store-status]','Statut Google indisponible');
- text('[data-store-status-info]','Ouverture en direct non vérifiée');
+ const state=parisOpeningState();
  const indicator=popup.querySelector('[data-store-status-pill]');
- if(indicator)indicator.dataset.status='unknown';
+ if(indicator)indicator.dataset.status=state?(state.open?'open':'closed'):'unknown';
+ text('[data-store-status]',state?(state.open?'Ouvert · horaires habituels':'Fermé · horaires habituels'):'Statut Google indisponible');
+ text('[data-store-status-info]',state?state.message+' · non vérifié en direct':'Ouverture en direct non vérifiée');
  text('[data-store-hours]','Horaires habituels aujourd’hui : '+todayHours());
- text('[data-store-source]','Coordonnées et horaires habituels : ville du Thor');
+ text('[data-store-source]','Statut estimé selon les horaires habituels · Google indisponible');
  text('[data-store-updated]','');
  const src=popup.querySelector('[data-store-source-link]');
  if(src){src.href=MUNICIPAL_URL;src.textContent='Source officielle'}
@@ -175,6 +198,7 @@ function close(){
  if(trigger){trigger.setAttribute('aria-expanded','false');trigger.removeAttribute('aria-controls')}
  trigger=null;revision++;
  if(autoRefresh){clearInterval(autoRefresh);autoRefresh=null}
+ if(fallbackClock){clearInterval(fallbackClock);fallbackClock=null}
  popup?.remove();popup=null;pending=null;
 }
 function toggle(button){
@@ -186,6 +210,8 @@ function toggle(button){
  if(lastData)render(lastData);
  position();void refresh(false);
  autoRefresh=setInterval(()=>{if(document.visibilityState==='visible')void refresh(false)},120000);
+ // Refresh the locally estimated open/closed state at minute boundaries, even offline.
+ fallbackClock=setInterval(()=>{if(popup&&document.visibilityState==='visible'&&!lastData)fallback()},30000);
 }
 document.addEventListener('pointerdown',event=>{
  if(!popup||!trigger)return;
