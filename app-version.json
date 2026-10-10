@@ -1,17 +1,17 @@
 {
-  "version": 425,
-  "label": "v1.46.61",
+  "version": 426,
+  "label": "v1.46.62",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Accueil Desktop · Widgets plus lisibles",
-  "message": "Messages prioritaires et Actions rapides : titres agrandis, aperçus plus lisibles, avatars et icônes plus visibles, raccourcis plus confortables.",
-  "published_at": "2026-10-10T13:12:29.653Z",
+  "title": "Connexion Desktop · Image personnalisable",
+  "message": "Correction de l'affichage du fond importé depuis Gestion et ajout de vrais textes HTML pour la présentation de Nethor sur desktop.",
+  "published_at": "2026-10-10T15:00:00+02:00",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Messages prioritaires : titres et contenus agrandis, avatars plus grands, indicateurs de nouveaux messages plus visibles.",
-    "Actions rapides : boutons plus grands, libellés et icônes lisibles, deux actions par ligne.",
-    "Effets de survol et de focus plus visibles, meilleure adaptation aux fenêtres réduites.",
-    "Aucun changement à la logique des messages ou aux actions existantes, y compris Nouveau signalement."
+    "L'image de fond importée dans Gestion s'affiche sur la connexion Desktop, selon le thème choisi.",
+    "Le contenu Outil interne, Bienvenue sur Nethor, Planning, Chat, Gestion et citation est rendu en HTML.",
+    "Le texte imprimé de l'ancien décor est recouvert par un habillage CSS sur la partie gauche.",
+    "L'écran de connexion Mobile, les horaires dynamiques et l'authentification restent inchangés."
   ]
 }
