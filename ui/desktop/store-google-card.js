@@ -112,13 +112,23 @@ function render(data){
  }else if(data.open_now===false){
   status='closed';statusText='Fermé';
   detail=data.next_open_time?'Prochaine ouverture à '+parisTime(data.next_open_time):'Prochaine ouverture non renseignée';
+ }else{
+  // Google responded but did not provide an opening state: use the same
+  // indicative timetable as when the Google API itself is unavailable.
+  const indicative=parisOpeningState();
+  if(indicative){
+   status=indicative.open?'open':'closed';
+   statusText=indicative.open?'Ouvert · horaires habituels':'Fermé · horaires habituels';
+   detail=indicative.message+' · non vérifié en direct';
+  }
  }
  if(pill)pill.dataset.status=status;
  text('[data-store-status]',statusText);
  text('[data-store-status-info]',detail);
  const todayGoogle=googleTodayHours(data.weekday_descriptions);
- text('[data-store-hours]',todayGoogle?'Horaires Google aujourd’hui : '+todayGoogle:'Horaires habituels aujourd’hui : '+todayHours());
- text('[data-store-source]',data.address&&data.phone?'Adresse, téléphone et statut : Google Maps':'Statut Google Maps · coordonnées complétées depuis la ville du Thor');
+ const googleStatusKnown=data.open_now===true||data.open_now===false||data.business_status==='CLOSED_PERMANENTLY'||data.business_status==='CLOSED_TEMPORARILY';
+ text('[data-store-hours]',googleStatusKnown&&todayGoogle?'Horaires Google aujourd’hui : '+todayGoogle:'Horaires habituels aujourd’hui : '+todayHours());
+ text('[data-store-source]',googleStatusKnown?(data.address&&data.phone?'Adresse, téléphone et statut : Google Maps':'Statut Google Maps · coordonnées complétées depuis la ville du Thor'):'Statut estimé selon les horaires habituels · Google sans indication d’ouverture');
  const src=popup.querySelector('[data-store-source-link]');
  if(src){src.href=safeMapsUrl(data.maps_url);src.textContent='Données Google Maps'}
  const map=safeMapsUrl(data.maps_url);
@@ -211,7 +221,13 @@ function toggle(button){
  position();void refresh(false);
  autoRefresh=setInterval(()=>{if(document.visibilityState==='visible')void refresh(false)},120000);
  // Refresh the locally estimated open/closed state at minute boundaries, even offline.
- fallbackClock=setInterval(()=>{if(popup&&document.visibilityState==='visible'&&!lastData)fallback()},30000);
+ fallbackClock=setInterval(()=>{
+  if(!popup||document.visibilityState!=='visible')return;
+  if(!lastData)fallback();
+  else if(lastData.open_now!==true&&lastData.open_now!==false
+   &&lastData.business_status!=='CLOSED_PERMANENTLY'
+   &&lastData.business_status!=='CLOSED_TEMPORARILY')render(lastData);
+ },30000);
 }
 document.addEventListener('pointerdown',event=>{
  if(!popup||!trigger)return;
