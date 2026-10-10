@@ -111,7 +111,8 @@ function setLoading(value){
 }
 function showError(){
  if(!popup)return;
- // Never represent old Google opening status as live after refresh fails.
+ // Drop any previously fetched opening status after a failed revalidation.
+ lastData=null;lastFetch=0;
  fallback();
  text('[data-store-updated]',navigator.onLine===false?'Hors connexion : statut Google indisponible':'Mise à jour Google indisponible pour le moment');
 }
