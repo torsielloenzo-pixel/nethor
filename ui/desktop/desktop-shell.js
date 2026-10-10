@@ -24,6 +24,7 @@ const DESKTOP_SIDEBAR_DEFAULTS={
  management:{label:'Gestion',url:'admin-portal.html',icon:'reports',enabled:true},
  activity:{label:'Activité magasin',url:'home.html#nethorDesktopStatsRow',icon:'activity',enabled:true},
  planning:{label:'Planning',url:'planning.html',icon:'planning',enabled:true},
+ promotions:{label:'Promotions',url:'promotions.html',icon:'promotions',enabled:true},
  team:{label:'Équipe',url:'home.html#nethorDesktopTeamWidget',icon:'team',enabled:true},
  tasks:{label:'Tâches',url:'home.html#nethorDesktopPriorities',icon:'tasks',enabled:true},
  receptions:{label:'Réceptions',url:'home.html#nethorDesktopDeliveriesKpi',icon:'receptions',enabled:true},
@@ -75,6 +76,7 @@ function desktopSidebarIcon(kind){
   home:'<svg '+common+'><path d="M3.5 10.7 12 3.5l8.5 7.2"/><path d="M5.5 9.8V20h13V9.8"/><path d="M9.5 20v-6h5v6"/></svg>',
   activity:'<svg '+common+'><path d="M4 20V10M8 20V5M12 20v-8M16 20V8M20 20V3"/><path d="M2.5 20.5h19"/></svg>',
   planning:'<svg '+common+'><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"/><path d="M8 13h3M13 13h3M8 16.5h3"/></svg>',
+  promotions:'<svg '+common+'><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="7.5" cy="7.5" r="2"/><circle cx="16.5" cy="16.5" r="2"/><path d="M18.5 5.5 5.5 18.5"/></svg>',
   team:'<svg '+common+'><circle cx="9" cy="8" r="3"/><path d="M3.8 19c.4-3.3 2.1-5 5.2-5s4.8 1.7 5.2 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.2c3.2-.5 5 1.1 5.3 4.1"/></svg>',
   tasks:'<svg '+common+'><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="m8 12 2.2 2.2L16.5 8"/><path d="M8 7h.01M8 17h8"/></svg>',
   receptions:'<svg '+common+'><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
@@ -101,6 +103,7 @@ function sidebarActiveKey(page){
  const id=String(page||'').toLowerCase();
  if(['home'].includes(id))return'home';
  if(id==='planning')return'planning';
+ if(id==='promotions')return'promotions';
  if(['admin-portal','accounts'].includes(id))return'management';
  if(id==='chat')return'chat';
  if(id==='articles')return'articles';
@@ -135,7 +138,7 @@ function buildDesktopSidebar(page){
  ensureDesktopSidebarStyle();
  applySidebarMode(savedSidebarMode(),{fullWidth:desktopDashboardConfig(window.NettoProfileUI?.siteConfig||{}).sidebar.width});
  const active=sidebarActiveKey(page);
- const mainKeys=['home','planning','chat','management'];
+ const mainKeys=['home','planning','promotions','chat','management'];
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
   '<div class="nethorSidebarBrandRow"><button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
   '<button class="nethorSidebarCollapse" type="button" onclick="window.NethorDesktopShell?.toggleSidebar?.()" title="Réduire la barre latérale" aria-label="Réduire la barre latérale" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.8 5.5-6.3 6.5 6.3 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>'+
@@ -327,6 +330,7 @@ function buildPageLayout(page){
   home:{title:'Nethor',subtitle:'Portail opérationnel',back:false},
   profile:{title:'Mon profil',subtitle:'Identité & notifications',back:true},
   planning:{title:'Planning équipe',subtitle:'Organisation du magasin',back:true},
+   promotions:{title:'Promotions',subtitle:'Catalogues et références',back:true},
   settings:{title:'Personnalisation',subtitle:'Mon affichage et mes raccourcis',back:true},
   'notification-settings':{title:'Notifications',subtitle:'Préférences et canaux',back:true},
   'report-problem':{title:'Signaler un problème',subtitle:'Rapport à l’administration',back:true},
