@@ -88,6 +88,19 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rp
  margin:0!important;padding:20px 22px 18px!important;border:0!important;border-radius:0!important;
  box-shadow:none!important;overflow:visible!important;background:var(--rp-card)!important
 }
+/* Correctif : les deux cartes partagent un conteneur flex.
+   La règle générique display:flex!important écrasait .hidden et montrait
+   formulaire + confirmation côte à côte, avec une barre de défilement. */
+html.rpEmbedded #reportCard.hidden,
+html.rpEmbedded #successCard.hidden,
+html.rpEmbedded #reportCard[hidden],
+html.rpEmbedded #successCard[hidden],
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpMain > .rpCard.hidden,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpMain > .rpCard[hidden]{
+ display:none!important
+}
+html.rpEmbedded .rpMain{min-width:0!important;overflow-x:hidden!important}
+html.rpEmbedded .rpMain>.rpCard{min-width:0!important;max-width:100%!important}
 html.rpEmbedded .rpIntro{display:none!important}
 html.rpEmbedded .rpContext,
 html.rpEmbedded .rpContextPicker{
@@ -442,6 +455,7 @@ async function sendReport(){
   if(error)throw error;
   state('✓ Signalement envoyé.','ok');
   $('reportCard').classList.add('hidden');$('successCard').classList.remove('hidden');
+  if(NETHOR_QUICK_REPORT_EMBEDDED){$('reportCard').hidden=true;$('successCard').hidden=false}
   try{window.NettoSounds?.play?.('success')}catch(_){}
  }catch(e){
   console.error('Signalement problème:',e);
@@ -451,6 +465,9 @@ async function sendReport(){
 }
 async function init(){
  if(NETHOR_QUICK_REPORT_EMBEDDED){
+  // Ne jamais rendre simultanément le formulaire et la confirmation.
+  $('reportCard').hidden=false;
+  $('successCard').hidden=true;
   const help=document.querySelector('.rpHelp');
   if(help)help.textContent='N’indique pas de mot de passe ou d’information sensible. Un diagnostic technique sera joint.';
   const send=$('sendBtn'),close=$('returnBtn');
