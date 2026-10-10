@@ -258,7 +258,11 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"]
 /* Messages : lecture immédiate du nom, des deux premières lignes et de la date. */
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"]
 .nethorDesktopReferenceDashboard .ndWidgetAside .ndMessageRows{
- padding:8px 14px 14px
+ padding:8px 14px 14px;
+ /* Conserver les emplacements des conversations même lorsque certaines
+    sont vides : aucune réduction du widget Messages prioritaires. */
+ min-height:var(--nd-messages-reserved-height,330px);
+ box-sizing:border-box
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"]
 .nethorDesktopReferenceDashboard .ndWidgetAside .ndMessageRow{
