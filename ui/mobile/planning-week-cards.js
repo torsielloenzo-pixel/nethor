@@ -12,6 +12,7 @@ function render(start,ctx){
  const selected=Math.min(6,Math.max(0,Number(ctx.currentDay)||0));
  const dates=Array.from({length:7},(_,i)=>{const date=addDays(start,i);return {date,key:isoDate(date),label:dayShort(date),number:date.getDate()}});
  const employees=(model?.employees||[]).map((employee,index)=>{
+  if(ctx.isAccountHidden?.(employee.name))return null;
   const info=avatarFor(employee);
   const days=dates.map(d=>{
    const cells=model.days?.[d.key]?.cells?.[index]||[];
@@ -22,12 +23,13 @@ function render(start,ctx){
   const totalFromExcel=numeric(employee.excelWeekTotalHours),contract=numeric(employee.excelContractHours),diff=numeric(employee.excelContractDifference);
   return {info,days,contract,diff,total:totalFromExcel??days.reduce((sum,d)=>sum+d.total,0),isMe:isCurrentAgendaEmployee(employee)};
  });
+ const activeEmployees=activeEmployees.filter(Boolean);
  const selectedDate=dates[selected].date;
- const present=employees.filter(e=>e.days[selected].status==='work').length;
- const onLeave=employees.filter(e=>e.days[selected].status==='leave').length;
- const showMe=employees.some(e=>e.isMe);
+ const present=activeEmployees.filter(e=>e.days[selected].status==='work').length;
+ const onLeave=activeEmployees.filter(e=>e.days[selected].status==='leave').length;
+ const showMe=activeEmployees.some(e=>e.isMe);
  if(filter==='mine'&&!showMe)filter='all';
- let visible=employees.filter(e=>filter==='all'||filter==='working'&&e.days[selected].status==='work'||filter==='off'&&e.days[selected].status!=='work'||filter==='mine'&&e.isMe);
+ let visible=activeEmployees.filter(e=>filter==='all'||filter==='working'&&e.days[selected].status==='work'||filter==='off'&&e.days[selected].status!=='work'||filter==='mine'&&e.isMe);
  visible=[...visible].sort((a,b)=>Number(b.isMe)-Number(a.isMe));
  let out='<div class="nthWeekDays" role="group" aria-label="Sélectionner un jour">';
  const today=isoDate(new Date());
@@ -35,7 +37,7 @@ function render(start,ctx){
   const d=dates[i],active=i===selected;
   out+='<button type="button" class="nthWeekDay'+(active?' selected':'')+(d.key===today?' today':'')+'" data-nth-day="'+i+'" aria-pressed="'+active+'" aria-label="'+escapeHtml(dayFull(d.date))+'"><span>'+escapeHtml(d.label)+'</span><strong>'+d.number+'</strong></button>';
  }
- out+='</div><div class="nthWeekSummary" aria-label="Équipe le '+escapeHtml(dayFull(selectedDate))+'"><div><small>Équipe</small><strong>'+employees.length+'</strong></div><div><small>En poste</small><strong>'+present+'</strong></div><div><small>Congés</small><strong>'+onLeave+'</strong></div></div>';
+ out+='</div><div class="nthWeekSummary" aria-label="Équipe le '+escapeHtml(dayFull(selectedDate))+'"><div><small>Équipe</small><strong>'+activeEmployees.length+'</strong></div><div><small>En poste</small><strong>'+present+'</strong></div><div><small>Congés</small><strong>'+onLeave+'</strong></div></div>';
  out+='<div class="nthWeekFilters" role="group" aria-label="Afficher les collaborateurs">';
  for(const [id,label] of [['all','Tous'],['working','En poste'],['off','Autres'],['mine','Moi']]){
   if(id==='mine'&&!showMe)continue;
