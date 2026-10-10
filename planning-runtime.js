@@ -88,7 +88,7 @@ async function planningUserCardFeature(){
   const existing=document.querySelector('script[data-planning-user-card]');
   const done=()=>window.NethorProfileFeatures?.userCard?resolve(window.NethorProfileFeatures.userCard):reject(new Error('Fiche utilisateur indisponible'));
   if(existing){existing.addEventListener('load',done,{once:true});existing.addEventListener('error',()=>reject(new Error('Fiche utilisateur indisponible')),{once:true});return}
-  const s=document.createElement('script');s.src='profile-user-card.js?v=3';s.async=true;s.dataset.planningUserCard='1';s.onload=done;s.onerror=()=>reject(new Error('Fiche utilisateur indisponible'));document.head.appendChild(s)
+  const s=document.createElement('script');s.src='profile-user-card.js?v=4';s.async=true;s.dataset.planningUserCard='1';s.onload=done;s.onerror=()=>reject(new Error('Fiche utilisateur indisponible'));document.head.appendChild(s)
  })
 }
 async function openPlanningUserCard(userId){
