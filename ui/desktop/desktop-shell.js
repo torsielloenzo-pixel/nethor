@@ -284,7 +284,7 @@ function applyDesktopShellConfig(site={}){
  if(management&&user){
   let allowed=user.role==='admin';
   try{
-   const level=window.NettoProfileUI?.permissionLevel?.('admin-portal',user);
+   const level=window.NettoProfileUI?.permissionLevel?.('portal_admin',user);
    if(level)allowed=level!=='none';
   }catch(_){}
   management.classList.toggle('hidden',!allowed||c.sidebar.items.management?.enabled===false);
