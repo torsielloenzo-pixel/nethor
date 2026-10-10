@@ -1,17 +1,20 @@
 {
-  "version": 446,
-  "label": "v1.46.71",
+  "version": 447,
+  "label": "v1.46.72",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Typographie harmonisée",
-  "message": "La page Promotions sur ordinateur reprend désormais la police et l’espacement typographique de l’accueil, sans modifier les tailles, les composants ni la version mobile.",
-  "published_at": "2026-10-10T22:56:45.800Z",
+  "title": "Promotions · Nouveau moteur visuel multimodal",
+  "message": "Nouvel import PDF basé sur une IA visuelle sécurisée, identification d'encadrés, lecture des produits et contrôle autonome de couverture.",
+  "published_at": "2026-10-10T23:03:16.076Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Police Inter / Segoe UI alignée sur l’accueil desktop.",
-    "Titres, textes, boutons, tableaux et champs harmonisés.",
-    "Aucun changement sur mobile ni sur les autres pages.",
-    "Cache PWA actualisé."
+    "Remplacement de l'ancien moteur d'extraction OCR et texte par un moteur d'analyse visuelle multimodal côté serveur Supabase.",
+    "Analyse indépendante de chaque encadré produit : nom, prix, unité, grammage, prix/kg, origine, catégorie et avantage carte.",
+    "Seconde analyse visuelle de chaque page pour rechercher les produits omis avant tout enregistrement.",
+    "Semaine ISO, dates de validité du catalogue, mémoire des corrections et fiches produits conservées dans Supabase.",
+    "Traitement soumis à authentification Administrateur/Point de vente et quota quotidien, clé externe jamais exposée au navigateur.",
+    "Une clé OPENAI_API_KEY doit être configurée dans les secrets Supabase pour activer l'import IA ; aucune extraction fictive ou ancien moteur de secours.",
+    "Les PDF jusqu'à 60 pages sont pris en charge pour limiter le coût et la durée d'analyse."
   ]
 }
