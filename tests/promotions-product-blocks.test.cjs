@@ -138,8 +138,7 @@ test('PDF et base : inclure les champs séparés et la géométrie source',()=>{
  assert.match(sql,/add column if not exists source_block jsonb/);
  assert.match(sql,/private\.session_is_active\(\)/);
  assert.match(sql,/p\.role in \('admin','role_point-de-vente'\)/);
- for(const asset of ['runtime/promotions-parser.js?v=3','runtime/promotions-page.js?v=3',
-  'runtime/promotions-block-analyzer.js?v=1','runtime/promotions-ocr.js?v=1']){
+ for(const asset of [...html.matchAll(/runtime\/promotions-[\w-]+\.(?:js|css)\?v=\d+/g)].map(x=>x[0])){
   assert.ok(html.includes(asset),'HTML sans '+asset);
   assert.ok(sw.includes('./'+asset),'PWA sans '+asset);
  }

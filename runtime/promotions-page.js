@@ -8,7 +8,7 @@ const db=window.supabase.createClient(SUPABASE_URL,PUBLIC_KEY,{
 });
 const $=id=>document.getElementById(id);
 const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const state={user:null,profile:null,busy:false,catalogs:[],last:null};
+const state={user:null,profile:null,busy:false,catalogs:[],last:null,selectedCatalogId:null,reviewBusy:false};
 const manager=()=>['admin','role_point-de-vente'].includes(state.profile?.role);
 function notify(msg,type=''){
  const el=$('promoAlert');el.textContent=msg;el.className='promoAlert '+type;el.hidden=!msg
@@ -152,7 +152,19 @@ async function importAutomatic(file){
   if(!products.length)throw new Error('Aucun produit identifiable dans ce PDF. Import interrompu sans créer de fausses références.');
   if(products.length>2000)throw new Error('Plus de 2 000 références détectées : limite du module actuel.');
   const diagnostics=classifyDiagnostics(reports,products);
-  loading('Catégorisation automatique',products.length+' produits détectés · '+meta.title);
+  let selectedProducts=products;
+  try{
+   const feedback=await db.from('promotion_analysis_feedback')
+    .select('id,source_key,source_excerpt,action,corrected_name,corrected_category,created_at')
+    .order('created_at',{ascending:false}).limit(1500);
+   if(!feedback.error){
+    const learned=window.NethorPromotionsFeedback.useRules(products,feedback.data||[]);
+    selectedProducts=learned.products;
+    diagnostics.feedback=learned.stats
+   }else diagnostics.feedback_error='Mémoire des corrections indisponible'
+  }catch(_){diagnostics.feedback_error='Mémoire des corrections indisponible'}
+  if(!selectedProducts.length)throw new Error('Toutes les propositions ont été écartées par des corrections antérieures. Aucune référence enregistrée.');
+  loading('Catégorisation automatique',selectedProducts.length+' produits détectés · '+meta.title);
   storagePath=state.user.id+'/'+crypto.randomUUID()+'.pdf';
   const saved=await db.storage.from('promotion-pdfs').upload(storagePath,file,{
    contentType:'application/pdf',cacheControl:'3600',upsert:false
@@ -162,7 +174,7 @@ async function importAutomatic(file){
   const result=await db.rpc('import_promotion_catalog_auto',{
    p_filename:file.name,p_storage_path:storagePath,p_file_sha256:hash,
    p_valid_from:meta.from,p_valid_until:meta.until,p_pages:reports.length,
-   p_products:products.map(p=>({
+   p_products:selectedProducts.map(p=>({
     product_name:p.product_name,technical_details:p.technical_details,
     price_or_benefit:p.price_or_benefit,source_page:p.source_page,
     source_excerpt:p.source_excerpt,extraction_confidence:p.extraction_confidence,
@@ -190,59 +202,183 @@ async function importAutomatic(file){
   if(!imported)$('promoDropTitle').textContent='Dépose ton catalogue PDF pour lancer l’analyse'
  }
 }
+
+function collapseCatalog(){
+ state.selectedCatalogId=null;
+ $('promoCatalogDetail').hidden=true;
+ $('promoCatalogDetail').replaceChildren();
+ reflectCatalogExpansion()
+}
+function reflectCatalogExpansion(){
+ document.querySelectorAll('[data-promo-catalog]').forEach(button=>{
+  const open=button.dataset.promoCatalog===state.selectedCatalogId;
+  button.setAttribute('aria-expanded',String(open));
+  const chevron=button.querySelector('.promoCatalogCaret');
+  if(chevron)chevron.textContent=open?'⌃':'⌄'
+ })
+}
 async function loadCatalogs(){
  const {data,error}=await db.from('promotion_catalogs')
   .select('id,title,source_filename,storage_path,valid_from,valid_until,week_start,week_end,iso_year,iso_week,extraction_state,unclassified_count,pages_total,imported_at')
   .order('imported_at',{ascending:false}).limit(100);
  if(error){$('promoCatalogList').innerHTML='<p class="promoMuted">Impossible de charger les promotions : '+escapeHtml(error.message)+'</p>';return}
  state.catalogs=data||[];
+ if(state.selectedCatalogId&&!state.catalogs.some(p=>p.id===state.selectedCatalogId))collapseCatalog();
  $('promoCatalogList').innerHTML=state.catalogs.length?state.catalogs.map(p=>
-  '<div class="promoCatalog"><button type="button" data-promo-catalog="'+escapeHtml(p.id)+'"><span>'+
-  '<strong>'+escapeHtml(p.title)+'</strong>'+
+  '<div class="promoCatalog">'+
+  '<button class="promoCatalogToggle" type="button" data-promo-catalog="'+escapeHtml(p.id)+'" aria-expanded="'+(state.selectedCatalogId===p.id)+'" aria-controls="promoCatalogDetail">'+
+  '<span><strong>'+escapeHtml(p.title)+'</strong>'+
   '<small>'+escapeHtml(isoWeekLabel(p))+' · Lundi '+dateFr(p.week_start)+' au '+dateFr(p.week_end)+'</small>'+
   '<small>Offres valables du '+dateRange(p)+' · '+p.pages_total+' pages'+
-   (p.extraction_state==='partial'?' · Extraction partielle':'')+
-   (p.unclassified_count?' · '+p.unclassified_count+' produit(s) incertain(s)':'')+
-   '</small></span><span class="promoCatalogCount" aria-hidden="true">%</span></button></div>').join(''):
+  (p.extraction_state==='partial'?' · Extraction partielle':'')+
+  (p.unclassified_count?' · '+p.unclassified_count+' produit(s) incertain(s)':'')+
+  '</small></span><span class="promoCatalogCaret" aria-hidden="true">'+(state.selectedCatalogId===p.id?'⌃':'⌄')+'</span></button>'+
+  (manager()?'<button class="promoCatalogDelete" type="button" data-promo-delete-catalog="'+escapeHtml(p.id)+'" aria-label="Supprimer '+escapeHtml(p.title)+'">Supprimer</button>':'')+
+  '</div>').join(''):
   '<p class="promoMuted">Aucun catalogue pour le moment. Dépose un PDF pour démarrer automatiquement l’analyse.</p>'
 }
+async function deleteCatalog(id){
+ if(!manager()||state.reviewBusy)return;
+ const cat=state.catalogs.find(x=>x.id===id);if(!cat)return;
+ if(!window.confirm('Supprimer définitivement « '+cat.title+' » et toutes ses références ? Cette action est irréversible. La mémoire des corrections sera conservée.'))return;
+ state.reviewBusy=true;
+ try{
+  const {data,error}=await db.rpc('delete_promotion_catalog',{p_catalog_id:id});
+  if(error)throw error;
+  if(state.selectedCatalogId===id)collapseCatalog();
+  await loadCatalogs();
+  const path=data?.storage_path;
+  if(path){
+   const removed=await db.storage.from('promotion-pdfs').remove([path]);
+   if(removed.error){
+    notify('Catalogue supprimé, mais le PDF privé n’a pas pu être nettoyé : '+removed.error.message,'error');
+    return
+   }
+  }
+  notify('Catalogue « '+cat.title+' » et '+(data?.products||0)+' référence(s) supprimés.','ok')
+ }catch(e){notify('Suppression impossible : '+(e.message||String(e)),'error')}
+ finally{state.reviewBusy=false}
+}
+async function toggleCatalog(id){
+ if(state.selectedCatalogId===id){collapseCatalog();return}
+ await openCatalog(id)
+}
+const promoStatusLabels={pending:'À vérifier',validated:'Validé',reworked:'Retravaillé',rejected:'Refusé'};
 async function openCatalog(id){
  const cat=state.catalogs.find(x=>x.id===id);if(!cat)return;
- $('promoCatalogDetail').hidden=false;
- $('promoCatalogDetail').innerHTML='<p class="promoMuted">Chargement des références…</p>';
+ state.selectedCatalogId=id;
+ reflectCatalogExpansion();
+ const detail=$('promoCatalogDetail');
+ detail.hidden=false;
+ detail.innerHTML='<p class="promoMuted">Chargement des références…</p>';
  const {data,error}=await db.from('promotion_products')
-  .select('position,product_name,technical_details,price_or_benefit,price_unit,additional_info,source_block,category,auto_uncertain,source_page')
+  .select('id,position,product_name,technical_details,price_or_benefit,price_unit,additional_info,source_excerpt,source_block,category,auto_uncertain,review_status,reviewed_at,source_page')
   .eq('catalog_id',id).order('position').limit(2000);
- if(error){$('promoCatalogDetail').textContent='Erreur : '+error.message;return}
+ if(state.selectedCatalogId!==id)return;
+ if(error){detail.textContent='Erreur : '+error.message;return}
  const products=data||[];
- $('promoCatalogDetail').innerHTML='<div class="promoDetailsHead"><div><h3>'+escapeHtml(cat.title)+'</h3>'+
+ const totals={pending:0,validated:0,reworked:0,rejected:0};
+ products.forEach(p=>{const key=p.review_status||'pending';if(Object.hasOwn(totals,key))totals[key]++});
+ const categories=[...new Set(['Fruits et légumes','Frais et crémerie','Surgelés','Boissons','Animaux',
+  'Hygiène et entretien','Épicerie sucrée','Épicerie salée','Boulangerie','Maison','À classer',
+  ...products.map(p=>p.category||'À classer')])].sort((a,b)=>a.localeCompare(b,'fr'));
+ const options=categories.map(s=>'<option value="'+escapeHtml(s)+'">'+escapeHtml(s)+'</option>').join('');
+ detail.innerHTML='<div class="promoDetailsHead"><div><h3>'+escapeHtml(cat.title)+'</h3>'+
   '<p>'+products.length+' références · du '+dateRange(cat)+'</p>'+
-  '<p>Semaine '+cat.iso_week+' ('+dateFr(cat.week_start)+' au '+dateFr(cat.week_end)+')'+
-  (cat.extraction_state==='partial'?' · extraction partielle':'')+'</p></div>'+
-  '<div class="promoDetailsActions">'+(manager()?'<button type="button" class="promoSecondary" id="promoHistoricPdf">PDF source ↗</button>':'')+
-  '<input type="search" id="promoCatalogSearch" placeholder="Rechercher une référence…" aria-label="Rechercher une référence">'+
-  '<select id="promoCategoryFilter" aria-label="Filtrer par catégorie"><option value="">Toutes les catégories</option>'+
-  [...new Set(products.map(p=>p.category||'À classer'))].sort().map(category=>
-   '<option value="'+escapeHtml(category)+'">'+escapeHtml(category)+'</option>').join('')+
-  '</select></div></div>'+
-  '<div style="overflow-x:auto"><table class="promoProductTable"><thead><tr><th>Référence</th><th>Informations techniques</th>'+
-  '<th>Prix ou avantage</th><th>Catégorie</th><th>Page</th></tr></thead><tbody id="promoCatalogRows"></tbody></table></div>';
+  '<p>Semaine '+cat.iso_week+' ('+dateFr(cat.week_start)+' au '+dateFr(cat.week_end)+')</p>'+
+  '<p class="promoReviewCounts">'+totals.validated+' validées · '+totals.reworked+' retravaillées · '+
+  totals.rejected+' refusées · '+totals.pending+' à vérifier</p></div>'+
+  '<div class="promoDetailsActions">'+
+   (manager()?'<button type="button" class="promoSecondary" id="promoHistoricPdf">PDF source ↗</button>':'')+
+   '<button type="button" class="promoSecondary" id="promoCollapse">Replier ↑</button>'+
+   '<input type="search" id="promoCatalogSearch" placeholder="Rechercher une référence…" aria-label="Rechercher une référence">'+
+   '<select id="promoCategoryFilter" aria-label="Filtrer par catégorie"><option value="">Toutes les catégories</option>'+
+   options+'</select></div></div>'+
+  (manager()?'<label class="promoRejectedSwitch"><input type="checkbox" id="promoShowRejected"> Afficher les produits refusés ('+totals.rejected+')</label>':'')+
+  '<div id="promoProductEditor" class="promoProductEditor" hidden></div>'+
+  '<div class="promoTableWrap"><table class="promoProductTable"><thead><tr><th>Référence</th>'+
+  '<th>Informations techniques</th><th>Prix ou avantage</th><th>Catégorie</th><th>Page</th>'+
+  (manager()?'<th>Contrôle</th>':'')+'</tr></thead><tbody id="promoCatalogRows"></tbody></table></div>';
+ const search=$('promoCatalogSearch'),category=$('promoCategoryFilter'),
+  rejected=$('promoShowRejected'),rows=$('promoCatalogRows'),editor=$('promoProductEditor');
  function render(){
-  const needle=$('promoCatalogSearch').value.trim().toLocaleLowerCase('fr');
-  const category=$('promoCategoryFilter').value;
-  const filtered=products.filter(x=>(!category||(x.category||'À classer')===category)&&
-   [x.product_name,x.technical_details,x.price_or_benefit,x.price_unit,x.additional_info].some(s=>String(s||'').toLocaleLowerCase('fr').includes(needle)));
-  $('promoCatalogRows').innerHTML=filtered.map(p=>'<tr><td>'+escapeHtml(p.product_name)+
-   (p.auto_uncertain?'<small class="promoUncertain">À affiner</small>':'')+
+  const needle=search.value.trim().toLocaleLowerCase('fr');
+  const filter=category.value,showRejected=Boolean(rejected?.checked);
+  const visible=products.filter(p=>(p.review_status!=='rejected'||showRejected)&&
+   (!filter||(p.category||'À classer')===filter)&&
+   [p.product_name,p.technical_details,p.price_or_benefit,p.price_unit,p.additional_info]
+    .some(value=>String(value||'').toLocaleLowerCase('fr').includes(needle)));
+  rows.innerHTML=visible.map(p=>'<tr class="'+(p.review_status==='rejected'?'promoRowRejected':'')+'"><td>'+
+   '<strong>'+escapeHtml(p.product_name)+'</strong>'+
+   '<small class="promoReviewBadge promoStatus-'+escapeHtml(p.review_status||'pending')+'">'+
+   escapeHtml(promoStatusLabels[p.review_status]||promoStatusLabels.pending)+'</small>'+
+   (p.auto_uncertain&&p.review_status==='pending'?'<small class="promoUncertain">À affiner</small>':'')+
    '</td><td>'+escapeHtml(p.technical_details||'—')+'</td><td><strong>'+escapeHtml(p.price_or_benefit)+'</strong>'+
    (p.price_unit?'<small class="promoItemUnit">'+escapeHtml(p.price_unit)+'</small>':'')+
-   (p.additional_info?'<small class="promoItemExtra">'+escapeHtml(p.additional_info)+'</small>':'')+'</td>'+
-   '<td>'+escapeHtml(p.category||'À classer')+'</td><td>'+p.source_page+'</td></tr>').join('')||
-   '<tr><td colspan="5" class="promoMuted">Aucun résultat pour ce filtre.</td></tr>'
+   (p.additional_info?'<small class="promoItemExtra">'+escapeHtml(p.additional_info)+'</small>':'')+
+   '</td><td>'+escapeHtml(p.category||'À classer')+'</td><td>'+p.source_page+'</td>'+
+   (manager()?'<td><div class="promoReviewButtons">'+
+     '<button type="button" class="promoReviewValidate" data-promo-action="validated" data-product-id="'+escapeHtml(p.id)+'">Valider</button>'+
+     '<button type="button" class="promoReviewEdit" data-promo-action="edit" data-product-id="'+escapeHtml(p.id)+'">Retravailler</button>'+
+     '<button type="button" class="promoReviewReject" data-promo-action="rejected" data-product-id="'+escapeHtml(p.id)+'">Refuser</button>'+
+     '</div></td>':'')+'</tr>').join('')||
+    '<tr><td colspan="'+(manager()?6:5)+'" class="promoMuted">Aucun produit à afficher pour ce filtre.</td></tr>'
+ }
+ function editProduct(product){
+  editor.hidden=false;
+  editor.innerHTML='<h4>Retravailler : '+escapeHtml(product.product_name)+'</h4>'+
+   '<p>Corrige la fiche. Le nom et le rayon pourront être appris lors des prochaines analyses ; les prix resteront propres à chaque catalogue.</p>'+
+   '<form id="promoEditForm" class="promoEditFields">'+
+   '<label>Nom complet<input name="product_name" maxlength="500" required value="'+escapeHtml(product.product_name)+'"></label>'+
+   '<label>Rayon<select name="category">'+options+'</select></label>'+
+   '<label>Informations techniques<textarea name="technical_details" maxlength="1200">'+escapeHtml(product.technical_details)+'</textarea></label>'+
+   '<label>Prix ou avantage<textarea name="price_or_benefit" maxlength="1200" required>'+escapeHtml(product.price_or_benefit)+'</textarea></label>'+
+   '<label>Unité de prix<input name="price_unit" maxlength="120" value="'+escapeHtml(product.price_unit||'')+'"></label>'+
+   '<label>Informations supplémentaires<textarea name="additional_info" maxlength="1200">'+escapeHtml(product.additional_info||'')+'</textarea></label>'+
+   '<div class="promoEditActions"><button type="button" class="promoSecondary" id="promoEditCancel">Annuler</button>'+
+   '<button type="submit" class="promoPrimary">Enregistrer les corrections</button></div></form>';
+  editor.querySelector('select[name="category"]').value=product.category||'À classer';
+  editor.querySelector('#promoEditCancel').onclick=()=>{editor.hidden=true;editor.replaceChildren()};
+  editor.querySelector('form').onsubmit=async event=>{
+   event.preventDefault();const form=event.currentTarget;
+   const fields={};
+   for(const name of ['product_name','category','technical_details','price_or_benefit','price_unit','additional_info'])
+    fields[name]=form.elements.namedItem(name)?.value?.trim()||'';
+   if(fields.product_name.length<2||!fields.category||!fields.price_or_benefit){
+    notify('Nom, rayon et prix/avantage sont obligatoires.','error');return
+   }
+   await reviewProduct(product.id,'reworked',fields)
+  };
+  editor.scrollIntoView({behavior:'smooth',block:'nearest'})
+ }
+ async function reviewProduct(productId,action,fields={}){
+  if(!manager()||state.reviewBusy)return;
+  if(action==='rejected'&&!window.confirm('Refuser ce produit ? Il sera masqué de la liste courante et le moteur mémorisera cette décision.'))return;
+  state.reviewBusy=true;
+  try{
+   const {error}=await db.rpc('review_promotion_product',{
+    p_product_id:productId,p_action:action,p_fields:fields
+   });
+   if(error)throw error;
+   notify(action==='validated'?'Produit validé.':
+    action==='reworked'?'Produit corrigé. Ses informations serviront aux prochaines analyses.':
+    'Produit refusé. Il est masqué et la décision est mémorisée.','ok');
+   await openCatalog(id)
+  }catch(e){notify('Impossible de modifier la référence : '+(e.message||String(e)),'error')}
+  finally{state.reviewBusy=false}
  }
  render();
- $('promoCatalogSearch').addEventListener('input',render);
- $('promoCategoryFilter').addEventListener('change',render);
+ search.addEventListener('input',render);
+ category.addEventListener('change',render);
+ rejected?.addEventListener('change',render);
+ detail.onclick=async event=>{
+  if(event.target.closest('#promoCollapse')){collapseCatalog();return}
+  const button=event.target.closest('[data-promo-action]');if(!button)return;
+  const product=products.find(p=>p.id===button.dataset.productId);
+  if(!product)return;
+  if(button.dataset.promoAction==='edit')return editProduct(product);
+  await reviewProduct(product.id,button.dataset.promoAction)
+ };
  if(manager())$('promoHistoricPdf')?.addEventListener('click',async()=>{
   const {data,error}=await db.storage.from('promotion-pdfs').createSignedUrl(cat.storage_path,90);
   if(error||!data?.signedUrl){notify('Impossible d’ouvrir le PDF original : '+(error?.message||'lien indisponible'),'error');return}
@@ -268,7 +404,9 @@ async function boot(){
   $('promoFile').addEventListener('change',e=>{if(!state.busy)importAutomatic(e.target.files?.[0])})
  }
  $('promoCatalogList').addEventListener('click',e=>{
-  const button=e.target.closest('[data-promo-catalog]');if(button)openCatalog(button.dataset.promoCatalog)
+  const deleteButton=e.target.closest('[data-promo-delete-catalog]');
+  if(deleteButton){deleteCatalog(deleteButton.dataset.promoDeleteCatalog);return}
+  const button=e.target.closest('[data-promo-catalog]');if(button)toggleCatalog(button.dataset.promoCatalog)
  });
  await loadCatalogs()
 }
