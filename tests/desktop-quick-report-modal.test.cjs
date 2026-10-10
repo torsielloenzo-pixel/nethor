@@ -72,6 +72,15 @@ test('Formulaire et confirmation sont mutuellement exclusifs, même avec display
  assert.match(report,/\$\('reportCard'\)\.classList\.add\('hidden'\);\$\('successCard'\)\.classList\.remove\('hidden'\)/);
 });
 
+test('La mini-fenêtre neutralise le décalage de la barre latérale Desktop',()=>{
+ const shellCss=read('ui/desktop/desktop-sidebar.css');
+ assert.match(shellCss,/padding-left:var\(--nethor-sidebar-w\)!important/);
+ const modalOnly=report.slice(report.indexOf('/* Intégration compacte'),report.indexOf('</style>',report.indexOf('/* Intégration compacte')));
+ assert.match(modalOnly,/html\.rpEmbedded\[data-nethor-page-layout="desktop"\] body\s*\{[^}]*padding:0!important/s);
+ assert.match(modalOnly,/html\.rpEmbedded\[data-nethor-page-layout="desktop"\] body\s*\{[^}]*width:100%!important/s);
+ assert.ok(!report.slice(0,report.indexOf('/* Intégration compacte')).includes('padding-left:0!important'),'La page autonome ne doit pas être modifiée');
+});
+
 test('La page embarquée conserve l’enregistrement officiel des problèmes et ses permissions',()=>{
  assert.match(report,/NETHOR_QUICK_REPORT_EMBEDDED/);
  assert.match(report,/window\.parent\.location\.origin===location\.origin/);
@@ -88,8 +97,9 @@ test('La page embarquée conserve l’enregistrement officiel des problèmes et 
 
 test('Ressources et version PWA synchronisées',()=>{
  const home=read('home.html'),sw=read('sw.js'),ver=JSON.parse(read('app-version.json'));
- for(const asset of ['runtime/desktop-home-dashboard.js?v=6','ui/desktop/home-dashboard-v3.css?v=8']){
-  assert.ok(home.includes(asset),'Absent du HTML : '+asset);
+ for(const rx of [/runtime\/desktop-home-dashboard\.js\?v=\d+/,/ui\/desktop\/home-dashboard-v3\.css\?v=\d+/]){
+  const asset=home.match(rx)?.[0];
+  assert.ok(asset,'Ressource absente du HTML : '+rx);
   assert.ok(sw.includes('./'+asset),'Absent du cache : '+asset);
  }
  assert.equal(Number(sw.match(/const APP_VERSION=(\d+);/)[1]),ver.version);

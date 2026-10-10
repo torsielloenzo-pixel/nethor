@@ -1,17 +1,17 @@
 {
-  "version": 418,
-  "label": "v1.46.59",
+  "version": 420,
+  "label": "v1.46.60",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Signalement express · Affichage corrigé",
-  "message": "Correction du formulaire rapide Desktop : la confirmation ne s'affiche plus à côté du formulaire, les champs reprennent toute la largeur de la fenêtre.",
-  "published_at": "2026-10-10T12:22:06.005Z",
+  "title": "Signalement express · Fenêtre pleine largeur",
+  "message": "Le formulaire du signalement rapide utilise désormais toute la largeur de sa mini-fenêtre, sans décalage réservé à la barre latérale desktop.",
+  "published_at": "2026-10-10T12:27:47.080Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Correction de l'affichage simultané du formulaire et de la confirmation.",
-    "Suppression du défilement horizontal provoqué par les deux panneaux.",
-    "Confirmation affichée uniquement après l'envoi réussi du signalement.",
-    "Base de données et fonctionnement des signalements inchangés."
+    "Suppression du décalage de barre latérale à l’intérieur de la mini-fenêtre de signalement.",
+    "Champs et zone de description étendus à toute la largeur disponible.",
+    "Aucune modification à la navigation Desktop ni à la page de signalement ouverte normalement.",
+    "Envoi des signalements et autorisations conservés."
   ]
 }
