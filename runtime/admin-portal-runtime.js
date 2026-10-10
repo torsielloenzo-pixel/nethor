@@ -979,6 +979,108 @@ function renderDesktopSidebarLogoEditor(){
   '<div class="ddBrandFootnote">Les fichiers sont conservés dans les médias sécurisés du portail. Clique <b>Enregistrer</b> après l’importation pour appliquer le logo à tous les comptes Desktop. Le choix « Complet / Compact » reste local à chaque navigateur.</div>';
 }
 
+
+function desktopGlobalBackgroundNode(){
+ return ensureDesktopDashboardWidgetConfig().background
+}
+function applyDesktopGlobalBackgroundPreview(){
+ try{window.NethorDesktopShell?.applyDesktopShellConfig?.(config)}
+ catch(e){console.warn('Aperçu du fond Desktop indisponible',e)}
+}
+function chooseDesktopGlobalBackground(){
+ $('desktopGlobalBackgroundFile')?.click()
+}
+function removeDesktopGlobalBackground(){
+ const node=desktopGlobalBackgroundNode();
+ node.image_url='';node.image_path='';node.image_name='';node.enabled=false;
+ markDirty();renderDesktopGlobalBackgroundEditor();applyDesktopGlobalBackgroundPreview()
+}
+function downloadDesktopGlobalBackground(){
+ const node=desktopGlobalBackgroundNode();
+ if(node.image_url)downloadAssetUrl(node.image_url,node.image_name||'fond-nethor-desktop.webp')
+}
+function updateDesktopGlobalBackgroundPreview(){
+ const host=$('desktopGlobalBackgroundEditor');if(!host)return;
+ const node=desktopGlobalBackgroundNode(),image=host.querySelector('.ndBgPreview'),badge=host.querySelector('.ndBgPreviewBadge');
+ const hasImage=!!String(node.image_url||'').trim(),opacity=Math.max(0,Math.min(75,Number(node.veil)||0))/100;
+ const color=document.documentElement.dataset.theme==='dark'?'17,19,23':'247,249,252';
+ if(image){
+  image.style.backgroundImage=hasImage?
+   'linear-gradient(rgba('+color+','+opacity+'),rgba('+color+','+opacity+')),url('+JSON.stringify(node.image_url)+')':'none';
+  image.style.backgroundSize='cover,'+(node.fit==='contain'?'contain':'cover');
+  image.style.backgroundPosition='center,'+(node.position==='top'?'center top':node.position==='bottom'?'center bottom':'center center');
+  image.style.backgroundRepeat='no-repeat';
+  image.classList.toggle('hasImage',hasImage);
+ }
+ if(badge)badge.textContent=!hasImage?'Aucun fond sélectionné':node.enabled?'Fond activé · Desktop':'Fond désactivé';
+ const value=host.querySelector('.ndBgVeilValue');if(value)value.textContent=node.veil+' %';
+}
+async function uploadDesktopGlobalBackground(input){
+ const file=input?.files?.[0];if(!file)return;
+ const state=$('saveState');
+ try{
+  const ext=String(file.name||'').split('.').pop().toLowerCase();
+  const mime={'png':'image/png','jpg':'image/jpeg','jpeg':'image/jpeg','webp':'image/webp','avif':'image/avif'};
+  if(!Object.prototype.hasOwnProperty.call(mime,ext))throw new Error('Format accepté : PNG, JPG, WebP ou AVIF.');
+  if(file.type&&file.type!==mime[ext])throw new Error('Le format du fichier ne correspond pas à son extension.');
+  if(file.size>8*1024*1024)throw new Error('Image trop volumineuse : 8 Mo maximum.');
+  if(!file.size)throw new Error('Le fichier sélectionné est vide.');
+  if(state){state.className='saveState';state.textContent='Import du fond Desktop…'}
+  const storagePath='desktop/background/wallpaper-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  const {error}=await db.storage.from('portal-assets').upload(storagePath,file,{upsert:false,contentType:mime[ext]});
+  if(error)throw error;
+  const {data}=db.storage.from('portal-assets').getPublicUrl(storagePath);
+  if(!data?.publicUrl)throw new Error('Lien public du fond indisponible.');
+  const node=desktopGlobalBackgroundNode();
+  node.image_url=data.publicUrl;node.image_path=storagePath;node.image_name=String(file.name||'Fond Desktop');
+  node.enabled=true;
+  markDirty();renderDesktopGlobalBackgroundEditor();applyDesktopGlobalBackgroundPreview();
+  if(state)state.textContent='Fond Desktop prêt · clique Enregistrer pour le publier sur toutes les pages';
+ }catch(e){
+  if(state){state.className='saveState err';state.textContent='Erreur fond Desktop : '+(e?.message||e)}
+ }finally{if(input)input.value=''}
+}
+function renderDesktopGlobalBackgroundEditor(){
+ const desktopTab=$('tab-desktop');if(!desktopTab)return;
+ let host=$('desktopGlobalBackgroundEditor');
+ if(!host){
+  host=document.createElement('section');
+  host.id='desktopGlobalBackgroundEditor';
+  host.className='panel desktopGlobalBackgroundEditor';
+  const logos=$('desktopSidebarLogoEditor'),identity=$('platformIdentity_desktop');
+  if(logos)logos.insertAdjacentElement('afterend',host);
+  else if(identity)identity.insertAdjacentElement('afterend',host);
+  else desktopTab.prepend(host);
+ }
+ const node=desktopGlobalBackgroundNode(),exists=!!node.image_url;
+ host.innerHTML='<div class="toolbar platformEditorHead"><div><h2>Fond d’écran global · Desktop</h2>'+
+  '<p>Un fond commun à toutes les pages ordinateur, derrière les widgets et les panneaux. La version mobile et l’écran de connexion restent indépendants.</p></div></div>'+
+  '<div class="ndBgLayout"><div class="ndBgPreview" aria-label="Aperçu du fond global"><span class="ndBgPreviewBadge"></span>'+
+   '<div class="ndBgPreviewScreen"><span class="ndBgPreviewSidebar"></span><span class="ndBgPreviewHeader"></span><span class="ndBgPreviewCard"></span><span class="ndBgPreviewCard second"></span></div></div>'+
+  '<div class="ndBgDetails"><strong>'+(exists?esc(node.image_name||'Image personnalisée'):'Aucune image importée')+'</strong>'+
+   '<small>'+(exists?'Le fond s’appliquera à tous les comptes Desktop après Enregistrer.':'Formats PNG, JPG, WebP, AVIF · maximum 8 Mo. Résolution 1920 × 1080 px conseillée.')+'</small>'+
+   '<label class="ndBgEnabled"><input type="checkbox" data-nd-bg-setting="enabled" '+(node.enabled?'checked':'')+'> <span>Afficher le fond sur toutes les pages Desktop</span></label>'+
+   '<div class="ndBgButtons"><button class="btn secondaryBtn mini" type="button" onclick="chooseDesktopGlobalBackground()">Importer une image</button>'+
+    (exists?'<button class="btn secondaryBtn mini" type="button" onclick="downloadDesktopGlobalBackground()">Télécharger</button>'+
+      '<button class="btn secondaryBtn mini" type="button" onclick="removeDesktopGlobalBackground()">Réinitialiser</button>':'')+
+   '</div><input type="file" id="desktopGlobalBackgroundFile" hidden accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif" onchange="uploadDesktopGlobalBackground(this)"></div></div>'+
+  '<div class="ndBgSettings"><div class="field"><label for="desktopGlobalBackgroundFit">Cadrage de l’image</label>'+
+    '<select id="desktopGlobalBackgroundFit" data-nd-bg-setting="fit"><option value="cover" '+(node.fit==='cover'?'selected':'')+'>Remplir l’écran</option><option value="contain" '+(node.fit==='contain'?'selected':'')+'>Afficher toute l’image</option></select></div>'+
+   '<div class="field"><label for="desktopGlobalBackgroundPosition">Position</label><select id="desktopGlobalBackgroundPosition" data-nd-bg-setting="position">'+
+    [['top','Haut'],['center','Centre'],['bottom','Bas']].map(x=>'<option value="'+x[0]+'" '+(node.position===x[0]?'selected':'')+'>'+x[1]+'</option>').join('')+'</select></div>'+
+   '<div class="field ndBgVeil"><label for="desktopGlobalBackgroundVeil">Voile de lecture <b class="ndBgVeilValue">'+node.veil+' %</b></label>'+
+    '<input id="desktopGlobalBackgroundVeil" type="range" min="0" max="75" step="5" value="'+node.veil+'" data-nd-bg-setting="veil"><small>Un voile léger garde les textes lisibles. 0 % = image sans voile.</small></div></div>'+
+  '<p class="ndBgFoot">Ce réglage ne modifie ni les images des widgets, ni la bannière du magasin. Clique <b>Enregistrer</b> pour le publier.</p>';
+ host.querySelectorAll('[data-nd-bg-setting]').forEach(el=>{
+  el.oninput=el.onchange=()=>{
+   const key=el.dataset.ndBgSetting,settings=desktopGlobalBackgroundNode();
+   settings[key]=key==='enabled'?el.checked:key==='veil'?Math.max(0,Math.min(75,Number(el.value)||0)):el.value;
+   markDirty();updateDesktopGlobalBackgroundPreview();applyDesktopGlobalBackgroundPreview();
+  };
+ });
+ updateDesktopGlobalBackgroundPreview()
+}
+
 function chooseDesktopStoreImage(){$('desktopStoreImageFile')?.click()}
 function desktopStoreImageEffective(){
  const node=ensureDesktopDashboardWidgetConfig(),own=String(node.header.store_image_url||'').trim();
@@ -2838,7 +2940,7 @@ function resetMobileAppearanceTheme(theme){
 }
 
 function renderPlatformEditors(){
- ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileAppearanceThemeEditor();renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderDesktopSidebarLogoEditor();renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
+ ensurePlatformUiConfig();renderPlatformIdentity('mobile');renderMobileAppearanceThemeEditor();renderMobileNotificationVisualEditor();renderPlatformIdentity('desktop');renderDesktopSidebarLogoEditor();renderDesktopGlobalBackgroundEditor();renderPlatformComponents('mobile');renderPlatformComponents('desktop');renderSoundEditor()
 }
 function ensurePortalPlatformStructure(){
  restructureManagementOverview();
@@ -2987,7 +3089,7 @@ async function saveConfig(){
  try{collectGlobal();ensureMobileBar();validateConfig();const {error}=await db.from('app_settings').upsert({key:'site_config',value:config,updated_by:session.user.id,updated_at:new Date().toISOString()},{onConflict:'key'});if(error)throw error;dirty=false;await loadMobileThemeProfileFrames();state.className='saveState ok';state.textContent='✓ Portail mis à jour';window.NettoSounds?.play?.('success');await window.NettoProfileUI?.refresh?.();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();if($('tab-logs')?.classList.contains('active'))await loadPortalLogs()}catch(e){console.error(e);state.className='saveState err';state.textContent='Erreur : '+(e?.message||'enregistrement impossible');window.NettoSounds?.play?.('error')}
 }
 async function reloadConfig(){if(dirty&&!confirm('Annuler les modifications non enregistrées ?'))return;await loadConfig();window.NettoSounds?.play?.('confirm')}
-async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});await loadMobileThemeProfileFrames();ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
+async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});await loadMobileThemeProfileFrames();ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();applyDesktopGlobalBackgroundPreview();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
 
 
 function logDate(value){const d=new Date(value);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
