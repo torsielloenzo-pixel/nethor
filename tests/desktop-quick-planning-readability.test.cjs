@@ -23,7 +23,7 @@ test('Les services de matin et après-midi ont des équipes et des couleurs dist
  assert.equal(shift([{a:14,b:20.5}]),'afternoon');
  assert.ok(runtime.includes("person.shift==='morning'?'Morning':'Afternoon'"));
  assert.match(runtime,/class="qplanTrack qplanShift/);
- assert.match(style,/--qp-morning:#21875e/);
+ assert.match(style,/--qp-morning:#2aaf70/);
  assert.match(style,/--qp-afternoon:#2677c3/);
  assert.match(style,/\.qplanShiftMorning\{--qp-person:var\(--qp-morning\)\}/);
  assert.match(style,/\.qplanShiftAfternoon\{--qp-person:var\(--qp-afternoon\)\}/);
@@ -51,7 +51,7 @@ test('Barres épaisses et repère Maintenant continu avec son horodatage',()=>{
 });
 test('Desktop : fichiers à jour et Service Worker cohérent',()=>{
  for(const asset of [
- 'runtime/quick-planning-widget.css?v=8',
+ 'runtime/quick-planning-widget.css?v=9',
  'ui/desktop/home-dashboard-v3.css?v=6',
  'runtime/home-runtime.js?v=16'
  ]){
