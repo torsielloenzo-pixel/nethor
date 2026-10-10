@@ -18,10 +18,19 @@ Le client passe par `ui/desktop/store-google-card.js` et l'Edge Function Supabas
 
 ## Source de secours
 La ville du Thor référence Netto : **150 chemin Saint-Michel, 84250 Le Thor** et **04 90 01 34 23**.
-Horaires habituels : lundi–samedi **08:00–20:00**, dimanche **09:00–12:30**.
-Source : https://www.ville-lethor.fr/contacts/netto/
+Horaires de secours configurés dans Nethor à partir des indications fournies par le magasin :
+- **Lundi à samedi : 08:00–20:00**
+- **Dimanche : 09:00–12:30**
 
-Si la clé n'est pas configurée, que Google est inaccessible ou que les données sont absentes, la fiche **n'affiche pas de faux statut « ouvert en temps réel »**.
+Source d'adresse et de contact : https://www.ville-lethor.fr/contacts/netto/
+
+Si Google est indisponible, ou si Google répond sans fournir `openNow`, Nethor calcule localement le statut estimé en fuseau `Europe/Paris` et affiche par exemple :
+- **Ouvert · horaires habituels** — « Ferme à 20:00 · non vérifié en direct »
+- **Fermé · horaires habituels** — « Ouvre demain à 09:00 · non vérifié en direct »
+
+La fiche distingue systématiquement le statut basé sur les horaires **habituels** du statut réel obtenu de Google. Cela ne garantit pas les ouvertures exceptionnelles, jours fériés, changements de planning ou fermetures temporaires. Les états explicitement « temporairement fermé » ou « définitivement fermé » signalés par Google prévalent sur le planning local.
+
+Lorsque la fenêtre reste ouverte, le statut local est recalculé toutes les 30 secondes. Le système tente de récupérer les données Google toutes les 2 minutes, comme auparavant.
 
 ## Confidentialité et coûts
 - Endpoint réservé aux utilisateurs authentifiés, sans paramètres permettant d'interroger d'autres établissements.
