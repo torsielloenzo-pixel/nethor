@@ -926,11 +926,22 @@ function renderDesktopHeaderIdentity(config,url,logoWidth,logoHeight,wordmarkSiz
  button.classList.remove('customLogo');
  button.style.removeProperty('background-image');button.style.removeProperty('background-repeat');button.style.removeProperty('background-position');button.style.removeProperty('background-size');
  const layout=headerIdentityLayout(config,'desktop'),secondaryUrl=themedPlatformAssetUrl(config,'desktop','header_logo_secondary','');
- const root=document.createElement('span');root.className='nethorHeaderIdentity nethorDesktopHeaderIdentity';root.dataset.headerLayout=layout;
- const primary=headerIdentityPrimary(url,'desktop',logoWidth,logoHeight,wordmarkSize),secondary=headerIdentitySecondary(secondaryUrl),textNode=headerIdentityTextNode(headerIdentityText(config,'desktop'));
- const nodes=layout==='logo_logo'?[primary,secondary]:layout==='text_logo'?[textNode,primary]:layout==='logo_text'?[primary,textNode]:[primary];
- root.append(...nodes.filter(Boolean));button.replaceChildren(root);
- bindDesktopHeaderAnimation(button,config,primary)
+ const sidebar=config?.desktop_dashboard_widget?.sidebar||{};
+ const fullUrl=String(sidebar.logo_full_url||'').trim(),compactUrl=String(sidebar.logo_compact_url||'').trim();
+ const root=document.createElement('span');root.className='nethorHeaderIdentity nethorDesktopHeaderIdentity';root.dataset.headerLayout=fullUrl?'logo_only':layout;
+ const primary=headerIdentityPrimary(fullUrl||url,'desktop',logoWidth,logoHeight,wordmarkSize),secondary=fullUrl?null:headerIdentitySecondary(secondaryUrl),textNode=headerIdentityTextNode(headerIdentityText(config,'desktop'));
+ const nodes=fullUrl?[primary]:layout==='logo_logo'?[primary,secondary]:layout==='text_logo'?[textNode,primary]:layout==='logo_text'?[primary,textNode]:[primary];
+ root.append(...nodes.filter(Boolean));
+ const compact=document.createElement('span');compact.className='nethorSidebarCompactLogo';
+ compact.setAttribute('aria-hidden','true');
+ if(compactUrl){
+  const img=document.createElement('img');img.src=compactUrl;img.alt='';img.draggable=false;compact.appendChild(img)
+ }else{
+  const letter=document.createElement('span');letter.className='nethorSidebarCompactDefault';letter.textContent='n';compact.appendChild(letter)
+ }
+ button.replaceChildren(root,compact);
+ // Retain the existing full-size animated logo when no independent full logo is selected.
+ if(!fullUrl)bindDesktopHeaderAnimation(button,config,primary)
 }
 function mobileHeaderAppearance(config){
  const ui=config?.platform_ui?.mobile||{},custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase(),visual=['mineral','sage','plum','halloween'].includes(custom)?custom:(document.documentElement.dataset.theme==='dark'?'dark':'light'),node=ui.header_themes?.[visual]&&typeof ui.header_themes[visual]==='object'?ui.header_themes[visual]:{};
