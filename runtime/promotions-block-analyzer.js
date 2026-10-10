@@ -84,7 +84,7 @@ function regionsForPage(lines,pageWidth,pageHeight){
   else{cluster.y=(cluster.y*cluster.n+line.y)/(cluster.n+1);cluster.n++}
  }
  rowClusters.sort((a,b)=>a.y-b.y);
- const rowBounds=[0,...rowClusters.slice(1).map((r,i)=>(r.y+rowClusters[i].y)/2),pageHeight+3];
+ const rowBounds=[0,...rowClusters.slice(1).map((r,i)=>rowClusters[i].y+(r.y-rowClusters[i].y)*.20),pageHeight+3];
  if(!rowClusters.length)return [];
  const width=pageWidth/columns,regions=[];
  for(let ri=0;ri<rowClusters.length;ri++){
@@ -150,12 +150,21 @@ function nameInBlock(block,anchor,core){
 function priceUnitInBlock(block,price){
  const center=price.line;
  const other=block.lines.filter(l=>l.id!==center.id&&priceUnitRE.test(l.text)&&
-  l.text.length<=42&&Math.abs(l.y-center.y)<=36&&
-  l.x<=center.x+Math.max(115,block.width*.40))
+  l.text.length<=42&&Math.abs(l.y-center.y)<=78&&
+  l.x<=center.x+Math.min(74,block.width*.30)&&
+  !(/\d+[.,]\d{2}\s*€/.test(l.text)&&technicalRE.test(l.text)))
   .sort((a,b)=>Math.abs(a.y-center.y)-Math.abs(b.y-center.y));
  const raw=other[0]?.text||center.text;
  const matched=raw.match(/(?:la\s+bo[iî]te\s+de\s+\d+|le\s+filet\s+de\s+\d+\s*kg|le\s+lot\s+de\s+\d+|l['’]unit[eé]|le\s+kg|au\s+kg|le\s+litre|la\s+pi[eè]ce|le\s+sachet|la\s+barquette)/i);
  return{value:matched?clean(matched[0]):'',used:matched&&other[0]?[other[0].id]:[]}
+}
+function departmentFromBlock(name,core,lines){
+ const t=clean(name);
+ if(/\b(?:POIREAUX?|RAISIN|AVOCAT|OIGNON|POMMES?\s+DE\s+TERRE|BROCOLI|AUBERGINE|MELON)\b/i.test(t))return 'Fruits et légumes';
+ if(/\b(?:CHOUQUETTES?|PAINS?\s+AU\s+CHOCOLAT|CHAUSSON|CROISSANTS?|VIENNOISERIES?|D[EÉ]LICES?\s+AU\s+CARAMEL)\b/i.test(t))return 'Boulangerie';
+ const ctx=lines.map(l=>clean(l.text)).join(' ');
+ if(/\b(?:chouquettes?|p[aâ]tisseries?|viennoiseries?)\b/i.test(ctx)&&/\b(?:chouquettes?|d[eé]lices?\s+au\s+caramel)\b/i.test(t))return 'Boulangerie';
+ return core.categoryOf(t)
 }
 function itemFromBlock(block,core,page){
  const primary=pickMainPrice(block);if(!primary)return null;
@@ -179,7 +188,7 @@ function itemFromBlock(block,core,page){
  const tech=uniqueStrings(technical).join(' · ').slice(0,1200);
  const info=uniqueStrings(extras).join(' · ').slice(0,1200);
  const offer=[primary.parsed.price,...uniqueStrings(benefits)].join(' · ').slice(0,1200);
- const category=core.categoryOf(named.name);
+ const category=departmentFromBlock(named.name,core,block.lines);
  const auto_uncertain=Boolean(primary.parsed.uncertain||category==='À classer'||
    !named.name||!priceUnit&&primary.parsed.price.endsWith(' €')&&primary.line.text.length<=4);
  const bbox={x:Math.round(block.x),y:Math.round(block.y),width:Math.round(block.width),
