@@ -197,12 +197,12 @@ async function safeQueries(ctx){
 }
 async function render(ctx){
  const c=config(ctx.cfg||{});if(c.enabled===false)return{html:'',config:c};
- const ext=await safeQueries(ctx),now=new Date(),people=peopleToday(ctx.todayModel,ctx.todayKey,ctx.profileRows),teamTotal=todayTeamCount(ctx.todayModel,ctx.todayKey),cov=coverage(ctx.todayModel,ctx.todayKey),tasks=taskStats(ctx);
+ const ext=await safeQueries(ctx),now=new Date(),people=peopleToday(ctx.todayModel,ctx.todayKey,ctx.profileRows),currentlyWorking=peopleNow(ctx.todayModel,ctx.todayKey,ctx.profileRows,now),teamTotal=todayTeamCount(ctx.todayModel,ctx.todayKey),cov=coverage(ctx.todayModel,ctx.todayKey),tasks=taskStats(ctx);
  const criticalKinds=new Set(['maintenance','password_reset_request','security','incident','problem']);
  const alertCount=(ctx.notifications||[]).filter(n=>!n.read_at&&criticalKinds.has(String(n.kind||''))).length+ext.flashes.filter(x=>['material','procedure'].includes(x.category)).length;
  const planningAnomalyCount=planningDayAnomalyCount(ctx.todayModel,ctx.todayKey,ctx.profileRows,ext.absences);
  const kpis=[],wd=c.widgets;
- if(enabled(wd.present_staff))kpis.push(kpi('staff',wd.present_staff.label,people.length+' / '+teamTotal,people.length?'actuellement en poste':'aucune présence détectée','team',teamTotal?Math.round(people.length/teamTotal*100):0));
+ if(enabled(wd.present_staff))kpis.push(kpi('staff',wd.present_staff.label,currentlyWorking.length+' / '+teamTotal,currentlyWorking.length?'actuellement en poste':'aucune présence actuellement','team',teamTotal?Math.round(currentlyWorking.length/teamTotal*100):0));
  if(enabled(wd.planning_coverage))kpis.push(kpi('coverage',wd.planning_coverage.label,cov==null?'—':cov+' %',cov==null?'planning non renseigné':'continuité des plages planifiées','calendar',cov??0));
  if(enabled(wd.daily_tasks))kpis.push(kpi('tasks',wd.daily_tasks.label,tasks.done+' / '+tasks.total,tasks.total?'missions publiées aujourd’hui':'aucune tâche publiée','task',tasks.total?Math.round(tasks.done/tasks.total*100):0));
  if(enabled(wd.critical_alerts)){
@@ -213,19 +213,28 @@ async function render(ctx){
  if(enabled(wd.deliveries))kpis.push(kpi('deliveries',wd.deliveries.label,ext.deliveryAvailable?String(ext.deliveries.filter(x=>!['put_away','cancelled'].includes(x.status)).length):'—',ext.deliveryAvailable?'actives aujourd’hui':'données non accessibles','truck',undefined,'nethorDesktopDeliveriesKpi'));
  const style='--nd-accent:'+attr(c.style.accent||'#ff5a2a')+';--nd-radius:'+int(c.style.radius,16,10,28)+'px;--nd-gap:'+int(c.style.gap,14,8,24)+'px';
  const parts=[];
+ // Store banner remains untouched. Only the dashboard widgets change layout.
  if(enabled(wd.store_banner)&&ctx.storeInfoHtml)parts.push('<div class="ndHeroSlot">'+ctx.storeInfoHtml+'</div>');
- if(kpis.length)parts.push('<div class="ndKpiGrid" id="nethorDesktopStatsRow">'+kpis.join('')+'</div>');
- if(enabled(wd.priorities)||enabled(wd.planning_view)){
-  parts.push('<div class="ndMainRow">'+(enabled(wd.priorities)?renderPriorities(ctx,wd.priorities,ext.chat,ext.deliveries):'')+(enabled(wd.planning_view)?'<section class="ndPlanningSlot">'+(ctx.quickPlanningHtml||'<div class="ndCard ndEmpty">Planning indisponible.</div>')+'</section>':'')+'</div>')
+ if(kpis.length)parts.push('<div class="ndKpiGrid" id="nethorDesktopStatsRow" style="--nd-kpi-count:'+kpis.length+'">'+kpis.join('')+'</div>');
+ // The daily timeline is the principal widget; messages and quick actions share
+ // an independent right column. Optional widgets remain accessible below.
+ const primary=[];
+ if(enabled(wd.planning_view))primary.push('<section class="ndPlanningSlot">'+(ctx.quickPlanningHtml||'<div class="ndCard ndEmpty">Planning indisponible.</div>')+'</section>');
+ if(enabled(wd.priorities))primary.push(renderPriorities(ctx,wd.priorities,ext.chat,ext.deliveries));
+ const sidebar=[];
+ if(enabled(wd.priority_messages))sidebar.push(renderMessages(ctx,wd.priority_messages,ext.chat));
+ if(enabled(wd.quick_actions))sidebar.push(renderQuickActions(ctx.cfg||{},wd.quick_actions));
+ if(primary.length||sidebar.length){
+  const gridClass='ndWidgetGrid'+(!primary.length?' ndWidgetGrid--asideOnly':'')+(!sidebar.length?' ndWidgetGrid--primaryOnly':'');
+  parts.push('<div class="'+gridClass+'">'+
+   (primary.length?'<div class="ndWidgetPrimary">'+primary.join('')+'</div>':'')+
+   (sidebar.length?'<div class="ndWidgetAside">'+sidebar.join('')+'</div>':'')+
+  '</div>');
  }
- const lower=[];
- if(enabled(wd.team_service))lower.push(renderTeam(ctx,wd.team_service,people));
- if(enabled(wd.operations_followup))lower.push(renderFollowup(ctx,wd.operations_followup,ext.deliveries));
- const right=[];
- if(enabled(wd.priority_messages))right.push(renderMessages(ctx,wd.priority_messages,ext.chat));
- if(enabled(wd.quick_actions))right.push(renderQuickActions(ctx.cfg||{},wd.quick_actions));
- if(right.length)lower.push('<div class="ndSideStack">'+right.join('')+'</div>');
- if(lower.length)parts.push('<div class="ndLowerRow">'+lower.join('')+'</div>');
+ const secondary=[];
+ if(enabled(wd.team_service))secondary.push(renderTeam(ctx,wd.team_service,people));
+ if(enabled(wd.operations_followup))secondary.push(renderFollowup(ctx,wd.operations_followup,ext.deliveries));
+ if(secondary.length)parts.push('<div class="ndSupportingGrid">'+secondary.join('')+'</div>');
  return{html:'<div class="nethorDesktopReferenceDashboard" style="'+style+'">'+parts.join('')+'</div>',config:c,people,ext,tasks,alertCount,planningAnomalyCount}
 }
 function activate(result){
