@@ -181,7 +181,7 @@ function renderMessages(ctx,w,chatRows){
  const rows=(Array.isArray(chatRows)?chatRows:[]).filter(x=>x?.last_message_at&&Number.isFinite(new Date(x.last_message_at).getTime()))
   .sort((a,b)=>(Number(b.unread_count>0)-Number(a.unread_count>0))||new Date(b.last_message_at)-new Date(a.last_message_at))
   .slice(0,max);
- return '<section class="ndCard ndMessages" style="--nd-message-slots:'+max+'">'+
+ return '<section class="ndCard ndMessages" style="--nd-messages-reserved-height:'+(max*77+22)+'px">'+
   sectionHead(w.label,rows.reduce((n,x)=>n+Number(x.unread_count||0),0),'Voir tous les messages','chat.html','chat')+
   '<div class="ndMessageRows">'+(rows.length?rows.map(x=>{
    const sender=profiles.find(p=>p.id===x.last_sender),name=sender?.display_name||x.conversation_name||'Conversation';
