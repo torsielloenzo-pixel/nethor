@@ -293,6 +293,7 @@ const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
  enabled:true,legacy_operations_hub:false,
  management:{platform:'desktop',category:'home'},
  header:{store_name:'Netto Le Thor',store_subtitle:'Point de vente',store_url:DESKTOP_STORE_GOOGLE_URL,store_image_url:'',store_image_path:'',store_image_name:'',show_store:true,show_datetime:true,show_notifications:true,show_user:true,show_update:true,show_mobile_preview:true,show_admin_logs:true,show_store_image:true},
+ background:{enabled:false,image_url:'',image_path:'',image_name:'',fit:'cover',position:'center',veil:14},
  sidebar:{enabled:true,width:240,logo_full_url:'',logo_full_path:'',logo_full_name:'',logo_compact_url:'',logo_compact_path:'',logo_compact_name:'',items:{
   home:{enabled:true,label:'Accueil',url:'home.html'},
   management:{enabled:true,label:'Gestion',url:'admin-portal.html'},
@@ -331,7 +332,7 @@ const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
 };
 function normalizeDesktopDashboardWidgetConfig(raw){
  raw=raw&&typeof raw==='object'?raw:{};
- const header=raw.header&&typeof raw.header==='object'?raw.header:{},sidebar=raw.sidebar&&typeof raw.sidebar==='object'?raw.sidebar:{},widgets=raw.widgets&&typeof raw.widgets==='object'?raw.widgets:{},actions=raw.quick_actions&&typeof raw.quick_actions==='object'?raw.quick_actions:{},style=raw.style&&typeof raw.style==='object'?raw.style:{};
+ const background=raw.background&&typeof raw.background==='object'?raw.background:{},header=raw.header&&typeof raw.header==='object'?raw.header:{},sidebar=raw.sidebar&&typeof raw.sidebar==='object'?raw.sidebar:{},widgets=raw.widgets&&typeof raw.widgets==='object'?raw.widgets:{},actions=raw.quick_actions&&typeof raw.quick_actions==='object'?raw.quick_actions:{},style=raw.style&&typeof raw.style==='object'?raw.style:{};
  const items=sidebar.items&&typeof sidebar.items==='object'?sidebar.items:{},normalizedItems={};
  for(const [key,def] of Object.entries(DESKTOP_DASHBOARD_WIDGET_DEFAULTS.sidebar.items)){
   const x=items[key]&&typeof items[key]==='object'?items[key]:{};
@@ -351,6 +352,15 @@ function normalizeDesktopDashboardWidgetConfig(raw){
  return{
   enabled:raw.enabled!==false,legacy_operations_hub:raw.legacy_operations_hub===true,
   management:{platform:'desktop',category:'home'},
+  background:{
+   enabled:background.enabled===true,
+   image_url:String(background.image_url||''),
+   image_path:String(background.image_path||''),
+   image_name:String(background.image_name||''),
+   fit:['cover','contain'].includes(background.fit)?background.fit:'cover',
+   position:['center','top','bottom'].includes(background.position)?background.position:'center',
+   veil:Number.isFinite(Number(background.veil))?Math.max(0,Math.min(75,Math.round(Number(background.veil)))):14
+  },
   header:{
    store_name:String(header.store_name||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_name),
    store_subtitle:String(header.store_subtitle||DESKTOP_DASHBOARD_WIDGET_DEFAULTS.header.store_subtitle),
