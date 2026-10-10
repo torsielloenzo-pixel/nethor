@@ -127,12 +127,12 @@ test('PDF et base : inclure les champs séparés et la géométrie source',()=>{
  const src=read('runtime/promotions-page.js');
  const sql=read('database/2026-10-10-promotions-product-blocks.sql');
  const html=read('promotions.html'),sw=read('sw.js');
- assert.match(src,/NethorPromotionsBlocks\.parsePages\(pages,window\.NethorPromotionParser\)/);
+ assert.match(src,/NethorPromotionVision\.analyze/);
  assert.match(src,/p\.price_unit\|\|''/);
  assert.match(src,/p\.additional_info\|\|''/);
  assert.match(src,/p\.source_block\|\|\{\}/);
- assert.match(src,/NethorPromotionsOCR\.scanPage/);
- assert.match(src,/source_mode/);
+ assert.match(read('runtime/promotions-visual-engine.js'),/action:'verify'/);
+ assert.match(src,/p\.source_block\|\|\{\}/);
  assert.match(sql,/add column if not exists price_unit/);
  assert.match(sql,/add column if not exists additional_info/);
  assert.match(sql,/add column if not exists source_block jsonb/);
