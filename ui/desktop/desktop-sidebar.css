@@ -320,6 +320,9 @@ html[data-nethor-page-layout="desktop"] .nethorSidebarItem.active{
 .nethorSidebarItem[data-sidebar-key="chat"]{--nsi-color:#267fe9!important;--nsi-bg:#e7f1ff!important}
 .nethorSidebarItem[data-sidebar-key="management"]{--nsi-color:#46566d!important;--nsi-bg:#eef0f3!important}
 .nethorSidebarItem[data-sidebar-key="settings"]{--nsi-color:#45566e!important;--nsi-bg:#f0f2f5!important}
+/* Accès permanent à la page de signalement, même style que les autres entrées. */
+.nethorSidebarItem[data-sidebar-key="signal"]{--nsi-color:#e34444!important;--nsi-bg:#ffeceb!important}
+.nethorDesktopSidebarBottom{display:flex;flex-direction:column;gap:5px}
 html[data-nethor-page-layout="desktop"] .nethorSidebarIcon{
  width:42px!important;height:42px!important;
  border-radius:12px;background:var(--nsi-bg)!important;color:var(--nsi-color)!important;
