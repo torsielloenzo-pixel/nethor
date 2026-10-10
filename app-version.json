@@ -1,19 +1,20 @@
 {
-  "version": 437,
-  "label": "v1.46.67",
+  "version": 440,
+  "label": "v1.46.68",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Desktop · Nouvelle page Promotions",
-  "message": "Import de catalogues PDF, extraction et correction des références, dates de validité et sauvegarde dans une base sécurisée.",
-  "published_at": "2026-10-10T20:24:21.971Z",
+  "title": "Promotions · Import automatique et semaine de référence",
+  "message": "Le PDF est analysé et enregistré automatiquement, avec dates de validité, semaine ISO du lundi, produits et catégories.",
+  "published_at": "2026-10-10T21:28:18.562Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Barre latérale Desktop : nouvelle entrée Promotions avec une icône pourcentage.",
-    "Import PDF réservé à Administrateur / Point de vente ; consultation des catalogues accessible aux comptes actifs.",
-    "Analyse des PDF texte : nom complet, informations techniques, prix ou avantage et page source.",
-    "Relecture obligatoire de chaque page et ajout manuel de références avant sauvegarde.",
-    "Catalogues et produits enregistrés dans Supabase ; PDF original conservé dans un espace privé.",
-    "PDF scans/images non pris en charge sans OCR : un contrôle par page avertit des limites d'extraction."
+    "Sélection du PDF : lancement de l’analyse, catégorisation et enregistrement automatiques, sans écran de validation.",
+    "Dates du catalogue détectées automatiquement, sans saisie manuelle ni date inventée.",
+    "Titre créé automatiquement : Promotions Netto - Semaine XX.",
+    "Rattachement calculé sur la semaine ISO du premier jour de validité (lundi-dimanche), dates réelles conservées.",
+    "Références classées par catégorie ; informations techniques, prix et avantages conservés avec page source.",
+    "Produits incertains ou prix non détectés identifiés explicitement, et diagnostic des pages scannées.",
+    "Import bloqué uniquement si les dates ou le contenu du PDF ne sont pas exploitables sans OCR."
   ]
 }

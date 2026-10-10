@@ -16,7 +16,7 @@
 <script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=34','ui/mobile/mobile-shell.js?v=14')</script>
 <link rel="stylesheet" href="profile-ui.css?v=3">
 <script src="profile-ui.js?v=226"></script>
-<link rel="stylesheet" href="runtime/promotions-page.css?v=1">
+<link rel="stylesheet" href="runtime/promotions-page.css?v=2">
 </head>
 <body>
 <div data-nethor-platform-header></div>
@@ -24,55 +24,37 @@
  <div data-nethor-platform-lead></div>
  <div class="promoInner">
   <header class="promoTitleRow">
-   <div><span class="promoEyebrow">CATALOGUES & OFFRES</span><h1>Promotions</h1><p>Une base de références fidèle aux catalogues du magasin.</p></div>
+   <div><span class="promoEyebrow">CATALOGUES & OFFRES</span><h1>Promotions</h1><p>Catalogues analysés automatiquement, référencés et classés par semaine.</p></div>
    <span class="promoTitleIcon" aria-hidden="true">%</span>
   </header>
   <div id="promoAlert" class="promoAlert" role="status" aria-live="polite" hidden></div>
   <section class="promoPanel promoImport" id="promoImport" hidden>
-   <div class="promoSectionHead"><span class="promoIcon">⇧</span><div><h2>Importer un catalogue PDF</h2><p>Extraction et relecture avant l’enregistrement.</p></div></div>
-   <div class="promoImportGrid">
-    <div class="promoDrop" id="promoDrop" tabindex="0" role="button" aria-label="Choisir un catalogue PDF">
-     <span class="promoPdfIcon" aria-hidden="true">PDF</span><strong id="promoDropTitle">Glisser le catalogue PDF ici</strong>
-     <small>ou cliquer pour choisir un fichier · PDF avec texte sélectionnable · 30 Mo maximum</small>
-     <input type="file" id="promoFile" accept=".pdf,application/pdf" hidden>
-    </div>
-    <div class="promoFields">
-     <label>Nom du catalogue<input id="promoTitle" type="text" placeholder="Ex. Promotions Netto · Semaine 41" maxlength="240"></label>
-     <div class="promoDates"><label>Début de validité<input id="promoStart" type="date"></label><label>Fin de validité<input id="promoEnd" type="date"></label></div>
-     <button type="button" id="promoExtract" class="promoPrimary" disabled>Analyser le PDF</button>
-    </div>
+   <div class="promoSectionHead"><span class="promoIcon">⇧</span><div>
+    <h2>Import automatique du catalogue</h2>
+    <p>Un fichier PDF suffit : Nethor recherche les offres, les dates et les catégories, puis construit la base.</p>
+   </div></div>
+   <div class="promoDrop" id="promoDrop" tabindex="0" role="button" aria-label="Importer et analyser automatiquement un catalogue PDF">
+    <span class="promoPdfIcon" aria-hidden="true">PDF</span>
+    <strong id="promoDropTitle">Dépose ton catalogue PDF pour lancer l'analyse</strong>
+    <small>ou clique pour le sélectionner · lancement et enregistrement automatiques · PDF textuel · 30 Mo maximum</small>
+    <input type="file" id="promoFile" accept=".pdf,application/pdf" hidden>
    </div>
-   <p class="promoHint">Les PDF numérisés sans texte nécessitent un OCR : ils ne sont pas importés automatiquement. Les résultats issus d’un catalogue doivent être vérifiés page par page.</p>
-  </section>
-  <section id="promoReview" class="promoPanel promoReview" hidden>
-   <div class="promoSectionHead"><span class="promoIcon">✓</span><div><h2>Vérifier les références extraites</h2><p>Nom complet · informations techniques · prix / avantage · page source.</p></div></div>
-   <div id="promoStats" class="promoStats"></div>
-   <div class="promoReviewLayout">
-    <aside class="promoReviewAside">
-     <strong>Contrôle des pages</strong>
-     <div id="promoPages"></div>
-     <p>Chaque page doit être relue. Ajoute les références manquantes si nécessaire.</p>
-     <button type="button" class="promoSecondary" id="promoSourceView">Afficher le PDF original ↗</button>
-    </aside>
-    <div class="promoReviewMain">
-     <div class="promoReviewToolbar"><label>Page à examiner <select id="promoPageFilter"></select></label>
-      <button type="button" class="promoSecondary" id="promoAdd">+ Ajouter une référence</button></div>
-     <div class="promoItems" id="promoItems"></div>
-     <div class="promoUnresolved"><strong>Textes restant à contrôler</strong><p>Des éléments de la page peuvent ne pas avoir été associés à une référence. Consulte le PDF d'origine pour t'assurer qu'aucun produit n'est oublié.</p><div id="promoUnresolved"></div></div>
-     <div class="promoReviewActions"><button type="button" class="promoSecondary" id="promoCancel">Annuler l’analyse</button>
-      <button type="button" class="promoPrimary" id="promoSave" disabled>Valider et enregistrer dans Nethor</button></div>
-    </div>
+   <div class="promoAutoProgress" id="promoAutoProgress" role="status" aria-live="polite" hidden>
+    <span class="promoSpinner" aria-hidden="true"></span>
+    <div><strong id="promoProgressTitle">Analyse en cours…</strong><p id="promoProgressText">Nethor examine les pages du PDF.</p></div>
    </div>
+   <div class="promoAutoSummary" id="promoAutoSummary" hidden></div>
+   <p class="promoHint">Aucune validation à effectuer. Les dates sont relevées dans le PDF, le catalogue est relié à la semaine du lundi de son début de validité. Les produits incertains sont conservés et signalés. Un scan sans texte ou une période introuvable ne sera pas importé avec des informations inventées.</p>
   </section>
   <section class="promoPanel promoCatalogs">
-   <div class="promoSectionHead"><span class="promoIcon">%</span><div><h2>Base de données des promotions</h2><p>Catalogues enregistrés et références associées.</p></div></div>
+   <div class="promoSectionHead"><span class="promoIcon">%</span><div><h2>Base de données des promotions</h2><p>Nom automatique · semaine ISO · dates réelles · produits catégorisés.</p></div></div>
    <div id="promoCatalogList" class="promoCatalogList"><p class="promoMuted">Chargement des catalogues…</p></div>
    <div id="promoCatalogDetail" class="promoCatalogDetail" hidden></div>
   </section>
  </div>
 </main>
 <script src="platform-page-layout.js?v=12"></script>
-<script src="runtime/promotions-parser.js?v=1"></script>
-<script src="runtime/promotions-page.js?v=1"></script>
+<script src="runtime/promotions-parser.js?v=2"></script>
+<script src="runtime/promotions-page.js?v=2"></script>
 </body>
 </html>
