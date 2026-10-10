@@ -1,0 +1,81 @@
+/* Accueil desktop — fiche détaillée des livraisons (partage l'ossature du dialogue Anomalies). */
+.ndDeliveryDialog .nddHeaderIcon{color:#d95c29;background:#fff0e9;font-size:24px}
+.ndDeliveryDialog .ndaHeaderCopy>small{color:#d86b35}
+.ndDeliveryDialog .ndaStat strong{color:#e76a35}
+.ndDeliveryDialog .ndaStat.isWeek strong{color:#326eca}
+.ndDeliveryDialog .ndaWeekRange strong{color:#947029;font-size:26px;line-height:1.15}
+.ndDeliveryDialog .ndaTabs button.isActive{color:#dc6832}
+.ndDeliveryDialog .ndaDayButton.isCurrent{border-color:#eb9364;background:#fff4eb}
+.ndDeliveryDialog .ndaDayButton b.hasAnomalies{background:#ffeadc;color:#cc6827}
+.ndDeliveryDialog .ndaDayButton b.isClear{background:#edf1f5;color:#65758e}
+.nddContent{scrollbar-width:thin}
+.nddDeliverySection{margin:12px 0 19px}
+.nddSectionHead{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:0 1px 9px}
+.nddSectionHead h3{font-size:12px;font-weight:850;margin:0}
+.nddSectionHead p{font-size:10px;margin:4px 0 0;line-height:1.4;color:var(--nethor-sidebar-text,#728198)}
+.nddSectionCount{min-width:25px;height:25px;padding:0 5px;display:grid;place-items:center;border-radius:8px;
+ background:#fff0e4;color:#bd6c29;font-size:11px}
+.nddSectionCount-possible{background:#fff7e5;color:#956b26}
+.nddSectionCount-overnight{background:#eaf3ff;color:#4778c1}
+.nddDeliveryRows{display:flex;flex-direction:column;gap:8px}
+.nddDeliveryRow{
+ display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;
+ padding:11px 12px;border:1px solid var(--nethor-sidebar-border,#e8ebf1);
+ border-radius:11px;background:var(--nethor-shell-card,#fff)
+}
+.nddDeliveryGlyph{
+ display:grid;place-items:center;width:32px;height:32px;border-radius:9px;
+ font-size:17px;font-weight:850;background:#edf4fc;color:#4173b6
+}
+.nddCategory-sec .nddDeliveryGlyph{background:#fff0e6;color:#d86a34}
+.nddCategory-gel .nddDeliveryGlyph{background:#eaf4ff;color:#347bb8}
+.nddCategory-frais .nddDeliveryGlyph{background:#ecf7f2;color:#388f70}
+.nddDeliveryCopy{display:flex;min-width:0;flex-direction:column;gap:3px}
+.nddDeliveryCopy strong{font-size:11px;font-weight:830}
+.nddDeliveryCopy small{font-size:10px;color:var(--nethor-sidebar-text,#64758b)}
+.nddDeliveryCopy>span{font-size:9px;color:var(--nethor-sidebar-text,#8492a3);line-height:1.4}
+.nddDeliveryPill{border-radius:8px;padding:6px 8px;font-size:9px;font-weight:820;white-space:nowrap}
+.nddDeliveryPill.isExpected{background:#eaf7ee;color:#258256}
+.nddDeliveryPill.isPossible{background:#fff4da;color:#966f26}
+.nddDeliveryPill.isOvernight{background:#eaf1fc;color:#5879ad}
+.nddEmpty{padding:15px 12px;border:1px dashed var(--nethor-sidebar-border,#e1e7f0);
+ border-radius:11px;background:color-mix(in srgb,var(--nethor-shell-card,#fff) 96%,#e2eaf4);
+ font-size:10px;color:var(--nethor-sidebar-text,#69788c);
+ display:flex;align-items:center;gap:10px}
+.nddEmpty span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#e7f5eb;color:#26966d;font-weight:900}
+.nddWeekLegend{display:flex;gap:15px;align-items:center;flex-wrap:wrap;margin:0 0 12px;font-size:9px;font-weight:730}
+.nddWeekLegend .isExpected{color:#d96731}
+.nddWeekLegend .isPossible{color:#bd8a32}
+.nddWeekLegend .isOvernight{color:#6a8fc8}
+.nddWeekRow{grid-template-columns:minmax(0,1fr) auto 12px;min-height:53px}
+.nddWeekCounters{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.nddWeekCounters b{padding:5px 8px;border-radius:8px;font-size:9px;font-weight:850}
+.nddWeekCounters b.hasExpected{background:#ffede2;color:#bd652f}
+.nddWeekCounters b.isZero{background:#f0f3f7;color:#8691a1}
+.nddWeekCounters b.isPossible{background:#fff2d8;color:#946c25}
+.nddWeekCounters b.isOvernight{background:#ebf2ff;color:#5779ad}
+.nddWeekNote{background:#f4f7fb;border:1px solid #e5ebf2;border-radius:11px;
+ padding:12px;margin-top:14px;font-size:10px;color:#66758c;line-height:1.55}
+.nddFooter button.nddFooterClose{padding:9px 15px;border:1px solid #efc5b2;border-radius:9px;
+ background:#fff2e9;color:#c95c2c;font-size:10px;font-weight:800;cursor:pointer}
+.nddFooter button.nddFooterClose:hover{background:#ffe9de}
+.nethorDesktopReferenceDashboard .ndKpi-deliveries[role="button"]{cursor:pointer}
+.nethorDesktopReferenceDashboard .ndKpi-deliveries[role="button"]:hover{
+ border-color:#f4cbb2;box-shadow:0 9px 23px rgba(229,113,47,.10)
+}
+.nethorDesktopReferenceDashboard .ndKpi-deliveries[role="button"]:focus-visible{
+ outline:3px solid rgba(227,113,57,.36);outline-offset:3px
+}
+html[data-theme="dark"] .ndDeliveryDialog .nddDeliveryRow{background:#24282f}
+html[data-theme="dark"] .ndDeliveryDialog .nddWeekNote{background:#242d38;border-color:#364152;color:#c1cbd9}
+html[data-theme="dark"] .ndDeliveryDialog .nddFooterClose{background:#47352d;border-color:#6a4d3d;color:#ffd2bd}
+html[data-theme="dark"] .ndDeliveryDialog .nddEmpty{background:#252d34}
+html[data-theme="dark"] .ndDeliveryDialog .ndaDayButton.isCurrent{background:#46342b}
+@media(max-width:620px){
+ .nddDeliveryRow{grid-template-columns:30px minmax(0,1fr);gap:8px}
+ .nddDeliveryPill{grid-column:2;justify-self:start}
+ .nddWeekRow{gap:6px}
+ .nddWeekCounters b{padding:5px}
+ .nddWeekLegend{gap:8px}
+ .nddFooter{display:flex;align-items:center;gap:10px}
+}
