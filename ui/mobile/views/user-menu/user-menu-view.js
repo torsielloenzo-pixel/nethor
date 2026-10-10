@@ -7,6 +7,7 @@ const BASE_MODULES=Object.freeze([
  {id:'stock',label:'Stock F&L',subtitle:'Gestion du stock',url:'index.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
  {id:'planning',label:'Planning',subtitle:'Horaires de l’équipe',url:'planning.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
  {id:'chat',label:'Chat',subtitle:'Messagerie interne',url:'chat.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
+ {id:'surveys',label:'Sondages de l’équipe',subtitle:'8 semaines pour améliorer notre quotidien',url:'mobile.html?view=surveys',roles:null,userMenu:true,defaultUser:true,platform:'mobile'},
  {id:'scanner',label:'Scanner (bêta)',subtitle:'EAN13 vers fiche article',url:'scanner.html',roles:null,userMenu:true,defaultUser:true,platform:'mobile'},
  {id:'articles',label:'Fiches articles',subtitle:'Référentiel articles',url:'articles.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
  {id:'notification_settings',label:'Réglages des notifications',subtitle:'Préférences et alertes',url:'notification-settings.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
@@ -24,6 +25,7 @@ const ICONS=Object.freeze({
  stock:'<svg viewBox="0 0 24 24" fill="none"><path d="M4.5 8.5h15l-1.4 10H5.9l-1.4-10Z"/><path d="M7 8.5 9 5.5h6l2 3"/><path d="M8 12h8"/></svg>',
  planning:'<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5.5" width="16" height="14" rx="3"/><path d="M8 4v3M16 4v3M4 9.5h16"/><path d="M8 13h3M13 13h3M8 16h3"/></svg>',
  chat:'<svg viewBox="0 0 24 24" fill="none"><path d="M7.5 16.5H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-3l-2.5 2v-2Z"/><path d="M15.5 15.5H19a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-1.5"/></svg>',
+ surveys:'<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="16" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/><path d="m15 16 1 1 2-2"/></svg>',
  scanner:'<svg viewBox="0 0 24 24" fill="none"><path d="M5 8V5h3M16 5h3v3M19 16v3h-3M8 19H5v-3"/><path d="M8 9v6M11 8v8M14 9v6M17 8v8"/></svg>',
  articles:'<svg viewBox="0 0 24 24" fill="none"><path d="M7 5.5h8l2 2V18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2Z"/><path d="M15 5.5v2h2"/><path d="M8 11h8M8 14h8M8 17h5"/></svg>',
  notification_settings:'<svg viewBox="0 0 24 24" fill="none"><path d="M7 9a5 5 0 0 1 10 0v3.2l1.7 2.8H5.3L7 12.2V9Z"/><path d="M9.5 18h5M12 3v1"/></svg>',
@@ -113,7 +115,10 @@ function navigate(raw){
  try{
   const u=new URL(raw||'home.html',location.href);
   if(u.origin!==location.origin){location.href=u.href;return}
-  const file=(u.pathname.split('/').pop()||'home.html').toLowerCase(),view=routeIdForFile(file);
+  const file=(u.pathname.split('/').pop()||'home.html').toLowerCase();
+  const shellView=file==='mobile.html'?String(u.searchParams.get('view')||''):'';
+  if(shellView&&router()?.registered?.(shellView)){router().open(shellView,{source:'user-menu'});return}
+  const view=routeIdForFile(file);
   if(view&&router()?.open){router().open(view,{params:paramsObject(u.searchParams),source:'user-menu'});return}
   location.href=(u.pathname.split('/').pop()||'home.html')+u.search+u.hash
  }catch(_){location.href=raw}
@@ -166,7 +171,7 @@ async function logout(button){
 function render(){
  const shared=services(),profile=shared?.profile,cfg=shared?.siteConfig||{};
  if(!state.mounted||!state.host||!profile)return false;
- const modules=modulesForMenu(profile,cfg),primaryIds=new Set(['home','stock','planning','chat','scanner','articles']),adminIds=new Set(['accounts','portal_admin']),specialIds=new Set(['notification_settings','problem_report']);
+ const modules=modulesForMenu(profile,cfg),primaryIds=new Set(['home','stock','planning','chat','surveys','scanner','articles']),adminIds=new Set(['accounts','portal_admin']),specialIds=new Set(['notification_settings','problem_report']);
  const primary=modules.filter(m=>primaryIds.has(m.id)),admin=modules.filter(m=>adminIds.has(m.id)),extra=modules.filter(m=>!primaryIds.has(m.id)&&!adminIds.has(m.id)&&!specialIds.has(m.id));
  const notificationSettings=modules.find(m=>m.id==='notification_settings')||null,problemReport=modules.find(m=>m.id==='problem_report')||null;
  const settingsModule=moduleFromConfig(BASE_MODULES.find(m=>m.id==='settings'),cfg);

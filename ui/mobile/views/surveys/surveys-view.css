@@ -1,0 +1,70 @@
+/* Nethor · Sondages hebdomadaires Mobile — thèmes hérités sans modification du shell */
+.nethorMobileView[data-mobile-view="surveys"]{padding:0;background:var(--nwp-bg,#f3f5f8)}
+.nethorWeeklyPollView{
+ --nwp-bg:#f3f5f8;--nwp-card:#fff;--nwp-soft:#f0f4f8;
+ --nwp-text:#202a35;--nwp-muted:#6a7786;--nwp-border:#dde4eb;
+ --nwp-accent:#2877bb;--nwp-accent-on:#fff;--nwp-ring:#b6d9f5;
+ min-height:100%;box-sizing:border-box;background:var(--nwp-bg);color:var(--nwp-text);
+ padding:18px 14px calc(32px + env(safe-area-inset-bottom,0px));
+ font-family:inherit;overflow-wrap:anywhere;
+}
+.nethorWeeklyPollView *{box-sizing:border-box}
+.nethorWeeklyPollView button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nwpTop{display:flex;gap:10px;align-items:center;min-height:44px;font-size:13px;font-weight:800}
+.nwpBack{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border:1px solid var(--nwp-border);border-radius:13px;background:var(--nwp-card);color:var(--nwp-text);font-size:28px!important;line-height:1}
+.nwpTop>span:nth-child(2){flex:1}
+.nwpCampaignTag{border:1px solid var(--nwp-border);border-radius:99px;padding:6px 9px;color:var(--nwp-muted);font-size:10px}
+.nwpHero{position:relative;overflow:hidden;border:1px solid var(--nwp-border);border-radius:23px;margin:17px 0 20px;padding:24px 19px;background:linear-gradient(145deg,var(--nwp-card),var(--nwp-soft));box-shadow:0 7px 20px rgba(19,45,76,.035)}
+.nwpHero:after{content:"";position:absolute;right:-40px;top:-35px;width:140px;height:140px;border:25px solid var(--nwp-ring);opacity:.27;border-radius:50%;pointer-events:none}
+.nwpEyebrow{position:relative;z-index:1;letter-spacing:.1em;font-size:10px;font-weight:900;color:var(--nwp-accent)}
+.nwpHero h1{position:relative;z-index:1;max-width:300px;margin:10px 0 12px;color:var(--nwp-text);font-size:28px;line-height:1.14;letter-spacing:-.8px;font-weight:900}
+.nwpHero p{position:relative;z-index:1;max-width:340px;margin:0;color:var(--nwp-muted);font-size:12px;line-height:1.55}
+.nwpWeekHead{display:flex;justify-content:space-between;align-items:center;margin:0 3px 10px}
+.nwpWeekHead strong{font-size:14px}.nwpWeekHead small{font-size:11px;color:var(--nwp-muted)}
+.nwpWeeks{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin-bottom:18px}
+.nwpWeek{position:relative;min-width:0;height:43px;padding:2px 0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;border:1px solid var(--nwp-border);border-radius:12px;background:var(--nwp-card);color:var(--nwp-muted);font-size:12px;font-weight:800;transition:border-color .13s ease,background-color .13s ease}
+.nwpWeek.current{border-color:var(--nwp-accent);color:var(--nwp-accent);background:var(--nwp-soft)}
+.nwpDot{display:block;width:5px;height:5px;border-radius:50%;background:var(--nwp-border)}
+.nwpDot.open{background:#35a980}.nwpDot.closed{background:var(--nwp-accent)}
+.nwpCard{border:1px solid var(--nwp-border);border-radius:22px;background:var(--nwp-card);padding:19px 16px;box-shadow:0 8px 26px rgba(18,40,62,.035)}
+.nwpInfo{line-height:1.6;color:var(--nwp-muted);min-height:115px}
+.nwpInfo strong{color:var(--nwp-text)}.nwpInfo p{margin:8px 0}
+.nwpRetry{margin-top:12px;border:0;border-radius:12px;padding:11px 16px;background:var(--nwp-accent);color:var(--nwp-accent-on)}
+.nwpMeta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;color:var(--nwp-muted);font-size:11px;font-weight:700}
+.nwpStatus{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:var(--nwp-soft);color:var(--nwp-text);font-size:11px;font-weight:800}
+.nwpStatus.open{color:#0b744e;background:#e0f5eb}.nwpStatus.closed{color:var(--nwp-accent);background:var(--nwp-soft)}
+.nwpCard h2{color:var(--nwp-muted);font-size:13px;line-height:1.4;margin:23px 0 9px;font-weight:800}
+.nwpQuestion{margin:0 0 20px;color:var(--nwp-text);font-size:20px;line-height:1.35;font-weight:900;letter-spacing:-.35px}
+.nwpOptions{display:grid;gap:9px}
+.nwpOption{position:relative;min-height:57px;display:flex;align-items:center;text-align:left;gap:10px;width:100%;overflow:hidden;background:var(--nwp-card);color:var(--nwp-text);border:1px solid var(--nwp-border);border-radius:14px;padding:10px 11px;font-size:12px!important;line-height:1.35}
+.nwpOption.selected{border-color:var(--nwp-accent);background:var(--nwp-soft)}
+.nwpOption:disabled{cursor:default;opacity:1}
+.nwpOptionNumber{z-index:1;display:grid;place-items:center;min-width:25px;height:25px;border:1px solid var(--nwp-border);border-radius:9px;background:var(--nwp-card);font-size:11px;font-weight:800;color:var(--nwp-muted)}
+.nwpOption.selected .nwpOptionNumber{border-color:var(--nwp-accent);color:var(--nwp-accent)}
+.nwpOptionLabel{position:relative;z-index:1;flex:1;font-weight:700}
+.nwpChosen,.nwpCount{position:relative;z-index:1;flex:none;color:var(--nwp-accent);font-size:10px;font-weight:900}
+.nwpOptionProgress{position:absolute;inset:0 auto 0 0;background:var(--nwp-soft);border-radius:12px;pointer-events:none}
+.nwpFootNote,.nwpResultFoot{font-size:11px;line-height:1.55;margin:15px 2px 0;color:var(--nwp-muted)}
+.nwpSuccess{color:var(--nwp-accent);font-weight:800}
+.nwpResultFoot{font-weight:800}
+.nwpAction{border-top:1px solid var(--nwp-border);margin-top:20px;padding-top:16px}
+.nwpAction strong{font-size:13px}.nwpAction p{color:var(--nwp-text);line-height:1.55;font-size:12px;margin:8px 0}
+.nwpAction small{color:var(--nwp-muted);line-height:1.45;font-size:10px}
+.nwpPrivacy{display:flex;align-items:start;gap:8px;color:var(--nwp-muted);font-size:10px;line-height:1.6;padding:20px 5px 6px;max-width:620px;margin:0 auto}
+.nethorWeeklyPollView button:focus-visible{outline:3px solid var(--nwp-ring);outline-offset:2px}
+:root[data-theme="dark"]:not([data-nethor-mobile-theme]) .nethorWeeklyPollView{
+ --nwp-bg:#171a1e;--nwp-card:#23282d;--nwp-soft:#2d3540;--nwp-text:#f3f4f5;--nwp-muted:#b1bcc7;
+ --nwp-border:#3b444d;--nwp-accent:#90c5f8;--nwp-accent-on:#172b42;--nwp-ring:#497eab;
+}
+:root[data-nethor-mobile-theme] .nethorWeeklyPollView{
+ --nwp-bg:var(--nmt-bg);--nwp-card:var(--nmt-surface);--nwp-soft:var(--nmt-soft);
+ --nwp-text:var(--nmt-text);--nwp-muted:var(--nmt-muted);--nwp-border:var(--nmt-line);
+ --nwp-accent:var(--nmt-accent);--nwp-accent-on:var(--nmt-on-accent);
+ --nwp-ring:var(--nmt-accent);
+}
+:root[data-nethor-mobile-theme] .nethorMobileView[data-mobile-view="surveys"]{background:var(--nmt-bg)!important}
+:root[data-nethor-mobile-theme="plum"] .nwpStatus.open,
+:root[data-nethor-mobile-theme="halloween"] .nwpStatus.open{color:#9bedc9;background:#214534}
+@media(min-width:640px){.nethorWeeklyPollView{padding-left:max(14px,calc((100% - 620px)/2));padding-right:max(14px,calc((100% - 620px)/2))}}
+@media(max-width:360px){.nethorWeeklyPollView{padding-left:10px;padding-right:10px}.nwpWeeks{gap:3px}.nwpWeek{border-radius:9px}.nwpHero h1{font-size:24px}.nwpQuestion{font-size:18px}.nwpOption{padding:9px 8px}}
+@media(prefers-reduced-motion:reduce){.nwpWeek{transition:none}}
