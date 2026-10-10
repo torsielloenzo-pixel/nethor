@@ -702,3 +702,19 @@ html[data-nethor-platform="mobile"] [data-avatar-frame^="themeframe_"]::after{
  z-index:30!important;
  transform:none!important;
 }
+
+/* Planning Mobile — en-tête de semaine sans carte.
+   Conserver « Semaine XX » et les dates, mais laisser apparaître le fond
+   du thème derrière le texte (clair, sombre, minéral, sauge, prune, Halloween).
+   La mise en page et les contrastes typographiques existants sont inchangés. */
+html[data-nethor-mobile-app="1"] body.agendaLayout .agendaHeader{
+ background:transparent!important;
+ background-color:transparent!important;
+ background-image:none!important;
+ border:0!important;
+ border-color:transparent!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+ backdrop-filter:none!important;
+ -webkit-backdrop-filter:none!important;
+}
