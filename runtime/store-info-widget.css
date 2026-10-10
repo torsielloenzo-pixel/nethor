@@ -172,3 +172,79 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwHours{
  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwStoreName{flex-wrap:wrap}
  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiwVisual{inset:0!important;opacity:.62}
 }
+
+
+/* 10/10/2026 — Nouvelle direction artistique de la bannière d'accueil Desktop.
+   Photo, horaires, messages et paramètres éditables restent issus des données réelles. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner{
+  box-shadow:var(--nsiw-shadow,0 18px 46px rgba(10,14,20,.18));
+  border-color:rgba(255,239,226,.17);
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner:before{
+  background:
+    radial-gradient(ellipse 58% 130% at 28% 160%,rgba(242,82,52,.32) 0%,transparent 72%),
+    linear-gradient(99deg,var(--nsiw-surface) 0%,color-mix(in srgb,var(--nsiw-surface) 90%,#55262c) 26%,rgba(89,33,39,.96) 47%,rgba(128,41,39,.85) 56%,rgba(144,45,40,.38) 68%,transparent 83%);
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner:after{
+  content:"";position:absolute;z-index:0;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 100% 230% at 75% -180%,transparent 69%,rgba(255,170,100,.095) 70%,rgba(255,146,88,.05) 74%,transparent 75%),
+    linear-gradient(125deg,transparent 0%,rgba(255,155,95,.07) 51%,transparent 67%);
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwVisual{
+  inset:0 0 0 42%;
+  background-position:var(--nsiw-image-position,50% 50%);
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwVisual:before{
+  background:linear-gradient(90deg,rgba(79,32,39,.4) 0%,rgba(86,28,33,.24) 28%,transparent 68%);
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwVisual:after{
+  background:rgba(0,0,0,calc(var(--nsiw-image-dim,.28) * .52));
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwContent{
+  grid-template-columns:minmax(195px,auto) 3px minmax(225px,300px);
+  gap:24px;padding:27px 36px;
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwContent:after{
+  background:linear-gradient(180deg,#ff9b45,var(--nsiw-accent,#ff6a2b));
+  box-shadow:0 0 18px rgba(255,118,61,.3);
+  height:68px;
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwGreeting{
+  letter-spacing:-.35px;line-height:1.2;text-shadow:0 2px 14px rgba(0,0,0,.3);
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwStoreName{
+  color:#fff;font-weight:900;margin-top:8px;letter-spacing:-.6px;text-shadow:0 2px 18px rgba(0,0,0,.25);
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwStoreName:before{
+  background:linear-gradient(90deg,#ffab40,var(--nsiw-accent,#ff6a2b));
+  width:21px;height:3px;flex:0 0 21px;
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwHoursLabel{
+  color:#ffeae0;font-weight:750;
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwHours{
+  color:#fff;letter-spacing:-.65px;
+}
+@media(max-width:1120px){
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwContent{
+    grid-template-columns:minmax(145px,auto) 3px minmax(190px,260px);
+    gap:14px;padding:23px 25px;
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwVisual{inset:0 0 0 38%}
+}
+@media(max-width:780px){
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwContent{
+    grid-template-columns:minmax(0,1fr) 2px minmax(145px,.9fr);
+    gap:11px;padding:20px;
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwGreeting{
+    white-space:normal;font-size:min(15px,var(--nsiw-greeting-size,18px));
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwStoreName{
+    font-size:min(23px,var(--nsiw-store-name-size,30px));
+  }
+  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .nsiw.nsiwBanner .nsiwHours{
+    font-size:min(21px,var(--nsiw-hours-value-size,28px));
+  }
+}
