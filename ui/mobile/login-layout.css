@@ -43,7 +43,7 @@ html[data-nethor-platform="mobile"] .authMobileBrand,
 html[data-nethor-platform="mobile-preview"] .authMobileBrand{display:flex;flex-direction:column;align-items:center;text-align:center;margin:0 0 28px}
 html[data-nethor-platform="mobile"] .authMobileLogo,
 html[data-nethor-platform="mobile-preview"] .authMobileLogo{
- width:108px;height:108px;border-radius:29px;display:block;object-fit:contain;box-shadow:0 14px 32px rgba(33,25,18,.16)
+ width:108px;height:108px;display:block;object-fit:contain;border:0;border-radius:0;background:transparent;box-shadow:none
 }
 html[data-nethor-platform="mobile"] .authMobileBrandCopy,
 html[data-nethor-platform="mobile-preview"] .authMobileBrandCopy{display:flex;flex-direction:column;align-items:center}
@@ -139,7 +139,7 @@ html[data-nethor-platform="mobile-preview"] .authMobileForm .loginFoot{text-alig
  html[data-nethor-platform="mobile"] .authMobileForm.loginCard,
  html[data-nethor-platform="mobile-preview"] .authMobileForm.loginCard{padding-top:22px;padding-bottom:18px}
  html[data-nethor-platform="mobile"] .authMobileLogo,
- html[data-nethor-platform="mobile-preview"] .authMobileLogo{width:82px;height:82px;border-radius:23px}
+ html[data-nethor-platform="mobile-preview"] .authMobileLogo{width:82px;height:82px}
  html[data-nethor-platform="mobile"] .authMobileBrand,
  html[data-nethor-platform="mobile-preview"] .authMobileBrand{margin-bottom:20px}
  html[data-nethor-platform="mobile"] .authMobileBrandCopy strong,
