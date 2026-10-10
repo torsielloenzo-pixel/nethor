@@ -26,6 +26,8 @@ jobs:
           node --check ui/mobile/mobile-sync.js
           node --check ui/mobile/mobile-services.js
           node --check ui/mobile/views/home/home-view.js
+          node --check ui/mobile/views/surveys/surveys-view.js
+          node --check ui/mobile/views/user-menu/user-menu-view.js
           node --check planning-runtime.js
           node --check chat-v2.js
           node --check runtime/client-health.js
@@ -33,4 +35,4 @@ jobs:
           node --check runtime/admin-portal-runtime.js
           node --check sw.js
       - name: Exécuter la suite de non-régression
-        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs
+        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs

@@ -7,6 +7,7 @@ const VIEW_META=Object.freeze({
   chat:{label:'Chat'},
   notifications:{label:'Notifications'},
   'user-menu':{label:'Menu utilisateur'},
+  surveys:{label:'Sondages de l’équipe'},
   profile:{label:'Mon profil'},
   settings:{label:'Personnalisation'},
   'notification-settings':{label:'Réglages des notifications'},

@@ -421,7 +421,7 @@ function syncLegacyLinks(){
   })
 }
 function syncActive(view=requestedView()){
-  const menuViews=new Set(['user-menu','settings','notification-settings','report-problem']);
+  const menuViews=new Set(['user-menu','surveys','settings','notification-settings','report-problem']);
   navigationLinks().forEach(link=>{
     const id=link.getAttribute('data-mobile-destination')||'';
     const active=id===view||(id==='user-menu'&&menuViews.has(view));

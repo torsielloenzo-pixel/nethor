@@ -1,18 +1,17 @@
 {
-  "version": 402,
-  "label": "v1.46.53",
+  "version": 403,
+  "label": "v1.46.54",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Cadres de profil · Affichage mobile",
-  "message": "Le cadre d’avatar enregistré apparaît sur l’en-tête, le planning, le chat et Mon profil, lorsque le thème du spectateur correspond au thème du cadre.",
-  "published_at": "2026-10-08T11:32:36.103Z",
+  "title": "Nouveau · Sondages de l’équipe",
+  "message": "Une nouvelle page mobile permet de participer à 8 sondages hebdomadaires pour améliorer les conditions de travail et le quotidien du magasin.",
+  "published_at": "2026-10-10T10:44:34.335Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Le cadre enregistré reste associé au compte et suit ses avatars sur toutes les vues mobiles.",
-    "Seuls les cadres correspondant au thème actuellement utilisé par le spectateur sont visibles.",
-    "L’affichage utilise désormais un calque réel pour éviter les conflits des styles d’avatar.",
-    "Les avatars sont mis à jour lorsque les informations du profil ou les pages changent.",
-    "Rafraîchissement ciblé des ressources mobiles sans purge des données hors connexion."
+    "Accès via Menu utilisateur → Sondages de l’équipe, sans changer la barre Accueil / Planning / Chat.",
+    "Une question par semaine du 12 octobre au 6 décembre 2026, vote modifiable pendant la semaine.",
+    "Résultats collectifs visibles après clôture si au moins cinq personnes ont participé.",
+    "Mise en page adaptée à tous les thèmes mobiles, y compris Halloween."
   ]
 }
