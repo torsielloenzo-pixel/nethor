@@ -308,8 +308,7 @@ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursClo
 }
 
 
-/* Connexion Desktop : restaurer les images choisies dans Gestion.
-   Les textes de bienvenue sont HTML ; les inscriptions de la maquette initiale sont masquées par une composition CSS. */
+/* Connexion Desktop : image de fond choisie dans Gestion, sans calque décoratif ; textes de bienvenue en HTML. */
 html[data-nethor-platform="desktop"] #login.authDesktopRoot::before{
  background-image:var(--auth-login-background,url("../../assets/nethor-login-premium.webp"))!important;
  background-size:cover!important;background-position:center!important;
@@ -319,12 +318,6 @@ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntro{
  position:absolute;z-index:2;inset:0 auto 0 0;width:clamp(575px,44.5vw,790px);
  display:flex;align-items:center;color:#fff;isolation:isolate;pointer-events:none;
  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
-html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntro::before{
- content:"";position:absolute;inset:0 -20px 0 0;z-index:0;
- background:repeating-radial-gradient(ellipse 970px 1080px at -430px 110%,#c95856 0 176px,#e99164 177px 266px,#ffd481 267px 322px,#e58c63 323px 428px,#c95856 429px 530px,#eb9e6b 531px 650px),linear-gradient(135deg,#efa66a,#c85b55);
- -webkit-mask-image:linear-gradient(to right,black 0%,black 92%,transparent 100%);
- mask-image:linear-gradient(to right,black 0%,black 92%,transparent 100%);
 }
 html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroInner{
  position:relative;z-index:1;width:min(430px,calc(100% - 155px));margin-left:clamp(45px,7.2vw,125px);
