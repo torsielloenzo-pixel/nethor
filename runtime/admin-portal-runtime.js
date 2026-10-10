@@ -3092,7 +3092,14 @@ async function reloadConfig(){if(dirty&&!confirm('Annuler les modifications non 
 async function loadConfig(){const {data,error}=await db.from('app_settings').select('value').eq('key','site_config').maybeSingle();if(error)throw error;config=normalize(data?.value||{});await loadMobileThemeProfileFrames();ensurePages();ensureMobileBar();ensureMobileUserMenu();fillGlobal();renderSystem();renderMobileBar();renderMobileUserMenu();renderPlatformEditors();applyDesktopGlobalBackgroundPreview();dirty=false;$('saveState').className='saveState';$('saveState').textContent='À jour'}
 
 
-function logDate(value){const d=new Date(value);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+function logDate(value){
+ const common=window.NethorConnectionTimes;
+ if(common?.stamp)return common.stamp(value,{seconds:true}).replace(' à ',' · ');
+ const d=new Date(value);
+ if(!Number.isFinite(d.getTime()))return'Date indisponible';
+ return d.toLocaleDateString('fr-FR',{timeZone:'Europe/Paris',day:'2-digit',month:'2-digit',year:'numeric'})+
+  ' · '+d.toLocaleTimeString('fr-FR',{timeZone:'Europe/Paris',hour:'2-digit',minute:'2-digit',second:'2-digit'})
+}
 const LOG_DETAIL_LABELS={changed_fields:'Éléments modifiés',page_id:'Page',menu_id:'Menu',section:'Section',commits:'Références Git',commit:'Référence Git',pwa_cache:'Cache PWA',cache:'Cache',profile_ui:'Interface globale',scope:'Portée',messages:'Messages',logos:'Logos',fallback:'Icône de secours',colors:'Couleurs',icon_pack:'Pack d’icônes',seeded_rows:'Entrées initiales',mobile_preview:'Aperçu mobile',login_log_delete:'Suppression des connexions'};
 const LOG_FIELD_LABELS={label:'Nom',nav_label:'Navigation',subtitle:'Sous-titre',description:'Description',roles:'Rôles',image_path:'Image',image_url:'Image',icon:'Icône',color:'Couleur',accent:'Accent',contract_hours:'Heures contrat',home:'Accueil',user_menu:'Menu utilisateur',enabled:'Activation',url:'Destination',kicker:'Petit titre',action:'Action',default_home:'Accueil par défaut',default_user:'Menu utilisateur par défaut',items:'Contenu'};
 function logDetailValue(key,value){
@@ -3151,7 +3158,7 @@ function logExportDetailLines(details){
 function portalLogAsText(x){
  const auto=x?.source==='auto',author=auto?'AUTO':(x?.actor_name||'Administrateur'),version=logExportVersion(x)||'—';
  const details=logExportDetailLines(x?.details);
- const date=x?.created_at?new Date(x.created_at).toLocaleString('fr-FR',{dateStyle:'full',timeStyle:'medium'}):'—';
+ const date=x?.created_at?new Date(x.created_at).toLocaleString('fr-FR',{timeZone:'Europe/Paris',dateStyle:'full',timeStyle:'medium'}):'—';
  const lines=[
   'NETHOR — JOURNAL DES MODIFICATIONS',
   '===================================',
@@ -3242,12 +3249,12 @@ async function downloadAllPortalLogs(){
    'NETHOR — JOURNAL COMPLET DES MODIFICATIONS',
    '==========================================',
    '',
-   'Export : '+generated.toLocaleString('fr-FR'),
+   'Export : '+logDate(generated),
    'Entrées : '+rows.length,
    '',
    ...rows.flatMap((x,i)=>[
     String(i+1).padStart(3,'0')+' · '+(logExportVersion(x)||('Log #'+(x.id??'?')))+' · '+(x.release_type==='maj'?'MAJ':'PATCH')+' · '+String(x.title||'Modification'),
-    '    '+(x.created_at?new Date(x.created_at).toLocaleString('fr-FR'):'')+' · '+(x.source==='auto'?'AUTO':'MANUEL'),
+    '    '+(x.created_at?logDate(x.created_at):'')+' · '+(x.source==='auto'?'AUTO':'MANUEL'),
     ''
    ])
   ].join('\r\n');
