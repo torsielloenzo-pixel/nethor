@@ -34,5 +34,7 @@ jobs:
           node --check runtime/client-health-admin.js
           node --check runtime/admin-portal-runtime.js
           node --check sw.js
+          node --check runtime/home-runtime.js
+          node --check runtime/admin-portal-runtime.js
       - name: Exécuter la suite de non-régression
-        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs
+        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs tests/desktop-quick-planning-readability.test.cjs

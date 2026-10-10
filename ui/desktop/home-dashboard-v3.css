@@ -123,14 +123,14 @@ html[data-theme="dark"] .ndSectionHead>button{background:#34251f;border-color:#6
  height:auto!important;
  min-height:var(--qp-board-min,150px)!important;
 }
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTitleCopy strong{font-size:14px}
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTitleCopy small{font-size:9px}
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanNameCopy strong{font-size:10.5px}
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanNameCopy small{font-size:8.5px}
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTick>span{font-size:8px}
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanUpdated,
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanLegend{font-size:8px}
-.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanAvatar{font-size:10px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTitleCopy strong{font-size:16px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTitleCopy small{font-size:10.5px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanNameCopy strong{font-size:12px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanNameCopy small{font-size:10px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTick>span{font-size:10.5px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanUpdated{font-size:10px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanLegend{font-size:11px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanAvatar{font-size:11px}
 
 .nethorDesktopReferenceDashboard .ndWidgetAside>.ndCard,
 .nethorDesktopReferenceDashboard .ndWidgetPrimary>.ndCard{width:100%;min-width:0}

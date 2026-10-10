@@ -816,7 +816,7 @@ function renderQuickPlanningWidgetEditor(){
  if(!host){
   const panel=document.querySelector('#tab-blocks .panel');if(!panel)return;
   const block=document.createElement('div');block.className='operationsWidgetAdmin quickPlanningWidgetAdmin';
-  block.innerHTML='<div class="quickPlanningAdminHead"><div><span class="eyebrow">WIDGET DESKTOP · PLANNING</span><h3>Vue rapide planning</h3><p>Format demi-largeur compact : personnes actuellement en poste, horaires réels du planning et repère « Maintenant » automatique.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderQuickPlanningWidgetEditor()">↻ Actualiser</button></div><div id="quickPlanningWidgetEditor"></div>';
+  block.innerHTML='<div class="quickPlanningAdminHead"><div><span class="eyebrow">WIDGET DESKTOP · PLANNING</span><h3>Vue magasin aujourd’hui</h3><p>Équipe du matin en vert, équipe de l’après-midi en bleu, horaires du planning et ligne « Maintenant » automatique.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderQuickPlanningWidgetEditor()">↻ Actualiser</button></div><div id="quickPlanningWidgetEditor"></div>';
   panel.appendChild(block);host=$('quickPlanningWidgetEditor')
  }
  const w=ensureQuickPlanningWidgetConfig();
@@ -829,7 +829,7 @@ function renderQuickPlanningWidgetEditor(){
     '<div class="field"><label>Texte du bouton</label><input maxlength="80" value="'+attr(w.action_label)+'" data-quick-planning="action_label"></div>'+
     '<div class="field"><label>Densité</label><select data-quick-planning="density"><option value="comfortable" '+(w.density==='comfortable'?'selected':'')+'>Confortable</option><option value="compact" '+(w.density==='compact'?'selected':'')+'>Compacte</option></select></div>'+
     '<div class="field full"><label>Texte lorsqu’aucune personne n’est en poste</label><input maxlength="160" value="'+attr(w.empty_text)+'" data-quick-planning="empty_text"></div>'+
-    '<div class="field"><label>Couleur des barres</label><select data-quick-planning="bar_mode"><option value="profile" '+(w.bar_mode==='profile'?'selected':'')+'>Couleur du profil utilisateur</option><option value="accent" '+(w.bar_mode==='accent'?'selected':'')+'>Couleur d’accent unique</option></select></div>'+
+    '<div class="field"><label>Équipes</label><div class="quickPlanningTeamLegend"><span class="morning">Matin · vert</span><span class="afternoon">Après-midi · bleu</span></div></div>'+
    '</div>'+
    '<div class="operationsWidgetAdminToggles">'+
     '<label class="operationsWidgetToggle"><span><strong>Avatar</strong><small>Afficher les initiales / couleurs du profil.</small></span><input type="checkbox" data-quick-planning="show_avatar" '+(w.show_avatar?'checked':'')+'></label>'+
@@ -849,8 +849,8 @@ function renderQuickPlanningWidgetEditor(){
     '<div class="field"><label>Arrondi (px)</label><input type="number" min="10" max="30" value="'+attr(w.style.radius)+'" data-quick-planning-style="radius"></div>'+
    '</div>'+
    '<div class="operationsWidgetAdminToggles"><label class="operationsWidgetToggle"><span><strong>Ombre</strong><small>Ajoute une profondeur légère autour du widget.</small></span><input type="checkbox" data-quick-planning-style="shadow" '+(w.style.shadow!==false?'checked':'')+'></label></div>'+
-   '<div class="quickPlanningNote"><b>Plage horaire automatique :</b> aucune heure de début ou de fin n’est réglable manuellement. La frise utilise la première prise de poste et la dernière fin de poste présentes dans le planning du jour. Aucun défilement horizontal n’est proposé.</div>'+
-   '<div class="quickPlanningPreview"><div class="quickPlanningPreviewCard"><div class="quickPlanningPreviewHead"><strong>'+esc(w.title)+'</strong><span>'+esc(w.action_label)+' →</span></div><div class="quickPlanningPreviewRow"><span class="quickPlanningPreviewName">Utilisateur</span><span class="quickPlanningPreviewTrack"><i class="quickPlanningPreviewBar" style="background:linear-gradient(90deg,'+attr(w.style.accent)+',color-mix(in srgb,'+attr(w.style.accent)+' 72%,#fff))"></i><i class="quickPlanningPreviewNow" style="border-color:'+attr(w.style.now_color)+'"></i></span></div></div></div>'+
+   '<div class="quickPlanningNote"><b>Plage horaire automatique :</b> aucune heure de début ou de fin n’est réglable manuellement. La frise présente les heures de 06:00 à 20:30 avec un repère continu en temps réel. Aucun défilement horizontal n’est proposé.</div>'+
+   '<div class="quickPlanningPreview"><div class="quickPlanningPreviewCard"><div class="quickPlanningPreviewHead"><strong>'+esc(w.title)+'</strong><span>'+esc(w.action_label)+' →</span></div><div class="quickPlanningPreviewRow"><span class="quickPlanningPreviewName">Utilisateur</span><span class="quickPlanningPreviewTrack"><i class="quickPlanningPreviewBar"></i><i class="quickPlanningPreviewNow" style="border-color:'+attr(w.style.now_color)+'"></i></span></div></div></div>'+
   '</div>';
  host.querySelectorAll('[data-quick-planning]').forEach(el=>el.oninput=el.onchange=()=>{
   const node=ensureQuickPlanningWidgetConfig(),key=el.dataset.quickPlanning;

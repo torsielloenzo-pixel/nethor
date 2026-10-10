@@ -514,10 +514,19 @@ function homeQuickPlanningBounds(){
 }
 function homeQuickPlanningTicks(bounds){
  const out=[];
- for(let t=Math.ceil(bounds.start);t<=Math.floor(bounds.end);t+=1)out.push(t);
+ for(let t=Math.ceil(bounds.start);t<=Math.floor(bounds.end);t+=1){
+  // La dernière étiquette 20:30 remplace 20:00, trop proche.
+  if(bounds.end>t&&bounds.end-t<1)continue;
+  out.push(t)
+ }
  if(!out.length||Math.abs(out[0]-bounds.start)>.001)out.unshift(bounds.start);
  if(Math.abs(out[out.length-1]-bounds.end)>.001)out.push(bounds.end);
  return out
+}
+// Coloration par prise de poste (avant midi = matin, à partir de midi = après-midi).
+function homeQuickPlanningShiftFor(ranges){
+ const starts=(ranges||[]).map(r=>Number(r.a)).filter(Number.isFinite);
+ return starts.length&&Math.min(...starts)<12?'morning':'afternoon'
 }
 function homeQuickPlanningPeople(model,dateKey,profileRows,nowHour,w){
  if(!model?.days?.[dateKey])return[];
@@ -525,11 +534,11 @@ function homeQuickPlanningPeople(model,dateKey,profileRows,nowHour,w){
  (model.employees||[]).forEach((employee,i)=>{
   const row=model.days[dateKey].cells?.[i]||[],ranges=homeWorkRanges(row,model||{}),activeRange=ranges.find(r=>nowHour>=r.a&&nowHour<r.b),current=activeRange||ranges[0];
   if(!ranges.length||(!activeRange&&!w.show_all_day))return;
-  const profile=homeQuickPlanningProfileFor(employee?.name,profileRows),profileColor=homeStoreHex(profile?.profile_color,w.style.accent);
+  const profile=homeQuickPlanningProfileFor(employee?.name,profileRows);
   out.push({
    name:String(employee?.name||profile?.display_name||'Utilisateur'),
    profile,ranges,current,
-   color:w.bar_mode==='accent'?w.style.accent:profileColor
+   shift:homeQuickPlanningShiftFor(ranges)
   })
  });
  return out.sort((a,b)=>a.current.a-b.current.a||a.name.localeCompare(b.name,'fr',{sensitivity:'base'}))
@@ -542,12 +551,12 @@ function homeQuickPlanningSegments(person,bounds){
  const visible=person.ranges.filter(r=>r.b>bounds.start&&r.a<bounds.end);
  visible.forEach(r=>{
   const left=homeQuickPlanningPosition(Math.max(bounds.start,r.a),bounds),right=homeQuickPlanningPosition(Math.min(bounds.end,r.b),bounds),width=Math.max(0,right-left);
-  if(width>0)html+='<span class="qplanSegment" style="left:'+left.toFixed(3)+'%;width:'+width.toFixed(3)+'%;--qp-person:'+homeEsc(person.color)+'" title="'+homeEsc(homeClock(r.a)+' – '+homeClock(r.b))+'"></span>'
+  if(width>0)html+='<span class="qplanSegment" style="left:'+left.toFixed(3)+'%;width:'+width.toFixed(3)+'%" title="'+homeEsc(homeClock(r.a)+' – '+homeClock(r.b))+'"></span>'
  });
  for(let i=0;i<visible.length-1;i++){
   const a=visible[i],b=visible[i+1];if(b.a<=a.b)continue;
   const left=homeQuickPlanningPosition(a.b,bounds),right=homeQuickPlanningPosition(b.a,bounds),width=Math.max(0,right-left);
-  if(width>0)html+='<span class="qplanPause" style="left:'+left.toFixed(3)+'%;width:'+width.toFixed(3)+'%;--qp-person:'+homeEsc(person.color)+'"></span>'
+  if(width>0)html+='<span class="qplanPause" style="left:'+left.toFixed(3)+'%;width:'+width.toFixed(3)+'%"></span>'
  }
  return html
 }
@@ -557,11 +566,11 @@ function homeQuickPlanningCalendarIcon(){
 function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart){
  const w=homeQuickPlanningConfig(cfg);if(!w.enabled)return'';
  const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds(),allPeople=homeQuickPlanningPeople(todayModel,todayKey,profileRows,nowHour,{...w,show_all_day:true}),people=allPeople;
- const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),nowInRange=nowHour>=bounds.start&&nowHour<=bounds.end,edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
+ const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),nowInRange=nowHour>=bounds.start&&nowHour<=bounds.end,edgeClass=rawNow<=10?' edgeStart':rawNow>=90?' edgeEnd':'';
  const ticks=homeQuickPlanningTicks(bounds),target='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
  const s=w.style,shadow=s.shadow?'0 10px 30px rgba(28,36,48,.07)':'none';
  // The board must grow with every working person, never scroll/crop at a fixed row limit.
- const minBoardHeight=48+(people.length||1)*(w.density==='compact'?38:44);
+ const minBoardHeight=60+(people.length||1)*(w.density==='compact'?46:52);
  const subtitle=/actuellement|en cours|maintenant/i.test(w.subtitle)?'Présences prévues sur toute la journée':w.subtitle;
  const style='--qp-accent:'+s.accent+';--qp-now:'+s.now_color+';--qp-surface-light:'+s.surface_light+';--qp-surface-dark:'+s.surface_dark+';--qp-text-light:'+s.text_light+';--qp-text-dark:'+s.text_dark+';--qp-grid-light:'+s.grid_light+';--qp-grid-dark:'+s.grid_dark+';--qp-radius:'+s.radius+'px;--qp-shadow:'+shadow+';--qp-count:'+(people.length||1)+';--qp-board-min:'+minBoardHeight+'px';
  const names=people.length?people.map(person=>{
@@ -569,11 +578,11 @@ function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,w
   const meta=[];
   if(w.show_role)meta.push(role);
   if(w.show_shift)meta.push(homeClock(person.ranges[0].a)+' – '+homeClock(person.ranges[person.ranges.length-1].b));
-  return '<div class="qplanName" style="--qp-person:'+homeEsc(person.color)+'" title="'+homeEsc(person.name+' · '+person.ranges.map(r=>homeClock(r.a)+' – '+homeClock(r.b)).join(' / '))+'">'+
+  return '<div class="qplanName qplanShift'+(person.shift==='morning'?'Morning':'Afternoon')+'" title="'+homeEsc(person.name+' · '+person.ranges.map(r=>homeClock(r.a)+' – '+homeClock(r.b)).join(' / '))+'">'+
    (w.show_avatar?'<span class="qplanAvatar">'+homeEsc(homeQuickPlanningInitials(person.name))+'</span>':'')+
    '<span class="qplanNameCopy"><strong>'+homeEsc(person.name)+'</strong>'+(meta.length?'<small>'+homeEsc(meta.join(' · '))+'</small>':'')+'</span></div>'
  }).join(''):'<div class="qplanEmptyName">'+homeEsc(todayModel?.days?.[todayKey]?w.empty_text:'Planning du jour non renseigné')+'</div>';
- const tracks=people.length?people.map(person=>'<div class="qplanTrack" style="--qp-person:'+homeEsc(person.color)+'">'+homeQuickPlanningSegments(person,bounds)+'</div>').join(''):'<div class="qplanTrack empty"></div>';
+ const tracks=people.length?people.map(person=>'<div class="qplanTrack qplanShift'+(person.shift==='morning'?'Morning':'Afternoon')+'">'+homeQuickPlanningSegments(person,bounds)+'</div>').join(''):'<div class="qplanTrack empty"></div>';
  const tickHtml=ticks.map((t,index)=>{
   const left=homeQuickPlanningPosition(t,bounds),cls=(index===0?' first':'')+(index===ticks.length-1?' last':'');
   return '<span class="qplanTick'+cls+'" style="left:'+left.toFixed(3)+'%"><span>'+homeEsc(homeClock(t).replace('h',':'))+'</span></span>'
@@ -581,8 +590,8 @@ function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,w
  const clock=String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0');
  return '<section id="nethorQuickPlanningWidget" class="qplan density'+(w.density==='compact'?'Compact':'Comfortable')+(w.show_avatar?'':' noAvatars')+'" style="'+homeEsc(style)+'" aria-label="'+homeEsc(w.title)+'">'+
   '<div class="qplanHead"><div class="qplanTitle"><span class="qplanTitleIcon">'+homeQuickPlanningCalendarIcon()+'</span><span class="qplanTitleCopy"><strong>'+homeEsc(w.title)+'</strong><small>'+homeEsc(subtitle)+' · '+people.length+' salarié'+(people.length>1?'s':'')+' planifié'+(people.length>1?'s':'')+'</small></span></div><button type="button" class="qplanFullLink" onclick="location.href=\''+homeEsc(target)+'\'">'+homeEsc(w.action_label)+' <span>→</span></button></div>'+
-  '<div class="qplanBoard"><div class="qplanNames"><div class="qplanNameAxis"></div>'+names+'</div><div class="qplanTimeline"><div class="qplanAxis">'+tickHtml+'</div><div class="qplanRows">'+tracks+'</div>'+(nowInRange?'<span class="qplanNow'+edgeClass+'" style="left:'+nowPct.toFixed(3)+'%"><span class="qplanNowLabel">Maintenant</span></span>':'')+'</div></div>'+
-  '<div class="qplanFoot">'+(w.show_legend?'<div class="qplanLegend"><span class="solid">En poste</span><span class="pause">Pause / coupure</span><span class="now">Maintenant</span></div>':'<span></span>')+'<span class="qplanUpdated">Actualisé automatiquement · '+homeEsc(clock)+'</span></div>'+
+  '<div class="qplanBoard"><div class="qplanNames"><div class="qplanNameAxis">Équipe</div>'+names+'</div><div class="qplanTimeline"><div class="qplanAxis">'+tickHtml+'</div><div class="qplanRows">'+tracks+'</div>'+(nowInRange?'<span class="qplanNow'+edgeClass+'" style="left:'+nowPct.toFixed(3)+'%"><span class="qplanNowLabel">Maintenant · '+homeEsc(clock)+'</span></span>':'')+'</div></div>'+
+  '<div class="qplanFoot">'+(w.show_legend?'<div class="qplanLegend"><span class="morning">En poste · matin</span><span class="afternoon">En poste · après-midi</span><span class="pause">Pause / coupure</span><span class="now">Maintenant</span></div>':'<span></span>')+'<span class="qplanUpdated">Actualisé automatiquement · '+homeEsc(clock)+'</span></div>'+
  '</section>'
 }
 function homeStartQuickPlanningClock(cfg,todayModel,todayKey,profileRows,weekStart){
@@ -603,12 +612,14 @@ function homeStartQuickPlanningClock(cfg,todayModel,todayKey,profileRows,weekSta
    if(!marker){
     marker=document.createElement('span');
     marker.className='qplanNow';
-    marker.innerHTML='<span class="qplanNowLabel">Maintenant</span>';
+    marker.innerHTML='<span class="qplanNowLabel"></span>';
     timeline.appendChild(marker);
    }
    marker.style.left=percent.toFixed(3)+'%';
-   marker.classList.toggle('edgeStart',nowHour<=bounds.start);
-   marker.classList.toggle('edgeEnd',nowHour>=bounds.end);
+   marker.classList.toggle('edgeStart',percent<=10);
+   marker.classList.toggle('edgeEnd',percent>=90);
+   const liveLabel=marker.querySelector('.qplanNowLabel');
+   if(liveLabel)liveLabel.textContent='Maintenant · '+String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0');
   }
   const updated=root.querySelector('.qplanUpdated');
   if(updated)updated.textContent='Actualisé automatiquement · '+String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0');

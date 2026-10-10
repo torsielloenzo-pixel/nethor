@@ -1,17 +1,17 @@
 {
-  "version": 410,
-  "label": "v1.46.54",
+  "version": 412,
+  "label": "v1.46.55",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Nouveau · Sondages de l’équipe",
-  "message": "Une nouvelle page mobile permet de participer à 8 sondages hebdomadaires pour améliorer les conditions de travail et le quotidien du magasin.",
-  "published_at": "2026-10-10T10:44:34.335Z",
+  "title": "Vue magasin aujourd'hui · Lisibilité améliorée",
+  "message": "Sur l'accueil Desktop, les équipes du matin apparaissent en vert, celles de l'après-midi en bleu, avec des barres plus épaisses, une légende lisible et une ligne continue pour l'heure actuelle.",
+  "published_at": "2026-10-10T11:04:38.467Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Accès via Menu utilisateur → Sondages de l’équipe, sans changer la barre Accueil / Planning / Chat.",
-    "Une question par semaine du 12 octobre au 6 décembre 2026, vote modifiable pendant la semaine.",
-    "Résultats collectifs visibles après clôture si au moins cinq personnes ont participé.",
-    "Mise en page adaptée à tous les thèmes mobiles, y compris Halloween."
+    "Vue magasin aujourd'hui : barres épaissies et couleurs vert (prise de poste avant midi) / bleu (à partir de midi).",
+    "Ligne Maintenant continue, avec heure courante en temps réel.",
+    "Heures, noms et légende agrandis ; pauses distinctes en hachures.",
+    "Ajustements de lisibilité selon la largeur de la fenêtre, sans modifier le planning."
   ]
 }
