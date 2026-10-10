@@ -372,6 +372,7 @@ function renderDayAgenda(a){
  if(sub)sub.textContent=focusRest?'Jour ciblé depuis « Prochain repos »':'Vue détaillée de la journée';
  const items=[];
  employees.forEach((emp,ri)=>{
+  if(typeof planningAccountHidden==='function'&&planningAccountHidden(emp.name))return;
   const row=rows[ri]||[],ranges=rowRanges(row).filter(r=>r.c==='g'||r.c==='b'),isMe=isCurrentAgendaEmployee(emp)||ri===currentIdx,hasLeave=!ranges.length&&row.some(v=>v==='y');
   if(!ranges.length&&!isMe)return;
   const info=avatarFor(emp);
@@ -410,6 +411,7 @@ function renderWeekAgenda(a){
  for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0);html+='<div class="agendaDayHead '+(key===todayKey?'today ':'')+(active?'activeDay':'')+'"><strong>'+escLocal(dayShort(dt))+'</strong><span>'+dt.getDate()+'</span></div>'}
  if(desktop)html+='<div class="agendaWeekTotalHead"><strong>Total</strong><span>Semaine</span></div>';
  employees.forEach((emp,ri)=>{
+  if(typeof planningAccountHidden==='function'&&planningAccountHidden(emp.name))return;
   let employeeTotal=0;for(let di=0;di<7;di++){const row=model.days?.[isoDate(addDays(a,di))]?.cells?.[ri]||[];employeeTotal+=shiftHours(agendaRanges(row))}weekHours+=employeeTotal;
   const info=avatarFor(emp);html+='<div class="agendaEmployee">'+info.avatar+'<div class="planningIdentityText"><strong>'+escLocal(info.label)+'</strong>'+(desktop?'':'<span class="agendaEmployeeTotal">'+hoursLabel(employeeTotal)+'</span>')+'</div></div>'+(desktop?'<div class="agendaReadCell">'+(typeof planningReadWeekSummaryHtml==='function'?planningReadWeekSummaryHtml(emp.name,a):'')+'</div>':'');
   for(let di=0;di<7;di++){const dt=addDays(a,di),key=isoDate(dt),active=di===(typeof currentDay==='number'?currentDay:0),row=model.days?.[key]?.cells?.[ri]||[],ranges=agendaRanges(row);html+='<div class="agendaCell '+(key===todayKey?'today ':'')+(active?'activeDay ':'')+(ranges.length?'':'empty')+'">';
