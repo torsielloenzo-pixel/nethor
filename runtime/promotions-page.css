@@ -122,3 +122,45 @@
 .promoItemExtra{display:block;font-size:10.5px;color:var(--pm-muted);
  margin-top:6px;line-height:1.5;font-weight:500}
 .promoProductTable td:nth-child(3) strong{font-size:12px;line-height:1.4}
+
+/* Promotions · accordéons, décisions sur chaque référence, formulaire correctif */
+.promoCatalog{display:flex;align-items:stretch;gap:0;min-width:0}
+.promoCatalog .promoCatalogToggle{flex:1 1 auto;min-width:0;width:auto;padding:15px}
+.promoCatalog .promoCatalogCaret{width:31px;height:31px;flex:none;display:grid;place-items:center;
+ border:1px solid var(--pm-line);border-radius:9px;background:var(--pm-soft);
+ font-weight:900;font-size:19px;color:var(--pm-accent)}
+.promoCatalog .promoCatalogDelete{flex:none;align-self:center;width:auto;height:36px;
+ margin-right:12px;padding:6px 11px;border:1px solid color-mix(in srgb,#bd3d35 30%,var(--pm-line));
+ border-radius:9px;background:var(--pm-surface);color:#b83c34;font-size:11px;font-weight:800}
+.promoCatalog .promoCatalogDelete:hover{background:color-mix(in srgb,#bc493a 10%,var(--pm-surface))}
+.promoReviewCounts{font-weight:750;color:var(--pm-muted)!important}
+.promoRejectedSwitch{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--pm-muted);
+ margin:0 0 13px;cursor:pointer}
+.promoRejectedSwitch input{width:16px;height:16px;accent-color:var(--pm-accent)}
+.promoTableWrap{overflow-x:auto}
+.promoProductTable td:last-child{white-space:normal}
+.promoReviewButtons{display:flex;flex-direction:column;gap:6px;min-width:98px}
+.promoReviewButtons button{min-height:28px;padding:5px 9px;white-space:nowrap;border-radius:8px;
+ font-size:10px;font-weight:850;border:1px solid var(--pm-line);background:var(--pm-surface)}
+.promoReviewButtons .promoReviewValidate{color:#16815b;border-color:color-mix(in srgb,#16815b 24%,var(--pm-line))}
+.promoReviewButtons .promoReviewEdit{color:var(--pm-ink)}
+.promoReviewButtons .promoReviewReject{color:#b84036;border-color:color-mix(in srgb,#b84036 22%,var(--pm-line))}
+.promoReviewButtons button:hover{background:var(--pm-soft)}
+.promoReviewBadge{display:block;width:max-content;padding:3px 7px;margin-top:6px;
+ border-radius:6px;background:var(--pm-soft);color:var(--pm-muted);font-size:10px;font-weight:850}
+.promoStatus-validated{color:#16815b;background:color-mix(in srgb,#16815b 12%,var(--pm-surface))}
+.promoStatus-reworked{color:var(--pm-accent);background:color-mix(in srgb,var(--pm-accent) 11%,var(--pm-surface))}
+.promoStatus-rejected{color:#b84036;background:color-mix(in srgb,#b84036 11%,var(--pm-surface))}
+.promoRowRejected{opacity:.65}
+.promoProductEditor{padding:17px;border:1px solid var(--pm-line);border-radius:14px;
+ background:var(--pm-soft);margin:10px 0 18px}
+.promoProductEditor h4{font-size:15px;color:var(--pm-ink);margin:0 0 5px}
+.promoProductEditor p{font-size:11px;line-height:1.6;color:var(--pm-muted);margin:0 0 15px}
+.promoEditFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.promoEditFields label{display:grid;gap:6px;font-size:11px;font-weight:850;color:var(--pm-muted)}
+.promoEditFields textarea{min-height:76px;resize:vertical}
+.promoEditActions{grid-column:1/-1;display:flex;gap:9px;justify-content:flex-end}
+@media(max-width:900px){.promoEditFields{grid-template-columns:1fr}.promoReviewButtons{min-width:90px}}
+@media(max-width:580px){.promoCatalog .promoCatalogDelete{margin-right:7px;padding:5px}
+ .promoCatalog .promoCatalogToggle{padding:10px}.promoReviewButtons{min-width:70px}
+ .promoReviewButtons button{font-size:9px;padding:5px}}
