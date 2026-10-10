@@ -5,6 +5,8 @@ if(window.NethorPlanningQuickImport)return;
 const INPUT_ID='nethorHomePlanningExcel';
 let picker=null,modal=null,frame=null,enginePromise=null,active=false,success=false,showing=false;
 let observeState=null;
+const allowedRoles=new Set(['admin','point_de_vente','point-of-sale','point_vente','pdv']);
+function canImport(){const p=window.NettoProfileUI?.profile;return !!p&&allowedRoles.has(String(p.role||'').toLowerCase())}
 
 function makePicker(){
  if(picker?.isConnected)return picker;
@@ -42,20 +44,22 @@ function makeModal(){
  modal.className='nethorHomeImportBackdrop';
  modal.id='nethorHomeImportDialog';
  modal.innerHTML='<section class="nethorHomeImportPanel" role="dialog" aria-modal="true" aria-labelledby="nethorHomeImportTitle">'+
-  '<div class="nethorHomeImportHead"><span class="nethorHomeImportIcon" aria-hidden="true">▦</span><div><small>PLANNING · IMPORT EXCEL</small><h2 id="nethorHomeImportTitle">Importer un planning</h2></div></div>'+
+  '<button type="button" class="nethorHomeImportClose" aria-label="Fermer" title="Fermer">×</button><div class="nethorHomeImportHead"><span class="nethorHomeImportIcon" aria-hidden="true">▦</span><div><small>PLANNING · IMPORT EXCEL</small><h2 id="nethorHomeImportTitle">Importer un planning</h2></div></div>'+
   '<p class="nethorHomeImportExplanation">Même importateur que dans la page Planning : lecture des fichiers, remplacement confirmé, archivage et notifications.</p>'+
   '<div class="nethorHomeImportStatus" role="status" aria-live="polite" data-planning-quick-status>Préparation de l’import…</div>'+
   '<div class="nethorHomeImportEngine" data-planning-quick-engine></div>'+
-  '<div class="nethorHomeImportButtons"><button type="button" class="nethorHomeImportAgain">Choisir des fichiers Excel</button><button type="button" class="nethorHomeImportClose">Fermer</button></div>'+
+  '<div class="nethorHomeImportButtons"><button type="button" class="nethorHomeImportAgain">Choisir des fichiers Excel</button></div>'+
   '</section>';
  document.body.appendChild(modal);
- modal.querySelector('.nethorHomeImportAgain').addEventListener('click',()=>{if(!active)makePicker().click()});
+ modal.querySelector('.nethorHomeImportAgain').hidden=!canImport();
+ modal.querySelector('.nethorHomeImportAgain').addEventListener('click',()=>{if(!active&&canImport())makePicker().click()});
  modal.querySelector('.nethorHomeImportClose').addEventListener('click',close);
  modal.addEventListener('click',e=>{if(e.target===modal)close()});
  return modal;
 }
 function showModal(){
  makeModal().classList.add('is-open');
+ modal.querySelector('.nethorHomeImportAgain').hidden=!canImport();
  showing=true;
  document.documentElement.classList.add('nethorHomeImportOpen');
 }
@@ -161,6 +165,7 @@ function loadEngine(){
 }
 async function importFiles(files){
  if(active||!files?.length)return;
+ if(!canImport()){showModal();setStatus('Vous ne disposez pas de l’autorisation d’importer un planning.','error');return;}
  if(navigator.onLine===false){
   showModal();setStatus('Import impossible hors connexion.','error');return;
  }
@@ -186,9 +191,7 @@ async function importFiles(files){
 }
 function open(){
  if(active)return;
- const api=window.NettoProfileUI,profile=api?.profile;
- const level=profile&&typeof api.permissionLevel==='function'?api.permissionLevel('planning',profile):null;
- if(profile?.role!=='admin'&&level&&level!=='manage'){
+ if(!canImport()){
   showModal();setStatus('Vous ne disposez pas de l’autorisation d’importer un planning.','error');return;
  }
  if(navigator.onLine===false){
