@@ -317,6 +317,8 @@ html[data-nethor-page-layout="desktop"] .nethorSidebarItem.active{
 }
 .nethorSidebarItem[data-sidebar-key="home"]{--nsi-color:#fb651d!important;--nsi-bg:#ffebe4!important}
 .nethorSidebarItem[data-sidebar-key="planning"]{--nsi-color:#7947e6!important;--nsi-bg:#f0eafd!important}
+/* Promotions : jaune dédié, accordé au pictogramme promotion. */
+.nethorSidebarItem[data-sidebar-key="promotions"]{--nsi-color:#e8ae00!important;--nsi-bg:#fff5cb!important}
 .nethorSidebarItem[data-sidebar-key="chat"]{--nsi-color:#267fe9!important;--nsi-bg:#e7f1ff!important}
 .nethorSidebarItem[data-sidebar-key="management"]{--nsi-color:#46566d!important;--nsi-bg:#eef0f3!important}
 .nethorSidebarItem[data-sidebar-key="settings"]{--nsi-color:#45566e!important;--nsi-bg:#f0f2f5!important}
