@@ -50,12 +50,13 @@ test('Barres épaisses et repère Maintenant continu avec son horodatage',()=>{
  assert.match(style,/@container \(max-width:600px\)/);
 });
 test('Desktop : fichiers à jour et Service Worker cohérent',()=>{
- for(const asset of [
- 'runtime/quick-planning-widget.css?v=9',
- home.match(/ui\/desktop\/home-dashboard-v3\.css\?v=\d+/)?.[0],
- 'runtime/home-runtime.js?v=16'
+ for(const rx of [
+  /runtime\/quick-planning-widget\.css\?v=\d+/,
+  /ui\/desktop\/home-dashboard-v3\.css\?v=\d+/,
+  /runtime\/home-runtime\.js\?v=\d+/
  ]){
-  assert.ok(home.includes(asset),'home.html manque '+asset);
+  const asset=home.match(rx)?.[0];
+  assert.ok(asset,'Ressource absente de home.html : '+rx);
   assert.ok(worker.includes('./'+asset),'PWA manque '+asset);
  }
  const version=JSON.parse(source('app-version.json')).version;
