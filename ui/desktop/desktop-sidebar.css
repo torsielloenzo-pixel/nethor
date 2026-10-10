@@ -434,16 +434,6 @@ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"
 html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"]>.top.nethorDesktopReferenceHeader{
   gap:12px!important;
 }
-/* Marque dans l'entête, indépendante du logo personnalisable de la sidebar. */
-html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{
-  content:"Nethor";
-  position:relative;
-  display:inline-flex!important;align-items:center;flex:0 0 auto;
-  min-width:111px;height:46px;padding:0 2px 0 36px;
-  background:url("../../assets/nethor-login-mark.svg") left center / 29px 29px no-repeat;
-  color:#242831;font-size:19px;font-weight:850;letter-spacing:-.6px;
-  white-space:nowrap;box-sizing:border-box;pointer-events:none;
-}
 html[data-nethor-page-layout="desktop"] .nethorDesktopStoreSwitch{
   width:clamp(220px,21vw,286px);min-width:220px;max-width:286px;
   height:50px;border:1px solid rgba(250,182,142,.39);
@@ -481,7 +471,6 @@ html[data-theme="dark"][data-nethor-page-layout="desktop"] header[data-nethor-pa
   background:linear-gradient(115deg,#20232b 0%,#2b2526 55%,#56352d 80%,#23252d 100%)!important;
   border-bottom-color:#534036!important;
 }
-html[data-theme="dark"][data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{color:#f7f0e9}
 html[data-theme="dark"][data-nethor-page-layout="desktop"] :is(.nethorDesktopStoreSwitch,.nethorDesktopDateTime){
   background:rgba(37,39,46,.91);border-color:#584036;color:#f3f2f0;
 }
@@ -491,9 +480,6 @@ html[data-theme="dark"][data-nethor-page-layout="desktop"] header[data-nethor-pa
   background:#2b2c34!important;border-color:#59443c!important;
 }
 @media(max-width:1250px){
-  html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{
-    min-width:40px;width:40px;padding:0;overflow:hidden;font-size:0;background-size:28px;
-  }
   html[data-nethor-page-layout="desktop"] .nethorDesktopDateTime{min-width:110px}
 }
 @media(max-width:1000px){
@@ -503,10 +489,4 @@ html[data-theme="dark"][data-nethor-page-layout="desktop"] header[data-nethor-pa
   }
   html[data-nethor-page-layout="desktop"] .nethorStoreThumb{width:33px;height:33px}
   html[data-nethor-page-layout="desktop"] .nethorDesktopDateTime{height:48px;min-width:66px;padding:4px 8px}
-  html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{
-    min-width:34px;width:34px;background-size:26px;
-  }
-}
-@media(max-width:720px){
-  html[data-nethor-page-layout="desktop"] .nethorDesktopReferenceHeader::before{display:none!important}
 }
