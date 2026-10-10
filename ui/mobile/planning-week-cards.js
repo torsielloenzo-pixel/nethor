@@ -23,7 +23,7 @@ function render(start,ctx){
   const totalFromExcel=numeric(employee.excelWeekTotalHours),contract=numeric(employee.excelContractHours),diff=numeric(employee.excelContractDifference);
   return {info,days,contract,diff,total:totalFromExcel??days.reduce((sum,d)=>sum+d.total,0),isMe:isCurrentAgendaEmployee(employee)};
  });
- const activeEmployees=activeEmployees.filter(Boolean);
+ const activeEmployees=employees.filter(Boolean);
  const selectedDate=dates[selected].date;
  const present=activeEmployees.filter(e=>e.days[selected].status==='work').length;
  const onLeave=activeEmployees.filter(e=>e.days[selected].status==='leave').length;
