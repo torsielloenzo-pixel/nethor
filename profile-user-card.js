@@ -60,7 +60,7 @@ async function connectionRow(userId,{force=false}={}){
  try{
   const {data,error}=await a.client.from('chat_presence_history')
    .select('last_seen_at').eq('user_id',userId).maybeSingle();
-  if(!error)return data||null
+  if(!error)return data?{...data,__partial:true}:null
  }catch(_){}
  return null
 }
@@ -90,8 +90,8 @@ async function refreshPresence(){
  if(dot)dot.classList.toggle('online',Boolean(online));
  const login=document.getElementById('nettoUserCardLastLogin'),
   activity=document.getElementById('nettoUserCardLastActivity');
- if(login)login.textContent=row?.last_login_at?dateStamp(row.last_login_at):'Non enregistrée';
- if(activity)activity.textContent=row?.last_seen_at?dateStamp(row.last_seen_at):'Non enregistrée'
+ if(login)login.textContent=row?.last_login_at?dateStamp(row.last_login_at):!row||row.__partial?'Indisponible':'Non enregistrée';
+ if(activity)activity.textContent=row?.last_seen_at?dateStamp(row.last_seen_at):!row?'Indisponible':'Non enregistrée'
 }
 function open(user,opts={}){
  if(!user?.id)return;
