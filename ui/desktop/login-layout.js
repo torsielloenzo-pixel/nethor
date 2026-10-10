@@ -4,6 +4,20 @@ function build(){
  return{
   platform:'desktop',
   html:`<div id="login" class="authDesktopRoot hidden" data-nethor-login-platform="desktop">
+   <section class="authDesktopIntro" aria-label="Bienvenue sur Nethor">
+    <div class="authDesktopIntroInner">
+     <span class="authDesktopIntroBadge"><span aria-hidden="true">✧</span> Outil interne</span>
+     <h1 class="authDesktopIntroHeading">Bienvenue sur <strong>Nethor</strong></h1>
+     <p class="authDesktopIntroStore">Netto Le Thor - Point de vente</p>
+     <p class="authDesktopIntroLead">Votre outil quotidien pour un magasin<br>plus organisé, plus simple, plus efficace.</p>
+     <div class="authDesktopIntroFeatures" aria-label="Fonctionnalités Nethor">
+      <div class="authDesktopIntroFeature"><span class="authDesktopIntroFeatureIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 15h3m3 0h4"/></svg></span><p><strong>Planning</strong><span>Consultez vos horaires et l'équipe<br>en temps réel.</span></p></div>
+      <div class="authDesktopIntroFeature"><span class="authDesktopIntroFeatureIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11.5A8.5 8.5 0 0 1 11.5 20c-1.4 0-2.8-.3-4-.9L3 20l1-4.5a8.5 8.5 0 1 1 16-4Z"/><path d="M8 11.5h8"/></svg></span><p><strong>Chat</strong><span>Échangez facilement avec l'équipe.</span></p></div>
+      <div class="authDesktopIntroFeature"><span class="authDesktopIntroFeatureIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V12m5 8V5m5 15v-9m5 9V3"/></svg></span><p><strong>Gestion</strong><span>Suivez, organisez et optimisez<br>le quotidien du magasin.</span></p></div>
+     </div>
+     <blockquote class="authDesktopIntroQuote">Une équipe organisée<br>fait un magasin plus fort.<span aria-hidden="true">“</span></blockquote>
+    </div>
+   </section>
    <aside class="authDesktopHours" aria-label="Horaires habituels du magasin">
     <div class="authDesktopHoursLeft">
      <span class="authDesktopHoursIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
