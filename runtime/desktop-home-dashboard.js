@@ -201,7 +201,12 @@ async function render(ctx){
  const ext=await safeQueries(ctx),now=new Date(),people=peopleToday(ctx.todayModel,ctx.todayKey,ctx.profileRows),currentlyWorking=peopleNow(ctx.todayModel,ctx.todayKey,ctx.profileRows,now),teamTotal=todayTeamCount(ctx.todayModel,ctx.todayKey),cov=coverage(ctx.todayModel,ctx.todayKey),tasks=taskStats(ctx);
  const criticalKinds=new Set(['maintenance','password_reset_request','security','incident','problem']);
  const alertCount=(ctx.notifications||[]).filter(n=>!n.read_at&&criticalKinds.has(String(n.kind||''))).length+ext.flashes.filter(x=>['material','procedure'].includes(x.category)).length;
- const weekModel=ctx.currentWeek||ctx.todayModel;
+ const belongsToWeek=model=>{
+  if(!model?.days||!ctx.weekStart)return false;
+  const next=window.NethorPlanningAnomalyCore?.plusDays?.(ctx.weekStart,6)||ctx.todayKey;
+  return Object.keys(model.days).some(date=>date>=ctx.weekStart&&date<=next)
+ };
+ const weekModel=belongsToWeek(ctx.currentWeek)?ctx.currentWeek:belongsToWeek(ctx.todayModel)?ctx.todayModel:null;
  const anomalyReport=window.NethorPlanningAnomalyCore?.analyze?.(weekModel,ctx.weekStart,ctx.profileRows,ext.absences)||null;
  const currentAnomalyDay=anomalyReport?.days?.find(x=>x.date===ctx.todayKey);
  const planningAnomalyCount=currentAnomalyDay?currentAnomalyDay.count:planningDayAnomalyCount(ctx.todayModel,ctx.todayKey,ctx.profileRows,ext.absences);
