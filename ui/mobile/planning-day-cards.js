@@ -23,11 +23,12 @@ function getItems(start,ctx,now=new Date()){
  const date=addDays(start,selected),key=isoDate(date),clock=parisClock(now),isToday=key===clock.key;
  const employees=model?.employees||[],rows=model?.days?.[key]?.cells||[];
  const items=employees.map((emp,index)=>{
+  if(ctx.isAccountHidden?.(emp.name))return null;
   const cells=rows[index]||[],ranges=rowRanges(cells).filter(x=>x.c==='g'||x.c==='b');
   const nonWork=ranges.length?'':cells.includes('y')?'leave':cells.includes('r')||cells.includes('o')?'rest':cells.includes('w')?'unavailable':'empty';
   return {emp,index,info:avatarFor(emp),ranges,nonWork,state:scheduleState(ranges,isToday,clock.hours),isMe:isCurrentAgendaEmployee(emp)}
  });
- return {items,date,key,isToday,clock,selected}
+ return {items:items.filter(Boolean),date,key,isToday,clock,selected}
 }
 function signature(start,ctx,now=new Date()){
  const {items,key,isToday,clock}=getItems(start,ctx,now);
