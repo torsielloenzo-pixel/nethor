@@ -237,10 +237,44 @@ async function render(ctx){
  if(secondary.length)parts.push('<div class="ndSupportingGrid">'+secondary.join('')+'</div>');
  return{html:'<div class="nethorDesktopReferenceDashboard" style="'+style+'">'+parts.join('')+'</div>',config:c,people,ext,tasks,alertCount,planningAnomalyCount}
 }
+// Le signalement express embarque la page officielle : aucune duplication de l'API de création.
+function openQuickReport(){
+ const fullPage='report-problem.html?from=home.html';
+ if(typeof HTMLDialogElement==='undefined'){location.href=fullPage;return}
+ let dialog=document.getElementById('nethorQuickReportDialog');
+ if(!dialog){
+  dialog=document.createElement('dialog');
+  dialog.id='nethorQuickReportDialog';
+  dialog.className='ndReportDialog';
+  dialog.setAttribute('aria-labelledby','ndReportDialogTitle');
+  dialog.setAttribute('aria-describedby','ndReportDialogDescription');
+  dialog.innerHTML='<div class="ndReportShell">'+
+   '<div class="ndReportHeader"><span class="ndReportHeaderIcon" aria-hidden="true">!</span>'+
+   '<div class="ndReportHeaderText"><strong id="ndReportDialogTitle">Nouveau signalement</strong>'+
+   '<span id="ndReportDialogDescription">Décris le problème sans quitter l’accueil.</span></div>'+
+   '<button type="button" class="ndReportClose" data-nd-report-close aria-label="Fermer la fenêtre">×</button></div>'+
+   '<iframe class="ndReportFrame" title="Formulaire Nethor de signalement de problème" referrerpolicy="same-origin"></iframe>'+
+   '<div class="ndReportFooter"><span>Le signalement sera enregistré dans Gestion → Problèmes signalés.</span>'+
+   '<a href="'+fullPage+'">Ouvrir la page complète ↗</a></div>'+
+   '</div>';
+  dialog.querySelector('[data-nd-report-close]').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
+  dialog.addEventListener('close',()=>dialog.querySelector('iframe')?.removeAttribute('src'));
+  window.addEventListener('message',event=>{
+   if(event.origin!==location.origin||event.source!==dialog.querySelector('iframe')?.contentWindow)return;
+   if(event.data?.type==='nethor:quick-report-close'&&dialog.open)dialog.close()
+  });
+  document.body.appendChild(dialog)
+ }
+ if(dialog.open)return;
+ dialog.querySelector('iframe').src=fullPage+'&embedded=desktop-home';
+ dialog.showModal();
+}
 function activate(result){
  const root=document.querySelector('.nethorDesktopReferenceDashboard');if(!root)return;
  const planningTitle=root.querySelector('.ndPlanningSlot .qplanTitleCopy strong');if(planningTitle&&result?.config?.widgets?.planning_view?.label)planningTitle.textContent=result.config.widgets.planning_view.label;
  root.querySelectorAll('[data-desktop-home-url]').forEach(btn=>btn.addEventListener('click',()=>{
+  if(btn.dataset.desktopHomeAction==='incident'){openQuickReport();return}
   if(btn.dataset.desktopHomeAction==='planning'){
    if(typeof window.NethorPlanningQuickImport?.open==='function')window.NethorPlanningQuickImport.open();
    else console.error('Importateur Excel indisponible sur l’accueil.');

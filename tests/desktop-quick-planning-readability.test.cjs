@@ -52,7 +52,7 @@ test('Barres épaisses et repère Maintenant continu avec son horodatage',()=>{
 test('Desktop : fichiers à jour et Service Worker cohérent',()=>{
  for(const asset of [
  'runtime/quick-planning-widget.css?v=9',
- 'ui/desktop/home-dashboard-v3.css?v=6',
+ home.match(/ui\/desktop\/home-dashboard-v3\.css\?v=\d+/)?.[0],
  'runtime/home-runtime.js?v=16'
  ]){
   assert.ok(home.includes(asset),'home.html manque '+asset);

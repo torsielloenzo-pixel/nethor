@@ -175,3 +175,50 @@ html[data-theme="dark"] .ndSectionHead>button{background:#34251f;border-color:#6
  .nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanBoard{min-width:0}
  .nethorDesktopReferenceDashboard .ndWidgetAside .ndActionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Desktop Accueil · Fenêtre rapide pour les signalements.
+   Le formulaire chargé reste celui de report-problem.html (même backend/permissions). */
+.ndReportDialog{
+ --nd-report-card:#fff;--nd-report-surface:#f7f9fb;--nd-report-text:#202a35;
+ --nd-report-muted:#687583;--nd-report-border:#e0e6ed;--nd-report-accent:#f05b34;
+ box-sizing:border-box;width:min(540px,calc(100vw - 28px));max-width:calc(100vw - 28px);
+ height:min(660px,calc(100dvh - 40px));max-height:calc(100dvh - 24px);
+ margin:auto;padding:0;overflow:hidden;
+ border:1px solid var(--nd-report-border);border-radius:22px;
+ background:var(--nd-report-card);color:var(--nd-report-text);
+ box-shadow:0 28px 80px rgba(15,23,42,.27);font-family:inherit
+}
+.ndReportDialog::backdrop{background:rgba(14,21,31,.56);backdrop-filter:blur(4px)}
+.ndReportShell{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100%;min-height:0}
+.ndReportHeader{display:flex;align-items:center;gap:12px;padding:16px 18px;
+ border-bottom:1px solid var(--nd-report-border)}
+.ndReportHeaderIcon{flex:none;width:37px;height:37px;display:grid;place-items:center;
+ border-radius:12px;color:var(--nd-report-accent);background:color-mix(in srgb,var(--nd-report-accent) 11%,var(--nd-report-card));
+ font-size:23px;font-weight:850}
+.ndReportHeaderText{flex:1 1 auto;min-width:0}
+.ndReportHeaderText strong{display:block;font-size:16px;font-weight:850;line-height:1.25}
+.ndReportHeaderText span{display:block;margin-top:3px;font-size:11px;line-height:1.4;color:var(--nd-report-muted)}
+.ndReportClose{flex:none;display:grid;place-items:center;width:34px;height:34px;
+ padding:0;border:1px solid var(--nd-report-border);border-radius:10px;
+ background:var(--nd-report-surface);color:var(--nd-report-text);
+ font:inherit;font-size:24px;line-height:1;cursor:pointer}
+.ndReportClose:hover{background:color-mix(in srgb,var(--nd-report-border) 55%,var(--nd-report-card))}
+.ndReportClose:focus-visible,.ndReportFooter a:focus-visible{outline:3px solid var(--nd-report-accent);outline-offset:3px}
+.ndReportFrame{display:block;min-width:0;width:100%;height:100%;min-height:0;border:0;background:var(--nd-report-card)}
+.ndReportFooter{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+ padding:12px 18px;border-top:1px solid var(--nd-report-border);background:var(--nd-report-surface)}
+.ndReportFooter span{flex:1 1 210px;color:var(--nd-report-muted);font-size:10.5px;line-height:1.45}
+.ndReportFooter a{flex:none;color:var(--nd-report-accent);font-size:11px;font-weight:800;text-decoration:none}
+html[data-theme="dark"] .ndReportDialog{
+ --nd-report-card:#252a31;--nd-report-surface:#1d2229;--nd-report-text:#f2f4f6;
+ --nd-report-muted:#b3bfca;--nd-report-border:#424952;--nd-report-accent:#ff906c
+}
+@media(max-height:620px){
+ .ndReportDialog{height:calc(100dvh - 20px);max-height:calc(100dvh - 20px);border-radius:16px}
+ .ndReportHeader{padding:9px 14px}.ndReportHeaderIcon{width:30px;height:30px;font-size:19px}
+ .ndReportFooter{padding:8px 14px}
+}
+@media(max-width:540px){
+ .ndReportDialog{width:calc(100vw - 16px);max-width:calc(100vw - 16px);height:calc(100dvh - 20px)}
+ .ndReportFooter span{font-size:9px}
+}

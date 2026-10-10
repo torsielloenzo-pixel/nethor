@@ -1,17 +1,17 @@
 {
-  "version": 414,
-  "label": "v1.46.56",
+  "version": 415,
+  "label": "v1.46.57",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Vue magasin · Vert du matin adouci",
-  "message": "Le vert des équipes du matin sur l'accueil Desktop est désormais plus clair, harmonisé avec le vert utilisé dans le planning. Le bleu de l'après-midi ne change pas.",
-  "published_at": "2026-10-10T11:17:00.000Z",
+  "title": "Desktop · Signalement express",
+  "message": "Depuis Accueil → Actions rapides → Nouveau signalement, ouvre une fenêtre compacte pour envoyer un problème avec le formulaire officiel et les diagnostics Nethor, sans quitter l'accueil.",
+  "published_at": "2026-10-10T11:26:36.206Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Équipe du matin : vert du planning #2AAF70, plus lumineux.",
-    "Même teinte sur les barres, la légende et l'aperçu administrateur.",
-    "Barres, horaires, repère Maintenant et équipe d'après-midi inchangés.",
-    "Rafraîchissement ciblé des ressources desktop via Service Worker v414."
+    "Nouveau signalement ouvre une fenêtre centrée, adaptée aux thèmes clair et sombre.",
+    "Le formulaire officiel et les autorisations de la page Signaler un problème sont réutilisés.",
+    "Les signalements continuent à être enregistrés dans la table reported_problems avec diagnostics.",
+    "La fermeture revient sur l'accueil sans navigation ; la page complète reste disponible."
   ]
 }
