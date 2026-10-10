@@ -140,8 +140,9 @@ function icon(kind){
  return m[kind]||m.task
 }
 function kpi(id,label,value,sub,kind,progress,extra=''){
+ const interactive=id==='alerts'?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir les anomalies du planning par jour et sur la semaine" title="Détails des anomalies du planning"':'';
  const p=Number.isFinite(progress)?'<div class="ndKpiProgress"><i style="width:'+Math.max(0,Math.min(100,progress))+'%"></i></div>':'';
- return '<article class="ndKpi ndKpi-'+id+'" id="'+extra+'"><span class="ndKpiIcon">'+icon(kind)+'</span><div class="ndKpiBody"><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong>'+(sub?'<small>'+esc(sub)+'</small>':'')+p+'</div><span class="ndKpiArrow">›</span></article>'
+ return '<article class="ndKpi ndKpi-'+id+'" id="'+extra+'"'+interactive+'><span class="ndKpiIcon">'+icon(kind)+'</span><div class="ndKpiBody"><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong>'+(sub?'<small>'+esc(sub)+'</small>':'')+p+'</div><span class="ndKpiArrow">›</span></article>'
 }
 function sectionHead(label,count,actionLabel,url,iconKind){
  return '<div class="ndSectionHead"><div class="ndSectionTitle"><span class="ndSectionIcon">'+icon(iconKind)+'</span><strong>'+esc(label)+'</strong>'+(Number.isFinite(count)&&count>0?'<b>'+count+'</b>':'')+'</div>'+(url?'<button type="button" data-desktop-home-url="'+attr(url)+'">'+esc(actionLabel||'Voir tout')+' <span>→</span></button>':'')+'</div>'
@@ -181,12 +182,12 @@ function renderQuickActions(site,w){
  return '<section class="ndCard ndActions">'+sectionHead(w.label,undefined,null,null,'bolt')+'<div class="ndActionGrid">'+items.map(([key,x])=>'<button type="button" data-desktop-home-action="'+attr(key)+'" data-desktop-home-url="'+attr(x.url)+'"><span class="'+esc(key)+'">'+icon(x.icon||key)+'</span><strong>'+esc(x.label)+'</strong></button>').join('')+'</div></section>'
 }
 async function safeQueries(ctx){
- const db=ctx.db,today=ctx.todayKey,now=new Date().toISOString();
+ const db=ctx.db,today=ctx.todayKey,now=new Date().toISOString(),weekStart=ctx.weekStart||today,weekEnd=window.NethorPlanningAnomalyCore?.plusDays?.(weekStart,6)||today;
  const results=await Promise.allSettled([
   db.rpc('list_chat_conversations'),
   db.from('operations_deliveries').select('id,delivery_date,stream,supplier,expected_label,expected_at,supports,position_label,status,note,created_at').eq('delivery_date',today).order('created_at',{ascending:false}).limit(40),
   db.from('operations_flashes').select('id,category,title,body,active,starts_at,expires_at,created_at').eq('active',true).lte('starts_at',now).or('expires_at.is.null,expires_at.gte.'+now).order('created_at',{ascending:false}).limit(40),
-  db.from('planning_absences').select('id,user_id,display_name,type,start_date,end_date,status').lte('start_date',today).gte('end_date',today).in('status',['approved','pending'])
+  db.from('planning_absences').select('id,user_id,display_name,type,start_date,end_date,status').lte('start_date',weekEnd).gte('end_date',weekStart).in('status',['approved','pending'])
  ]);
  const data=x=>x.status==='fulfilled'&&!x.value?.error?(x.value.data||[]):[];
  return{
@@ -200,7 +201,10 @@ async function render(ctx){
  const ext=await safeQueries(ctx),now=new Date(),people=peopleToday(ctx.todayModel,ctx.todayKey,ctx.profileRows),currentlyWorking=peopleNow(ctx.todayModel,ctx.todayKey,ctx.profileRows,now),teamTotal=todayTeamCount(ctx.todayModel,ctx.todayKey),cov=coverage(ctx.todayModel,ctx.todayKey),tasks=taskStats(ctx);
  const criticalKinds=new Set(['maintenance','password_reset_request','security','incident','problem']);
  const alertCount=(ctx.notifications||[]).filter(n=>!n.read_at&&criticalKinds.has(String(n.kind||''))).length+ext.flashes.filter(x=>['material','procedure'].includes(x.category)).length;
- const planningAnomalyCount=planningDayAnomalyCount(ctx.todayModel,ctx.todayKey,ctx.profileRows,ext.absences);
+ const weekModel=ctx.currentWeek||ctx.todayModel;
+ const anomalyReport=window.NethorPlanningAnomalyCore?.analyze?.(weekModel,ctx.weekStart,ctx.profileRows,ext.absences)||null;
+ const currentAnomalyDay=anomalyReport?.days?.find(x=>x.date===ctx.todayKey);
+ const planningAnomalyCount=currentAnomalyDay?currentAnomalyDay.count:planningDayAnomalyCount(ctx.todayModel,ctx.todayKey,ctx.profileRows,ext.absences);
  const kpis=[],wd=c.widgets;
  if(enabled(wd.present_staff))kpis.push(kpi('staff',wd.present_staff.label,currentlyWorking.length+' / '+teamTotal,currentlyWorking.length?'actuellement en poste':'aucune présence actuellement','team',teamTotal?Math.round(currentlyWorking.length/teamTotal*100):0));
  if(enabled(wd.planning_coverage))kpis.push(kpi('coverage',wd.planning_coverage.label,cov==null?'—':cov+' %',cov==null?'planning non renseigné':'continuité des plages planifiées','calendar',cov??0));
@@ -235,7 +239,10 @@ async function render(ctx){
  if(enabled(wd.team_service))secondary.push(renderTeam(ctx,wd.team_service,people));
  if(enabled(wd.operations_followup))secondary.push(renderFollowup(ctx,wd.operations_followup,ext.deliveries));
  if(secondary.length)parts.push('<div class="ndSupportingGrid">'+secondary.join('')+'</div>');
- return{html:'<div class="nethorDesktopReferenceDashboard" style="'+style+'">'+parts.join('')+'</div>',config:c,people,ext,tasks,alertCount,planningAnomalyCount}
+ return{html:'<div class="nethorDesktopReferenceDashboard" style="'+style+'">'+parts.join('')+'</div>',
+  config:c,people,ext,tasks,alertCount,planningAnomalyCount,anomalyReport,
+  anomalyContext:{db:ctx.db,weekStart:ctx.weekStart,todayKey:ctx.todayKey,model:weekModel,profiles:ctx.profileRows,absences:ext.absences,absencesAvailable:ext.absenceAvailable}
+ }
 }
 // Le signalement express embarque la page officielle : aucune duplication de l'API de création.
 function openQuickReport(){
@@ -271,6 +278,15 @@ function openQuickReport(){
 function activate(result){
  const root=document.querySelector('.nethorDesktopReferenceDashboard');if(!root)return;
  const planningTitle=root.querySelector('.ndPlanningSlot .qplanTitleCopy strong');if(planningTitle&&result?.config?.widgets?.planning_view?.label)planningTitle.textContent=result.config.widgets.planning_view.label;
+ const anomalyTile=root.querySelector('.ndKpi-alerts[role="button"]');
+ if(anomalyTile&&!anomalyTile.dataset.ndAnomalyBound){
+  anomalyTile.dataset.ndAnomalyBound='1';
+  const open=()=>window.NethorHomeAnomalyDialog?.open?.({...result.anomalyContext,report:result.anomalyReport});
+  anomalyTile.addEventListener('click',open);
+  anomalyTile.addEventListener('keydown',event=>{
+   if(event.key==='Enter'||event.key===' '){event.preventDefault();open()}
+  });
+ }
  root.querySelectorAll('[data-desktop-home-url]').forEach(btn=>btn.addEventListener('click',()=>{
   if(btn.dataset.desktopHomeAction==='incident'){openQuickReport();return}
   if(btn.dataset.desktopHomeAction==='planning'){
