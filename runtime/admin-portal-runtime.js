@@ -1020,8 +1020,8 @@ async function uploadDesktopGlobalBackground(input){
  const state=$('saveState');
  try{
   const ext=String(file.name||'').split('.').pop().toLowerCase();
-  const mime={'png':'image/png','jpg':'image/jpeg','jpeg':'image/jpeg','webp':'image/webp','avif':'image/avif'};
-  if(!Object.prototype.hasOwnProperty.call(mime,ext))throw new Error('Format accepté : PNG, JPG, WebP ou AVIF.');
+  const mime={'png':'image/png','jpg':'image/jpeg','jpeg':'image/jpeg','webp':'image/webp'};
+  if(!Object.prototype.hasOwnProperty.call(mime,ext))throw new Error('Format accepté : PNG, JPG ou WebP.');
   if(file.type&&file.type!==mime[ext])throw new Error('Le format du fichier ne correspond pas à son extension.');
   if(file.size>8*1024*1024)throw new Error('Image trop volumineuse : 8 Mo maximum.');
   if(!file.size)throw new Error('Le fichier sélectionné est vide.');
@@ -1058,12 +1058,12 @@ function renderDesktopGlobalBackgroundEditor(){
   '<div class="ndBgLayout"><div class="ndBgPreview" aria-label="Aperçu du fond global"><span class="ndBgPreviewBadge"></span>'+
    '<div class="ndBgPreviewScreen"><span class="ndBgPreviewSidebar"></span><span class="ndBgPreviewHeader"></span><span class="ndBgPreviewCard"></span><span class="ndBgPreviewCard second"></span></div></div>'+
   '<div class="ndBgDetails"><strong>'+(exists?esc(node.image_name||'Image personnalisée'):'Aucune image importée')+'</strong>'+
-   '<small>'+(exists?'Le fond s’appliquera à tous les comptes Desktop après Enregistrer.':'Formats PNG, JPG, WebP, AVIF · maximum 8 Mo. Résolution 1920 × 1080 px conseillée.')+'</small>'+
+   '<small>'+(exists?'Le fond s’appliquera à tous les comptes Desktop après Enregistrer.':'Formats PNG, JPG, WebP · maximum 8 Mo. Résolution 1920 × 1080 px conseillée.')+'</small>'+
    '<label class="ndBgEnabled"><input type="checkbox" data-nd-bg-setting="enabled" '+(node.enabled?'checked':'')+'> <span>Afficher le fond sur toutes les pages Desktop</span></label>'+
    '<div class="ndBgButtons"><button class="btn secondaryBtn mini" type="button" onclick="chooseDesktopGlobalBackground()">Importer une image</button>'+
     (exists?'<button class="btn secondaryBtn mini" type="button" onclick="downloadDesktopGlobalBackground()">Télécharger</button>'+
       '<button class="btn secondaryBtn mini" type="button" onclick="removeDesktopGlobalBackground()">Réinitialiser</button>':'')+
-   '</div><input type="file" id="desktopGlobalBackgroundFile" hidden accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif" onchange="uploadDesktopGlobalBackground(this)"></div></div>'+
+   '</div><input type="file" id="desktopGlobalBackgroundFile" hidden accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" onchange="uploadDesktopGlobalBackground(this)"></div></div>'+
   '<div class="ndBgSettings"><div class="field"><label for="desktopGlobalBackgroundFit">Cadrage de l’image</label>'+
     '<select id="desktopGlobalBackgroundFit" data-nd-bg-setting="fit"><option value="cover" '+(node.fit==='cover'?'selected':'')+'>Remplir l’écran</option><option value="contain" '+(node.fit==='contain'?'selected':'')+'>Afficher toute l’image</option></select></div>'+
    '<div class="field"><label for="desktopGlobalBackgroundPosition">Position</label><select id="desktopGlobalBackgroundPosition" data-nd-bg-setting="position">'+
