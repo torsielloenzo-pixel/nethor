@@ -41,6 +41,20 @@ test('Le dialogue et sa fermeture par message ne prennent pas la main sur la nav
  assert.equal(iframe.src,'');
 });
 
+test('Fenêtre naturelle : un seul en-tête, formulaire sans éléments de page dupliqués',()=>{
+ assert.match(dashboard,/id="ndReportDialogTitle">Signaler un problème/);
+ assert.doesNotMatch(dashboard,/ndReportFooter/);
+ assert.doesNotMatch(dashboard,/ndReportHeaderIcon/);
+ assert.match(css,/width:min\(500px,calc\(100vw - 32px\)\)/);
+ assert.match(css,/grid-template-rows:auto minmax\(0,1fr\)/);
+ assert.match(report,/html\.rpEmbedded \.rpIntro\{display:none!important\}/);
+ assert.match(report,/html\.rpEmbedded \.rpContextPicker>small\{display:none!important\}/);
+ assert.match(report,/overflow-y:auto!important/);
+ assert.match(report,/html\.rpEmbedded \.rpText/);
+ assert.match(report,/if\(help\)help\.textContent=/);
+ assert.match(report,/if\(close\)close\.textContent='Fermer'/);
+});
+
 test('La page embarquée conserve l’enregistrement officiel des problèmes et ses permissions',()=>{
  assert.match(report,/NETHOR_QUICK_REPORT_EMBEDDED/);
  assert.match(report,/window\.parent\.location\.origin===location\.origin/);
