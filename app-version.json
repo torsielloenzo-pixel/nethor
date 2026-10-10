@@ -1,17 +1,18 @@
 {
-  "version": 429,
-  "label": "v1.46.65",
+  "version": 430,
+  "label": "v1.46.66",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Planning Mobile · En-tête de semaine harmonisé",
-  "message": "Le titre « Semaine » et sa plage de dates s’affichent directement sur le fond du thème, sans cadre de couleur différente.",
-  "published_at": "2026-10-10T14:20:56.348Z",
+  "title": "Mobile · Finitions des six thèmes",
+  "message": "Harmonisation discrète des palettes, textes, bordures et accents entre les différentes pages de Nethor Mobile.",
+  "published_at": "2026-10-10T14:33:24.608Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Suppression du fond, de la bordure et de l’ombre derrière le titre de semaine sur Mobile.",
-    "Conservation des textes, dates et styles de lisibilité adaptés aux thèmes.",
-    "Compatible avec les thèmes clair, sombre, bleu minéral, sauge, prune nocturne et Halloween.",
-    "Aucune modification du planning, des couleurs horaires ni de Desktop."
+    "Clair et sombre : meilleure cohérence des textes et contrôles sur les notifications, le profil et la personnalisation.",
+    "Bleu minéral et sauge : fonds et contrastes légèrement affinés, accents cohérents sur les sous-pages.",
+    "Prune nocturne : cartes et textes secondaires plus harmonieux, bouton de sondage plus contrasté.",
+    "Halloween : décor conservé, textes secondaires mieux lisibles.",
+    "Aucune modification des plannings, des horaires, des états métier ni de la version Desktop."
   ]
 }

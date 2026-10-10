@@ -40,4 +40,4 @@ jobs:
           node --check runtime/desktop-home-dashboard.js
           node --check runtime/admin-portal-runtime.js
       - name: Exécuter la suite de non-régression
-        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs tests/desktop-quick-planning-readability.test.cjs tests/desktop-quick-report-modal.test.cjs tests/desktop-aside-widgets-readability.test.cjs tests/mobile-auth-animation-exclusivity.test.cjs tests/mobile-planning-week-header-theme.test.cjs
+        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs tests/desktop-quick-planning-readability.test.cjs tests/desktop-quick-report-modal.test.cjs tests/desktop-aside-widgets-readability.test.cjs tests/mobile-auth-animation-exclusivity.test.cjs tests/mobile-planning-week-header-theme.test.cjs tests/mobile-theme-polish.test.cjs
