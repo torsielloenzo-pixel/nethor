@@ -396,3 +396,27 @@ html[data-nethor-page-layout="desktop"][data-nethor-desktop-sidebar="0"] .nethor
  html[data-nethor-page-layout="desktop"] .nethorDesktopSidebar,
  .nethorSidebarCollapse{transition:none!important}
 }
+
+/* Nethor Desktop — global wallpaper (all desktop pages, never mobile).
+   Keep the header, sidebar and page cards intact, only change the canvas. */
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-wallpaper="1"]{
+ --nethor-desktop-wallpaper-overlay:var(--nethor-desktop-wallpaper-overlay-light,rgba(247,249,252,.14));
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-desktop-wallpaper="1"]{
+ --nethor-desktop-wallpaper-overlay:var(--nethor-desktop-wallpaper-overlay-dark,rgba(17,19,23,.14));
+}
+html[data-nethor-page-layout="desktop"][data-nethor-desktop-wallpaper="1"] body{
+ background-color:var(--nethor-shell-bg,#f7f9fc)!important;
+ background-image:
+  linear-gradient(var(--nethor-desktop-wallpaper-overlay),var(--nethor-desktop-wallpaper-overlay)),
+  var(--nethor-desktop-wallpaper-image,none)!important;
+ background-size:cover,var(--nethor-desktop-wallpaper-fit,cover)!important;
+ background-position:center center,var(--nethor-desktop-wallpaper-position,center center)!important;
+ background-repeat:no-repeat,no-repeat!important;
+ background-attachment:fixed,fixed!important;
+ min-height:100dvh;
+}
+/* Existing login screen has its own independent background setting. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="index"] body:has(#site.hidden){
+ background-image:none!important;
+}
