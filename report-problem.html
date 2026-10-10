@@ -69,6 +69,19 @@ html.rpEmbedded,html.rpEmbedded body{
  overflow:hidden!important;background:var(--rp-card)!important
 }
 html.rpEmbedded body{position:fixed!important;inset:0!important}
+/* La mise en page globale Desktop ajoute un padding-left de 210px pour
+   sa barre latérale. Dans l'iframe de signalement, cette barre est absente :
+   retirer uniquement ici ce décalage, avec une spécificité supérieure. */
+html.rpEmbedded[data-nethor-page-layout="desktop"] body{
+ box-sizing:border-box!important;
+ padding:0!important;
+ margin:0!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ overflow:hidden!important
+}
+
 html.rpEmbedded body>:not(.rpShell):not(script):not(style){display:none!important}
 html.rpEmbedded .rpShell,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpDesktopShell{
