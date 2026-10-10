@@ -103,3 +103,206 @@ html[data-nethor-platform="desktop"] .authDesktopForm .loginFoot{text-align:cent
  html[data-nethor-platform="desktop"] .authDesktopBrand{margin-bottom:22px}
 }
 @media(prefers-reduced-motion:reduce){html[data-nethor-platform="desktop"] .authDesktopRoot::before{transform:none}}
+
+/* Nethor · écran de connexion desktop premium d'après la maquette approuvée.
+   Décor fourni par l'utilisateur et généré à partir de la photo du magasin.
+   Limité à #login et au moteur desktop pour préserver mobile et les autres pages. */
+html[data-nethor-platform="desktop"] #login.authDesktopRoot{
+  --auth-panel:rgba(255,249,243,.985);
+  --auth-field:#e9f1ff;
+  --auth-text:#23262b;
+  --auth-muted:#747b84;
+  --auth-line:#d0dcf0;
+  --auth-icon:#6e7988;
+  --auth-feature:rgba(255,255,255,.54);
+  --auth-shadow:0 25px 68px rgba(48,30,22,.18);
+  background:#b7554e!important;
+  color:#23262b!important;
+  overflow:auto!important;
+  isolation:isolate;
+  padding:0!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot::before{
+  content:""!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:-2!important;
+  background-image:url("../../assets/nethor-login-premium.webp")!important;
+  background-size:cover!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  opacity:1!important;
+  filter:none!important;
+  transform:none!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot::after{
+  content:none!important;display:none!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopShell{
+  position:absolute!important;
+  left:49.15%;top:46.25%;
+  transform:translate(-50%,-50%);
+  width:min(420px,calc(100vw - 40px))!important;
+  max-width:none!important;margin:0!important;
+  z-index:3;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopForm.loginCard{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  padding:38px 36px 20px!important;
+  background:linear-gradient(145deg,#fff9f2 0%,#fff6f3 100%)!important;
+  border:1px solid rgba(255,255,255,.9)!important;
+  border-radius:25px!important;
+  box-shadow:0 25px 60px rgba(57,24,19,.16)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  color:#22272b!important;
+  animation:none!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopBrand{margin:0 0 33px!important;}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopLogo{
+  width:68px!important;height:68px!important;border:0!important;border-radius:0!important;
+  object-fit:contain!important;background:transparent!important;box-shadow:none!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopName,
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopSub{display:none!important;}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authLoginFields{gap:10px!important;}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopForm input{
+  min-height:48px!important;height:48px!important;
+  padding:0 47px!important;
+  background:#e8f0fe!important;
+  border:1px solid #d1dcf0!important;
+  border-radius:14px!important;
+  box-shadow:none!important;
+  color:#202734!important;
+  font-size:13px!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopForm input:focus-visible{
+  outline:2px solid #ff7226!important;outline-offset:2px!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authFieldIcon{
+  left:17px!important;width:19px!important;height:19px!important;color:#6e7887!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .eyeBtn{
+  top:6px!important;right:6px!important;width:36px!important;height:36px!important;
+  border:1px solid #dbe4f4!important;border-radius:11px!important;
+  background:#f1f5fc!important;color:#7c8796!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopSubmit{
+  width:100%!important;min-height:48px!important;height:48px!important;
+  margin-top:14px!important;padding:0 16px!important;
+  border-radius:14px!important;color:#fff!important;
+  background:linear-gradient(100deg,#ff970e,#ff6520 55%,#ff3224)!important;
+  box-shadow:0 7px 16px rgba(236,70,27,.22)!important;
+  font-size:14px!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .loginHelp{margin-top:6px!important;}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .forgotBtn{
+  min-height:29px!important;font-size:10px!important;color:#777d86!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot #loginError:empty{
+  display:none!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot #loginError:not(:empty){
+  min-height:0!important;margin:7px 0 0!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authFeatureDivider{
+  height:1px!important;margin:23px 0 12px!important;background:#e6dcd8!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authFeatureGrid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authFeature{gap:5px!important;}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authFeature>span{
+  width:40px!important;height:40px!important;padding:10px!important;
+  border:1px solid #efe1db!important;border-radius:11px!important;
+  background:#fffaf7!important;color:#ff6724!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authFeature small{
+  font-size:10px!important;color:#252529!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .loginFoot{
+  margin-top:13px!important;color:#91949b!important;
+  font-size:8.5px!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHours{
+  position:absolute!important;z-index:4;
+  top:9.56%;right:7.42%;width:min(440px,31.5vw);min-height:114px;
+  box-sizing:border-box;padding:18px 19px!important;
+  display:grid;grid-template-columns:minmax(0,1fr) 122px;
+  align-items:center;gap:15px;color:#fff!important;
+  background:rgba(29,38,49,.94)!important;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:19px;box-shadow:0 12px 34px rgba(26,34,42,.25);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursLeft{
+  display:grid;grid-template-columns:29px minmax(0,1fr);gap:11px;align-items:start;min-width:0;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursIcon{
+  width:27px;height:27px;color:#e4ebf4;margin-top:3px;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursIcon svg{
+  width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursLabel{
+  display:block;font-size:12px;line-height:1.25;white-space:nowrap;color:#f6f7f8;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursTime{
+  display:block;margin-top:7px;font-size:25px;line-height:1.1;font-weight:850;letter-spacing:-.5px;color:#fff;
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursSunday{
+  display:block;margin-top:5px;font-size:11px;color:#edf0f6;white-space:nowrap;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursRight{
+  padding-left:16px;border-left:1px solid rgba(255,255,255,.38);text-align:center;min-width:0;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursStatus{
+  display:block;font-size:13px;font-weight:850;color:#62ec79;white-space:nowrap;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursStatus::before{
+  content:"";display:inline-block;width:10px;height:10px;margin-right:7px;border-radius:50%;background:currentColor;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursStatus.isClosed{
+  color:#ffb4a3!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursNowLabel{
+  display:block;margin-top:7px;font-size:10.5px;font-weight:400;white-space:nowrap;color:#fff;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursClock{
+  display:block;margin-top:2px;font-size:21px;font-weight:850;line-height:1.05;color:#fff;font-variant-numeric:tabular-nums;
+}
+/* Empêche les adaptations sombres générales de dénaturer la maquette desktop. */
+:root[data-theme="dark"][data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopForm.loginCard{
+ background:linear-gradient(145deg,#fff9f2,#fff6f3)!important;color:#22272b!important;border-color:#fff!important;
+}
+:root[data-theme="dark"][data-nethor-platform="desktop"] #login.authDesktopRoot::before{filter:none!important;}
+/* Les écrans desktop bas et étroits conservent le formulaire accessible. */
+@media(max-height:750px){
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopShell{
+   top:50%;width:min(405px,calc(100vw - 42px))!important;
+ }
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopForm.loginCard{
+   padding-top:19px!important;padding-bottom:14px!important;
+ }
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopBrand{margin-bottom:14px!important;}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopLogo{width:54px!important;height:54px!important;}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authFeatureDivider{margin-top:12px!important;}
+}
+@media(max-width:1120px){
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHours{
+   width:330px;right:2.5%;padding:13px!important;grid-template-columns:minmax(0,1fr) 95px;gap:6px;
+ }
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursTime{font-size:20px;}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursLabel{font-size:10px;}
+}
+@media(min-width:901px) and (max-width:1000px){
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHours{top:3%;right:2%;}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopForm.loginCard{animation:none!important;}
+}

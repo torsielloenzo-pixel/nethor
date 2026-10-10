@@ -4,10 +4,25 @@ function build(){
  return{
   platform:'desktop',
   html:`<div id="login" class="authDesktopRoot hidden" data-nethor-login-platform="desktop">
+   <aside class="authDesktopHours" aria-label="Horaires habituels du magasin">
+    <div class="authDesktopHoursLeft">
+     <span class="authDesktopHoursIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+     <div>
+      <span class="authDesktopHoursLabel">Horaires d'ouverture aujourd'hui</span>
+      <strong class="authDesktopHoursTime" data-auth-hours>08:00 – 20:00</strong>
+      <small class="authDesktopHoursSunday">Dimanche : 09:00 – 12:30</small>
+     </div>
+    </div>
+    <div class="authDesktopHoursRight">
+     <strong class="authDesktopHoursStatus" data-auth-open>—</strong>
+     <span class="authDesktopHoursNowLabel">Il est actuellement</span>
+     <time class="authDesktopHoursClock" data-auth-clock>--:--</time>
+    </div>
+   </aside>
    <div class="authDesktopShell">
     <form class="loginCard authDesktopForm" onsubmit="login(event)">
      <section class="authDesktopBrand" aria-label="Nethor">
-      <img class="authDesktopLogo" src="assets/app-icon-v63.svg" alt="">
+      <img class="authDesktopLogo" src="assets/nethor-login-mark.svg" alt="">
       <div class="authDesktopName">Nethor</div>
       <div class="authDesktopSub">Portail opérationnel interne</div>
      </section>
@@ -46,4 +61,23 @@ function build(){
  }
 }
 window.NethorDesktopLoginLayout=Object.freeze({build});
+// Widget informatif : statut calculé d'après les horaires habituels, et non un état Google en direct.
+function updateDesktopStoreHours(){
+ const root=document.querySelector('.authDesktopRoot');
+ if(!root)return;
+ try{
+  const parts=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'long',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+  const value=t=>parts.find(p=>p.type===t)?.value||'';
+  const sunday=value('weekday').toLowerCase()==='dimanche';
+  const mins=(Number(value('hour'))*60)+Number(value('minute'));
+  const open=sunday?(mins>=540&&mins<750):(mins>=480&&mins<1200);
+  const h=root.querySelector('[data-auth-hours]'),st=root.querySelector('[data-auth-open]'),clock=root.querySelector('[data-auth-clock]');
+  if(h)h.textContent=sunday?'09:00 – 12:30':'08:00 – 20:00';
+  if(st){st.textContent=open?'Ouvert':'Fermé';st.classList.toggle('isClosed',!open);st.title='Statut estimé selon les horaires habituels, hors fermetures exceptionnelles';}
+  if(clock){clock.textContent=value('hour')+':'+value('minute');clock.dateTime=new Date().toISOString();}
+ }catch(e){console.warn('Widget horaires desktop :',e)}
+}
+document.addEventListener('nethor:login-layout-ready',updateDesktopStoreHours);
+setInterval(updateDesktopStoreHours,30000);
+
 })();
