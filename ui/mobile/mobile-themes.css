@@ -785,6 +785,21 @@ html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorUserMenuView .
  color:var(--nmt-muted)!important
 }
 
+/* Même finition discrète des séparateurs et interactions, sans ajout
+   d'effets sur les états métier ni sur les illustrations saisonnières. */
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npRow{
+ border-color:var(--nmt-polish-line)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npTopMenu,
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npRowMenu{
+ border-color:var(--nmt-polish-line)!important;
+ box-shadow:0 14px 34px var(--nmt-polish-shadow)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme="mineral"] .nethorMobileAppNav,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme="sage"] .nethorMobileAppNav,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme="plum"] .nethorMobileAppNav{
+ box-shadow:0 -7px 20px var(--nmt-shadow)!important
+}
 /* Les pages Notifications conservaient plusieurs titres noirs et
    états interactifs orange quel que soit le thème choisi. */
 html[data-nethor-mobile-app="1"] .nethorNotificationsView :is(.npGroup,.npSentence b,.npMobileTitle h1){
