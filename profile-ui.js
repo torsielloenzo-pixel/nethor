@@ -1551,11 +1551,44 @@ function notificationPreferenceEnabled(ruleKey,channel='push'){
 function notificationPushEnabled(kind){return notificationPreferenceEnabled(notificationRuleKey(kind),'push')}
 function notificationPortalEnabled(kind){return notificationPreferenceEnabled(notificationRuleKey(kind),'portal')}
 function notificationKindEnabled(kind){return notificationPushEnabled(kind)}
+
+function latestNotificationsOnly(rows){
+ const recent=[...(Array.isArray(rows)?rows:[])].sort((a,b)=>{
+  const t=Date.parse(b.created_at||0)-Date.parse(a.created_at||0);
+  return t||Number(b.id||0)-Number(a.id||0);
+ });
+ const used=new Set(),out=[];
+ for(const item of recent){
+  const kind=String(item.kind||''),url=String(item.target_url||'');
+  let key='';
+  if(['manual_edit','import_new','import_replace','reset_week','reset_day'].includes(kind)){
+   const date=kind==='reset_day'?String(item.planning_date||''):String(item.week_start||item.planning_date||'');
+   if(date)key='planning:'+kind+':'+date;
+  }else if(['chat_message','chat_direct','chat_group','chat_general'].includes(kind)){
+   const match=/[?&]c=([^&#]+)/.exec(url);
+   const conversation=match?decodeURIComponent(match[1]):'';
+   const sender=String(item.created_by||'').trim();
+   if(conversation)key='chat:'+kind+':'+conversation+(['chat_group','chat_general'].includes(kind)?':'+(sender||item.title||''):'');
+   else if(sender)key='chat:'+kind+':sender:'+sender;
+  }else if(['absence_request','absence_decision'].includes(kind)){
+   const scope=url&&url!=='notifications.html'?url:String(item.planning_date||item.week_start||'');
+   if(scope)key='absence:'+kind+':'+scope;
+  }else if(['admin_message','app_update','maintenance'].includes(kind)){
+   const scope=String(item.title||'').trim()||url;
+   if(scope)key='feature:'+kind+':'+scope;
+  }
+  if(key&&used.has(key))continue;
+  if(key)used.add(key);
+  out.push(item);
+ }
+ return out;
+}
+
 async function loadNotifications(){
  if(!api.client||!api.session)return;
- const {data,error}=await api.client.from('planning_notifications').select('id,kind,title,message,planning_date,week_start,target_url,read_at,created_at').eq('user_id',api.session.user.id).order('created_at',{ascending:false}).limit(80);
+ const {data,error}=await api.client.from('planning_notifications').select('id,kind,title,message,planning_date,week_start,target_url,created_by,read_at,created_at').eq('user_id',api.session.user.id).order('created_at',{ascending:false}).limit(500);
  if(error){console.warn('Notifications:',error);return}
- api.notifications=(data||[]).filter(n=>notificationPortalEnabled(n.kind));
+ api.notifications=latestNotificationsOnly((data||[]).filter(n=>notificationPortalEnabled(n.kind)));
  renderNotifications();
  window.dispatchEvent(new CustomEvent('netto:notifications',{detail:{notifications:api.notifications,unread:api.notifications.filter(n=>!n.read_at).length}}))
 }
