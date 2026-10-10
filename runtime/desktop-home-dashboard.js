@@ -249,13 +249,11 @@ function openQuickReport(){
   dialog.setAttribute('aria-labelledby','ndReportDialogTitle');
   dialog.setAttribute('aria-describedby','ndReportDialogDescription');
   dialog.innerHTML='<div class="ndReportShell">'+
-   '<div class="ndReportHeader"><span class="ndReportHeaderIcon" aria-hidden="true">!</span>'+
-   '<div class="ndReportHeaderText"><strong id="ndReportDialogTitle">Nouveau signalement</strong>'+
-   '<span id="ndReportDialogDescription">Décris le problème sans quitter l’accueil.</span></div>'+
+   '<div class="ndReportHeader"><div class="ndReportHeaderText">'+
+   '<strong id="ndReportDialogTitle">Signaler un problème</strong>'+
+   '<span id="ndReportDialogDescription">Décris ce qui ne fonctionne pas. Le diagnostic est joint automatiquement.</span></div>'+
    '<button type="button" class="ndReportClose" data-nd-report-close aria-label="Fermer la fenêtre">×</button></div>'+
    '<iframe class="ndReportFrame" title="Formulaire Nethor de signalement de problème" referrerpolicy="same-origin"></iframe>'+
-   '<div class="ndReportFooter"><span>Le signalement sera enregistré dans Gestion → Problèmes signalés.</span>'+
-   '<a href="'+fullPage+'">Ouvrir la page complète ↗</a></div>'+
    '</div>';
   dialog.querySelector('[data-nd-report-close]').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
