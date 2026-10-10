@@ -108,13 +108,31 @@ function buildDesktopSidebar(page){
   '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+'</div>'+
  '</aside>'
 }
-function openDesktopStoreCard(url){
- const target=String(url||DEFAULT_STORE_GOOGLE_URL).trim()||DEFAULT_STORE_GOOGLE_URL;
- if(/^https?:\/\//i.test(target)){window.open(target,'_blank','noopener,noreferrer');return}
- location.href=target
+let desktopStoreCardPromise=null;
+function ensureDesktopStoreCardAssets(){
+ if(!document.getElementById('nethorStoreCardCss')){
+  const link=document.createElement('link');link.id='nethorStoreCardCss';
+  link.rel='stylesheet';link.href='ui/desktop/store-google-card.css?v=1';
+  document.head.appendChild(link);
+ }
+ if(window.NethorStoreGoogleCard)return Promise.resolve(window.NethorStoreGoogleCard);
+ if(desktopStoreCardPromise)return desktopStoreCardPromise;
+ desktopStoreCardPromise=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');
+  script.id='nethorStoreCardJs';script.src='ui/desktop/store-google-card.js?v=1';script.async=true;
+  script.onload=()=>window.NethorStoreGoogleCard?resolve(window.NethorStoreGoogleCard):reject(new Error('Fiche point de vente non initialisée'));
+  script.onerror=()=>{script.remove();reject(new Error('Fiche point de vente indisponible'))};
+  document.head.appendChild(script);
+ }).catch(error=>{desktopStoreCardPromise=null;console.warn('Fiche magasin:',error);throw error});
+ return desktopStoreCardPromise;
+}
+function openDesktopStoreCard(button){
+ if(!(button instanceof HTMLElement))return;
+ if(window.NethorStoreGoogleCard){window.NethorStoreGoogleCard.toggle(button);return}
+ ensureDesktopStoreCardAssets().then(module=>module.toggle(button)).catch(()=>{});
 }
 function desktopHeaderStore(){
- return '<button class="nethorDesktopStoreSwitch" type="button" data-desktop-store-url="'+esc(DEFAULT_STORE_GOOGLE_URL)+'" onclick="window.NethorDesktopShell?.openStoreCard?.(this.dataset.desktopStoreUrl)" aria-label="Ouvrir la fiche Google de Netto Le Thor"><span class="nethorStoreThumb" aria-hidden="true"></span><span class="nethorStoreCopy"><strong data-nethor-store-name>Netto Le Thor</strong><small data-nethor-store-subtitle>Point de vente</small></span><span class="nethorStoreChevron">↗</span></button>'
+ return '<button class="nethorDesktopStoreSwitch" type="button" data-desktop-store-url="'+esc(DEFAULT_STORE_GOOGLE_URL)+'" onclick="window.NethorDesktopShell?.openStoreCard?.(this)" aria-haspopup="dialog" aria-expanded="false" title="Informations du point de vente" aria-label="Afficher les informations de Netto Le Thor"><span class="nethorStoreThumb" aria-hidden="true"></span><span class="nethorStoreCopy"><strong data-nethor-store-name>Netto Le Thor</strong><small data-nethor-store-subtitle>Point de vente</small></span><span class="nethorStoreChevron">⌄</span></button>'
 }
 function desktopHeaderDateTime(){
  return '<div class="nethorDesktopDateTime"><span class="nethorDateIcon">'+desktopSidebarIcon('planning')+'</span><span><small data-nethor-desktop-date>—</small><strong data-nethor-desktop-time>--:--</strong></span></div>'
@@ -257,6 +275,8 @@ function buildDesktopChrome(page){
  const id=String(page||'home').toLowerCase();
  const sidebar=buildDesktopSidebar(id);
  const header='<header data-nethor-page-chrome="desktop"><div class="top nethorDesktopReferenceHeader">'+desktopHeaderStore()+desktopHeaderDateTime()+'<span data-nethor-global-tools-host style="display:contents"></span></div></header>'+sidebar;
+ // Load the store popover on every desktop page; it does not change the mobile UI.
+ ensureDesktopStoreCardAssets().catch(()=>{});
  startDesktopTextScaling();
  setTimeout(()=>{applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{});scaleDesktopText(document.body)},0);
  return header
