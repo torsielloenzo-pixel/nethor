@@ -1166,6 +1166,9 @@ async function importPlanningFiles(fileList){
   const parts=[];if(confirmed.length)parts.push('✓ '+confirmed.length+' confirmé'+(confirmed.length>1?'s':''));if(unverified.length)parts.push('⚠ '+unverified.length+' enregistré'+(unverified.length>1?'s':'')+' • version à vérifier');if(cancelled.length)parts.push(cancelled.length+' annulé'+(cancelled.length>1?'s':''));if(errors.length)parts.push(errors.length+' erreur'+(errors.length>1?'s':''));
   state.textContent=parts.join(' • ')+(errors.length?' — '+errors.map(x=>x.file.name).join(', '):'');
   if(ok.length){renderAll();showToast(unverified.length?'Enregistré, version à vérifier':(ok.length>1?'✓ '+ok.length+' plannings importés':(ok[0].replacing?'✓ Planning remplacé':'✓ Planning importé')))}
+  // Expose only the outcome; the actual parsing, authorization, replacement,
+  // archival, audit and notifications remain the canonical Planning workflow.
+  return {ok:ok.length,confirmed:confirmed.length,unverified:unverified.length,cancelled:cancelled.length,errors:errors.length};
  }finally{planningImportBusy=false;document.getElementById('excelFile').value=''}
 }
 
