@@ -449,9 +449,9 @@ function homeStartStoreInfoClock(w,name){
 const HOME_QUICK_PLANNING_DEFAULTS={
  enabled:true,
  title:'Vue rapide planning',
- subtitle:'Personnes en poste actuellement',
+ subtitle:'Présences prévues sur toute la journée',
  action_label:'Voir le planning complet',
- empty_text:'Aucune personne en poste actuellement',
+ empty_text:'Aucun salarié planifié aujourd’hui',
  show_avatar:true,
  show_role:true,
  show_shift:true,
@@ -560,13 +560,16 @@ function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,w
  const rawNow=((nowHour-bounds.start)/bounds.span)*100,nowPct=Math.max(0,Math.min(100,rawNow)),nowInRange=nowHour>=bounds.start&&nowHour<=bounds.end,edgeClass=rawNow<=0?' edgeStart':rawNow>=100?' edgeEnd':'';
  const ticks=homeQuickPlanningTicks(bounds),target='planning.html?week='+encodeURIComponent(weekStart)+'&day='+encodeURIComponent(todayKey);
  const s=w.style,shadow=s.shadow?'0 10px 30px rgba(28,36,48,.07)':'none';
- const style='--qp-accent:'+s.accent+';--qp-now:'+s.now_color+';--qp-surface-light:'+s.surface_light+';--qp-surface-dark:'+s.surface_dark+';--qp-text-light:'+s.text_light+';--qp-text-dark:'+s.text_dark+';--qp-grid-light:'+s.grid_light+';--qp-grid-dark:'+s.grid_dark+';--qp-radius:'+s.radius+'px;--qp-shadow:'+shadow+';--qp-count:'+(people.length||1);
+ // The board must grow with every working person, never scroll/crop at a fixed row limit.
+ const minBoardHeight=48+(people.length||1)*(w.density==='compact'?38:44);
+ const subtitle=/actuellement|en cours|maintenant/i.test(w.subtitle)?'Présences prévues sur toute la journée':w.subtitle;
+ const style='--qp-accent:'+s.accent+';--qp-now:'+s.now_color+';--qp-surface-light:'+s.surface_light+';--qp-surface-dark:'+s.surface_dark+';--qp-text-light:'+s.text_light+';--qp-text-dark:'+s.text_dark+';--qp-grid-light:'+s.grid_light+';--qp-grid-dark:'+s.grid_dark+';--qp-radius:'+s.radius+'px;--qp-shadow:'+shadow+';--qp-count:'+(people.length||1)+';--qp-board-min:'+minBoardHeight+'px';
  const names=people.length?people.map(person=>{
   const role=person.profile?(window.NettoProfileUI?.roleLabel?.(person.profile.role)||person.profile.role||'Équipe'):'Équipe';
   const meta=[];
   if(w.show_role)meta.push(role);
-  if(w.show_shift)meta.push(homeClock(person.current.a)+' – '+homeClock(person.current.b));
-  return '<div class="qplanName" style="--qp-person:'+homeEsc(person.color)+'">'+
+  if(w.show_shift)meta.push(homeClock(person.ranges[0].a)+' – '+homeClock(person.ranges[person.ranges.length-1].b));
+  return '<div class="qplanName" style="--qp-person:'+homeEsc(person.color)+'" title="'+homeEsc(person.name+' · '+person.ranges.map(r=>homeClock(r.a)+' – '+homeClock(r.b)).join(' / '))+'">'+
    (w.show_avatar?'<span class="qplanAvatar">'+homeEsc(homeQuickPlanningInitials(person.name))+'</span>':'')+
    '<span class="qplanNameCopy"><strong>'+homeEsc(person.name)+'</strong>'+(meta.length?'<small>'+homeEsc(meta.join(' · '))+'</small>':'')+'</span></div>'
  }).join(''):'<div class="qplanEmptyName">'+homeEsc(todayModel?.days?.[todayKey]?w.empty_text:'Planning du jour non renseigné')+'</div>';
@@ -577,7 +580,7 @@ function homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,w
  }).join('');
  const clock=String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0');
  return '<section id="nethorQuickPlanningWidget" class="qplan density'+(w.density==='compact'?'Compact':'Comfortable')+(w.show_avatar?'':' noAvatars')+'" style="'+homeEsc(style)+'" aria-label="'+homeEsc(w.title)+'">'+
-  '<div class="qplanHead"><div class="qplanTitle"><span class="qplanTitleIcon">'+homeQuickPlanningCalendarIcon()+'</span><span class="qplanTitleCopy"><strong>'+homeEsc(w.title)+'</strong><small>'+homeEsc(w.subtitle)+' · '+people.length+' en poste</small></span></div><button type="button" class="qplanFullLink" onclick="location.href=\''+homeEsc(target)+'\'">'+homeEsc(w.action_label)+' <span>→</span></button></div>'+
+  '<div class="qplanHead"><div class="qplanTitle"><span class="qplanTitleIcon">'+homeQuickPlanningCalendarIcon()+'</span><span class="qplanTitleCopy"><strong>'+homeEsc(w.title)+'</strong><small>'+homeEsc(subtitle)+' · '+people.length+' salarié'+(people.length>1?'s':'')+' planifié'+(people.length>1?'s':'')+'</small></span></div><button type="button" class="qplanFullLink" onclick="location.href=\''+homeEsc(target)+'\'">'+homeEsc(w.action_label)+' <span>→</span></button></div>'+
   '<div class="qplanBoard"><div class="qplanNames"><div class="qplanNameAxis"></div>'+names+'</div><div class="qplanTimeline"><div class="qplanAxis">'+tickHtml+'</div><div class="qplanRows">'+tracks+'</div>'+(nowInRange?'<span class="qplanNow'+edgeClass+'" style="left:'+nowPct.toFixed(3)+'%"><span class="qplanNowLabel">Maintenant</span></span>':'')+'</div></div>'+
   '<div class="qplanFoot">'+(w.show_legend?'<div class="qplanLegend"><span class="solid">En poste</span><span class="pause">Pause / coupure</span><span class="now">Maintenant</span></div>':'<span></span>')+'<span class="qplanUpdated">Actualisé automatiquement · '+homeEsc(clock)+'</span></div>'+
  '</section>'
@@ -589,12 +592,29 @@ function homeStartQuickPlanningClock(cfg,todayModel,todayKey,profileRows,weekSta
   const root=$('nethorQuickPlanningWidget');if(!root)return;
   const now=new Date();
   if(homeParisDateKey(now)!==todayKey){clearInterval(window.__nethorQuickPlanningTimer);location.reload();return}
-  const html=homeRenderQuickPlanningWidget(cfg,now,todayKey,todayModel,profileRows,weekStart);
-  if(html)root.outerHTML=html
+  // Update the live cursor instead of recreating the whole widget every minute.
+  // Replacing outerHTML displaced the editor handles and caused visible jumping.
+  const p=homeParisClockParts(now),nowHour=p.hour+p.minute/60,bounds=homeQuickPlanningBounds();
+  const percent=homeQuickPlanningPosition(nowHour,bounds),visible=nowHour>=bounds.start&&nowHour<=bounds.end;
+  const timeline=root.querySelector('.qplanTimeline');
+  let marker=root.querySelector('.qplanNow');
+  if(!visible){marker?.remove()}
+  else if(timeline){
+   if(!marker){
+    marker=document.createElement('span');
+    marker.className='qplanNow';
+    marker.innerHTML='<span class="qplanNowLabel">Maintenant</span>';
+    timeline.appendChild(marker);
+   }
+   marker.style.left=percent.toFixed(3)+'%';
+   marker.classList.toggle('edgeStart',nowHour<=bounds.start);
+   marker.classList.toggle('edgeEnd',nowHour>=bounds.end);
+  }
+  const updated=root.querySelector('.qplanUpdated');
+  if(updated)updated.textContent='Actualisé automatiquement · '+String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0');
  };
  window.__nethorQuickPlanningTimer=setInterval(tick,60000)
 }
-
 async function renderHomeDashboard(profile,name,cfg){
  const host=$('homeDashboard');if(!host)return;
  host.innerHTML='<div class="mhdCard mhdSection"><div class="mhdEmpty">Chargement de ton espace de travail…</div></div>';
