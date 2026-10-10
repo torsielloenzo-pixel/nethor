@@ -25,3 +25,10 @@ html[data-theme="dark"] .nethorHomeImportExplanation{color:#b1bcc8}
 html[data-theme="dark"] .nethorHomeImportStatus{background:#303844;border-color:#475364;color:#eff4fb}
 html.nethorHomeImportOpen{overflow:hidden}
 @media(max-width:580px){.nethorHomeImportBackdrop{padding:12px}.nethorHomeImportPanel{padding:18px}.nethorHomeImportButtons button{flex:1 1 100%}}
+
+.nethorHomeImportPanel{position:relative}
+.nethorHomeImportClose{position:absolute;top:13px;right:13px;display:grid;place-items:center;width:29px;height:29px;padding:0;border:0;border-radius:8px;background:transparent;color:#687587;font-size:23px;line-height:1;cursor:pointer}
+.nethorHomeImportClose:hover{background:#eef1f5;color:#202936}
+.nethorHomeImportAgain[hidden]{display:none!important}
+html[data-theme="dark"] .nethorHomeImportClose{color:#b6c0cc}
+html[data-theme="dark"] .nethorHomeImportClose:hover{background:#353e49;color:#fff}
