@@ -63,41 +63,83 @@ button{touch-action:manipulation}
 :root[data-theme="dark"]{--rp-bg:#17191d;--rp-card:#22252a;--rp-text:#f2efeb;--rp-muted:#aaa59f;--rp-line:#353a41;--rp-soft:#392821}
 :root[data-theme="dark"] .rpContext{background:#1c1f23}:root[data-theme="dark"] .rpSourceSelect{color:#f2efeb}:root[data-theme="dark"] .rpText{background:#1b1e22;border-color:#3b4047;color:#f2efeb}:root[data-theme="dark"] .rpCancel,:root[data-theme="dark"] .rpReturn{background:#25292e}
 @media(max-height:540px){.rpShell{padding-top:calc(env(safe-area-inset-top) + 5px);padding-bottom:calc(env(safe-area-inset-bottom) + 5px)}.rpTop{min-height:42px;padding-bottom:6px}.rpCard{padding:11px;border-radius:18px}.rpIntro{grid-template-columns:36px minmax(0,1fr);gap:8px}.rpIcon{width:36px;height:36px;border-radius:11px}.rpIntro strong{font-size:15px}.rpIntro p{display:none}.rpContext{margin:8px 0 7px;padding:6px 9px;min-height:30px}.rpContextPicker>small{display:none}.rpSourceSelect{height:26px}.rpText{min-height:72px;padding:10px 12px}.rpHelp{margin:5px 2px 6px}.rpSend{min-height:42px}}
-/* Mode compact : le formulaire d'origine reste identique, seule sa présentation change. */
-html.rpEmbedded,html.rpEmbedded body{height:100%!important;min-height:0!important;overflow:hidden!important;background:var(--rp-card)!important}
+/* Intégration compacte dans le dialogue Desktop. La page autonome reste inchangée. */
+html.rpEmbedded,html.rpEmbedded body{
+ width:100%!important;height:100%!important;min-height:0!important;
+ overflow:hidden!important;background:var(--rp-card)!important
+}
 html.rpEmbedded body{position:fixed!important;inset:0!important}
 html.rpEmbedded body>:not(.rpShell):not(script):not(style){display:none!important}
+html.rpEmbedded .rpShell,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpDesktopShell{
  width:100%!important;height:100dvh!important;min-height:0!important;margin:0!important;padding:0!important;
- display:flex!important;flex-direction:column!important;overflow:hidden!important
+ display:flex!important;flex-direction:column!important;overflow:hidden!important;background:var(--rp-card)!important
 }
-html.rpEmbedded .rpDesktopTop{display:none!important}
+html.rpEmbedded .rpTop{display:none!important}
+html.rpEmbedded .rpMain,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpMain{
- display:flex!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important
+ width:100%!important;height:100%!important;min-height:0!important;flex:1 1 auto!important;
+ display:flex!important;overflow-y:auto!important;overscroll-behavior:contain!important
 }
+html.rpEmbedded .rpCard,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpCard{
- display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;min-height:0!important;
- margin:0!important;padding:18px 20px!important;border:0!important;border-radius:0!important;
- box-shadow:none!important;overflow:hidden!important
+ width:100%!important;height:auto!important;min-height:100%!important;
+ flex:1 1 auto!important;display:flex!important;flex-direction:column!important;
+ margin:0!important;padding:20px 22px 18px!important;border:0!important;border-radius:0!important;
+ box-shadow:none!important;overflow:visible!important;background:var(--rp-card)!important
 }
-html.rpEmbedded .rpIntro strong{font-size:16px}
-html.rpEmbedded .rpIntro p{font-size:11px}
-html.rpEmbedded .rpContext{margin:11px 0 10px}
-html.rpEmbedded .rpContextPicker>label{font-size:11px}
-html.rpEmbedded .rpSourceSelect{font-size:12px}
-html.rpEmbedded .rpLabel{font-size:11px}
-html.rpEmbedded .rpCount,html.rpEmbedded .rpHelp{font-size:10px}
+html.rpEmbedded .rpIntro{display:none!important}
+html.rpEmbedded .rpContext,
+html.rpEmbedded .rpContextPicker{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ gap:7px!important;width:100%!important;min-height:0!important;
+ margin:0 0 16px!important;padding:0!important;border:0!important;
+ background:transparent!important
+}
+html.rpEmbedded .rpContextPicker>label{font-size:12px!important;color:var(--rp-text)!important;font-weight:800!important}
+html.rpEmbedded .rpSourceSelectWrap{
+ width:100%!important;height:42px!important;min-height:42px!important;
+ padding:0 12px!important;border:1px solid var(--rp-line)!important;
+ border-radius:11px!important;background:var(--rp-card)!important
+}
+html.rpEmbedded .rpSourceSelect{
+ height:100%!important;width:100%!important;
+ font-size:13px!important;font-weight:650!important;padding-right:20px!important
+}
+html.rpEmbedded .rpContextPicker>small{display:none!important}
+html.rpEmbedded .rpLabel{margin-bottom:8px!important;font-size:12px!important;line-height:1.4!important}
+html.rpEmbedded .rpCount{font-size:10px!important}
+html.rpEmbedded .rpText,
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpText{
- flex:1 1 auto!important;min-height:115px!important;resize:none!important;font-size:14px!important
+ width:100%!important;min-height:125px!important;height:auto!important;
+ flex:1 1 auto!important;resize:none!important;box-sizing:border-box!important;
+ border:1px solid var(--rp-line)!important;border-radius:12px!important;
+ background:var(--rp-card)!important;color:var(--rp-text)!important;
+ padding:12px 13px!important;font-size:14px!important;line-height:1.5!important
 }
-html.rpEmbedded .rpSend{min-height:44px}
-html.rpEmbedded .rpState{font-size:11px}
-html.rpEmbedded .rpSuccess{justify-content:center;align-items:center}
-@media(max-height:520px){
- html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpCard{padding:10px 13px!important}
- html.rpEmbedded .rpContext{margin:7px 0}
- html.rpEmbedded .rpText{min-height:66px!important}
- html.rpEmbedded .rpHelp{margin:5px 0}
+html.rpEmbedded .rpText:focus{
+ border-color:var(--rp-orange)!important;
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--rp-orange) 14%,transparent)!important
+}
+html.rpEmbedded .rpHelp{margin:11px 0 13px!important;color:var(--rp-muted)!important;font-size:10.5px!important;line-height:1.45!important}
+html.rpEmbedded .rpSend{
+ flex:0 0 auto!important;min-height:44px!important;border-radius:12px!important;
+ background:#f15a38!important;color:#fff!important;
+ box-shadow:none!important;font-size:13px!important;font-weight:850!important
+}
+html.rpEmbedded .rpSend:hover:not(:disabled){background:#dd4d2d!important}
+html.rpEmbedded .rpState{min-height:15px!important;margin-top:9px!important;font-size:11px!important}
+html.rpEmbedded .rpSuccess{place-items:center!important;justify-content:center!important;align-items:center!important}
+html.rpEmbedded .rpSuccessBox{max-width:300px!important}
+html.rpEmbedded .rpSuccess h2{font-size:20px!important}
+html.rpEmbedded .rpSuccess p{font-size:12px!important;line-height:1.5!important}
+html.rpEmbedded .rpReturn{font-size:12px!important;border-radius:10px!important}
+@media(max-height:540px){
+ html.rpEmbedded .rpCard,
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpCard{padding:13px 16px!important}
+ html.rpEmbedded .rpContext{margin-bottom:10px!important}
+ html.rpEmbedded .rpText{min-height:100px!important}
+ html.rpEmbedded .rpHelp{margin:8px 0!important}
 }
 </style>
 </head>
@@ -408,6 +450,13 @@ async function sendReport(){
  }
 }
 async function init(){
+ if(NETHOR_QUICK_REPORT_EMBEDDED){
+  const help=document.querySelector('.rpHelp');
+  if(help)help.textContent='N’indique pas de mot de passe ou d’information sensible. Un diagnostic technique sera joint.';
+  const send=$('sendBtn'),close=$('returnBtn');
+  if(send)send.textContent='Envoyer le signalement';
+  if(close)close.textContent='Fermer';
+ }
  $('cancelBtn').addEventListener('click',returnToMenu);
  $('returnBtn').addEventListener('click',returnToMenu);
  $('problemText').addEventListener('input',updateCount);

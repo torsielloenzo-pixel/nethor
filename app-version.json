@@ -1,17 +1,17 @@
 {
-  "version": 415,
-  "label": "v1.46.57",
+  "version": 417,
+  "label": "v1.46.58",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Desktop · Signalement express",
-  "message": "Depuis Accueil → Actions rapides → Nouveau signalement, ouvre une fenêtre compacte pour envoyer un problème avec le formulaire officiel et les diagnostics Nethor, sans quitter l'accueil.",
-  "published_at": "2026-10-10T11:26:36.206Z",
+  "title": "Signalement express · Affichage simplifié",
+  "message": "La fenêtre de signalement rapide sur l’accueil Desktop est plus compacte, sans doublon d’en-tête ni pied de page inutile. Le formulaire et l’enregistrement restent identiques.",
+  "published_at": "2026-10-10T12:16:49.601Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Nouveau signalement ouvre une fenêtre centrée, adaptée aux thèmes clair et sombre.",
-    "Le formulaire officiel et les autorisations de la page Signaler un problème sont réutilisés.",
-    "Les signalements continuent à être enregistrés dans la table reported_problems avec diagnostics.",
-    "La fermeture revient sur l'accueil sans navigation ; la page complète reste disponible."
+    "Fenêtre redessinée comme une petite boîte de dialogue naturelle, avec un seul en-tête.",
+    "Formulaire officiel compact : sélection de la page, zone de description plus lisible, bouton d’envoi clairement visible.",
+    "Fermeture, confirmation et confidentialité des signalements inchangées.",
+    "Aucun changement à la version mobile ou aux autorisations Supabase."
   ]
 }
