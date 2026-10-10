@@ -194,7 +194,7 @@ function ensurePopup(){
   '<div class="storePopupLine"><span class="storePopupLineIcon">⌖</span><div><small>Adresse</small><strong data-store-address></strong></div></div>'+
   '<div class="storePopupLine"><span class="storePopupLineIcon">☎</span><div><small>Téléphone</small><a data-store-phone-link><strong data-store-phone></strong></a></div></div>'+
   '<div class="storePopupHours" data-store-hours></div>'+
-  '<div class="storePopupBusy"><div><strong>Horaires d’affluence</strong><p>Google ne les partage pas via son API. Consulte la fréquentation directement sur Maps, si elle est disponible.</p></div><a data-store-maps target="_blank" rel="noopener noreferrer">Voir l’affluence ↗</a></div>'+
+  '<div class="storePopupBusy storePopupServices"><div><strong>Services disponibles</strong><ul><li>Gaz en bouteille</li><li>Laverie automatique</li><li>Cartes cadeaux</li><li>Tickets restaurant</li><li>Pain cuit sur place</li></ul></div></div>'+
  '</div>'+
  '<div class="storePopupFoot"><div><small data-store-source></small><small data-store-updated role="status" aria-live="polite"></small></div><div class="storePopupLinks"><a data-store-source-link target="_blank" rel="noopener noreferrer">Source officielle</a><a data-store-maps target="_blank" rel="noopener noreferrer">Ouvrir Maps ↗</a></div></div>';
  document.body.appendChild(panel);
