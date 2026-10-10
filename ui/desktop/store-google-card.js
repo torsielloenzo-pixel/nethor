@@ -12,7 +12,7 @@ let popup=null,trigger=null,lastData=null,lastFetch=0,pending=null,revision=0,au
 function safeMapsUrl(value){
  try{
   const url=new URL(String(value||''));
-  if(url.protocol==='https:'&&/(^|\\.)google\\.(com|fr)$/.test(url.hostname))return url.href;
+  if(url.protocol==='https:'&&/(^|\.)google\.(com|fr)$/.test(url.hostname))return url.href;
  }catch(_){}
  return MAPS_URL;
 }
@@ -25,6 +25,19 @@ function parisTime(iso){
 function todayHours(){
  const day=new Intl.DateTimeFormat('en-US',{timeZone:'Europe/Paris',weekday:'short'}).format(new Date());
  return day==='Sun'?'09:00 – 12:30':'08:00 – 20:00';
+}
+function googleTodayHours(weekdayDescriptions){
+ if(!Array.isArray(weekdayDescriptions))return'';
+ const today=new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'long'}).format(new Date()).toLowerCase();
+ const normalize=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const key=normalize(today);
+ const match=weekdayDescriptions.find(line=>{
+  const normalized=normalize(line);
+  return normalized.startsWith(key+':')||normalized.startsWith(key+' ');
+ });
+ if(!match)return'';
+ const value=String(match).replace(/^[^:]+:\s*/, '').trim();
+ return value&&value.length<100?value:'';
 }
 function text(selector,value){
  const el=popup?.querySelector(selector);
@@ -63,7 +76,7 @@ function render(data){
  text('[data-store-address]',address);
  text('[data-store-phone]',phone);
  const phoneLink=popup.querySelector('[data-store-phone-link]');
- if(phoneLink)phoneLink.href='tel:'+phone.replace(/[^+\\d]/g,'');
+ if(phoneLink)phoneLink.href='tel:'+phone.replace(/[^+\d]/g,'');
  const pill=popup.querySelector('[data-store-status-pill]');
  let status='unknown',statusText='Statut indisponible',detail='Google ne fournit pas le statut actuel';
  if(data.business_status==='CLOSED_PERMANENTLY'){
@@ -80,8 +93,9 @@ function render(data){
  if(pill)pill.dataset.status=status;
  text('[data-store-status]',statusText);
  text('[data-store-status-info]',detail);
- text('[data-store-hours]','Horaires habituels aujourd’hui : '+todayHours());
- text('[data-store-source]','Adresse, téléphone et statut : Google Maps');
+ const todayGoogle=googleTodayHours(data.weekday_descriptions);
+ text('[data-store-hours]',todayGoogle?'Horaires Google aujourd’hui : '+todayGoogle:'Horaires habituels aujourd’hui : '+todayHours());
+ text('[data-store-source]',data.address&&data.phone?'Adresse, téléphone et statut : Google Maps':'Statut Google Maps · coordonnées complétées depuis la ville du Thor');
  const src=popup.querySelector('[data-store-source-link]');
  if(src){src.href=safeMapsUrl(data.maps_url);src.textContent='Données Google Maps'}
  const map=safeMapsUrl(data.maps_url);
@@ -97,7 +111,8 @@ function setLoading(value){
 }
 function showError(){
  if(!popup)return;
- if(!lastData)fallback();
+ // Never represent old Google opening status as live after refresh fails.
+ fallback();
  text('[data-store-updated]',navigator.onLine===false?'Hors connexion : statut Google indisponible':'Mise à jour Google indisponible pour le moment');
 }
 async function refresh(force){
@@ -176,7 +191,7 @@ document.addEventListener('pointerdown',event=>{
  if(popup.contains(event.target)||trigger.contains(event.target))return;
  close();
 },true);
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&popup){close();trigger?.focus?.()}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&popup){const original=trigger;close();original?.focus?.()}});
 window.addEventListener('resize',position,{passive:true});
 window.addEventListener('scroll',()=>{if(popup)position()},{capture:true,passive:true});
 window.addEventListener('netto:profile',()=>{if(popup&&!lastData)void refresh(false)});
