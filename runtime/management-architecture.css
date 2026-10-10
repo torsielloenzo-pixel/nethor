@@ -180,3 +180,50 @@ html[data-theme="dark"] .ddSidebarRow input:not([type="checkbox"]),html[data-the
 :root[data-theme="dark"] .ddBrandCopy span{color:#d1dded}
 :root[data-theme="dark"] .ddBrandFootnote{background:#253246;color:#c0d5ee}
 @media(max-width:760px){.ddBrandGrid{grid-template-columns:minmax(0,1fr)}}
+
+/* Fond d’écran global Desktop · Gestion */
+.desktopGlobalBackgroundEditor{margin-top:14px}
+.ndBgLayout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(230px,1fr);gap:18px;margin:17px 0 14px;align-items:stretch}
+.ndBgPreview{
+ position:relative;overflow:hidden;min-height:196px;border-radius:14px;
+ border:1px solid #dfe5ed;background:linear-gradient(130deg,#f7f9fc,#e9eef5);
+ background-repeat:no-repeat;background-size:cover;background-position:center;
+ display:grid;place-items:center;
+}
+.ndBgPreview.hasImage{background-color:#edf0f5}
+.ndBgPreviewBadge{
+ position:absolute;bottom:10px;left:10px;padding:6px 10px;z-index:1;
+ font-weight:780;font-size:10px;color:#334155;background:rgba(255,255,255,.93);
+ border:1px solid rgba(255,255,255,.55);border-radius:9px;box-shadow:0 2px 8px rgba(0,0,0,.08)
+}
+.ndBgPreviewScreen{position:relative;width:73%;height:74%;border-radius:8px;overflow:hidden;
+ background:rgba(246,248,252,.25);border:1px solid rgba(255,255,255,.75);
+ box-shadow:0 8px 27px rgba(12,26,47,.17)}
+.ndBgPreviewSidebar{position:absolute;inset:0 auto 0 0;width:19%;background:rgba(255,255,255,.88);border-right:1px solid #dce2ec}
+.ndBgPreviewHeader{position:absolute;inset:0 0 auto 19%;height:17%;background:rgba(255,255,255,.93);border-bottom:1px solid #e3e8ef}
+.ndBgPreviewCard,.ndBgPreviewCard.second{position:absolute;top:29%;left:25%;width:43%;height:39%;border-radius:5px;background:rgba(255,255,255,.94);box-shadow:0 3px 9px rgba(0,0,0,.07)}
+.ndBgPreviewCard.second{left:72%;width:22%;height:25%}
+.ndBgDetails{display:flex;flex-direction:column;gap:9px;justify-content:center;min-width:0}
+.ndBgDetails>strong{font-size:13px;overflow-wrap:anywhere}
+.ndBgDetails>small{font-size:10px;line-height:1.55;color:#728096}
+.ndBgEnabled{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:760;color:#38485c;cursor:pointer}
+.ndBgEnabled input{width:17px;height:17px;accent-color:#fa622e;flex:0 0 auto}
+.ndBgButtons{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
+.ndBgSettings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(180px,1.4fr);gap:13px;padding:14px 15px;
+ border-radius:12px;border:1px solid #e7ebf1;background:#fafbfd;align-items:end}
+.ndBgSettings .field{min-width:0;margin:0}
+.ndBgSettings .field>label{font-size:11px;font-weight:780;display:flex;justify-content:space-between;gap:8px}
+.ndBgSettings .field select{width:100%;height:39px;border:1px solid #dce3ec;border-radius:9px;background:#fff;color:#334155;padding:0 10px;font-size:11px}
+.ndBgSettings .ndBgVeil{align-self:stretch;justify-content:center}
+.ndBgVeil input[type="range"]{width:100%;height:19px;accent-color:#fb602b;cursor:pointer}
+.ndBgVeilValue{white-space:nowrap;color:#f26732;font-size:10px}
+.ndBgSettings .ndBgVeil small{display:block;font-size:9px;line-height:1.45;color:#7e8c9e}
+.ndBgFoot{font-size:10px;line-height:1.5;color:#748196;margin:0 0 3px}
+:root[data-theme="dark"] .ndBgPreview{border-color:#444b57}
+:root[data-theme="dark"] .ndBgPreviewBadge{background:rgba(36,42,52,.91);border-color:#495363;color:#d8e2ee}
+:root[data-theme="dark"] .ndBgDetails>small,:root[data-theme="dark"] .ndBgFoot{color:#aeb8c5}
+:root[data-theme="dark"] .ndBgEnabled{color:#d7e1ec}
+:root[data-theme="dark"] .ndBgSettings{background:#23282f;border-color:#3c4652}
+:root[data-theme="dark"] .ndBgSettings .field select{background:#2b323a;border-color:#48515d;color:#f1f4f8}
+@media(max-width:800px){.ndBgLayout{grid-template-columns:minmax(0,1fr)}.ndBgSettings{grid-template-columns:repeat(2,minmax(0,1fr))}.ndBgVeil{grid-column:1/-1}}
+@media(max-width:520px){.ndBgSettings{grid-template-columns:minmax(0,1fr)}.ndBgVeil{grid-column:auto}}
