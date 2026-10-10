@@ -12,10 +12,10 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=2',
- 'planning-runtime.js?v=21',
+ 'planning-runtime.js?v=26',
  'ui/mobile/planning-week-cards.js?v=2',
  'ui/mobile/planning-day-cards.js?v=1',
- 'planning-agenda-v2.js?v=26'
+ 'planning-agenda-v2.js?v=27'
 ];
 const state={
  host:null,
