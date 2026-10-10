@@ -39,7 +39,7 @@ const state={
  session:null,profile:null,canManage:false,members:[],onlineIds:new Set(),conversations:[],activeId:null,
  messages:[],participants:[],reactions:[],presenceHistory:new Map(),selectedFile:null,attachmentPreviewUrl:null,replyTo:null,editingId:null,newMode:'direct',
  groupMembers:new Set(),typing:new Map(),typingChannel:null,dataChannel:null,memberChannel:null,recording:null,
- signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:'',voicePeaks:new Map(),activeVoiceId:null,generalAvatarUrl:'',generalAvatarPath:'',contactsEnsuredFor:'',generalAvatarEditor:null
+ signedCache:new Map(),avatarSignedCache:new Map(),search:'',messageSearch:'',onlyUnread:false,archives:[],adminArchives:[],actionConversationId:null,longPressTimer:null,longPressTriggered:false,addMemberSelection:new Set(),messageLoadSeq:0,messageRenderSeq:0,lastMessageRenderKey:'',lastConversationRenderKey:'',voicePeaks:new Map(),activeVoiceId:null,generalAvatarUrl:'',generalAvatarPath:'',contactsEnsuredFor:'',generalAvatarEditor:null,disabledContactIds:[]
 };
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','gif','heic','heif','mp4','mov','webm','pdf','txt','doc','docx','xls','xlsx','mp3','m4a','ogg','wav']);
 const ALLOWED_MIME=new Set([
@@ -140,7 +140,8 @@ async function loadPresenceHistory(){
 }
 async function loadMembers(){
  const {data,error}=await db.rpc('list_team_members');if(error){console.warn(error);return}
- const rows=[...(data||[])];if(state.session?.user?.id&&state.profile&&!rows.some(x=>x.id===state.session.user.id))rows.push({id:state.session.user.id,...state.profile});
+ const rows=[...(data||[])];state.disabledContactIds=rows.filter(x=>x.account_enabled===false).map(x=>x.id);
+ rows.splice(0,rows.length,...rows.filter(x=>x.account_enabled!==false));if(state.session?.user?.id&&state.profile&&!rows.some(x=>x.id===state.session.user.id))rows.push({id:state.session.user.id,...state.profile});
  state.members=await Promise.all(rows.map(async m=>{if(m.avatar_path)m.avatar_url=await signedAvatar(m.avatar_path);return m}));
  await loadPresenceHistory();renderConversations();renderNewChatMembers();renderConversationHeader()
 }
@@ -187,7 +188,8 @@ async function loadConversations(){
  const {data,error}=conversationResult;if(error){console.error('Conversations:',error);showToast('Impossible de charger les discussions');return false}
  if(!generalResult.error){state.generalAvatarUrl=String(generalResult.data?.avatar_url||'');state.generalAvatarPath=String(generalResult.data?.avatar_path||'')}
  const pinMap=new Map((pinsResult.data||[]).map(row=>[row.id,row.pinned_at]));
- state.conversations=(data||[]).map(row=>({...row,pinned_at:pinMap.get(row.conversation_id)||null}));renderConversations();
+ const blockedIds=new Set(state.disabledContactIds||[]);
+ state.conversations=(data||[]).filter(row=>row.conversation_type!=='direct'||!(row.member_ids||[]).some(id=>id!==state.session?.user?.id&&blockedIds.has(id))).map(row=>({...row,pinned_at:pinMap.get(row.conversation_id)||null}));renderConversations();
  if(state.activeId&&!state.conversations.some(c=>c.conversation_id===state.activeId)){state.activeId=null;state.messages=[];state.participants=[];renderConversationHeader();renderMessages()}
  return !generalResult.error&&!pinsResult.error
 }
