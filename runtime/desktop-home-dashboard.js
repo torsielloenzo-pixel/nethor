@@ -178,7 +178,7 @@ function renderMessages(ctx,w,chatRows){
 }
 function renderQuickActions(site,w){
  const c=config(site),items=Object.entries(c.quick_actions).filter(([,x])=>enabled(x));
- return '<section class="ndCard ndActions">'+sectionHead(w.label,undefined,null,null,'bolt')+'<div class="ndActionGrid">'+items.map(([key,x])=>'<button type="button" data-desktop-home-url="'+attr(x.url)+'"><span class="'+esc(key)+'">'+icon(x.icon||key)+'</span><strong>'+esc(x.label)+'</strong></button>').join('')+'</div></section>'
+ return '<section class="ndCard ndActions">'+sectionHead(w.label,undefined,null,null,'bolt')+'<div class="ndActionGrid">'+items.map(([key,x])=>'<button type="button" data-desktop-home-action="'+attr(key)+'" data-desktop-home-url="'+attr(x.url)+'"><span class="'+esc(key)+'">'+icon(x.icon||key)+'</span><strong>'+esc(x.label)+'</strong></button>').join('')+'</div></section>'
 }
 async function safeQueries(ctx){
  const db=ctx.db,today=ctx.todayKey,now=new Date().toISOString();
@@ -231,7 +231,15 @@ async function render(ctx){
 function activate(result){
  const root=document.querySelector('.nethorDesktopReferenceDashboard');if(!root)return;
  const planningTitle=root.querySelector('.ndPlanningSlot .qplanTitleCopy strong');if(planningTitle&&result?.config?.widgets?.planning_view?.label)planningTitle.textContent=result.config.widgets.planning_view.label;
- root.querySelectorAll('[data-desktop-home-url]').forEach(btn=>btn.addEventListener('click',()=>{const url=btn.dataset.desktopHomeUrl;if(url)location.href=url}));
+ root.querySelectorAll('[data-desktop-home-url]').forEach(btn=>btn.addEventListener('click',()=>{
+  if(btn.dataset.desktopHomeAction==='planning'){
+   if(typeof window.NethorPlanningQuickImport?.open==='function')window.NethorPlanningQuickImport.open();
+   else console.error('Importateur Excel indisponible sur l’accueil.');
+   return;
+  }
+  const url=btn.dataset.desktopHomeUrl;
+  if(url)location.href=url;
+ }));
  const badges={tasks:Math.max(0,(result?.tasks?.total||0)-(result?.tasks?.done||0)),chat:(result?.ext?.chat||[]).reduce((n,x)=>n+Number(x.unread_count||0),0),incidents:Number(result?.alertCount||0),receptions:(result?.ext?.deliveries||[]).filter(x=>!['put_away','cancelled'].includes(x.status)).length};
  Object.entries(badges).forEach(([key,value])=>{const b=document.querySelector('.nethorSidebarItem[data-sidebar-key="'+key+'"] .nethorSidebarBadge');if(!b)return;b.textContent=value>99?'99+':String(value);b.classList.toggle('hidden',!value)})
 }
