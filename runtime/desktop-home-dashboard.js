@@ -140,7 +140,8 @@ function icon(kind){
  return m[kind]||m.task
 }
 function kpi(id,label,value,sub,kind,progress,extra=''){
- const interactive=id==='alerts'?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir les anomalies du planning par jour et sur la semaine" title="Détails des anomalies du planning"':'';
+ const interactive=id==='alerts'?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir les anomalies du planning par jour et sur la semaine" title="Détails des anomalies du planning"':
+  id==='deliveries'?' role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir le calendrier des livraisons par jour et par semaine" title="Détails du calendrier des livraisons"':'';
  const p=Number.isFinite(progress)?'<div class="ndKpiProgress"><i style="width:'+Math.max(0,Math.min(100,progress))+'%"></i></div>':'';
  return '<article class="ndKpi ndKpi-'+id+'" id="'+extra+'"'+interactive+'><span class="ndKpiIcon">'+icon(kind)+'</span><div class="ndKpiBody"><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong>'+(sub?'<small>'+esc(sub)+'</small>':'')+p+'</div><span class="ndKpiArrow">›</span></article>'
 }
@@ -187,13 +188,15 @@ async function safeQueries(ctx){
   db.rpc('list_chat_conversations'),
   db.from('operations_deliveries').select('id,delivery_date,stream,supplier,expected_label,expected_at,supports,position_label,status,note,created_at').eq('delivery_date',today).order('created_at',{ascending:false}).limit(40),
   db.from('operations_flashes').select('id,category,title,body,active,starts_at,expires_at,created_at').eq('active',true).lte('starts_at',now).or('expires_at.is.null,expires_at.gte.'+now).order('created_at',{ascending:false}).limit(40),
-  db.from('planning_absences').select('id,user_id,display_name,type,start_date,end_date,status').lte('start_date',weekEnd).gte('end_date',weekStart).in('status',['approved','pending'])
+  db.from('planning_absences').select('id,user_id,display_name,type,start_date,end_date,status').lte('start_date',weekEnd).gte('end_date',weekStart).in('status',['approved','pending']),
+  db.from('store_delivery_schedule').select('code,label,category,weekdays,certainty,period,window_start,window_end,note,active,sort_order').eq('active',true).order('sort_order',{ascending:true})
  ]);
  const data=x=>x.status==='fulfilled'&&!x.value?.error?(x.value.data||[]):[];
  return{
   chat:data(results[0]),deliveries:data(results[1]),flashes:data(results[2]),absences:data(results[3]),
   deliveryAvailable:results[1].status==='fulfilled'&&!results[1].value?.error,
-  absenceAvailable:results[3].status==='fulfilled'&&!results[3].value?.error
+  absenceAvailable:results[3].status==='fulfilled'&&!results[3].value?.error,
+  scheduledDeliveries:window.NethorDeliverySchedule?.resolve?.(results[4].status==='fulfilled'?results[4].value:null)||{rows:[],source:'secours'}
  }
 }
 async function render(ctx){
@@ -214,6 +217,9 @@ async function render(ctx){
  let anomalyPlanningLevel='view';
  try{anomalyPlanningLevel=window.NettoProfileUI?.permissionLevel?.('planning',ctx.profile)||'view'}catch(_){}
  const canInspectAnomalies=anomalyAllowedByRule&&anomalyPlanningLevel!=='none';
+ const deliverySchedule=window.NethorDeliverySchedule;
+ const deliveryReport=deliverySchedule?.analyze?.(ctx.weekStart||ctx.todayKey,ext.scheduledDeliveries.rows,ext.scheduledDeliveries.source)||null;
+ const deliveryToday=deliveryReport?.days?.find(day=>day.date===ctx.todayKey)||null;
  const kpis=[],wd=c.widgets;
  if(enabled(wd.present_staff))kpis.push(kpi('staff',wd.present_staff.label,currentlyWorking.length+' / '+teamTotal,currentlyWorking.length?'actuellement en poste':'aucune présence actuellement','team',teamTotal?Math.round(currentlyWorking.length/teamTotal*100):0));
  if(enabled(wd.planning_coverage))kpis.push(kpi('coverage',wd.planning_coverage.label,cov==null?'—':cov+' %',cov==null?'planning non renseigné':'continuité des plages planifiées','calendar',cov??0));
@@ -223,7 +229,12 @@ async function render(ctx){
   const anomalyText=planningAnomalyCount===null?'planning du jour non renseigné':planningAnomalyCount?(planningAnomalyCount+' anomalie'+(planningAnomalyCount>1?'s':'')+' détectée'+(planningAnomalyCount>1?'s':'')+' aujourd’hui'):'aucune anomalie détectée aujourd’hui';
   kpis.push(kpi('alerts',wd.critical_alerts.label,anomalyValue,anomalyText,'alert',planningAnomalyCount===null?undefined:Math.min(100,planningAnomalyCount*20)))
  }
- if(enabled(wd.deliveries))kpis.push(kpi('deliveries',wd.deliveries.label,ext.deliveryAvailable?String(ext.deliveries.filter(x=>!['put_away','cancelled'].includes(x.status)).length):'—',ext.deliveryAvailable?'actives aujourd’hui':'données non accessibles','truck',undefined,'nethorDesktopDeliveriesKpi'));
+ if(enabled(wd.deliveries)){
+  const scheduled=deliveryToday?.expectedCount;
+  const tentative=deliveryToday?.possibleCount||0;
+  const subtitle=scheduled==null?'calendrier non disponible':'flux habituels de jour'+(tentative?' · '+tentative+' possible':'')+(deliveryReport?.source==='secours'?' · secours':'');
+  kpis.push(kpi('deliveries',wd.deliveries.label,scheduled==null?'—':String(scheduled),subtitle,'truck',undefined,'nethorDesktopDeliveriesKpi'))
+ }
  const style='--nd-accent:'+attr(c.style.accent||'#ff5a2a')+';--nd-radius:'+int(c.style.radius,16,10,28)+'px;--nd-gap:'+int(c.style.gap,14,8,24)+'px';
  const parts=[];
  // Store banner remains untouched. Only the dashboard widgets change layout.
@@ -249,7 +260,8 @@ async function render(ctx){
  if(enabled(wd.operations_followup))secondary.push(renderFollowup(ctx,wd.operations_followup,ext.deliveries));
  if(secondary.length)parts.push('<div class="ndSupportingGrid">'+secondary.join('')+'</div>');
  return{html:'<div class="nethorDesktopReferenceDashboard" style="'+style+'">'+parts.join('')+'</div>',
-  config:c,people,ext,tasks,alertCount,planningAnomalyCount,anomalyReport,canInspectAnomalies,
+  config:c,people,ext,tasks,alertCount,planningAnomalyCount,anomalyReport,canInspectAnomalies,deliveryReport,
+  deliveryContext:{db:ctx.db,weekStart:ctx.weekStart||ctx.todayKey,todayKey:ctx.todayKey,report:deliveryReport},
   anomalyContext:{db:ctx.db,weekStart:ctx.weekStart,todayKey:ctx.todayKey,model:weekModel,profiles:ctx.profileRows,absences:ext.absences,absencesAvailable:ext.absenceAvailable}
  }
 }
@@ -297,6 +309,15 @@ function activate(result){
   const open=()=>window.NethorHomeAnomalyDialog?.open?.({...result.anomalyContext,report:result.anomalyReport});
   anomalyTile.addEventListener('click',open);
   anomalyTile.addEventListener('keydown',event=>{
+   if(event.key==='Enter'||event.key===' '){event.preventDefault();open()}
+  });
+ }
+ const deliveryTile=root.querySelector('.ndKpi-deliveries[role="button"]');
+ if(deliveryTile&&!deliveryTile.dataset.ndDeliveryBound){
+  deliveryTile.dataset.ndDeliveryBound='1';
+  const open=()=>window.NethorHomeDeliveryDialog?.open?.(result.deliveryContext);
+  deliveryTile.addEventListener('click',open);
+  deliveryTile.addEventListener('keydown',event=>{
    if(event.key==='Enter'||event.key===' '){event.preventDefault();open()}
   });
  }
