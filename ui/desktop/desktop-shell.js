@@ -91,7 +91,7 @@ function ensureDesktopSidebarStyle(){
  const link=document.createElement('link');
  link.id='nethorDesktopSidebarCss';
  link.rel='stylesheet';
- link.href='ui/desktop/desktop-sidebar.css?v=13';
+ link.href='ui/desktop/desktop-sidebar.css?v=14';
  document.head.appendChild(link)
 }
 function desktopSidebarItem(key,def,active){
@@ -140,7 +140,10 @@ function buildDesktopSidebar(page){
   '<div class="nethorSidebarBrandRow"><button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
   '<button class="nethorSidebarCollapse" type="button" onclick="window.NethorDesktopShell?.toggleSidebar?.()" title="Réduire la barre latérale" aria-label="Réduire la barre latérale" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.8 5.5-6.3 6.5 6.3 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>'+
   '<nav class="nethorDesktopSidebarNav" aria-label="Pages principales">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key)).join('')+'</nav>'+
-  '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+'</div>'+
+  '<div class="nethorDesktopSidebarBottom">'+
+   desktopSidebarItem('signal',{label:'Signaler',url:'report-problem.html',icon:'incidents',enabled:true},active==='incidents')+
+   desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+
+   '</div>'+
  '</aside>'
 }
 
