@@ -175,8 +175,20 @@ function renderFollowup(ctx,w,deliveries){
 }
 function renderMessages(ctx,w,chatRows){
  const max=int(w.max_items,4,1,8),profiles=ctx.profileRows||[];
- const rows=[...chatRows].sort((a,b)=>(Number(b.unread_count>0)-Number(a.unread_count>0))||new Date(b.last_message_at||0)-new Date(a.last_message_at||0)).slice(0,max);
- return '<section class="ndCard ndMessages">'+sectionHead(w.label,rows.reduce((n,x)=>n+Number(x.unread_count||0),0),'Voir tous les messages','chat.html','chat')+'<div class="ndMessageRows">'+(rows.length?rows.map(x=>{const sender=profiles.find(p=>p.id===x.last_sender),name=sender?.display_name||x.conversation_name||'Conversation',initials=String(name).split(/\s+/).slice(0,2).map(p=>p[0]?.toUpperCase()).join('');return'<button class="ndMessageRow" type="button" data-desktop-home-url="chat.html"><span class="ndAvatar small" style="--nd-avatar:'+attr(sender?.profile_color||'#8b6de8')+'">'+esc(initials||'M')+'</span><span><strong>'+esc(name)+'</strong><small>'+esc(x.last_message||'Aucun aperçu disponible')+'</small></span><time>'+esc(since(x.last_message_at))+'</time>'+(Number(x.unread_count)>0?'<i></i>':'')+'</button>'}).join(''):'<div class="ndEmpty">Aucun message récent.</div>')+'</div></section>'
+ // The chat RPC creates a contact row even when no message was ever sent.
+ // Only last_message_at proves that a conversation has actually started.
+ // Filter BEFORE sorting/limiting so empty contacts never take a message slot.
+ const rows=(Array.isArray(chatRows)?chatRows:[]).filter(x=>x?.last_message_at&&Number.isFinite(new Date(x.last_message_at).getTime()))
+  .sort((a,b)=>(Number(b.unread_count>0)-Number(a.unread_count>0))||new Date(b.last_message_at)-new Date(a.last_message_at))
+  .slice(0,max);
+ return '<section class="ndCard ndMessages" style="--nd-message-slots:'+max+'">'+
+  sectionHead(w.label,rows.reduce((n,x)=>n+Number(x.unread_count||0),0),'Voir tous les messages','chat.html','chat')+
+  '<div class="ndMessageRows">'+(rows.length?rows.map(x=>{
+   const sender=profiles.find(p=>p.id===x.last_sender),name=sender?.display_name||x.conversation_name||'Conversation';
+   const initials=String(name).split(/\s+/).slice(0,2).map(p=>p[0]?.toUpperCase()).join('');
+   const preview=String(x.last_message||'').trim()||'Message envoyé';
+   return'<button class="ndMessageRow" type="button" data-desktop-home-url="chat.html"><span class="ndAvatar small" style="--nd-avatar:'+attr(sender?.profile_color||'#8b6de8')+'">'+esc(initials||'M')+'</span><span><strong>'+esc(name)+'</strong><small>'+esc(preview)+'</small></span><time>'+esc(since(x.last_message_at))+'</time>'+(Number(x.unread_count)>0?'<i></i>':'')+'</button>'
+  }).join(''):'<div class="ndEmpty">Aucune conversation commencée.</div>')+'</div></section>'
 }
 function renderQuickActions(site,w){
  const c=config(site),items=Object.entries(c.quick_actions).filter(([,x])=>enabled(x));
