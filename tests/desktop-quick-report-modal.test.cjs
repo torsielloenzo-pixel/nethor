@@ -55,6 +55,23 @@ test('Fenêtre naturelle : un seul en-tête, formulaire sans éléments de page 
  assert.match(report,/if\(close\)close\.textContent='Fermer'/);
 });
 
+test('Formulaire et confirmation sont mutuellement exclusifs, même avec display:flex!important',()=>{
+ const css=report.slice(report.indexOf('/* Intégration compacte'),report.indexOf('</style>',report.indexOf('/* Intégration compacte')));
+ const flexRule=css.indexOf('.rpCard{');
+ const hideRule=css.indexOf('html.rpEmbedded #reportCard.hidden');
+ assert.ok(flexRule>=0&&hideRule>flexRule,'La règle de masquage doit suivre la règle display:flex');
+ assert.match(css,/html\.rpEmbedded #reportCard\.hidden/);
+ assert.match(css,/html\.rpEmbedded #successCard\.hidden/);
+ assert.match(css,/html\.rpEmbedded #reportCard\[hidden\]/);
+ assert.match(css,/html\.rpEmbedded #successCard\[hidden\]/);
+ assert.match(css,/\.rpMain > \.rpCard\.hidden/);
+ assert.match(css,/display:none!important/);
+ assert.match(css,/overflow-x:hidden!important/);
+ assert.match(report,/\$\('successCard'\)\.hidden=true/);
+ assert.match(report,/\$\('reportCard'\)\.hidden=true;\$\('successCard'\)\.hidden=false/);
+ assert.match(report,/\$\('reportCard'\)\.classList\.add\('hidden'\);\$\('successCard'\)\.classList\.remove\('hidden'\)/);
+});
+
 test('La page embarquée conserve l’enregistrement officiel des problèmes et ses permissions',()=>{
  assert.match(report,/NETHOR_QUICK_REPORT_EMBEDDED/);
  assert.match(report,/window\.parent\.location\.origin===location\.origin/);
