@@ -119,7 +119,7 @@ function ensureDesktopStoreCardAssets(){
  if(desktopStoreCardPromise)return desktopStoreCardPromise;
  desktopStoreCardPromise=new Promise((resolve,reject)=>{
   const script=document.createElement('script');
-  script.id='nethorStoreCardJs';script.src='ui/desktop/store-google-card.js?v=2';script.async=true;
+  script.id='nethorStoreCardJs';script.src='ui/desktop/store-google-card.js?v=3';script.async=true;
   script.onload=()=>window.NethorStoreGoogleCard?resolve(window.NethorStoreGoogleCard):reject(new Error('Fiche point de vente non initialisée'));
   script.onerror=()=>{script.remove();reject(new Error('Fiche point de vente indisponible'))};
   document.head.appendChild(script);
