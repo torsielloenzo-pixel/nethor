@@ -210,6 +210,10 @@ async function render(ctx){
  const anomalyReport=window.NethorPlanningAnomalyCore?.analyze?.(weekModel,ctx.weekStart,ctx.profileRows,ext.absences)||null;
  const currentAnomalyDay=anomalyReport?.days?.find(x=>x.date===ctx.todayKey);
  const planningAnomalyCount=currentAnomalyDay?currentAnomalyDay.count:planningDayAnomalyCount(ctx.todayModel,ctx.todayKey,ctx.profileRows,ext.absences);
+ const anomalyAllowedByRule=ctx.cfg?.planning_widgets?.anomalies?.[String(ctx.profile?.role||'')]!==false;
+ let anomalyPlanningLevel='view';
+ try{anomalyPlanningLevel=window.NettoProfileUI?.permissionLevel?.('planning',ctx.profile)||'view'}catch(_){}
+ const canInspectAnomalies=anomalyAllowedByRule&&anomalyPlanningLevel!=='none';
  const kpis=[],wd=c.widgets;
  if(enabled(wd.present_staff))kpis.push(kpi('staff',wd.present_staff.label,currentlyWorking.length+' / '+teamTotal,currentlyWorking.length?'actuellement en poste':'aucune présence actuellement','team',teamTotal?Math.round(currentlyWorking.length/teamTotal*100):0));
  if(enabled(wd.planning_coverage))kpis.push(kpi('coverage',wd.planning_coverage.label,cov==null?'—':cov+' %',cov==null?'planning non renseigné':'continuité des plages planifiées','calendar',cov??0));
@@ -245,7 +249,7 @@ async function render(ctx){
  if(enabled(wd.operations_followup))secondary.push(renderFollowup(ctx,wd.operations_followup,ext.deliveries));
  if(secondary.length)parts.push('<div class="ndSupportingGrid">'+secondary.join('')+'</div>');
  return{html:'<div class="nethorDesktopReferenceDashboard" style="'+style+'">'+parts.join('')+'</div>',
-  config:c,people,ext,tasks,alertCount,planningAnomalyCount,anomalyReport,
+  config:c,people,ext,tasks,alertCount,planningAnomalyCount,anomalyReport,canInspectAnomalies,
   anomalyContext:{db:ctx.db,weekStart:ctx.weekStart,todayKey:ctx.todayKey,model:weekModel,profiles:ctx.profileRows,absences:ext.absences,absencesAvailable:ext.absenceAvailable}
  }
 }
@@ -284,7 +288,11 @@ function activate(result){
  const root=document.querySelector('.nethorDesktopReferenceDashboard');if(!root)return;
  const planningTitle=root.querySelector('.ndPlanningSlot .qplanTitleCopy strong');if(planningTitle&&result?.config?.widgets?.planning_view?.label)planningTitle.textContent=result.config.widgets.planning_view.label;
  const anomalyTile=root.querySelector('.ndKpi-alerts[role="button"]');
- if(anomalyTile&&!anomalyTile.dataset.ndAnomalyBound){
+ if(anomalyTile&&result?.canInspectAnomalies===false){
+  anomalyTile.removeAttribute('role');anomalyTile.removeAttribute('tabindex');anomalyTile.removeAttribute('aria-haspopup');
+  anomalyTile.title='Détail des anomalies réservé aux utilisateurs autorisés sur le planning';
+ }
+ if(anomalyTile&&result?.canInspectAnomalies!==false&&!anomalyTile.dataset.ndAnomalyBound){
   anomalyTile.dataset.ndAnomalyBound='1';
   const open=()=>window.NethorHomeAnomalyDialog?.open?.({...result.anomalyContext,report:result.anomalyReport});
   anomalyTile.addEventListener('click',open);
