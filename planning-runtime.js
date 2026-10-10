@@ -500,6 +500,13 @@ function planningContractDifferenceAnomalies(){
  return out.sort((a,b)=>Math.abs(b.contractDifference)-Math.abs(a.contractDifference))
 }
 function planningAnomalies(){
+ // The home KPI and planning analysis share exactly the same detection rules.
+ // Keep the previous in-page implementation as a fallback for older mobile runtimes.
+ if(window.NethorPlanningAnomalyCore?.analyze&&model){
+  const report=window.NethorPlanningAnomalyCore.analyze(model,isoDate(currentWeekStart),teamProfiles,planningAbsences);
+  const day=report.days.find(x=>x.date===dayKey());
+  return [...report.weekItems,...(day?.items||[])].slice(0,24)
+ }
  const out=planningContractDifferenceAnomalies(),day=modelDay(),date=dayKey();if(!model||!day)return out;
  const rows=day.cells||[],employees=model.employees||[];
  employees.forEach((emp,ri)=>{
