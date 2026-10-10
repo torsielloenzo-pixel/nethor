@@ -1,0 +1,25 @@
+/* Import Excel depuis Actions rapides (accueil desktop) */
+.nethorHomeImportBackdrop{position:fixed;inset:0;z-index:2147482500;background:rgba(14,22,36,.58);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
+.nethorHomeImportBackdrop.is-open{display:flex}
+.nethorHomeImportPanel{width:min(100%,480px);background:#fff;color:#172033;border:1px solid rgba(255,255,255,.2);border-radius:19px;box-shadow:0 26px 78px rgba(9,15,29,.3);padding:24px;box-sizing:border-box;font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.nethorHomeImportHead{display:flex;gap:13px;align-items:center}
+.nethorHomeImportIcon{width:48px;height:48px;border-radius:13px;background:#eaf3ff;color:#2674c7;display:grid;place-items:center;font-size:24px;font-weight:700;flex:0 0 auto}
+.nethorHomeImportHead small{color:#63758a;font-size:10px;font-weight:800;letter-spacing:.07em}
+.nethorHomeImportHead h2{margin:3px 0 0;font-size:21px;line-height:1.2;color:inherit}
+.nethorHomeImportExplanation{color:#5b6777;font-size:12px;margin:14px 0 16px}
+.nethorHomeImportStatus{padding:13px 14px;border:1px solid #e7edf3;border-radius:11px;background:#f7f9fc;color:#354459;font-size:12px;font-weight:650;min-height:44px;box-sizing:border-box;overflow-wrap:anywhere}
+.nethorHomeImportStatus[data-kind="ok"]{color:#167846;background:#edf9f1;border-color:#ccebd8}
+.nethorHomeImportStatus[data-kind="warn"]{color:#90620b;background:#fff9e9;border-color:#f4dfae}
+.nethorHomeImportStatus[data-kind="error"]{color:#b13f35;background:#fff3f1;border-color:#f2d4d1}
+.nethorHomeImportEngine{height:2px;overflow:hidden}
+.nethorHomeImportIframe{display:block;width:100%;height:2px;border:0;background:transparent;pointer-events:none}
+.nethorHomeImportButtons{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:18px}
+.nethorHomeImportButtons button{border:1px solid #d9e1ea;border-radius:10px;padding:10px 13px;font:700 12px/1.2 inherit;cursor:pointer}
+.nethorHomeImportAgain{background:#ff5a2a;color:#fff;border-color:#ff5a2a!important}
+.nethorHomeImportClose{background:#f5f6f8;color:#283344}
+.nethorHomeImportButtons button:disabled{opacity:.45;cursor:progress}
+html[data-theme="dark"] .nethorHomeImportPanel{background:#22272f;color:#f1f4f7;border-color:#454d57}
+html[data-theme="dark"] .nethorHomeImportExplanation{color:#b1bcc8}
+html[data-theme="dark"] .nethorHomeImportStatus{background:#303844;border-color:#475364;color:#eff4fb}
+html.nethorHomeImportOpen{overflow:hidden}
+@media(max-width:580px){.nethorHomeImportBackdrop{padding:12px}.nethorHomeImportPanel{padding:18px}.nethorHomeImportButtons button{flex:1 1 100%}}
