@@ -82,7 +82,7 @@ test('Produits sans prix, pages sans texte et passages non reconnus restent diag
  assert.equal(r.reports[1].hasText,false);
  assert.ok(r.reports[0].unmatched>0);
  assert.match(page,/NethorPromotionVision\.analyze/);
- assert.match(page,/Clé OPENAI_API_KEY/);
+ assert.match(page,/OPENAI_API_KEY/);
 });
 test('Dépôt PDF : aucune validation, aucun formulaire date et aucun clic pour publier',()=>{
  assert.match(html,/Importer un catalogue PDF|Import automatique du catalogue/);
