@@ -497,6 +497,27 @@ function homeQuickPlanningConfig(cfg){
   }
  }
 }
+function homeActivePlanningOnly(raw,profiles=[]){
+ if(!raw||!Array.isArray(raw.employees))return raw;
+ const disabled=new Set();
+ for(const p of profiles){
+  if(p.account_enabled!==false)continue;
+  for(const name of [p.planning_name,p.display_name]){
+   const key=homeNorm(name);if(key)disabled.add(key);
+  }
+ }
+ if(!disabled.size)return raw;
+ const visible=raw.employees.map((employee,index)=>({employee,index})).filter(x=>{
+  const name=homeNorm(x.employee?.name),base=name.replace(/\\s+[a-z]$/,'');
+  return !disabled.has(name)&&!disabled.has(base)
+ });
+ if(visible.length===raw.employees.length)return raw;
+ const days={};
+ for(const [date,day] of Object.entries(raw.days||{})){
+  days[date]={...day,cells:visible.map(x=>day?.cells?.[x.index]||[])};
+ }
+ return {...raw,employees:visible.map(x=>x.employee),days};
+}
 function homeQuickPlanningProfileFor(name,rows=[]){
  const target=homeNorm(name),base=target.replace(/\s+[a-z]$/,'');
  return (rows||[]).find(x=>{
@@ -639,11 +660,13 @@ async function renderHomeDashboard(profile,name,cfg){
   db.from('daily_task_catalog').select('key,section_key,section_label,title,sort_order').eq('active',true).order('sort_order'),
   db.from('daily_tasks').select('id,task_date,catalog_key,source_keys,title,section_key,section_label,detail,all_users,sort_order,created_by,created_at').eq('task_date',todayKey).order('sort_order').order('created_at')
  ]);
- const subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean),weeks=(weeksRes.data||[]).map(x=>x.data).filter(Boolean);
+ const subroleKeys=(subRes?.data||[]).map(x=>x.subrole_key).filter(Boolean),weeksRaw=(weeksRes.data||[]).map(x=>x.data).filter(Boolean);
+ let weeks=weeksRaw;
  const widget=id=>homeWidgetVisible(cfg,id,profile,subroleKeys);
  homeTaskCatalog=taskCatalogRes.error?[]:(taskCatalogRes.data||[]);
  homeTaskRows=taskRowsRes.error?[]:(taskRowsRes.data||[]);
  homeTaskTeam=profilesRes.error?[]:(profilesRes.data||[]);
+ weeks=weeksRaw.map(x=>homeActivePlanningOnly(x,homeTaskTeam));
  homeTaskAssignees=[];homeTaskCompletions=[];
  if(homeTaskRows.length&&(homeIsMobilePlatform()?widget('tasks'):true)){
   const ids=homeTaskRows.map(x=>x.id),[aRes,cRes]=await Promise.all([
