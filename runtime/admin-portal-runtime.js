@@ -293,8 +293,9 @@ const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
  enabled:true,legacy_operations_hub:false,
  management:{platform:'desktop',category:'home'},
  header:{store_name:'Netto Le Thor',store_subtitle:'Point de vente',store_url:DESKTOP_STORE_GOOGLE_URL,store_image_url:'',store_image_path:'',store_image_name:'',show_store:true,show_datetime:true,show_notifications:true,show_user:true,show_update:true,show_mobile_preview:true,show_admin_logs:true,show_store_image:true},
- sidebar:{enabled:true,width:210,items:{
+ sidebar:{enabled:true,width:240,logo_full_url:'',logo_full_path:'',logo_full_name:'',logo_compact_url:'',logo_compact_path:'',logo_compact_name:'',items:{
   home:{enabled:true,label:'Accueil',url:'home.html'},
+  management:{enabled:true,label:'Gestion',url:'admin-portal.html'},
   activity:{enabled:true,label:'Activité magasin',url:'home.html#nethorDesktopStatsRow'},
   planning:{enabled:true,label:'Planning',url:'planning.html'},
   team:{enabled:true,label:'Équipe',url:'home.html#nethorDesktopTeamWidget'},
@@ -357,7 +358,12 @@ function normalizeDesktopDashboardWidgetConfig(raw){
    store_image_url:String(header.store_image_url||''),store_image_path:String(header.store_image_path||''),store_image_name:String(header.store_image_name||''),
    show_store:header.show_store!==false,show_datetime:header.show_datetime!==false,show_notifications:header.show_notifications!==false,show_user:header.show_user!==false,show_update:header.show_update!==false,show_mobile_preview:header.show_mobile_preview!==false,show_admin_logs:header.show_admin_logs!==false,show_store_image:header.show_store_image!==false
   },
-  sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalizedItems},
+  sidebar:{
+   enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||240)),
+   logo_full_url:String(sidebar.logo_full_url||''),logo_full_path:String(sidebar.logo_full_path||''),logo_full_name:String(sidebar.logo_full_name||''),
+   logo_compact_url:String(sidebar.logo_compact_url||''),logo_compact_path:String(sidebar.logo_compact_path||''),logo_compact_name:String(sidebar.logo_compact_name||''),
+   items:normalizedItems
+  },
   widgets:normalizedWidgets,quick_actions:normalizedActions,
   style:{accent:validColor(style.accent,DESKTOP_DASHBOARD_WIDGET_DEFAULTS.style.accent),radius:Math.max(10,Math.min(28,Number(style.radius)||16)),gap:Math.max(8,Math.min(24,Number(style.gap)||14)),sidebar_text_scale:Math.max(70,Math.min(160,Number(style.sidebar_text_scale)||100)),widget_text_scale:Math.max(70,Math.min(160,Number(style.widget_text_scale)||100))}
  }
@@ -911,7 +917,7 @@ function renderDesktopDashboardWidgetEditor(){
   block.innerHTML='<div class="quickPlanningAdminHead"><div><span class="eyebrow">DESKTOP · STRUCTURE COMPLÈTE</span><h3>Tableau de bord point de vente</h3><p>Entête, barre latérale, widgets, raccourcis et style. Les droits réels restent séparés dans Utilisateurs & accès.</p></div><button class="btn secondaryBtn mini" type="button" onclick="renderDesktopDashboardWidgetEditor()">↻ Actualiser</button></div><div id="desktopDashboardWidgetEditor"></div>';
   panel.appendChild(block);host=$('desktopDashboardWidgetEditor')
  }
- const w=ensureDesktopDashboardWidgetConfig(),sidebarLabels={home:'Accueil',activity:'Activité magasin',planning:'Planning',team:'Équipe',tasks:'Tâches',receptions:'Réceptions',articles:'Fiches articles',chat:'Chat',incidents:'Incidents',reports:'Rapports',settings:'Paramètres'};
+ const w=ensureDesktopDashboardWidgetConfig(),sidebarLabels={home:'Accueil',planning:'Planning',chat:'Chat',management:'Gestion',settings:'Paramètres'};
  host.innerHTML='<div class="operationsWidgetAdminCard">'+
   '<div class="operationsWidgetAdminSummary"><div><strong>Structure Desktop de référence</strong><small>Reproduit la hiérarchie visuelle de la maquette : navigation fixe, entête compact et tableau de bord opérationnel.</small></div><label class="toggleChip"><input type="checkbox" data-dd-root="enabled" '+(w.enabled?'checked':'')+'> Tableau de bord actif</label></div>'+
   '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Entête Desktop</strong><small>Uniquement les éléments de la référence : point de vente, date/heure, notifications et compte.</small></div>'+
@@ -920,7 +926,7 @@ function renderDesktopDashboardWidgetEditor(){
    '<div class="operationsWidgetAdminToggles">'+
     [['show_store','Point de vente'],['show_store_image','Image du magasin'],['show_datetime','Date & heure'],['show_admin_logs','Logs connexions (admin)'],['show_mobile_preview','Visualiser mobile'],['show_update','Mise à jour Nethor'],['show_notifications','Notifications'],['show_user','Compte utilisateur']].map(x=>'<label class="operationsWidgetToggle"><span><strong>'+x[1]+'</strong><small>Afficher dans l’entête Desktop.</small></span><input type="checkbox" data-dd-header="'+x[0]+'" '+(w.header[x[0]]?'checked':'')+'></label>').join('')+
    '</div></div>'+
-  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Barre latérale</strong><small>Le logo Nethor est fixé en haut. Chaque entrée peut être affichée, renommée et redirigée.</small></div>'+
+  '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Barre latérale</strong><small>Navigation : Accueil, Planning, Chat, Gestion et Paramètres. Les logos du mode complet et du mode compact se personnalisent dans Gestion → Desktop.</small></div>'+
    '<div class="ddAdminGrid"><label class="toggleChip ddSidebarToggle"><input type="checkbox" data-dd-sidebar="enabled" '+(w.sidebar.enabled?'checked':'')+'> Afficher la barre latérale</label><div class="field"><label>Largeur</label><input type="number" min="180" max="280" value="'+attr(w.sidebar.width)+'" data-dd-sidebar="width"><small>px</small></div></div>'+
    '<div class="ddSidebarEditor">'+Object.entries(sidebarLabels).map(([key,label])=>{const x=w.sidebar.items[key];return'<div class="ddSidebarRow"><label class="ddEnabled"><input type="checkbox" data-dd-sidebar-item="'+key+'" data-dd-sidebar-key="enabled" '+(x.enabled?'checked':'')+'><span>'+esc(label)+'</span></label><input aria-label="Libellé '+attr(label)+'" value="'+attr(x.label)+'" data-dd-sidebar-item="'+key+'" data-dd-sidebar-key="label"><input aria-label="Destination '+attr(label)+'" value="'+attr(x.url)+'" data-dd-sidebar-item="'+key+'" data-dd-sidebar-key="url"></div>'}).join('')+'</div></div>'+
   '<div class="ddAdminSection"><div class="ddAdminTitle"><strong>Widgets du tableau de bord</strong><small>Afficher/masquer et renommer chaque bloc sans modifier les permissions.</small></div>'+
