@@ -12,7 +12,8 @@ const defaultWordmarkHtml=mobileWordmark?.innerHTML||'';
 const chromeDefaults=new WeakMap();
 let configuredSiteConfig={};
 const MOBILE_LAUNCH_CACHE_KEY='nethorMobileLaunchBrandV1';
-const MOBILE_LAUNCH_SESSION_KEY='nethorMobileLaunchShownV1';
+const MOBILE_LOGIN_HANDOFF_KEY='nethorMobileSkipOpeningOnceV1';
+const MOBILE_LOGIN_HANDOFF_MAX_AGE_MS=10*60*1000;
 const MOBILE_LAUNCH_MIN_MS=1900;
 [...navHost?.querySelectorAll('[data-mobile-destination]')||[],...headerHost?.querySelectorAll('[data-mobile-destination]')||[]].forEach(link=>{const icon=link.getAttribute('data-mobile-destination')==='notifications'?link.querySelector('.nethorMobileNavIconWrap>span'):link.querySelector(':scope > span');if(icon)chromeDefaults.set(icon,icon.innerHTML)});
 if(!root||!viewHost||!navHost||!toolHost||!headerHost)return;
@@ -264,14 +265,22 @@ function renderMobileLaunchWelcome(state){
  }else mark.innerHTML='<img src="'+safeUrl+'" alt="" draggable="false">';
  return overlay
 }
-function mobileLaunchAlreadyShown(){
- try{return sessionStorage.getItem(MOBILE_LAUNCH_SESSION_KEY)==='1'}catch(_){return false}
+// La redirection suivant une connexion réussie ne doit pas lancer l'ouverture.
+ // La consigne est consommée une seule fois, sans bloquer les ouvertures futures.
+function consumeMobileLoginHandoff(){
+ try{
+  const raw=sessionStorage.getItem(MOBILE_LOGIN_HANDOFF_KEY);
+  sessionStorage.removeItem(MOBILE_LOGIN_HANDOFF_KEY);
+  sessionStorage.removeItem('nethorMobileLaunchShownV1'); // ancien marqueur permanent
+  const stamp=Number(raw);
+  return Number.isFinite(stamp)&&stamp>0&&Date.now()-stamp>=0&&Date.now()-stamp<MOBILE_LOGIN_HANDOFF_MAX_AGE_MS
+ }catch(_){return false}
 }
 function markMobileLaunchShown(){
- try{sessionStorage.setItem(MOBILE_LAUNCH_SESSION_KEY,'1')}catch(_){}
- try{document.documentElement.dataset.nethorLaunchSplash='skip'}catch(_){}
+ document.documentElement.dataset.nethorLaunchSplash='skip'
 }
 function skipMobileLaunchWelcome(){
+ document.documentElement.dataset.nethorLaunchSplash='skip';
  const overlay=document.querySelector('[data-mobile-launch-welcome]');
  if(overlay){
   overlay.classList.remove('show','leaving');
@@ -281,7 +290,8 @@ function skipMobileLaunchWelcome(){
  root.removeAttribute('aria-hidden')
 }
 function prepareMobileLaunchWelcome(){
- const overlay=renderMobileLaunchWelcome({siteConfig:cachedMobileLaunchConfig()});
+ document.documentElement.dataset.nethorLaunchSplash='show';
+ const overlay=renderMobileLaunchWelcome({siteConfig:services()?.siteConfig||cachedMobileLaunchConfig(),profile:services()?.profile});
  root.inert=true;
  root.setAttribute('aria-hidden','true');
  overlay.setAttribute('aria-hidden','false');
@@ -776,14 +786,15 @@ async function boot(){
     location.replace(new URL('home.html',location.href).href);
     return
   }
-  const launchStarted=mobileLaunchAlreadyShown()?null:prepareMobileLaunchWelcome();
-  if(launchStarted===null)skipMobileLaunchWelcome();
+  // Ne jamais lancer l'animation d'ouverture avant validation d'une session.
+  // Le retour immédiat d'une connexion porte un marqueur à usage unique.
+  const skipOpeningAfterLogin=consumeMobileLoginHandoff();
+  skipMobileLaunchWelcome();
   const mobileRouter=router();
   if(!mobileRouter){
     root.dataset.router='missing';
     syncLegacyLinks();
     syncActive();
-    if(launchStarted!==null)await finishMobileLaunchWelcome(launchStarted);
     return
   }
   window.addEventListener('nethor:mobile-route-change',onRouteEvent);
@@ -799,17 +810,23 @@ async function boot(){
   root.dataset.ready='1';
 
   const serviceState=await bootServices();
-  if(services()?.status==='signed-out')return;
+  if(services()?.status==='signed-out'){
+    skipMobileLaunchWelcome();
+    return
+  }
   if(navigator.onLine===false&&services()?.isReady!==true){
     viewHost.innerHTML='<section class="nethorMobileBootstrap"><strong>Mode hors connexion indisponible</strong><span>Ouvre Nethor une fois avec une connexion et consulte ton Planning pour enregistrer une copie sur cet appareil.</span></section>';
     window.addEventListener('online',()=>location.reload(),{once:true});
-    if(launchStarted!==null)await finishMobileLaunchWelcome(launchStarted);
+    skipMobileLaunchWelcome();
     return
   }
   const liveConfig=services()?.siteConfig||serviceState?.siteConfig||{};
   if(liveConfig&&Object.keys(liveConfig).length)rememberMobileLaunchConfig(liveConfig,services()?.profile||serviceState?.profile);
   applyConfiguredChrome(liveConfig);
-  renderMobileLaunchWelcome({profile:services()?.profile||serviceState?.profile,siteConfig:liveConfig});
+  const verifiedSession=Boolean(services()?.session?.user?.id&&(services()?.profile||serviceState?.profile));
+  const launchStarted=verifiedSession&&!skipOpeningAfterLogin?prepareMobileLaunchWelcome():null;
+  if(launchStarted!==null)renderMobileLaunchWelcome({profile:services()?.profile||serviceState?.profile,siteConfig:liveConfig});
+  else skipMobileLaunchWelcome();
 
   const prewarmPromise=prewarmMobileViews();
   if(launchStarted!==null)await prewarmPromise;

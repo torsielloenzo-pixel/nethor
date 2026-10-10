@@ -25,6 +25,8 @@ jobs:
           node --check ui/mobile/mobile-offline-store.js
           node --check ui/mobile/mobile-sync.js
           node --check ui/mobile/mobile-services.js
+          node --check ui/mobile/mobile-app.js
+          node --check auth/auth-login.js
           node --check ui/mobile/views/home/home-view.js
           node --check ui/mobile/views/surveys/surveys-view.js
           node --check ui/mobile/views/user-menu/user-menu-view.js
@@ -38,4 +40,4 @@ jobs:
           node --check runtime/desktop-home-dashboard.js
           node --check runtime/admin-portal-runtime.js
       - name: Exécuter la suite de non-régression
-        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs tests/desktop-quick-planning-readability.test.cjs tests/desktop-quick-report-modal.test.cjs tests/desktop-aside-widgets-readability.test.cjs
+        run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs tests/desktop-quick-planning-readability.test.cjs tests/desktop-quick-report-modal.test.cjs tests/desktop-aside-widgets-readability.test.cjs tests/mobile-auth-animation-exclusivity.test.cjs

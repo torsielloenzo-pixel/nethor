@@ -1,17 +1,18 @@
 {
-  "version": 427,
-  "label": "v1.46.63",
+  "version": 428,
+  "label": "v1.46.64",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Connexion Desktop · Fond sans calque",
-  "message": "Suppression du calque décoratif orange et rouge sur la partie gauche de la connexion Desktop. L'image choisie dans Gestion est directement visible derrière les éléments de l'interface.",
-  "published_at": "2026-10-10T13:39:25.589Z",
+  "title": "Mobile · Animations de connexion et d’ouverture séparées",
+  "message": "L'ouverture se joue uniquement pour une session déjà connectée ; après une connexion réussie, seule l'animation de connexion est jouée.",
+  "published_at": "2026-10-10T13:43:12.036Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Calque CSS orange et rouge supprimé de la zone de bienvenue Desktop.",
-    "Image personnalisée claire ou sombre affichée sans ce recouvrement.",
-    "Textes HTML, carte de connexion et widget des horaires conservés.",
-    "Aucune modification du rendu de connexion mobile."
+    "Session existante : animation d'ouverture après vérification du compte.",
+    "Aucune session : écran de connexion direct, sans animation d'ouverture.",
+    "Connexion réussie : une seule animation de bienvenue avant l'accueil, sans splash supplémentaire.",
+    "Ancien marqueur permanent remplacé par un indicateur consommé à la première redirection.",
+    "Aucune modification au Desktop ni aux données du magasin."
   ]
 }

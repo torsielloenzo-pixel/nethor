@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Nethor">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Nethor</title>
-<script>(function(){try{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light';localStorage.setItem('nettoTheme','light')}catch(_){}try{document.documentElement.dataset.nethorLaunchSplash=sessionStorage.getItem('nethorMobileLaunchShownV1')==='1'?'skip':'show'}catch(_){document.documentElement.dataset.nethorLaunchSplash='show'}})();</script>
+<script>(function(){try{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light';localStorage.setItem('nettoTheme','light')}catch(_){}document.documentElement.dataset.nethorLaunchSplash='skip'})();</script>
 <script>(function(){try{var custom=localStorage.getItem('nethorMobileTheme'),eligible=localStorage.getItem('nethorHalloweenEligibleV1')==='1',allowed=['mineral','sage','plum'].includes(custom)||(custom==='halloween'&&eligible);if(allowed){var theme=(custom==='plum'||custom==='halloween')?'dark':'light';document.documentElement.dataset.nethorMobileTheme=custom;document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;var meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=({mineral:'#edf3f8',sage:'#eef3ef',plum:'#171623',halloween:'#120e17'})[custom];}}catch(_){}})();</script>
 <script src="assets/halloween-opening-pumpkin-v3/loader.js?v=1"></script>
 <script src="platform-resolver.js?v=3"></script>
@@ -43,7 +43,7 @@
 <link rel="stylesheet" href="ui/mobile/mobile-themes.css?v=11">
 </head>
 <body>
-<section class="nethorMobileLaunchWelcome show" data-mobile-launch-welcome aria-live="polite" aria-hidden="false">
+<section class="nethorMobileLaunchWelcome" data-mobile-launch-welcome aria-live="polite" aria-hidden="true">
   <div class="nethorMobileLaunchWelcomeInner">
     <div class="nethorMobileLaunchWelcomeMark" data-mobile-launch-welcome-mark aria-hidden="true">N</div>
     <strong class="nethorMobileLaunchWelcomeText" data-mobile-launch-welcome-text>Bienvenue</strong>
@@ -51,22 +51,7 @@
     <small class="nethorMobileLaunchWelcomeStatus" data-mobile-launch-welcome-status>Préparation de ton espace…</small>
   </div>
 </section>
-<script>
-(function(){
- try{
-  var raw=JSON.parse(localStorage.getItem('nethorMobileLaunchBrandV1')||'null'),cfg=raw&&raw.config||{},brand=cfg.brand||{},mobile=cfg.platform_ui&&cfg.platform_ui.mobile||{},media=mobile.welcome_media||{},theme=document.documentElement.dataset.theme==='dark'?'dark':'light',custom=String(document.documentElement.dataset.nethorMobileTheme||'').trim().toLowerCase(),visualTheme=['mineral','sage','plum','halloween'].includes(custom)?custom:theme,themed=mobile.welcome_media_themes&&mobile.welcome_media_themes[visualTheme],variant=(themed&&themed.url)?themed:(media[theme]&&media[theme].url?media[theme]:(theme==='dark'&&media.light&&media.light.url?media.light:media)),url=String(variant&&variant.url||'').trim(),tag=String(variant&&variant.tag||''),mark=document.querySelector('[data-mobile-launch-welcome-mark]'),sub=document.querySelector('[data-mobile-launch-welcome-sub]');
-  if(sub)sub.textContent=(String(brand.name||'Nethor').trim()||'Nethor')+' · '+(String(brand.subtitle||'Espace outils').trim()||'Espace outils');
-  if(!mark||!url)return;
-  var type=String((themed&&themed.url?themed.type:media.type)||'image'),sig=type+'|'+url+'|'+tag+'|'+visualTheme,safe=url.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-  mark.dataset.mediaSignature=sig;mark.dataset.bootstrapMedia='1';mark.classList.add('hasMedia');
-  if(type==='animation'&&/\.js(?:$|\?)/i.test(url)){
-   var q=new URLSearchParams({src:url,theme:theme,mode:'media',name:'Utilisateur'});if(tag)q.set('tag',tag);
-   mark.innerHTML='<iframe src="welcome-animation-host.html?v=5&'+String(q).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" title="Animation Nethor" sandbox="allow-scripts" tabindex="-1"></iframe>'
-  }else if(type==='animation'&&/\.(mp4|webm)(?:$|\?)/i.test(url))mark.innerHTML='<video src="'+safe+'" autoplay muted loop playsinline preload="auto"></video>';
-  else mark.innerHTML='<img src="'+safe+'" alt="" draggable="false">'
- }catch(_){}
-})();
-</script>
+
 <div id="nethorMobileApp" class="nethorMobileApp" data-mobile-app-shell>
   <header class="nethorMobileAppTop" data-mobile-app-header>
     <div class="nethorMobileAppBrandCluster">
@@ -133,6 +118,6 @@
 <script src="ui/mobile/views/scanner/scanner-view.js?v=4"></script>
 <script src="ui/mobile/views/planning/planning-view.js?v=24"></script>
 <script src="ui/mobile/views/chat/chat-view.js?v=14"></script>
-<script src="ui/mobile/mobile-app.js?v=41"></script>
+<script src="ui/mobile/mobile-app.js?v=42"></script>
 </body>
 </html>
