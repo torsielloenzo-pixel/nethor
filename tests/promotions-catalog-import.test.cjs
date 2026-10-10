@@ -115,8 +115,10 @@ test('Catégories, années ISO et contrôles côté serveur',()=>{
 });
 test('Cache PWA et scripts de promotions actualisés',()=>{
  const sw=read('sw.js'),v=JSON.parse(read('app-version.json'));
- for(const asset of ['./promotions.html','./runtime/promotions-parser.js?v=2',
-  './runtime/promotions-page.js?v=2','./runtime/promotions-page.css?v=2']){
+ const html=read('promotions.html');
+ const assets=['./promotions.html',...['promotions-parser.js','promotions-page.js','promotions-page.css']
+  .map(name=>html.match(new RegExp('runtime/'+name.replace('.','\\.')+'\\?v=\\d+'))?.[0]).filter(Boolean).map(x=>'./'+x)];
+ for(const asset of assets){
   assert.ok(sw.includes(asset),'Ressource PWA absente : '+asset)
  }
  assert.equal(Number(sw.match(/APP_VERSION=(\d+)/)[1]),v.version);

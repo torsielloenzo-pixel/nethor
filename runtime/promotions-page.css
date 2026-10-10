@@ -115,3 +115,10 @@
 @media(max-width:640px){.promoAutoProgress{padding:12px}.promoAutoSummary{padding:13px}
  .promoDetailsActions{width:100%}.promoDetailsActions input,.promoDetailsActions select{flex:1 1 100%;width:100%}}
 @media(prefers-reduced-motion:reduce){.promoSpinner{animation:none}}
+
+/* Lecture d'un cartouche : prix, unité, compléments clairement séparés. */
+.promoItemUnit{display:block;font-size:11px;font-weight:750;color:var(--pm-ink);
+ margin-top:4px;line-height:1.35}
+.promoItemExtra{display:block;font-size:10.5px;color:var(--pm-muted);
+ margin-top:6px;line-height:1.5;font-weight:500}
+.promoProductTable td:nth-child(3) strong{font-size:12px;line-height:1.4}

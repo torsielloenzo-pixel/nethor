@@ -1,20 +1,20 @@
 {
-  "version": 443,
-  "label": "v1.46.68",
+  "version": 444,
+  "label": "v1.46.69",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Import automatique et semaine de référence",
-  "message": "Le PDF est analysé et enregistré automatiquement, avec dates de validité, semaine ISO du lundi, produits et catégories.",
-  "published_at": "2026-10-10T21:28:18.562Z",
+  "title": "Promotions · Analyse par encadré produit",
+  "message": "Identification des blocs de promotions et séparation précise du prix, de son unité, du produit, des caractéristiques techniques et des informations supplémentaires.",
+  "published_at": "2026-10-10T21:54:44.181Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Sélection du PDF : lancement de l’analyse, catégorisation et enregistrement automatiques, sans écran de validation.",
-    "Dates du catalogue détectées automatiquement, sans saisie manuelle ni date inventée.",
-    "Titre créé automatiquement : Promotions Netto - Semaine XX.",
-    "Rattachement calculé sur la semaine ISO du premier jour de validité (lundi-dimanche), dates réelles conservées.",
-    "Références classées par catégorie ; informations techniques, prix et avantages conservés avec page source.",
-    "Produits incertains ou prix non détectés identifiés explicitement, et diagnostic des pages scannées.",
-    "Import bloqué uniquement si les dates ou le contenu du PDF ne sont pas exploitables sans OCR."
+    "Analyse de la géométrie des encadrés produits du PDF, ligne et colonne, au lieu du rapprochement global des textes.",
+    "Prix rouges reconstitués même lorsque les euros et les centimes sont séparés.",
+    "Prix et unité stockés séparément ; calibre, catégorie qualité, grammage et prix au kilo préservés.",
+    "Mentions supplémentaires et origine attribuées au bon produit, sans mélange entre encadrés.",
+    "Repli OCR français local dans le navigateur pour les pages composées d’images ou dépourvues de prix sélectionnables.",
+    "Position exacte du bloc source enregistrée dans Supabase pour améliorer la précision des prochains imports.",
+    "Import sans validation conservé, avec incertitude signalée si une information manque ou est difficile à reconnaître."
   ]
 }

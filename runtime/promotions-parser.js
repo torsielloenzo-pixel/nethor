@@ -56,15 +56,16 @@ function linesForPage(items,pageWidth,pageHeight){
   for(const token of row.tokens){
    if(!current||token.x-current.right>Math.max(28,token.height*3)){
     if(current)lines.push(current);
-    current={text:token.text,x:token.x,y:row.y,right:token.x+token.width}
+    current={text:token.text,x:token.x,y:row.y,right:token.x+token.width,height:token.height}
    }else{
     current.text+=((token.x-current.right>2)?' ':'')+token.text;
-    current.right=Math.max(current.right,token.x+token.width)
+    current.right=Math.max(current.right,token.x+token.width);
+    current.height=Math.max(current.height,token.height)
    }
   }
   if(current)lines.push(current)
  }
- return lines.sort((a,b)=>a.y-b.y||a.x-b.x).map((r,i)=>({...r,id:i+1,pageWidth}))
+ return lines.sort((a,b)=>a.y-b.y||a.x-b.x).map((r,i)=>({...r,id:i+1,pageWidth,pageHeight}))
 }
 function isOffer(s){
  const t=clean(s);
