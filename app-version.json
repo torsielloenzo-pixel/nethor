@@ -1,17 +1,17 @@
 {
-  "version": 413,
-  "label": "v1.46.55",
+  "version": 414,
+  "label": "v1.46.56",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Vue magasin aujourd'hui · Lisibilité améliorée",
-  "message": "Sur l'accueil Desktop, les équipes du matin apparaissent en vert, celles de l'après-midi en bleu, avec des barres plus épaisses, une légende lisible et une ligne continue pour l'heure actuelle.",
-  "published_at": "2026-10-10T11:04:38.467Z",
+  "title": "Vue magasin · Vert du matin adouci",
+  "message": "Le vert des équipes du matin sur l'accueil Desktop est désormais plus clair, harmonisé avec le vert utilisé dans le planning. Le bleu de l'après-midi ne change pas.",
+  "published_at": "2026-10-10T11:17:00.000Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Vue magasin aujourd'hui : barres épaissies et couleurs vert (prise de poste avant midi) / bleu (à partir de midi).",
-    "Ligne Maintenant continue, avec heure courante en temps réel.",
-    "Heures, noms et légende agrandis ; pauses distinctes en hachures.",
-    "Ajustements de lisibilité selon la largeur de la fenêtre, sans modifier le planning."
+    "Équipe du matin : vert du planning #2AAF70, plus lumineux.",
+    "Même teinte sur les barres, la légende et l'aperçu administrateur.",
+    "Barres, horaires, repère Maintenant et équipe d'après-midi inchangés.",
+    "Rafraîchissement ciblé des ressources desktop via Service Worker v414."
   ]
 }
