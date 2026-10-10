@@ -6,6 +6,16 @@
 <meta name="theme-color" content="#f3f4f6">
 <title>Nethor — Signaler un problème</title>
 <script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('nettoTheme')||'light'}catch(_){}})();</script>
+<script>
+const NETHOR_QUICK_REPORT_EMBEDDED=(()=>{
+ try{
+  return window.parent!==window &&
+   window.parent.location.origin===location.origin &&
+   new URLSearchParams(location.search).get('embedded')==='desktop-home'
+ }catch(_){return false}
+})();
+if(NETHOR_QUICK_REPORT_EMBEDDED)document.documentElement.classList.add('rpEmbedded');
+</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin>
 <script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=4"></script><script>window.NethorPlatformAssets.style('ui/desktop/desktop-shell.css?v=8','ui/mobile/mobile-shell.css?v=5')</script>
@@ -53,6 +63,42 @@ button{touch-action:manipulation}
 :root[data-theme="dark"]{--rp-bg:#17191d;--rp-card:#22252a;--rp-text:#f2efeb;--rp-muted:#aaa59f;--rp-line:#353a41;--rp-soft:#392821}
 :root[data-theme="dark"] .rpContext{background:#1c1f23}:root[data-theme="dark"] .rpSourceSelect{color:#f2efeb}:root[data-theme="dark"] .rpText{background:#1b1e22;border-color:#3b4047;color:#f2efeb}:root[data-theme="dark"] .rpCancel,:root[data-theme="dark"] .rpReturn{background:#25292e}
 @media(max-height:540px){.rpShell{padding-top:calc(env(safe-area-inset-top) + 5px);padding-bottom:calc(env(safe-area-inset-bottom) + 5px)}.rpTop{min-height:42px;padding-bottom:6px}.rpCard{padding:11px;border-radius:18px}.rpIntro{grid-template-columns:36px minmax(0,1fr);gap:8px}.rpIcon{width:36px;height:36px;border-radius:11px}.rpIntro strong{font-size:15px}.rpIntro p{display:none}.rpContext{margin:8px 0 7px;padding:6px 9px;min-height:30px}.rpContextPicker>small{display:none}.rpSourceSelect{height:26px}.rpText{min-height:72px;padding:10px 12px}.rpHelp{margin:5px 2px 6px}.rpSend{min-height:42px}}
+/* Mode compact : le formulaire d'origine reste identique, seule sa présentation change. */
+html.rpEmbedded,html.rpEmbedded body{height:100%!important;min-height:0!important;overflow:hidden!important;background:var(--rp-card)!important}
+html.rpEmbedded body{position:fixed!important;inset:0!important}
+html.rpEmbedded body>:not(.rpShell):not(script):not(style){display:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpDesktopShell{
+ width:100%!important;height:100dvh!important;min-height:0!important;margin:0!important;padding:0!important;
+ display:flex!important;flex-direction:column!important;overflow:hidden!important
+}
+html.rpEmbedded .rpDesktopTop{display:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpMain{
+ display:flex!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpCard{
+ display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;min-height:0!important;
+ margin:0!important;padding:18px 20px!important;border:0!important;border-radius:0!important;
+ box-shadow:none!important;overflow:hidden!important
+}
+html.rpEmbedded .rpIntro strong{font-size:16px}
+html.rpEmbedded .rpIntro p{font-size:11px}
+html.rpEmbedded .rpContext{margin:11px 0 10px}
+html.rpEmbedded .rpContextPicker>label{font-size:11px}
+html.rpEmbedded .rpSourceSelect{font-size:12px}
+html.rpEmbedded .rpLabel{font-size:11px}
+html.rpEmbedded .rpCount,html.rpEmbedded .rpHelp{font-size:10px}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpText{
+ flex:1 1 auto!important;min-height:115px!important;resize:none!important;font-size:14px!important
+}
+html.rpEmbedded .rpSend{min-height:44px}
+html.rpEmbedded .rpState{font-size:11px}
+html.rpEmbedded .rpSuccess{justify-content:center;align-items:center}
+@media(max-height:520px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="report-problem"].rpEmbedded .rpCard{padding:10px 13px!important}
+ html.rpEmbedded .rpContext{margin:7px 0}
+ html.rpEmbedded .rpText{min-height:66px!important}
+ html.rpEmbedded .rpHelp{margin:5px 0}
+}
 </style>
 </head>
 <body><div data-nethor-platform-header></div><div data-nethor-platform-lead></div><div data-nethor-user-page-layout></div><script src="platform-page-layout.js?v=12"></script>
@@ -153,6 +199,10 @@ function applyProblemPageConfig(){
  document.title='Nethor — '+label
 }
 function returnToMenu(){
+ if(NETHOR_QUICK_REPORT_EMBEDDED){
+  window.parent.postMessage({type:'nethor:quick-report-close'},location.origin);
+  return
+ }
  if(window.NethorNavigation?.isMobileShell?.()&&window.NethorNavigation?.navigateBack){
   window.NethorNavigation.navigateBack();return
  }
@@ -231,8 +281,9 @@ async function cacheInfo(){
  }catch(_){return[]}
 }
 async function collectDiagnostics(){
- const ua=String(navigator.userAgent||''),vv=window.visualViewport||null,conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection||null;
- const navEntry=performance.getEntriesByType?.('navigation')?.[0]||null;
+ const capturedWindow=NETHOR_QUICK_REPORT_EMBEDDED?window.parent:window;
+ const ua=String(navigator.userAgent||''),vv=capturedWindow.visualViewport||null,conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection||null;
+ const navEntry=capturedWindow.performance?.getEntriesByType?.('navigation')?.[0]||null;
  const [uaData,cacheNames]=await Promise.all([highEntropyUA(),cacheInfo()]);
  const sw=navigator.serviceWorker?.controller||null;
  let orientationType=null,orientationAngle=null;
@@ -290,8 +341,8 @@ async function collectDiagnostics(){
    color_depth:screen.colorDepth||null,
    orientation_type:orientationType,
    orientation_angle:orientationAngle,
-   viewport_width:window.innerWidth||null,
-   viewport_height:window.innerHeight||null,
+   viewport_width:capturedWindow.innerWidth||null,
+   viewport_height:capturedWindow.innerHeight||null,
    visual_viewport_width:vv?Math.round(vv.width):null,
    visual_viewport_height:vv?Math.round(vv.height):null,
    visual_viewport_scale:vv?vv.scale:null
@@ -321,7 +372,7 @@ async function collectDiagnostics(){
    duration_ms:Number.isFinite(navEntry?.duration)?Math.round(navEntry.duration):null,
    transfer_size:Number.isFinite(navEntry?.transferSize)?navEntry.transferSize:null,
    encoded_body_size:Number.isFinite(navEntry?.encodedBodySize)?navEntry.encodedBodySize:null,
-   visibility_state:document.visibilityState||null
+   visibility_state:capturedWindow.document.visibilityState||null
   }
  }
 }
