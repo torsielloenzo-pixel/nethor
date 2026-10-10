@@ -21,6 +21,7 @@ function buildUserMenu(ctx){
 const DEFAULT_STORE_GOOGLE_URL='https://www.google.com/maps/search/?api=1&query=Netto%20Le%20Thor&query_place_id=ChIJSY7JsE71tRIRRSih3toBniY&utm_source=nethor&utm_campaign=place_details_search';
 const DESKTOP_SIDEBAR_DEFAULTS={
  home:{label:'Accueil',url:'home.html',icon:'home',enabled:true},
+ management:{label:'Gestion',url:'admin-portal.html',icon:'reports',enabled:true},
  activity:{label:'Activité magasin',url:'home.html#nethorDesktopStatsRow',icon:'activity',enabled:true},
  planning:{label:'Planning',url:'planning.html',icon:'planning',enabled:true},
  team:{label:'Équipe',url:'home.html#nethorDesktopTeamWidget',icon:'team',enabled:true},
@@ -56,7 +57,7 @@ function desktopDashboardConfig(site={}){
    show_admin_logs:header.show_admin_logs!==false,
    show_store_image:header.show_store_image!==false
   },
-  sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||210)),items:normalized},
+  sidebar:{enabled:sidebar.enabled!==false,width:Math.max(180,Math.min(280,Number(sidebar.width)||240)),items:normalized,logo_full_url:String(sidebar.logo_full_url||''),logo_compact_url:String(sidebar.logo_compact_url||'')},
   style:{accent:String(raw?.style?.accent||'#ff5a2a'),sidebar_text_scale:Math.max(70,Math.min(160,Number(raw?.style?.sidebar_text_scale)||100)),widget_text_scale:Math.max(70,Math.min(160,Number(raw?.style?.widget_text_scale)||100))}
  }
 }
@@ -82,32 +83,59 @@ function ensureDesktopSidebarStyle(){
  const link=document.createElement('link');
  link.id='nethorDesktopSidebarCss';
  link.rel='stylesheet';
- link.href='ui/desktop/desktop-sidebar.css?v=8';
+ link.href='ui/desktop/desktop-sidebar.css?v=9';
  document.head.appendChild(link)
 }
 function desktopSidebarItem(key,def,active){
- return '<button class="nethorSidebarItem'+(active?' active':'')+'" data-sidebar-key="'+esc(key)+'" type="button" data-sidebar-url="'+esc(def.url)+'" onclick="window.location.href=this.dataset.sidebarUrl"'+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(def.icon)+'</span><span class="nethorSidebarLabel">'+esc(def.label)+'</span><span class="nethorSidebarBadge hidden" aria-hidden="true"></span></button>'
+ return '<button class="nethorSidebarItem'+(active?' active':'')+'" data-sidebar-key="'+esc(key)+'" title="'+esc(def.label)+'" aria-label="'+esc(def.label)+'" type="button" data-sidebar-url="'+esc(def.url)+'" onclick="window.location.href=this.dataset.sidebarUrl"'+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(def.icon)+'</span><span class="nethorSidebarLabel">'+esc(def.label)+'</span><span class="nethorSidebarBadge hidden" aria-hidden="true"></span></button>'
 }
 function sidebarActiveKey(page){
  const id=String(page||'').toLowerCase();
  if(['home'].includes(id))return'home';
  if(id==='planning')return'planning';
+ if(['admin-portal','accounts'].includes(id))return'management';
  if(id==='chat')return'chat';
  if(id==='articles')return'articles';
  if(id==='report-problem')return'incidents';
  if(['settings','notification-settings'].includes(id))return'settings';
  return''
 }
+const DESKTOP_SIDEBAR_MODE_KEY='nethorDesktopSidebarModeV1';
+const DESKTOP_SIDEBAR_COMPACT_WIDTH=82;
+function savedSidebarMode(){
+ try{return localStorage.getItem(DESKTOP_SIDEBAR_MODE_KEY)==='compact'?'compact':'full'}catch(_){return'full'}
+}
+function applySidebarMode(mode,{persist=false,fullWidth=240}={}){
+ const compact=mode==='compact',root=document.documentElement;
+ root.dataset.nethorSidebarMode=compact?'compact':'full';
+ root.style.setProperty('--nethor-sidebar-w',(compact?DESKTOP_SIDEBAR_COMPACT_WIDTH:Math.max(180,Math.min(280,Number(fullWidth)||240)))+'px');
+ const toggle=document.querySelector('.nethorSidebarCollapse');
+ if(toggle){
+  const description=compact?'Agrandir la barre latérale':'Réduire la barre latérale';
+  toggle.title=description;toggle.setAttribute('aria-label',description);
+  toggle.setAttribute('aria-expanded',String(!compact));
+ }
+ if(persist)try{localStorage.setItem(DESKTOP_SIDEBAR_MODE_KEY,compact?'compact':'full')}catch(_){}
+}
+function toggleDesktopSidebar(){
+ const next=document.documentElement.dataset.nethorSidebarMode==='compact'?'full':'compact';
+ const width=desktopDashboardConfig(window.NettoProfileUI?.siteConfig||{}).sidebar.width;
+ applySidebarMode(next,{persist:true,fullWidth:width});
+ window.dispatchEvent(new Event('resize'));
+}
 function buildDesktopSidebar(page){
  ensureDesktopSidebarStyle();
+ applySidebarMode(savedSidebarMode(),{fullWidth:desktopDashboardConfig(window.NettoProfileUI?.siteConfig||{}).sidebar.width});
  const active=sidebarActiveKey(page);
- const mainKeys=['home','activity','planning','team','tasks','receptions','articles','chat','incidents','reports'];
+ const mainKeys=['home','planning','chat','management'];
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
-  '<button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
-  '<nav class="nethorDesktopSidebarNav">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key)).join('')+'</nav>'+
+  '<div class="nethorSidebarBrandRow"><button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
+  '<button class="nethorSidebarCollapse" type="button" onclick="window.NethorDesktopShell?.toggleSidebar?.()" title="Réduire la barre latérale" aria-label="Réduire la barre latérale" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.8 5.5-6.3 6.5 6.3 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>'+
+  '<nav class="nethorDesktopSidebarNav" aria-label="Pages principales">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key)).join('')+'</nav>'+
   '<div class="nethorDesktopSidebarBottom">'+desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+'</div>'+
  '</aside>'
 }
+
 let desktopStoreCardPromise=null;
 function ensureDesktopStoreCardAssets(){
  if(!document.getElementById('nethorStoreCardCss')){
@@ -223,7 +251,7 @@ function startDesktopTextScaling(){
 function applyDesktopShellConfig(site={}){
  if(String(document.documentElement.dataset.nethorPageLayout||document.documentElement.dataset.nethorPlatform||'').toLowerCase()!=='desktop')return;
  const c=desktopDashboardConfig(site);
- document.documentElement.style.setProperty('--nethor-sidebar-w',c.sidebar.width+'px');
+ applySidebarMode(document.documentElement.dataset.nethorSidebarMode||savedSidebarMode(),{fullWidth:c.sidebar.width});
  document.documentElement.style.setProperty('--nethor-sidebar-accent',c.style.accent||'#ff5a2a');
  document.documentElement.style.setProperty('--nethor-sidebar-text-scale',(c.style.sidebar_text_scale/100).toFixed(3));
  document.documentElement.style.setProperty('--nethor-widget-text-scale',(c.style.widget_text_scale/100).toFixed(3));
@@ -242,7 +270,25 @@ function applyDesktopShellConfig(site={}){
   if(brand){brand.classList.remove('customLogo');brand.style.removeProperty('background-image')}
   try{window.NettoProfileUI?.applyHeaderLogo?.(site)}catch(_){}
  }
- if(sidebar)Object.entries(c.sidebar.items).forEach(([key,item])=>{const el=sidebar.querySelector('[data-sidebar-key="'+CSS.escape(key)+'"]');if(!el)return;el.classList.toggle('hidden',item.enabled===false);el.dataset.sidebarUrl=item.url||DESKTOP_SIDEBAR_DEFAULTS[key]?.url||'home.html';const label=el.querySelector('.nethorSidebarLabel');if(label)label.textContent=item.label||DESKTOP_SIDEBAR_DEFAULTS[key]?.label||key});
+ if(sidebar)Object.entries(c.sidebar.items).forEach(([key,item])=>{
+  const el=sidebar.querySelector('[data-sidebar-key="'+CSS.escape(key)+'"]');if(!el)return;
+  el.classList.toggle('hidden',item.enabled===false);
+  el.dataset.sidebarUrl=item.url||DESKTOP_SIDEBAR_DEFAULTS[key]?.url||'home.html';
+  const label=el.querySelector('.nethorSidebarLabel'),name=item.label||DESKTOP_SIDEBAR_DEFAULTS[key]?.label||key;
+  if(label)label.textContent=name;
+  el.title=name;el.setAttribute('aria-label',name);
+ });
+ // Management access is still enforced server-side. Do not advertise a protected
+ // administrative route to accounts whose permission model denies it.
+ const management=sidebar?.querySelector('[data-sidebar-key="management"]'),user=window.NettoProfileUI?.profile;
+ if(management&&user){
+  let allowed=user.role==='admin';
+  try{
+   const level=window.NettoProfileUI?.permissionLevel?.('admin-portal',user);
+   if(level)allowed=level!=='none';
+  }catch(_){}
+  management.classList.toggle('hidden',!allowed||c.sidebar.items.management?.enabled===false);
+ }
  startDesktopClock();scaleDesktopText(document.body)
 }
 function buildPageLayout(page){
@@ -283,5 +329,5 @@ function buildDesktopChrome(page){
 }
 window.addEventListener('netto:profile',e=>applyDesktopShellConfig(e.detail?.siteConfig||window.NettoProfileUI?.siteConfig||{}));
 document.addEventListener('nethor:page-layout-ready',()=>applyDesktopShellConfig(window.NettoProfileUI?.siteConfig||{}));
-window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout,buildDesktopChrome,applyDesktopShellConfig,desktopDashboardConfig,openStoreCard:openDesktopStoreCard,scaleText:scaleDesktopText});
+window.NethorDesktopShell=Object.freeze({buildUserMenu,buildPageLayout,buildDesktopChrome,applyDesktopShellConfig,desktopDashboardConfig,openStoreCard:openDesktopStoreCard,toggleSidebar:toggleDesktopSidebar,scaleText:scaleDesktopText});
 })();
