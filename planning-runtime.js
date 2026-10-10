@@ -1,6 +1,7 @@
 
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co',SUPABASE_KEY='sb_publishable_nJPMS-Z_20ng1aMJmufbmg_gWFFndrC';
 const PLANNING_SPA_MODE=document.documentElement.dataset.nethorMobileApp==='1';
+const PLANNING_QUICK_IMPORT_MODE=window.parent!==window&&new URLSearchParams(location.search).get('quick-import')==='1';
 let planningRuntimeActive=false,planningViewportBound=false;
 let planningCacheReady=false,planningCacheUserId='',planningLoadedWeekKey='',planningLoadedRevisionAt='',planningWeekLoadError=false,planningWeekLoadSeq=0,planningDataChannel=null,planningDataRefreshTimer=null,planningDataSyncUnsubscribe=null;
 let planningReadStatusByDay=new Map(),planningReadStatusWeekKey='',planningReadStatusSeq=0,planningReadStatusTimer=null,planningReadMarkKey='';
@@ -132,7 +133,7 @@ function planningParisDateKey(now=new Date()){
  return pick('year')+'-'+pick('month')+'-'+pick('day')
 }
 function planningReadStatusEnabled(){
- return !PLANNING_SPA_MODE&&detectPlanningDevice().key==='desktop'&&planningPermissionLevel==='manage'
+ return !PLANNING_SPA_MODE&&!PLANNING_QUICK_IMPORT_MODE&&detectPlanningDevice().key==='desktop'&&planningPermissionLevel==='manage'
 }
 function planningReadStatusForProfile(profile,date=dayKey()){
  if(!profile?.id||planningReadStatusWeekKey!==currentPlanningWeekKey())return null;
@@ -218,6 +219,7 @@ function startPlanningReadStatusPolling(){
  },15000)
 }
 async function markPlanningDayRead(date=dayKey(),source=''){
+ if(PLANNING_QUICK_IMPORT_MODE)return false;
  if(!db||!currentUser||!model||navigator.onLine===false||(editMode&&changedDates().length)||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(date||'')))return false;
  const markSource=source||(PLANNING_SPA_MODE?'planning_mobile':'planning_desktop');
  const revision=planningLoadedRevisionAt;
