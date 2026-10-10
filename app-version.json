@@ -1,18 +1,19 @@
 {
-  "version": 430,
-  "label": "v1.46.66",
+  "version": 437,
+  "label": "v1.46.67",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile · Finitions des six thèmes",
-  "message": "Harmonisation discrète des palettes, textes, bordures et accents entre les différentes pages de Nethor Mobile.",
-  "published_at": "2026-10-10T14:33:24.608Z",
+  "title": "Desktop · Nouvelle page Promotions",
+  "message": "Import de catalogues PDF, extraction et correction des références, dates de validité et sauvegarde dans une base sécurisée.",
+  "published_at": "2026-10-10T20:24:21.971Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Clair et sombre : meilleure cohérence des textes et contrôles sur les notifications, le profil et la personnalisation.",
-    "Bleu minéral et sauge : fonds et contrastes légèrement affinés, accents cohérents sur les sous-pages.",
-    "Prune nocturne : cartes et textes secondaires plus harmonieux, bouton de sondage plus contrasté.",
-    "Halloween : décor conservé, textes secondaires mieux lisibles.",
-    "Aucune modification des plannings, des horaires, des états métier ni de la version Desktop."
+    "Barre latérale Desktop : nouvelle entrée Promotions avec une icône pourcentage.",
+    "Import PDF réservé à Administrateur / Point de vente ; consultation des catalogues accessible aux comptes actifs.",
+    "Analyse des PDF texte : nom complet, informations techniques, prix ou avantage et page source.",
+    "Relecture obligatoire de chaque page et ajout manuel de références avant sauvegarde.",
+    "Catalogues et produits enregistrés dans Supabase ; PDF original conservé dans un espace privé.",
+    "PDF scans/images non pris en charge sans OCR : un contrôle par page avertit des limites d'extraction."
   ]
 }

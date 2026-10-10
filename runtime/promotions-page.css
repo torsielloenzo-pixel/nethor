@@ -1,0 +1,83 @@
+/* Nethor Desktop · Promotions v1 — style épuré, intégré à la barre latérale. */
+.promoPage{
+ --pm-bg:#f3f5f8;--pm-surface:#fff;--pm-ink:#202a35;--pm-muted:#6a7888;
+ --pm-line:#dfe5ec;--pm-soft:#eff3f7;--pm-accent:#ed663b;--pm-green:#238a60;
+ min-height:100dvh!important;padding:23px clamp(18px,3vw,48px) 65px!important;
+ background:var(--pm-bg);color:var(--pm-ink);font:inherit;box-sizing:border-box;
+}
+.promoPage *{box-sizing:border-box}.promoPage button,.promoPage input,.promoPage select,.promoPage textarea{font:inherit}
+.promoPage button{cursor:pointer}.promoPage button:disabled{opacity:.55;cursor:not-allowed}
+.promoInner{max-width:1480px;margin:0 auto}.promoTitleRow{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:25px}
+.promoEyebrow{color:var(--pm-accent);font-size:10px;font-weight:900;letter-spacing:.11em}
+.promoTitleRow h1{font-size:32px;letter-spacing:-1.1px;font-weight:900;margin:5px 0 5px}
+.promoTitleRow p{font-size:13px;color:var(--pm-muted);margin:0}
+.promoTitleIcon{display:grid;place-items:center;width:58px;height:58px;border-radius:17px;font-size:29px;font-weight:900;background:#fff1eb;color:var(--pm-accent)}
+.promoPanel{background:var(--pm-surface);border:1px solid var(--pm-line);border-radius:20px;padding:22px;margin:0 0 17px;box-shadow:0 8px 28px #1b324707}
+.promoSectionHead{display:flex;align-items:center;gap:13px;margin-bottom:19px}
+.promoSectionHead .promoIcon{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:var(--pm-soft);color:var(--pm-accent);font-size:18px;font-weight:900;flex:none}
+.promoSectionHead h2{font-size:16px;margin:0 0 3px;font-weight:850;letter-spacing:-.25px}
+.promoSectionHead p{font-size:11.5px;color:var(--pm-muted);margin:0}
+.promoImportGrid{display:grid;grid-template-columns:minmax(270px,1.2fr) minmax(295px,1fr);gap:18px}
+.promoDrop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px;border:2px dashed var(--pm-line);border-radius:15px;background:var(--pm-soft);text-align:center;padding:16px;cursor:pointer}
+.promoDrop:hover,.promoDrop:focus-visible,.promoDrop.dragover{border-color:var(--pm-accent);outline:none;background:color-mix(in srgb,var(--pm-accent) 5%,var(--pm-surface))}
+.promoPdfIcon{font-size:14px;display:grid;place-items:center;width:53px;height:58px;border:1px solid color-mix(in srgb,var(--pm-accent) 23%,var(--pm-line));border-radius:10px;font-weight:900;color:var(--pm-accent);background:var(--pm-surface)}
+.promoDrop strong{font-size:13px}.promoDrop small{font-size:11px;color:var(--pm-muted);line-height:1.6}
+.promoFields{display:grid;gap:12px;align-content:center}.promoFields label,.promoReviewToolbar label{display:grid;gap:7px;font-size:11px;font-weight:800;color:var(--pm-muted)}
+.promoPage :is(input,textarea,select){min-width:0;width:100%;padding:10px 12px;border:1px solid var(--pm-line);border-radius:10px;color:var(--pm-ink);background:var(--pm-surface);outline:none}
+.promoPage :is(input,textarea,select):focus{border-color:var(--pm-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--pm-accent) 12%,transparent)}
+.promoDates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.promoPrimary,.promoSecondary{min-height:40px;padding:10px 17px;border-radius:11px;font-weight:850;font-size:12px}
+.promoPrimary{color:#fff;background:var(--pm-accent);border:1px solid var(--pm-accent)}
+.promoSecondary{border:1px solid var(--pm-line);color:var(--pm-ink);background:var(--pm-surface)}
+.promoPrimary:not(:disabled):hover{filter:brightness(.93)}.promoSecondary:not(:disabled):hover{background:var(--pm-soft)}
+.promoHint{font-size:11px;line-height:1.65;color:var(--pm-muted);margin:15px 0 0}
+.promoAlert{margin-bottom:15px;padding:13px 16px;border-radius:12px;border:1px solid var(--pm-line);background:var(--pm-soft);font-size:12px;line-height:1.55}
+.promoAlert.error{border-color:#d99c92;color:#aa2e22;background:#fff2ee}
+.promoAlert.ok{border-color:#acdec5;color:#177b52;background:#e8f8ef}
+.promoStats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:17px}
+.promoStat{padding:9px 12px;background:var(--pm-soft);border:1px solid var(--pm-line);border-radius:10px;color:var(--pm-muted);font-size:11px}
+.promoStat strong{color:var(--pm-ink);font-size:15px;margin-right:5px}
+.promoReviewLayout{display:grid;grid-template-columns:225px minmax(0,1fr);gap:18px;align-items:start}
+.promoReviewAside{border-radius:13px;border:1px solid var(--pm-line);background:var(--pm-soft);padding:14px;position:sticky;top:18px}
+.promoReviewAside>strong{font-size:12px;display:block;margin-bottom:9px}.promoReviewAside>p{font-size:10.5px;line-height:1.6;color:var(--pm-muted)}
+.promoPageRow{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--pm-line);font-size:11px}
+.promoPageRow input{width:15px;height:15px;accent-color:var(--pm-accent)}
+.promoReviewMain{min-width:0}.promoReviewToolbar{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:12px}
+.promoReviewToolbar label{min-width:150px}.promoItems{display:grid;gap:12px}
+.promoItem{border:1px solid var(--pm-line);border-radius:13px;padding:14px;background:var(--pm-surface)}
+.promoItemHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:13px;color:var(--pm-muted);font-size:10.5px}
+.promoItemHead strong{color:var(--pm-accent);font-size:11px}
+.promoItemFields{display:grid;gap:11px}.promoItemFields label{display:grid;gap:6px;color:var(--pm-muted);font-size:10px;font-weight:800}
+.promoItemFields input{font-size:12.5px;font-weight:750}.promoItemFields textarea{min-height:62px;resize:vertical;font-size:12px}
+.promoItemFields label:nth-child(2) textarea{min-height:52px}
+.promoItemActions{display:flex;justify-content:space-between;align-items:center;gap:9px;margin-top:12px;color:var(--pm-muted);font-size:10px}
+.promoDelete{border:0;background:transparent;color:#bc463c;font-size:11px;font-weight:800;padding:7px}
+.promoUnresolved{background:var(--pm-soft);border:1px solid var(--pm-line);border-radius:13px;padding:15px;margin-top:13px}
+.promoUnresolved>strong{font-size:12px}.promoUnresolved>p{font-size:10.5px;color:var(--pm-muted);line-height:1.5}
+.promoReviewPassage{display:flex;align-items:center;gap:9px;padding:8px 2px;border-top:1px solid var(--pm-line);font-size:10.5px}
+.promoReviewPassage span{flex:1;min-width:0;overflow-wrap:anywhere}
+.promoReviewPassage button{font-size:10px;font-weight:800;white-space:nowrap;color:var(--pm-accent);border:0;background:none}
+.promoReviewActions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:17px}
+.promoCatalogList{display:grid;gap:10px}.promoCatalog{border:1px solid var(--pm-line);border-radius:12px;overflow:hidden}
+.promoCatalog button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:var(--pm-surface);border:0;text-align:left;padding:15px;color:var(--pm-ink)}
+.promoCatalog button:hover{background:var(--pm-soft)}.promoCatalog button strong{font-size:13px;display:block}.promoCatalog button small{display:block;color:var(--pm-muted);font-size:11px;margin-top:5px}
+.promoCatalogCount{display:inline-grid;place-items:center;min-width:30px;height:30px;border-radius:10px;background:var(--pm-soft);font-size:12px;font-weight:850;color:var(--pm-accent)}
+.promoCatalogDetail{margin-top:17px;border-top:1px solid var(--pm-line);padding-top:16px}
+.promoDetailsHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.promoDetailsActions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.promoDetailsActions input{width:260px;max-width:100%}
+.promoDetailsHead h3{font-size:15px;margin:0}.promoDetailsHead p{margin:4px 0 0;font-size:11px;color:var(--pm-muted)}
+.promoDetailsHead input{max-width:290px}.promoProductTable{width:100%;border-collapse:collapse;font-size:12px}
+.promoProductTable th{text-align:left;background:var(--pm-soft);padding:11px 9px;color:var(--pm-muted);font-size:10px}
+.promoProductTable td{padding:12px 9px;border-bottom:1px solid var(--pm-line);vertical-align:top;line-height:1.5}
+.promoProductTable td:first-child{font-weight:800;max-width:300px}.promoProductTable td:nth-child(2){color:var(--pm-muted)}
+.promoMuted{font-size:12px;color:var(--pm-muted);line-height:1.5}
+.promoPage [hidden]{display:none!important}
+:root[data-theme="dark"] .promoPage{
+ --pm-bg:#181c22;--pm-surface:#252b33;--pm-ink:#f4f5f8;--pm-muted:#b0becb;
+ --pm-line:#414955;--pm-soft:#2f3742;--pm-accent:#ff936b;--pm-green:#8fd7b2
+}
+:root[data-theme="dark"] .promoTitleIcon{background:#3b2d2b}
+:root[data-theme="dark"] .promoAlert.error{background:#4a2727;color:#ffc4ba;border-color:#894b46}
+:root[data-theme="dark"] .promoAlert.ok{background:#203b30;color:#b4e8c9;border-color:#376952}
+@media(max-width:980px){.promoReviewLayout{grid-template-columns:1fr}.promoReviewAside{position:static}.promoImportGrid{grid-template-columns:1fr}.promoPage{padding-inline:16px!important}}
+@media(max-width:640px){.promoPage{padding:14px 11px 60px!important}.promoPanel{padding:14px}.promoTitleRow h1{font-size:26px}.promoTitleIcon{display:none}.promoReviewToolbar{align-items:stretch;flex-direction:column}.promoDates{grid-template-columns:1fr}.promoDetailsHead{align-items:stretch;flex-direction:column}.promoProductTable{font-size:10.5px}}
