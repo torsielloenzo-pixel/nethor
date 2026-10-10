@@ -80,3 +80,98 @@ html[data-theme="dark"] .ndSectionHead>button{background:#34251f;border-color:#6
  .ndMessageRow time{display:none}
 }
 
+
+
+/* ==========================================================================
+   Accueil desktop — composition des widgets (bannière et navigation inchangées)
+   ========================================================================== */
+.nethorDesktopReferenceDashboard .ndKpiGrid{
+ grid-template-columns:repeat(var(--nd-kpi-count,3),minmax(0,1fr));
+ align-items:stretch;
+}
+.nethorDesktopReferenceDashboard .ndKpi{
+ width:100%;min-width:0;min-height:104px;box-sizing:border-box;
+}
+.nethorDesktopReferenceDashboard .ndKpiBody>span{font-size:11.5px}
+.nethorDesktopReferenceDashboard .ndKpiBody strong{font-size:25px}
+
+.nethorDesktopReferenceDashboard .ndWidgetGrid{
+ display:grid;
+ grid-template-columns:minmax(0,1.85fr) minmax(290px,1fr);
+ gap:var(--nd-gap);
+ align-items:stretch;
+ min-width:0;
+ width:100%;
+}
+.nethorDesktopReferenceDashboard .ndWidgetGrid--primaryOnly,
+.nethorDesktopReferenceDashboard .ndWidgetGrid--asideOnly{grid-template-columns:minmax(0,1fr)}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary,
+.nethorDesktopReferenceDashboard .ndWidgetAside{
+ display:flex;flex-direction:column;gap:var(--nd-gap);
+ min-width:0;width:100%;
+}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary>.ndPlanningSlot{
+ min-width:0;width:100%;display:flex;flex:1 0 auto;
+}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplan{
+ order:0!important;grid-column:auto!important;
+ width:100%;height:auto!important;min-height:0!important;
+ margin:0!important;align-self:stretch!important;
+ grid-template-rows:auto minmax(0,1fr) auto;
+}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanBoard{
+ height:auto!important;
+ min-height:var(--qp-board-min,150px)!important;
+}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTitleCopy strong{font-size:14px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTitleCopy small{font-size:9px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanNameCopy strong{font-size:10.5px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanNameCopy small{font-size:8.5px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanTick>span{font-size:8px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanUpdated,
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanLegend{font-size:8px}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanAvatar{font-size:10px}
+
+.nethorDesktopReferenceDashboard .ndWidgetAside>.ndCard,
+.nethorDesktopReferenceDashboard .ndWidgetPrimary>.ndCard{width:100%;min-width:0}
+.nethorDesktopReferenceDashboard .ndWidgetAside>.ndMessages{flex:1 1 auto}
+.nethorDesktopReferenceDashboard .ndWidgetAside>.ndActions{flex:0 0 auto}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndSectionTitle strong{font-size:14px}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndMessageRow{min-height:56px}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndMessageRow strong{font-size:10.5px}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndMessageRow small{font-size:9px}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndMessageRow time{font-size:8.5px}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndActionGrid{
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:8px;padding:10px;
+}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndActionGrid button{
+ min-height:74px;padding:9px;border-radius:11px;
+}
+.nethorDesktopReferenceDashboard .ndWidgetAside .ndActionGrid button strong{font-size:9.5px}
+
+.nethorDesktopReferenceDashboard .ndSupportingGrid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));
+ gap:var(--nd-gap);min-width:0;width:100%;
+}
+.nethorDesktopReferenceDashboard .ndWidgetGrid--asideOnly .ndWidgetAside{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;
+}
+@container (max-width:1160px){
+ .nethorDesktopReferenceDashboard .ndWidgetGrid{grid-template-columns:minmax(0,1fr)}
+ .nethorDesktopReferenceDashboard .ndWidgetAside{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;
+ }
+ .nethorDesktopReferenceDashboard .ndWidgetAside>.ndMessages,
+ .nethorDesktopReferenceDashboard .ndWidgetAside>.ndActions{height:auto;min-height:0}
+}
+@container (max-width:820px){
+ .nethorDesktopReferenceDashboard .ndKpiGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .nethorDesktopReferenceDashboard .ndWidgetAside,
+ .nethorDesktopReferenceDashboard .ndWidgetGrid--asideOnly .ndWidgetAside{grid-template-columns:minmax(0,1fr)}
+}
+@container (max-width:560px){
+ .nethorDesktopReferenceDashboard .ndKpiGrid{grid-template-columns:minmax(0,1fr)}
+ .nethorDesktopReferenceDashboard .ndWidgetPrimary .qplanBoard{min-width:0}
+ .nethorDesktopReferenceDashboard .ndWidgetAside .ndActionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
