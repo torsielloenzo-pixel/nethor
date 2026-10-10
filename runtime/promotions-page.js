@@ -59,12 +59,31 @@ async function extractPDF(bytes){
    loading('Extraction des références','Analyse de la page '+n+' sur '+doc.numPages+'…');
    const page=await doc.getPage(n),viewport=page.getViewport({scale:1});
    const {items}=await page.getTextContent();
-   const lines=window.NethorPromotionParser.linesForPage(items,viewport.width,viewport.height);
-   pages.push({number:n,lines});
+   let lines=window.NethorPromotionParser.linesForPage(items,viewport.width,viewport.height);
+   let source_mode='pdf-text',ocr_error='';
+   // Les cartouches promotionnels peuvent être des images dans un PDF textuel.
+   // Si les glyphes sélectionnables sont absents ou ne contiennent aucun prix,
+   // compléter avec l'OCR français local en conservant la géométrie des mots.
+   const hasPrice=lines.some(l=>/[€]|\d+[.,]\d{2}/.test(l.text));
+   if((lines.length<10||!hasPrice)&&window.NethorPromotionsOCR){
+    try{
+     const scanned=await window.NethorPromotionsOCR.scanPage(
+      page,viewport,window.NethorPromotionParser,
+      message=>loading('Reconnaissance des encadrés',message+' · page '+n+'/'+doc.numPages));
+     if(scanned.length>=5&&(scanned.length>lines.length||!hasPrice)){
+      lines=scanned;source_mode='ocr-local'
+     }
+    }catch(e){ocr_error=String(e?.message||e).slice(0,200)}
+   }
+   pages.push({number:n,width:viewport.width,height:viewport.height,
+    lines,source_mode,ocr_error});
    page.cleanup()
   }
   return pages
- }finally{await task.destroy().catch(()=>{})}
+ }finally{
+  await task.destroy().catch(()=>{});
+  await window.NethorPromotionsOCR?.close?.().catch(()=>{})
+ }
 }
 function autoSummary(result,meta,report){
  const warnings=report.filter(x=>!x.hasText),unmatched=report.reduce((n,x)=>n+x.unmatched,0);
@@ -82,13 +101,15 @@ function autoSummary(result,meta,report){
 function classifyDiagnostics(reports,products){
  const textless=reports.filter(p=>!p.hasText);
  return {
-  engine:'nethor-pdf-text-auto-v2',
+  engine:'nethor-pdf-spatial-tiles-ocr-v3',
   total_pages:reports.length,textless_pages:textless.length,
   textless_page_numbers:textless.map(p=>p.number),
   candidate_count:products.length,
   uncertain_count:products.filter(p=>p.auto_uncertain).length,
   unmatched_passage_count:reports.reduce((n,p)=>n+p.unmatched,0),
   pages:reports.map(p=>({page:p.number,lines:p.lines,products:p.detected,
+   blocks:p.blocks_detected||0,analysis_mode:p.analysis_mode||'unknown',
+   source_mode:p.source_mode||'pdf-text',ocr_error:p.ocr_error||'',
    uncertain:p.uncertain,unmatched:p.unmatched,has_text:p.hasText}))
  }
 }
@@ -122,7 +143,12 @@ async function importAutomatic(file){
   loading('Détection des dates','Recherche de la période de promotion dans le catalogue…');
   const meta=window.NethorPromotionParser.extractMetadata(pages,file.name);
   if(!meta)throw new Error('Impossible de trouver des dates de début et fin fiables dans ce catalogue. Aucun calendrier ou titre inventé : le PDF ne sera pas enregistré.');
-  const {products,reports}=window.NethorPromotionParser.parsePages(pages);
+  const {products,reports}=window.NethorPromotionsBlocks.parsePages(pages,window.NethorPromotionParser);
+  reports.forEach(report=>{
+   const matching=pages.find(page=>page.number===report.number);
+   report.source_mode=matching?.source_mode||'pdf-text';
+   report.ocr_error=matching?.ocr_error||''
+  });
   if(!products.length)throw new Error('Aucun produit identifiable dans ce PDF. Import interrompu sans créer de fausses références.');
   if(products.length>2000)throw new Error('Plus de 2 000 références détectées : limite du module actuel.');
   const diagnostics=classifyDiagnostics(reports,products);
@@ -140,7 +166,9 @@ async function importAutomatic(file){
     product_name:p.product_name,technical_details:p.technical_details,
     price_or_benefit:p.price_or_benefit,source_page:p.source_page,
     source_excerpt:p.source_excerpt,extraction_confidence:p.extraction_confidence,
-    category:p.category,auto_uncertain:p.auto_uncertain
+    category:p.category,auto_uncertain:p.auto_uncertain,
+    price_unit:p.price_unit||'',additional_info:p.additional_info||'',
+    source_block:p.source_block||{}
    })),
    p_diagnostics:diagnostics
   });
@@ -183,7 +211,7 @@ async function openCatalog(id){
  $('promoCatalogDetail').hidden=false;
  $('promoCatalogDetail').innerHTML='<p class="promoMuted">Chargement des références…</p>';
  const {data,error}=await db.from('promotion_products')
-  .select('position,product_name,technical_details,price_or_benefit,category,auto_uncertain,source_page')
+  .select('position,product_name,technical_details,price_or_benefit,price_unit,additional_info,source_block,category,auto_uncertain,source_page')
   .eq('catalog_id',id).order('position').limit(2000);
  if(error){$('promoCatalogDetail').textContent='Erreur : '+error.message;return}
  const products=data||[];
@@ -203,10 +231,12 @@ async function openCatalog(id){
   const needle=$('promoCatalogSearch').value.trim().toLocaleLowerCase('fr');
   const category=$('promoCategoryFilter').value;
   const filtered=products.filter(x=>(!category||(x.category||'À classer')===category)&&
-   [x.product_name,x.technical_details,x.price_or_benefit].some(s=>String(s||'').toLocaleLowerCase('fr').includes(needle)));
+   [x.product_name,x.technical_details,x.price_or_benefit,x.price_unit,x.additional_info].some(s=>String(s||'').toLocaleLowerCase('fr').includes(needle)));
   $('promoCatalogRows').innerHTML=filtered.map(p=>'<tr><td>'+escapeHtml(p.product_name)+
    (p.auto_uncertain?'<small class="promoUncertain">À affiner</small>':'')+
-   '</td><td>'+escapeHtml(p.technical_details||'—')+'</td><td>'+escapeHtml(p.price_or_benefit)+'</td>'+
+   '</td><td>'+escapeHtml(p.technical_details||'—')+'</td><td><strong>'+escapeHtml(p.price_or_benefit)+'</strong>'+
+   (p.price_unit?'<small class="promoItemUnit">'+escapeHtml(p.price_unit)+'</small>':'')+
+   (p.additional_info?'<small class="promoItemExtra">'+escapeHtml(p.additional_info)+'</small>':'')+'</td>'+
    '<td>'+escapeHtml(p.category||'À classer')+'</td><td>'+p.source_page+'</td></tr>').join('')||
    '<tr><td colspan="5" class="promoMuted">Aucun résultat pour ce filtre.</td></tr>'
  }
