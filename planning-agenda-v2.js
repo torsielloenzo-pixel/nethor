@@ -461,8 +461,8 @@ function renderAgenda(){
    if(mobileMode==='day'){
     const myIndex=typeof currentUserEmployeeIndex==='function'?currentUserEmployeeIndex(model):-1;
     host.innerHTML=window.NethorMobileDayCards?.render?.(a,{model,currentDay,addDays,isoDate,rowRanges,avatarFor,
-     isCurrentAgendaEmployee:emp=>isCurrentAgendaEmployee(emp)||(myIndex>=0&&model.employees[myIndex]===emp),dayShort,dayFull})||renderDayAgenda(a)
-   }else host.innerHTML=window.NethorMobileWeekCards?.render?.(a,{model,currentDay,addDays,isoDate,rowRanges,avatarFor,isCurrentAgendaEmployee,dayShort,dayFull})||renderWeekAgenda(a);
+     isCurrentAgendaEmployee:emp=>isCurrentAgendaEmployee(emp)||(myIndex>=0&&model.employees[myIndex]===emp),isAccountHidden:empName=>typeof planningAccountHidden==='function'&&planningAccountHidden(empName),dayShort,dayFull})||renderDayAgenda(a)
+   }else host.innerHTML=window.NethorMobileWeekCards?.render?.(a,{model,currentDay,addDays,isoDate,rowRanges,avatarFor,isCurrentAgendaEmployee,isAccountHidden:empName=>typeof planningAccountHidden==='function'&&planningAccountHidden(empName),dayShort,dayFull})||renderWeekAgenda(a);
    if(restFocusActive()&&!restFocusRevealed){
     const target=host.querySelector('.agendaRestFocusBlock,.agendaDayCardRest');
     if(target){restFocusRevealed=true;requestAnimationFrame(()=>target.scrollIntoView({behavior:'auto',block:'center',inline:'nearest'}))}
