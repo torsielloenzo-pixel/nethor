@@ -306,3 +306,98 @@ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopHoursClo
 @media(prefers-reduced-motion:reduce){
  html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopForm.loginCard{animation:none!important;}
 }
+
+
+/* Connexion Desktop : restaurer les images choisies dans Gestion.
+   Les textes de bienvenue sont HTML ; les inscriptions de la maquette initiale sont masquées par une composition CSS. */
+html[data-nethor-platform="desktop"] #login.authDesktopRoot::before{
+ background-image:var(--auth-login-background,url("../../assets/nethor-login-premium.webp"))!important;
+ background-size:cover!important;background-position:center!important;
+ opacity:var(--auth-login-background-opacity,1)!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntro{
+ position:absolute;z-index:2;inset:0 auto 0 0;width:clamp(575px,44.5vw,790px);
+ display:flex;align-items:center;color:#fff;isolation:isolate;pointer-events:none;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntro::before{
+ content:"";position:absolute;inset:0 -20px 0 0;z-index:0;
+ background:repeating-radial-gradient(ellipse 970px 1080px at -430px 110%,#c95856 0 176px,#e99164 177px 266px,#ffd481 267px 322px,#e58c63 323px 428px,#c95856 429px 530px,#eb9e6b 531px 650px),linear-gradient(135deg,#efa66a,#c85b55);
+ -webkit-mask-image:linear-gradient(to right,black 0%,black 92%,transparent 100%);
+ mask-image:linear-gradient(to right,black 0%,black 92%,transparent 100%);
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroInner{
+ position:relative;z-index:1;width:min(430px,calc(100% - 155px));margin-left:clamp(45px,7.2vw,125px);
+ padding:25px 0;text-shadow:0 1px 3px rgba(100,40,35,.06);
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroBadge{
+ display:inline-flex;gap:9px;align-items:center;padding:7px 13px;border-radius:999px;
+ background:rgba(255,255,255,.19);font-size:14px;font-weight:720;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroBadge span{font-size:19px}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroHeading{
+ color:#fff!important;font-weight:440!important;font-size:clamp(31px,2.55vw,44px)!important;
+ line-height:1.05!important;letter-spacing:-1.3px;margin:24px 0 0!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroHeading strong{
+ display:block;color:#fff;font-size:clamp(61px,5.5vw,96px);
+ font-weight:920;letter-spacing:-4px;line-height:.99;margin-top:2px;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroStore{
+ color:#fff;font-size:clamp(17px,1.45vw,23px);line-height:1.24;margin:10px 0 0!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroLead{
+ color:rgba(255,255,255,.88);font-size:clamp(13px,1.05vw,16px);line-height:1.4;margin:26px 0 0!important;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeatures{display:grid;gap:21px;margin-top:32px}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeature{display:flex;align-items:center;gap:15px}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeatureIcon{
+ flex:none;width:60px;height:60px;display:grid;place-items:center;border-radius:16px;
+ background:rgba(255,251,247,.96);color:#ff6b24;box-shadow:0 5px 16px #71332419;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeatureIcon svg{
+ width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeature p{margin:0!important}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeature strong{
+ display:block;font-size:17px;color:#fff;font-weight:800;line-height:1.14;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeature p span{
+ display:block;margin-top:4px;color:rgba(255,255,255,.87);font-size:13px;line-height:1.36;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroQuote{
+ position:relative;margin:29px 0 0;padding:20px 34px 20px 42px;box-sizing:border-box;
+ border:0;border-radius:17px;background:rgba(119,51,44,.38);color:#fff;font-size:15px;line-height:1.45;
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroQuote::before{
+ content:"";position:absolute;top:20px;bottom:20px;left:20px;width:3px;
+ border-radius:3px;background:linear-gradient(#ff8a28,#ff4822);
+}
+html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroQuote>span{
+ position:absolute;right:20px;top:0;font:62px/1 Georgia,serif;color:#ffffff66;
+}
+@media(max-width:1320px){
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntro{width:47vw;min-width:440px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroInner{width:calc(100% - 90px);margin-left:4vw}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeatureIcon{width:48px;height:48px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeatures{gap:15px;margin-top:19px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroQuote{margin-top:19px}
+}
+@media(max-height:770px){
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroInner{padding:8px 0}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroHeading{margin-top:12px!important}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroHeading strong{font-size:clamp(53px,5vw,84px)}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroLead{margin-top:14px!important}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeatures{gap:12px;margin-top:18px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeatureIcon{width:42px;height:42px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeature strong{font-size:14px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroFeature p span{font-size:12px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroQuote{margin-top:13px;padding:12px 33px;font-size:13px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroQuote::before{top:12px;bottom:12px;left:15px}
+}
+@media(min-width:901px) and (max-width:1040px){
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroInner{margin-left:24px;width:calc(100% - 95px)}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroHeading{font-size:25px!important}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroStore{font-size:16px}
+ html[data-nethor-platform="desktop"] #login.authDesktopRoot .authDesktopIntroLead{font-size:12px}
+}
