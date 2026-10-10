@@ -718,3 +718,159 @@ html[data-nethor-mobile-app="1"] body.agendaLayout .agendaHeader{
  backdrop-filter:none!important;
  -webkit-backdrop-filter:none!important;
 }
+
+/* ======================================================================
+   Finition chromatique Mobile — 6 ambiances, un langage visuel.
+   Contrastes, surfaces secondaires et accents oubliés des sous-pages.
+   Ne touche ni aux couleurs métier du planning (g/b/y/r), ni aux
+   notifications d'erreur, ni aux cadres avatars, ni aux décors Halloween.
+   ====================================================================== */
+:root[data-nethor-mobile-app="1"]{
+ --nmt-polish-text:#24303b;
+ --nmt-polish-muted:#677686;
+ --nmt-polish-line:#dce3eb;
+ --nmt-polish-soft:#eff2f5;
+ --nmt-polish-surface:#ffffff;
+ --nmt-polish-accent:#c75535;
+ --nmt-polish-shadow:rgba(29,44,61,.055);
+}
+:root[data-nethor-mobile-app="1"][data-theme="dark"]:not([data-nethor-mobile-theme]){
+ --nmt-polish-text:#f1f3f5;
+ --nmt-polish-muted:#b4bdc8;
+ --nmt-polish-line:#3c4650;
+ --nmt-polish-soft:#2c343c;
+ --nmt-polish-surface:#22272d;
+ --nmt-polish-accent:#ff9d79;
+ --nmt-polish-shadow:rgba(0,0,0,.20);
+}
+:root[data-nethor-mobile-app="1"][data-nethor-mobile-theme]{
+ --nmt-polish-text:var(--nmt-text);
+ --nmt-polish-muted:var(--nmt-muted);
+ --nmt-polish-line:var(--nmt-line);
+ --nmt-polish-soft:var(--nmt-soft);
+ --nmt-polish-surface:var(--nmt-surface);
+ --nmt-polish-accent:var(--nmt-accent);
+ --nmt-polish-shadow:var(--nmt-shadow);
+}
+/* Affinement discret des trois palettes permanentes, sans retoucher
+   les couleurs des postes, congés, repos, erreurs ou réussites. */
+:root[data-nethor-mobile-app="1"][data-nethor-mobile-theme="mineral"]{
+ --nmt-bg:#eef4f9;--nmt-soft:#e7f0f7;--nmt-muted:#586f82;--nmt-line:#d5e2ec
+}
+:root[data-nethor-mobile-app="1"][data-nethor-mobile-theme="sage"]{
+ --nmt-bg:#eff4f0;--nmt-soft:#e6efe8;--nmt-muted:#5d7565;--nmt-line:#d5e3d9
+}
+:root[data-nethor-mobile-app="1"][data-nethor-mobile-theme="plum"]{
+ --nmt-bg:#191724;--nmt-surface:#252338;--nmt-soft:#322d46;--nmt-muted:#c3b9d3;--nmt-line:#49415e
+}
+/* Pour Halloween, préserver le noir violet, la lune, le chat et
+   la citrouille ; n'améliorer que le contraste des textes secondaires. */
+:root[data-nethor-mobile-app="1"][data-nethor-mobile-theme="halloween"]{
+ --nmt-muted:#d0bfd4
+}
+
+/* Couleurs textuelles héritées du thème clair : accueil et menu. */
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileMenuHeader h2,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileMenuCopy strong,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileProfileCopy strong,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .mhdHero h1{
+ color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .mhdHero p,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .mhdWelcomeDate,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .mhdStatHead,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .mhdStat small,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .mhdRowCopy small,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorUserMenuView .nettoMobileMenuChevron{
+ color:var(--nmt-muted)!important
+}
+
+/* Les pages Notifications conservaient plusieurs titres noirs et
+   états interactifs orange quel que soit le thème choisi. */
+html[data-nethor-mobile-app="1"] .nethorNotificationsView :is(.npGroup,.npSentence b,.npMobileTitle h1){
+ color:var(--nmt-polish-text)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView :is(.npSentence,.npCategory,.npAge){
+ color:var(--nmt-polish-muted)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView :is(.npRowMore,.npCircleBtn,.npFilterState){
+ color:var(--nmt-polish-text)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npFilterState{
+ background:var(--nmt-polish-soft)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npFilterState.active{
+ background:var(--nmt-polish-soft)!important;
+ color:var(--nmt-polish-accent)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npRow.unread .npAge{
+ color:var(--nmt-polish-accent)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npSearch:focus{
+ border-color:var(--nmt-polish-accent)!important;
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--nmt-polish-accent) 13%,transparent)!important
+}
+html[data-nethor-mobile-app="1"] .nethorNotificationsView :is(.npTopMenu button,.npRowMenu button):hover,
+html[data-nethor-mobile-app="1"] .nethorNotificationsView .npRowMore:hover{
+ background:var(--nmt-polish-soft)!important
+}
+
+/* Profil : e-mail de récupération, choix de cadre et libellés.
+   Seules les surfaces neutres et le focus changent, jamais le cadre équipé. */
+html[data-nethor-mobile-app="1"] .nethorProfileView :is(.npvEmailFields input,.npvThemeIdentityRow,.npvFrameChoice){
+ background:var(--nmt-polish-surface)!important;
+ color:var(--nmt-polish-text)!important;
+ border-color:var(--nmt-polish-line)!important
+}
+html[data-nethor-mobile-app="1"] .nethorProfileView :is(.npvEmailFields label>span,.npvEmailFields small,.npvField label,.npvRewardGrid label span,.npvColorHelp,.npvThemeIdentityRow small,.npvFrameSectionHead small){
+ color:var(--nmt-polish-muted)!important
+}
+html[data-nethor-mobile-app="1"] .nethorProfileView .npvFrameChoice.active{
+ background:var(--nmt-polish-soft)!important;
+ border-color:var(--nmt-polish-accent)!important;
+ box-shadow:0 0 0 2px color-mix(in srgb,var(--nmt-polish-accent) 16%,transparent)!important
+}
+html[data-nethor-mobile-app="1"] .nethorProfileView .npvEmailFields input:focus{
+ border-color:var(--nmt-polish-accent)!important;
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--nmt-polish-accent) 13%,transparent)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .npvIdentityCopy span{
+ color:var(--nmt-accent)!important
+}
+
+/* Personnalisation et menu : états tactiles et éléments secondaires
+   cohérents, sans toucher aux actions dangereuses (rouges). */
+html[data-nethor-mobile-app="1"] .nsvThemes .nsvThemeLabel small{
+ color:var(--nmt-polish-muted)!important
+}
+html[data-nethor-mobile-app="1"] .nsvThemes .nsvThemeCheck{
+ border-color:var(--nmt-polish-line)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nsvThemes button.active .nsvThemeCheck{
+ background:var(--nmt-accent-strong)!important;border-color:var(--nmt-accent-strong)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorUserMenuView :is(.nettoMobileMenuRow,.nettoMobileProfileMain):active{
+ background:var(--nmt-soft)!important
+}
+/* Les loaders de chat ne doivent plus rester orange/charbon sur
+   les interfaces minérale, sauge, prune et Halloween. */
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorChatViewLoading,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorChatViewError{
+ color:var(--nmt-muted)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorChatViewLoading strong,
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorChatViewError strong{
+ color:var(--nmt-text)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorChatViewLoading span{
+ border-color:var(--nmt-line)!important;border-top-color:var(--nmt-accent)!important
+}
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme] .nethorChatViewError button{
+ background:var(--nmt-accent-strong)!important;color:var(--nmt-on-accent)!important
+}
+/* Prune : l'accent lavande clair requiert un texte sombre sur le
+   bouton du sondage ; ailleurs les boutons prune foncé restent blancs. */
+html[data-nethor-mobile-app="1"][data-nethor-mobile-theme="plum"] .nethorWeeklyPollView{
+ --nwp-accent-on:#231b33
+}
+/* L'en-tête Semaine / dates demeure sans cadre dans tous les thèmes. */
