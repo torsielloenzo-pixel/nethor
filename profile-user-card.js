@@ -28,36 +28,70 @@ function ensureStyle(){
  const link=document.createElement('link');link.rel='stylesheet';link.href='profile-user-card.css?v=1';document.head?.appendChild(link)
 }
 function historyLabel(value){
- if(!value)return'Hors ligne';
- const d=new Date(value);if(Number.isNaN(d.getTime()))return'Hors ligne';
- const now=new Date(),y=new Date(now);y.setDate(now.getDate()-1);
- const time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
- if(d.toDateString()===now.toDateString())return'En ligne aujourd’hui à '+time;
- if(d.toDateString()===y.toDateString())return'En ligne hier à '+time;
- return'En ligne le '+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' à '+time
+ const times=window.NethorConnectionTimes;
+ if(times?.relative)return times.relative(value,'activity');
+ if(!value)return'Activité non enregistrée';
+ const d=new Date(value);
+ if(!Number.isFinite(d.getTime()))return'Activité non enregistrée';
+ return'Dernière activité le '+d.toLocaleString('fr-FR',{
+  timeZone:'Europe/Paris',day:'2-digit',month:'2-digit',year:'numeric',
+  hour:'2-digit',minute:'2-digit'
+ })
+}
+function dateStamp(value){
+ const time=window.NethorConnectionTimes;
+ if(time?.stamp)return time.stamp(value);
+ if(!value)return'Date non disponible';
+ const d=new Date(value);
+ return Number.isFinite(d.getTime())?
+  d.toLocaleString('fr-FR',{timeZone:'Europe/Paris',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):
+  'Date non disponible'
+}
+async function connectionRow(userId,{force=false}={}){
+ const a=api(),shared=window.NethorConnectionTimes;
+ if(!userId||!a.client)return null;
+ try{
+  if(shared?.load){
+   const rows=await shared.load(a.client,{force});
+   return rows.find(x=>x.user_id===userId)||null
+  }
+ }catch(e){console.warn('Fiche utilisateur : historique de connexion indisponible',e)}
+ // Offline/legacy fallback does not invent a login timestamp from last activity.
+ try{
+  const {data,error}=await a.client.from('chat_presence_history')
+   .select('last_seen_at').eq('user_id',userId).maybeSingle();
+  if(!error)return data||null
+ }catch(_){}
+ return null
 }
 async function presenceLabel(userId){
- const a=api();
  if(!userId)return'Hors ligne';
- if(a.onlineIds?.has?.(userId))return'En ligne';
- try{
-  const {data,error}=await a.client?.from('chat_presence_history').select('last_seen_at').eq('user_id',userId).maybeSingle();
-  if(!error&&data?.last_seen_at)return historyLabel(data.last_seen_at)
- }catch(_){}
- return'Hors ligne'
+ if(api().onlineIds?.has?.(userId))return'En ligne';
+ const row=await connectionRow(userId);
+ return row?.last_seen_at?historyLabel(row.last_seen_at):'Hors ligne'
 }
 function close(){
  const bg=document.getElementById('nettoUserCardBackdrop');bg?.classList.add('hidden');
  active={user:null,opts:null}
 }
 async function refreshPresence(){
- const user=active.user,opts=active.opts;if(!user)return;
- const value=typeof opts?.presenceLabel==='function'?opts.presenceLabel(user):opts?.presenceLabel;
- const label=value||await presenceLabel(user.id);
+ const user=active.user,opts=active.opts;
+ if(!user)return;
+ const current=api();
+ const [row,override]=await Promise.all([
+  connectionRow(user.id,{force:true}),
+  Promise.resolve(typeof opts?.presenceLabel==='function'?opts.presenceLabel(user):opts?.presenceLabel).catch(()=>null)
+ ]);
  if(active.user?.id!==user.id)return;
- const strong=document.getElementById('nettoUserCardPresenceValue'),dot=document.getElementById('nettoUserCardPresenceDot');
- if(strong?.lastChild)strong.lastChild.textContent=label;
- if(dot)dot.classList.toggle('online',api().onlineIds?.has?.(user.id)||/^En ligne$/.test(label))
+ const online=current.onlineIds?.has?.(user.id)||override==='En ligne';
+ const presence=document.getElementById('nettoUserCardPresenceValue'),
+  dot=document.getElementById('nettoUserCardPresenceDot');
+ if(presence?.lastChild)presence.lastChild.textContent=online?'En ligne':'Hors ligne';
+ if(dot)dot.classList.toggle('online',Boolean(online));
+ const login=document.getElementById('nettoUserCardLastLogin'),
+  activity=document.getElementById('nettoUserCardLastActivity');
+ if(login)login.textContent=row?.last_login_at?dateStamp(row.last_login_at):'Non enregistrée';
+ if(activity)activity.textContent=row?.last_seen_at?dateStamp(row.last_seen_at):'Non enregistrée'
 }
 function open(user,opts={}){
  if(!user?.id)return;
@@ -75,7 +109,7 @@ function open(user,opts={}){
  active={user,opts};
  if(!box)return;
  box.innerHTML='<div class="nettoUserCardHero"><div id="nettoUserCardAvatar" class="nettoUserCardAvatar"></div><div><h3 id="nettoUserCardName">'+esc(name)+'</h3></div></div>'+
- '<div class="nettoUserCardFields"><div class="nettoUserCardField"><small>Rôle</small><strong>'+esc(a.roleLabel?.(user.role)||user.role||'Compte')+'</strong></div><div class="nettoUserCardField"><small>Présence</small><strong id="nettoUserCardPresenceValue"><i id="nettoUserCardPresenceDot" class="nettoUserPresenceDot"></i><span>Chargement…</span></strong></div></div>'+
+ '<div class="nettoUserCardFields"><div class="nettoUserCardField"><small>Rôle</small><strong>'+esc(a.roleLabel?.(user.role)||user.role||'Compte')+'</strong></div><div class="nettoUserCardField"><small>Présence</small><strong id="nettoUserCardPresenceValue"><i id="nettoUserCardPresenceDot" class="nettoUserPresenceDot"></i><span>Chargement…</span></strong></div><div class="nettoUserCardField"><small>Dernière connexion · Paris</small><strong id="nettoUserCardLastLogin">Chargement…</strong></div><div class="nettoUserCardField"><small>Dernière activité · Paris</small><strong id="nettoUserCardLastActivity">Chargement…</strong></div></div>'+
  '<button id="nettoUserCardMessage" class="nettoUserCardMessage" type="button" '+(self?'disabled aria-disabled="true" title="Votre propre profil"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3l4-3h9a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/></svg>Envoyer un message</button>';
  const avatar=document.getElementById('nettoUserCardAvatar');
  a.paintAvatar?.(avatar,user.avatar_url||user.avatarUrl||null,name,user.profile_color,user.avatar_frame);
