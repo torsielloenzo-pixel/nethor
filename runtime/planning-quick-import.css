@@ -11,10 +11,12 @@
 .nethorHomeImportStatus[data-kind="ok"]{color:#167846;background:#edf9f1;border-color:#ccebd8}
 .nethorHomeImportStatus[data-kind="warn"]{color:#90620b;background:#fff9e9;border-color:#f4dfae}
 .nethorHomeImportStatus[data-kind="error"]{color:#b13f35;background:#fff3f1;border-color:#f2d4d1}
-.nethorHomeImportEngine{height:2px;overflow:hidden}
-.nethorHomeImportIframe{display:block;width:100%;height:2px;border:0;background:transparent;pointer-events:none}
+.nethorHomeImportEngine{height:0;overflow:hidden}
+.nethorHomeImportIframe{display:block;width:100%;height:65px;border:0;background:transparent;pointer-events:none}
+.nethorHomeImportBackdrop.is-engine-ready .nethorHomeImportEngine{height:65px}
+.nethorHomeImportBackdrop.is-engine-ready .nethorHomeImportStatus{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;border:0!important;overflow:hidden!important;clip-path:inset(50%)}
 .nethorHomeImportButtons{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:18px}
-.nethorHomeImportButtons button{border:1px solid #d9e1ea;border-radius:10px;padding:10px 13px;font:700 12px/1.2 inherit;cursor:pointer}
+.nethorHomeImportButtons button{border:1px solid #d9e1ea;border-radius:10px;padding:10px 13px;font:700 12px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
 .nethorHomeImportAgain{background:#ff5a2a;color:#fff;border-color:#ff5a2a!important}
 .nethorHomeImportClose{background:#f5f6f8;color:#283344}
 .nethorHomeImportButtons button:disabled{opacity:.45;cursor:progress}
