@@ -1,18 +1,17 @@
 {
-  "version": 428,
-  "label": "v1.46.64",
+  "version": 429,
+  "label": "v1.46.65",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Mobile · Animations de connexion et d’ouverture séparées",
-  "message": "L'ouverture se joue uniquement pour une session déjà connectée ; après une connexion réussie, seule l'animation de connexion est jouée.",
-  "published_at": "2026-10-10T13:43:12.036Z",
+  "title": "Planning Mobile · En-tête de semaine harmonisé",
+  "message": "Le titre « Semaine » et sa plage de dates s’affichent directement sur le fond du thème, sans cadre de couleur différente.",
+  "published_at": "2026-10-10T14:20:56.348Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Session existante : animation d'ouverture après vérification du compte.",
-    "Aucune session : écran de connexion direct, sans animation d'ouverture.",
-    "Connexion réussie : une seule animation de bienvenue avant l'accueil, sans splash supplémentaire.",
-    "Ancien marqueur permanent remplacé par un indicateur consommé à la première redirection.",
-    "Aucune modification au Desktop ni aux données du magasin."
+    "Suppression du fond, de la bordure et de l’ombre derrière le titre de semaine sur Mobile.",
+    "Conservation des textes, dates et styles de lisibilité adaptés aux thèmes.",
+    "Compatible avec les thèmes clair, sombre, bleu minéral, sauge, prune nocturne et Halloween.",
+    "Aucune modification du planning, des couleurs horaires ni de Desktop."
   ]
 }
