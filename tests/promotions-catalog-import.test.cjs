@@ -90,7 +90,7 @@ test('Dépôt PDF : aucune validation, aucun formulaire date et aucun clic pour 
  assert.match(page,/async function importAutomatic\(file\)/);
  assert.match(page,/addEventListener\('change',e=>\{if\(!state.busy\)importAutomatic\(e.target.files\?\.\[0\]\)\}/);
  assert.match(page,/db\.rpc\('import_promotion_catalog_auto'/);
- assert.doesNotMatch(page.slice(page.indexOf('async function importAutomatic('),page.indexOf('async function loadCatalogs(')),/window\\.confirm\\(/);
+ assert.ok(!page.slice(page.indexOf('async function importAutomatic('),page.indexOf('function collapseCatalog(')).includes('window.confirm('),'L’import ne doit exiger aucune confirmation');
  assert.doesNotMatch(page,/reviewed_pages/);
  assert.match(page,/extractMetadata\(pages,file\.name\)/);
  assert.match(page,/!meta\)throw new Error/);
