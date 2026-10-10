@@ -1,17 +1,17 @@
 {
-  "version": 446,
-  "label": "v1.46.71",
+  "version": 447,
+  "label": "v1.46.72",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Typographie harmonisée",
-  "message": "La page Promotions sur ordinateur reprend désormais la police et l’espacement typographique de l’accueil, sans modifier les tailles, les composants ni la version mobile.",
-  "published_at": "2026-10-10T22:56:45.800Z",
+  "title": "Navigation desktop · Police uniforme",
+  "message": "Les intitulés de la barre latérale utilisent désormais la police de l’accueil sur toutes les pages desktop, en mode complet et compact.",
+  "published_at": "2026-10-10T23:02:29.956Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Police Inter / Segoe UI alignée sur l’accueil desktop.",
-    "Titres, textes, boutons, tableaux et champs harmonisés.",
-    "Aucun changement sur mobile ni sur les autres pages.",
-    "Cache PWA actualisé."
+    "Police Inter / Segoe UI et espacement typographique identiques à l’accueil.",
+    "Application au composant commun de la barre latérale sur toutes les pages Desktop.",
+    "Logos, icônes, couleurs, dimensions et version mobile conservés.",
+    "Ressources CSS et JavaScript renouvelées dans le cache PWA."
   ]
 }
