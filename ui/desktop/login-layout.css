@@ -29,7 +29,7 @@ html[data-nethor-platform="desktop"] .authDesktopForm.loginCard{
 }
 html[data-nethor-platform="desktop"] .authDesktopBrand{display:flex;flex-direction:column;align-items:center;text-align:center;margin:0 0 30px}
 html[data-nethor-platform="desktop"] .authDesktopLogo{
- width:116px;height:116px;border-radius:31px;display:block;object-fit:contain;box-shadow:0 15px 36px rgba(33,25,18,.17)
+ width:116px;height:116px;display:block;object-fit:contain;border:0;border-radius:0;background:transparent;box-shadow:none
 }
 html[data-nethor-platform="desktop"] .authDesktopName{
  margin-top:13px;color:var(--auth-text)!important;font-size:45px;line-height:1;font-weight:950;letter-spacing:-2px;text-transform:lowercase
@@ -98,7 +98,7 @@ html[data-nethor-platform="desktop"] .authDesktopForm .loginFoot{text-align:cent
 
 @media(max-height:720px){
  html[data-nethor-platform="desktop"] .authDesktopForm.loginCard{padding-top:28px;padding-bottom:22px}
- html[data-nethor-platform="desktop"] .authDesktopLogo{width:88px;height:88px;border-radius:25px}
+ html[data-nethor-platform="desktop"] .authDesktopLogo{width:88px;height:88px}
  html[data-nethor-platform="desktop"] .authDesktopName{font-size:38px;margin-top:9px}
  html[data-nethor-platform="desktop"] .authDesktopBrand{margin-bottom:22px}
 }
