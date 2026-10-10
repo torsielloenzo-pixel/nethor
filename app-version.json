@@ -1,20 +1,17 @@
 {
-  "version": 445,
-  "label": "v1.46.70",
+  "version": 446,
+  "label": "v1.46.71",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Gestion et correction des références",
-  "message": "Catalogues repliables et supprimables ; validation, correction et refus des produits avec apprentissage contrôlé pour les futurs imports.",
-  "published_at": "2026-10-10T22:35:01.131Z",
+  "title": "Promotions · Typographie harmonisée",
+  "message": "La page Promotions sur ordinateur reprend désormais la police et l’espacement typographique de l’accueil, sans modifier les tailles, les composants ni la version mobile.",
+  "published_at": "2026-10-10T22:56:45.800Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Un clic sur Promotions Netto - Semaine XX permet désormais de déplier ou replier ses références.",
-    "Administrateur et Point de vente peuvent supprimer un catalogue avec confirmation, ses produits et le PDF privé associé.",
-    "Chaque fiche promotionnelle peut être validée, retravaillée (nom, rayon, poids/prix, unité, détails) ou refusée.",
-    "Les fiches refusées sont masquées par défaut, mais consultables via Afficher les produits refusés.",
-    "Les corrections et refus sont historisés séparément et conservés même si le catalogue est supprimé.",
-    "À l'import suivant, Nethor réutilise prudemment les noms/rayons corrigés et écarte les faux positifs exacts, sans reprendre d'anciens prix.",
-    "Rôles et permissions vérifiés côté serveur, cache PWA incrémenté."
+    "Police Inter / Segoe UI alignée sur l’accueil desktop.",
+    "Titres, textes, boutons, tableaux et champs harmonisés.",
+    "Aucun changement sur mobile ni sur les autres pages.",
+    "Cache PWA actualisé."
   ]
 }
