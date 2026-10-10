@@ -81,8 +81,8 @@ test('Produits sans prix, pages sans texte et passages non reconnus restent diag
  assert.equal(r.products[0].auto_uncertain,true);
  assert.equal(r.reports[1].hasText,false);
  assert.ok(r.reports[0].unmatched>0);
- assert.match(page,/textless_pages/);
- assert.match(page,/aucune référence fictive n’est créée/);
+ assert.match(page,/NethorPromotionVision\.analyze/);
+ assert.match(page,/Clé OPENAI_API_KEY/);
 });
 test('Dépôt PDF : aucune validation, aucun formulaire date et aucun clic pour publier',()=>{
  assert.match(html,/Importer un catalogue PDF|Import automatique du catalogue/);
@@ -92,8 +92,8 @@ test('Dépôt PDF : aucune validation, aucun formulaire date et aucun clic pour 
  assert.match(page,/db\.rpc\('import_promotion_catalog_auto'/);
  assert.ok(!page.slice(page.indexOf('async function importAutomatic('),page.indexOf('function collapseCatalog(')).includes('window.confirm('),'L’import ne doit exiger aucune confirmation');
  assert.doesNotMatch(page,/reviewed_pages/);
- assert.match(page,/extractMetadata\(pages,file\.name\)/);
- assert.match(page,/!meta\)throw new Error/);
+ assert.match(page,/NethorPromotionVision\.analyze/);
+ assert.match(page,/const \{meta,reports,diagnostics\}=analysis/);
  assert.match(page,/\.upload\(storagePath,file/);
 });
 test('Catégories, années ISO et contrôles côté serveur',()=>{
