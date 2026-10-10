@@ -87,7 +87,7 @@ function frameContentCSS(){
   '#importPanel:not(.hidden){display:block!important;width:100%!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}',
   '#importState{display:block!important;margin:0!important;padding:8px 0!important;background:transparent!important;border:0!important;min-height:26px!important;font:600 12px/1.35 system-ui,sans-serif!important;white-space:normal!important}',
   '#planningToast{display:none!important}'
- ].join('\\n');
+ ].join('\n');
 }
 function injectFrameCSS(){
  if(!frame)return;
@@ -103,6 +103,7 @@ function injectFrameCSS(){
 function connectStatus(){
  const d=frame?.contentDocument,source=d?.getElementById('importState');
  if(!source)return;
+ modal?.classList.add('is-engine-ready');
  observeState?.disconnect();
  const update=()=>{
   const label=(source.textContent||'').trim();
@@ -176,6 +177,7 @@ async function importFiles(files){
   else setStatus('Aucun planning importé.', 'warn');
  }catch(e){
   console.error('Raccourci import Excel :',e);
+  modal?.classList.remove('is-engine-ready');
   setStatus(e?.message||'Impossible de lancer l’import Excel.', 'error');
  }finally{setBusy(false)}
 }
