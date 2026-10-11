@@ -264,3 +264,19 @@ html[data-nethor-platform="desktop"] .promoPage :is(button,input,select,textarea
 .promoReviewReviewDate,.promoReviewFootnote{font-size:10px;color:var(--pm-muted);line-height:1.55;margin:12px 0 0}
 @media(max-width:1170px){.promoReviewColumns{grid-template-columns:1fr}.promoReviewInspector{position:static}.promoReviewItems{max-height:390px}}
 @media(max-width:600px){.promoReviewToolbarNew{grid-template-columns:1fr}.promoReviewFacts{grid-template-columns:1fr}.promoReviewEditFields{grid-template-columns:1fr}.promoReviewEditFields label{grid-column:1/-1}.promoReviewSource{max-height:320px}.promoReviewHeaderActions{width:100%}}
+
+
+/* Catalogue S41 : reconnaissance des opérations générales et visuels d'origine. */
+.promoDraftOfferOverview{border:1px solid var(--pm-line);border-radius:11px;padding:12px 15px;margin:14px 0;background:var(--pm-surface)}
+.promoDraftOfferOverview>strong{font-size:12px}
+.promoDraftOfferOverview p{font-size:11px;margin:7px 0;line-height:1.55}
+.promoDraftOfferOverview ul{padding-left:18px;margin:9px 0 0;display:grid;gap:6px;font-size:11px}
+.promoDraftOfferOverview li small{color:var(--pm-muted);margin-left:6px}
+.promoReviewReliability{margin-top:13px;padding:11px 13px;border:1px solid var(--pm-line);border-radius:9px;background:var(--pm-soft)}
+.promoReviewReliability strong{font-size:11px}
+.promoReviewReliability p{margin:5px 0 0;font-size:11px;line-height:1.5;color:var(--pm-muted)}
+.promoReviewFullPage{margin-top:9px;border-top:1px solid var(--pm-line);padding-top:8px;min-width:0}
+.promoReviewFullPage summary{cursor:pointer;font-size:11px;font-weight:800;color:var(--pm-ink);padding:7px}
+.promoReviewFullPage canvas{display:block;width:100%;height:auto;margin-top:8px}
+.promoReviewSourceCanvas{margin:0 auto;max-width:100%}
+.promoReviewSourceCanvas canvas{display:block;width:100%;height:auto;border-radius:6px}
