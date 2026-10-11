@@ -114,7 +114,7 @@ test('Serveur autorisé, quota SQL, clé uniquement en secret, aucune donnée IA
 });
 test('PWA : nouvelle feuille de route et cache synchronisé',()=>{
  const sw=read('sw.js'),meta=JSON.parse(read('app-version.json'));
- assert.match(sw,/\.\/runtime\/promotions-local-engine\.js\?v=1/);
+ assert.match(sw,/\.\/runtime\/promotions-local-engine\.js\?v=2/);
  assert.match(sw,/\.\/runtime\/promotions-page\.js\?v=10/);
  assert.equal(Number(sw.match(/APP_VERSION=(\d+)/)[1]),meta.version);
  assert.equal(Number(sw.match(/netto-tools-v(\d+)/)[1]),meta.version);
@@ -170,7 +170,7 @@ test('Sécurité : le nouveau contrôle valide le payload avant le quota payant'
  const page=read('runtime/promotions-page.js'),html=read('promotions.html');
  assert.doesNotMatch(page,/promoVisionRetry|NethorPromotionVision\.analyze/);
  assert.doesNotMatch(html,/promoVisionUnavailable/);
- assert.match(html,/promotions-local-engine.js\?v=1/);
+ assert.match(html,/promotions-local-engine.js\?v=2/);
  assert.match(page,/NethorPromotionsLocal\.analyze/);
  assert.match(html,/src="runtime\/promotions-ocr\.js/);
 });
