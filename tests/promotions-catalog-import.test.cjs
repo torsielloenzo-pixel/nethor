@@ -113,8 +113,8 @@ test('Catégories, années ISO et contrôles côté serveur',()=>{
  assert.match(sql,/p\.role in \('admin','role_point-de-vente'\)/);
  assert.match(sql,/grant execute on function public\.import_promotion_catalog_auto/);
  assert.match(page,/file_sha256',hash/);
- assert.match(page,/createSignedUrl\(/);
- assert.match(page,/promoCategoryFilter/);
+ assert.match(read('runtime/promotions-review-workshop.js'),/createSignedUrl\(/);
+ assert.match(read('runtime/promotions-review-workshop.js'),/promoReviewCategory/);
  assert.match(shell,/promotions:\{label:'Promotions',url:'promotions\.html',icon:'promotions'/);
 });
 test('Cache PWA et scripts de promotions actualisés',()=>{

@@ -24,16 +24,21 @@ test('Plier et déplier un catalogue sans perdre la possibilité de le rouvrir',
  assert.match(js,/data-promo-delete-catalog/);
  assert.match(js,/promoCatalogList'\)\.addEventListener\('click'/);
 });
-test('Valider / Retravailler / Refuser depuis chaque référence',()=>{
- for(const action of ['validated','reworked','rejected'])
-  assert.ok(js.includes("data-promo-action=\""+action+"\"")||js.includes("action==='"+action+"'"));
+test('Valider / Retravailler / Refuser depuis l’atelier dédié',()=>{
+ const workshop=read('runtime/promotions-review-workshop.js');
+ assert.match(js,/NethorPromotionsReview\.mount/);
+ for(const action of ['validated','rejected'])
+  assert.ok(workshop.includes('data-review-action="'+action+'"'));
+ assert.match(workshop,/act\('reworked',fields\)/);
  for(const field of ['product_name','category','technical_details','price_or_benefit','price_unit','additional_info'])
-  assert.ok(js.includes('name="'+field+'"'),'Champ absent : '+field);
- assert.match(js,/db\.rpc\('review_promotion_product'/);
- assert.match(js,/promoShowRejected/);
- assert.match(js,/p\.review_status!=='rejected'\|\|showRejected/);
- assert.match(js,/reviewProduct\(product\.id,'reworked',fields\)/);
- assert.match(js,/data-promo-action="edit"/);
+  assert.ok(workshop.includes('name="'+field+'"'),'Champ absent : '+field);
+ assert.match(workshop,/db\.rpc\('review_promotion_product'/);
+ assert.match(workshop,/db\.storage\.from\('promotion-pdfs'\)\.createSignedUrl/);
+ assert.match(workshop,/data-review-filter/);
+ assert.match(workshop,/let filter=canManage&&counts\(products\)\.pending>0\?'pending':'all'/);
+ assert.match(workshop,/p\.review_status\|\|'pending'/);
+ assert.match(workshop,/act\('reworked',fields\)/);
+ assert.match(workshop,/data-review-edit/);
 });
 test('Effacement catalogue avec confirmation et nettoyage du PDF privé',()=>{
  assert.match(js,/window\.confirm\('Supprimer définitivement/);

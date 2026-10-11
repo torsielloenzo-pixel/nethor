@@ -200,3 +200,67 @@ html[data-nethor-platform="desktop"] .promoPage :is(button,input,select,textarea
 .promoDraftList b{white-space:nowrap;color:var(--pm-ink)}
 .promoDraftActions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
 @media(max-width:650px){.promoDraftActions>button{flex:1}.promoDraftItems{padding:11px}}
+
+
+/* Étape 3 — atelier de contrôle des références promotionnelles. */
+.promoReviewWorkspace{min-width:0}
+.promoReviewHeader{display:flex;justify-content:space-between;align-items:start;gap:17px;flex-wrap:wrap;margin-bottom:18px}
+.promoReviewHeader h3{font-size:21px;line-height:1.3;margin:5px 0;color:var(--pm-ink)}
+.promoReviewHeader p{color:var(--pm-muted);font-size:12px;margin:5px 0 0}
+.promoReviewHeaderActions{display:flex;gap:8px;flex-wrap:wrap}
+.promoReviewProgress{background:var(--pm-soft);border:1px solid var(--pm-line);border-radius:13px;padding:14px;margin-bottom:15px}
+.promoReviewProgressInfo{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px}
+.promoReviewProgressInfo span{color:var(--pm-muted)}
+.promoReviewProgressBar{height:7px;border-radius:40px;background:var(--pm-line);overflow:hidden;margin-top:11px}
+.promoReviewProgressBar span{display:block;height:100%;width:0;background:var(--pm-green);transition:width .18s ease}
+.promoReviewTabs{display:flex;gap:6px;flex-wrap:wrap;margin:13px 0}
+.promoReviewTabs button{border:1px solid var(--pm-line);background:var(--pm-surface);color:var(--pm-muted);padding:10px 12px;border-radius:10px;font-size:11px;font-weight:800}
+.promoReviewTabs button[aria-pressed="true"]{background:var(--pm-soft);border-color:var(--pm-accent);color:var(--pm-ink)}
+.promoReviewTabs button span{display:inline-block;margin-left:4px;opacity:.75}
+.promoReviewToolbarNew{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,255px);gap:9px;margin-bottom:14px}
+.promoReviewColumns{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(360px,1.15fr);gap:16px;align-items:start}
+.promoReviewItems{min-height:240px;max-height:745px;overflow:auto;border:1px solid var(--pm-line);border-radius:14px;background:var(--pm-surface);padding:8px;display:grid;align-content:start;gap:7px}
+.promoReviewItem{display:grid;gap:6px;width:100%;text-align:left!important;border:1px solid var(--pm-line);border-radius:11px;background:var(--pm-surface);padding:13px;color:var(--pm-ink)}
+.promoReviewItem:hover{background:var(--pm-soft)}
+.promoReviewItem.isSelected{border-color:var(--pm-accent);box-shadow:0 0 0 1px var(--pm-accent);background:var(--pm-soft)}
+.promoReviewItemTitle{font-size:12.5px;font-weight:850;line-height:1.4}
+.promoReviewItemSub{font-size:10.5px;color:var(--pm-muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.promoReviewItemBottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px}
+.promoReviewItemBottom strong{color:var(--pm-ink);font-size:12px}
+.promoReviewItemBottom small{margin-left:auto;color:var(--pm-muted)}
+.promoReviewEmpty{padding:22px 13px}
+.promoReviewInspector{border:1px solid var(--pm-line);border-radius:14px;padding:17px;background:var(--pm-surface);min-width:0;position:sticky;top:18px}
+.promoReviewInspectorHead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.promoReviewInspector h4{font-size:17px;line-height:1.35;margin:11px 0 15px;color:var(--pm-ink);overflow-wrap:anywhere}
+.promoReviewFacts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.promoReviewFacts>div{border:1px solid var(--pm-line);border-radius:10px;padding:11px;display:grid;gap:5px;min-width:0}
+.promoReviewFacts>div:first-child{background:var(--pm-soft)}
+.promoReviewFacts small{font-size:10px;color:var(--pm-muted)}
+.promoReviewFacts strong{font-size:14px;overflow-wrap:anywhere}
+.promoReviewFacts span{font-size:11.5px;overflow-wrap:anywhere;line-height:1.45}
+.promoReviewEvidence{border-left:3px solid var(--pm-accent);padding:8px 11px;margin:15px 0;background:var(--pm-soft);border-radius:0 8px 8px 0}
+.promoReviewEvidence strong{font-size:10.5px}
+.promoReviewEvidence p{font-size:11px;color:var(--pm-muted);line-height:1.55;overflow-wrap:anywhere;margin:5px 0 0}
+.promoReviewSourceHead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:13px 0 8px}
+.promoReviewSourceHead strong{font-size:12px}
+.promoReviewTextButton{font-size:11px;border:0;background:transparent;color:var(--pm-accent);font-weight:750}
+.promoReviewSource{background:var(--pm-soft);border:1px solid var(--pm-line);border-radius:11px;padding:10px;min-height:90px;max-height:410px;overflow:auto;display:grid;align-content:start;gap:8px}
+.promoReviewSource>span,.promoReviewSource>small{font-size:10.5px;color:var(--pm-muted);line-height:1.55}
+.promoReviewSourceCanvas{position:relative;width:100%;max-width:580px;line-height:0;margin-inline:auto}
+.promoReviewSourceCanvas canvas{display:block;width:100%;height:auto}
+.promoReviewSourceMarker{position:absolute;border:3px solid #e6a800;background:rgba(255,220,0,.13);box-shadow:0 0 0 1px rgba(0,0,0,.2);pointer-events:none}
+.promoReviewDecision{margin-top:16px}
+.promoReviewDecisionButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.promoReviewDecisionButtons button{padding:10px 7px;font-size:11px;font-weight:850;border:1px solid var(--pm-line);border-radius:10px;min-width:0}
+.promoReviewDecisionButtons .promoReviewValidate{color:#157247;border-color:#9bcfb2;background:#e8f8ee}
+.promoReviewDecisionButtons .promoReviewEdit{color:var(--pm-ink);background:var(--pm-soft)}
+.promoReviewDecisionButtons .promoReviewReject{color:#b53530;border-color:#dfb5b2;background:#fff0ef}
+.promoReviewEditFields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.promoReviewEditFields>p{grid-column:1/-1;margin:0 0 4px}
+.promoReviewEditFields label{font-size:11px;color:var(--pm-muted);font-weight:800;display:grid;gap:6px}
+.promoReviewEditFields label:nth-of-type(1),.promoReviewEditFields label:nth-of-type(5),.promoReviewEditFields label:nth-of-type(6){grid-column:1/-1}
+.promoReviewEditFields textarea{min-height:58px;resize:vertical}
+.promoReviewEditActions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.promoReviewReviewDate,.promoReviewFootnote{font-size:10px;color:var(--pm-muted);line-height:1.55;margin:12px 0 0}
+@media(max-width:1170px){.promoReviewColumns{grid-template-columns:1fr}.promoReviewInspector{position:static}.promoReviewItems{max-height:390px}}
+@media(max-width:600px){.promoReviewToolbarNew{grid-template-columns:1fr}.promoReviewFacts{grid-template-columns:1fr}.promoReviewEditFields{grid-template-columns:1fr}.promoReviewEditFields label{grid-column:1/-1}.promoReviewSource{max-height:320px}.promoReviewHeaderActions{width:100%}}
