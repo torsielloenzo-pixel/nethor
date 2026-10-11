@@ -1,16 +1,18 @@
 {
-  "version": 451,
-  "label": "v1.46.75",
+  "version": 452,
+  "label": "v1.46.76",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Sélecteur PDF stabilisé",
-  "message": "Le sélecteur de catalogue ne se relance plus sur son propre événement.",
-  "published_at": "2026-10-11T10:38:37.430Z",
+  "title": "Promotions · Atelier de validation des produits",
+  "message": "Vérifie les références avec leur page PDF, corrige les erreurs et suis les produits contrôlés avant préparation de la semaine.",
+  "published_at": "2026-10-11T10:48:55.723Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Correction du clic et du glisser-déposer PDF pour éviter l'ouverture récursive du sélecteur.",
-    "Le moteur de lecture PDF locale reste gratuit, avec dates confirmées avant enregistrement.",
-    "Tous les produits restent en attente de contrôle avant une future checklist."
+    "Atelier desktop à deux colonnes : produits et fiche source du catalogue.",
+    "Filtres À vérifier, Validés, Retravaillés, Refusés et Tous avec progression.",
+    "Aperçu du PDF privé pour les rôles autorisés, avec surlignage du bloc lorsqu'il existe.",
+    "Valider, Retravailler et Refuser via la fonction Supabase sécurisée déjà en place.",
+    "Une fiche contrôlée n'est pas automatiquement ajoutée à la checklist mobile."
   ]
 }
