@@ -1,18 +1,18 @@
 {
-  "version": 452,
-  "label": "v1.46.76",
+  "version": 453,
+  "label": "v1.46.77",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Atelier de validation des produits",
-  "message": "Vérifie les références avec leur page PDF, corrige les erreurs et suis les produits contrôlés avant préparation de la semaine.",
-  "published_at": "2026-10-11T10:48:55.723Z",
+  "title": "Promotions · Extraction ciblée depuis le prospectus",
+  "message": "Les encadrés produits, les conditions des offres générales et les périodes spécifiques sont mieux distingués. Consulte le recadrage original de chaque encadré.",
+  "published_at": "2026-10-11T11:43:05.969Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Atelier desktop à deux colonnes : produits et fiche source du catalogue.",
-    "Filtres À vérifier, Validés, Retravaillés, Refusés et Tous avec progression.",
-    "Aperçu du PDF privé pour les rôles autorisés, avec surlignage du bloc lorsqu'il existe.",
-    "Valider, Retravailler et Refuser via la fonction Supabase sécurisée déjà en place.",
-    "Une fiche contrôlée n'est pas automatiquement ajoutée à la checklist mobile."
+    "Les fiches conservent les coordonnées du bloc PDF, la taille/format, le type d'offre et la validité spécifique quand détectée.",
+    "Les promotions de marque ou de rayon entier sont signalées à part, sans être inventées comme produits.",
+    "Dans l'atelier de vérification, le recadrage original de l'encadré remplace la page entière par défaut, avec possibilité de consulter l'ensemble de la page.",
+    "Les produits techniquement lisibles sont distingués des cas incertains, sans validation ou installation automatique.",
+    "Aucun code EAN13, Mercalys ou appel à une API IA payante."
   ]
 }
