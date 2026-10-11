@@ -82,7 +82,7 @@ test('Produits sans prix, pages sans texte et passages non reconnus restent diag
  assert.equal(r.reports[1].hasText,false);
  assert.ok(r.reports[0].unmatched>0);
  assert.match(page,/NethorPromotionsLocal\.analyze/);
- assert.match(page,/OPENAI_API_KEY/);
+ assert.doesNotMatch(page,/OPENAI_API_KEY/);
 });
 test('Dépôt PDF local : aperçu, contrôle des dates et enregistrement différé',()=>{
  assert.match(html,/id="promoImportReview"/);
