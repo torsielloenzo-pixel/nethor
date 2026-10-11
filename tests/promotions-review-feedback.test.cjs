@@ -27,9 +27,9 @@ test('Plier et déplier un catalogue sans perdre la possibilité de le rouvrir',
 test('Valider / Retravailler / Refuser depuis l’atelier dédié',()=>{
  const workshop=read('runtime/promotions-review-workshop.js');
  assert.match(js,/NethorPromotionsReview\.mount/);
- for(const action of ['validated','reworked','rejected'])
-  assert.ok(workshop.includes("data-review-action=\""+action+"\"")||
-    workshop.includes("data-review-action=\""+action+"'"));
+ for(const action of ['validated','rejected'])
+  assert.ok(workshop.includes('data-review-action="'+action+'"'));
+ assert.match(workshop,/act\('reworked',fields\)/);
  for(const field of ['product_name','category','technical_details','price_or_benefit','price_unit','additional_info'])
   assert.ok(workshop.includes('name="'+field+'"'),'Champ absent : '+field);
  assert.match(workshop,/db\.rpc\('review_promotion_product'/);
