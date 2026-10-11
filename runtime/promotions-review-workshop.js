@@ -241,9 +241,9 @@ function mount({detail,cat,rows,db,canManage=false,pdfJs,notify,onCollapse}){
     'Fiche corrigée et correction enregistrée.':'Produit refusé et conservé dans l’historique.','ok');
    const currentList=filterProducts(products,{status:filter,query,category});
    if(!currentList.some(x=>x.id===p.id))selectedId=currentList[0]?.id||null;
-   updateCounters();listItems();renderInspect()
-  }catch(e){notify('Contrôle non enregistré : '+String(e?.message||e),'error');renderInspect()}
-  finally{busy=false}
+   updateCounters();listItems()
+  }catch(e){notify('Contrôle non enregistré : '+String(e?.message||e),'error')}
+  finally{busy=false;if(!destroyed)renderInspect()}
  }
  function redraw(){
   updateCounters();listItems();renderInspect()
