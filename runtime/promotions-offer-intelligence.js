@@ -161,9 +161,11 @@ function normalizeProduct(product,{lines,core,sections,dates,meta}){
 function enhancePage({products,lines,page,core,meta}){
  const sections=pageSections(lines),dates=pageDateRules(lines,core);
  const mapped=(products||[]).map(p=>normalizeProduct(p,{lines,core,sections,dates,meta}));
+ const globalCandidates=mapped.filter(p=>p.source_block.source_kind==='general_candidate')
+  .map(p=>({title:p.product_name,scope:'general',page,requires_scope_check:true}));
  return{
-  products:mapped,
-  general_offers:detectGeneralOffers(lines,page),
+  products:mapped.filter(p=>p.source_block.source_kind==='product'),
+  general_offers:[...detectGeneralOffers(lines,page),...globalCandidates],
   section_date_rules:dates,
   section_names:sections.map(s=>s.name),
   page_warnings:dates.length?['Dates spécifiques relevées sur la page '+page]:[]
