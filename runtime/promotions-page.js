@@ -63,12 +63,14 @@ async function checkVisionReady(){
  const {data,error}=await db.functions.invoke('promotions-vision',{body:{action:'status'}});
  if(error||!data?.ready){
   state.visionReady=false;
+  $('promoVisionUnavailable').hidden=false;
   $('promoDrop').classList.add('disabled');
   $('promoDrop').setAttribute('aria-disabled','true');
   notify('Import IA non disponible : ajoute OPENAI_API_KEY dans les secrets des Edge Functions Supabase. Les catalogues existants restent accessibles.','error');
   return false
  }
- state.visionReady=true;$('promoDrop').classList.remove('disabled');
+ state.visionReady=true;$('promoVisionUnavailable').hidden=true;
+ $('promoDrop').classList.remove('disabled');
  $('promoDrop').removeAttribute('aria-disabled');return true
 }
 async function importAutomatic(file){
@@ -346,6 +348,10 @@ async function boot(){
   drop.addEventListener('dragleave',()=>drop.classList.remove('dragover'));
   drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragover');if(!state.busy)importAutomatic(e.dataTransfer?.files?.[0])});
   $('promoFile').addEventListener('change',e=>{if(!state.busy)importAutomatic(e.target.files?.[0])})
+  $('promoVisionRetry').addEventListener('click',async()=>{
+   const button=$('promoVisionRetry');button.disabled=true;
+   try{await checkVisionReady()}finally{button.disabled=false}
+  });
   await checkVisionReady();
  }
  $('promoCatalogList').addEventListener('click',e=>{
