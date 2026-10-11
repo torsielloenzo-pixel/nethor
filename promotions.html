@@ -16,7 +16,7 @@
 <script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=35','ui/mobile/mobile-shell.js?v=14')</script>
 <link rel="stylesheet" href="profile-ui.css?v=3">
 <script src="profile-ui.js?v=226"></script>
-<link rel="stylesheet" href="runtime/promotions-page.css?v=8">
+<link rel="stylesheet" href="runtime/promotions-page.css?v=9">
 </head>
 <body>
 <div data-nethor-platform-header></div>
@@ -52,6 +52,7 @@
      <label class="promoDateLabel">Début de validité<input type="date" id="promoValidFrom" required></label>
      <label class="promoDateLabel">Fin de validité<input type="date" id="promoValidUntil" required></label>
     </div>
+    <div class="promoDraftOfferOverview" id="promoDraftOfferOverview" hidden></div>
     <div class="promoDraftItems" id="promoDraftItems"></div>
     <div class="promoDraftActions"><button type="button" class="promoSecondary" id="promoCancelImport">Annuler</button><button type="button" class="promoPrimary" id="promoConfirmImport">Enregistrer pour validation</button></div>
    </div>
@@ -69,9 +70,10 @@
 <script src="runtime/promotions-parser.js?v=1"></script>
 <script src="runtime/promotions-block-analyzer.js?v=1"></script>
 <script src="runtime/promotions-ocr.js?v=1"></script>
-<script src="runtime/promotions-local-engine.js?v=1"></script>
+<script src="runtime/promotions-offer-intelligence.js?v=1"></script>
+<script src="runtime/promotions-local-engine.js?v=2"></script>
 <script src="runtime/promotions-feedback.js?v=1"></script>
-<script src="runtime/promotions-review-workshop.js?v=1"></script>
-<script src="runtime/promotions-page.js?v=9"></script>
+<script src="runtime/promotions-review-workshop.js?v=2"></script>
+<script src="runtime/promotions-page.js?v=10"></script>
 </body>
 </html>
