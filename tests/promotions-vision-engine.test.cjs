@@ -114,8 +114,63 @@ test('Serveur autorisé, quota SQL, clé uniquement en secret, aucune donnée IA
 });
 test('PWA : nouvelle feuille de route et cache synchronisé',()=>{
  const sw=read('sw.js'),meta=JSON.parse(read('app-version.json'));
- assert.match(sw,/\.\/runtime\/promotions-visual-engine\.js\?v=1/);
- assert.match(sw,/\.\/runtime\/promotions-page\.js\?v=5/);
+ assert.match(sw,/\.\/runtime\/promotions-visual-engine\.js\?v=2/);
+ assert.match(sw,/\.\/runtime\/promotions-page\.js\?v=6/);
  assert.equal(Number(sw.match(/APP_VERSION=(\d+)/)[1]),meta.version);
  assert.equal(Number(sw.match(/netto-tools-v(\d+)/)[1]),meta.version);
+});
+
+test('Score IA entre 0 et 100 normalisé, résultat invalide jamais traité comme fiable',()=>{
+ const e=engine();
+ const product=(confidence)=>e.toProduct({id:'p',is_product:true,product_name:'POIREAU',category:'Fruits et légumes',
+  quality_grade:'Catégorie 1',grammage:'',prix_kg:'',calibre:'20/40',prix:'1,69 €',
+  price_unit:'Le kg',price_type:'prix direct',price_caisse:'',card_advantage:'',price_after_card:'',
+  quantity_condition:'',origine:'France',additional_info:'',technical_details:'',confidence,evidence:'POIREAU 1,69 €'},
+  {x:10,y:10,w:400,h:300},1,false);
+ assert.equal(product(93).source_block.confidence,.93);
+ assert.equal(product(93).auto_uncertain,false);
+ assert.equal(product(64).source_block.confidence,.64);
+ assert.equal(product(64).auto_uncertain,true);
+ assert.equal(product(155).source_block.confidence,0);
+ assert.equal(product(155).auto_uncertain,true);
+});
+test('Contrôle multimodal relit les blocs douteux, conserve un signalement de prudence',async()=>{
+ let reads=0;
+ const model=(id,confidence)=>({id,is_product:true,product_name:'POIREAU',category:'Fruits et légumes',
+  quality_grade:'1',grammage:'',prix_kg:'',calibre:'20/40',prix:'1,69 €',
+  price_unit:'Le kg',price_type:'prix direct',price_caisse:'',card_advantage:'',
+  price_after_card:'',quantity_condition:'',origine:'France',additional_info:'',
+  technical_details:'',confidence,evidence:'POIREAU 1,69 €'});
+ const db={functions:{invoke:async(_,{body})=>{
+  if(body.action==='detect')return {data:{ok:true,result:{date_start:'2026-10-06',
+   date_end:'2026-10-12',blocks:[{id:'a',x:10,y:10,w:450,h:450,label:'Poireau',confidence:.9}],warnings:[]}}};
+  if(body.action==='verify')return{data:{ok:true,result:{date_start:'',date_end:'',
+   missing_blocks:[],suspicious_ids:['p1b0'],warnings:[]}}};
+  reads++;
+  return{data:{ok:true,result:{products:body.crops.map(c=>model(c.id,reads===1?64:94)),warnings:[]}}}
+ }}};
+ const canvas=()=>({width:0,height:0,getContext:()=>({drawImage(){}}),toDataURL:()=> 'data:image/jpeg;base64,'+'AA'.repeat(50)});
+ const page={getViewport:()=>({width:600,height:800}),render:()=>({promise:Promise.resolve()}),cleanup(){}};
+ const pdfjs={getDocument:()=>({promise:Promise.resolve({numPages:1,getPage:async()=>page}),destroy:async()=>{}})};
+ const e=engine({document:{createElement:()=>canvas()}});
+ const result=await e.analyze({db,pdfjs,filename:'catalogue.pdf',bytes:new ArrayBuffer(10)});
+ assert.equal(reads,2);
+ assert.equal(result.products[0].source_block.confidence,.94);
+ assert.equal(result.products[0].auto_uncertain,true);
+ assert.equal(result.reports[0].rechecked,1);
+ assert.equal(result.reports[0].recheck_failures,0);
+ assert.equal(result.diagnostics.review_passes,3);
+});
+test('Sécurité : le nouveau contrôle valide le payload avant le quota payant',()=>{
+ const s=read('supabase/functions/promotions-vision/index.ts');
+ assert.ok(s.indexOf('img(body?.image)')<s.indexOf('const quota=await db.rpc'));
+ assert.match(s,/rawLength>23500000/);
+ assert.match(s,/vision-multimodal-v2/);
+ assert.match(s,/Confidence entre 0 et 1/);
+ const page=read('runtime/promotions-page.js'),html=read('promotions.html');
+ assert.match(page,/promoVisionRetry/);
+ assert.match(html,/promoVisionUnavailable/);
+ assert.match(html,/promotions-visual-engine.js\?v=2/);
+ assert.match(page,/NethorPromotionVision\.analyze/);
+ assert.doesNotMatch(html,/src="runtime\/promotions-ocr\.js/);
 });
