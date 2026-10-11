@@ -16,7 +16,7 @@
 <script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=35','ui/mobile/mobile-shell.js?v=14')</script>
 <link rel="stylesheet" href="profile-ui.css?v=3">
 <script src="profile-ui.js?v=226"></script>
-<link rel="stylesheet" href="runtime/promotions-page.css?v=5">
+<link rel="stylesheet" href="runtime/promotions-page.css?v=6">
 </head>
 <body>
 <div data-nethor-platform-header></div>
@@ -39,6 +39,11 @@
     <small>ou clique pour le sélectionner · lancement et enregistrement automatiques · IA visuelle sécurisée · 60 pages maximum · 30 Mo</small>
     <input type="file" id="promoFile" accept=".pdf,application/pdf" hidden>
    </div>
+   <div class="promoVisionUnavailable" id="promoVisionUnavailable" hidden>
+    <strong><span aria-hidden="true">!</span> Moteur IA non activé</strong>
+    <p>Les importations nécessitent une clé privée <code>OPENAI_API_KEY</code> dans les secrets Supabase. Ne la mets jamais dans le code du site. <a href="https://supabase.com/dashboard/project/gioxrpaiwogqqtakjpnv/functions" target="_blank" rel="noopener noreferrer">Ouvrir Supabase</a></p>
+    <button type="button" class="promoSecondary" id="promoVisionRetry">Revérifier la configuration</button>
+   </div>
    <div class="promoAutoProgress" id="promoAutoProgress" role="status" aria-live="polite" hidden>
     <span class="promoSpinner" aria-hidden="true"></span>
     <div><strong id="promoProgressTitle">Analyse en cours…</strong><p id="promoProgressText">Nethor examine les pages du PDF.</p></div>
@@ -54,8 +59,8 @@
  </div>
 </main>
 <script src="platform-page-layout.js?v=12"></script>
-<script src="runtime/promotions-visual-engine.js?v=1"></script>
+<script src="runtime/promotions-visual-engine.js?v=2"></script>
 <script src="runtime/promotions-feedback.js?v=1"></script>
-<script src="runtime/promotions-page.js?v=5"></script>
+<script src="runtime/promotions-page.js?v=6"></script>
 </body>
 </html>

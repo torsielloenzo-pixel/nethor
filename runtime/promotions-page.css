@@ -174,3 +174,11 @@ html[data-nethor-platform="desktop"] .promoPage{
 html[data-nethor-platform="desktop"] .promoPage :is(button,input,select,textarea,option,table,th,td){
  font-family:inherit!important;
 }
+
+/* Activation du moteur visuel, sans exposer ni récupérer la clé API. */
+.promoVisionUnavailable{margin:12px 0;padding:16px;border:1px solid color-mix(in srgb,var(--pm-accent) 36%,var(--pm-line));border-radius:12px;background:var(--pm-soft)}
+.promoVisionUnavailable strong{display:block;font-size:13px;color:var(--pm-ink)}
+.promoVisionUnavailable strong span{margin-right:7px;color:var(--pm-accent)}
+.promoVisionUnavailable p{font-size:11px;line-height:1.6;color:var(--pm-muted);margin:8px 0 12px}
+.promoVisionUnavailable code{font-size:11px;overflow-wrap:anywhere}
+.promoVisionUnavailable a{color:var(--pm-accent);font-weight:800;text-decoration:underline}

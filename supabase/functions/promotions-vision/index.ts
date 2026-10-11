@@ -45,10 +45,28 @@ Deno.serve(async req=>{
   const {data:profile,error:profileError}=await db.from("profiles").select("role,account_enabled").eq("id",user.id).maybeSingle();
   if(profileError||!profile||profile.account_enabled===false||!["admin","role_point-de-vente"].includes(profile.role))
    return reply({error:"Droits insuffisants pour analyser des catalogues"},403);
+  // Limite mémoire / coût et contrôle du payload avant l'appel externe.
+  const rawLength=Number(req.headers.get("content-length")||0);
+  if(rawLength>23500000)return reply({error:"Images trop volumineuses pour une requête"},413);
   const body=await req.json().catch(()=>null),action=body?.action,key=Deno.env.get("OPENAI_API_KEY")||"";
-  if(action==="status")return reply({ready:!!key,engine:"vision-multimodal-v1",model:"gpt-4.1",max_pages:60});
+  if(action==="status")return reply({ready:!!key,engine:"vision-multimodal-v2",model:"gpt-4.1",max_pages:60,review_passes:3});
   if(!key)return reply({error:"Clé OPENAI_API_KEY manquante dans les secrets Supabase"},503);
   if(!["detect","read","verify"].includes(action))return reply({error:"Action inconnue"},400);
+  // Empêcher les payloads invalides de consommer les 300 crédits/jour.
+  try{
+   if(action==="detect"||action==="verify")img(body?.image);
+   if(action==="read"){
+    if(!Array.isArray(body?.crops)||body.crops.length<1||body.crops.length>6)
+     return reply({error:"Lot de 1 à 6 blocs requis"},400);
+    for(const crop of body.crops){
+     if(typeof crop?.id!=="string"||crop.id.length<1||crop.id.length>50)
+      return reply({error:"ID de bloc invalide"},400);
+     img(crop.image);
+    }
+   }
+   if(action==="verify"&&(!Array.isArray(body?.products)||body.products.length>85))
+    return reply({error:"Contrôle impossible : trop de produits"},400);
+  }catch(e){return reply({error:e instanceof Error?e.message:"Entrée invalide"},400)}
   const quota=await db.rpc("reserve_promotion_vision_call",{p_call_kind:action});
   if(quota.error)return reply({error:"Limite IA atteinte : "+quota.error.message},429);
   let result:any;
@@ -58,7 +76,8 @@ Deno.serve(async req=>{
   }else if(action==="read"){
    const crops=body.crops;
    if(!Array.isArray(crops)||crops.length<1||crops.length>6)return reply({error:"Lot de 1 à 6 blocs requis"},400);
-   const content:any[]=[{type:"input_text",text:"Chaque image est un bloc distinct : une image = au maximum un produit. Correspondance obligatoire avec son ID. prix = prix principal, prix_kg = prix au kilo secondaire, price_unit = Le kg/La boîte de 20. origine et quality_grade (Catégorie : 1) distincts du rayon. Décris les avantages carte en champs séparés. Si publicité ou faux produit, is_product=false."}];
+   const recheck=body.guidance==="REVÉRIFICATION : le contrôle a signalé ce bloc comme incertain. Vérifie tous les chiffres du prix et ses centimes, distingue prix/kg du prix de caisse, le nom, les dates et les avantages carte. Ne complète pas les textes illisibles.";
+   const content:any[]=[{type:"input_text",text:"Chaque image est un bloc distinct : une image = au maximum un produit. Correspondance obligatoire avec son ID. prix = prix principal, prix_kg = prix au kilo secondaire, price_unit = Le kg/La boîte de 20. origine et quality_grade (Catégorie : 1) distincts du rayon. Décris les avantages carte en champs séparés. Si publicité ou faux produit, is_product=false. Confidence entre 0 et 1. "+(recheck?"Deuxième lecture : vérifie les petits caractères, les centimes et les avantages ; jamais de valeur imaginée.":"")}];
    for(const crop of crops){if(typeof crop.id!=="string"||crop.id.length>50)return reply({error:"ID invalide"},400);content.push({type:"input_text",text:"Identifiant bloc "+crop.id});content.push(img(crop.image))}
    result=await inference(key,action,content,schemaRead);
    result.products=(result.products||[]).filter((p:any)=>crops.some((c:any)=>c.id===p.id));

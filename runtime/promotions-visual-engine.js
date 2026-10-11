@@ -89,7 +89,11 @@ function toProduct(item,box,page,flag){
  const offer=unique([price,...conditions]).join(' · ').slice(0,1200);
  const details=unique([item.origine,item.additional_info]).join(' · ').slice(0,1200);
  const cat=CATS.includes(item.category)?item.category:'À classer';
- const confidence=Math.max(0,Math.min(1,Number(item.confidence)||0));
+ // L'IA peut émettre une confiance 0-1 ou 0-100. On normalise sans
+ // transformer une valeur invalide en un faux score élevé.
+ const rawConfidence=Number(item.confidence);
+ const confidence=Number.isFinite(rawConfidence)&&rawConfidence>=0&&rawConfidence<=100
+  ?Math.min(1,rawConfidence>1?rawConfidence/100:rawConfidence):0;
  const uncertain=Boolean(flag||confidence<.83||!price||cat==='À classer'||clean(item.price_unit)==='');
  const bbox=bounds(box);
  return{product_name:name.slice(0,500),technical_details:technical,
@@ -124,6 +128,7 @@ async function analyze({db,bytes,filename,pdfjs,onProgress}){
     const detected=(detection.blocks||[]).filter(b=>bounds(b)).slice(0,70);
     const boxes=detected.map((b,i)=>({...b,id:'p'+n+'b'+i}));
     const products=[];
+    let rechecks=0,recheckFailures=0;
     async function readBlocks(parts,missing=false){
      for(let start=0;start<parts.length;start+=6){
       const slice=parts.slice(start,start+6);
@@ -150,10 +155,39 @@ async function analyze({db,bytes,filename,pdfjs,onProgress}){
       !boxes.some(x=>overlap(x,b)>.43)).slice(0,35)
       .map((b,i)=>({...b,id:'p'+n+'m'+i}));
     await readBlocks(missing,true);
+    // Troisième lecture ciblée : les cartouches que l'audit juge douteux,
+    // ou qui ont une confiance faible, sont revus séparément à fort zoom.
+    // Le second résultat ne remplace la première lecture que s'il est
+    // exploitable et au moins aussi fiable. Sinon conserver l'incertitude.
+    const flagged=products.filter(p=>audit.suspicious_ids?.includes(p._id)||
+      Number(p.source_block?.confidence)<.75||p.price_or_benefit==='Prix non détecté')
+      .slice(0,6);
+    for(const original of flagged){
+      const source=[...boxes,...missing].find(b=>b.id===original._id);
+      if(!source)continue;
+      rechecks++;
+      original.auto_uncertain=true;
+      original.extraction_confidence='review';
+      onProgress?.({step:'vérification ciblée',page:n,total,products:allSeen+products.length});
+      try{
+        const reread=await call(db,{action:'read',crops:[{
+          id:source.id,image:crop(canvas,source)
+        }],guidance:'REVÉRIFICATION : le contrôle a signalé ce bloc comme incertain. Vérifie tous les chiffres du prix et ses centimes, distingue prix/kg du prix de caisse, le nom, les dates et les avantages carte. Ne complète pas les textes illisibles.'});
+        const candidate=(reread.products||[]).find(p=>p.id===source.id);
+        const resolved=candidate&&toProduct(candidate,source,n,false);
+        if(resolved&&resolved.source_block.confidence>=original.source_block.confidence&&
+          resolved.price_or_benefit!=='Prix non détecté'){
+          Object.assign(original,{...resolved,_id:source.id});
+        }else recheckFailures++
+      }catch(_){recheckFailures++}
+      // Une lecture redemandée par l'audit reste signalée tant
+      // qu'aucune correction humaine n'est intervenue.
+      original.auto_uncertain=true;original.extraction_confidence='review'
+    }
     if(products.some(p=>audit.suspicious_ids?.includes(p._id)))
-     products.forEach(p=>{if(audit.suspicious_ids.includes(p._id)){
-      p.auto_uncertain=true;p.extraction_confidence='review'
-     }});
+      products.forEach(p=>{if(audit.suspicious_ids.includes(p._id)){
+       p.auto_uncertain=true;p.extraction_confidence='review'
+      }});
     const warnings=unique([...(detection.warnings||[]),...(audit.warnings||[])]);
     const dedup=[];
     for(const p of products){
@@ -165,7 +199,8 @@ async function analyze({db,bytes,filename,pdfjs,onProgress}){
     const count=dedup.length;allSeen+=count;
     reports.push({number:n,detected:count,hasText:true,uncertain:products.filter(p=>p.auto_uncertain).length,
      unmatched:missing.length,analysis_mode:'multimodal-vision',
-     blocks_detected:boxes.length,missing_found:missing.length,warnings});
+     blocks_detected:boxes.length,missing_found:missing.length,
+     rechecked:rechecks,recheck_failures:recheckFailures,warnings});
    }finally{canvas.width=0;canvas.height=0;page.cleanup()}
   }
   if(!results.length)throw Error('Aucune référence promotionnelle exploitable détectée.');
@@ -173,9 +208,9 @@ async function analyze({db,bytes,filename,pdfjs,onProgress}){
   const dates=parseDates(candidates);
   if(!dates)throw Error('Dates de validité introuvables dans les pages : aucun calendrier inventé.');
   return{products:results,meta:dates,reports,diagnostics:{
-   engine:'nethor-multimodal-vision-v1',total_pages:reports.length,model:'gpt-4.1',
+   engine:'nethor-multimodal-vision-v2',total_pages:reports.length,model:'gpt-4.1',
    pages:reports,uncertain_count:results.filter(p=>p.auto_uncertain).length,
-   visual_coverage_checked:true,review_passes:2,
+   visual_coverage_checked:true,review_passes:3,
    textless_pages:0,unmatched_passage_count:reports.reduce((s,r)=>s+r.unmatched,0)
   }}
  }finally{await task.destroy().catch(()=>{})}
