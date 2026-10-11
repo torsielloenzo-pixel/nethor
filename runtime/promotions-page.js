@@ -1,4 +1,4 @@
-/* Nethor Promotions — import PDF entièrement automatique, indexé par semaine ISO. */
+/* Nethor Promotions — dépôt PDF local, prévisualisation et confirmation avant enregistrement. */
 (function(){
 'use strict';
 const SUPABASE_URL='https://gioxrpaiwogqqtakjpnv.supabase.co';
@@ -8,7 +8,7 @@ const db=window.supabase.createClient(SUPABASE_URL,PUBLIC_KEY,{
 });
 const $=id=>document.getElementById(id);
 const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const state={user:null,profile:null,busy:false,catalogs:[],last:null,selectedCatalogId:null,reviewBusy:false,visionReady:false};
+const state={user:null,profile:null,busy:false,catalogs:[],last:null,selectedCatalogId:null,reviewBusy:false,draft:null};
 const manager=()=>['admin','role_point-de-vente'].includes(state.profile?.role);
 function notify(msg,type=''){
  const el=$('promoAlert');el.textContent=msg;el.className='promoAlert '+type;el.hidden=!msg
@@ -45,48 +45,61 @@ async function sha256(bytes){
  const digest=await crypto.subtle.digest('SHA-256',bytes);
  return Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('')
 }
-/* Visual AI pipeline replaces text heuristics and OCR-based product guessing. */
+/* Les résultats de l'extraction restent un brouillon : aucune checklist publiée ici. */
 function autoSummary(result,meta,reports){
  const el=$('promoAutoSummary');el.hidden=false;
- const found=reports.reduce((s,p)=>s+(p.missing_found||0),0);
- el.innerHTML='<div class="promoAutoSummaryHead"><strong>Catalogue analysé et enregistré</strong><span class="promoAutoGood">✓</span></div>'+
+ el.innerHTML='<div class="promoAutoSummaryHead"><strong>Prospectus enregistré pour contrôle</strong><span class="promoAutoGood">✓</span></div>'+
  '<h3>'+escapeHtml(result.title)+'</h3>'+
- '<p><strong>Semaine de rattachement :</strong> '+dateFr(result.week_start)+' au '+dateFr(result.week_end)+'</p>'+
- '<p><strong>Dates de validité réelle :</strong> '+dateFr(meta.from)+' au '+dateFr(meta.until)+'</p>'+
- '<div class="promoAutoMetrics"><span><strong>'+result.products+'</strong> références</span>'+
- '<span><strong>'+result.uncertain+'</strong> à affiner</span>'+
- '<span><strong>'+reports.length+'</strong> pages visuellement contrôlées</span>'+
- '<span><strong>'+found+'</strong> produits récupérés au second passage</span></div>'+
- (result.uncertain?'<p class="promoAutoInfo">Certaines fiches restent à vérifier : elles sont signalées « À affiner » dans le catalogue.</p>':'')
+ '<p><strong>Semaine :</strong> '+dateFr(result.week_start)+' au '+dateFr(result.week_end)+'</p>'+
+ '<p><strong>Offres valables :</strong> '+dateFr(meta.from)+' au '+dateFr(meta.until)+'</p>'+
+ '<div class="promoAutoMetrics"><span><strong>'+result.products+'</strong> produits provisoires</span>'+
+ '<span><strong>'+reports.length+'</strong> pages parcourues</span>'+
+ '<span><strong>'+result.uncertain+'</strong> à vérifier</span></div>'+
+ '<p class="promoAutoWarning">Les produits détectés ne sont pas encore validés ni ajoutés à la liste d’installation.</p>';
 }
-async function checkVisionReady(){
- const {data,error}=await db.functions.invoke('promotions-vision',{body:{action:'status'}});
- if(error||!data?.ready){
-  state.visionReady=false;
-  $('promoVisionUnavailable').hidden=false;
-  $('promoDrop').classList.add('disabled');
-  $('promoDrop').setAttribute('aria-disabled','true');
-  notify('Import IA non disponible : ajoute OPENAI_API_KEY dans les secrets des Edge Functions Supabase. Les catalogues existants restent accessibles.','error');
-  return false
- }
- state.visionReady=true;$('promoVisionUnavailable').hidden=true;
- $('promoDrop').classList.remove('disabled');
- $('promoDrop').removeAttribute('aria-disabled');return true
+function renderDraft(){
+ const draft=state.draft,review=$('promoImportReview');
+ if(!draft){review.hidden=true;return}
+ const {analysis,file}=draft;
+ $('promoDraftCount').textContent=file.name+' · '+analysis.reports.length+' pages · '+
+  analysis.products.length+' produits proposés';
+ $('promoValidFrom').value=analysis.meta?.from||'';
+ $('promoValidUntil').value=analysis.meta?.until||'';
+ const diagnostics=analysis.diagnostics||{},warnings=[];
+ if(!analysis.meta)warnings.push('Dates non détectées avec certitude : indique la période exacte du catalogue.');
+ if(diagnostics.unreadable_pages?.length)warnings.push('Pages sans texte exploitable : '+diagnostics.unreadable_pages.join(', ')+'. Vérification du PDF obligatoire.');
+ if(diagnostics.ocr_failures)warnings.push('La reconnaissance OCR a rencontré '+diagnostics.ocr_failures+' erreur(s). Certaines offres peuvent manquer.');
+ if(diagnostics.pages_without_detected_products?.length)
+  warnings.push('Aucun produit détecté sur '+diagnostics.pages_without_detected_products.length+
+   ' page(s) : '+diagnostics.pages_without_detected_products.join(', ')+'. Cela peut être normal (couvertures, mentions légales) ou une omission.');
+ warnings.push('Les associations nom/prix/format sont provisoires. Vérifie la liste et le prospectus avant toute utilisation en rayon.');
+ $('promoDraftWarnings').innerHTML=warnings.map(w=>'<p>⚠ '+escapeHtml(w)+'</p>').join('');
+ const preview=analysis.products.slice(0,12);
+ $('promoDraftItems').innerHTML='<strong>Extrait des produits détectés ('+preview.length+
+  ' premiers)</strong><div class="promoDraftList">'+
+  preview.map(p=>'<div><span>'+escapeHtml(p.product_name)+' <small>p. '+p.source_page+
+  '</small></span><b>'+escapeHtml(p.price_or_benefit)+'</b></div>').join('')+
+  '</div>'+(analysis.products.length>12?'<p class="promoMuted">… et '+(analysis.products.length-12)+
+  ' autres références à contrôler après enregistrement.</p>':'');
+ review.hidden=false;
+ review.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 async function importAutomatic(file){
- if(state.busy||!manager()||!state.visionReady)return;
+ if(state.busy||!manager())return;
  if(!file||!/\.pdf$/i.test(file.name)||!['application/pdf',''].includes(file.type)){
   notify('Choisis un fichier PDF valide.','error');return
  }
  if(file.size>30*1024*1024){notify('Ce PDF dépasse la limite de 30 Mo.','error');return}
- state.busy=true;$('promoDrop').setAttribute('aria-busy','true');
+ if(state.draft&&!window.confirm('Remplacer le brouillon en cours ? Il n’a pas encore été enregistré.'))return;
+ state.busy=true;state.draft=null;$('promoImportReview').hidden=true;
+ $('promoDrop').setAttribute('aria-busy','true');
  $('promoDrop').classList.add('processing');$('promoDropTitle').textContent=file.name;
  $('promoAutoSummary').hidden=true;notify('');
- let storagePath=null,imported=false;
  try{
-  loading('Analyse multimodale','Préparation du catalogue…');
+  loading('Lecture PDF locale','Ouverture et lecture du prospectus…');
   const bytes=await file.arrayBuffer();
-  if(String.fromCharCode(...new Uint8Array(bytes.slice(0,5)))!=='%PDF-')throw Error('Structure PDF non valide');
+  if(String.fromCharCode(...new Uint8Array(bytes.slice(0,5)))!=='%PDF-')
+   throw Error('Structure PDF non valide');
   const hash=await sha256(bytes);
   const previous=await db.from('promotion_catalogs').select('id,title').eq('file_sha256',hash).maybeSingle();
   if(previous.error)throw previous.error;
@@ -94,58 +107,80 @@ async function importAutomatic(file){
    notify('PDF déjà enregistré : '+previous.data.title,'ok');
    await loadCatalogs();await openCatalog(previous.data.id);return
   }
-  const analysis=await window.NethorPromotionVision.analyze({
-   db,bytes,filename:file.name,pdfjs:await pdfJs(),
-   onProgress:p=>loading('Vision IA · page '+p.page+'/'+p.total,
-    p.step+' · '+p.products+' référence(s) reconnue(s)')
+  const analysis=await window.NethorPromotionsLocal.analyze({
+   bytes,filename:file.name,pdfjs:await pdfJs(),
+   onProgress:p=>loading('Extraction locale · page '+p.page+'/'+p.total,
+    p.step+' · '+p.products+' produit(s) proposés')
   });
-  const {meta,reports,diagnostics}=analysis;
-  let products=analysis.products;
-  // Corrections précédentes appliquées seulement aux noms/rayons équivalents,
-  // jamais aux prix et aux avantages issus du catalogue courant.
+  // Les règles mémorisées améliorent les libellés sans recopier d'anciens prix.
   try{
    const feedback=await db.from('promotion_analysis_feedback')
     .select('id,source_key,source_excerpt,action,corrected_name,corrected_category,created_at')
     .order('created_at',{ascending:false}).limit(1500);
-   if(!feedback.error){
-    const learned=window.NethorPromotionsFeedback.useRules(products,feedback.data||[]);
-    products=learned.products;diagnostics.feedback=learned.stats
-   }else diagnostics.feedback_error='Historique des corrections indisponible'
-  }catch(_){diagnostics.feedback_error='Historique des corrections indisponible'}
-  if(!products.length)throw Error('Aucun article disponible après analyse et exclusions.');
-  loading('Sauvegarde','Conservation du PDF original et des fiches reconnues…');
-  storagePath=state.user.id+'/'+crypto.randomUUID()+'.pdf';
-  const saved=await db.storage.from('promotion-pdfs').upload(storagePath,file,{
-   contentType:'application/pdf',cacheControl:'3600',upsert:false
-  });
-  if(saved.error)throw saved.error;
-  const {data,error}=await db.rpc('import_promotion_catalog_auto',{
-   p_filename:file.name,p_storage_path:storagePath,p_file_sha256:hash,
-   p_valid_from:meta.from,p_valid_until:meta.until,p_pages:reports.length,
-   p_products:products.map(p=>({
-    product_name:p.product_name,technical_details:p.technical_details,
-    price_or_benefit:p.price_or_benefit,source_page:p.source_page,
-    source_excerpt:p.source_excerpt,extraction_confidence:p.extraction_confidence,
-    category:p.category,auto_uncertain:p.auto_uncertain,
-    price_unit:p.price_unit||'',additional_info:p.additional_info||'',
-    source_block:p.source_block||{}
-   })),p_diagnostics:diagnostics
-  });
-  if(error)throw error;
-  imported=true;state.last=data;
-  autoSummary(data,meta,reports);
-  notify('Analyse visuelle terminée : '+data.products+' références enregistrées dans '+data.title,'ok');
-  await loadCatalogs();await openCatalog(data.id)
+   if(!feedback.error&&window.NethorPromotionsFeedback){
+    const learned=window.NethorPromotionsFeedback.useRules(analysis.products,feedback.data||[]);
+    analysis.products=learned.products;analysis.diagnostics.feedback=learned.stats;
+   }
+  }catch(_){}
+  if(!analysis.products.length)throw Error('Aucun produit exploitable après les exclusions.');
+  analysis.diagnostics.uncertain_count=analysis.products.length;
+  state.draft={file,hash,analysis};renderDraft();
+  notify('Extraction locale terminée : vérifie les dates, puis enregistre les références pour contrôle.','ok');
  }catch(error){
-  notify('Import multimodal interrompu : '+(error?.message||String(error)),'error');
-  if(storagePath&&!imported){
-   try{await db.storage.from('promotion-pdfs').remove([storagePath])}catch(_){}
-  }
+  notify('Lecture PDF interrompue : '+(error?.message||String(error)),'error');
  }finally{
   state.busy=false;$('promoAutoProgress').hidden=true;
   $('promoDrop').classList.remove('processing');$('promoDrop').removeAttribute('aria-busy');
   $('promoFile').value='';
-  if(!imported)$('promoDropTitle').textContent='Dépose ton catalogue PDF pour lancer l’analyse'
+  $('promoDropTitle').textContent='Dépose un catalogue PDF pour préparer les produits';
+ }
+}
+async function saveDraft(){
+ if(state.busy||!manager()||!state.draft)return;
+ let dates;
+ try{dates=window.NethorPromotionsLocal.validateDates(
+  $('promoValidFrom').value,$('promoValidUntil').value
+ )}catch(e){notify(e.message,'error');return}
+ const draft=state.draft,{file,hash,analysis}=draft,diagnostics=analysis.diagnostics;
+ if(diagnostics.unreadable_pages?.length&&!window.confirm(
+  'Attention : '+diagnostics.unreadable_pages.length+' page(s) n’ont pas pu être lues. Enregistrer ce catalogue incomplet pour correction manuelle ?'
+ ))return;
+ state.busy=true;$('promoConfirmImport').disabled=true;
+ let storagePath=null,saved=false;
+ try{
+  loading('Enregistrement','Sauvegarde du PDF privé et des références provisoires…');
+  const previous=await db.from('promotion_catalogs').select('id,title').eq('file_sha256',hash).maybeSingle();
+  if(previous.error)throw previous.error;
+  if(previous.data)throw Error('Ce PDF a déjà été enregistré : '+previous.data.title);
+  storagePath=state.user.id+'/'+crypto.randomUUID()+'.pdf';
+  const upload=await db.storage.from('promotion-pdfs').upload(storagePath,file,{
+   contentType:'application/pdf',cacheControl:'3600',upsert:false
+  });
+  if(upload.error)throw upload.error;
+  const {data,error}=await db.rpc('import_promotion_catalog_auto',{
+   p_filename:file.name,p_storage_path:storagePath,p_file_sha256:hash,
+   p_valid_from:dates.from,p_valid_until:dates.until,p_pages:analysis.reports.length,
+   p_products:analysis.products.map(p=>({
+    product_name:p.product_name,technical_details:p.technical_details,
+    price_or_benefit:p.price_or_benefit,source_page:p.source_page,
+    source_excerpt:p.source_excerpt,extraction_confidence:'review',
+    category:p.category,auto_uncertain:true,price_unit:p.price_unit||'',
+    additional_info:p.additional_info||'',source_block:p.source_block||{}
+   })),p_diagnostics:diagnostics
+  });
+  if(error)throw error;
+  saved=true;state.last=data;state.draft=null;$('promoImportReview').hidden=true;
+  autoSummary(data,dates,analysis.reports);
+  notify('Catalogue conservé pour validation : '+data.products+' produits, aucun publié pour installation.','ok');
+  await loadCatalogs();await openCatalog(data.id);
+ }catch(e){
+  notify('Enregistrement impossible : '+(e?.message||String(e)),'error');
+  if(storagePath&&!saved){
+   try{await db.storage.from('promotion-pdfs').remove([storagePath])}catch(_){}
+  }
+ }finally{
+  state.busy=false;$('promoConfirmImport').disabled=false;
+  $('promoAutoProgress').hidden=true
  }
 }
 
@@ -177,11 +212,12 @@ async function loadCatalogs(){
   '<small>'+escapeHtml(isoWeekLabel(p))+' · Lundi '+dateFr(p.week_start)+' au '+dateFr(p.week_end)+'</small>'+
   '<small>Offres valables du '+dateRange(p)+' · '+p.pages_total+' pages'+
   (p.extraction_state==='partial'?' · Extraction partielle':'')+
+  (p.extraction_state==='automatic_uncertain'?' · Contrôle nécessaire':'')+
   (p.unclassified_count?' · '+p.unclassified_count+' produit(s) incertain(s)':'')+
   '</small></span><span class="promoCatalogCaret" aria-hidden="true">'+(state.selectedCatalogId===p.id?'⌃':'⌄')+'</span></button>'+
   (manager()?'<button class="promoCatalogDelete" type="button" data-promo-delete-catalog="'+escapeHtml(p.id)+'" aria-label="Supprimer '+escapeHtml(p.title)+'">Supprimer</button>':'')+
   '</div>').join(''):
-  '<p class="promoMuted">Aucun catalogue pour le moment. Dépose un PDF pour démarrer automatiquement l’analyse.</p>'
+  '<p class="promoMuted">Aucun catalogue pour le moment. Dépose un PDF pour préparer une liste de produits à vérifier.</p>'
 }
 async function deleteCatalog(id){
  if(!manager()||state.reviewBusy)return;
@@ -333,7 +369,7 @@ async function openCatalog(id){
 }
 async function boot(){
  if(window.NethorPlatform?.isMobile?.()){location.replace('mobile.html');return}
- if(!window.supabase||!window.NethorPromotionVision){notify('Le module Promotions n’a pas été chargé. Recharge la page.','error');return}
+ if(!window.supabase||!window.NethorPromotionsLocal||!window.NethorPromotionsBlocks||!window.NethorPromotionParser){notify('Le module Promotions n’a pas été chargé. Recharge la page.','error');return}
  const {data:{session},error:sessionError}=await db.auth.getSession();
  if(sessionError||!session){location.replace('index.html');return}
  state.user=session.user;
@@ -348,11 +384,11 @@ async function boot(){
   drop.addEventListener('dragleave',()=>drop.classList.remove('dragover'));
   drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragover');if(!state.busy)importAutomatic(e.dataTransfer?.files?.[0])});
   $('promoFile').addEventListener('change',e=>{if(!state.busy)importAutomatic(e.target.files?.[0])})
-  $('promoVisionRetry').addEventListener('click',async()=>{
-   const button=$('promoVisionRetry');button.disabled=true;
-   try{await checkVisionReady()}finally{button.disabled=false}
+  $('promoConfirmImport').addEventListener('click',saveDraft);
+  $('promoCancelImport').addEventListener('click',()=>{
+   if(state.busy)return;
+   state.draft=null;$('promoImportReview').hidden=true;notify('Brouillon abandonné. Aucun catalogue enregistré.');
   });
-  await checkVisionReady();
  }
  $('promoCatalogList').addEventListener('click',e=>{
   const deleteButton=e.target.closest('[data-promo-delete-catalog]');
