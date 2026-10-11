@@ -123,16 +123,30 @@ function mount({detail,cat,rows,db,canManage=false,pdfJs,notify,onCollapse}){
   const p=getSelected(),inspect=node('promoReviewInspector');
   sourceToken++;
   if(!p){inspect.innerHTML='<p class="promoMuted">Sélectionne une référence pour la contrôler.</p>';return}
+  const meta=p.source_block?.display||{};
+  const reliability=meta.quality_flags||[];
   inspect.innerHTML='<div class="promoReviewInspectorHead"><span class="promoEyebrow">RÉFÉRENCE N° '+escapeHtml(p.position||'—')+'</span>'+
    '<span class="promoReviewBadge promoStatus-'+escapeHtml(p.review_status||'pending')+'">'+
    escapeHtml(statusLabels[p.review_status||'pending'])+'</span></div>'+
    '<h4>'+escapeHtml(p.product_name)+'</h4>'+
    '<div class="promoReviewFacts"><div><small>Prix / avantage</small><strong>'+escapeHtml(p.price_or_benefit)+'</strong></div>'+
+   (meta.format?'<div><small>Format d’identification</small><span>'+escapeHtml(meta.format)+'</span></div>':'')+
+   (meta.offer_type&&meta.offer_type!=='standard'?'<div><small>Type de promotion</small><span>'+escapeHtml(meta.offer_label)+'</span></div>':'')+
+   (meta.valid_from&&meta.valid_until?'<div><small>Validité de cette offre</small><span>'+escapeHtml(meta.valid_from)+' → '+escapeHtml(meta.valid_until)+'</span></div>':'')+
    '<div><small>Unité</small><span>'+escapeHtml(p.price_unit||'À préciser')+'</span></div>'+
    '<div><small>Calibre / caractéristiques</small><span>'+escapeHtml(p.technical_details||'À contrôler')+'</span></div>'+
    '<div><small>Catégorie</small><span>'+escapeHtml(p.category||'À classer')+'</span></div>'+
    (p.additional_info?'<div><small>Informations</small><span>'+escapeHtml(p.additional_info)+'</span></div>':'')+
    '</div>'+
+   (reliability.length?'<div class="promoReviewReliability"><strong>Points à regarder sur le prospectus</strong><p>'+
+     escapeHtml(reliability.map(flag=>({
+      price_missing:'Prix non trouvé',image_region_missing:'Encadré non localisé',
+      format_or_unit_missing:'Format non précisé',multiple_prices:'Plusieurs prix dans l’offre',
+      offer_terms:'Conditions promotionnelles particulières',
+      general_offer_not_product:'Opération générale',special_validity:'Dates spécifiques à cette rubrique',
+      name_uncertain:'Nom ambigu',date_unknown:'Dates à confirmer',
+      extraction_uncertain:'Reconnaissance approximative'
+     })[flag]||'Vérification nécessaire').join(' · '))+'</p></div>':'')+
    '<div class="promoReviewEvidence"><strong>Extrait de l’analyse</strong><p>'+
    escapeHtml(p.source_excerpt||'Aucun extrait textuel conservé.')+'</p></div>'+
    '<div class="promoReviewSourceHead"><strong>Prospectus · page '+escapeHtml(p.source_page)+'</strong>'+
@@ -183,21 +197,37 @@ function mount({detail,cat,rows,db,canManage=false,pdfJs,notify,onCollapse}){
    await page.render({canvasContext:ctx,viewport}).promise;
    if(destroyed||token!==sourceToken)return;
    const wrap=document.createElement('div');wrap.className='promoReviewSourceCanvas';
-   wrap.appendChild(canvas);
    const box=regionPercent(p.source_block);
+   target.replaceChildren();
    if(box){
-    const marker=document.createElement('div');marker.className='promoReviewSourceMarker';
-    marker.style.left=box.left+'%';marker.style.top=box.top+'%';
-    marker.style.width=box.width+'%';marker.style.height=box.height+'%';
-    marker.title='Zone du produit détectée automatiquement';
-    wrap.appendChild(marker);
+    // Reconstitue le visuel directement depuis le PDF original, jamais depuis
+    // une photo trouvée sur Internet. La zone est approximative si les prix
+    // d'un encadré ont été mal associés par le moteur géométrique.
+    const sx=Math.floor(canvas.width*box.left/100);
+    const sy=Math.floor(canvas.height*box.top/100);
+    const sw=Math.min(canvas.width-sx,Math.ceil(canvas.width*box.width/100));
+    const sh=Math.min(canvas.height-sy,Math.ceil(canvas.height*box.height/100));
+    if(sw>20&&sh>20){
+     const crop=document.createElement('canvas');
+     const factor=Math.min(1,760/sw);
+     crop.width=Math.max(1,Math.floor(sw*factor));
+     crop.height=Math.max(1,Math.floor(sh*factor));
+     crop.getContext('2d').drawImage(canvas,sx,sy,sw,sh,0,0,crop.width,crop.height);
+     crop.setAttribute('aria-label','Extrait du bloc promotionnel du prospectus original');
+     wrap.appendChild(crop);
+     const explain=document.createElement('small');
+     explain.textContent='Zone estimée depuis le PDF, à comparer à la page complète si elle paraît décalée.';
+     target.append(wrap,explain);
+    }
    }
-   target.replaceChildren(wrap);
-   if(!box){
+   if(!wrap.childNodes.length){
     const note=document.createElement('small');
-    note.textContent='Position exacte indisponible : contrôle visuel de la page entière.';
+    note.textContent='Découpe indisponible : la page complète reste consultable.';
     target.appendChild(note);
    }
+   const details=document.createElement('details');details.className='promoReviewFullPage';
+   const summary=document.createElement('summary');summary.textContent='Afficher la page entière';
+   details.append(summary,canvas);target.appendChild(details);
   }catch(e){
    if(destroyed||token!==sourceToken)return;
    target.replaceChildren();
