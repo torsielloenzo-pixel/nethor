@@ -1,18 +1,16 @@
 {
-  "version": 450,
-  "label": "v1.46.74",
+  "version": 451,
+  "label": "v1.46.75",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Import PDF local sans API payante",
-  "message": "Nethor peut analyser un catalogue dans le navigateur (blocs PDF et OCR), vérifier les dates et enregistrer les produits en attente de contrôle.",
-  "published_at": "2026-10-11T10:32:52.494Z",
+  "title": "Promotions · Sélecteur PDF stabilisé",
+  "message": "Le sélecteur de catalogue ne se relance plus sur son propre événement.",
+  "published_at": "2026-10-11T10:38:37.430Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "L'import Promotions ne dépend plus de OPENAI_API_KEY.",
-    "Extraction locale du texte, analyse des blocs produits et OCR pour les pages peu lisibles.",
-    "Aperçu des produits et confirmation de la période avant sauvegarde.",
-    "Tous les produits importés restent à vérifier; aucune checklist n'est publiée automatiquement.",
-    "Conservation des anciens catalogues et des corrections mémorisées."
+    "Correction du clic et du glisser-déposer PDF pour éviter l'ouverture récursive du sélecteur.",
+    "Le moteur de lecture PDF locale reste gratuit, avec dates confirmées avant enregistrement.",
+    "Tous les produits restent en attente de contrôle avant une future checklist."
   ]
 }
