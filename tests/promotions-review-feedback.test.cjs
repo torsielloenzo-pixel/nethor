@@ -35,7 +35,7 @@ test('Valider / Retravailler / Refuser depuis l’atelier dédié',()=>{
  assert.match(workshop,/db\.rpc\('review_promotion_product'/);
  assert.match(workshop,/db\.storage\.from\('promotion-pdfs'\)\.createSignedUrl/);
  assert.match(workshop,/data-review-filter/);
- assert.match(workshop,/status:'pending'/);
+ assert.match(workshop,/let filter=canManage&&counts\(products\)\.pending>0\?'pending':'all'/);
  assert.match(workshop,/p\.review_status\|\|'pending'/);
  assert.match(workshop,/act\('reworked',fields\)/);
  assert.match(workshop,/data-review-edit/);
