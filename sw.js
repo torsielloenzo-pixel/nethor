@@ -1,5 +1,5 @@
 const APP_VERSION=451;
-const CACHE='netto-tools-v450';
+const CACHE='netto-tools-v451';
 const DEPENDENCY_CACHE='nethor-deps-v1';
 const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
 const HTML5_QRCODE_UMD='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
