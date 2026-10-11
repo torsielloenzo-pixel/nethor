@@ -89,16 +89,16 @@ test('Chaîne complète : détection, lecture encadré, audit et produit manquan
  assert.equal(result.meta.week_start,'2026-10-05');
  assert.equal(calls.join(','),'detect,read,verify,read');
 });
-test('Le navigateur n’expose aucune clé secrète et utilise l’analyse multimodale exclusivement',()=>{
+test('Le nouvel import local n’a besoin d’aucune API visuelle payante',()=>{
  const page=read('runtime/promotions-page.js'),html=read('promotions.html');
- assert.match(page,/NethorPromotionVision\.analyze/);
- assert.match(page,/functions\.invoke\('promotions-vision'/);
- assert.doesNotMatch(page,/NethorPromotionsBlocks\.parsePages|NethorPromotionsOCR\.scanPage|extractMetadata\(/);
- assert.doesNotMatch(html,/src="runtime\/promotions-parser\.js|src="runtime\/promotions-ocr\.js|src="runtime\/promotions-block-analyzer\.js/);
- assert.match(html,/src="runtime\/promotions-visual-engine\.js\?v=/);
+ assert.match(page,/NethorPromotionsLocal\.analyze/);
+ assert.doesNotMatch(page,/functions\.invoke\('promotions-vision'/);
+ assert.doesNotMatch(page,/OPENAI_API_KEY|NethorPromotionVision/);
+ for(const name of ['promotions-parser','promotions-block-analyzer','promotions-ocr','promotions-local-engine'])
+  assert.ok(html.includes('src="runtime/'+name+'.js?v='),'Moteur absent : '+name);
  assert.doesNotMatch(page,/sk-[A-Za-z0-9]{12}/);
- assert.match(page,/OPENAI_API_KEY/);
 });
+
 test('Serveur autorisé, quota SQL, clé uniquement en secret, aucune donnée IA vendue au navigateur',()=>{
  const edge=read('supabase/functions/promotions-vision/index.ts');
  const sql=read('database/2026-10-11-promotions-vision-usage.sql');
@@ -114,8 +114,8 @@ test('Serveur autorisé, quota SQL, clé uniquement en secret, aucune donnée IA
 });
 test('PWA : nouvelle feuille de route et cache synchronisé',()=>{
  const sw=read('sw.js'),meta=JSON.parse(read('app-version.json'));
- assert.match(sw,/\.\/runtime\/promotions-visual-engine\.js\?v=2/);
- assert.match(sw,/\.\/runtime\/promotions-page\.js\?v=6/);
+ assert.match(sw,/\.\/runtime\/promotions-local-engine\.js\?v=1/);
+ assert.match(sw,/\.\/runtime\/promotions-page\.js\?v=7/);
  assert.equal(Number(sw.match(/APP_VERSION=(\d+)/)[1]),meta.version);
  assert.equal(Number(sw.match(/netto-tools-v(\d+)/)[1]),meta.version);
 });
@@ -168,9 +168,9 @@ test('Sécurité : le nouveau contrôle valide le payload avant le quota payant'
  assert.match(s,/vision-multimodal-v2/);
  assert.match(s,/Confidence entre 0 et 1/);
  const page=read('runtime/promotions-page.js'),html=read('promotions.html');
- assert.match(page,/promoVisionRetry/);
- assert.match(html,/promoVisionUnavailable/);
- assert.match(html,/promotions-visual-engine.js\?v=2/);
- assert.match(page,/NethorPromotionVision\.analyze/);
- assert.doesNotMatch(html,/src="runtime\/promotions-ocr\.js/);
+ assert.doesNotMatch(page,/promoVisionRetry|NethorPromotionVision\.analyze/);
+ assert.doesNotMatch(html,/promoVisionUnavailable/);
+ assert.match(html,/promotions-local-engine.js\?v=1/);
+ assert.match(page,/NethorPromotionsLocal\.analyze/);
+ assert.match(html,/src="runtime\/promotions-ocr\.js/);
 });
