@@ -115,7 +115,7 @@ test('Serveur autorisé, quota SQL, clé uniquement en secret, aucune donnée IA
 test('PWA : nouvelle feuille de route et cache synchronisé',()=>{
  const sw=read('sw.js'),meta=JSON.parse(read('app-version.json'));
  assert.match(sw,/\.\/runtime\/promotions-local-engine\.js\?v=1/);
- assert.match(sw,/\.\/runtime\/promotions-page\.js\?v=7/);
+ assert.match(sw,/\.\/runtime\/promotions-page\.js\?v=8/);
  assert.equal(Number(sw.match(/APP_VERSION=(\d+)/)[1]),meta.version);
  assert.equal(Number(sw.match(/netto-tools-v(\d+)/)[1]),meta.version);
 });

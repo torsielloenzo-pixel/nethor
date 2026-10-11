@@ -87,3 +87,8 @@ test('UI et services gratuits, produits toujours proposés pour validation',()=>
  assert.match(html,/Aucun appel OpenAI facturé/);
  assert.doesNotMatch(page,/promotions-vision|OPENAI_API_KEY/);
 });
+
+test('Le sélecteur PDF ignore son propre clic propagé',()=>{
+ const page=read('runtime/promotions-page.js');
+ assert.match(page,/event\.target!==\$\('promoFile'\)/);
+});

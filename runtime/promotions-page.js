@@ -378,7 +378,7 @@ async function boot(){
  state.profile=data;$('promoImport').hidden=!manager();
  if(manager()){
   const drop=$('promoDrop');
-  drop.addEventListener('click',()=>{if(!state.busy)$('promoFile').click()});
+  drop.addEventListener('click',event=>{if(event.target!==$('promoFile')&&!state.busy)$('promoFile').click()});
   drop.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&!state.busy){e.preventDefault();$('promoFile').click()}});
   drop.addEventListener('dragover',e=>{e.preventDefault();if(!state.busy)drop.classList.add('dragover')});
   drop.addEventListener('dragleave',()=>drop.classList.remove('dragover'));
