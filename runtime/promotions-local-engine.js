@@ -35,11 +35,12 @@ function safeReport(report,ocrUsed,ocrFailure){
  };
 }
 async function analyze({bytes,filename,pdfjs,onProgress,parser=root.NethorPromotionParser,
-  blocks=root.NethorPromotionsBlocks,ocr=root.NethorPromotionsOCR}){
+  blocks=root.NethorPromotionsBlocks,ocr=root.NethorPromotionsOCR,
+  intelligence=root.NethorPromotionsIntelligence}){
  if(!pdfjs?.getDocument||!parser?.linesForPage||!parser?.extractMetadata||!blocks?.parsePages)
   throw Error('Lecture PDF locale indisponible : recharge Nethor et réessaie.');
  const task=pdfjs.getDocument({data:new Uint8Array(bytes.slice(0))});
- const products=[],reports=[],metadataPages=[];
+ const products=[],reports=[],metadataPages=[],pageBundles=[];
  let ocrPages=0,failedOcrPages=0;
  try{
   const pdf=await task.promise;
@@ -78,10 +79,11 @@ async function analyze({bytes,filename,pdfjs,onProgress,parser=root.NethorPromot
        source_page:n,
        source_excerpt:clean(p.source_excerpt).slice(0,1500),
        source_block:p.source_block&&typeof p.source_block==='object'?p.source_block:{},
-       auto_uncertain:true,
-       extraction_confidence:'review'
+       auto_uncertain:Boolean(p.auto_uncertain),
+       extraction_confidence:p.extraction_confidence||'review'
       }));
     products.push(...pageProducts);
+    pageBundles.push({number:n,lines,products:pageProducts});
     reports.push(safeReport((parsed.reports||[])[0]||{number:n,detected:pageProducts.length,
       lines:lines.length,hasText:lines.length>0},ocrUsed,ocrFailure));
     onProgress?.({step:'Produits provisoires détectés',page:n,total,products:products.length});
@@ -90,13 +92,32 @@ async function analyze({bytes,filename,pdfjs,onProgress,parser=root.NethorPromot
   if(!products.length)throw Error('Aucun produit exploitable trouvé. Le prospectus peut nécessiter une saisie manuelle.');
   if(products.length>2000)throw Error('Plus de 2 000 produits détectés : découpe le catalogue en plusieurs PDF.');
   const meta=parser.extractMetadata(metadataPages,filename)||null;
+  // Enrichit une fois les dates de couverture connues : offre, format, rayon,
+  // dates propres à une section et référence visuelle du PDF.
+  const detectedGeneral=[],datePages=[];
+  if(intelligence?.enhancePage){
+   const enhanced=[];
+   for(const bundle of pageBundles){
+    const result=intelligence.enhancePage({
+     products:bundle.products,lines:bundle.lines,page:bundle.number,core:parser,meta
+    });
+    enhanced.push(...(result.products||[]));
+    detectedGeneral.push(...(result.general_offers||[]));
+    if(result.section_date_rules?.length)datePages.push(bundle.number);
+   }
+   products.splice(0,products.length,...enhanced);
+  }
   const unreadable=reports.filter(p=>!p.hasText).map(p=>p.number);
   const empty=reports.filter(p=>p.detected===0).map(p=>p.number);
   return{products,meta,reports,diagnostics:{
    engine:'nethor-pdf-text-blocks-browser-ocr-v1',
    paid_api:false,requires_human_review:true,
    total_pages:reports.length,
-   uncertain_count:products.length,
+   uncertain_count:products.filter(p=>p.auto_uncertain).length,
+   high_readability_count:products.filter(p=>!p.auto_uncertain).length,
+   note:'Une extraction techniquement lisible reste à contrôler sur le PDF ; aucune validation automatique.',
+   general_offers:detectedGeneral.slice(0,70),
+   special_validity_pages:datePages,
    textless_pages:unreadable.length,
    unreadable_pages:unreadable,
    pages_without_detected_products:empty,

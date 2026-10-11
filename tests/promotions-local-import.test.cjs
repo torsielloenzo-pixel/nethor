@@ -7,7 +7,7 @@ const path=require('node:path');
 const read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8');
 function engine(){
  const ctx={window:{}};
- for(const name of ['promotions-parser','promotions-block-analyzer','promotions-local-engine'])
+ for(const name of ['promotions-parser','promotions-block-analyzer','promotions-offer-intelligence','promotions-local-engine'])
   vm.runInNewContext(read('runtime/'+name+'.js'),ctx);
  return ctx.window;
 }
@@ -45,7 +45,8 @@ test('Le PDF natif extrait les blocs et les dates sans aucune API externe',async
  assert.equal(output.products[0].price_or_benefit,'1,69 €');
  assert.match(output.products[0].technical_details,/20\/40/);
  assert.equal(output.products[1].product_name,'OIGNON JAUNE');
- assert.ok(output.products.every(p=>p.auto_uncertain&&p.extraction_confidence==='review'));
+ assert.ok(output.products.every(p=>p.source_block?.display?.original_pdf_crop));
+ assert.ok(output.products.every(p=>p.review_status===undefined));
  assert.equal(output.diagnostics.paid_api,false);
  assert.equal(output.diagnostics.requires_human_review,true);
  assert.ok(ocrCalls<=1);
@@ -82,8 +83,8 @@ test('UI et services gratuits, produits toujours proposés pour validation',()=>
  const page=read('runtime/promotions-page.js'),html=read('promotions.html');
  assert.match(page,/NethorPromotionsLocal\.analyze/);
  assert.match(page,/async function saveDraft/);
- assert.match(page,/extraction_confidence:'review'/);
- assert.match(page,/auto_uncertain:true/);
+ assert.match(page,/extraction_confidence:p.extraction_confidence/);
+ assert.match(page,/auto_uncertain:!!p.auto_uncertain/);
  assert.match(html,/Aucun appel OpenAI facturé/);
  assert.doesNotMatch(page,/promotions-vision|OPENAI_API_KEY/);
 });
