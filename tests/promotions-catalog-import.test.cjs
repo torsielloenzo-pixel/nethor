@@ -81,21 +81,25 @@ test('Produits sans prix, pages sans texte et passages non reconnus restent diag
  assert.equal(r.products[0].auto_uncertain,true);
  assert.equal(r.reports[1].hasText,false);
  assert.ok(r.reports[0].unmatched>0);
- assert.match(page,/NethorPromotionVision\.analyze/);
+ assert.match(page,/NethorPromotionsLocal\.analyze/);
  assert.match(page,/OPENAI_API_KEY/);
 });
-test('Dépôt PDF : aucune validation, aucun formulaire date et aucun clic pour publier',()=>{
- assert.match(html,/Importer un catalogue PDF|Import automatique du catalogue/);
- assert.doesNotMatch(html,/id="promoSave"|id="promoStart"|id="promoEnd"|id="promoTitle"|id="promoReview"/);
+test('Dépôt PDF local : aperçu, contrôle des dates et enregistrement différé',()=>{
+ assert.match(html,/id="promoImportReview"/);
+ assert.match(html,/id="promoValidFrom"/);
+ assert.match(html,/id="promoValidUntil"/);
+ assert.match(html,/id="promoConfirmImport"/);
  assert.match(page,/async function importAutomatic\(file\)/);
- assert.match(page,/addEventListener\('change',e=>\{if\(!state.busy\)importAutomatic\(e.target.files\?\.\[0\]\)\}/);
+ assert.match(page,/NethorPromotionsLocal\.analyze/);
+ assert.match(page,/state\.draft=\{file,hash,analysis\}/);
+ assert.match(page,/async function saveDraft\(\)/);
+ assert.match(page,/NethorPromotionsLocal\.validateDates/);
  assert.match(page,/db\.rpc\('import_promotion_catalog_auto'/);
- assert.ok(!page.slice(page.indexOf('async function importAutomatic('),page.indexOf('function collapseCatalog(')).includes('window.confirm('),'L’import ne doit exiger aucune confirmation');
- assert.doesNotMatch(page,/reviewed_pages/);
- assert.match(page,/NethorPromotionVision\.analyze/);
- assert.match(page,/const \{meta,reports,diagnostics\}=analysis/);
  assert.match(page,/\.upload\(storagePath,file/);
+ assert.doesNotMatch(page,/checkVisionReady|OPENAI_API_KEY|NethorPromotionVision/);
+ assert.doesNotMatch(html,/id="promoVisionUnavailable"/);
 });
+
 test('Catégories, années ISO et contrôles côté serveur',()=>{
  const sql=read('database/2026-10-10-promotions-automatic-weekly.sql');
  for(const item of ['week_start','week_end','iso_year','iso_week','category','auto_uncertain','file_sha256']){
