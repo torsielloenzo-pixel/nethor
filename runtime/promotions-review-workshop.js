@@ -46,10 +46,10 @@ function regionPercent(box){
  const left=Math.max(0,x/maxX*100),top=Math.max(0,y/maxY*100);
  return{left,top,width:Math.min(100-left,w/maxX*100),height:Math.min(100-top,h/maxY*100)};
 }
-function mount({detail,cat,rows,db,canManage=false,pdfJs,notify}){
+function mount({detail,cat,rows,db,canManage=false,pdfJs,notify,onCollapse}){
  let products=(rows||[]).slice(),destroyed=false,busy=false,sourceToken=0;
  let pdfTask=null,pdfDoc=null,pdfLoading=null;
- let filter=canManage?'pending':'all',query='',category='',selectedId=null;
+ let filter=canManage&&counts(products).pending>0?'pending':'all',query='',category='',selectedId=null;
  let editing=false;
  const getSelected=()=>products.find(p=>p.id===selectedId)||null;
  const totals=()=>counts(products);
@@ -289,7 +289,6 @@ function mount({detail,cat,rows,db,canManage=false,pdfJs,notify}){
   void act('reworked',fields)
  }
  // The callback is provided by the host page: it must retain catalog collapse behavior.
- const onCollapse=arguments[0].onCollapse;
  redraw();
  return{destroy(){
   destroyed=true;sourceToken++;
