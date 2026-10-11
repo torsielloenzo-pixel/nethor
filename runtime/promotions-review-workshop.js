@@ -232,7 +232,9 @@ function mount({detail,cat,rows,db,canManage=false,pdfJs,notify,onCollapse}){
     p_product_id:p.id,p_action:action,p_fields:fields
    });
    if(res.error)throw res.error;
+   if(destroyed)return;
    const fresh=await db.from('promotion_products').select('*').eq('id',p.id).single();
+   if(destroyed)return;
    if(fresh.error||!fresh.data)throw fresh.error||Error('Actualisation impossible');
    const index=products.findIndex(x=>x.id===p.id);
    if(index>=0)products[index]=fresh.data;
@@ -249,19 +251,21 @@ function mount({detail,cat,rows,db,canManage=false,pdfJs,notify,onCollapse}){
   updateCounters();listItems();renderInspect()
  }
  node('promoReviewSearch').addEventListener('input',e=>{
+  if(busy)return;
   query=e.target.value;
   const before=selectedId;
   listItems();
   if(before!==selectedId)renderInspect();
  });
  node('promoReviewCategory').addEventListener('change',e=>{
+  if(busy)return;
   category=e.target.value;redraw()
  });
  detail.addEventListener('click',onClick);
  detail.addEventListener('submit',onSubmit);
  async function onClick(e){
   const button=e.target.closest('button');if(!button||!detail.contains(button))return;
-  if(button.hasAttribute('data-review-collapse')){onCollapse?.();return}
+  if(button.hasAttribute('data-review-collapse')){if(!busy)onCollapse?.();return}
   if(button.hasAttribute('data-review-open-pdf')){void openPdf();return}
   if(busy)return;
   if(button.hasAttribute('data-review-filter')){
