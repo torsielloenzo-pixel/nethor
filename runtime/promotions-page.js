@@ -54,7 +54,7 @@ function autoSummary(result,meta,reports){
  '<p><strong>Offres valables :</strong> '+dateFr(meta.from)+' au '+dateFr(meta.until)+'</p>'+
  '<div class="promoAutoMetrics"><span><strong>'+result.products+'</strong> produits provisoires</span>'+
  '<span><strong>'+reports.length+'</strong> pages parcourues</span>'+
- '<span><strong>'+result.uncertain+'</strong> à vérifier</span></div>'+
+ '<span><strong>'+result.uncertain+'</strong> à contrôler</span></div>'+
  '<p class="promoAutoWarning">Les produits détectés ne sont pas encore validés ni ajoutés à la liste d’installation.</p>';
 }
 function renderDraft(){
@@ -71,9 +71,19 @@ function renderDraft(){
  if(diagnostics.ocr_failures)warnings.push('La reconnaissance OCR a rencontré '+diagnostics.ocr_failures+' erreur(s). Certaines offres peuvent manquer.');
  if(diagnostics.pages_without_detected_products?.length)
   warnings.push('Aucun produit détecté sur '+diagnostics.pages_without_detected_products.length+
-   ' page(s) : '+diagnostics.pages_without_detected_products.join(', ')+'. Cela peut être normal (couvertures, mentions légales) ou une omission.');
- warnings.push('Les associations nom/prix/format sont provisoires. Vérifie la liste et le prospectus avant toute utilisation en rayon.');
+   ' page(s) : '+diagnostics.pages_without_detected_products.join(', ')+'. Certaines pages sont purement publicitaires.');
+ if(diagnostics.special_validity_pages?.length)
+  warnings.push('Certaines rubriques ont leurs propres dates : pages '+diagnostics.special_validity_pages.join(', ')+'.');
+ warnings.push('Les informations sont des propositions : les références non relues ne sont jamais publiées pour la mise en place.');
  $('promoDraftWarnings').innerHTML=warnings.map(w=>'<p>⚠ '+escapeHtml(w)+'</p>').join('');
+ const offers=(diagnostics.general_offers||[]);
+ const overview=$('promoDraftOfferOverview');
+ if(overview){
+  overview.hidden=!offers.length;
+  overview.innerHTML=offers.length?'<strong>Opérations générales distinctes des articles individuels ('+offers.length+')</strong>'+
+   '<p class="promoMuted">Elles peuvent concerner des marques ou rayons entiers : ce ne sont pas automatiquement des produits à installer.</p>'+
+   '<ul>'+offers.slice(0,9).map(o=>'<li>'+escapeHtml(o.title)+' <small>page '+escapeHtml(o.page)+'</small></li>').join('')+'</ul>':'';
+ }
  const preview=analysis.products.slice(0,12);
  $('promoDraftItems').innerHTML='<strong>Extrait des produits détectés ('+preview.length+
   ' premiers)</strong><div class="promoDraftList">'+
@@ -123,7 +133,8 @@ async function importAutomatic(file){
    }
   }catch(_){}
   if(!analysis.products.length)throw Error('Aucun produit exploitable après les exclusions.');
-  analysis.diagnostics.uncertain_count=analysis.products.length;
+  analysis.diagnostics.uncertain_count=analysis.products.filter(p=>p.auto_uncertain).length;
+  analysis.diagnostics.high_readability_count=analysis.products.length-analysis.diagnostics.uncertain_count;
   state.draft={file,hash,analysis};renderDraft();
   notify('Extraction locale terminée : vérifie les dates, puis enregistre les références pour contrôle.','ok');
  }catch(error){
@@ -163,8 +174,8 @@ async function saveDraft(){
    p_products:analysis.products.map(p=>({
     product_name:p.product_name,technical_details:p.technical_details,
     price_or_benefit:p.price_or_benefit,source_page:p.source_page,
-    source_excerpt:p.source_excerpt,extraction_confidence:'review',
-    category:p.category,auto_uncertain:true,price_unit:p.price_unit||'',
+    source_excerpt:p.source_excerpt,extraction_confidence:p.extraction_confidence||'review',
+    category:p.category,auto_uncertain:!!p.auto_uncertain,price_unit:p.price_unit||'',
     additional_info:p.additional_info||'',source_block:p.source_block||{}
    })),p_diagnostics:diagnostics
   });
