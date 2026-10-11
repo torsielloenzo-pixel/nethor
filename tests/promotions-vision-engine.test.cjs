@@ -168,9 +168,9 @@ test('Sécurité : le nouveau contrôle valide le payload avant le quota payant'
  assert.match(s,/vision-multimodal-v2/);
  assert.match(s,/Confidence entre 0 et 1/);
  const page=read('runtime/promotions-page.js'),html=read('promotions.html');
- assert.match(page,/promoVisionRetry/);
- assert.match(html,/promoVisionUnavailable/);
- assert.match(html,/promotions-visual-engine.js\?v=2/);
- assert.match(page,/NethorPromotionVision\.analyze/);
- assert.doesNotMatch(html,/src="runtime\/promotions-ocr\.js/);
+ assert.doesNotMatch(page,/promoVisionRetry|NethorPromotionVision\.analyze/);
+ assert.doesNotMatch(html,/promoVisionUnavailable/);
+ assert.match(html,/promotions-local-engine.js\?v=1/);
+ assert.match(page,/NethorPromotionsLocal\.analyze/);
+ assert.match(html,/src="runtime\/promotions-ocr\.js/);
 });
