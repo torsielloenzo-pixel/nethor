@@ -52,7 +52,7 @@ function ranges(row=[],model={}){
 function personProfile(name,rows=[]){
  const norm=s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  const n=norm(name),base=n.replace(/\s+[a-z]$/,'');
- return rows.find(x=>{const p=norm(x?.display_name),pb=p.replace(/\s+[a-z]$/,'');return p===n||pb===n||p===base||pb===base})||null
+ return rows.find(x=>x.account_enabled!==false&&[x.planning_name,x.display_name].filter(Boolean).some(value=>{const p=norm(value),pb=p.replace(/\s+[a-z]$/,'');return p===n||pb===n||p===base||pb===base}))||null
 }
 function peopleNow(model,dateKey,profiles=[],now=new Date()){
  if(!model?.days?.[dateKey])return[];
@@ -110,9 +110,9 @@ function planningDayAnomalyCount(model,dateKey,profiles=[],absences=[]){
  return count
 }
 function taskState(ctx,row){
- const team=(ctx.taskTeam||[]).filter(x=>['responsable','employe'].includes(String(x.role||'').toLowerCase()));
- const expected=row.all_users?team.length:(ctx.taskAssignees||[]).filter(x=>x.task_id===row.id).length;
- const completed=(ctx.taskCompletions||[]).filter(x=>x.task_id===row.id).length;
+ const activeIds=new Set((ctx.taskTeam||[]).filter(x=>x.account_enabled!==false&&['responsable','employe'].includes(String(x.role||'').toLowerCase())).map(x=>x.id));
+ const expected=row.all_users?activeIds.size:(ctx.taskAssignees||[]).filter(x=>x.task_id===row.id&&activeIds.has(x.user_id)).length;
+ const completed=(ctx.taskCompletions||[]).filter(x=>x.task_id===row.id&&activeIds.has(x.user_id)).length;
  return{expected,completed,status:expected>0&&completed>=expected?'done':completed>0?'partial':'todo'}
 }
 function taskStats(ctx){
