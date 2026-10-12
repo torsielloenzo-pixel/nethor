@@ -297,7 +297,7 @@ const FAST_ACCESS_TTL=1800000;
 const GLOBAL_UI_CACHE_TTL=1800000;
 const GLOBAL_UI_REFRESH_TTL=120000;
 const FAST_ACCESS_ROUTES=Object.freeze({
- profile:'profile.html',stock:'index.html',planning:'planning.html',chat:'chat.html',articles:'articles.html',
+ profile:'profile.html',stock:'index.html',planning:'planning.html',chat:'chat.html',team:'team.html',promotions:'promotions.html',articles:'articles.html',
  scanner:'scanner.html',notifications:'notifications.html',notification_settings:'notification-settings.html',
  problem_report:'report-problem.html',fl_assistant:'fl-assistant.html',
  rewards:'rewards.html',bakery:'bakery.html',accounts:'accounts.html',
@@ -1764,7 +1764,7 @@ async function rememberSiteBase(){
   await api.client.from('app_settings').upsert({key:'site_base_url',value:{url:base},updated_at:new Date().toISOString(),updated_by:api.session.user.id},{onConflict:'key'});
  }catch(e){console.warn('Enregistrement URL portail:',e)}
 }
-function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','profile.html':'Mon profil','articles.html':'Fiches articles','scanner.html':'Scanner (bêta)','notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','report-problem.html':'Signaler un problème','fl-assistant.html':'Assistant Précommande','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Gestion','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','maintenance.html':'Maintenance','user-menu.html':'Menu utilisateur'};return map[p]||document.title||'Portail'}
+function pageArea(){const p=(location.pathname.split('/').pop()||'home.html').toLowerCase();const map={'home.html':'Accueil','index.html':'Stock F&L','planning.html':'Planning','chat.html':'Chat','team.html':'Équipe','promotions.html':'Promotions','profile.html':'Mon profil','articles.html':'Fiches articles','scanner.html':'Scanner (bêta)','notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','report-problem.html':'Signaler un problème','fl-assistant.html':'Assistant Précommande','bakery.html':'Boulangerie','settings.html':'Personnalisation du site','admin-portal.html':'Gestion','rewards.html':'Défis & Boutique','accounts.html':'Gestion des comptes','maintenance.html':'Maintenance','user-menu.html':'Menu utilisateur'};return map[p]||document.title||'Portail'}
 async function logPageView(){if(!api.client||!api.session)return;try{await api.client.rpc('audit_page_view',{p_area:pageArea(),p_path:(location.pathname||'')+(location.search||''),p_title:document.title||pageArea()})}catch(e){console.warn('Journal consultation:',e)}}
 function globalCacheKey(){return api.session?.user?.id?'nettoGlobalUI:'+api.session.user.id:null}
 function globalCacheAge(){
