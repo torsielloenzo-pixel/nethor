@@ -49,3 +49,48 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .np
   padding:18px 0 42px!important
  }
 }
+
+/* NETHOR PROFESSIONAL NOTIFICATIONS V2 START */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] body{
+ background:#f3f5f7!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .notificationsPageMain{
+ width:100%!important;max-width:none!important;margin:0!important;padding:16px 18px 44px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npMobileHead{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;min-height:74px!important;
+ margin:0 0 10px!important;padding:13px 15px!important;border:1px solid #dfe5eb!important;border-radius:16px!important;background:#fff!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npMobileTitle h1{font-size:24px!important;letter-spacing:-.55px!important;color:#172033!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npMobileTitle p{font-size:9px!important;color:#758194!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npCircleBtn{
+ width:36px!important;height:36px!important;border-radius:9px!important;background:#eef2f6!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterLine{margin:0 0 8px!important;padding:0!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterLine strong{font-size:11px!important;color:#566478!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterState{
+ min-height:34px!important;border-radius:9px!important;background:#eef2f6!important;font-size:8.5px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npFilterState.active{background:#edf3fb!important;color:#315f97!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npList{
+ gap:0!important;border:1px solid #dfe5eb!important;border-radius:14px!important;background:#fff!important;overflow:hidden!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npGroup{padding:12px 13px 5px!important;font-size:10px!important;color:#637086!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRow{
+ grid-template-columns:42px minmax(0,1fr) 36px!important;gap:9px!important;min-height:64px!important;padding:9px 10px!important;border-top:1px solid #edf0f3!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRow.unread{background:#f3f7fc!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npIcon{width:40px!important;height:40px!important;border-radius:11px!important;background:#e9eef4!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npIcon span{width:28px!important;height:28px!important;background:#315f97!important;box-shadow:none!important;font-size:13px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRowText .npSentence{font-size:10.5px!important;line-height:1.4!important;color:#455267!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRowText .npSentence b{font-size:11px!important;color:#223149!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npCategory,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npAge{font-size:7.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npUnreadDot{background:#315f97!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npRowMore{width:34px!important;height:34px!important;min-width:34px!important;max-width:34px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npEmpty{
+ min-height:260px!important;background:#fff!important;color:#778395!important
+}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npMobileHead,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="notifications"] .npList{background:#1b222c!important;border-color:#34404e!important}
+/* NETHOR PROFESSIONAL NOTIFICATIONS V2 END */
