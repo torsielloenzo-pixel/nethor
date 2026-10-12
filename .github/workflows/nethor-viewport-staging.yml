@@ -1,4 +1,4 @@
-name: Nethor — Vues mobile / desktop (étape 23)
+name: Nethor — Vues Chromium et WebKit (recette)
 
 on:
   pull_request:
@@ -19,8 +19,8 @@ permissions:
   contents: read
 
 jobs:
-  chromium-viewports:
-    name: Chromium — 2 tailles mobiles et 2 desktop
+  browser-viewports:
+    name: Chromium + WebKit — mobile et desktop
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -28,12 +28,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Préparer Chromium isolé et Playwright fixé
+      - name: Préparer Chromium et WebKit isolés avec Playwright fixé
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/stage23-browser"
           npm install --prefix "$RUNNER_TEMP/stage23-browser" --no-save --no-package-lock --no-audit --no-fund playwright@1.58.2
-          "$RUNNER_TEMP/stage23-browser/node_modules/.bin/playwright" install --with-deps chromium
+          "$RUNNER_TEMP/stage23-browser/node_modules/.bin/playwright" install --with-deps chromium webkit
       - name: Vérifier les écrans sans contact avec la production
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/stage23-browser/node_modules/playwright
@@ -47,12 +47,13 @@ jobs:
             if curl -fsS http://127.0.0.1:8765/index.html -o /dev/null; then break; fi
             sleep 1
           done
-          node tests/ui/stage23-viewport-smoke.cjs
+          STAGE23_BROWSER=chromium node tests/ui/stage23-viewport-smoke.cjs
+          STAGE23_BROWSER=webkit node tests/ui/stage23-viewport-smoke.cjs
       - name: Captures de contrôle des écrans
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: stage23-chromium-viewport-screenshots
+          name: stage23-chromium-webkit-viewport-screenshots
           path: ${{ runner.temp }}/stage23-screenshots/*.png
           if-no-files-found: ignore
           retention-days: 7
