@@ -283,3 +283,36 @@ html[data-nethor-mobile-theme] .profileThemeLinkedRow{
   background:var(--nmt-soft)!important;
   border-color:var(--nmt-line)!important
 }
+
+/* NETHOR PROFESSIONAL PROFILE V2 START */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] body{
+ background:#f3f5f7!important;color:#172033!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] main{
+ padding:10px 9px calc(78px + env(safe-area-inset-bottom))!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileTop{gap:8px!important;margin:0 1px 9px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileBack{
+ width:38px!important;height:38px!important;border-radius:11px!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileTitle h1{font-size:21px!important;letter-spacing:-.45px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMobileTitle p{font-size:8.5px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .card,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .notificationsCard{
+ padding:12px!important;margin-top:8px!important;border-radius:13px!important;border-color:#dfe5eb!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileMainCard{margin-top:0!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .profileTop{grid-template-columns:66px minmax(0,1fr)!important;gap:11px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .avatarWrap,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .avatar{width:66px!important;height:66px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .avatar{background:#315f97!important;box-shadow:none!important;font-size:22px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .name{font-size:17px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .role{font-size:8px!important;color:#53708f!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .primary{background:#172033!important;box-shadow:none!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .btn{min-height:39px!important;border-radius:9px!important;font-size:9px!important;box-shadow:none!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .field input,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .field select,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .readonlyProfileName{height:40px!important;border-radius:9px!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .notificationItem.unread{background:#edf3fb!important;border-color:#cbd9eb!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="profile"] .unreadDot{background:#315f97!important}
+/* NETHOR PROFESSIONAL PROFILE V2 END */
