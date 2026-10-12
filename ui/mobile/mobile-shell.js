@@ -57,15 +57,15 @@ function buildUserMenu(ctx){
 }
 function buildPageLayout(page){
  const id=String(page||'').toLowerCase();
- if(!['home','profile','planning','settings','notification-settings','report-problem','notifications','scanner','articles','accounts','admin-portal','fl-assistant','bakery','rewards','chat','team'].includes(id))return null;
+ if(!['home','profile','planning','settings','notification-settings','report-problem','notifications','scanner','articles','promotions','accounts','admin-portal','fl-assistant','bakery','rewards','chat','team'].includes(id))return null;
  if(id==='accounts'&&document.documentElement.classList.contains('embeddedAccounts'))return{platform:'mobile',handlesBack:true,header:'',lead:''};
  const lead=id==='profile'
   ?'<div class="profileMobileTop" data-nethor-page-lead="mobile"><button class="profileMobileBack" type="button" onclick="window.NettoProfileUI?.goBack?window.NettoProfileUI.goBack():window.NethorNavigation?.navigateBack?window.NethorNavigation.navigateBack():location.href=\'user-menu.html\'" aria-label="Retour">‹</button><div class="profileMobileTitle"><h1>Mon profil</h1><p>Identité, apparence et sécurité de ton compte.</p></div></div>'
   :'';
- const ownChrome=id==='report-problem'||id==='scanner'||id==='articles'||id==='accounts'||id==='admin-portal'||id==='fl-assistant'||id==='bakery'||id==='rewards'||id==='chat';
+ const ownChrome=id==='report-problem'||id==='scanner'||id==='articles'||id==='promotions'||id==='accounts'||id==='admin-portal'||id==='fl-assistant'||id==='bakery'||id==='rewards'||id==='chat';
  return {
   platform:'mobile',
-  handlesBack:['profile','settings','notification-settings','report-problem','scanner','articles','accounts','admin-portal','fl-assistant','bakery','rewards','chat','team'].includes(id),
+  handlesBack:['profile','settings','notification-settings','report-problem','scanner','articles','promotions','accounts','admin-portal','fl-assistant','bakery','rewards','chat','team'].includes(id),
   header:ownChrome?'':'<div class="nethorMobileUtilityHost" data-nethor-page-chrome="mobile" data-nethor-global-tools-host></div>',
   lead
  }
