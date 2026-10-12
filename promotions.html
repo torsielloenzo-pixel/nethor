@@ -24,6 +24,7 @@
  <div data-nethor-platform-lead></div>
  <div class="promoInner">
   <header class="promoTitleRow">
+   <button class="promoMobileBack" type="button" id="promoMobileBack" aria-label="Retour">‹</button>
    <div><span class="promoEyebrow">CATALOGUES & OFFRES</span><h1>Promotions</h1><p>Catalogues promotionnels extraits localement, organisés par semaine et contrôlés avant leur utilisation.</p></div>
    <span class="promoTitleIcon" aria-hidden="true">%</span>
   </header>
@@ -74,6 +75,9 @@
 <script src="runtime/promotions-local-engine.js?v=2"></script>
 <script src="runtime/promotions-feedback.js?v=1"></script>
 <script src="runtime/promotions-review-workshop.js?v=2"></script>
+<script>
+document.getElementById('promoMobileBack')?.addEventListener('click',()=>{if(window.NethorNavigation?.navigateBack)window.NethorNavigation.navigateBack();else location.href='user-menu.html'});
+</script>
 <script src="runtime/promotions-page.js?v=10"></script>
 </body>
 </html>
