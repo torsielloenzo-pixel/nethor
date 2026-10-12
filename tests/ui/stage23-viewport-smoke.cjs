@@ -1,5 +1,5 @@
 'use strict';
-// Browser viewport smoke test (Chromium only): mobile-shaped and desktop-sized
+// Browser viewport smoke test (Chromium and WebKit): mobile-shaped and desktop-sized
 // viewports. Does NOT claim to be a physical iPhone, Safari or an installed PWA.
 // All external requests are mocked or blocked; real Supabase is NEVER called.
 const assert=require('node:assert/strict');
@@ -7,6 +7,8 @@ const fs=require('node:fs');
 const path=require('node:path');
 const playwright=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 
+const engine=process.env.STAGE23_BROWSER||'chromium';
+assert.ok(['chromium','webkit'].includes(engine),'Unsupported browser');
 const origin='http://127.0.0.1:8765';
 const output=path.resolve(process.env.STAGE23_SCREENSHOT_DIR||'stage23-screenshots');
 fs.mkdirSync(output,{recursive:true});
@@ -33,7 +35,8 @@ window.supabase={createClient(){
 `;
 
 async function main(){
- const browser=await playwright.chromium.launch({headless:true,args:['--no-sandbox']});
+ const browser=await playwright[engine].launch(engine==='chromium'?
+  {headless:true,args:['--no-sandbox']}:{headless:true});
  const viewports=[
   {key:'mobile-375',width:375,height:812,platform:'mobile',mobile:true},
   {key:'mobile-390',width:390,height:844,platform:'mobile',mobile:true},
@@ -49,7 +52,8 @@ async function main(){
     deviceScaleFactor:1,
     userAgent:v.mobile?
       'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+      (engine==='webkit'? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15':
+       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36')
    });
    await context.route('**/*',route=>{
     const url=route.request().url();
@@ -71,15 +75,15 @@ async function main(){
       formWidth:r.width,formX:r.x,scrollWidth:document.documentElement.scrollWidth,
       viewport:innerWidth,visible:r.width>0&&r.height>0};
    });
-   assert.equal(login.found,true,'Login form absent '+v.key);
+   assert.equal(login.found,true,'Login form absent '+engine+'/'+v.key);
    assert.equal(login.platform,v.platform,'Wrong platform layout '+v.key);
    assert.equal(login.visible,true,'Login hidden '+v.key);
    assert.ok(login.formWidth<=v.width+2,'Login form wider than viewport '+v.key);
    assert.ok(login.formX>=-2,'Login form cut off at left '+v.key);
    assert.ok(login.formX+login.formWidth<=v.width+2,'Login form cut off at right '+v.key);
    assert.ok(login.scrollWidth<=v.width+3,'Horizontal overflow on login '+v.key);
-   await page.screenshot({path:path.join(output,v.key+'-login.png'),fullPage:true,animations:'disabled'});
-   console.log('stage23-viewport-login-'+v.key+'-PASS');
+   await page.screenshot({path:path.join(output,engine+'-'+v.key+'-login.png'),fullPage:true,animations:'disabled'});
+   console.log('stage23-viewport-login-'+engine+'-'+v.key+'-PASS');
 
    await page.goto(origin+'/reset-password.html?token_hash=synthetic-only&type=recovery',{waitUntil:'domcontentloaded'});
    await page.locator('#resetForm').waitFor({state:'visible',timeout:12000});
@@ -95,11 +99,11 @@ async function main(){
    await page.locator('#saveBtn').click();
    await page.locator('#state.err').waitFor({state:'visible'});
    assert.match(await page.locator('#state').innerText(),/confirmation ne correspond pas/i);
-   await page.screenshot({path:path.join(output,v.key+'-reset.png'),fullPage:true,animations:'disabled'});
-   console.log('stage23-viewport-recovery-'+v.key+'-PASS');
+   await page.screenshot({path:path.join(output,engine+'-'+v.key+'-reset.png'),fullPage:true,animations:'disabled'});
+   console.log('stage23-viewport-recovery-'+engine+'-'+v.key+'-PASS');
    await context.close();
   }
  }finally{await browser.close()}
- console.log('stage23-chromium-viewport-smoke-complete');
+ console.log('stage23-'+engine+'-viewport-smoke-complete');
 }
 main().catch(e=>{console.error('stage23 viewport smoke failed:',e.message);process.exitCode=1});
