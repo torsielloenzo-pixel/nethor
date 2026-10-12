@@ -3,7 +3,7 @@
 
 const STYLE_ASSETS=[
  'chat-v2.css?v=30',
- 'ui/mobile/chat-layout.css?v=3',
+ 'ui/mobile/chat-layout.css?v=4',
  'ui/mobile/views/chat/chat-view.css?v=2'
 ];
 const SCRIPT_ASSETS=[
