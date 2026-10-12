@@ -113,6 +113,30 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA droits à chaud : Chat et Accueil se recalculent sans rechargement de page',()=>{
+ const chat=read('chat-v2.js');
+ const home=read('runtime/home-runtime.js');
+ assert.match(chat,/async function syncFreshChatAccess\(fresh\)/);
+ assert.match(chat,/chatPermissionFromShared\(fresh,shared\.siteConfig\|\|\{\}\)/);
+ assert.match(chat,/state\.canManage=permission==='manage'/);
+ assert.match(chat,/window\.addEventListener\('netto:profile'/);
+ assert.match(chat,/window\.addEventListener\('nethor:mobile-services'/);
+ assert.match(chat,/\['ready','core','permissions'\]\.includes\(e\.detail\?\.type\)/);
+ assert.match(home,/let homeBootReady=false,homeProfileRefreshTimer=null,homeProfileRefreshSeq=0/);
+ assert.match(home,/function scheduleHomeProfileRefresh\(fresh,siteConfig\)/);
+ assert.match(home,/window\.addEventListener\('netto:profile'/);
+ assert.match(home,/renderHomeCards\(profile,cfg\)/);
+ assert.match(home,/renderHomeDashboard\(profile,name,cfg\)/);
+});
+
+test('QA conflit Planning : dès qu’une version distante est détectée, Enregistrer est bloqué côté client',()=>{
+ const planning=read('planning-runtime.js');
+ assert.match(planning,/if\(planningConflictDetected\)\{planningLastSaveOutcome='conflict'/);
+ assert.match(planning,/Enregistrement bloqué : une version plus récente existe/);
+ assert.match(planning,/select\('updated_at'\)\.eq\('week_start',key\)\.maybeSingle\(\)/);
+ assert.match(planning,/String\(data\.updated_at\|\|''\)!==String\(planningLoadedRevisionAt\|\|''\)/);
+});
+
 test('QA sécurité session : reconnexion réseau et changement de rôle sont revalidés',()=>{
  const desktop=read('profile-ui.js');
  const mobile=read('ui/mobile/mobile-services.js');
