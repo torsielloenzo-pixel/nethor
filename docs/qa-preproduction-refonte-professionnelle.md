@@ -31,16 +31,22 @@ Le test `tests/professional-refactor-qa.test.cjs` vérifie notamment :
 | Équipe | ✓ | selon permissions | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Congés / indisponibilités | gérer | selon permissions | selon permissions | demander/voir | lecture | ✓ | ✓ |
 | Chat | ✓ | selon permissions | ✓ | ✓ | selon permissions | ✓ | ✓ |
-| Promotions | ✓ | selon permissions | selon permissions | selon permissions | lecture/masqué | ✓ | ✓ |
-| Fiches articles | ✓ | selon permissions | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Promotions | gérer | gérer | lecture validée | lecture validée | lecture validée | ✓ | ✓ |
+| Fiches articles | gérer | aucun accès actuel | aucun accès actuel | aucun accès actuel | aucun compte actuel | selon droits | ✓ |
 | Scanner | ✓ | selon permissions | ✓ | ✓ | selon permissions | ✓ | — |
 | Signalement | ✓ | selon permissions | ✓ | ✓ | ✓ | ✓ | accès shell |
 | Notifications | ✓ | selon permissions | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Profil / sécurité | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Personnalisation | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Gestion | gérer | selon permission serveur | masqué par défaut | masqué | masqué | ✓ si autorisé | ✓ si autorisé |
+| Gestion | gérer | aucun accès actuel | aucun accès actuel | aucun accès actuel | aucun compte actuel | ✓ si autorisé | ✓ si autorisé |
 
 * Le rôle « Point de vente » et les sous-rôles peuvent être définis dynamiquement dans `site_config`. La QA ne doit jamais remplacer cette logique par une liste codée en dur.
+
+## Snapshot backend réel
+
+Voir aussi : `docs/qa-backend-production-2026-10-12.md`.
+
+La configuration de production auditée confirme notamment que Point de vente gère le Planning mais n'accède pas à Gestion, que Fiches articles est actuellement réservé à l'Administrateur et que Promotions est géré par Admin/Point de vente avec lecture filtrée pour les autres rôles.
 
 ## Parcours de test par rôle
 
