@@ -17,7 +17,7 @@
 :root{--tm-bg:#f3f5f7;--tm-card:#fff;--tm-text:#172033;--tm-muted:#6d7889;--tm-line:#dfe5eb;--tm-blue:#2563eb;--tm-blue-soft:#eaf1ff;--tm-green:#158657}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;min-height:100dvh;background:var(--tm-bg);color:var(--tm-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}.hidden{display:none!important}
 .teamShell{width:100%;max-width:1560px;margin:0 auto;padding:16px 18px 34px}
-.teamCommand{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:78px;padding:15px 17px;border:1px solid var(--tm-line);border-radius:16px;background:var(--tm-card)}
+.teamCommand{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:78px;padding:15px 17px;border:1px solid var(--tm-line);border-radius:16px;background:var(--tm-card)}.teamMobileBack{display:none}
 .teamCommandCopy{display:grid;grid-template-columns:auto 1fr;column-gap:9px;align-items:baseline;min-width:0}.teamCommandCopy>span{grid-column:1/-1;font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#8b95a4}.teamCommandCopy>strong{font-size:24px;letter-spacing:-.55px}.teamCommandCopy>small{font-size:10px;font-weight:700;color:var(--tm-muted)}
 .teamCommandActions{display:flex;gap:8px;flex:none}.teamCommandActions button{min-height:38px;padding:0 13px;border:1px solid var(--tm-line);border-radius:10px;background:#fff;color:#26344a;font-size:9.5px;font-weight:850;cursor:pointer}.teamCommandActions .primary{background:#172033;color:#fff;border-color:#172033}
 .teamSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0}.teamKpi{padding:12px 13px;border:1px solid var(--tm-line);border-radius:13px;background:var(--tm-card)}.teamKpi span{display:block;color:var(--tm-muted);font-size:8.5px;font-weight:800}.teamKpi strong{display:block;margin-top:3px;font-size:20px;letter-spacing:-.35px}
@@ -26,7 +26,7 @@
 .teamError{margin-top:10px;padding:12px;border:1px solid #f0c9c9;border-radius:12px;background:#fff4f4;color:#9a3f3f;font-size:10px}
 @media(max-width:1180px){.teamGrid{grid-template-columns:repeat(3,minmax(220px,1fr))}}
 @media(max-width:840px){.teamShell{padding:10px 10px 26px}.teamCommand{align-items:flex-start;flex-direction:column}.teamCommandActions{width:100%}.teamCommandActions button{flex:1}.teamSummary{grid-template-columns:repeat(3,minmax(0,1fr))}.teamGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.teamShell{padding:8px 9px calc(82px + env(safe-area-inset-bottom))}.teamCommand{min-height:0;padding:12px;border-radius:14px}.teamCommandCopy>strong{font-size:21px}.teamCommandCopy>small{font-size:9px}.teamCommandActions{display:none}.teamSummary{gap:6px}.teamKpi{padding:9px 8px;border-radius:11px}.teamKpi span{font-size:7.5px}.teamKpi strong{font-size:17px}.teamTools{grid-template-columns:1fr}.teamFilters{overflow-x:auto}.teamFilter{flex:none}.teamGrid{grid-template-columns:1fr;gap:7px}.teamCard{min-height:72px;padding:10px;border-radius:12px;grid-template-columns:43px minmax(0,1fr) auto}.teamAvatar{width:43px;height:43px}.teamCopy strong{font-size:12px}}
+@media(max-width:600px){.teamShell{padding:8px 9px calc(82px + env(safe-area-inset-bottom))}.teamCommand{min-height:0;padding:12px;border-radius:14px;display:grid!important;grid-template-columns:38px minmax(0,1fr);align-items:center!important;gap:9px!important}.teamMobileBack{display:grid;width:38px;height:38px;padding:0;place-items:center;border:1px solid var(--tm-line);border-radius:11px;background:var(--tm-card);color:var(--tm-text);font-size:22px;font-weight:850}.teamCommandCopy{grid-column:2}.teamCommandCopy>strong{font-size:21px}.teamCommandCopy>small{font-size:9px}.teamCommandActions{display:none}.teamSummary{gap:6px}.teamKpi{padding:9px 8px;border-radius:11px}.teamKpi span{font-size:7.5px}.teamKpi strong{font-size:17px}.teamTools{grid-template-columns:1fr}.teamFilters{overflow-x:auto}.teamFilter{flex:none}.teamGrid{grid-template-columns:1fr;gap:7px}.teamCard{min-height:72px;padding:10px;border-radius:12px;grid-template-columns:43px minmax(0,1fr) auto}.teamAvatar{width:43px;height:43px}.teamCopy strong{font-size:12px}}
 :root[data-theme="dark"]{--tm-bg:#12171e;--tm-card:#1b222c;--tm-text:#edf2f8;--tm-muted:#a6b0bf;--tm-line:#34404e}
 :root[data-theme="dark"] .teamSearch,:root[data-theme="dark"] .teamFilters,:root[data-theme="dark"] .teamCommandActions button{background:#222b36;color:#eef3f9;border-color:#3b4756}:root[data-theme="dark"] .teamCommandActions .primary,:root[data-theme="dark"] .teamFilter.active{background:#eef3f9;color:#172033}:root[data-theme="dark"] .teamCard:hover{background:#202833}:root[data-theme="dark"] .teamAvatar{background:#293440;color:#d9e2ec}:root[data-theme="dark"] .teamOnlineDot{border-color:#1b222c}:root[data-theme="dark"] .teamEmpty{background:#1b222c}
 </style>
@@ -34,6 +34,7 @@
 <body><div data-nethor-platform-header></div><div data-nethor-platform-lead></div>
 <main class="teamShell">
  <section class="teamCommand">
+  <button class="teamMobileBack" type="button" id="teamMobileBack" aria-label="Retour">‹</button>
   <div class="teamCommandCopy"><span>Organisation</span><strong>Équipe</strong><small>Annuaire interne et présence en temps réel</small></div>
   <div class="teamCommandActions"><button type="button" onclick="location.href='planning.html'">Voir le planning</button><button class="primary" type="button" onclick="location.href='chat.html'">Ouvrir les messages</button></div>
  </section>
@@ -91,6 +92,7 @@ async function load(){
 document.getElementById('teamSearch').addEventListener('input',e=>{state.query=e.target.value;render()});
 document.querySelectorAll('.teamFilter').forEach(btn=>btn.addEventListener('click',()=>{state.filter=btn.dataset.filter;document.querySelectorAll('.teamFilter').forEach(x=>x.classList.toggle('active',x===btn));render()}));
 document.getElementById('teamGrid').addEventListener('click',e=>{const card=e.target.closest('[data-user]');if(!card)return;const m=state.members.find(x=>x.id===card.dataset.user);if(!m)return;state.api?.openUserCard?.(m,{presenceLabel:()=>presenceIds().has(m.id)?'En ligne':'Hors ligne',messageUrl:'chat.html?user='+encodeURIComponent(m.id)})});
+document.getElementById('teamMobileBack')?.addEventListener('click',()=>{if(window.NethorNavigation?.navigateBack)window.NethorNavigation.navigateBack();else location.href='user-menu.html'});
 window.addEventListener('netto:presence',()=>render());
 load();
 })();
