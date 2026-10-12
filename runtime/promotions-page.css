@@ -280,3 +280,74 @@ html[data-nethor-platform="desktop"] .promoPage :is(button,input,select,textarea
 .promoReviewFullPage canvas{display:block;width:100%;height:auto;margin-top:8px}
 .promoReviewSourceCanvas{margin:0 auto;max-width:100%}
 .promoReviewSourceCanvas canvas{display:block;width:100%;height:auto;border-radius:6px}
+
+/* NETHOR PROFESSIONAL PROMOTIONS V2 START */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoPage,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoPage{
+ --pm-bg:#f3f5f7;--pm-surface:#fff;--pm-ink:#172033;--pm-muted:#6f7b8c;--pm-line:#dfe5eb;--pm-soft:#f4f6f8;
+ --pm-accent:#b78b00;--pm-accent-soft:#fff5c9;--pm-green:#21805a;
+ background:var(--pm-bg)!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoPage{padding:16px 18px 38px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoInner{max-width:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoTitleRow{
+ min-height:78px;padding:14px 16px!important;margin:0 0 10px;border:1px solid var(--pm-line);border-radius:16px;background:#fff
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoEyebrow{font-size:8px!important;color:#8e710d!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoTitleRow h1{margin:3px 0 3px!important;font-size:24px!important;letter-spacing:-.55px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoTitleRow p{font-size:9.5px!important;color:var(--pm-muted)!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoTitleIcon{
+ width:44px!important;height:44px!important;border-radius:12px!important;background:var(--pm-accent-soft)!important;color:#987600!important;font-size:21px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoPanel{
+ margin-bottom:10px!important;padding:15px!important;border-radius:15px!important;border-color:var(--pm-line)!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoSectionHead{gap:10px!important;margin-bottom:12px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoSectionHead .promoIcon{
+ width:34px!important;height:34px!important;border-radius:10px!important;background:var(--pm-accent-soft)!important;color:#997700!important;font-size:15px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoSectionHead h2{font-size:13.5px!important;color:#26354b!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoSectionHead p{font-size:9px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoDrop{
+ min-height:132px!important;border-width:1px!important;border-radius:12px!important;background:#f8f9fb!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoPdfIcon{width:43px!important;height:46px!important;border-radius:9px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoDrop strong{font-size:11px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoDrop small{font-size:8.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoPrimary{
+ background:#172033!important;border-color:#172033!important;color:#fff!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoCatalogList{gap:6px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoCatalog{border-radius:10px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoCatalog .promoCatalogToggle{padding:11px 12px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoCatalog button strong{font-size:11px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoCatalog button small{font-size:8.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoCatalogCount,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoCatalogCaret{background:var(--pm-accent-soft)!important;color:#987600!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoProductTable th{background:#f5f7f9!important;font-size:8.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoProductTable td{padding:9px!important;font-size:10px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoReviewProgress,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoImportReview,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promoProductEditor{box-shadow:none!important}
+
+@media(max-width:900px){
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoPage{
+  padding:10px 9px calc(78px + env(safe-area-inset-bottom))!important
+ }
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoTitleRow{padding:5px 2px 12px!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoEyebrow{font-size:7.5px!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoTitleRow h1{font-size:23px!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoTitleRow p{font-size:9px!important;line-height:1.35!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoPanel{padding:11px!important;border-radius:14px!important;box-shadow:none!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoSectionHead{gap:8px!important;margin-bottom:10px!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoSectionHead .promoIcon{width:32px!important;height:32px!important;background:var(--pm-accent-soft)!important;color:#987600!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoSectionHead h2{font-size:12px!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoSectionHead p{font-size:8px!important;line-height:1.35!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoDrop{min-height:125px!important;border-width:1px!important;background:#f8f9fb!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoPrimary{background:#172033!important;border-color:#172033!important}
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="promotions"] .promoCatalog{border-radius:10px!important}
+}
+:root[data-theme="dark"] html[data-nethor-page-id="promotions"] .promoTitleRow,
+:root[data-theme="dark"] html[data-nethor-page-id="promotions"] .promoPanel{background:#1b222c!important;border-color:#34404e!important}
+:root[data-theme="dark"] html[data-nethor-page-id="promotions"] .promoDrop{background:#222b36!important}
+/* NETHOR PROFESSIONAL PROMOTIONS V2 END */
