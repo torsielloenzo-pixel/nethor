@@ -1,0 +1,58 @@
+name: Nethor — Vues mobile / desktop (étape 23)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/nethor-viewport-staging.yml'
+      - 'tests/ui/stage23-*'
+      - 'index.html'
+      - 'reset-password.html'
+      - 'login-page-layout.js'
+      - 'platform-resolver.js'
+      - 'ui/mobile/login-layout.js'
+      - 'ui/desktop/login-layout.js'
+      - 'ui/mobile/login-layout.css'
+      - 'ui/desktop/login-layout.css'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chromium-viewports:
+    name: Chromium — 2 tailles mobiles et 2 desktop
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Préparer Chromium isolé et Playwright fixé
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stage23-browser"
+          npm install --prefix "$RUNNER_TEMP/stage23-browser" --no-save --no-package-lock --no-audit --no-fund playwright@1.58.2
+          "$RUNNER_TEMP/stage23-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Vérifier les écrans sans contact avec la production
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/stage23-browser/node_modules/playwright
+          STAGE23_SCREENSHOT_DIR: ${{ runner.temp }}/stage23-screenshots
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --bind 127.0.0.1 > "$RUNNER_TEMP/stage23-http.log" 2>&1 &
+          HTTP_PID=$!
+          trap 'kill "$HTTP_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/index.html -o /dev/null; then break; fi
+            sleep 1
+          done
+          node tests/ui/stage23-viewport-smoke.cjs
+      - name: Captures de contrôle des écrans
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage23-chromium-viewport-screenshots
+          path: ${{ runner.temp }}/stage23-screenshots/*.png
+          if-no-files-found: ignore
+          retention-days: 7
