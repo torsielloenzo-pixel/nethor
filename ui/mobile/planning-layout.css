@@ -1215,3 +1215,59 @@ html[data-theme="dark"][data-nethor-page-layout="mobile"][data-nethor-page-id="p
  html[data-theme="dark"] .nthDayMineProfile>div>strong,html[data-theme="dark"] .nthDayPerson>strong{color:#eaf0f8!important}
 }
 /* NETHOR PROFESSIONAL PLANNING V1 END */\n
+
+/* NETHOR PROFESSIONAL ABSENCES V1 START */
+@media(max-width:900px){
+ body.agendaLayout .absencesWideRow{margin:8px 0 0!important}
+ body.agendaLayout #absencesWidget{
+  padding:0!important;overflow:hidden!important;border:1px solid #dfe5eb!important;border-radius:14px!important;background:#fff!important;box-shadow:none!important
+ }
+ body.agendaLayout #absencesWidget>.insightHead{
+  min-height:54px!important;padding:10px 11px!important;border-bottom:1px solid #edf0f3!important;background:#fbfcfd!important
+ }
+ body.agendaLayout #absencesWidget>.insightHead strong{font-size:12px!important;color:#27364e!important}
+ body.agendaLayout #absencesWidget>.insightHead small{font-size:8px!important;color:#7a8697!important}
+ body.agendaLayout #absencesWidget .absenceHeaderActions{width:auto!important;display:flex!important;gap:5px!important}
+ body.agendaLayout #absencesWidget #absenceRequestBtn{
+  width:auto!important;min-height:34px!important;padding:0 9px!important;border:1px solid #b9cae2!important;border-radius:9px!important;
+  background:#edf3fb!important;color:#315c92!important;box-shadow:none!important;font-size:8px!important;font-weight:850!important
+ }
+ body.agendaLayout #absencesWidget .absenceAdminTools{display:none!important}
+ body.agendaLayout #absencesWidget .absenceManagementSummary{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;padding:8px 9px!important;border-bottom:1px solid #edf0f3!important
+ }
+ body.agendaLayout #absencesWidget .absenceManagementSummary.hidden{display:none!important}
+ body.agendaLayout #absencesWidget .absenceManageIntro{grid-column:1/-1!important;padding:7px 8px!important;border-radius:9px!important;background:#f6f8fa!important}
+ body.agendaLayout #absencesWidget .absenceManageIntro b{font-size:9px!important}.absenceManageIntro span{display:block;margin-top:2px;font-size:7.5px!important;color:#778496!important}
+ body.agendaLayout #absencesWidget .absenceManageStat{display:grid!important;place-items:center!important;gap:2px!important;padding:7px 4px!important;border:1px solid #e4e8ed!important;border-radius:9px!important;background:#f8fafb!important}
+ body.agendaLayout #absencesWidget .absenceManageStat span{font-size:7px!important;color:#788496!important}.absenceManageStat b{font-size:14px!important}
+ body.agendaLayout #absencesWidget .absenceList{display:grid!important;gap:0!important;max-height:none!important;padding:0 10px 7px!important}
+ body.agendaLayout #absencesWidget .absenceRow{padding:10px 1px!important;border-top:1px solid #edf0f3!important;background:transparent!important}
+ body.agendaLayout #absencesWidget .absenceRow:first-child{border-top:0!important}
+ body.agendaLayout #absencesWidget .absenceTop strong{font-size:10.5px!important;color:#28374e!important}
+ body.agendaLayout #absencesWidget .absenceStatus{padding:4px 7px!important;border-radius:999px!important;font-size:7px!important;font-weight:900!important}
+ body.agendaLayout #absencesWidget .absenceMeta{margin-top:4px!important;font-size:8.5px!important;color:#738096!important}
+ body.agendaLayout #absencesWidget .absenceNote{margin-top:6px!important;padding:7px 8px!important;border-radius:8px!important;background:#f6f8fa!important;font-size:8.5px!important;color:#566478!important}
+ body.agendaLayout #absencesWidget .absenceButtons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important;margin-top:8px!important}
+ body.agendaLayout #absencesWidget .absenceButtons button{min-height:36px!important;border-radius:9px!important;font-size:8px!important;font-weight:850!important}
+ body.agendaLayout #absencesWidget .absenceApprove{background:#e8f5ed!important;color:#246f4d!important}
+ body.agendaLayout #absencesWidget .absenceReject{background:#f9ebeb!important;color:#9e4545!important}
+ body.agendaLayout #absencesWidget .absenceCancel{grid-column:1/-1!important;background:#edf1f5!important;color:#566478!important}
+ body.agendaLayout #absencesWidget .absenceEmpty{padding:22px 9px!important;color:#7b8797!important;font-size:9px!important;text-align:center!important}
+
+ .planningModal:has(#absenceRequestTitle){align-items:flex-end!important;padding:8px!important;background:rgba(11,16,23,.44)!important;backdrop-filter:blur(4px)!important}
+ .planningModal:has(#absenceRequestTitle) .planningModalCard{
+  width:100%!important;max-width:100%!important;margin:0!important;padding:14px!important;border-radius:20px 20px 14px 14px!important;
+  border:1px solid #dfe5eb!important;background:#fff!important;box-shadow:0 -16px 48px rgba(17,30,48,.18)!important
+ }
+ .planningModal:has(#absenceRequestTitle) .planningModalHead{padding-bottom:10px!important;border-bottom:1px solid #edf0f3!important}
+ .planningModal:has(#absenceRequestTitle) .planningModalHead strong{font-size:14px!important;color:#26354d!important}
+ .planningModal:has(#absenceRequestTitle) .absenceForm{gap:9px!important;padding-top:10px!important}
+ .planningModal:has(#absenceRequestTitle) .absenceForm input,.planningModal:has(#absenceRequestTitle) .absenceForm select,.planningModal:has(#absenceRequestTitle) .absenceForm textarea{border:1px solid #dfe5eb!important;border-radius:10px!important;background:#fff!important}
+ .planningModal:has(#absenceRequestTitle) #absenceRequestSubmit{min-height:43px!important;background:#172033!important;color:#fff!important;border-radius:10px!important;box-shadow:none!important}
+}
+html[data-theme="dark"] body.agendaLayout #absencesWidget{background:#1b222c!important;border-color:#34404e!important}
+html[data-theme="dark"] body.agendaLayout #absencesWidget>.insightHead{background:#1d252f!important;border-color:#303b49!important}
+html[data-theme="dark"] body.agendaLayout #absencesWidget .absenceManageIntro,html[data-theme="dark"] body.agendaLayout #absencesWidget .absenceManageStat,html[data-theme="dark"] body.agendaLayout #absencesWidget .absenceNote{background:#222b36!important;border-color:#354150!important}
+html[data-theme="dark"] body.agendaLayout #absencesWidget .absenceTop strong,html[data-theme="dark"] body.agendaLayout #absencesWidget>.insightHead strong{color:#eaf0f7!important}
+/* NETHOR PROFESSIONAL ABSENCES V1 END */
