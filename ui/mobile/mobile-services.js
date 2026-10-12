@@ -397,23 +397,33 @@ function securityAuthFailure(error){
   return [400,401,403].includes(status)||['session_not_found','refresh_token_not_found','refresh_token_already_used'].includes(code)
 }
 async function verifyAuthAfterSecurityError(){
+  // getUser() verifie le JWT, pas necessairement la presence de session_id
+  // dans auth.sessions apres une revocation. Il ne remplace jamais le RPC.
   try{
     const {data,error}=await client.auth.getUser();
-    if(!error&&data?.user)return true;
-    if((!error&&!data?.user)||securityAuthFailure(error)){await forceDisabledAccountLogout();return false}
-  }catch(_){}
-  return true
+    if((!error&&!data?.user)||securityAuthFailure(error)){
+      await forceDisabledAccountLogout();
+    }
+  }catch(error){console.warn('[Nethor MobileServices] verification Auth indisponible',error)}
+  return false
 }
 async function checkSecurityState(){
-  if(!client||!state.session||navigator.onLine===false||securityBusy)return true;
+  // Hors connexion ou pendant un controle deja en cours : ne pas autoriser
+  // un rafraichissement privilegie avant validation explicite du serveur.
+  if(!client||!state.session||navigator.onLine===false||securityBusy)return false;
   securityBusy=true;
   try{
     const {data,error}=await client.rpc('nethor_security_context');
-    if(error)return verifyAuthAfterSecurityError();
+    if(error)return await verifyAuthAfterSecurityError();
     if(data?.session_active===false){await forceDisabledAccountLogout();return false}
+    if(data?.session_active!==true)return false;
     const serverRole=String(data?.role||'').trim(),localRole=String(state.profile?.role||'').trim();
-    if(serverRole&&localRole&&serverRole!==localRole)await refreshCore({emitChange:true});
+    if(!serverRole)return false;
+    if(serverRole!==localRole)await refreshCore({emitChange:true});
     return true
+  }catch(error){
+    console.warn('[Nethor MobileServices] verification session',error);
+    return await verifyAuthAfterSecurityError()
   }finally{securityBusy=false}
 }
 function startSecurityWatch(){
