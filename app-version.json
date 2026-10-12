@@ -1,18 +1,18 @@
 {
-  "version": 456,
-  "label": "v1.46.80",
+  "version": 457,
+  "label": "v1.46.81",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Accueil desktop · cohérence des effectifs",
-  "message": "Les statistiques d'équipe et de tâches n'incluent plus les comptes désactivés, sur desktop comme sur mobile.",
+  "title": "Sécurité mobile · validation des sessions",
+  "message": "La PWA mobile ne considère plus une simple validation de jeton comme une preuve de session encore active après révocation.",
   "published_at": "2026-10-11T11:43:05.969Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Accueil desktop : les comptes désactivés sont exclus des destinataires et des compteurs de tâches.",
-    "Correspondance entre les noms du planning et les noms de compte, avec masquage des profils inactifs.",
-    "Tableau de bord : les indicateurs de progression ignorent les validations historiques de comptes désactivés.",
-    "Tests automatisés mobile et desktop désormais inclus dans GitHub Actions.",
-    "Aucune donnée, session ni autorisation Supabase modifiée."
+    "Reconnexion : vérification explicite de session_active côté serveur avant de relancer la synchronisation.",
+    "Une réponse réseau temporairement indisponible ne déconnecte pas arbitrairement le compte.",
+    "Révocation et désactivation connues : déconnexion et effacement du cache personnel prévus.",
+    "Tests automatisés supplémentaires sur les sessions actives, révoquées, concurrentes et les retours réseau.",
+    "Révision en brouillon : aucun déploiement sur le domaine ni changement Supabase."
   ]
 }
