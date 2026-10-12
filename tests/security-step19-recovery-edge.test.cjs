@@ -123,3 +123,24 @@ test('stage20: public request remains available without authentication',()=>{
  assert.match(rest,/return genericOk\(\)/);
  assert.doesNotMatch(rest,/caller\.rpc\("nethor_security_context"\)/);
 });
+
+
+test('stage20: client reports Auth success separately from server audit confirmation',()=>{
+ const html=fs.readFileSync(path.join(__dirname,'..','reset-password.html'),'utf8');
+ const authSave=html.indexOf("await db.auth.updateUser({password:next})");
+ const acknowledgement=html.indexOf("await db.functions.invoke('password-recovery-email',{body:{action:'resolved'}})");
+ assert.ok(authSave>=0&&acknowledgement>authSave,'Password must be saved by Auth first');
+ assert.match(html,/followUpVerified=!followUpError&&confirmation\?\.verified===true/);
+ assert.match(html,/Le suivi de cette modification reste à confirmer côté serveur/);
+ assert.match(html,/await db\.auth\.signOut\(\{scope:'global'\}\)/);
+});
+test('stage20: only changed Auth password hash can provide server evidence',()=>{
+ const sql=fs.readFileSync(path.join(__dirname,'..','docs/security/etape20-confirmation-auth-verifiee-proposal.sql'),'utf8');
+ assert.match(sql,/AFTER UPDATE OF encrypted_password ON auth\.users/);
+ assert.match(sql,/OLD\.encrypted_password IS DISTINCT FROM NEW\.encrypted_password/);
+ assert.match(sql,/SET password_changed_verified_at = v_changed_at/);
+ assert.match(sql,/r\.reset_channel = 'email'/);
+ assert.match(sql,/r\.email_status = 'sent'/);
+ assert.match(sql,/r\.requested_at >= v_changed_at - interval '24 hours'/);
+ assert.doesNotMatch(sql,/auth\.(?:tokens|audit_log_entries)\s*SET/);
+});
