@@ -10,7 +10,7 @@ const start=source.indexOf('    if (action !== "request") return json(');
 const end=source.indexOf('\n  } catch (e) {',start);
 assert.ok(start>=0&&end>start,'Expected staged request branch');
 const branch=source.slice(start,end);
-const runRequest=new AsyncFunction('body','admin','Deno','crypto','findProfile','validBaseUrl','sendMail','safe','genericOk','fetch','url','json',`
+const runRequest=new AsyncFunction('body','admin','Deno','crypto','findProfile','validBaseUrl','sendMail','safe','genericOk','fetch','url','json','service',`
  const action="request";
  ${branch}
 `);
@@ -68,7 +68,7 @@ function harness({pendingCreated=true,mailOk=true,updateFails=false}={}){
  const genericOk=()=>({status:200,body:{success:true}});
  const fetch=async()=>{calls.push('fallback');return{ok:true}};
  const json=(body,status=200)=>({body,status});
- return{calls,inserted,updates,sent,run:()=>runRequest({action:'request',identifier:'fake'},admin,Deno,webcrypto,findProfile,validBaseUrl,sendMail,safe,genericOk,fetch,'http://127.0.0.1',json)}
+ return{calls,inserted,updates,sent,run:()=>runRequest({action:'request',identifier:'fake'},admin,Deno,webcrypto,findProfile,validBaseUrl,sendMail,safe,genericOk,fetch,'http://127.0.0.1',json,'test-only-service-role-placeholder')}
 }
 test('stage24: emailed recovery link contains request id and Auth token, but DB stores digest only',async()=>{
  const h=harness();const response=await h.run();
