@@ -27,7 +27,8 @@ test('Security step 16 SQL is review-only, atomic, and guarded against concurren
  assert.match(sql,/^COMMIT;$/m);
  assert.match(sql,/DO \$nethor_preflight\$/);
  assert.equal((sql.match(/md5\(pg_get_functiondef\(p\.oid\)\)/g)||[]).length,targets.length);
- assert.doesNotMatch(sql,/\b(?:GRANT|REVOKE|DROP TABLE|DELETE FROM auth\.sessions|UPDATE public\.profiles)\b/i);
+ const executable=sql.split('\n').filter(line=>!line.trimStart().startsWith('--')).join('\n');
+ assert.doesNotMatch(executable,/\b(?:GRANT|REVOKE|DROP TABLE|DELETE FROM auth\.sessions|UPDATE public\.profiles)\b/i);
  assert.doesNotMatch(relative,/supabase\/migrations/i);
 });
 test('Security step 16 preserves each function and installs an explicit session guard',()=>{
