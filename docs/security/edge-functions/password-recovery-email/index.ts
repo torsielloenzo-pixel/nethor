@@ -130,34 +130,57 @@ Deno.serve(async (req) => {
       // Le seul signal de preuve est un changement d'empreinte de mot de passe
       // constaté par la base Auth (proposition SQL étape 20).
       // Un simple appel du navigateur ne peut plus résoudre une demande.
+      // Reassociation a une demande SPECIFIQUE dont le lien de recuperation
+      // a ete remis par e-mail. Posseder simplement un JWT et changer son mot
+      // de passe ne peut plus resoudre une demande de recuperation quelconque.
+      const requestId = String(body?.request_id || "").trim();
+      const proof = String(body?.token_hash || "");
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requestId)
+          || proof.length < 20 || proof.length > 2048) {
+        return json({ error: "Preuve du lien de récupération manquante." }, 400);
+      }
+      const proofHashBytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(proof));
+      const proofDigest = Array.from(new Uint8Array(proofHashBytes), (b) => b.toString(16).padStart(2, "0")).join("");
       const minRequestDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       const { data: latest, error: lookupError } = await admin.from("password_reset_requests")
-        .select("id,password_changed_verified_at,confirmation_notification_at")
+        .select("id,password_changed_verified_at,confirmation_notification_at,resolved_at")
+        .eq("id", requestId)
         .eq("user_id", user.id)
         .eq("reset_channel", "email")
         .eq("email_status", "sent")
+        .eq("recovery_proof_digest", proofDigest)
         .gte("requested_at", minRequestDate)
-        .order("requested_at", { ascending: false })
-        .limit(1)
         .maybeSingle();
       if (lookupError) return json({ error: "Vérification du changement indisponible." }, 503);
-      if (!latest?.password_changed_verified_at) {
+      if (!latest) return json({ error: "Lien de récupération non reconnu." }, 409);
+      if (!latest.password_changed_verified_at) {
         return json({ error: "Changement de mot de passe non encore confirmé par le serveur." }, 409);
       }
 
-      // Réservation atomique et unique de la notification, même si plusieurs
-      // onglets appellent l'endpoint simultanément.
+      // Reservation atomique d'un accuse lie a CE lien. Aucun autre compte,
+      // aucune autre demande, ni un simple changement Auth ne peut l'activer.
       const now = new Date().toISOString();
       const { data: claimed, error: claimError } = await admin.from("password_reset_requests")
-        .update({ confirmation_notification_at: now, confirmation_notification_status: "pending" })
+        .update({
+          resolved_at: now,
+          resolved_by: null,
+          confirmation_notification_at: now,
+          confirmation_notification_status: "pending",
+        })
         .eq("id", latest.id)
         .eq("user_id", user.id)
+        .eq("recovery_proof_digest", proofDigest)
         .not("password_changed_verified_at", "is", null)
+        .is("resolved_at", null)
         .is("confirmation_notification_at", null)
         .select("id")
         .maybeSingle();
       if (claimError) return json({ error: "Confirmation temporairement indisponible." }, 503);
-      if (!claimed) return json({ success: true, verified: true, already_acknowledged: true });
+      if (!claimed) {
+        if (latest.resolved_at && latest.confirmation_notification_at)
+          return json({ success: true, verified: true, already_acknowledged: true });
+        return json({ error: "Confirmation non disponible." }, 409);
+      }
 
       await admin.from("audit_logs").insert({
         actor_id: null,
