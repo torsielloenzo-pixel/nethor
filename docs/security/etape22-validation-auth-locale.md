@@ -50,3 +50,37 @@ Ce banc ne reproduit **pas** l'ensemble des policies RLS, des 12 fonctions SQL, 
 Les résultats doivent être fondés sur les logs du workflow **Nethor — Auth Supabase isolée (étape 22)**, pas sur les tests des étapes précédentes.
 
 Aucune autorisation de déploiement n'est donnée par une CI verte ; la PR #40 reste en **Draft**, et la sortie reste **NO-GO**.
+
+
+## Exécution validée — Supabase Auth local
+
+Workflow : [Nethor — Auth Supabase isolée, run #1](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38308791161), commit `7e483eb61aacc8effcd9b69c9d6a4c16016f15fc`.
+
+**Résultat du job Auth local : SUCCESS.** Les étapes `Démarrer une stack locale non liée à la production`, `Appliquer les fonctions proposées uniquement au local` et `Libérer les conteneurs locaux` ont toutes réussi.
+
+Les marqueurs explicitement retrouvés dans les logs sont :
+- `stage22-auth-real-jwt-active-PASS`
+- `stage22-auth-real-jwt-admin-PASS`
+- `stage22-auth-real-jwt-disabled-PASS`
+- `stage22-auth-real-jwt-cutoff-PASS`
+- `stage22-auth-real-jwt-revoked-PASS`
+- `stage22-auth-real-password-change-PASS`
+- `stage22-isolated-supabase-auth-complete`
+
+Ce résultat confirme :
+- un jeton signé authentique n'outrepasse pas `private.session_is_active()` après suppression de sa vraie session Auth ;
+- les deux RPC candidates testées n'exposent pas l'équipe ni les sous-rôles après désactivation/révocation ;
+- un changement de mot de passe effectué via `PUT /auth/v1/user` déclenche le mécanisme SQL proposé dans la stack locale ;
+- la stack a pu être arrêtée et ses ressources libérées correctement.
+
+Le job habituel [Nethor — Tests de fiabilité #1082](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38308790902) était également au vert au même commit.
+
+### Point bloquant découvert par le test réel
+
+Le scénario de changement de mot de passe utilise volontairement un **compte connecté et une mise à jour classique via Auth**, sans présenter ni utiliser un véritable lien de récupération envoyé par e-mail. Pourtant, le trigger de l'étape 20 marque une demande e-mail « résolue », car il observe seulement la modification de `auth.users.encrypted_password`.
+
+Il ne faut donc **pas** interpréter `resolved_at` ou `password_changed_verified_at` comme une preuve que le lien de récupération précis a été utilisé. Ce n'est qu'une preuve de modification Auth. En cas de réinitialisation par un administrateur ou de modification classique, une demande e-mail récente peut être marquée à tort « résolue ».
+
+**Sévérité : bloqueur de publication du mécanisme étape 20 (P1).** La suite devra lier une confirmation à une demande de récupération précise, par un identifiant/token sécurisé associé au lien et à la preuve Auth, ou éviter de déclarer la demande résolue sans cette liaison.
+
+Le banc de test ne doit pas être présenté comme « validation des cinq rôles et des 12 RPC/Edge Functions » : il prouve **les comptes Auth Admin/Employé, deux RPC, les chemins de révocation et le trigger**, dans une stack indépendante. Les autres validations restent nécessaires et la décision **NO-GO** est maintenue.
