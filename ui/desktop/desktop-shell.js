@@ -25,7 +25,7 @@ const DESKTOP_SIDEBAR_DEFAULTS={
  activity:{label:'Activité magasin',url:'home.html#nethorDesktopStatsRow',icon:'activity',enabled:true},
  planning:{label:'Planning',url:'planning.html',icon:'planning',enabled:true},
  promotions:{label:'Promotions',url:'promotions.html',icon:'promotions',enabled:true},
- team:{label:'Équipe',url:'home.html#nethorDesktopTeamWidget',icon:'team',enabled:true},
+ team:{label:'Équipe',url:'team.html',icon:'team',enabled:true},
  tasks:{label:'Tâches',url:'home.html#nethorDesktopPriorities',icon:'tasks',enabled:true},
  receptions:{label:'Réceptions',url:'home.html#nethorDesktopDeliveriesKpi',icon:'receptions',enabled:true},
  articles:{label:'Fiches articles',url:'articles.html',icon:'articles',enabled:true},
@@ -106,6 +106,7 @@ function sidebarActiveKey(page){
  if(id==='promotions')return'promotions';
  if(['admin-portal','accounts'].includes(id))return'management';
  if(id==='chat')return'chat';
+ if(id==='team')return'team';
  if(id==='articles')return'articles';
  if(id==='report-problem')return'incidents';
  if(['settings','notification-settings'].includes(id))return'settings';
@@ -138,7 +139,7 @@ function buildDesktopSidebar(page){
  ensureDesktopSidebarStyle();
  applySidebarMode(savedSidebarMode(),{fullWidth:desktopDashboardConfig(window.NettoProfileUI?.siteConfig||{}).sidebar.width});
  const active=sidebarActiveKey(page);
- const mainKeys=['home','planning','promotions','chat','management'];
+ const mainKeys=['home','planning','team','promotions','chat','management'];
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
   '<div class="nethorSidebarBrandRow"><button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
   '<button class="nethorSidebarCollapse" type="button" onclick="window.NethorDesktopShell?.toggleSidebar?.()" title="Réduire la barre latérale" aria-label="Réduire la barre latérale" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.8 5.5-6.3 6.5 6.3 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>'+
@@ -343,6 +344,7 @@ function buildPageLayout(page){
   bakery:{title:'Boulangerie',subtitle:'Stock interne',back:true},
   rewards:{title:'Défis & Boutique',subtitle:'Missions et récompenses',back:true},
   chat:{title:'Chat',subtitle:'Messagerie interne',back:true},
+  team:{title:'Équipe',subtitle:'Annuaire interne',back:true},
   'user-menu':{title:'Menu utilisateur',subtitle:'Compte et raccourcis',back:true},
   stock:{title:'Stock Fruits & Légumes',subtitle:'Gestion opérationnelle',back:true}
  };
