@@ -284,6 +284,16 @@ function taskMode(role){
  if(['responsable','employe'].includes(value))return'user';
  return'hidden'
 }
+function matchingPlanningMember(profile,name){
+ const target=norm(name).trim(),base=target.replace(/\s+[a-z]$/,'');
+ if(!target)return false;
+ return [profile?.planning_name,profile?.display_name].filter(Boolean).some(value=>{
+  const key=norm(value).trim();
+  return key===target||key===base
+ })
+}
+function disabledPlanningMember(name){return state.team.some(p=>p.account_enabled===false&&matchingPlanningMember(p,name))}
+function activePlanningMember(name){return state.team.find(p=>p.account_enabled!==false&&matchingPlanningMember(p,name))||null}
 function operationalUsers(){return state.team.filter(x=>x.account_enabled!==false&&['responsable','employe'].includes(String(x.role||'').toLowerCase()))}
 function afternoonUsers(){const ids=new Set(state.afternoonUserIds);return operationalUsers().filter(x=>ids.has(x.id))}
 function taskGroups(rows){
