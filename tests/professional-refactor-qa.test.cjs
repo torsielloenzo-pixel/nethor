@@ -113,6 +113,18 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA Accueil : les Tâches du jour reflètent exactement les rôles RLS',()=>{
+ const desktop=read('runtime/home-runtime.js');
+ const mobile=read('ui/mobile/views/home/home-view.js');
+ for(const source of [desktop,mobile]){
+  assert.match(source,/\['admin','role_point-de-vente','point_vente','surface_vente'\]\.includes\([^)]+\)\)return'editor'/);
+  assert.match(source,/\['responsable','employe'\]\.includes\([^)]+\)\)return'user'/);
+  assert.match(source,/return'hidden'/);
+ }
+ assert.match(desktop,/daily_task_completions'\)\.delete\(\)\.eq\('task_id',id\)\.eq\('user_id',uid\)/);
+ assert.match(desktop,/daily_task_completions'\)\.insert\(\{task_id:id,user_id:uid\}\)/);
+});
+
 test('QA Chat : actions sensibles et canal Général restent cohérents',()=>{
  const chat=read('chat-v2.js');
  assert.match(chat,/const canArchive=isGroup;/);
