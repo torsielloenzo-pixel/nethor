@@ -351,3 +351,9 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="promotions"] .promo
 :root[data-theme="dark"] html[data-nethor-page-id="promotions"] .promoPanel{background:#1b222c!important;border-color:#34404e!important}
 :root[data-theme="dark"] html[data-nethor-page-id="promotions"] .promoDrop{background:#222b36!important}
 /* NETHOR PROFESSIONAL PROMOTIONS V2 END */
+.promoMobileBack{display:none}
+@media(max-width:900px){
+ .promoTitleRow{display:grid!important;grid-template-columns:38px minmax(0,1fr) auto!important;align-items:center!important;gap:9px!important}
+ .promoMobileBack{display:grid;width:38px;height:38px;padding:0;place-items:center;border:1px solid var(--pm-line);border-radius:11px;background:var(--pm-surface);color:var(--pm-ink);font-size:22px;font-weight:850;box-shadow:none}
+ .promoTitleRow>div{min-width:0}
+}
