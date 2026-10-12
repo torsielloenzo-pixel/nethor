@@ -563,7 +563,9 @@ async function deleteMessage(e,id){
   showToast('Message supprimé définitivement');
   return
  }
- const {error}=await db.from('chat_messages').update({body:null,deleted_at:new Date().toISOString(),attachment_name:null,attachment_type:null,attachment_size:null}).eq('id',id).eq('user_id',state.session.user.id);
+ let deleteQuery=db.from('chat_messages').update({body:null,deleted_at:new Date().toISOString(),attachment_name:null,attachment_type:null,attachment_size:null}).eq('id',id);
+ if(!state.canManage)deleteQuery=deleteQuery.eq('user_id',state.session.user.id);
+ const {error}=await deleteQuery;
  if(error)return showToast('Suppression impossible');
  if(m.attachment_path){try{await db.storage.from('chat-files').remove([m.attachment_path])}catch(_){}}
  window.NettoSounds?.play?.('delete');await loadMessages()
@@ -599,7 +601,7 @@ async function renderDesktopDetails(){
  const hero=isDirect&&direct?avatarHtml(direct,'activeAvatar'):conversationAvatar(conv,true);
  const role=isDirect&&direct?roleLabel(direct.role):(isGeneral?'Canal général':'Groupe');
  const canAdd=!isGeneral&&(isDirect||(isGroup&&(conv.created_by===state.session?.user?.id||state.profile?.role==='admin')));
- const canArchive=!(isGeneral&&state.profile?.role!=='admin');
+ const canArchive=isGroup;
  const media=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&/^(image|video)\//.test(m.attachment_type||''));
  const files=state.messages.filter(m=>!m.deleted_at&&m.attachment_path&&!/^(image|video)\//.test(m.attachment_type||''));
  box.innerHTML='<div class="detailsHero">'+hero+'<h2>'+esc(title)+'</h2><span class="detailsRole">'+esc(role)+'</span><p>'+esc(presence)+'</p></div>'+
