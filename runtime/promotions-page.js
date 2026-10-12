@@ -276,7 +276,6 @@ async function openCatalog(id){
 }
 
 async function boot(){
- if(window.NethorPlatform?.isMobile?.()){location.replace('mobile.html');return}
  if(!window.supabase||!window.NethorPromotionsLocal||!window.NethorPromotionsBlocks||!window.NethorPromotionParser||!window.NethorPromotionsReview){notify('Le module Promotions n’a pas été chargé. Recharge la page.','error');return}
  const {data:{session},error:sessionError}=await db.auth.getSession();
  if(sessionError||!session){location.replace('index.html');return}
