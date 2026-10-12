@@ -858,6 +858,7 @@ async function loadWeek(start=currentWeekStart,opts={}){
  return !error
 }
 async function saveWeek(options={}){
+ if(planningConflictDetected){planningLastSaveOutcome='conflict';setSaveState('Conflit : recharge le planning avant d’enregistrer');showToast('Enregistrement bloqué : une version plus récente existe');return false}
  if(!canEdit||!model||planningSaveInFlight||navigator.onLine===false||(planningWeekLoadError&&!Object.prototype.hasOwnProperty.call(options,'expectedRevision')&&!(editMode&&changedDates().length&&planningLoadedRevisionAt&&planningLoadedWeekKey===isoDate(currentWeekStart))))return false;
  const weekKey=isoDate(currentWeekStart);
  const expectedRevision=Object.prototype.hasOwnProperty.call(options,'expectedRevision')?options.expectedRevision:planningLoadedRevisionAt;
