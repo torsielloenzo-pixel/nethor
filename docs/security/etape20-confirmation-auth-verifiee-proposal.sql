@@ -23,7 +23,7 @@ BEGIN
   -- Server evidence is the change of the stored Auth password hash, NOT a
   -- client-supplied event, time value, JWT claim or generic users.updated_at.
   IF OLD.encrypted_password IS DISTINCT FROM NEW.encrypted_password
-     AND pg_catalog.nullif(NEW.encrypted_password, '') IS NOT NULL THEN
+     AND nullif(NEW.encrypted_password, '') IS NOT NULL THEN
     UPDATE public.password_reset_requests AS r
        SET password_changed_verified_at = v_changed_at,
            resolved_at = v_changed_at,
