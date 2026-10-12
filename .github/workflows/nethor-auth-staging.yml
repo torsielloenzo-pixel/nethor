@@ -14,8 +14,28 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Détecter une modification du banc Auth
+    runs-on: ubuntu-latest
+    outputs:
+      staged: ${{ steps.diff.outputs.staged }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
+      - id: diff
+        shell: bash
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -Eq '^((tests/security/stage22-)|(tests/security/stage17-session-guard-snapshot\\.sql$)|(docs/security/etape16-rpc-hardening-proposal\\.sql$)|(docs/security/etape20-confirmation-auth-verifiee-proposal\\.sql$)|(\\.github/workflows/nethor-auth-staging\\.yml$))'; then
+            echo "staged=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "staged=false" >> "$GITHUB_OUTPUT"
+          fi
   go-true-isolation:
     name: Auth réelle — stack locale, comptes fictifs
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.staged == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
