@@ -618,6 +618,7 @@ async function render(){
  const todayModel=weeks.find(w=>w?.days?.[todayKey])||currentWeek,workingNames=[],afternoonNames=[],todayTeam=[];
  if(todayModel?.days?.[todayKey]){
   (todayModel.employees||[]).forEach((employee,i)=>{
+   if(disabledPlanningMember(employee.name))return;
    const row=todayModel.days[todayKey].cells?.[i]||[],ranges=workRanges(row,todayModel||{});
    if(row.some(v=>v==='g'||v==='b'))workingNames.push(employee.name);
    if(ranges.some(r=>r.b>14))afternoonNames.push(employee.name)
