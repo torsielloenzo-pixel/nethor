@@ -114,9 +114,16 @@ Deno.serve(async (req) => {
 
       // getUser valide le JWT, mais ne garantit pas qu'une session revoquee a perdu ses droits.
       // Revalider au niveau serveur avant toute operation utilisant la cle service_role.
-      const { data: securityContext, error: securityError } =
-        await caller.rpc("nethor_security_context");
-      if (securityError || securityContext?.session_active !== true) {
+      let sessionActive = false;
+      try {
+        const { data: securityContext, error: securityError } =
+          await caller.rpc("nethor_security_context");
+        sessionActive = !securityError && securityContext?.session_active === true;
+      } catch {
+        // Une erreur de transport/reseau ne doit jamais laisser passer une operation privilegiee.
+        sessionActive = false;
+      }
+      if (!sessionActive) {
         return json({ error: "Session inactive ou révoquée." }, 401);
       }
 
