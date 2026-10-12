@@ -113,6 +113,12 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA Gestion : Équipe et Promotions sont configurables dans la sidebar desktop',()=>{
+ const admin=read('runtime/admin-portal-runtime.js');
+ assert.match(admin,/team:\{enabled:true,label:'Équipe',url:'team\.html'\}/);
+ assert.match(admin,/promotions:\{enabled:true,label:'Promotions',url:'promotions\.html'\}/);
+});
+
 test('QA desktop : la sidebar respecte les permissions et inclut Fiches articles',()=>{
  const shell=read('ui/desktop/desktop-shell.js');
  assert.match(shell,/const mainKeys=\['home','planning','team','promotions','articles','chat','management'\]/);
