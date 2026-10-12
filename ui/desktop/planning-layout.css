@@ -1247,3 +1247,78 @@ html[data-theme="dark"] #sheetViewport .xlsTable .nameCell{background:#1a2029!im
 html[data-theme="dark"] #sheetViewport .xlsTable .readCell,
 html[data-theme="dark"] #sheetViewport .xlsTable .totalCell{background:#1d242e!important;color:#dfe7f1!important}
 /* NETHOR PROFESSIONAL PLANNING V1 END */\n
+
+/* NETHOR PROFESSIONAL ABSENCES V1 START */
+@media(min-width:761px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] .absencesWideRow{
+  margin:10px 0 0!important
+ }
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="planning"] #absencesWidget{
+  padding:0!important;overflow:hidden!important;border:1px solid var(--np-line,#dfe4ea)!important;
+  border-radius:15px!important;background:#fff!important;box-shadow:none!important
+ }
+ #absencesWidget>.insightHead{
+  min-height:58px!important;padding:11px 13px!important;border-bottom:1px solid #edf0f3!important;background:#fbfcfd!important
+ }
+ #absencesWidget>.insightHead strong{font-size:13px!important;color:#26344a!important}
+ #absencesWidget>.insightHead small{margin-top:3px!important;font-size:8.5px!important;color:#788395!important}
+ #absencesWidget .absenceHeaderActions{display:flex!important;align-items:center!important;gap:6px!important}
+ #absencesWidget .absenceSubmit{
+  min-height:34px!important;padding:0 11px!important;border:1px solid #b9cae2!important;border-radius:9px!important;
+  background:#edf3fb!important;color:#315c92!important;box-shadow:none!important;font-size:8.5px!important;font-weight:850!important
+ }
+ #absencesWidget .absenceAdminTools .btn{min-height:34px!important;border-radius:9px!important;font-size:8px!important}
+ #absencesWidget .absenceManagementSummary{
+  display:grid!important;grid-template-columns:minmax(220px,1fr) repeat(3,minmax(100px,.42fr))!important;
+  gap:7px!important;padding:10px 11px!important;border-bottom:1px solid #edf0f3!important;background:#fff!important
+ }
+ #absencesWidget .absenceManagementSummary.hidden{display:none!important}
+ #absencesWidget .absenceManageIntro,.absenceManageStat{
+  min-height:52px!important;padding:9px 10px!important;border:1px solid #e4e8ed!important;border-radius:10px!important;background:#f8fafb!important
+ }
+ #absencesWidget .absenceManageIntro b{font-size:10px!important;color:#2a374d!important}
+ #absencesWidget .absenceManageIntro span{display:block;margin-top:3px;font-size:8px!important;color:#7b8797!important}
+ #absencesWidget .absenceManageStat{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:6px!important}
+ #absencesWidget .absenceManageStat span{font-size:8px!important;color:#768397!important}.absenceManageStat b{font-size:15px!important}
+ #absencesWidget .absenceManageStat.pending b{color:#9a6714!important}.absenceManageStat.approved b{color:#22704b!important}.absenceManageStat.rejected b{color:#a74646!important}
+ #absencesWidget .absenceList{display:grid!important;gap:0!important;max-height:310px!important;overflow:auto!important;padding:0 11px 8px!important}
+ #absencesWidget .absenceRow{padding:11px 2px!important;border-top:1px solid #edf0f3!important;background:transparent!important}
+ #absencesWidget .absenceRow:first-child{border-top:0!important}
+ #absencesWidget .absenceTop{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important}
+ #absencesWidget .absenceTop strong{font-size:10.5px!important;color:#29374d!important}
+ #absencesWidget .absenceStatus{padding:4px 7px!important;border-radius:999px!important;font-size:7px!important;font-weight:900!important}
+ #absencesWidget .absenceStatus.pending{background:#fff3d7!important;color:#8b6111!important}
+ #absencesWidget .absenceStatus.approved{background:#e8f5ed!important;color:#236f4c!important}
+ #absencesWidget .absenceStatus.rejected{background:#f8e8e8!important;color:#a14444!important}
+ #absencesWidget .absenceStatus.cancelled{background:#edf0f3!important;color:#657183!important}
+ #absencesWidget .absenceMeta{margin-top:4px!important;font-size:8.5px!important;color:#738096!important}
+ #absencesWidget .absenceNote{margin-top:6px!important;padding:7px 8px!important;border-radius:8px!important;background:#f7f9fb!important;color:#566478!important;font-size:8.5px!important}
+ #absencesWidget .absenceButtons{display:flex!important;gap:5px!important;margin-top:8px!important}
+ #absencesWidget .absenceButtons button{min-height:30px!important;padding:0 9px!important;border-radius:8px!important;font-size:8px!important;font-weight:850!important}
+ #absencesWidget .absenceApprove{background:#e8f5ed!important;color:#246f4d!important;border:1px solid #c8e4d3!important}
+ #absencesWidget .absenceReject{background:#f9ebeb!important;color:#9e4545!important;border:1px solid #ebcaca!important}
+ #absencesWidget .absenceCancel{background:#edf1f5!important;color:#566478!important;border:1px solid #dce2e8!important}
+ #absencesWidget .absenceEmpty{padding:25px 10px!important;color:#788496!important;font-size:9px!important;text-align:center!important}
+
+ .planningModal:has(#absenceRequestTitle){background:rgba(17,24,39,.42)!important;backdrop-filter:blur(4px)!important}
+ .planningModal:has(#absenceRequestTitle) .planningModalCard{
+  width:min(520px,calc(100vw - 32px))!important;padding:16px!important;border:1px solid #dfe5eb!important;border-radius:16px!important;
+  background:#fff!important;box-shadow:0 24px 64px rgba(17,30,48,.20)!important
+ }
+ .planningModal:has(#absenceRequestTitle) .planningModalHead{padding-bottom:11px!important;border-bottom:1px solid #edf0f3!important}
+ .planningModal:has(#absenceRequestTitle) .planningModalHead strong{font-size:15px!important;color:#25334a!important}
+ .planningModal:has(#absenceRequestTitle) .planningModalHead small{font-size:8.5px!important;color:#798598!important}
+ .planningModal:has(#absenceRequestTitle) .absenceForm{gap:10px!important;padding-top:11px!important}
+ .planningModal:has(#absenceRequestTitle) .absenceForm label{font-size:8.5px!important;color:#657287!important;font-weight:850!important}
+ .planningModal:has(#absenceRequestTitle) .absenceForm input,
+ .planningModal:has(#absenceRequestTitle) .absenceForm select,
+ .planningModal:has(#absenceRequestTitle) .absenceForm textarea{
+  border:1px solid #dfe5eb!important;border-radius:10px!important;background:#fff!important;box-shadow:none!important
+ }
+ .planningModal:has(#absenceRequestTitle) #absenceRequestSubmit{background:#172033!important;color:#fff!important;border-radius:10px!important;box-shadow:none!important}
+}
+html[data-theme="dark"] #absencesWidget{background:#1a2029!important;border-color:#323b49!important}
+html[data-theme="dark"] #absencesWidget>.insightHead,html[data-theme="dark"] #absencesWidget .absenceManagementSummary{background:#1d242e!important;border-color:#2f3946!important}
+html[data-theme="dark"] #absencesWidget .absenceManageIntro,html[data-theme="dark"] #absencesWidget .absenceManageStat,html[data-theme="dark"] #absencesWidget .absenceNote{background:#222a35!important;border-color:#354151!important}
+html[data-theme="dark"] #absencesWidget .absenceTop strong,html[data-theme="dark"] #absencesWidget>.insightHead strong,html[data-theme="dark"] #absencesWidget .absenceManageIntro b{color:#e9eff7!important}
+/* NETHOR PROFESSIONAL ABSENCES V1 END */
