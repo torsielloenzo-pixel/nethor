@@ -1,18 +1,17 @@
 {
-  "version": 453,
-  "label": "v1.46.77",
+  "version": 454,
+  "label": "v1.46.78",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Promotions · Extraction ciblée depuis le prospectus",
-  "message": "Les encadrés produits, les conditions des offres générales et les périodes spécifiques sont mieux distingués. Consulte le recadrage original de chaque encadré.",
+  "title": "Fiabilisation Nethor — sessions et permissions",
+  "message": "Les changements de permissions de sous-role sont mieux repercutes sur ordinateur. La PWA mobile revalide la session et recharge ses donnees apres un demarrage hors connexion.",
   "published_at": "2026-10-11T11:43:05.969Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Les fiches conservent les coordonnées du bloc PDF, la taille/format, le type d'offre et la validité spécifique quand détectée.",
-    "Les promotions de marque ou de rayon entier sont signalées à part, sans être inventées comme produits.",
-    "Dans l'atelier de vérification, le recadrage original de l'encadré remplace la page entière par défaut, avec possibilité de consulter l'ensemble de la page.",
-    "Les produits techniquement lisibles sont distingués des cas incertains, sans validation ou installation automatique.",
-    "Aucun code EAN13, Mercalys ou appel à une API IA payante."
+    "Desktop : suivi des changements de permissions des sous-roles sans attendre un rechargement manuel.",
+    "Mobile : controle de session installe meme lorsqu'une PWA demarre sans connexion.",
+    "Au retour reseau : session revalidee avant actualisation du profil, des permissions et des notifications.",
+    "Aucune modification des roles, RLS, comptes ou donnees en production tant que la PR reste en brouillon."
   ]
 }
