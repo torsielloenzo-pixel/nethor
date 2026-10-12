@@ -249,11 +249,11 @@ async function render(ctx){
  }
  const style='--nd-accent:'+attr(c.style.accent||'#ff5a2a')+';--nd-radius:'+int(c.style.radius,16,10,28)+'px;--nd-gap:'+int(c.style.gap,14,8,24)+'px';
  const parts=[];
- // Store banner remains untouched. Only the dashboard widgets change layout.
+ const todayLabel=(()=>{try{return new Date(String(ctx.todayKey||'')+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long'}).replace(/^./,c=>c.toUpperCase())}catch(_){return String(ctx.todayKey||'')}})();
+ parts.push('<section class="ndCommandHeader" aria-label="Vue opérationnelle du magasin"><div class="ndCommandCopy"><span>Tableau de bord</span><strong>Vue opérationnelle</strong><small>'+esc(todayLabel)+' · Netto Le Thor</small></div><div class="ndCommandActions"><button type="button" data-desktop-home-action="open-planning" data-desktop-home-url="planning.html">Ouvrir le planning</button><button type="button" class="primary" data-desktop-home-action="incident" data-desktop-home-url="report-problem.html">Signaler</button></div></section>');
+ // Le point de vente reste visible mais devient un contexte compact, pas le contenu principal.
  if(enabled(wd.store_banner)&&ctx.storeInfoHtml)parts.push('<div class="ndHeroSlot">'+ctx.storeInfoHtml+'</div>');
- if(kpis.length)parts.push('<div class="ndKpiGrid" id="nethorDesktopStatsRow" style="--nd-kpi-count:'+kpis.length+'">'+kpis.join('')+'</div>');
- // The daily timeline is the principal widget; messages and quick actions share
- // an independent right column. Optional widgets remain accessible below.
+ // Le planning quotidien est le premier véritable espace de travail.
  const primary=[];
  if(enabled(wd.planning_view))primary.push('<section class="ndPlanningSlot">'+(ctx.quickPlanningHtml||'<div class="ndCard ndEmpty">Planning indisponible.</div>')+'</section>');
  if(enabled(wd.priorities))primary.push(renderPriorities(ctx,wd.priorities,ext.chat,ext.deliveries));
@@ -267,6 +267,8 @@ async function render(ctx){
    (sidebar.length?'<div class="ndWidgetAside">'+sidebar.join('')+'</div>':'')+
   '</div>');
  }
+ // Les KPI deviennent une synthèse secondaire : utiles, mais jamais devant le planning.
+ if(kpis.length)parts.push('<div class="ndKpiGrid" id="nethorDesktopStatsRow" style="--nd-kpi-count:'+kpis.length+'">'+kpis.join('')+'</div>');
  const secondary=[];
  if(enabled(wd.team_service))secondary.push(renderTeam(ctx,wd.team_service,people));
  if(enabled(wd.operations_followup))secondary.push(renderFollowup(ctx,wd.operations_followup,ext.deliveries));
