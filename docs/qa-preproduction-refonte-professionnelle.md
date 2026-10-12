@@ -223,3 +223,40 @@ Contrôles confirmés :
 - préférences Profil/Paramètres : mise à jour du profil courant uniquement.
 
 Validation automatisée : **Nethor — Tests de fiabilité #948 : succès**.
+
+## QA préproduction — sessions, concurrence et actions simultanées
+
+### Révocation / désactivation de compte
+Vérification production confirmée :
+- `admin_set_account_enabled(..., false)` désactive le profil, avance `sessions_valid_after` et supprime les sessions Auth ;
+- `private.session_is_active()` exige un compte actif, une session Auth existante et une session postérieure à `sessions_valid_after`.
+
+Durcissement client :
+- contrôle sécurité immédiat au retour réseau, au focus et au retour au premier plan ;
+- comparaison du rôle serveur et du rôle local ;
+- resynchronisation immédiate du profil si le rôle change ;
+- en cas d'erreur d'authentification du RPC sécurité, validation via `auth.getUser()` ;
+- une erreur réseau ordinaire ne provoque pas de déconnexion forcée.
+
+### Changement de rôle à chaud
+- Planning : perte du niveau `manage` ferme immédiatement le mode édition, efface le brouillon mutable et restaure la dernière version publiée ;
+- Chat : `canManage`, actions Admin et menus sont recalculés sans recharger la page ;
+- Accueil desktop : Tâches du jour et widgets dépendants du rôle sont rerendus après mise à jour du profil ;
+- Accueil mobile : déjà abonné aux événements `core / permissions` de MobileServices.
+
+### Concurrence Planning
+- surveillance Realtime de la semaine ouverte ;
+- comparaison de `updated_at` pendant une édition locale ;
+- conservation du brouillon si une version distante apparaît ;
+- verrou `planningSaveInFlight` contre les doubles sauvegardes ;
+- écriture via `planning_save_week_if_revision` ;
+- dès qu'un conflit distant est connu, le bouton Enregistrer est bloqué côté client avant même l'appel RPC.
+
+### Anti double-action
+- Chat : une seconde invocation de `sendMessage()` est ignorée tant que le bouton d'envoi est désactivé, y compris avec deux pressions Entrée rapides ;
+- demande de congé / indisponibilité : seconde soumission ignorée pendant l'envoi ;
+- validation/refus d'absence : mise à jour conditionnée par `status = pending` et la révision `updated_at` ;
+- tâches desktop : verrou `homeTaskBusy` ;
+- tâches mobile : verrou `state.busy`.
+
+Les protections serveur restent la source d'autorité ; ces changements empêchent surtout l'interface de proposer ou répéter une action déjà invalide.
