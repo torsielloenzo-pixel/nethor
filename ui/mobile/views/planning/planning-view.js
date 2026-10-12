@@ -6,7 +6,7 @@ const STYLE_ASSETS=[
  'planning-agenda-v2.css?v=15',
  'ui/mobile/planning-agenda.css?v=2',
  'ui/mobile/planning-week-cards.css?v=2',
- 'ui/mobile/planning-layout.css?v=5',
+ 'ui/mobile/planning-layout.css?v=6',
  'ui/mobile/views/planning/planning-view.css?v=2',
  'ui/mobile/planning-day-cards.css?v=1'
 ];
