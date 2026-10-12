@@ -1221,8 +1221,8 @@ function cancelPlanningEdit(){
  setSaveState('Vérification de la semaine…');loadWeek(currentWeekStart).catch(e=>console.warn('Rechargement après abandon :',e));window.NettoSounds?.play?.('menuClose');showToast(hasChanges?'Modifications annulées':'Mode modification fermé')
 }
 async function saveAndFinishEdit(){if(!canEdit||!model||planningSaveInFlight)return;const dates=changedDates();if(dates.length){const saved=await saveWeek();if(!saved){showToast(planningLastSaveOutcome==='conflict'?'Conflit : modifications locales conservées':'Enregistrement non confirmé : modifications conservées');return}await addPlanningLog('modify',logDetails({kind:'manual_edit',dates}));await notifyChangedEmployees()}editSnapshot=null;editMode=false;document.getElementById('editTools').classList.add('hidden');document.getElementById('editSaveBar').classList.add('hidden');const b=document.getElementById('editPlanningBtn');b.textContent='✎ Modifier le planning';b.classList.remove('editing');setSaveState(dates.length?(planningLastSaveVerified?'✓ Planning enregistré':'Enregistré • version non confirmée'):'Lecture seule');resetEditChanges();renderAll();if(dates.length&&planningLastSaveVerified)window.NettoSounds?.play?.('success');showToast(dates.length?(!planningLastSaveVerified?'Enregistré, version à revérifier':'✓ Modifications enregistrées'):'Aucune modification')}
-function paintCell(td){if(!editMode||!model)return;const row=+td.dataset.row,slot=+td.dataset.slot;if(drag.row!==null&&row!==drag.row)return;const key=row+'|'+slot;if(drag.changed.has(key))return;drag.changed.add(key);const d=modelDay(),value=paintColor==='erase'?null:paintColor;if(d.cells[row][slot]===value)return;d.cells[row][slot]=value;markPlanningChange(currentDay,row);td.style.background=value?COLOR[value]:'';drag.first=drag.first||{row,slot};drag.last={row,slot}}
-function bindEditing(){const table=document.getElementById('xlsTable');if(!table)return;table.onpointerdown=e=>{const td=e.target.closest('.slot.editable');if(!td||e.button>0)return;e.preventDefault();drag={active:true,row:+td.dataset.row,pointerId:e.pointerId,changed:new Set(),first:null,last:null};try{table.setPointerCapture(e.pointerId)}catch(_){}paintCell(td)};table.onpointermove=e=>{if(!drag.active||e.pointerId!==drag.pointerId)return;e.preventDefault();const td=document.elementFromPoint(e.clientX,e.clientY)?.closest('.slot.editable');if(td&&table.contains(td))paintCell(td)};const end=e=>{if(!drag.active)return;drag.active=false;if(drag.changed.size){renderReader();renderPlanningInsights()}drag.row=null;drag.changed.clear()};table.onpointerup=end;table.onpointercancel=end;table.onlostpointercapture=end}
+function paintCell(td){if(!canEdit||!editMode||!model)return;const row=+td.dataset.row,slot=+td.dataset.slot;if(drag.row!==null&&row!==drag.row)return;const key=row+'|'+slot;if(drag.changed.has(key))return;drag.changed.add(key);const d=modelDay(),value=paintColor==='erase'?null:paintColor;if(d.cells[row][slot]===value)return;d.cells[row][slot]=value;markPlanningChange(currentDay,row);td.style.background=value?COLOR[value]:'';drag.first=drag.first||{row,slot};drag.last={row,slot}}
+function bindEditing(){const table=document.getElementById('xlsTable');if(!table)return;table.onpointerdown=e=>{const td=e.target.closest('.slot.editable');if(!canEdit||!td||e.button>0)return;e.preventDefault();drag={active:true,row:+td.dataset.row,pointerId:e.pointerId,changed:new Set(),first:null,last:null};try{table.setPointerCapture(e.pointerId)}catch(_){}paintCell(td)};table.onpointermove=e=>{if(!drag.active||e.pointerId!==drag.pointerId)return;e.preventDefault();const td=document.elementFromPoint(e.clientX,e.clientY)?.closest('.slot.editable');if(td&&table.contains(td))paintCell(td)};const end=e=>{if(!drag.active)return;drag.active=false;if(drag.changed.size){renderReader();renderPlanningInsights()}drag.row=null;drag.changed.clear()};table.onpointerup=end;table.onpointercancel=end;table.onlostpointercapture=end}
 async function resetDay(){if(!canEdit||!editMode||!model||planningSaveInFlight)return;const date=dayKey();if(!confirm('Réinitialiser entièrement '+DAYS[currentDay][1]+' '+frDate(addDays(currentWeekStart,currentDay))+' ?'))return;const d=modelDay(),affected=[];d.cells.forEach((r,i)=>{if(r.some(Boolean)){affected.push(model.employees[i]?.name);markPlanningChange(currentDay,i)}});d.cells=d.cells.map(r=>r.map(()=>null));const saved=await saveWeek();if(!saved){showToast(planningLastSaveOutcome==='conflict'?'Conflit : la journée n’a pas été réinitialisée':'Réinitialisation non confirmée. Vérifie la semaine avant de réessayer.');return}await addPlanningLog('modify',logDetails({kind:'reset_day',dates:[date]}));const ids=[...new Set(affected.map(n=>planningProfileFor(n)?.id).filter(Boolean))];await notifyUsers(ids.map(id=>({user_id:id,kind:'reset_day',title:'Planning du '+shortDate(date)+' modifié',message:'La journée du '+shortDate(date)+' a été réinitialisée. Merci de reconsulter tes horaires.',planning_date:date,week_start:isoDate(startOfWeek(parseISO(date))),target_url:'planning.html?week='+encodeURIComponent(isoDate(startOfWeek(parseISO(date))))+'&day='+encodeURIComponent(date)})));resetEditChanges();editSnapshot=clonePlanningModel(model);renderAll();if(planningLastSaveVerified)window.NettoSounds?.play?.('delete');showToast(planningLastSaveVerified?'Planning du jour réinitialisé':'Enregistré • version à vérifier')}
 async function resetWeek(){
  if(!canEdit||!editMode||!model||planningSaveInFlight||planningWeekLoadError||navigator.onLine===false)return;
@@ -1462,14 +1462,31 @@ async function prewarmPlanningRuntime(){
  planningRuntimeActive=false;
  return planningCacheReady
 }
+async function revokePlanningEditAccess(){
+ if(!editMode)return false;
+ const publishedFallback=editSnapshot?clonePlanningModel(editSnapshot):null;
+ editMode=false;editSnapshot=null;resetEditChanges();
+ drag={active:false,row:null,pointerId:null,changed:new Set(),first:null,last:null};
+ if(publishedFallback)model=publishedFallback;
+ document.getElementById('editTools')?.classList.add('hidden');
+ document.getElementById('editSaveBar')?.classList.add('hidden');
+ const button=document.getElementById('editPlanningBtn');
+ if(button){button.textContent='✎ Modifier le planning';button.classList.remove('editing')}
+ setSaveState('Droits de modification retirés · synchronisation…');
+ const refreshed=await loadWeek(currentWeekStart,{render:false,silent:true,preserveDraft:false}).catch(()=>false);
+ if(!refreshed&&publishedFallback)model=publishedFallback;
+ showToast('Droits de modification retirés · version publiée restaurée');
+ return true
+}
 async function syncFreshPlanningAccess(fresh=(planningSharedServices()?.profile||window.NettoProfileUI?.profile)){
  if(!fresh)return;
  try{
-  const shared=planningSharedServices(),api=window.NettoProfileUI;
+  const shared=planningSharedServices(),api=window.NettoProfileUI,wasCanEdit=canEdit;
   role=fresh.role||role||'lecture';
   planningPermissionLevel=shared?planningPermissionFromShared(fresh,shared.siteConfig||{}):(api?.permissionLevel?.('planning',fresh)||'none');
-  if(planningPermissionLevel==='none'){planningGoHome();return}
+  if(planningPermissionLevel==='none'){if(editMode)await revokePlanningEditAccess();planningGoHome();return}
   canEdit=planningPermissionLevel==='manage';
+  if(wasCanEdit&&!canEdit&&editMode)await revokePlanningEditAccess();
   currentUser={id:shared?.session?.user?.id||api?.session?.user?.id||currentUser?.id,name:fresh.display_name||currentUser?.name||'Utilisateur'};
   await applyPlanningWidgetPermissions(role,shared?.siteConfig||api?.siteConfig||{},planningPermissionLevel);
   updatePlanningRoleActions();
