@@ -48,6 +48,8 @@ Le script `tests/ui/stage23-viewport-smoke.cjs` :
 - intercepte ou refuse **tous** les accès réseau externes ;
 - sauvegarde des captures préfixées `chromium-` ou `webkit-`.
 
+[CI navigateur Chromium + WebKit #26](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38316270923) : **SUCCESS**, **8/8 tests WebKit** (4 vues login et 4 vues récupération) et **8/8 Chromium**. [CI fiabilité #1121](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38316270795) : **155 tests Node réussis, 0 échec**, PostgreSQL jetable réussi. [CI Auth #40](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38316270816) : workflow réussi, mais **job GoTrue volontairement ignoré** car son banc n'avait pas changé ; le dernier test réellement exécuté reste **#38**.
+
 Le moteur **WebKit sous Linux n'est pas Safari iOS**, ni une PWA installée sur un iPhone réel. Aucune ligne de la recette physique n'est automatiquement déclarée PASS grâce à ces tests.
 
 ## 3. Ce qui conditionne désormais la publication
