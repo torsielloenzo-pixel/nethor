@@ -10,6 +10,22 @@
 - **Non encore testé :** Edge Function complète exécutée dans le runtime Deno avec le service mail, Safari sur un véritable iPhone et PWA installée, interactions authentifiées réelles des cinq rôles.
 - Les scripts d'intégration refusent toute URL SQL ou HTTP non locale. Ne jamais les alimenter avec l'adresse ou des clés du projet Supabase hébergé.
 
+## Résultat de l'intégration locale du 13 octobre 2026
+
+La [CI Supabase Auth locale #33](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38314551323) a **réussi** après correction d'une expression régulière dans le test de validation UUID (première exécution échouée sur le test, pas sur Auth). L'exécution retenue contient les marqueurs :
+
+- `stage26-recovery-unverified-and-cross-user-denied-PASS`
+- `stage26-recovery-token-valid-and-single-use-PASS`
+- `stage26-recovery-auth-password-event-unresolved-PASS`
+- `stage26-recovery-proof-bound-and-unique-PASS`
+- `stage26-recovery-new-password-login-PASS`
+- `stage26-recovery-disabled-session-denied-PASS`
+- `stage26-local-gotrue-recovery-complete`
+
+Les tests des étapes 22 et 23 (`stage22-isolated-supabase-auth-complete`, `stage23-local-five-role-planning-complete`) sont également passés. [Tests Node/PostgreSQL #1114](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38314551456) et [Chromium #19](https://github.com/torsielloenzo-pixel/nethor/actions/runs/38314551308) : tous les jobs terminés avec succès.
+
+**Portée de la preuve :** vrai GoTrue, vrais JWT, vrai `generate_link`/`verify`/`updateUser` sur instance locale ; clôture via une RPC SQL fictive de test, **pas** l'Edge Function Deno candidate. Aucun e-mail réel ni Safari/PWA physique n'a été utilisé. La décision reste **NO-GO**.
+
 ## 1. Vérifier la récupération du compte en staging
 
 La nouvelle épreuve automatisée (`tests/security/stage26-local-recovery-integration.cjs`) essaie de valider :
