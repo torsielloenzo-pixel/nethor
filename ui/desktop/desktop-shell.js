@@ -41,6 +41,7 @@ function desktopDashboardConfig(site={}){
  const sidebar=raw.sidebar&&typeof raw.sidebar==='object'?raw.sidebar:{},items=sidebar.items&&typeof sidebar.items==='object'?sidebar.items:{};
  const normalized={};
  Object.entries(DESKTOP_SIDEBAR_DEFAULTS).forEach(([key,def])=>normalized[key]={...def,...(items[key]&&typeof items[key]==='object'?items[key]:{})});
+ if(normalized.team?.url==='home.html#nethorDesktopTeamWidget')normalized.team.url='team.html';
  return{
   enabled:raw.enabled!==false,
   background:{
