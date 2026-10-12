@@ -36,3 +36,9 @@ ALTER TABLE public.user_recovery_emails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.password_reset_requests,public.user_recovery_emails,public.audit_logs
   FROM PUBLIC,anon,authenticated;
+
+-- Match production's service_role privileges in this disposable fixture.
+GRANT SELECT ON public.profiles,public.app_settings TO service_role;
+GRANT ALL ON public.password_reset_requests,public.user_recovery_emails,public.audit_logs TO service_role;
+GRANT USAGE,SELECT ON SEQUENCE public.audit_logs_id_seq TO service_role;
+NOTIFY pgrst, 'reload schema';
