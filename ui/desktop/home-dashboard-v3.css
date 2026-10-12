@@ -390,3 +390,88 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"]
  html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"]
  .nethorDesktopReferenceDashboard .ndWidgetAside .ndActionGrid button{min-height:91px}
 }
+
+/* NETHOR PROFESSIONAL HOME V1 START
+   Accueil desktop : pilotage du jour, planning prioritaire, indicateurs secondaires. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"]{
+ --nd-bg:#f3f5f7;--nd-card:#fff;--nd-text:#172033;--nd-muted:#6e798b;--nd-line:#dfe4ea;
+ --nd-accent:#f97316;--nd-radius:16px;--nd-gap:12px
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] body>main{
+ width:calc(100vw - var(--nethor-sidebar-w,240px))!important;max-width:none!important;
+ margin-left:var(--nethor-sidebar-w,240px)!important;padding:16px 18px 28px!important;background:var(--nd-bg)!important
+}
+.nethorDesktopReferenceDashboard{gap:12px!important;min-height:calc(100dvh - 96px)!important}
+.ndCommandHeader{
+ display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:74px;padding:14px 16px;
+ border:1px solid var(--nd-line);border-radius:16px;background:var(--nd-card);box-shadow:0 5px 16px rgba(20,28,40,.035)
+}
+.ndCommandCopy{display:grid;grid-template-columns:auto 1fr;align-items:baseline;column-gap:10px;min-width:0}
+.ndCommandCopy>span{grid-column:1/-1;color:#8a94a3;font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.ndCommandCopy>strong{font-size:23px;line-height:1.05;letter-spacing:-.55px;color:var(--nd-text)}
+.ndCommandCopy>small{min-width:0;color:var(--nd-muted);font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ndCommandActions{display:flex;align-items:center;gap:8px;flex:none}
+.ndCommandActions button{
+ min-height:38px;padding:0 13px;border:1px solid var(--nd-line);border-radius:10px;background:#fff;color:#27344a;
+ font-size:9.5px;font-weight:850;cursor:pointer
+}
+.ndCommandActions button.primary{border-color:#f0b799;background:#fff2e8;color:#a64b17}
+
+.ndHeroSlot{order:2}
+.nethorDesktopReferenceDashboard .nsiw{min-height:112px!important;border-radius:15px!important;box-shadow:none!important;border:1px solid var(--nd-line)!important}
+.nethorDesktopReferenceDashboard .nsiwContent{min-height:112px!important;padding:16px 22px!important}
+.nethorDesktopReferenceDashboard .nsiwContent h1,
+.nethorDesktopReferenceDashboard .nsiwContent h2{font-size:22px!important}
+.nethorDesktopReferenceDashboard .nsiwContent p{font-size:10px!important}
+
+.nethorDesktopReferenceDashboard .ndWidgetGrid{
+ grid-template-columns:minmax(650px,1.65fr) minmax(290px,.72fr)!important;gap:12px!important;align-items:start!important
+}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary{display:grid!important;gap:12px!important}
+.nethorDesktopReferenceDashboard .ndWidgetAside{display:grid!important;gap:12px!important;align-content:start!important}
+.nethorDesktopReferenceDashboard .ndWidgetPrimary>.ndPlanningSlot{min-height:285px!important}
+.nethorDesktopReferenceDashboard .ndPlanningSlot>.qplan{
+ min-height:285px!important;border:1px solid var(--nd-line)!important;border-radius:16px!important;box-shadow:none!important
+}
+.nethorDesktopReferenceDashboard .qplanTitleCopy strong{font-size:15px!important;letter-spacing:-.2px}
+.nethorDesktopReferenceDashboard .qplanTitleCopy small{font-size:8.5px!important;color:var(--nd-muted)!important}
+.nethorDesktopReferenceDashboard .ndCard{box-shadow:none!important;border-color:var(--nd-line)!important}
+.nethorDesktopReferenceDashboard .ndSectionHead{min-height:50px!important;padding:9px 12px!important}
+.nethorDesktopReferenceDashboard .ndSectionTitle strong{font-size:12.5px!important}
+.nethorDesktopReferenceDashboard .ndMessages{min-height:178px!important}
+.nethorDesktopReferenceDashboard .ndActions{min-height:auto!important}
+.nethorDesktopReferenceDashboard .ndActionGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;padding:8px!important}
+.nethorDesktopReferenceDashboard .ndActionGrid button{min-height:56px!important;border-radius:10px!important}
+.nethorDesktopReferenceDashboard .ndActionGrid button strong{font-size:8.5px!important}
+
+.ndKpiGrid{grid-template-columns:repeat(5,minmax(150px,1fr))!important;gap:10px!important}
+.ndKpi{
+ min-height:76px!important;padding:10px 11px!important;grid-template-columns:40px minmax(0,1fr) 10px!important;gap:9px!important;
+ border-radius:14px!important;box-shadow:none!important
+}
+.ndKpiIcon{width:40px!important;height:40px!important;border-radius:11px!important}
+.ndKpiIcon svg{width:19px!important;height:19px!important}
+.ndKpiBody>span{font-size:9px!important}.ndKpiBody strong{font-size:18px!important;margin:2px 0!important}.ndKpiBody small{font-size:7.5px!important}
+.ndKpiProgress{height:4px!important;margin-top:5px!important}
+
+.nethorDesktopReferenceDashboard .ndSupportingGrid{gap:10px!important}
+.nethorDesktopReferenceDashboard .ndSupportingGrid>.ndCard{min-height:190px!important}
+
+@container (max-width:1180px){
+ .nethorDesktopReferenceDashboard .ndWidgetGrid{grid-template-columns:1fr!important}
+ .nethorDesktopReferenceDashboard .ndWidgetAside{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .ndKpiGrid{grid-template-columns:repeat(3,minmax(160px,1fr))!important}
+}
+@container (max-width:760px){
+ .ndCommandHeader{align-items:flex-start;flex-direction:column}
+ .ndCommandActions{width:100%}.ndCommandActions button{flex:1}
+ .nethorDesktopReferenceDashboard .ndWidgetAside{grid-template-columns:1fr!important}
+ .ndKpiGrid{grid-template-columns:repeat(2,minmax(140px,1fr))!important}
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="home"]{
+ --nd-bg:#12171e;--nd-card:#1b222c;--nd-text:#edf2f8;--nd-muted:#a7b1bf;--nd-line:#34404e
+}
+html[data-theme="dark"] .ndCommandHeader{background:#1b222c!important;border-color:#34404e!important}
+html[data-theme="dark"] .ndCommandActions button{background:#252e3a!important;border-color:#3a4655!important;color:#eef3f9!important}
+html[data-theme="dark"] .ndCommandActions button.primary{background:#3a2b21!important;border-color:#68432d!important;color:#ffc39e!important}
+/* NETHOR PROFESSIONAL HOME V1 END */
