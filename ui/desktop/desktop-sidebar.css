@@ -508,3 +508,12 @@ html[data-nethor-page-layout="desktop"] .nethorDesktopSidebar :is(.nethorSidebar
  font-family:inherit!important;
 }
 /* La marque Nethor conserve son lettrage spécifique et ses logos. */
+
+/* NETHOR PROFESSIONAL NAV V2 START */
+.nethorSidebarItem[data-sidebar-key="team"]{--nsi-color:#24806f!important;--nsi-bg:#e7f4f0!important}
+html[data-nethor-page-layout="desktop"] .nethorDesktopSidebarNav{gap:2px!important}
+html[data-nethor-page-layout="desktop"] .nethorSidebarItem{min-height:48px!important;border-radius:9px!important}
+html[data-nethor-page-layout="desktop"] .nethorSidebarIcon{width:38px!important;height:38px!important;border-radius:10px!important}
+html[data-nethor-page-layout="desktop"] .nethorSidebarIcon svg{width:21px!important;height:21px!important}
+html[data-nethor-page-layout="desktop"] .nethorSidebarLabel{font-size:11.5px!important}
+/* NETHOR PROFESSIONAL NAV V2 END */
