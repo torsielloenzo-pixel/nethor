@@ -113,6 +113,29 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA Chat : actions sensibles et canal Général restent cohérents',()=>{
+ const chat=read('chat-v2.js');
+ assert.match(chat,/const canArchive=isGroup;/);
+ assert.match(chat,/archive\?\.classList\.toggle\('hidden',isGeneral\|\|isDirect\)/);
+ assert.match(chat,/conv\?\.conversation_type==='general'\|\|conv\?\.conversation_type==='direct'/);
+ assert.match(chat,/if\(state\.profile\?\.role!=='admin'\)return showToast\('Administrateur uniquement'\)/);
+ assert.match(chat,/db\.rpc\('chat_admin_delete_message'/);
+ assert.match(chat,/let deleteQuery=db\.from\('chat_messages'\)\.update/);
+ assert.match(chat,/if\(!state\.canManage\)deleteQuery=deleteQuery\.eq\('user_id',state\.session\.user\.id\)/);
+ assert.match(chat,/pin\?\.classList\.toggle\('hidden',!admin\)/);
+ assert.match(chat,/if\(state\.profile\?\.role!=='admin'\)\{input\.value='';return showToast\('Administrateur uniquement'\)\}/);
+});
+
+test('QA compte personnel : Notifications et Profil restent limités au propriétaire, widgets admin masqués',()=>{
+ const profile=read('profile.html');
+ const settings=read('settings.html');
+ assert.match(profile,/\.eq\('id',id\)\.eq\('user_id',session\.user\.id\)/);
+ assert.match(profile,/\.eq\('user_id',session\.user\.id\)\.is\('read_at',null\)/);
+ assert.match(profile,/function syncAdminProfileWidgets\(role\)[\s\S]*?role==='admin'/);
+ assert.match(profile,/adminOnlyProfileWidget/);
+ assert.match(settings,/\.update\(\{ui_preferences:prefs\}\)\.eq\('id',session\.user\.id\)/);
+});
+
 test('QA actions par rôle : Planning, Promotions et Articles restent alignés au backend',()=>{
  const planning=read('planning-runtime.js');
  const promotions=read('runtime/promotions-page.js');
