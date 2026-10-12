@@ -338,6 +338,7 @@ function normalizeDesktopDashboardWidgetConfig(raw){
   const x=items[key]&&typeof items[key]==='object'?items[key]:{};
   normalizedItems[key]={enabled:x.enabled!==false,label:String(x.label||def.label),url:String(x.url||def.url)}
  }
+ if(normalizedItems.team?.url==='home.html#nethorDesktopTeamWidget')normalizedItems.team.url='team.html';
  const normalizedWidgets={};
  for(const [key,def] of Object.entries(DESKTOP_DASHBOARD_WIDGET_DEFAULTS.widgets)){
   const x=widgets[key]&&typeof widgets[key]==='object'?widgets[key]:{};
