@@ -52,3 +52,35 @@ html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rp
 html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpText{font-size:16px!important;border-radius:11px!important}
 html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpSend{min-height:44px!important;border-radius:10px!important;background:#b74747!important;box-shadow:none!important}
 /* NETHOR PROFESSIONAL REPORT V2 END */
+
+/* NETHOR PROFESSIONAL USER PAGES V2 START */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="settings"] body,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] body{background:#f3f5f7!important}
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="settings"] main,
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] main{
+ padding:10px 9px calc(78px + env(safe-area-inset-bottom))!important;
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+html[data-nethor-page-layout="mobile"] .settingsMobileTop,
+html[data-nethor-page-layout="mobile"] .nsTop{margin:0 1px 9px!important;gap:8px!important}
+html[data-nethor-page-layout="mobile"] .settingsMobileBack,
+html[data-nethor-page-layout="mobile"] .nsBack{width:38px!important;height:38px!important;border-radius:11px!important;box-shadow:none!important}
+html[data-nethor-page-layout="mobile"] .settingsMobileTitle h1,
+html[data-nethor-page-layout="mobile"] .nsTitle h1{font-size:21px!important;letter-spacing:-.45px!important}
+html[data-nethor-page-layout="mobile"] .settingsMobileTitle p,
+html[data-nethor-page-layout="mobile"] .nsTitle p{font-size:8.5px!important}
+html[data-nethor-page-layout="mobile"] .settingsMobileRole .roleBadge{
+ background:#edf3fb!important;color:#315f97!important;border-color:#cbd9eb!important
+}
+html[data-nethor-page-layout="mobile"] .settingsMobileLayout .panel,
+html[data-nethor-page-layout="mobile"] .notificationSettingsMobileLayout .nsCard{
+ margin-bottom:8px!important;padding:12px!important;border-radius:13px!important;border-color:#dfe5eb!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="mobile"] .settingsMobileLayout .themeChoice{border-radius:10px!important;box-shadow:none!important}
+html[data-nethor-page-layout="mobile"] .settingsMobileLayout .themeChoice.active{border-color:#abc0dc!important;background:#edf3fb!important;box-shadow:none!important}
+html[data-nethor-page-layout="mobile"] .settingsMobileLayout .btn.primary,
+html[data-nethor-page-layout="mobile"] .notificationSettingsMobileLayout .btn.primary{background:#172033!important;color:#fff!important;box-shadow:none!important}
+html[data-nethor-page-layout="mobile"] .notificationSettingsMobileLayout .pushPanel{border-radius:10px!important;background:#f8fafb!important}
+html[data-nethor-page-layout="mobile"] .notificationSettingsMobileLayout .ruleIcon{background:#edf3fb!important;color:#315f97!important}
+html[data-nethor-page-layout="mobile"] .notificationSettingsMobileLayout .channelOption[data-mode="both"].active{background:#315f97!important;color:#fff!important;box-shadow:none!important}
+/* NETHOR PROFESSIONAL USER PAGES V2 END */
