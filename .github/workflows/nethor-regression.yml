@@ -91,7 +91,10 @@ jobs:
         run: |
           set -euo pipefail
           psql -v ON_ERROR_STOP=1 -f tests/security/stage17-fixture.sql
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage18-fixture-extension.sql
           psql -v ON_ERROR_STOP=1 -f tests/security/stage17-session-guard-snapshot.sql
-          node tests/security/stage17-extract-functions.cjs > "$RUNNER_TEMP/nethor-stage17-functions.sql"
-          psql -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/nethor-stage17-functions.sql"
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage18-chat-helper-snapshots.sql
+          node tests/security/stage17-extract-functions.cjs > "$RUNNER_TEMP/nethor-stage18-functions.sql"
+          psql -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/nethor-stage18-functions.sql"
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage18-assertions.sql
           psql -v ON_ERROR_STOP=1 -f tests/security/stage17-assertions.sql
