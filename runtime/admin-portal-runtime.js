@@ -300,6 +300,7 @@ const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
   activity:{enabled:true,label:'Activité magasin',url:'home.html#nethorDesktopStatsRow'},
   planning:{enabled:true,label:'Planning',url:'planning.html'},
   team:{enabled:true,label:'Équipe',url:'team.html'},
+  promotions:{enabled:true,label:'Promotions',url:'promotions.html'},
   tasks:{enabled:true,label:'Tâches',url:'home.html#nethorDesktopPriorities'},
   receptions:{enabled:true,label:'Réceptions',url:'home.html#nethorDesktopDeliveriesKpi'},
   articles:{enabled:true,label:'Fiches articles',url:'articles.html'},
