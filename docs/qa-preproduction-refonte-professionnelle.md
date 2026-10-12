@@ -173,3 +173,53 @@ Correction appliquée :
 - test de non-régression ajouté.
 
 Validation : GitHub Actions **#929 — succès**.
+
+## QA des actions internes par rôle
+
+### Congés — Point de vente
+Le backend attribue `manage` à Point de vente pour les absences, mais une demande personnelle est réservée au niveau `request` et à l'Administrateur.
+
+Correction :
+- le bouton « Faire une demande » utilise maintenant la même condition que l'action réelle ;
+- Point de vente ne voit plus une action qui serait refusée ;
+- ouverture et soumission utilisent le même garde-fou `canRequestPlanningAbsence()`.
+
+### Promotions — mobile standalone
+Une redirection historique renvoyait tout mobile depuis `promotions.html` vers `mobile.html`, ce qui pouvait ramener à l'Accueil après ouverture depuis Outils.
+
+Correction :
+- suppression de cette redirection ;
+- Promotions reste une page outil standalone sous le shell mobile ;
+- le parent SPA est mémorisé par le routeur pour un retour cohérent.
+
+### Fiches articles
+Les mutations produits/catégories/conditionnements sont protégées par `articles=manage`, tandis que les familles restent Admin-only côté RLS.
+
+Correction :
+- actions générales affichées selon `permissionLevel('articles') === 'manage'` ;
+- gestion des familles toujours masquée et bloquée pour tout non-Admin ;
+- comportement actuel inchangé en production puisque Articles est aujourd'hui Admin-only.
+
+### Chat
+- Général reste permanent et non archivable ;
+- les discussions directes restent visibles et ne sont pas archivables ;
+- seuls les groupes exposent désormais l'action Archiver sur desktop ;
+- l'épinglage et la photo du canal Général restent strictement Admin ;
+- un futur rôle avec `chat=manage` peut effectuer la suppression douce autorisée par RLS ;
+- seule la suppression définitive via `chat_admin_delete_message` reste Admin-only.
+
+### Tâches du jour
+Correspondance UI / RLS confirmée :
+- Admin / Point de vente : éditeur ;
+- Responsable / Employé : utilisateur, validation de ses propres tâches ;
+- Lecture seule : masqué.
+
+### Comptes, Signalements, Notifications et Profil
+Contrôles confirmés :
+- Gestion des comptes : Admin-only avant chargement du runtime ;
+- traitement des signalements : Admin-only ;
+- règles globales de notifications : Admin-only ;
+- notifications personnelles : opérations limitées au `user_id` courant ;
+- préférences Profil/Paramètres : mise à jour du profil courant uniquement.
+
+Validation automatisée : **Nethor — Tests de fiabilité #948 : succès**.
