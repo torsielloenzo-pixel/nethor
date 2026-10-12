@@ -1,6 +1,9 @@
 -- Exécute uniquement dans une base PostgreSQL jetable de GitHub Actions.
 -- Les tests échouent au premier comportement inattendu.
 BEGIN;
+-- Staged migration adds the proof digest after the initial fixture was created.
+UPDATE public.password_reset_requests SET recovery_proof_digest=repeat('a',64)
+ WHERE id='10000000-0000-4000-8000-000000000001';
 DO $check$
 BEGIN
  IF (SELECT count(*) FROM public.password_reset_requests WHERE password_changed_verified_at IS NOT NULL)<>0 THEN
@@ -26,7 +29,7 @@ BEGIN
  END IF;
 END $check$;
 
--- Actual password hash change: a single recent sent email request is verified.
+-- Actual password hash change: observe it only; never resolve the email request without link proof.
 UPDATE auth.users SET encrypted_password='TEST_HASH_EMPLOYEE_V2'
  WHERE id='11111111-1111-4111-8111-111111111111';
 DO $check$
@@ -34,7 +37,7 @@ BEGIN
  IF NOT EXISTS(SELECT 1 FROM public.password_reset_requests
    WHERE id='10000000-0000-4000-8000-000000000001'
    AND password_changed_verified_at IS NOT NULL
-   AND resolved_at=password_changed_verified_at) THEN
+   AND resolved_at IS NULL) THEN
   RAISE EXCEPTION 'Actual hash change failed to mark matching request verified';
  END IF;
  IF EXISTS(SELECT 1 FROM public.password_reset_requests
