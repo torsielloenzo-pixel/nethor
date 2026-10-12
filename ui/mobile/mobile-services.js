@@ -399,6 +399,8 @@ async function checkSecurityState(){
     const {data,error}=await client.rpc('nethor_security_context');
     if(error)return true;
     if(data?.session_active===false){await forceDisabledAccountLogout();return false}
+    const serverRole=String(data?.role||'').trim(),localRole=String(state.profile?.role||'').trim();
+    if(serverRole&&localRole&&serverRole!==localRole)await refreshCore({emitChange:true});
     return true
   }finally{securityBusy=false}
 }
@@ -407,6 +409,7 @@ function startSecurityWatch(){
   securityTimer=setInterval(()=>{if(!document.hidden)void checkSecurityState()},10000);
   const check=()=>{if(!document.hidden)void checkSecurityState()};
   window.addEventListener('focus',check,{passive:true});
+  window.addEventListener('online',check,{passive:true});
   document.addEventListener('visibilitychange',check,{passive:true})
 }
 function startRealtime(){
