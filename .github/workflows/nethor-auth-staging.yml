@@ -1,0 +1,80 @@
+name: Nethor — Auth Supabase isolée (étape 22)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/nethor-auth-staging.yml'
+      - 'tests/security/stage22-*'
+      - 'tests/security/stage17-session-guard-snapshot.sql'
+      - 'docs/security/etape16-rpc-hardening-proposal.sql'
+      - 'docs/security/etape20-confirmation-auth-verifiee-proposal.sql'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  go-true-isolation:
+    name: Auth réelle — stack locale, comptes fictifs
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Installer PostgreSQL client
+        run: |
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq postgresql-client
+          fi
+      - name: Démarrer une stack locale non liée à la production
+        env:
+          SUPABASE_TELEMETRY_DISABLED: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/nethor-auth-stage22"
+          cd "$RUNNER_TEMP/nethor-auth-stage22"
+          supabase init
+          supabase start --help > "$RUNNER_TEMP/stage22-supabase-help.txt"
+          # Keep Postgres + Auth (GoTrue) + REST (PostgREST) + gateway only.
+          # Both old and newer CLI --exclude terminologies are supported.
+          if grep -q 'storage-api' "$RUNNER_TEMP/stage22-supabase-help.txt"; then
+            excluded="realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor,mailpit"
+          else
+            excluded="realtime,storage,functions,studio,mail,analytics,pooler"
+          fi
+          if ! supabase start --exclude "$excluded" > "$RUNNER_TEMP/stage22-supabase-start.log" 2>&1; then
+            echo "Local Supabase startup failed (no hosted project was touched)."
+            tail -n 85 "$RUNNER_TEMP/stage22-supabase-start.log"
+            exit 1
+          fi
+          if supabase status --help | grep -q -- '--env'; then
+            supabase status --env --output-format text > "$RUNNER_TEMP/stage22-local.env"
+          else
+            supabase status -o env > "$RUNNER_TEMP/stage22-local.env"
+          fi
+      - name: Appliquer les fonctions proposées uniquement au local
+        env:
+          STAGE22_LOCAL_AUTH: '1'
+        run: |
+          set -euo pipefail
+          set -a
+          source "$RUNNER_TEMP/stage22-local.env"
+          set +a
+          # Prevent any SQL or API access unless CLI provided loopback URLs.
+          case "${API_URL:-}" in http://127.0.0.1:*|http://localhost:*) ;; *) echo 'Refusing non-local API_URL'; exit 1;; esac
+          case "${DB_URL:-}" in postgresql://postgres:*@127.0.0.1:*|postgresql://postgres:*@localhost:*) ;; *) echo 'Refusing non-local DB_URL'; exit 1;; esac
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage22-local-auth-schema.sql
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage17-session-guard-snapshot.sql
+          node tests/security/stage22-extract-rpcs.cjs > "$RUNNER_TEMP/stage22-rpcs.sql"
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/stage22-rpcs.sql"
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage22-local-auth-probe.sql
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f docs/security/etape20-confirmation-auth-verifiee-proposal.sql
+          node tests/security/stage22-local-auth-integration.cjs
+      - name: Libérer les conteneurs locaux
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP/nethor-auth-stage22" 2>/dev/null || exit 0
+          supabase stop --no-backup || true
