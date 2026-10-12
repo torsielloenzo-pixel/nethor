@@ -306,3 +306,13 @@ html[data-theme="dark"] .nethorMobileWordmark.nethorHeaderIdentity .nethorHeader
  .nethorMobileWordmark.nethorHeaderIdentity .nethorHeaderLogoSecondary{height:27px;max-width:78px}
  .nethorMobileWordmark.nethorHeaderIdentity .nethorHeaderText{max-width:88px;font-size:13px}
 }
+
+/* NETHOR PROFESSIONAL GLOBAL FINISH V1 START */
+.nethorMobileApp,.nethorMobileApp button,.nethorMobileApp input,.nethorMobileApp textarea,.nethorMobileApp select{
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+.nethorMobileApp :is(.npvLoading,.nsvLoading,.nnsLoading,.teamEmpty,.npEmpty){
+ color:#748094!important;box-shadow:none!important
+}
+.nethorMobileApp :is(.npvState,.nsvSaveState,.nnsState,.nethorMobileAppStatus){letter-spacing:0!important}
+/* NETHOR PROFESSIONAL GLOBAL FINISH V1 END */
