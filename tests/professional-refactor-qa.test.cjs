@@ -134,6 +134,18 @@ test('QA navigation secondaire : aucun module opérationnel n’est orphelin',()
  }
 });
 
+test('QA mobile : Équipe et Promotions exposent un retour visible',()=>{
+ const team=read('team.html');
+ const promotions=read('promotions.html');
+ const promoCss=read('runtime/promotions-page.css');
+ assert.match(team,/id="teamMobileBack"/);
+ assert.match(team,/NethorNavigation\?\.navigateBack/);
+ assert.match(promotions,/id="promoMobileBack"/);
+ assert.match(promotions,/NethorNavigation\?\.navigateBack/);
+ assert.match(promoCss,/\.promoMobileBack\{display:none\}/);
+ assert.match(promoCss,/@media\(max-width:900px\)[\s\S]*?\.promoMobileBack\{display:grid/);
+});
+
 test('QA signalement : les nouveaux modules sont identifiables dans le contexte de diagnostic',()=>{
  const report=read('report-problem.html');
  assert.match(report,/'team\.html':'Équipe'/);
