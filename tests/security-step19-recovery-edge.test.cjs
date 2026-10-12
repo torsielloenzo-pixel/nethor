@@ -16,13 +16,14 @@ const runResolved=new AsyncFunction('req','admin','createClient','Deno','url','j
   return {status:599,body:{error:"Unexpected fallthrough"}};
 `);
 
-function harness({authHeader='Bearer synthetic-token',user={id:'synthetic-user'},authError=null,securityContext={session_active:true},securityError=null,pending=[{id:'synthetic-request'}]}={}){
+function harness({authHeader='Bearer synthetic-token',user={id:'synthetic-user'},authError=null,securityContext={session_active:true},securityError=null,rpcThrows=false,pending=[{id:'synthetic-request'}]}={}){
  const calls=[];
  const caller={
    auth:{getUser:async()=>{calls.push('auth.getUser');return{data:{user},error:authError}}},
    rpc:async(name)=>{
      calls.push('caller.rpc:'+name);
      assert.equal(name,'nethor_security_context');
+     if(rpcThrows)throw new Error('synthetic RPC failure');
      return{data:securityContext,error:securityError};
    }
  };
@@ -72,6 +73,9 @@ test('stage19: revoked, absent or unverifiable session rejects BEFORE service ro
  const t=harness({securityError:{message:'connection lost'}});
  assert.equal((await t.run()).status,401);
  assert.ok(!t.calls.some(x=>x.startsWith('admin.')));
+ const offline=harness({rpcThrows:true});
+ assert.equal((await offline.run()).status,401);
+ assert.ok(!offline.calls.some(x=>x.startsWith('admin.')));
 });
 
 test('stage19: active session continues normal request reconciliation and audit',async()=>{
