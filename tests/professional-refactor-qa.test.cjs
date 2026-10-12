@@ -121,6 +121,10 @@ test('QA sécurité session : reconnexion réseau et changement de rôle sont re
   assert.match(source,/session_active===false/);
   assert.match(source,/serverRole=String\(data\?\.role\|\|''\)\.trim\(\),localRole=String\(/);
   assert.match(source,/window\.addEventListener\('online',check,\{passive:true\}\)/);
+  assert.match(source,/auth\.getUser\(\)/);
+  assert.match(source,/\[400,401,403\]\.includes\(status\)/);
+  assert.match(source,/verifyAuthAfterSecurityError\(\)/);
+  assert.match(source,/forceDisabledAccountLogout\(\)/);
  }
  assert.match(desktop,/serverRole!==localRole\)await refresh\(\)/);
  assert.match(mobile,/serverRole!==localRole\)await refreshCore\(\{emitChange:true\}\)/);
