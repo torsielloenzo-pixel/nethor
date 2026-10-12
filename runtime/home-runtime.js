@@ -803,6 +803,29 @@ function homeAfterFirstPaint(task){
  const run=()=>{try{const result=task();if(result?.catch)result.catch(()=>{})}catch(_){}};
  requestAnimationFrame(()=>requestAnimationFrame(()=>{'requestIdleCallback' in window?requestIdleCallback(run,{timeout:700}):setTimeout(run,40)}))
 }
+let homeBootReady=false,homeProfileRefreshTimer=null,homeProfileRefreshSeq=0;
+function scheduleHomeProfileRefresh(fresh,siteConfig){
+ if(!homeBootReady||!fresh||!homeSession)return;
+ clearTimeout(homeProfileRefreshTimer);
+ const seq=++homeProfileRefreshSeq;
+ homeProfileRefreshTimer=setTimeout(async()=>{
+  if(seq!==homeProfileRefreshSeq||!homeSession)return;
+  const profile={...(homeDashboardProfile||{}),...fresh},name=profile.display_name||profile.email?.split('@')[0]||homeDashboardName||'';
+  const cfg=siteConfig&&typeof siteConfig==='object'?siteConfig:(window.NettoProfileUI?.siteConfig||homeDashboardConfig||{});
+  window.currentRole=profile.role;
+  document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',profile.role!=='admin'));
+  homeDashboardProfile=profile;homeDashboardName=name;homeDashboardConfig=cfg;
+  renderHomeCards(profile,cfg);
+  await loadHomeTodayPlanning(profile,name);
+  if(seq!==homeProfileRefreshSeq)return;
+  await renderHomeDashboard(profile,name,cfg);
+ },100)
+}
+window.addEventListener('netto:profile',e=>{
+ if(e.detail?.cached)return;
+ scheduleHomeProfileRefresh(e.detail?.profile,e.detail?.siteConfig)
+});
+
 async function boot(){
  const {data:{session}}=await db.auth.getSession();if(!session){location.replace('index.html');return}
  homeSession=session;
@@ -824,6 +847,7 @@ async function boot(){
  if(p?.role==='admin'&&homePlatformKind()==='desktop')homeAfterFirstPaint(loadAdminPageViews);
  await loadHomeTodayPlanning(p,name);
  await renderHomeDashboard(p,name,sharedConfig||{});
+ homeBootReady=true;
  const status=document.getElementById('status');if(status)status.textContent='Session active'
 }
 function homeEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
