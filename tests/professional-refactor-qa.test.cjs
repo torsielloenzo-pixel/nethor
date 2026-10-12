@@ -113,6 +113,20 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA anti double-action : messages, absences et tâches sont verrouillés',()=>{
+ const chat=read('chat-v2.js');
+ const planning=read('planning-runtime.js');
+ const desktopHome=read('runtime/home-runtime.js');
+ const mobileHome=read('ui/mobile/views/home/home-view.js');
+ assert.match(chat,/async function sendMessage\(\)[\s\S]*?if\(btn\?\.disabled\)return;[\s\S]*?btn\.disabled=true/);
+ assert.match(planning,/async function submitAbsenceRequest\(\)[\s\S]*?if\(btn\?\.disabled\)return;[\s\S]*?btn\.disabled=true/);
+ assert.match(planning,/async function reviewAbsence\(id,status\)[\s\S]*?\.eq\('status','pending'\)\.eq\('updated_at',a\.updated_at\)/);
+ assert.match(planning,/if\(!updated\)\{alert\('Cette demande a déjà été traitée ou modifiée par une autre personne/);
+ assert.match(desktopHome,/async function homePublishDailyTasks\(btn\)\{\s*if\(homeTaskBusy\|\|!homeSession\)return/);
+ assert.match(mobileHome,/async function publishTasks\(button\)\{\s*if\(state\.busy\|\|!state\.session\|\|!state\.db\)return/);
+ assert.match(mobileHome,/async function toggleTask\(id,button\)\{\s*if\(state\.busy\|\|!state\.session\|\|!id\)return/);
+});
+
 test('QA droits à chaud : Chat et Accueil se recalculent sans rechargement de page',()=>{
  const chat=read('chat-v2.js');
  const home=read('runtime/home-runtime.js');
