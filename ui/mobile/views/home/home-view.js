@@ -625,7 +625,7 @@ async function render(){
   })
  }
  for(const name of workingNames){
-  const profile=state.team.find(x=>norm(x.display_name)===norm(name));
+  const profile=activePlanningMember(name);
   todayTeam.push({name,profile:profile||null})
  }
  state.afternoonUserIds=[...new Set(afternoonNames.map(name=>{
