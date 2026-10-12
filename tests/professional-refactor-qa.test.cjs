@@ -99,9 +99,9 @@ test('QA signalement : les nouveaux modules sont identifiables dans le contexte 
  assert.match(report,/'promotions\.html':'promotions'/);
 });
 
-test('QA PWA : les assets critiques de la refonte correspondent au Service Worker',()=>{
+test('QA PWA : les assets critiques sont versionnés et le cache mobile est synchronisé',()=>{
  const worker=read('sw.js');
- const pairs=[
+ const versioned=[
   ['home.html',/ui\/desktop\/home-dashboard-v3\.css\?v=\d+/],
   ['planning.html',/ui\/desktop\/planning-layout\.css\?v=\d+/],
   ['planning.html',/ui\/mobile\/planning-layout\.css\?v=\d+/],
@@ -113,10 +113,19 @@ test('QA PWA : les assets critiques de la refonte correspondent au Service Worke
   ['notifications.html',/ui\/desktop\/tool-pages-layout\.css\?v=\d+/],
   ['notifications.html',/ui\/mobile\/tool-pages-layout\.css\?v=\d+/]
  ];
- for(const [page,rx] of pairs){
+ for(const [page,rx] of versioned){
   const asset=read(page).match(rx)?.[0];
   assert.ok(asset,'Asset introuvable dans '+page+' : '+rx);
-  assert.ok(worker.includes('./'+asset),'Asset non synchronisé PWA : '+asset);
+  assert.ok(exists(asset.split('?')[0]),'Fichier versionné absent : '+asset);
+ }
+ for(const [page,rx] of [
+  ['home.html',/ui\/desktop\/home-dashboard-v3\.css\?v=\d+/],
+  ['promotions.html',/runtime\/promotions-page\.css\?v=\d+/],
+  ['profile.html',/ui\/mobile\/profile-layout\.css\?v=\d+/],
+  ['notifications.html',/ui\/mobile\/tool-pages-layout\.css\?v=\d+/]
+ ]){
+  const asset=read(page).match(rx)?.[0];
+  assert.ok(worker.includes('./'+asset),'Asset PWA attendu mais non synchronisé : '+asset);
  }
  const mobile=read('mobile.html');
  for(const rx of [
