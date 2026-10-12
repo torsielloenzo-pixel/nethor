@@ -113,6 +113,27 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA navigation secondaire : aucun module opérationnel n’est orphelin',()=>{
+ const nav=read('platform-navigation.js');
+ const profile=read('profile-ui.js');
+ const shell=read('ui/mobile/mobile-shell.js');
+ for(const page of ['team.html','promotions.html','articles.html','scanner.html']){
+  assert.ok(nav.includes("'"+page+"':{type:'url',value:'home.html'}"),'Retour desktop absent : '+page);
+  assert.ok(nav.includes("'"+page+"':{type:'url',value:'user-menu.html'}"),'Retour mobile absent : '+page);
+ }
+ for(const page of ['settings.html','notification-settings.html']){
+  assert.ok(nav.includes("'"+page+"':{type:'url',value:'home.html'}"),'Retour desktop absent : '+page);
+  assert.ok(nav.includes("'"+page+"':{type:'url',value:'user-menu.html'}"),'Retour mobile absent : '+page);
+ }
+ assert.ok(nav.includes("'notifications.html':{type:'url',value:'home.html'}"));
+ assert.ok(nav.includes("'report-problem':'report-problem.html'"));
+ assert.match(profile,/team:'team\.html',/);
+ assert.match(profile,/promotions:'promotions\.html',/);
+ for(const id of ['report-problem','scanner','articles','promotions','team']){
+  assert.ok(shell.includes("'"+id+"'")||shell.includes("id==='"+id+"'"),'Page non reconnue par le shell mobile : '+id);
+ }
+});
+
 test('QA signalement : les nouveaux modules sont identifiables dans le contexte de diagnostic',()=>{
  const report=read('report-problem.html');
  assert.match(report,/'team\.html':'Équipe'/);
