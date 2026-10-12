@@ -7,6 +7,7 @@ const BASE_MODULES=Object.freeze([
  {id:'stock',label:'Stock F&L',subtitle:'Gestion du stock',url:'index.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
  {id:'planning',label:'Planning',subtitle:'Horaires de l’équipe',url:'planning.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
  {id:'chat',label:'Chat',subtitle:'Messagerie interne',url:'chat.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
+ {id:'promotions',label:'Promotions',subtitle:'Catalogues et références',url:'promotions.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
  {id:'team',label:'Équipe',subtitle:'Annuaire interne',url:'team.html',roles:null,userMenu:true,defaultUser:true,platform:'all'},
  {id:'surveys',label:'Sondages de l’équipe',subtitle:'8 semaines pour améliorer notre quotidien',url:'mobile.html?view=surveys',roles:null,userMenu:true,defaultUser:true,platform:'mobile'},
  {id:'scanner',label:'Scanner (bêta)',subtitle:'EAN13 vers fiche article',url:'scanner.html',roles:null,userMenu:true,defaultUser:true,platform:'mobile'},
