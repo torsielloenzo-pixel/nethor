@@ -54,3 +54,73 @@ html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .r
 :root[data-theme="dark"][data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop{background:#1b222c!important;border-color:#34404e!important}
 :root[data-theme="dark"][data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop .rpTopTitle strong{color:#edf2f8!important}
 /* NETHOR PROFESSIONAL REPORT V2 END */
+
+/* NETHOR PROFESSIONAL USER PAGES V2 START */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="settings"],
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notification-settings"]{
+ --npu-bg:#f3f5f7;--npu-card:#fff;--npu-text:#172033;--npu-muted:#748094;--npu-line:#dfe5eb;--npu-blue:#315f97
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="settings"] body,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notification-settings"] body{
+ background:var(--npu-bg)!important;color:var(--npu-text)!important;
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="settings"] main,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="notification-settings"] main{
+ width:100%!important;max-width:none!important;margin:0!important;padding:16px 18px 48px!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout>.hero,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout>.nsDesktopIntro{
+ min-height:78px;margin:0 0 10px!important;padding:14px 16px!important;border:1px solid var(--npu-line)!important;border-radius:16px!important;background:#fff!important;align-items:center!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout>.hero h1,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout>.nsDesktopIntro h1{
+ margin:0 0 3px!important;font-size:24px!important;letter-spacing:-.55px!important;color:#172033!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout>.hero p,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout>.nsDesktopIntro p{font-size:9.5px!important;color:#748094!important}
+html[data-nethor-page-layout="desktop"] .nsEyebrow{font-size:8px!important;color:#667a91!important}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .panel,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .nsCard{
+ margin-bottom:9px!important;padding:14px!important;border:1px solid var(--npu-line)!important;border-radius:13px!important;background:#fff!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .panel h2,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .nsCardHead h2{font-size:13.5px!important;color:#26354c!important}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .panel p,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .nsCardHead p{font-size:8.5px!important;color:#7b8797!important}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .roleBadge{
+ background:#edf3fb!important;color:#315f97!important;border-color:#cbd9eb!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .themeChoice{
+ min-height:66px!important;border-radius:11px!important;background:#f8fafb!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .themeChoice.active{
+ border-color:#abc0dc!important;background:#edf3fb!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .item{
+ min-height:58px!important;border-radius:10px!important;background:#f8fafb!important
+}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout input[type="checkbox"]{accent-color:#315f97!important}
+html[data-nethor-page-layout="desktop"] .settingsDesktopLayout .btn.primary,
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .btn.primary{background:#172033!important;color:#fff!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .pushPanel{
+ margin:2px 0 10px!important;padding:10px!important;border-radius:10px!important;background:#f8fafb!important
+}
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .ruleRow{
+ grid-template-columns:38px minmax(0,1fr) minmax(260px,320px)!important;padding:10px 2px!important
+}
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .ruleIcon{
+ width:36px!important;height:36px!important;border-radius:10px!important;background:#edf3fb!important;color:#315f97!important
+}
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .channelOption[data-mode="both"].active{
+ background:#315f97!important;color:#fff!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .channelOption[data-mode="push"].active{color:#315f97!important}
+html[data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .ruleBadge.appOnly{background:#edf3fb!important;color:#315f97!important}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"] .settingsDesktopLayout>.hero,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout>.nsDesktopIntro,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"] .settingsDesktopLayout .panel,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"] .notificationSettingsDesktopLayout .nsCard{
+ background:#1b222c!important;border-color:#34404e!important
+}
+/* NETHOR PROFESSIONAL USER PAGES V2 END */
