@@ -110,3 +110,15 @@ test('mobile online event only refreshes after successful security revalidation'
  await flush();
  assert.equal(x.calls.filter(v=>v==='refresh').length,1);
 });
+
+
+test('stage21: PWA entrypoint and service worker precache the matching hardened asset',()=>{
+ const mobile=fs.readFileSync(path.join(__dirname,'..','mobile.html'),'utf8');
+ const sw=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');
+ const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'..','app-version.json'),'utf8'));
+ assert.match(mobile,/mobile-services\.js\?v=26/);
+ assert.match(sw,/mobile-services\.js\?v=26/);
+ assert.match(sw,/APP_VERSION=457/);
+ assert.match(sw,/netto-tools-v457/);
+ assert.equal(manifest.version,457);
+});
