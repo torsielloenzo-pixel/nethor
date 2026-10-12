@@ -3,7 +3,7 @@
 
 const STYLE_ASSETS=[
  'ui/mobile/views/scanner/scanner-view.css?v=2',
- 'ui/mobile/tool-pages-layout.css?v=5'
+ 'ui/mobile/tool-pages-layout.css?v=6'
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/tool-pages-layout.js?v=5',
