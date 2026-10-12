@@ -21,7 +21,7 @@ test('QA refonte : les écrans principaux existent et chargent le shell professi
   assert.match(html,/platform-resolver\.js\?v=3/,'Resolver absent : '+page);
   assert.match(html,/platform-assets\.js\?v=4/,'Assets platform absents : '+page);
   assert.match(html,/ui\/desktop\/desktop-shell\.css\?v=9/,'Shell CSS desktop obsolète : '+page);
-  assert.match(html,/ui\/desktop\/desktop-shell\.js\?v=37/,'Shell JS desktop obsolète : '+page);
+  assert.match(html,/ui\/desktop\/desktop-shell\.js\?v=38/,'Shell JS desktop obsolète : '+page);
  }
 });
 
@@ -80,8 +80,8 @@ test('QA rôles : les routes sensibles gardent leurs contrats et la Gestion rest
  assert.match(profile,/{id:'team'.*?roles:null/s);
  assert.match(profile,/const explicit=config\?\.role_permissions\?\.\[module\.id\]\?\.\[role\]/);
  assert.match(profile,/const extra=api\?\.subrolePermissions\?\.\[module\.id\]/);
- assert.match(shell,/permissionLevel\?\.\('portal_admin',user\)/);
- assert.match(shell,/management\.classList\.toggle\('hidden',!allowed/);
+ assert.match(shell,/permissionModules=\{home:'home',planning:'planning',team:'team',promotions:'promotions',articles:'articles',chat:'chat',management:'portal_admin',signal:'problem_report',settings:'settings'\}/);
+ assert.match(shell,/permissionLevel\?\.\(moduleId,user\)!=='none'/);
 });
 
 test('QA mobile : Promotions reste accessible depuis Outils et reconnu par le shell',()=>{
