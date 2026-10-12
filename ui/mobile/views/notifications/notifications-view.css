@@ -53,3 +53,35 @@
 :root[data-theme="dark"] .nethorNotificationsView .npSentence b,:root[data-theme="dark"] .nethorNotificationsView .npGroup,:root[data-theme="dark"] .nethorNotificationsView .npEmpty strong{color:#f0ece7}
 :root[data-theme="dark"] .nethorNotificationsView .npRowMore:hover,:root[data-theme="dark"] .nethorNotificationsView .npTopMenu button:hover,:root[data-theme="dark"] .nethorNotificationsView .npRowMenu button:hover{background:#30353b}
 @media(max-width:420px){.nethorNotificationsView{padding-left:10px;padding-right:10px}.nethorNotificationsView .npMobileTitle h1{font-size:26px}.nethorNotificationsView .npCircleBtn{width:40px;height:40px}.nethorNotificationsView .npRow{grid-template-columns:52px minmax(0,1fr) 40px;padding-left:10px}.nethorNotificationsView .npIcon{width:50px;height:50px}}
+
+/* NETHOR PROFESSIONAL NOTIFICATIONS V2 START */
+.nethorMobileView[data-mobile-view="notifications"]{background:#f3f5f7!important}
+.nethorMobileView[data-mobile-view="notifications"] .nethorNotificationsView{
+ --np-accent:#315f97;--np-accent-soft:#edf3fb;--np-unread:#f3f7fc;
+ padding:10px 9px 24px!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+.nethorMobileView[data-mobile-view="notifications"] .npMobileHead{margin:0 1px 8px!important;align-items:center!important}
+.nethorMobileView[data-mobile-view="notifications"] .npMobileTitle h1{font-size:21px!important;letter-spacing:-.45px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npMobileTitle p{font-size:8.5px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npCircleBtn{width:38px!important;height:38px!important;border-radius:11px!important;background:#eef2f6!important}
+.nethorMobileView[data-mobile-view="notifications"] .npSearch{height:40px!important;border-radius:10px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npSearch:focus{border-color:#9bb6d6!important;box-shadow:0 0 0 3px #315f9712!important}
+.nethorMobileView[data-mobile-view="notifications"] .npFilterState{min-height:34px!important;border-radius:9px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npFilterState.active{background:#edf3fb!important;color:#315f97!important}
+.nethorMobileView[data-mobile-view="notifications"] .npList{gap:6px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npGroup{padding:10px 2px 0!important;font-size:10px!important;color:#657287!important}
+.nethorMobileView[data-mobile-view="notifications"] .npRow{
+ grid-template-columns:42px minmax(0,1fr) 36px!important;gap:8px!important;min-height:62px!important;
+ padding:9px!important;border-radius:11px!important;border:1px solid #dfe5eb!important;box-shadow:none!important
+}
+.nethorMobileView[data-mobile-view="notifications"] .npRow.unread{background:#f3f7fc!important}
+.nethorMobileView[data-mobile-view="notifications"] .npIcon{width:40px!important;height:40px!important;border-radius:11px!important;background:#e9eef4!important;box-shadow:none!important}
+.nethorMobileView[data-mobile-view="notifications"] .npIcon span{width:27px!important;height:27px!important;background:#315f97!important;box-shadow:none!important;font-size:13px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npSentence{font-size:10.5px!important;line-height:1.38!important}
+.nethorMobileView[data-mobile-view="notifications"] .npSentence b{font-size:11px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npCategory,.nethorMobileView[data-mobile-view="notifications"] .npAge{font-size:7.5px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npUnreadDot{background:#315f97!important}
+.nethorMobileView[data-mobile-view="notifications"] .npRowMore{width:34px!important;height:34px!important}
+.nethorMobileView[data-mobile-view="notifications"] .npEmpty{min-height:52dvh!important;color:#7c8796!important}
+:root[data-theme="dark"] .nethorMobileView[data-mobile-view="notifications"] .nethorNotificationsView{--np-unread:#203149;--np-accent-soft:#203149}
+/* NETHOR PROFESSIONAL NOTIFICATIONS V2 END */
