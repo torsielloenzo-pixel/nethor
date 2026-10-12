@@ -1056,6 +1056,41 @@ async function prewarmChatRuntime(){
  return true
 }
 
+let chatAccessRefreshTimer=null;
+async function syncFreshChatAccess(fresh){
+ if(!fresh||!state.session)return false;
+ const shared=chatSharedServices(),api=window.NettoProfileUI;
+ const permission=shared?chatPermissionFromShared(fresh,shared.siteConfig||{}):(api?.permissionLevel?.('chat',fresh)||'none');
+ state.profile={...(state.profile||{}),...fresh};
+ window.currentRole=state.profile.role;
+ if(permission==='none'){
+  state.canManage=false;
+  closeAllChatMenus();closeConversationActions();
+  if(chatRuntimeActive)chatGoHome();
+  return false
+ }
+ state.canManage=permission==='manage';
+ if(!chatRuntimeActive)return true;
+ closeAllChatMenus();closeConversationActions();
+ if(state.profile?.role!=='admin'&&state.generalAvatarEditor)cancelGeneralAvatarCrop();
+ state.lastConversationRenderKey='';state.lastMessageRenderKey='';
+ renderConversations();renderNewChatMembers();renderConversationHeader();
+ await renderMessages();await renderDesktopDetails();
+ return true
+}
+function scheduleFreshChatAccess(fresh){
+ clearTimeout(chatAccessRefreshTimer);
+ chatAccessRefreshTimer=setTimeout(()=>syncFreshChatAccess(fresh).catch(e=>console.warn('Actualisation accès Chat:',e)),80)
+}
+window.addEventListener('netto:profile',e=>{
+ if(CHAT_SPA_MODE||e.detail?.cached||!state.session)return;
+ scheduleFreshChatAccess(e.detail?.profile)
+});
+window.addEventListener('nethor:mobile-services',e=>{
+ if(!CHAT_SPA_MODE||!state.session||!['ready','core','permissions'].includes(e.detail?.type))return;
+ scheduleFreshChatAccess(e.detail?.profile||chatSharedServices()?.profile)
+});
+
 async function boot(){
  chatRuntimeActive=true;
  const shared=chatSharedServices();
