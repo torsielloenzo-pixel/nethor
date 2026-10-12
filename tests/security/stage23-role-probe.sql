@@ -1,3 +1,11 @@
+-- Mirror the live project grants verified read-only in stage23.
+-- The invoker public wrapper needs USAGE on private and EXECUTE on the private
+-- guarded mutation function. No data/table write grants are given.
+GRANT USAGE ON SCHEMA private TO authenticated;
+GRANT EXECUTE ON FUNCTION private.planning_save_week_if_revision(
+ date,timestamptz,jsonb,jsonb,text,text,text,timestamptz
+) TO authenticated;
+
 -- Stage23: disposable Supabase Auth role probe only, no production deployment.
 CREATE OR REPLACE FUNCTION public.stage23_role_probe()
 RETURNS jsonb
