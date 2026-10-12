@@ -310,7 +310,7 @@ function completedCount(task){return state.completions.filter(x=>x.task_id===tas
 function assigneeLabel(task){
  if(task.all_users)return'Tous les utilisateurs';
  const ids=state.assignees.filter(x=>x.task_id===task.id).map(x=>x.user_id);
- const names=ids.map(id=>state.team.find(x=>x.id===id)?.display_name).filter(Boolean);
+ const names=ids.map(id=>state.team.find(x=>x.id===id&&x.account_enabled!==false)?.display_name).filter(Boolean);
  if(!names.length)return'Aucun destinataire';
  return names.length<=3?names.join(' · '):names.slice(0,3).join(' · ')+' +'+(names.length-3)
 }
