@@ -3,7 +3,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const {AsyncFunction}=Object.getPrototypeOf(async function(){}).constructor;
+const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
 const source=fs.readFileSync(path.join(__dirname,'..','docs/security/edge-functions/password-recovery-email/index.ts'),'utf8');
 const start=source.indexOf('    if (action === "resolved") {');
 const stop=source.indexOf('\n    if (action !== "request")',start);
@@ -62,8 +62,8 @@ test('stage19: missing token and failed JWT deny before privileged reads',async(
 });
 
 test('stage19: revoked, absent or unverifiable session rejects BEFORE service role operations',async()=>{
- for(const context of [false,null,undefined]){
-  const t=harness({securityContext:context===undefined?undefined:context===null?null:{session_active:context}});
+ for(const context of [{session_active:false},null,{}]){
+  const t=harness({securityContext:context});
   const res=await t.run();
   assert.equal(res.status,401);
   assert.match(res.body.error,/Session inactive/i);
