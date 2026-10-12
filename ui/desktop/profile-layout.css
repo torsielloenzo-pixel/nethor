@@ -2,3 +2,82 @@
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout{
  width:100%;min-width:0
 }
+
+/* NETHOR PROFESSIONAL PROFILE V2 START */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] body{
+ background:#f3f5f7!important;color:#172033!important;
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] main{
+ width:100%!important;max-width:none!important;margin:0!important;padding:16px 18px 46px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout>.hero{
+ min-height:78px;margin:0 0 10px!important;padding:14px 16px!important;border:1px solid #dfe5eb;border-radius:16px;background:#fff!important;text-align:left!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout>.hero h1{
+ margin:0 0 3px!important;font-size:24px!important;letter-spacing:-.55px!important;color:#172033!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout>.hero p{font-size:9.5px!important;color:#738094!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout{
+ display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr)!important;gap:10px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout>.hero{grid-column:1/-1!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileMainCard{grid-column:1!important;grid-row:auto!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .rewardCard,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .soundCard,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .emailCard,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .securityCard,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .notificationsCard{margin-top:0!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .card,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .notificationsCard{
+ padding:16px!important;border:1px solid #dfe5eb!important;border-radius:14px!important;box-shadow:none!important;background:#fff!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileTop{grid-template-columns:86px minmax(0,1fr)!important;gap:14px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .avatarWrap,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .avatar{width:86px!important;height:86px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .avatar{border-radius:50%!important;background:#315f97!important;box-shadow:none!important;font-size:27px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .avatar>img{border-radius:50%!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .avatarBadge{
+ width:30px!important;height:30px!important;right:-2px!important;bottom:0!important;border-width:3px!important;background:#172033!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .name{font-size:19px!important;color:#203049!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .role{font-size:8.5px!important;color:#53708f!important;letter-spacing:.08em!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .divider{margin:14px 0!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileFields{gap:9px!important;margin-bottom:10px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .field label{font-size:8.5px!important;color:#687589!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .fieldHelp{font-size:7.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .field input,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .field select,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .readonlyProfileName{
+ height:39px!important;border-radius:9px!important;border-color:#dfe5eb!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .field input:focus,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .field select:focus{border-color:#9bb6d6!important;box-shadow:0 0 0 3px #315f9712!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileColorChoice{width:34px!important;height:34px!important;border-radius:10px!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .btn{min-height:36px!important;border-radius:9px!important;padding:0 11px!important;font-size:8.5px!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .primary{background:#172033!important;color:#fff!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .secondary{background:#edf1f5!important;color:#334159!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .securityHead h2,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .rewardHead h2,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .soundHead h2,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .notificationsHead h2{font-size:13.5px!important;color:#26354c!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .securityHead p,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .rewardHead p,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .soundHead p,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .notificationsHead p{font-size:8.5px!important;color:#7a8697!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .notificationItem{
+ border-radius:9px!important;background:#f7f9fb!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .notificationItem.unread{background:#edf3fb!important;border-color:#cbd9eb!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .unreadDot{background:#315f97!important}
+@media(max-width:1180px){
+ html[data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout{grid-template-columns:1fr!important}
+}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout>.hero,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .card,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .notificationsCard{
+ background:#1b222c!important;border-color:#34404e!important
+}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .profileDesktopLayout>.hero h1,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="profile"] .name{color:#edf2f8!important}
+/* NETHOR PROFESSIONAL PROFILE V2 END */
