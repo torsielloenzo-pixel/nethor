@@ -392,12 +392,24 @@ async function forceDisabledAccountLogout(){
   state.session=null;state.profile=null;state.ready=false;state.status='signed-out';
   clearChannels();emit('signed-out');redirectToLogin();return true
 }
+function securityAuthFailure(error){
+  const status=Number(error?.status||error?.statusCode||0),code=String(error?.code||'').toLowerCase();
+  return [400,401,403].includes(status)||['session_not_found','refresh_token_not_found','refresh_token_already_used'].includes(code)
+}
+async function verifyAuthAfterSecurityError(){
+  try{
+    const {data,error}=await client.auth.getUser();
+    if(!error&&data?.user)return true;
+    if((!error&&!data?.user)||securityAuthFailure(error)){await forceDisabledAccountLogout();return false}
+  }catch(_){}
+  return true
+}
 async function checkSecurityState(){
   if(!client||!state.session||navigator.onLine===false||securityBusy)return true;
   securityBusy=true;
   try{
     const {data,error}=await client.rpc('nethor_security_context');
-    if(error)return true;
+    if(error)return verifyAuthAfterSecurityError();
     if(data?.session_active===false){await forceDisabledAccountLogout();return false}
     const serverRole=String(data?.role||'').trim(),localRole=String(state.profile?.role||'').trim();
     if(serverRole&&localRole&&serverRole!==localRole)await refreshCore({emitChange:true});
