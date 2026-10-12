@@ -190,14 +190,14 @@ const launchSourcePath=safeSource();
 let selectedSourcePath=launchSourcePath,sourceManuallyChanged=false;
 const pageNames={
  'general':'Nethor / Général',
- 'home.html':'Accueil','index.html':'Stock Fruits & Légumes','planning.html':'Planning','chat.html':'Chat',
+ 'home.html':'Accueil','index.html':'Stock Fruits & Légumes','planning.html':'Planning','team.html':'Équipe','chat.html':'Chat','promotions.html':'Promotions',
  'profile.html':'Mon profil','articles.html':'Fiches articles','bakery.html':'Boulangerie','settings.html':'Personnalisation',
  'notifications.html':'Notifications','notification-settings.html':'Réglages des notifications','scanner.html':'Scanner (bêta)',
  'report-problem.html':'Signaler un problème','fl-assistant.html':'Assistant Précommande','maintenance.html':'Maintenance',
  'rewards.html':'Défis & Boutique','accounts.html':'Comptes','admin-portal.html':'Gestion','user-menu.html':'Menu utilisateur'
 };
 const pageIdByFile={
- 'home.html':'home','index.html':'stock','planning.html':'planning','chat.html':'chat','profile.html':'profile',
+ 'home.html':'home','index.html':'stock','planning.html':'planning','team.html':'team','chat.html':'chat','promotions.html':'promotions','profile.html':'profile',
  'articles.html':'articles','bakery.html':'bakery','settings.html':'settings','notifications.html':'notifications',
  'notification-settings.html':'notification_settings','scanner.html':'scanner','report-problem.html':'problem_report',
  'fl-assistant.html':'fl_assistant','maintenance.html':'maintenance','rewards.html':'rewards','accounts.html':'accounts',
@@ -229,7 +229,7 @@ function pageSelectable(file){
 function sourceOptions(){
  const order=[
   'general','home.html','user-menu.html','profile.html','settings.html',
-  'planning.html','index.html','articles.html','chat.html','scanner.html',
+  'planning.html','team.html','index.html','articles.html','chat.html','promotions.html','scanner.html',
   'notifications.html','notification-settings.html','report-problem.html',
   'fl-assistant.html','bakery.html','rewards.html','admin-portal.html','accounts.html','maintenance.html'
  ];
