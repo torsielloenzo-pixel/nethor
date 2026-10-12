@@ -252,11 +252,30 @@ Deno.serve(async (req) => {
 
       const tokenHash = generated?.properties?.hashed_token || generated?.properties?.hashedToken || "";
       let actionLink = "";
+      let resetRowId = "";
       if (!linkError && tokenHash) {
-        const secureLink = new URL("reset-password.html", base);
-        secureLink.searchParams.set("token_hash", String(tokenHash));
-        secureLink.searchParams.set("type", "recovery");
-        actionLink = secureLink.toString();
+        // Le jeton brut est reserve au destinataire. Une empreinte SHA-256
+        // permet de lier le retour a la demande, sans stocker le jeton en clair.
+        const digestBytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(tokenHash)));
+        const digest = Array.from(new Uint8Array(digestBytes), (n) => n.toString(16).padStart(2, "0")).join("");
+        const { data: pending, error: pendingError } = await admin.from("password_reset_requests").insert({
+          user_id: profile.id,
+          identifier: rawIdentifier || username,
+          display_name: profile.display_name || username,
+          email_status: "pending",
+          email_error: null,
+          reset_channel: "email",
+          recovery_proof_digest: digest,
+        }).select("id").single();
+        if (pendingError) console.error("password recovery request tracking unavailable", pendingError);
+        if (pending?.id && !pendingError) {
+          resetRowId = String(pending.id);
+          const secureLink = new URL("reset-password.html", base);
+          secureLink.searchParams.set("token_hash", String(tokenHash));
+          secureLink.searchParams.set("type", "recovery");
+          secureLink.searchParams.set("request_id", resetRowId);
+          actionLink = secureLink.toString();
+        }
       }
       if (!linkError && actionLink) {
         const mail = await sendMail(
@@ -267,27 +286,30 @@ Deno.serve(async (req) => {
         );
 
         if (mail.ok) {
-          const { data: resetRow } = await admin.from("password_reset_requests").insert({
-            user_id: profile.id,
-            identifier: rawIdentifier || username,
-            display_name: profile.display_name || username,
-            email_status: "sent",
-            email_error: null,
-            reset_channel: "email",
-          }).select("id").single();
-
-          await admin.from("audit_logs").insert({
-            actor_id: null,
-            target_user_id: profile.id,
-            action: "password_reset_email_sent",
-            area: "Authentification",
-            resource_type: "password_reset_requests",
-            resource_id: resetRow?.id || null,
-            summary: "Lien de réinitialisation envoyé · " + (profile.display_name || username),
-            details: { channel: "email", resend_id: mail.id || null },
-          });
+          const { error: sentStatusError } = await admin.from("password_reset_requests")
+            .update({ email_status: "sent", email_error: null })
+            .eq("id", resetRowId);
+          if (sentStatusError) {
+            // Ne pas declarer un lien suivi comme confirme si l'envoi n'a pas
+            // pu etre consigne. Le lien Auth peut encore rester utilisable.
+            console.error("password recovery mail status unavailable", sentStatusError);
+          } else {
+            await admin.from("audit_logs").insert({
+              actor_id: null,
+              target_user_id: profile.id,
+              action: "password_reset_email_sent",
+              area: "Authentification",
+              resource_type: "password_reset_requests",
+              resource_id: resetRowId,
+              summary: "Lien de réinitialisation envoyé · " + (profile.display_name || username),
+              details: { channel: "email", resend_id: mail.id || null },
+            });
+          }
           return genericOk();
         }
+        await admin.from("password_reset_requests")
+          .update({ email_status: "failed", email_error: mail.reason || "send_failed" })
+          .eq("id", resetRowId);
       }
     }
 
