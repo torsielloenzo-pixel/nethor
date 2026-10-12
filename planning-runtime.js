@@ -602,7 +602,7 @@ function hidePointOfSaleDesktopAbsenceRequest(){
 }
 function openAbsenceRequest(){
  if(hidePointOfSaleDesktopAbsenceRequest())return;
- if(absenceAccess==='hidden'||(absenceAccess==='manage'&&role!=='admin')||!currentUser)return;
+ if(!canRequestPlanningAbsence()||!currentUser)return;
  const modal=document.getElementById('absenceRequestModal'),start=document.getElementById('absenceRequestStart'),end=document.getElementById('absenceRequestEnd'),type=document.getElementById('absenceRequestType'),note=document.getElementById('absenceRequestNote');
  if(!modal||!start||!end)return;
  const base=dayKey();
@@ -615,7 +615,7 @@ function closeAbsenceRequest(){
 }
 async function submitAbsenceRequest(){
  if(hidePointOfSaleDesktopAbsenceRequest())return;
- if(absenceAccess==='hidden'||(absenceAccess==='manage'&&role!=='admin')||!db||!currentUser)return;
+ if(!canRequestPlanningAbsence()||!db||!currentUser)return;
  const type=document.getElementById('absenceRequestType')?.value||'unavailable',start=document.getElementById('absenceRequestStart')?.value||'',end=document.getElementById('absenceRequestEnd')?.value||'',note=(document.getElementById('absenceRequestNote')?.value||'').trim(),btn=document.getElementById('absenceRequestSubmit');
  if(!start||!end){showToast('Choisis les dates de la demande');return}
  if(end<start){showToast('La date de fin doit être après la date de début');return}
@@ -1407,6 +1407,9 @@ async function applyPlanningWidgetPermissions(userRole,configOverride=null,permi
  const personalVisible=planningWidgetVisible(config,'personal_stats',userRole);
  document.getElementById('planningInsights')?.classList.toggle('hidden',!personalVisible)
 }
+function canRequestPlanningAbsence(){
+ return absenceAccess==='request'||(absenceAccess==='manage'&&role==='admin')
+}
 function updatePlanningRoleActions(){
  const canManageAbsences=absenceAccess==='manage';
  const offlineReadOnly=PLANNING_SPA_MODE&&navigator.onLine===false;
@@ -1417,7 +1420,7 @@ function updatePlanningRoleActions(){
  if(role!=='admin')closePlanningImportHistory();
  document.getElementById('planningLogs')?.classList.toggle('hidden',!(canEdit||canManageAbsences));
  document.getElementById('clearPlanningLogs')?.classList.toggle('hidden',role!=='admin');
- document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',absenceAccess==='hidden'||hidePointOfSaleDesktopAbsenceRequest());
+ document.getElementById('absenceRequestBtn')?.classList.toggle('hidden',!canRequestPlanningAbsence()||hidePointOfSaleDesktopAbsenceRequest());
  document.getElementById('absenceAdminTools')?.classList.toggle('hidden',role!=='admin');
  placePlanningActions()
 }
