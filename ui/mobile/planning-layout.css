@@ -1087,4 +1087,131 @@ body.planningYearOpen .editSaveBar{bottom:8px!important}
   body.planningYearOpen #yearView .yearCloseBtn{
     right:9px!important;
   }
+}\n\n/* NETHOR PROFESSIONAL PLANNING V1 START
+   Mobile : planning prioritaire, lecture rapide et gestes simples. */
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"]{
+ --npm-bg:#f3f5f7;--npm-surface:#fff;--npm-text:#172033;--npm-muted:#6f7b8c;--npm-line:#dfe5ec;
+ --npm-blue:#2563eb;--npm-blue-soft:#eaf1ff;--npm-navy:#172033;--npm-orange:#f97316
 }
+html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] body{background:var(--npm-bg)!important}
+@media(max-width:900px){
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="planning"] #planningApp{
+  padding:8px 10px calc(var(--netto-mobile-bar-h,64px) + env(safe-area-inset-bottom) + 16px)!important
+ }
+ .nethorMobilePlanningCommand{padding:11px!important;border:1px solid var(--npm-line)!important;border-radius:16px!important;background:#fff!important;box-shadow:none!important}
+ .nethorMobilePlanningTitle{display:grid;grid-template-columns:auto 1fr;align-items:baseline;column-gap:8px;margin:0 0 9px}
+ .nethorMobilePlanningTitle>span{grid-column:1/-1;color:#8a94a3;font-size:8px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+ .nethorMobilePlanningTitle>strong{font-size:21px;line-height:1.05;color:var(--npm-text);letter-spacing:-.4px}
+ .nethorMobilePlanningTitle>small{min-width:0;color:var(--npm-muted);font-size:9px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .nethorMobilePlanningCommand .viewTabs{grid-template-columns:1fr 1fr!important;gap:3px!important;padding:3px!important;background:#edf1f5!important;border-radius:11px!important}
+ .nethorMobilePlanningCommand .viewTab{min-height:37px!important;border-radius:8px!important;background:transparent!important;color:#596579!important;font-size:10.5px!important;font-weight:850!important}
+ .nethorMobilePlanningCommand .viewTab.active{background:#fff!important;color:#172033!important;box-shadow:0 1px 5px rgba(16,30,49,.09)!important}
+ .nethorMobilePlanningCommand .weekNav{margin-top:7px!important}
+ .nethorMobilePlanningCommand .weekLabel{color:#596579!important;font-size:9.5px!important;font-weight:750!important}
+ .nethorMobilePlanningCommand .weekNav .btn{min-height:39px!important;border:1px solid var(--npm-line)!important;border-radius:10px!important;background:#fff!important;color:#263246!important;box-shadow:none!important;font-size:10px!important}
+
+ body.agendaLayout .mobilePlanningPrimaryNav{
+  margin:0 0 9px!important;padding:3px!important;border:1px solid #e1e6ec!important;border-radius:13px!important;
+  background:#e9edf2!important;box-shadow:none!important
+ }
+ body.agendaLayout .mobilePlanningPrimaryNav .mobileAgendaModeBtn{
+  min-height:40px!important;border-radius:10px!important;background:transparent!important;color:#606c7e!important;font-size:11px!important;font-weight:850!important;box-shadow:none!important
+ }
+ body.agendaLayout .mobilePlanningPrimaryNav .mobileAgendaModeBtn.active{
+  background:#fff!important;color:#172033!important;box-shadow:0 1px 5px rgba(16,30,49,.09)!important
+ }
+ body.agendaLayout .mobilePlanningSelector{margin-bottom:11px!important;gap:6px!important}
+ body.agendaLayout .mobilePlanningSelectorArrow,
+ body.agendaLayout .mobilePlanningSelectBtn{
+  height:40px!important;min-height:40px!important;border:1px solid var(--npm-line)!important;border-radius:10px!important;
+  background:#fff!important;color:#283449!important;box-shadow:none!important
+ }
+ body.agendaLayout .mobilePlanningSelectBtn{font-size:10.5px!important;font-weight:800!important}
+ body.agendaLayout .agendaHeader{padding:1px 2px 11px!important}
+ body.agendaLayout .agendaHeader h2{font-size:20px!important;letter-spacing:-.4px!important;color:var(--npm-text)!important}
+ body.agendaLayout .agendaHeader p{margin-top:4px!important;color:var(--npm-muted)!important;font-size:9.5px!important;line-height:1.35!important}
+
+ .nthWeekDays,.nthDayWeekStrip{gap:4px!important;margin-bottom:9px!important}
+ .nthWeekDay,.nthDayWeekPill{
+  min-height:47px!important;border:1px solid #e1e6ec!important;border-radius:10px!important;background:#fff!important;color:#4c5c72!important;box-shadow:none!important
+ }
+ .nthWeekDay span,.nthDayWeekPill span{font-size:9px!important;color:inherit!important}
+ .nthWeekDay strong,.nthDayWeekPill strong{font-size:13px!important}
+ .nthWeekDay.today:not(.selected),.nthDayWeekPill.today:not(.selected){border-color:#9bb8e8!important}
+ .nthWeekDay.selected,.nthDayWeekPill.selected{background:#172033!important;border-color:#172033!important;color:#fff!important;box-shadow:none!important}
+
+ .nthWeekSummary,.nthDaySummary{gap:6px!important;margin-bottom:9px!important}
+ .nthWeekSummary>div,.nthDaySummary>div{padding:9px 8px!important;border:1px solid #e2e7ed!important;border-radius:10px!important;background:#fff!important}
+ .nthWeekSummary small,.nthDaySummary span{color:#788496!important;font-size:8.5px!important}
+ .nthWeekSummary strong,.nthDaySummary strong{color:#20304a!important;font-size:17px!important}
+
+ .nthWeekFilters,.nthDayFilters{gap:5px!important;margin-bottom:10px!important}
+ .nthWeekFilters button,.nthDayFilters button{
+  min-height:36px!important;padding:0 11px!important;border:1px solid #e0e6ed!important;border-radius:9px!important;background:#fff!important;
+  color:#566579!important;font-size:10px!important;font-weight:800!important
+ }
+ .nthWeekFilters button.selected,.nthDayFilters button.selected{background:#eaf1ff!important;border-color:#aac4f4!important;color:#1d55ad!important}
+
+ .nthWeekList,.nthDayTeamList{gap:8px!important}
+ .nthWeekCard,.nthDayMine,.nthDayTeamCard,.nthDayAway{
+  border:1px solid #e0e6ed!important;border-radius:14px!important;background:#fff!important;box-shadow:none!important
+ }
+ .nthWeekCard{padding:11px 9px 10px!important}
+ .nthWeekCard.mine,.nthDayMine{border-color:#a9bfe2!important;box-shadow:0 0 0 2px rgba(37,99,235,.04)!important}
+ .nthWeekPerson .planningIdentityAvatar,.nthDayMineProfile>.planningIdentityAvatar,.nthDayPerson>.planningIdentityAvatar{box-shadow:0 0 0 2px #fff,0 0 0 3px #e1e7ee!important}
+ .nthWeekName>strong,.nthDayBlockTop>strong,.nthDaySectionTitle>strong,.nthDayMineProfile>div>strong,.nthDayPerson>strong{color:#22314a!important}
+ .nthWeekName>small{color:#6d7c90!important}
+ .nthWeekTotal>strong{color:#33445f!important}.nthWeekTotal>strong span{color:#8b96a6!important}
+ .nthWeekProgress,.nthDayProgress{background:#e9edf3!important}.nthWeekProgress>i,.nthDayProgress>i{background:#356fc7!important}
+
+ .nthWeekSlot{min-height:52px!important;border-radius:8px!important}
+ .nthWeekSlot[data-status="g"],.nthDayShift[data-shift="g"]{background:#e4f4eb!important;color:#246646!important}
+ .nthWeekSlot[data-status="b"],.nthDayShift[data-shift="b"]{background:#e7eef9!important;color:#315e9d!important}
+ .nthWeekSlot[data-status="leave"]{background:#fff4cf!important;color:#85620c!important}
+ .nthWeekSlot[data-status="red"]{background:#fbe6e6!important;color:#a83d3d!important}
+ .nthWeekSlot[data-status="orange"]{background:#fff0df!important;color:#9a5a16!important}
+ .nthWeekSlot[data-status="unavailable"]{background:#eeeaf5!important;color:#67527f!important}
+ .nthWeekSlot.active{outline:2px solid #2563eb!important;outline-offset:-2px!important}
+
+ .nthDayMine{padding:12px!important;margin-bottom:13px!important}
+ .nthDayShift{border-radius:9px!important}
+ .nthDayBadge{border-radius:8px!important}
+ .nthDayAway{margin-top:11px!important}
+ .nthDayAway summary{min-height:49px!important}
+
+ .mobilePlanningActionsDock{margin-top:2px!important}
+ .mobilePlanningActionsDock .excelDrop,.mobilePlanningActionsDock #editPlanningBtn{
+  min-height:39px!important;border-radius:10px!important;border:1px solid var(--npm-line)!important;box-shadow:none!important
+ }
+ .mobilePlanningActionsDock #editPlanningBtn{background:#172033!important;color:#fff!important}
+
+ .planningInsightCard,.planningLogs{border:1px solid #e1e6ec!important;border-radius:14px!important;background:#fff!important;box-shadow:none!important}
+ .compactInsightCard>.insightHead,.personalStatsCard.compactStats .insightHead{min-height:50px!important;padding:10px 11px!important}
+ .insightHead strong{color:#26354c!important}
+}
+html[data-theme="dark"][data-nethor-page-layout="mobile"][data-nethor-page-id="planning"]{
+ --npm-bg:#12171e;--npm-surface:#1b222c;--npm-text:#eef3fa;--npm-muted:#a7b1bf;--npm-line:#34404e;--npm-blue:#72a3ff
+}
+@media(max-width:900px){
+ html[data-theme="dark"] .nethorMobilePlanningCommand,
+ html[data-theme="dark"] body.agendaLayout .mobilePlanningSelectorArrow,
+ html[data-theme="dark"] body.agendaLayout .mobilePlanningSelectBtn,
+ html[data-theme="dark"] .nthWeekDay,
+ html[data-theme="dark"] .nthDayWeekPill,
+ html[data-theme="dark"] .nthWeekSummary>div,
+ html[data-theme="dark"] .nthDaySummary>div,
+ html[data-theme="dark"] .nthWeekFilters button,
+ html[data-theme="dark"] .nthDayFilters button,
+ html[data-theme="dark"] .nthWeekCard,
+ html[data-theme="dark"] .nthDayMine,
+ html[data-theme="dark"] .nthDayTeamCard,
+ html[data-theme="dark"] .nthDayAway,
+ html[data-theme="dark"] .planningInsightCard,
+ html[data-theme="dark"] .planningLogs{background:#1b222c!important;border-color:#34404e!important;color:#e7eef8!important}
+ html[data-theme="dark"] body.agendaLayout .mobilePlanningPrimaryNav{background:#10161d!important;border-color:#303b49!important}
+ html[data-theme="dark"] body.agendaLayout .mobilePlanningPrimaryNav .mobileAgendaModeBtn.active{background:#293342!important;color:#fff!important}
+ html[data-theme="dark"] .nthWeekDay.selected,html[data-theme="dark"] .nthDayWeekPill.selected{background:#eef3fa!important;border-color:#eef3fa!important;color:#172033!important}
+ html[data-theme="dark"] .nthWeekName>strong,html[data-theme="dark"] .nthDayBlockTop>strong,html[data-theme="dark"] .nthDaySectionTitle>strong,
+ html[data-theme="dark"] .nthDayMineProfile>div>strong,html[data-theme="dark"] .nthDayPerson>strong{color:#eaf0f8!important}
+}
+/* NETHOR PROFESSIONAL PLANNING V1 END */\n
