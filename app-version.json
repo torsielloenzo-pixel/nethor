@@ -1,17 +1,18 @@
 {
-  "version": 455,
-  "label": "v1.46.79",
+  "version": 456,
+  "label": "v1.46.80",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Accueil mobile · comptes actifs",
-  "message": "Les comptes désactivés sont désormais exclus de l'équipe présente, des destinataires et des compteurs de tâches sur l'accueil mobile.",
+  "title": "Accueil desktop · cohérence des effectifs",
+  "message": "Les statistiques d'équipe et de tâches n'incluent plus les comptes désactivés, sur desktop comme sur mobile.",
   "published_at": "2026-10-11T11:43:05.969Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "L'accueil mobile ne présente plus les comptes désactivés dans l'équipe en poste.",
-    "Correspondance avec les noms de planning configurés dans les profils.",
-    "Les destinataires et compteurs de tâches n'incluent plus les comptes désactivés.",
-    "Aucune modification des comptes ou données Supabase ; correctif en préproduction uniquement."
+    "Accueil desktop : les comptes désactivés sont exclus des destinataires et des compteurs de tâches.",
+    "Correspondance entre les noms du planning et les noms de compte, avec masquage des profils inactifs.",
+    "Tableau de bord : les indicateurs de progression ignorent les validations historiques de comptes désactivés.",
+    "Tests automatisés mobile et desktop désormais inclus dans GitHub Actions.",
+    "Aucune donnée, session ni autorisation Supabase modifiée."
   ]
 }
