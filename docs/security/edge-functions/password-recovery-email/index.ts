@@ -127,43 +127,68 @@ Deno.serve(async (req) => {
         return json({ error: "Session inactive ou révoquée." }, 401);
       }
 
-      const now = new Date().toISOString();
-      const { data: rows } = await admin.from("password_reset_requests")
-        .select("id")
+      // Le seul signal de preuve est un changement d'empreinte de mot de passe
+      // constaté par la base Auth (proposition SQL étape 20).
+      // Un simple appel du navigateur ne peut plus résoudre une demande.
+      const minRequestDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { data: latest, error: lookupError } = await admin.from("password_reset_requests")
+        .select("id,password_changed_verified_at,confirmation_notification_at")
         .eq("user_id", user.id)
         .eq("reset_channel", "email")
-        .is("resolved_at", null);
-
-      if ((rows || []).length) {
-        await admin.from("password_reset_requests")
-          .update({ resolved_at: now, resolved_by: null })
-          .eq("user_id", user.id)
-          .eq("reset_channel", "email")
-          .is("resolved_at", null);
-
-        await admin.from("audit_logs").insert({
-          actor_id: null,
-          target_user_id: user.id,
-          action: "password_reset_self_resolved",
-          area: "Authentification",
-          resource_type: "password_reset_requests",
-          resource_id: rows[0]?.id || null,
-          summary: "Mot de passe réinitialisé par lien e-mail",
-          details: { channel: "email" },
-        });
+        .eq("email_status", "sent")
+        .gte("requested_at", minRequestDate)
+        .order("requested_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lookupError) return json({ error: "Vérification du changement indisponible." }, 503);
+      if (!latest?.password_changed_verified_at) {
+        return json({ error: "Changement de mot de passe non encore confirmé par le serveur." }, 409);
       }
+
+      // Réservation atomique et unique de la notification, même si plusieurs
+      // onglets appellent l'endpoint simultanément.
+      const now = new Date().toISOString();
+      const { data: claimed, error: claimError } = await admin.from("password_reset_requests")
+        .update({ confirmation_notification_at: now, confirmation_notification_status: "pending" })
+        .eq("id", latest.id)
+        .eq("user_id", user.id)
+        .not("password_changed_verified_at", "is", null)
+        .is("confirmation_notification_at", null)
+        .select("id")
+        .maybeSingle();
+      if (claimError) return json({ error: "Confirmation temporairement indisponible." }, 503);
+      if (!claimed) return json({ success: true, verified: true, already_acknowledged: true });
+
+      await admin.from("audit_logs").insert({
+        actor_id: null,
+        target_user_id: user.id,
+        action: "password_change_auth_verified",
+        area: "Authentification",
+        resource_type: "password_reset_requests",
+        resource_id: claimed.id,
+        summary: "Mot de passe modifié (preuve Auth)",
+        details: { channel: "email", evidence: "auth_password_hash_changed" },
+      });
 
       const { data: recovery } = await admin.from("user_recovery_emails")
         .select("email").eq("user_id", user.id).maybeSingle();
+      let notificationStatus = "skipped";
       if (recovery?.email) {
-        await sendMail(
+        const sent = await sendMail(
           recovery.email,
           "[Nethor] Votre mot de passe a été modifié",
           '<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;background:#f5f6f8;padding:28px;color:#202124"><div style="max-width:560px;margin:auto;background:#fff;border:1px solid #e4e7eb;border-radius:18px;padding:26px"><h2 style="margin:0 0 10px;font-size:21px">Mot de passe modifié</h2><p style="margin:0;line-height:1.55;color:#62676f">Le mot de passe de votre compte Nethor vient d’être réinitialisé.</p><p style="margin:16px 0 0;line-height:1.55;color:#8a4b25"><strong>Si vous n’êtes pas à l’origine de cette modification, contactez immédiatement un administrateur Nethor.</strong></p></div></div>',
-          "Le mot de passe de votre compte Nethor vient d’être réinitialisé.\n\nSi vous n’êtes pas à l’origine de cette modification, contactez immédiatement un administrateur Nethor."
+          "Le mot de passe de votre compte Nethor vient d'être réinitialisé.\\n\\nSi vous n'êtes pas à l'origine de cette modification, contactez immédiatement un administrateur Nethor."
         );
+        notificationStatus = sent.ok ? "sent" : "failed";
       }
-      return json({ success: true });
+      const { error: notificationError } = await admin.from("password_reset_requests")
+        .update({ confirmation_notification_status: notificationStatus })
+        .eq("id", claimed.id);
+      if (notificationError) {
+        console.error("password-recovery-email notification status", notificationError);
+      }
+      return json({ success: true, verified: true, notification_status: notificationStatus });
     }
 
     if (action !== "request") return json({ error: "Action inconnue." }, 400);
