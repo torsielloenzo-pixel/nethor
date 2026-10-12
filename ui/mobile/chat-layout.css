@@ -450,3 +450,47 @@ html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .conversation
  max-height:calc(100dvh - var(--netto-mobile-bar-h,64px) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px)!important;
  overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important
 }
+
+/* NETHOR PROFESSIONAL CHAT V1 START */
+@media(max-width:900px){
+ .nethorMobileView[data-mobile-view="chat"],html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"]{
+  --chat-bg:#f3f5f7;--chat-surface:#fff;--chat-line:#dfe5eb;--chat-text:#172033;--chat-muted:#6e798a;
+  --chat-soft:#f0f3f6;--chat-gradient:linear-gradient(135deg,#315d93,#476f9f)
+ }
+ .nethorMobileView[data-mobile-view="chat"] .conversationListPane,
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .conversationListPane{background:#fff!important}
+ .nethorMobileView[data-mobile-view="chat"] .listHead,
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .listHead{padding:11px 11px 8px!important}
+ .nethorMobileView[data-mobile-view="chat"] .listHead h1,
+ html[data-nethor-page-layout="mobile"][data-nethor-page-id="chat"] .listHead h1{font-size:21px!important;color:#1d2c43!important;letter-spacing:-.45px!important}
+ .nethorMobileView[data-mobile-view="chat"] .listHead small{color:#7a8697!important;font-size:8px!important}
+ .nethorMobileView[data-mobile-view="chat"] .newChatBtn{background:#172033!important;color:#fff!important}
+ .nethorMobileView[data-mobile-view="chat"] .convSearch{background:#f1f4f7!important;border:1px solid #e1e6ec!important}
+ .nethorMobileView[data-mobile-view="chat"] .conversationList{background:#fff!important}
+ .nethorMobileView[data-mobile-view="chat"] .convRow{min-height:65px!important;border-radius:11px!important}
+ .nethorMobileView[data-mobile-view="chat"] .convRow.active{background:#eaf1fb!important}
+ .nethorMobileView[data-mobile-view="chat"] .convAvatar{background:#e7edf4!important;color:#314a69!important}
+ .nethorMobileView[data-mobile-view="chat"] .convTitleLine strong{color:#26354c!important}
+ .nethorMobileView[data-mobile-view="chat"] .unreadBadge{background:#315f97!important}
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .chatHeader{background:#fff!important;border-bottom:1px solid #e1e6ec!important}
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .messages{background:#f3f5f7!important}
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .bubble{border:1px solid #e0e5eb!important;background:#fff!important}
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .mine .bubble{
+  border-color:#d5e2f4!important;background:#e8f0fb!important;color:#203b60!important
+ }
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .mine .messageBody,
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .mine .messageMeta,
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .mine .readTicks{color:#203b60!important}
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .composer{background:#fff!important;border-top:1px solid #e1e6ec!important}
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .composer textarea{background:#f0f3f6!important}
+ body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .sendBtn{background:#172033!important;color:#fff!important}
+}
+html[data-theme="dark"] .nethorMobileView[data-mobile-view="chat"] .conversationListPane,
+html[data-theme="dark"] body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .chatHeader,
+html[data-theme="dark"] body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .composer{background:#1b222c!important;border-color:#34404e!important}
+html[data-theme="dark"] .nethorMobileView[data-mobile-view="chat"] .conversationList{background:#1b222c!important}
+html[data-theme="dark"] .nethorMobileView[data-mobile-view="chat"] .convRow.active{background:#203149!important}
+html[data-theme="dark"] body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .messages{background:#12171e!important}
+html[data-theme="dark"] body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .bubble{background:#222b36!important;border-color:#354150!important}
+html[data-theme="dark"] body.mobileConversationOpen .nethorMobileView[data-mobile-view="chat"] .mine .bubble{background:#263d5d!important;border-color:#365376!important;color:#eef4fc!important}
+/* NETHOR PROFESSIONAL CHAT V1 END */
