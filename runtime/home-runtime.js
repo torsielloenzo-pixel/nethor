@@ -522,10 +522,14 @@ function homeActivePlanningOnly(raw,profiles=[]){
  return {...raw,employees:visible.map(x=>x.employee),days};
 }
 function homeQuickPlanningProfileFor(name,rows=[]){
- const target=homeNorm(name),base=target.replace(/\s+[a-z]$/,'');
+ const target=homeNorm(name).trim(),base=target.replace(/\s+[a-z]$/,'');
+ if(!target)return null;
  return (rows||[]).find(x=>{
-  const p=homeNorm(x?.display_name),pb=p.replace(/\s+[a-z]$/,'');
-  return p===target||pb===target||p===base||pb===base
+  if(x.account_enabled===false)return false;
+  return [x.planning_name,x.display_name].filter(Boolean).some(value=>{
+   const label=homeNorm(value).trim(),short=label.replace(/\s+[a-z]$/,'');
+   return label===target||label===base||short===target||short===base
+  })
  })||null
 }
 function homeQuickPlanningInitials(name){
@@ -717,12 +721,9 @@ async function renderHomeDashboard(profile,name,cfg){
   })
  }
  for(const n of workingNames){
-  const p=profileRows.find(x=>homeNorm(x.display_name)===homeNorm(n));todayTeam.push({name:n,profile:p||null})
+  const p=homeQuickPlanningProfileFor(n,profileRows);todayTeam.push({name:n,profile:p})
  }
- homeTaskAfternoonUserIds=[...new Set(afternoonNames.map(n=>{
-  const target=homeNorm(n),base=target.replace(/\s+[a-z]$/,'');
-  return profileRows.find(x=>{const p=homeNorm(x.display_name),pb=p.replace(/\s+[a-z]$/,'');return p===target||pb===target||p===base||pb===base})?.id
- }).filter(Boolean))];
+ homeTaskAfternoonUserIds=[...new Set(afternoonNames.map(n=>homeQuickPlanningProfileFor(n,profileRows)?.id).filter(Boolean))];
  const roleLabel=window.NettoProfileUI?.roleLabel?.(profile.role)||profile.role||'Compte';
  const dateLabel=today.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).replace('.','');
  const sections=[];
