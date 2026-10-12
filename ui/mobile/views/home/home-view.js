@@ -628,10 +628,7 @@ async function render(){
   const profile=activePlanningMember(name);
   todayTeam.push({name,profile:profile||null})
  }
- state.afternoonUserIds=[...new Set(afternoonNames.map(name=>{
-  const target=norm(name),base=target.replace(/\s+[a-z]$/,'');
-  return state.team.find(x=>{const p=norm(x.display_name),pb=p.replace(/\s+[a-z]$/,'');return p===target||pb===target||p===base||pb===base})?.id
- }).filter(Boolean))];
+ state.afternoonUserIds=[...new Set(afternoonNames.map(name=>activePlanningMember(name)?.id).filter(Boolean))];
 
  const sections=[],role=roleLabel(state.profile.role);
  if(!offline&&(snapshot.offlineCopy||snapshot.planningLoadError)){
