@@ -113,6 +113,14 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA desktop : la sidebar respecte les permissions et inclut Fiches articles',()=>{
+ const shell=read('ui/desktop/desktop-shell.js');
+ assert.match(shell,/const mainKeys=\['home','planning','team','promotions','articles','chat','management'\]/);
+ assert.match(shell,/permissionModules=\{home:'home',planning:'planning',team:'team',promotions:'promotions',articles:'articles',chat:'chat',management:'portal_admin',signal:'problem_report',settings:'settings'\}/);
+ assert.match(shell,/permissionLevel\?\.\(moduleId,user\)!=='none'/);
+ assert.match(shell,/\['articles','management'\]\.includes\(key\)/);
+});
+
 test('QA navigation secondaire : aucun module opérationnel n’est orphelin',()=>{
  const nav=read('platform-navigation.js');
  const profile=read('profile-ui.js');
