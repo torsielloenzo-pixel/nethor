@@ -299,7 +299,7 @@ const DESKTOP_DASHBOARD_WIDGET_DEFAULTS={
   management:{enabled:true,label:'Gestion',url:'admin-portal.html'},
   activity:{enabled:true,label:'Activité magasin',url:'home.html#nethorDesktopStatsRow'},
   planning:{enabled:true,label:'Planning',url:'planning.html'},
-  team:{enabled:true,label:'Équipe',url:'home.html#nethorDesktopTeamWidget'},
+  team:{enabled:true,label:'Équipe',url:'team.html'},
   tasks:{enabled:true,label:'Tâches',url:'home.html#nethorDesktopPriorities'},
   receptions:{enabled:true,label:'Réceptions',url:'home.html#nethorDesktopDeliveriesKpi'},
   articles:{enabled:true,label:'Fiches articles',url:'articles.html'},
