@@ -51,3 +51,47 @@ jobs:
           node --check runtime/admin-portal-runtime.js
       - name: Exécuter la suite de non-régression
         run: node --test tests/phase5-regression.test.cjs tests/phase6-offline.test.cjs tests/weekly-polls-regression.test.cjs tests/desktop-quick-planning-readability.test.cjs tests/desktop-quick-report-modal.test.cjs tests/desktop-aside-widgets-readability.test.cjs tests/mobile-auth-animation-exclusivity.test.cjs tests/mobile-planning-week-header-theme.test.cjs tests/mobile-theme-polish.test.cjs tests/promotions-catalog-import.test.cjs tests/promotions-product-blocks.test.cjs tests/promotions-review-feedback.test.cjs tests/promotions-vision-engine.test.cjs tests/promotions-local-import.test.cjs tests/promotions-review-workshop.test.cjs tests/promotions-s41-reference.test.cjs tests/professional-refactor-qa.test.cjs tests/mobile-home-active-team.test.cjs tests/desktop-home-active-team.test.cjs tests/security-step16-proposal.test.cjs
+
+  isolated_postgres:
+    name: Simulation révocation — PostgreSQL jetable
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nethor_stage17
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d nethor_stage17"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Préparer le client PostgreSQL
+        run: |
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq postgresql-client
+          fi
+      - name: Tester le SQL sur une base entièrement fictive
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: nethor_stage17
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage17-fixture.sql
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage17-session-guard-snapshot.sql
+          node tests/security/stage17-extract-functions.cjs > "$RUNNER_TEMP/nethor-stage17-functions.sql"
+          psql -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/nethor-stage17-functions.sql"
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage17-assertions.sql
