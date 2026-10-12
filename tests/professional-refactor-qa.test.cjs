@@ -113,6 +113,23 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA actions par rôle : Planning, Promotions et Articles restent alignés au backend',()=>{
+ const planning=read('planning-runtime.js');
+ const promotions=read('runtime/promotions-page.js');
+ const articles=read('articles.html');
+ assert.match(planning,/function canRequestPlanningAbsence\(\)\{\s*return absenceAccess==='request'\|\|\(absenceAccess==='manage'&&role==='admin'\)/);
+ assert.match(planning,/absenceRequestBtn'\)\?\.classList\.toggle\('hidden',!canRequestPlanningAbsence\(\)/);
+ assert.match(planning,/function openAbsenceRequest\(\)[\s\S]*?!canRequestPlanningAbsence\(\)/);
+ assert.match(planning,/async function submitAbsenceRequest\(\)[\s\S]*?!canRequestPlanningAbsence\(\)/);
+ assert.ok(!promotions.includes("location.replace('mobile.html')"),'Promotions ne doit plus renvoyer les mobiles vers l’accueil');
+ assert.match(promotions,/const manager=\(\)=>\['admin','role_point-de-vente'\]\.includes\(state\.profile\?\.role\)/);
+ assert.match(promotions,/state\.profile=data;\$\('promoImport'\)\.hidden=!manager\(\)/);
+ assert.match(articles,/canManageArticles=permission==='manage';syncArticleActionVisibility\(\)/);
+ assert.match(articles,/hub\.classList\.toggle\('hidden',!canManageArticles\)/);
+ assert.match(articles,/familyButton\?\.classList\.toggle\('hidden',profile\?\.role!=='admin'\)/);
+ assert.match(articles,/function openOptions\(kind\)\{if\(!canManageArticles\|\|\(kind==='family'&&profile\?\.role!=='admin'\)\)return/);
+});
+
 test('QA Gestion : Équipe et Promotions sont configurables dans la sidebar desktop',()=>{
  const admin=read('runtime/admin-portal-runtime.js');
  assert.match(admin,/team:\{enabled:true,label:'Équipe',url:'team\.html'\}/);
