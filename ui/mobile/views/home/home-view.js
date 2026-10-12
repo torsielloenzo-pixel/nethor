@@ -284,7 +284,7 @@ function taskMode(role){
  if(['responsable','employe'].includes(value))return'user';
  return'hidden'
 }
-function operationalUsers(){return state.team.filter(x=>['responsable','employe'].includes(String(x.role||'').toLowerCase()))}
+function operationalUsers(){return state.team.filter(x=>x.account_enabled!==false&&['responsable','employe'].includes(String(x.role||'').toLowerCase()))}
 function afternoonUsers(){const ids=new Set(state.afternoonUserIds);return operationalUsers().filter(x=>ids.has(x.id))}
 function taskGroups(rows){
  const map=new Map();
