@@ -37,10 +37,3 @@ CREATE TRIGGER stage23_revision_updated
 BEFORE UPDATE ON public.planning_weeks
 FOR EACH ROW EXECUTE FUNCTION public.stage23_refresh_planning_revision();
 
-ALTER TABLE public.planning_weeks ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE public.planning_weeks FROM PUBLIC,anon,authenticated;
-GRANT SELECT ON TABLE public.planning_weeks TO authenticated;
-CREATE POLICY stage23_planning_read ON public.planning_weeks
- FOR SELECT TO authenticated
- USING (private.can_module((select auth.uid()),'planning','view'));
--- No direct INSERT/UPDATE/DELETE grants or policies for authenticated.
