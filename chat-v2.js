@@ -530,6 +530,7 @@ function composerInput(){autoGrow();if(!state.typingChannel||!state.activeId)ret
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey&&chatDesktopMode()){e.preventDefault();sendMessage()}}
 async function sendMessage(){
  if(!state.activeId)return;const ta=$('message'),body=ta.value.trim(),btn=$('sendBtn');
+ if(btn?.disabled)return;
  if(state.editingId){if(!body)return;btn.disabled=true;const {error}=await db.from('chat_messages').update({body,edited_at:new Date().toISOString()}).eq('id',state.editingId).eq('user_id',state.session.user.id);btn.disabled=false;if(error)return showToast('Modification impossible');ta.value='';state.editingId=null;renderComposeBanner();autoGrow();await loadMessages();return}
  if(!body&&!state.selectedFile)return;btn.disabled=true;let path=null;
  try{
