@@ -84,6 +84,19 @@ test('QA rôles : les routes sensibles gardent leurs contrats et la Gestion rest
  assert.match(shell,/management\.classList\.toggle\('hidden',!allowed/);
 });
 
+test('QA mobile : Promotions reste accessible depuis Outils et reconnu par le shell',()=>{
+ const profile=read('profile-ui.js');
+ const menu=read('ui/mobile/views/user-menu/user-menu-view.js');
+ const shell=read('ui/mobile/mobile-shell.js');
+ const runtime=read('runtime/promotions-page.js');
+ assert.match(profile,/{id:'promotions'.*?url:'promotions\\.html'.*?userMenu:true.*?defaultUser:true/s);
+ assert.match(menu,/{id:'promotions'.*?url:'promotions\\.html'.*?userMenu:true.*?defaultUser:true/s);
+ assert.match(menu,/promotions:'<svg/);
+ assert.match(shell,/'articles','promotions','accounts'/);
+ assert.match(shell,/id==='articles'\\|\\|id==='promotions'\\|\\|id==='accounts'/);
+ assert.match(runtime,/\['admin','role_point-de-vente'\]\.includes\(state\.profile\?\.role\)/);
+});
+
 test('QA plateforme : les outils terrain conservent leur portée mobile explicite',()=>{
  const profile=read('profile-ui.js');
  assert.match(profile,/{id:'scanner'.*?platform:'mobile'/s);
