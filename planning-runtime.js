@@ -617,6 +617,7 @@ async function submitAbsenceRequest(){
  if(hidePointOfSaleDesktopAbsenceRequest())return;
  if(!canRequestPlanningAbsence()||!db||!currentUser)return;
  const type=document.getElementById('absenceRequestType')?.value||'unavailable',start=document.getElementById('absenceRequestStart')?.value||'',end=document.getElementById('absenceRequestEnd')?.value||'',note=(document.getElementById('absenceRequestNote')?.value||'').trim(),btn=document.getElementById('absenceRequestSubmit');
+ if(btn?.disabled)return;
  if(!start||!end){showToast('Choisis les dates de la demande');return}
  if(end<start){showToast('La date de fin doit être après la date de début');return}
  if(!['unavailable','leave'].includes(type))return;
