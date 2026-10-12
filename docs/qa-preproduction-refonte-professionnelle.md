@@ -142,3 +142,34 @@ Correction appliquée :
 Les droits ne changent pas : la lecture reste disponible selon RLS, tandis que l'import et la revue restent réservés à Admin / Point de vente.
 
 Validation : GitHub Actions **#877 — succès**.
+
+### Retours mobiles Équipe / Promotions — corrigé
+Ces deux pages standalone déclaraient qu'elles géraient leur retour mais n'affichaient aucun bouton visible sur mobile.
+
+Correction appliquée :
+- bouton Retour visible sur Équipe ;
+- bouton Retour visible sur Promotions ;
+- utilisation de `NethorNavigation.navigateBack()` ;
+- fallback vers `user-menu.html` ;
+- test de non-régression ajouté.
+
+### Fiches articles absent de la sidebar principale — corrigé
+Le module existait mais n'était pas présent dans la navigation desktop cible.
+
+Correction appliquée :
+- ajout de Fiches articles à la sidebar principale ;
+- entrée masquée dès le premier rendu ;
+- visibilité calculée via `permissionLevel('articles')` ;
+- sidebar entière rendue permission-aware pour Accueil, Planning, Équipe, Promotions, Articles, Chat, Gestion, Signalement et Paramètres.
+
+Avec la configuration actuelle de production, Fiches articles reste visible uniquement pour l'Administrateur.
+
+### Promotions non configurable dans Gestion > Sidebar — corrigé
+La sidebar runtime connaissait Promotions, mais l'éditeur de configuration Admin ne l'exposait pas.
+
+Correction appliquée :
+- ajout de Promotions aux valeurs par défaut de la sidebar dans `admin-portal-runtime.js` ;
+- gestion du label, de l'activation et de l'URL comme les autres entrées ;
+- test de non-régression ajouté.
+
+Validation : GitHub Actions **#929 — succès**.
