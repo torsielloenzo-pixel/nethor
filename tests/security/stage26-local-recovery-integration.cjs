@@ -18,7 +18,7 @@ assert.ok(local(base)&&local(dbUrl),'Refusing hosted Supabase URL');
 assert.ok(anon&&service,'Local Supabase-generated API keys required');
 const passwordBefore='Synthetic-Before!'+randomUUID();
 const passwordAfter='Synthetic-After!'+randomUUID();
-function uuid(v){assert.match(String(v||''),/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);return v;}
+function uuid(v){assert.match(String(v||''),/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);return v;}
 function sql(q){return execFileSync('psql',[dbUrl,'-X','-v','ON_ERROR_STOP=1','-t','-A','-c',q],{
   encoding:'utf8',env:process.env,stdio:['ignore','pipe','pipe']}).trim();}
 async function request(endpoint,{key=anon,token=key,body={},method='POST'}={}){
