@@ -28,3 +28,29 @@ html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .r
  width:min(100%,760px);height:auto;min-height:0;margin:0 auto;padding:24px;border-radius:24px
 }
 html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpText{min-height:180px}
+
+/* NETHOR PROFESSIONAL REPORT V2 START */
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] body{background:#f3f5f7!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopShell{
+ width:100%!important;max-width:none!important;margin:0!important;padding:16px 18px 40px!important;min-height:calc(100dvh - 72px)!important
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop{
+ min-height:74px;margin:0 0 10px!important;padding:13px 15px!important;border:1px solid #dfe5eb;border-radius:16px;background:#fff
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop .rpTopTitle strong{font-size:23px!important;letter-spacing:-.45px;color:#172033}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop .rpTopTitle small{font-size:9px!important;color:#778395}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpCancel{min-height:36px!important;border-radius:9px!important;font-size:9px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpMain{display:block!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpCard{
+ width:min(720px,100%)!important;margin:0!important;padding:18px!important;border-radius:15px!important;border-color:#dfe5eb!important;box-shadow:none!important
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpIntro{grid-template-columns:38px minmax(0,1fr)!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpIcon{width:38px!important;height:38px!important;border-radius:10px!important;background:#faeaea!important;color:#b34747!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpIntro strong{font-size:14px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpIntro p{font-size:9px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpContext{margin:12px 0 10px!important;background:#f7f9fb!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpText{min-height:160px!important;border-radius:11px!important;box-shadow:none!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpSend{min-height:42px!important;border-radius:10px!important;background:#b74747!important;box-shadow:none!important}
+:root[data-theme="dark"][data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop{background:#1b222c!important;border-color:#34404e!important}
+:root[data-theme="dark"][data-nethor-page-id="report-problem"][data-nethor-page-layout="desktop"] .rpDesktopTop .rpTopTitle strong{color:#edf2f8!important}
+/* NETHOR PROFESSIONAL REPORT V2 END */
