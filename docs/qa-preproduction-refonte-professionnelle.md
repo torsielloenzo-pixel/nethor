@@ -125,3 +125,20 @@ La PR peut sortir du mode Draft seulement si :
 4. Planning desktop et mobile montrent strictement la même publication ;
 5. aucun bug bloquant de navigation, PWA ou authentification n'est constaté ;
 6. le retour arrière vers `main` reste possible sans migration destructive.
+
+## Anomalies détectées pendant la QA
+
+### Promotions mobile non atteignable depuis Outils — corrigé
+La page Promotions existait et respectait déjà les droits serveur, mais elle n'était pas déclarée dans le registre commun des modules ni reconnue comme page native par le shell mobile.
+
+Correction appliquée :
+- ajout de Promotions à `profile-ui.js` ;
+- ajout au menu mobile Outils/Plus ;
+- ajout d'une icône dédiée ;
+- prise en charge par `ui/mobile/mobile-shell.js` ;
+- versions PWA / Service Worker synchronisées ;
+- test de non-régression ajouté.
+
+Les droits ne changent pas : la lecture reste disponible selon RLS, tandis que l'import et la revue restent réservés à Admin / Point de vente.
+
+Validation : GitHub Actions **#877 — succès**.
