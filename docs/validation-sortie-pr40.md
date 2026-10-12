@@ -39,7 +39,7 @@ Pour chaque cas, renseigner : date/heure, environnement (navigateur, appareil, P
 - Commit candidat :
 - Dernier run CI (lien, conclusion) :
 - Appareils / navigateurs testés :
-- P0 : __ / 8 PASS (recalculer selon la table), P1 : __ / 5 PASS (recalculer selon la table)
+- P0 : __ / 9 PASS, P1 : __ / 4 PASS
 - Anomalies ouvertes :
 - Validation finale (date et responsable) :
 - Décision : **NON VALIDÉE** (par défaut)
