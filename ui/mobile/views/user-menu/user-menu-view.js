@@ -30,6 +30,7 @@ const ICONS=Object.freeze({
  surveys:'<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="16" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/><path d="m15 16 1 1 2-2"/></svg>',
  scanner:'<svg viewBox="0 0 24 24" fill="none"><path d="M5 8V5h3M16 5h3v3M19 16v3h-3M8 19H5v-3"/><path d="M8 9v6M11 8v8M14 9v6M17 8v8"/></svg>',
  articles:'<svg viewBox="0 0 24 24" fill="none"><path d="M7 5.5h8l2 2V18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2Z"/><path d="M15 5.5v2h2"/><path d="M8 11h8M8 14h8M8 17h5"/></svg>',
+ promotions:'<svg viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7"/><circle cx="8" cy="8" r="2.2"/><circle cx="16" cy="16" r="2.2"/></svg>',
  notification_settings:'<svg viewBox="0 0 24 24" fill="none"><path d="M7 9a5 5 0 0 1 10 0v3.2l1.7 2.8H5.3L7 12.2V9Z"/><path d="M9.5 18h5M12 3v1"/></svg>',
  problem_report:'<svg viewBox="0 0 24 24" fill="none"><path d="M12 4 21 20H3L12 4Z"/><path d="M12 9v5"/><path d="M12 17.2v.2"/></svg>',
  rewards:'<svg viewBox="0 0 24 24" fill="none"><path d="M12 5.5 14 9.5l4.5.6-3.3 3 1 4.4L12 15.5l-4.2 2 1-4.4-3.3-3L10 9.5l2-4Z"/></svg>',
