@@ -1678,12 +1678,24 @@ async function forceDisabledAccountLogout(){
  location.replace('index.html');
  return true
 }
+function securityAuthFailure(error){
+ const status=Number(error?.status||error?.statusCode||0),code=String(error?.code||'').toLowerCase();
+ return [400,401,403].includes(status)||['session_not_found','refresh_token_not_found','refresh_token_already_used'].includes(code)
+}
+async function verifyAuthAfterSecurityError(){
+ try{
+  const {data,error}=await api.client.auth.getUser();
+  if(!error&&data?.user)return true;
+  if((!error&&!data?.user)||securityAuthFailure(error)){await forceDisabledAccountLogout();return false}
+ }catch(_){}
+ return true
+}
 async function checkSecurityState(){
  if(!api.client||!api.session||navigator.onLine===false||api.securityBusy)return true;
  api.securityBusy=true;
  try{
   const {data,error}=await api.client.rpc('nethor_security_context');
-  if(error)return true;
+  if(error)return verifyAuthAfterSecurityError();
   if(data?.session_active===false){await forceDisabledAccountLogout();return false}
   const serverRole=String(data?.role||'').trim(),localRole=String(api.profile?.role||'').trim();
   if(serverRole&&localRole&&serverRole!==localRole)await refresh();
