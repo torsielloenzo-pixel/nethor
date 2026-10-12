@@ -5,3 +5,64 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .article
 
 /* Phase 4.8 — responsive interne Desktop. */
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* NETHOR PROFESSIONAL ARTICLES V2 START */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] body{
+ --red:#315f97;--orange:#476f9f;--grad:linear-gradient(135deg,#172033,#31506f);background:#f3f5f7!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .articlesDesktopLayout{
+ width:100%!important;max-width:none!important;margin:0!important;padding:16px 18px 38px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .hero{
+ min-height:78px;margin:0 0 10px!important;padding:14px 16px;border:1px solid #dfe5eb;border-radius:16px;background:#fff;align-items:center!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .hero h1{margin:0 0 3px!important;font-size:24px!important;letter-spacing:-.55px!important;color:#172033}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .hero p{font-size:9.5px!important;color:#6f7b8c!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .countBox{
+ padding:8px 10px!important;border-radius:10px!important;box-shadow:none!important;background:#f5f7f9!important;font-size:8px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .countBox strong{color:#315f97!important;font-size:14px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .adminHub{margin-bottom:8px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .adminHub button{
+ min-height:34px!important;padding:0 10px!important;border-radius:9px!important;font-size:8px!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .adminHub .primary{background:#172033!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .controls{margin-bottom:9px!important;gap:7px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .search{height:40px!important;border-radius:10px!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .filters{border-radius:10px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .filter{font-size:8.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .filter.active{background:#172033!important;color:#fff!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .grid{grid-template-columns:1fr!important;gap:6px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .card{
+ min-height:82px!important;display:grid!important;grid-template-columns:72px minmax(0,1fr) minmax(190px,230px)!important;
+ align-items:stretch!important;border-radius:12px!important;border-color:#dfe5eb!important;box-shadow:none!important;overflow:hidden!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .photo{
+ width:72px!important;height:100%!important;min-height:82px!important;background:#f2f5f8!important;font-size:25px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .body{padding:10px 12px!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .name{font-size:12.5px!important;color:#25344b!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .familyLine,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .cat{font-size:8px!important;color:#758194!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .badge{padding:4px 7px!important;font-size:7px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .facts{
+ display:flex!important;flex-wrap:wrap!important;gap:5px!important;margin-top:7px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .fact{
+ min-width:120px!important;padding:5px 7px!important;border-radius:7px!important;background:#f6f8fa!important;border:0!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .fact.ean{grid-column:auto!important;min-width:170px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .fact span{font-size:6.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .fact strong{font-size:8.5px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .foot{
+ margin:0!important;padding:10px!important;border-top:0!important;border-left:1px solid #edf0f3!important;
+ align-content:center!important;justify-content:flex-end!important;background:#fbfcfd!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .switchWrap{font-size:8px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .openBtn{padding:7px 9px!important;border-radius:8px!important;font-size:8px!important;background:#edf1f5!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .switch.on{background:#315f97!important}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .hero,
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .card{background:#1b222c!important;border-color:#34404e!important}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .foot{background:#1e2630!important;border-color:#34404e!important}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="articles"] .name{color:#edf2f8!important}
+/* NETHOR PROFESSIONAL ARTICLES V2 END */
