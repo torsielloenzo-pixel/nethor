@@ -359,3 +359,13 @@ test('QA responsive : les protections de largeur et les états système communs 
  assert.match(desktop,/\.teamEmpty,\.notificationsEmpty,\.npEmpty,\.moduleEmpty,\.absenceEmpty/);
  assert.match(mobile,/\.npvLoading,\.nsvLoading,\.nnsLoading,\.teamEmpty,\.npEmpty/);
 });
+
+
+test('QA droits dynamiques : subroles desktop actualises et PWA hors ligne revalidee au retour reseau',()=>{
+ const desktop=read('profile-ui.js');
+ const mobile=read('ui/mobile/mobile-services.js');
+ assert.match(desktop,/table:'subrole_module_permissions'\},scheduleAccessRefresh\)/);
+ assert.match(mobile,/if\(navigator\.onLine===false\)\{[\s\S]*?restoreOfflineShell\(\)[\s\S]*?startSecurityWatch\(\)/);
+ assert.match(mobile,/window\.addEventListener\('online',reconnect,\{passive:true\}\)/);
+ assert.match(mobile,/if\(!await checkSecurityState\(\)\|\|!state\.session\)return;[\s\S]*?await refresh\(\)/);
+});
