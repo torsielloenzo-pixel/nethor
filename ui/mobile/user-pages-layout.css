@@ -31,3 +31,24 @@ html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rp
  html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] .channelControl,
  html[data-nethor-page-layout="mobile"][data-nethor-page-id="notification-settings"] .channelControl.two{grid-column:1/-1;width:100%;min-width:0;margin-top:2px}
 }
+
+/* NETHOR PROFESSIONAL REPORT V2 START */
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] body{background:#f3f5f7!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpMobileShell{
+ padding:calc(env(safe-area-inset-top) + 7px) 9px calc(env(safe-area-inset-bottom) + 8px)!important
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpTop{min-height:48px!important;padding-bottom:7px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpCancel{min-height:36px!important;border-radius:10px!important;padding:0 10px!important;font-size:9px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpTopTitle strong{font-size:13px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpTopTitle small{font-size:7.5px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpCard{
+ padding:12px!important;border-radius:15px!important;border-color:#dfe5eb!important;box-shadow:none!important
+}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpIntro{grid-template-columns:36px minmax(0,1fr)!important;gap:8px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpIcon{width:36px!important;height:36px!important;border-radius:10px!important;background:#faeaea!important;color:#b34747!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpIntro strong{font-size:13px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpIntro p{font-size:8.5px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpContext{margin:10px 0 9px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpText{font-size:16px!important;border-radius:11px!important}
+html[data-nethor-page-id="report-problem"][data-nethor-page-layout="mobile"] .rpSend{min-height:44px!important;border-radius:10px!important;background:#b74747!important;box-shadow:none!important}
+/* NETHOR PROFESSIONAL REPORT V2 END */
