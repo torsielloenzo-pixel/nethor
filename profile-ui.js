@@ -1724,6 +1724,7 @@ function startAccessRealtime(){
  if(!api.session||api.accessChannel)return;
  api.accessChannel=api.client.channel('access-self-'+api.session.user.id)
   .on('postgres_changes',{event:'*',schema:'public',table:'user_subroles',filter:'user_id=eq.'+api.session.user.id},scheduleAccessRefresh)
+  .on('postgres_changes',{event:'*',schema:'public',table:'subrole_module_permissions'},scheduleAccessRefresh)
   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'app_settings',filter:'key=eq.site_config'},scheduleAccessRefresh)
   .subscribe()
 }
