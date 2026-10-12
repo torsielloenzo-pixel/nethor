@@ -50,8 +50,6 @@ COMMIT;
 -- BEGIN;
 -- DROP TRIGGER IF EXISTS nethor_record_verified_password_change ON auth.users;
 -- DROP FUNCTION IF EXISTS private.nethor_record_verified_password_change();
--- ALTER TABLE public.password_reset_requests
---   DROP COLUMN IF EXISTS confirmation_notification_status,
---   DROP COLUMN IF EXISTS confirmation_notification_at,
---   DROP COLUMN IF EXISTS password_changed_verified_at;
 -- COMMIT;
+-- Retain the three tracking columns for audit/forensics; dropping them would
+-- permanently destroy previously recorded verification evidence.
