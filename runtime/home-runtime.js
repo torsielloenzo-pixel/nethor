@@ -109,7 +109,7 @@ function homeTaskMode(role){
  return'hidden'
 }
 function homeTaskOperationalUsers(rows=homeTaskTeam){
- return (rows||[]).filter(x=>['responsable','employe'].includes(String(x.role||'').toLowerCase()))
+ return (rows||[]).filter(x=>x.account_enabled!==false&&['responsable','employe'].includes(String(x.role||'').toLowerCase()))
 }
 function homeTaskAfternoonUsers(){
  const ids=new Set(homeTaskAfternoonUserIds||[]);
@@ -130,16 +130,19 @@ function homeTaskGroups(rows){
 function homeTaskAssigneeLabel(task){
  if(task.all_users)return'Tous les utilisateurs';
  const ids=homeTaskAssignees.filter(x=>x.task_id===task.id).map(x=>x.user_id);
- const names=ids.map(id=>homeTaskTeam.find(x=>x.id===id)?.display_name).filter(Boolean);
+ const names=ids.map(id=>homeTaskTeam.find(x=>x.id===id&&x.account_enabled!==false)?.display_name).filter(Boolean);
  if(!names.length)return'Aucun destinataire';
  if(names.length<=3)return names.join(' · ');
  return names.slice(0,3).join(' · ')+' +'+(names.length-3)
 }
+function homeTaskActiveUserIds(){return new Set(homeTaskOperationalUsers().map(x=>x.id))}
 function homeTaskExpectedCount(task){
- return task.all_users?homeTaskOperationalUsers().length:homeTaskAssignees.filter(x=>x.task_id===task.id).length
+ const ids=homeTaskActiveUserIds();
+ return task.all_users?ids.size:homeTaskAssignees.filter(x=>x.task_id===task.id&&ids.has(x.user_id)).length
 }
 function homeTaskCompletedCount(task){
- return homeTaskCompletions.filter(x=>x.task_id===task.id).length
+ const ids=homeTaskActiveUserIds();
+ return homeTaskCompletions.filter(x=>x.task_id===task.id&&ids.has(x.user_id)).length
 }
 function homeTaskGroupIcon(key){
  const icons={fl:'🥬',livraison_stock:'▤',promotion:'%',nettoyage:'✦',facing:'≡',dates:'◷',autre:'+'};
@@ -702,7 +705,7 @@ async function renderHomeDashboard(profile,name,cfg){
   nextLeave={start:first.dateKey,end}
  }
  const notifications=notifRes.error?[]:(notifRes.data||[]);
- const profileRows=homeTaskTeam;
+ const profileRows=homeTaskTeam.filter(x=>x.account_enabled!==false);
  const todayModel=weeks.find(w=>w?.days?.[todayKey])||currentWeek;
  const todayTeam=[];
  const workingNames=[],afternoonNames=[];
