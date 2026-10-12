@@ -89,8 +89,17 @@ test('QA mobile : Promotions reste accessible depuis Outils et reconnu par le sh
  const menu=read('ui/mobile/views/user-menu/user-menu-view.js');
  const shell=read('ui/mobile/mobile-shell.js');
  const runtime=read('runtime/promotions-page.js');
- assert.match(profile,/{id:'promotions'.*?url:'promotions\\.html'.*?userMenu:true.*?defaultUser:true/s);
- assert.match(menu,/{id:'promotions'.*?url:'promotions\\.html'.*?userMenu:true.*?defaultUser:true/s);
+ const profileStart=profile.indexOf("{id:'promotions'");
+ const menuStart=menu.indexOf("{id:'promotions'");
+ assert.ok(profileStart>=0,'Module Promotions absent de profile-ui');
+ assert.ok(menuStart>=0,'Module Promotions absent du menu mobile');
+ const profilePromo=profile.slice(profileStart,profile.indexOf('},',profileStart)+2);
+ const menuPromo=menu.slice(menuStart,menu.indexOf('},',menuStart)+2);
+ for(const block of [profilePromo,menuPromo]){
+  assert.ok(block.includes("url:'promotions.html'"));
+  assert.ok(block.includes("userMenu:true"));
+  assert.ok(block.includes("defaultUser:true"));
+ }
  assert.match(menu,/promotions:'<svg/);
  assert.match(shell,/'articles','promotions','accounts'/);
  assert.match(shell,/id==='articles'\\|\\|id==='promotions'\\|\\|id==='accounts'/);
