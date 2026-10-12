@@ -98,3 +98,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/nethor-stage18-functions.sql"
           psql -v ON_ERROR_STOP=1 -f tests/security/stage18-assertions.sql
           psql -v ON_ERROR_STOP=1 -f tests/security/stage17-assertions.sql
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage20-fixture.sql
+          psql -v ON_ERROR_STOP=1 -f docs/security/etape20-confirmation-auth-verifiee-proposal.sql
+          psql -v ON_ERROR_STOP=1 -f tests/security/stage20-assertions.sql
