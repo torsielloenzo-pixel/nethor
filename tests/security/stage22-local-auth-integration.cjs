@@ -104,13 +104,13 @@ async function main(){
  // The admin has a separate still-active Auth session and must remain unaffected.
  assert.equal((await probe(manager.accessToken)).session_active,true);
  const resetId=uuid(randomUUID());
- sql(`INSERT INTO public.password_reset_requests(id,user_id,requested_at,email_status,reset_channel)
-  VALUES ('${resetId}'::uuid,'${manager.id}'::uuid,now(),'sent','email');`);
+ sql(`INSERT INTO public.password_reset_requests(id,user_id,requested_at,email_status,reset_channel,recovery_proof_digest)
+  VALUES ('${resetId}'::uuid,'${manager.id}'::uuid,now(),'sent','email',repeat('a',64));`);
  await call('/auth/v1/user',{method:'PUT',token:manager.accessToken,body:{password:'Nethor_Stage22!_Changed789'}});
  const outcome=sql(`SELECT CASE WHEN password_changed_verified_at IS NOT NULL
-     AND resolved_at=password_changed_verified_at THEN 'verified' ELSE 'missing' END
+     AND resolved_at IS NULL THEN 'verified_unresolved' ELSE 'missing_or_auto_resolved' END
      FROM public.password_reset_requests WHERE id='${resetId}'::uuid;`);
- assert.equal(outcome,'verified','Real GoTrue password update did not trigger Nethor password-change evidence');
+ assert.equal(outcome,'verified_unresolved','Real Auth changed password but must NOT resolve an unproven recovery link');
  console.log('stage22-auth-real-password-change-PASS');
 
  console.log('stage22-isolated-supabase-auth-complete');
