@@ -6,12 +6,12 @@ const STYLE_ASSETS=[
  'planning-agenda-v2.css?v=15',
  'ui/mobile/planning-agenda.css?v=2',
  'ui/mobile/planning-week-cards.css?v=2',
- 'ui/mobile/planning-layout.css?v=4',
+ 'ui/mobile/planning-layout.css?v=5',
  'ui/mobile/views/planning/planning-view.css?v=2',
  'ui/mobile/planning-day-cards.css?v=1'
 ];
 const SCRIPT_ASSETS=[
- 'ui/mobile/planning-layout.js?v=2',
+ 'ui/mobile/planning-layout.js?v=3',
  'planning-runtime.js?v=27',
  'ui/mobile/planning-week-cards.js?v=3',
  'ui/mobile/planning-day-cards.js?v=2',
