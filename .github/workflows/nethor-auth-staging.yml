@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/nethor-auth-staging.yml'
       - 'tests/security/stage22-*'
+      - 'tests/security/stage23-*'
       - 'tests/security/stage17-session-guard-snapshot.sql'
       - 'docs/security/etape16-rpc-hardening-proposal.sql'
       - 'docs/security/etape20-confirmation-auth-verifiee-proposal.sql'
@@ -27,7 +28,7 @@ jobs:
       - id: diff
         shell: bash
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -Eq '^(tests/security/stage22-|tests/security/stage17-session-guard-snapshot[.]sql$|docs/security/etape16-rpc-hardening-proposal[.]sql$|docs/security/etape20-confirmation-auth-verifiee-proposal[.]sql$|[.]github/workflows/nethor-auth-staging[.]yml$)'; then
+          if git diff --name-only HEAD^ HEAD | grep -Eq '^(tests/security/stage22-|tests/security/stage23-|tests/security/stage17-session-guard-snapshot[.]sql$|docs/security/etape16-rpc-hardening-proposal[.]sql$|docs/security/etape20-confirmation-auth-verifiee-proposal[.]sql$|[.]github/workflows/nethor-auth-staging[.]yml$)'; then
             echo "staged=true" >> "$GITHUB_OUTPUT"
           else
             echo "staged=false" >> "$GITHUB_OUTPUT"
@@ -93,6 +94,11 @@ jobs:
           psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage22-local-auth-probe.sql
           psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f docs/security/etape20-confirmation-auth-verifiee-proposal.sql
           node tests/security/stage22-local-auth-integration.cjs
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage23-role-planning-fixture.sql
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage23-server-helpers.sql
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage23-role-planning-policy.sql
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage23-role-probe.sql
+          node tests/security/stage23-local-role-planning.cjs
       - name: Libérer les conteneurs locaux
         if: always()
         run: |
