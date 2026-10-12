@@ -66,3 +66,73 @@
   }
 
 @media(max-width:1199px){.chatApp{grid-template-columns:minmax(300px,360px) minmax(0,1fr)}.chatDetailsPane{display:none}}
+
+/* NETHOR PROFESSIONAL CHAT V1 START */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"]{
+ --chat-bg:#f3f5f7;--chat-surface:#fff;--chat-line:#dfe5eb;--chat-text:#172033;--chat-muted:#6e798a;
+ --chat-soft:#f2f5f8;--chat-red:#365f93;--chat-orange:#4b77ac;--chat-gradient:linear-gradient(135deg,#315d93,#476f9f);--chat-shadow:none
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] body{background:var(--chat-bg)!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .chatApp{
+ width:100%!important;max-width:none!important;height:calc(100dvh - 68px)!important;margin:0!important;padding:12px 16px 16px!important;
+ grid-template-columns:minmax(280px,320px) minmax(0,1fr) minmax(300px,350px)!important;gap:10px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .conversationListPane,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .conversationPane,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .chatDetailsPane{
+ border:1px solid var(--chat-line)!important;border-radius:15px!important;box-shadow:none!important;background:#fff!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .listHead{padding:13px 13px 9px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .listHead h1{font-size:17px!important;letter-spacing:-.3px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .listHead small{font-size:8.5px!important;color:#7a8697!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .newChatBtn{
+ width:36px!important;height:36px!important;border-radius:10px!important;background:#172033!important;color:#fff!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convSearchWrap{padding:0 10px 8px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convSearch{
+ height:38px!important;border:1px solid #e0e5eb!important;border-radius:10px!important;background:#f5f7f9!important;font-size:10px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .conversationList{padding:0 6px 9px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convRow{
+ min-height:64px!important;padding:7px 8px!important;border-radius:10px!important;grid-template-columns:43px minmax(0,1fr) 45px!important;gap:8px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convRow:hover{background:#f5f7f9!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convRow.active{background:#eaf1fb!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convAvatar{width:43px!important;height:43px!important;border-radius:50%!important;background:#e8edf4!important;color:#324967!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convTitleLine strong{font-size:11.5px!important;color:#26354c!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convPreview{font-size:9px!important;color:#7a8697!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .unreadBadge{background:#315f97!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .chatHeader{
+ min-height:62px!important;padding:9px 12px!important;background:#fbfcfd!important;border-bottom:1px solid #e3e7ec!important;backdrop-filter:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .activeAvatar{width:42px!important;height:42px!important;border-radius:50%!important;background:#e8edf4!important;color:#324967!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .activeIdentity strong{font-size:13.5px!important;color:#26354c!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .activeIdentity small{font-size:8.5px!important;color:#7a8697!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .headIconBtn{width:34px!important;height:34px!important;border-radius:9px!important;background:#eef2f6!important;color:#536176!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .messages{
+ padding:16px 18px 22px!important;background:#f5f7f9!important;background-image:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .bubble{
+ border:1px solid #e0e5eb!important;border-radius:14px 14px 14px 5px!important;background:#fff!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .mine .bubble{
+ border-color:#d5e2f4!important;border-radius:14px 14px 5px 14px!important;background:#e8f0fb!important;color:#203b60!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .mine .messageBody,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .mine .messageMeta{color:#203b60!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .composer{padding:9px 11px!important;background:#fff!important;border-top:1px solid #e3e7ec!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .composer textarea{border:1px solid #dfe5eb!important;background:#f5f7f9!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .sendBtn{background:#172033!important;color:#fff!important;box-shadow:none!important}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"]{
+ --chat-bg:#12171e;--chat-surface:#1b222c;--chat-line:#34404e;--chat-text:#edf2f8;--chat-muted:#a6b0bf;--chat-soft:#242d38
+}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .conversationListPane,
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .conversationPane,
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .chatDetailsPane,
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .chatHeader,
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .composer{background:#1b222c!important;border-color:#34404e!important}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .messages{background:#12171e!important}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .convRow.active{background:#203149!important}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .bubble{background:#222b36!important;border-color:#354150!important}
+html[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="chat"] .mine .bubble{background:#263d5d!important;border-color:#365376!important;color:#eef4fc!important}
+/* NETHOR PROFESSIONAL CHAT V1 END */
