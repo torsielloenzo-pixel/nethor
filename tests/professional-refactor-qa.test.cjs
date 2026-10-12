@@ -113,6 +113,41 @@ test('QA plateforme : les outils terrain conservent leur portée mobile explicit
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });
 
+test('QA sécurité session : reconnexion réseau et changement de rôle sont revalidés',()=>{
+ const desktop=read('profile-ui.js');
+ const mobile=read('ui/mobile/mobile-services.js');
+ for(const source of [desktop,mobile]){
+  assert.match(source,/rpc\('nethor_security_context'\)/);
+  assert.match(source,/session_active===false/);
+  assert.match(source,/serverRole=String\(data\?\.role\|\|''\)\.trim\(\),localRole=String\(/);
+  assert.match(source,/window\.addEventListener\('online',check,\{passive:true\}\)/);
+ }
+ assert.match(desktop,/serverRole!==localRole\)await refresh\(\)/);
+ assert.match(mobile,/serverRole!==localRole\)await refreshCore\(\{emitChange:true\}\)/);
+});
+
+test('QA Planning : une rétrogradation ferme immédiatement une édition locale',()=>{
+ const planning=read('planning-runtime.js');
+ assert.match(planning,/async function revokePlanningEditAccess\(\)/);
+ assert.match(planning,/const publishedFallback=editSnapshot\?clonePlanningModel\(editSnapshot\):null/);
+ assert.match(planning,/editMode=false;editSnapshot=null;resetEditChanges\(\)/);
+ assert.match(planning,/loadWeek\(currentWeekStart,\{render:false,silent:true,preserveDraft:false\}\)/);
+ assert.match(planning,/wasCanEdit=canEdit/);
+ assert.match(planning,/wasCanEdit&&!canEdit&&editMode\)await revokePlanningEditAccess\(\)/);
+ assert.match(planning,/function paintCell\(td\)\{if\(!canEdit\|\|!editMode\|\|!model\)return/);
+ assert.match(planning,/table\.onpointerdown=e=>\{const td=e\.target\.closest\('\.slot\.editable'\);if\(!canEdit\|\|!td\|\|e\.button>0\)return/);
+});
+
+test('QA Planning : sauvegarde concurrente et doubles publications restent bloquées',()=>{
+ const planning=read('planning-runtime.js');
+ assert.match(planning,/planningSaveInFlight=true/);
+ assert.match(planning,/planning_save_week_if_revision/);
+ assert.match(planning,/p_expected_revision:expectedRevision\|\|null/);
+ assert.match(planning,/result\?\.status==='conflict'/);
+ assert.match(planning,/Conflit : planning modifié par une autre personne/);
+ assert.match(planning,/if\(!canEdit\|\|!model\|\|planningSaveInFlight/);
+});
+
 test('QA Accueil : les Tâches du jour reflètent exactement les rôles RLS',()=>{
  const desktop=read('runtime/home-runtime.js');
  const mobile=read('ui/mobile/views/home/home-view.js');
