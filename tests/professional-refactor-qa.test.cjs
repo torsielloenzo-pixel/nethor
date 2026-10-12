@@ -158,7 +158,7 @@ test('QA sécurité session : reconnexion réseau et changement de rôle sont re
   assert.match(source,/rpc\('nethor_security_context'\)/);
   assert.match(source,/session_active===false/);
   assert.match(source,/serverRole=String\(data\?\.role\|\|''\)\.trim\(\),localRole=String\(/);
-  assert.match(source,/window\.addEventListener\('online',check,\{passive:true\}\)/);
+  assert.match(source,/window\.addEventListener\('online',(?:check|reconnect),\{passive:true\}\)/);
   assert.match(source,/auth\.getUser\(\)/);
   assert.match(source,/\[400,401,403\]\.includes\(status\)/);
   assert.match(source,/verifyAuthAfterSecurityError\(\)/);
