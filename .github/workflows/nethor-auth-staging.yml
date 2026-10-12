@@ -7,6 +7,8 @@ on:
       - 'tests/security/stage22-*'
       - 'tests/security/stage23-*'
       - 'tests/security/stage26-*'
+      - 'tests/security/stage27-*'
+      - 'docs/security/edge-functions/password-recovery-email/index.ts'
       - 'tests/security/stage17-session-guard-snapshot.sql'
       - 'docs/security/etape16-rpc-hardening-proposal.sql'
       - 'docs/security/etape20-confirmation-auth-verifiee-proposal.sql'
@@ -29,7 +31,7 @@ jobs:
       - id: diff
         shell: bash
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -Eq '^(tests/security/stage22-|tests/security/stage23-|tests/security/stage26-|tests/security/stage17-session-guard-snapshot[.]sql$|docs/security/etape16-rpc-hardening-proposal[.]sql$|docs/security/etape20-confirmation-auth-verifiee-proposal[.]sql$|[.]github/workflows/nethor-auth-staging[.]yml$)'; then
+          if git diff --name-only HEAD^ HEAD | grep -Eq '^(tests/security/stage22-|tests/security/stage23-|tests/security/stage26-|tests/security/stage27-|docs/security/edge-functions/password-recovery-email/index[.]ts$|tests/security/stage17-session-guard-snapshot[.]sql$|docs/security/etape16-rpc-hardening-proposal[.]sql$|docs/security/etape20-confirmation-auth-verifiee-proposal[.]sql$|[.]github/workflows/nethor-auth-staging[.]yml$)'; then
             echo "staged=true" >> "$GITHUB_OUTPUT"
           else
             echo "staged=false" >> "$GITHUB_OUTPUT"
@@ -45,6 +47,9 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: 2.119.0
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.5.0
       - name: Installer PostgreSQL client
         run: |
           if ! command -v psql >/dev/null 2>&1; then
@@ -102,6 +107,9 @@ jobs:
           psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage23-role-planning-policy.sql
           psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage23-role-probe.sql
           node tests/security/stage23-local-role-planning.cjs
+          psql "$DB_URL" -X -v ON_ERROR_STOP=1 -f tests/security/stage27-edge-local-fixture.sql
+          sleep 2
+          node tests/security/stage27-deno-edge-integration.cjs
       - name: Libérer les conteneurs locaux
         if: always()
         run: |
