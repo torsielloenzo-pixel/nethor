@@ -305,8 +305,15 @@ function taskGroups(rows){
  }
  return [...map.values()]
 }
-function expectedCount(task){return task.all_users?operationalUsers().length:state.assignees.filter(x=>x.task_id===task.id).length}
-function completedCount(task){return state.completions.filter(x=>x.task_id===task.id).length}
+function activeTaskUserIds(){return new Set(operationalUsers().map(x=>x.id))}
+function expectedCount(task){
+ const ids=activeTaskUserIds();
+ return task.all_users?ids.size:state.assignees.filter(x=>x.task_id===task.id&&ids.has(x.user_id)).length
+}
+function completedCount(task){
+ const ids=activeTaskUserIds();
+ return state.completions.filter(x=>x.task_id===task.id&&ids.has(x.user_id)).length
+}
 function assigneeLabel(task){
  if(task.all_users)return'Tous les utilisateurs';
  const ids=state.assignees.filter(x=>x.task_id===task.id).map(x=>x.user_id);
