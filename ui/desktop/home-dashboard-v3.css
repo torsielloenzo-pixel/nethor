@@ -398,8 +398,8 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"]{
  --nd-accent:#f97316;--nd-radius:16px;--nd-gap:12px
 }
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] body>main{
- width:calc(100vw - var(--nethor-sidebar-w,240px))!important;max-width:none!important;
- margin-left:var(--nethor-sidebar-w,240px)!important;padding:16px 18px 28px!important;background:var(--nd-bg)!important
+ width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;
+ padding:16px 18px 28px!important;background:var(--nd-bg)!important
 }
 .nethorDesktopReferenceDashboard{gap:12px!important;min-height:calc(100dvh - 96px)!important}
 .ndCommandHeader{
