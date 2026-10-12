@@ -421,7 +421,17 @@ function startSecurityWatch(){
   securityTimer=setInterval(()=>{if(!document.hidden)void checkSecurityState()},10000);
   const check=()=>{if(!document.hidden)void checkSecurityState()};
   window.addEventListener('focus',check,{passive:true});
-  window.addEventListener('online',check,{passive:true});
+  // Une PWA demarree hors ligne doit revalider session et donnees avant de quitter le mode hors connexion.
+  const reconnect=()=>{
+    if(!state.session)return;
+    void (async()=>{
+      try{
+        if(!await checkSecurityState()||!state.session)return;
+        await refresh();
+      }catch(error){console.warn('[Nethor MobileServices] reconnexion',error)}
+    })()
+  };
+  window.addEventListener('online',reconnect,{passive:true});
   document.addEventListener('visibilitychange',check,{passive:true})
 }
 function startRealtime(){
@@ -545,6 +555,8 @@ async function start(){
         emit('error',{error:state.error});
         return snapshot()
       }
+      // Installer le controle meme au demarrage hors connexion : il verifiera la session au retour reseau.
+      startSecurityWatch();
       window.NethorMobileSync?.start?.({db:client,uid:state.session.user.id});
       return snapshot()
     }
