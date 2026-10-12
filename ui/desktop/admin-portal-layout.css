@@ -59,3 +59,57 @@ html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .man
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementPageToolbar .managementSearch{max-width:560px;flex:1}
 html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementPageToolbar .headActions{display:flex;align-items:center;gap:8px}
 :root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementPageToolbar{background:#23272d;border-color:#3a4149}
+
+/* NETHOR PROFESSIONAL ADMIN V2 START */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"]{
+ --primary:#26364b;--secondary:#3b5575;--grad:linear-gradient(135deg,#26364b,#3b5575);--ink:#172033;--border:#dfe5eb;--muted:#748094
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] body{background:#f3f5f7!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] main{padding:16px 18px 54px!important;width:100%!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementHero{
+ min-height:78px;margin:0 0 10px!important;padding:13px 15px!important;border:1px solid #dfe5eb;border-radius:16px;background:#fff
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementHero h1{font-size:24px!important;letter-spacing:-.55px!important;color:#172033!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementHero p{font-size:9px!important;color:#748094!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .builder{grid-template-columns:214px minmax(0,1fr)!important;gap:10px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementSide{padding:4px 0!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementSide button{
+ min-height:44px!important;border-radius:9px!important;padding:8px 9px!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementSide button.active{
+ background:#eaf0f7!important;border-left-color:#315f97!important;color:#315f97!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementSide button.active .sideIcon{
+ background:#315f97!important;color:#fff!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementStats{gap:7px!important;margin-bottom:9px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementStat{
+ min-height:78px!important;padding:10px!important;border-radius:12px!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementStatIcon{width:36px!important;height:36px!important;border-radius:10px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementStatIcon.orange,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementCardIcon.orange{background:#eaf0f7!important;color:#315f97!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementOverviewGrid{gap:8px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementOverviewCard{
+ padding:12px!important;border-radius:13px!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementActionGrid{gap:6px!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementActionGrid>button{
+ padding:8px!important;border-radius:9px!important;background:#f8fafb!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementActionGrid>button>span{background:#eaf0f7!important;color:#315f97!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .panel,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .moduleCard{
+ border-radius:13px!important;box-shadow:none!important;border-color:#dfe5eb!important
+}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .moduleVisual{background:#eaf0f7!important;color:#315f97!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .toggleChip input,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .role input{accent-color:#315f97!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .btn.primary,
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .primary{background:#26364b!important;color:#fff!important;box-shadow:none!important}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .stickySave{
+ border-top:1px solid #dfe5eb!important;background:rgba(255,255,255,.96)!important;box-shadow:none!important
+}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementHero{background:#1b222c!important;border-color:#34404e!important}
+:root[data-theme="dark"][data-nethor-page-layout="desktop"][data-nethor-page-id="admin-portal"] .managementHero h1{color:#edf2f8!important}
+/* NETHOR PROFESSIONAL ADMIN V2 END */
