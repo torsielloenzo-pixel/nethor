@@ -97,8 +97,8 @@ function ensureDesktopSidebarStyle(){
  link.href='ui/desktop/desktop-sidebar.css?v=17';
  document.head.appendChild(link)
 }
-function desktopSidebarItem(key,def,active){
- return '<button class="nethorSidebarItem'+(active?' active':'')+'" data-sidebar-key="'+esc(key)+'" title="'+esc(def.label)+'" aria-label="'+esc(def.label)+'" type="button" data-sidebar-url="'+esc(def.url)+'" onclick="window.location.href=this.dataset.sidebarUrl"'+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(def.icon)+'</span><span class="nethorSidebarLabel">'+esc(def.label)+'</span><span class="nethorSidebarBadge hidden" aria-hidden="true"></span></button>'
+function desktopSidebarItem(key,def,active,initialHidden=false){
+ return '<button class="nethorSidebarItem'+(active?' active':'')+(initialHidden?' hidden':'')+'" data-sidebar-key="'+esc(key)+'" title="'+esc(def.label)+'" aria-label="'+esc(def.label)+'" type="button" data-sidebar-url="'+esc(def.url)+'" onclick="window.location.href=this.dataset.sidebarUrl"'+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(def.icon)+'</span><span class="nethorSidebarLabel">'+esc(def.label)+'</span><span class="nethorSidebarBadge hidden" aria-hidden="true"></span></button>'
 }
 function sidebarActiveKey(page){
  const id=String(page||'').toLowerCase();
@@ -140,11 +140,11 @@ function buildDesktopSidebar(page){
  ensureDesktopSidebarStyle();
  applySidebarMode(savedSidebarMode(),{fullWidth:desktopDashboardConfig(window.NettoProfileUI?.siteConfig||{}).sidebar.width});
  const active=sidebarActiveKey(page);
- const mainKeys=['home','planning','team','promotions','chat','management'];
+ const mainKeys=['home','planning','team','promotions','articles','chat','management'];
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
   '<div class="nethorSidebarBrandRow"><button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
   '<button class="nethorSidebarCollapse" type="button" onclick="window.NethorDesktopShell?.toggleSidebar?.()" title="Réduire la barre latérale" aria-label="Réduire la barre latérale" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.8 5.5-6.3 6.5 6.3 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>'+
-  '<nav class="nethorDesktopSidebarNav" aria-label="Pages principales">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key)).join('')+'</nav>'+
+  '<nav class="nethorDesktopSidebarNav" aria-label="Pages principales">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key,['articles','management'].includes(key))).join('')+'</nav>'+
   '<div class="nethorDesktopSidebarBottom">'+
    desktopSidebarItem('signal',{label:'Signaler',url:'report-problem.html',icon:'incidents',enabled:true},active==='incidents')+
    desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+
@@ -313,16 +313,18 @@ function applyDesktopShellConfig(site={}){
   if(label)label.textContent=name;
   el.title=name;el.setAttribute('aria-label',name);
  });
- // Management access is still enforced server-side. Do not advertise a protected
- // administrative route to accounts whose permission model denies it.
- const management=sidebar?.querySelector('[data-sidebar-key="management"]'),user=window.NettoProfileUI?.profile;
- if(management&&user){
-  let allowed=user.role==='admin';
-  try{
-   const level=window.NettoProfileUI?.permissionLevel?.('portal_admin',user);
-   if(level)allowed=level!=='none';
-  }catch(_){}
-  management.classList.toggle('hidden',!allowed||c.sidebar.items.management?.enabled===false);
+ // La sidebar reflète les mêmes permissions que le portail. Les contrôles
+ // serveur restent la source de vérité, mais une route interdite n'est jamais annoncée.
+ const user=window.NettoProfileUI?.profile;
+ const permissionModules={home:'home',planning:'planning',team:'team',promotions:'promotions',articles:'articles',chat:'chat',management:'portal_admin',signal:'problem_report',settings:'settings'};
+ if(sidebar&&user){
+  Object.entries(permissionModules).forEach(([key,moduleId])=>{
+   const el=sidebar.querySelector('[data-sidebar-key="'+CSS.escape(key)+'"]');if(!el)return;
+   let allowed=true;
+   try{allowed=window.NettoProfileUI?.permissionLevel?.(moduleId,user)!=='none'}catch(_){allowed=user.role==='admin'}
+   const configured=key==='signal'?true:c.sidebar.items[key]?.enabled!==false;
+   el.classList.toggle('hidden',!allowed||!configured)
+  })
  }
  startDesktopClock();scaleDesktopText(document.body)
 }
