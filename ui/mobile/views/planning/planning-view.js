@@ -12,7 +12,7 @@ const STYLE_ASSETS=[
 ];
 const SCRIPT_ASSETS=[
  'ui/mobile/planning-layout.js?v=3',
- 'planning-runtime.js?v=31',
+ 'planning-runtime.js?v=32',
  'ui/mobile/planning-week-cards.js?v=3',
  'ui/mobile/planning-day-cards.js?v=2',
  'planning-agenda-v2.js?v=28'
