@@ -1503,3 +1503,21 @@ html[data-nethor-page-layout="desktop"] header[data-nethor-page-chrome="desktop"
   gap:6px!important;
  }
 }
+
+/* NETHOR PROFESSIONAL GLOBAL FINISH V1 START */
+html[data-nethor-page-layout="desktop"] body,
+html[data-nethor-page-layout="desktop"] button,
+html[data-nethor-page-layout="desktop"] input,
+html[data-nethor-page-layout="desktop"] textarea,
+html[data-nethor-page-layout="desktop"] select{
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important
+}
+html[data-nethor-page-layout="desktop"] :is(.teamEmpty,.notificationsEmpty,.npEmpty,.moduleEmpty,.absenceEmpty){
+ border-color:#dfe5eb!important;color:#748094!important;box-shadow:none!important
+}
+html[data-nethor-page-layout="desktop"] :is(.saveState,.state,.readerMeta,.promoMuted){letter-spacing:0!important}
+html[data-nethor-page-layout="desktop"] :is(button,[role="button"],a){-webkit-tap-highlight-color:transparent}
+@media(max-width:1024px){
+ html[data-nethor-page-layout="desktop"] body{overflow-x:hidden!important}
+}
+/* NETHOR PROFESSIONAL GLOBAL FINISH V1 END */
