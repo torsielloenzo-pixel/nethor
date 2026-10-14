@@ -835,14 +835,38 @@ function ensureHomeLayout(){
  // dashboard hosts before rendering rather than marking a blank page as ready.
  let dashboard=document.getElementById('homeDashboard');
  let pages=document.getElementById('homePages');
- if(dashboard&&pages)return true;
- try{window.NethorPageLayout?.mountHome?.('home')}catch(error){console.warn('[Nethor] Home layout mount',error)}
+ // The dashboard CSS depends on page-layout attributes set by the full shell mount.
+ // Recover the shell, not just its inner widgets, if asynchronous mounting failed.
+ if(!document.documentElement.dataset.nethorPageLayout){
+  try{window.NethorPageLayout?.mount?.()}catch(error){console.warn('[Nethor] Full page mount',error)}
+ }
+ if(!dashboard||!pages){
+  try{window.NethorPageLayout?.mountHome?.('home')}catch(error){console.warn('[Nethor] Home layout mount',error)}
+ }
+ dashboard=document.getElementById('homeDashboard');
+ pages=document.getElementById('homePages');
+ if(dashboard&&pages&&document.documentElement.dataset.nethorPageLayout)return true;
  dashboard=document.getElementById('homeDashboard');
  pages=document.getElementById('homePages');
  if(dashboard&&pages)return true;
  const main=document.querySelector('main')||document.body;
  let root=document.querySelector('[data-nethor-home-platform]');
  if(!root){root=document.createElement('div');root.className='homeDesktopLayout';root.dataset.nethorHomePlatform='desktop';main.appendChild(root)}
+ const html=document.documentElement;
+ const kind=String(window.NethorPlatform?.current?.()||html.dataset.nethorPlatform||'desktop');
+ if(!html.dataset.nethorPageLayout)html.dataset.nethorPageLayout=kind==='desktop'?'desktop':'mobile';
+ html.dataset.nethorPageId='home';
+ // A recovered grid item must occupy the real content column, not its min-content width.
+ root.style.setProperty('width','100%','important');
+ root.style.setProperty('min-width','0','important');
+ root.style.setProperty('max-width','none','important');
+ root.style.setProperty('grid-column','1 / -1','important');
+ if(kind==='desktop'){
+  main.style.setProperty('width','100%','important');
+  main.style.setProperty('max-width','none','important');
+  main.style.setProperty('min-width','0','important');
+  main.style.setProperty('margin','0','important');
+ }
  if(!dashboard){dashboard=document.createElement('section');dashboard.id='homeDashboard';dashboard.className='homeDashboard homeDesktopDashboard';root.appendChild(dashboard)}
  if(!pages){pages=document.createElement('div');pages.id='homePages';pages.className='pages';root.appendChild(pages)}
  if(!document.getElementById('status')){const status=document.createElement('div');status.id='status';status.className='status';status.textContent='Chargement de l’accueil…';root.appendChild(status)}
