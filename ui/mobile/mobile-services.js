@@ -966,14 +966,7 @@ async function runMobileUpdateCheck(seed={}){
     return{...seed,available:false,error}
   }
 }
-async function checkForUpdates({interactive=true}={}){
-  if(!interactive){
-    try{return await mobileUpdateFetchSnapshot()}
-    catch(error){return{available:false,error}}
-  }
-  openMobileUpdateModal();
-  return runMobileUpdateCheck(mobileUpdateSnapshot||{})
-}
+async function checkForUpdates(){return {available:false,disabled:true}}
 
 async function markPlanningDayRead(day,source='mobile_home',revisionAt=''){
   if(!client||!state.session||!revisionAt||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(day||'')))return false;
