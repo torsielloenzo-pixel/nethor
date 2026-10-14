@@ -73,7 +73,11 @@ const targets=[
  {file:'team.html',selector:'.teamShell'},
  {file:'promotions.html',selector:'.promoPage'},
  {file:'articles.html',selector:'main'},
- {file:'report-problem.html',selector:'main',mobilePath:'mobile.html?view=report-problem&nethor_platform=mobile',mobileSelector:'.nethorReportView',mobileView:'report-problem'}
+ {file:'report-problem.html',selector:'main',mobilePath:'mobile.html?view=report-problem&nethor_platform=mobile',mobileSelector:'.nethorReportView',mobileView:'report-problem'},
+ {file:'profile.html',selector:'.profileDesktopLayout',mobilePath:'mobile.html?view=profile&nethor_platform=mobile',mobileSelector:'.nethorProfileView',mobileView:'profile'},
+ {file:'settings.html',selector:'.settingsDesktopLayout',mobilePath:'mobile.html?view=settings&nethor_platform=mobile',mobileSelector:'.nethorSettingsView',mobileView:'settings'},
+ {file:'notifications.html',selector:'.notificationsPageMain',mobilePath:'mobile.html?view=notifications&nethor_platform=mobile',mobileSelector:'.nethorNotificationsView',mobileView:'notifications'},
+ {file:'notification-settings.html',selector:'.notificationSettingsDesktopLayout',mobilePath:'mobile.html?view=notification-settings&nethor_platform=mobile',mobileSelector:'.nethorNotificationSettingsView',mobileView:'notification-settings'}
 ];
 const viewports=[
  {key:'mobile-390',width:390,height:844,platform:'mobile',mobile:true},
