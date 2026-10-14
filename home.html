@@ -58,7 +58,8 @@
   var box=document.createElement('section');
   box.id='nethorStartupRecovery';
   box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#f7f8fa;color:#212936;display:flex;align-items:center;justify-content:center;padding:24px;font:15px system-ui,sans-serif';
-  var detail=startupError?'Erreur technique : '+startupError:'Le chargement de l’accueil ne se termine pas.';
+  var stage=String(window.__nethorHomeStage||'script non initialisé');
+  var detail=startupError?'Erreur technique : '+startupError:'Étape de démarrage : '+stage+'. Le chargement de l’accueil ne se termine pas.';
   box.innerHTML='<div style="max-width:450px;width:100%;background:white;border:1px solid #e5e7eb;border-radius:18px;padding:28px;box-shadow:0 12px 50px #1112"><h1 style="font-size:24px;margin:0 0 12px">Nethor</h1><p style="line-height:1.55">Impossible d’afficher l’accueil pour le moment.</p><p id="nethorStartupDetail" style="font-size:12px;line-height:1.5;overflow-wrap:anywhere;color:#626c7d"></p><p style="margin-top:20px"><a href="index.html?logout=1" style="color:#d44d25;font-weight:600">Retour à la connexion</a> · <a href="planning.html" style="color:#d44d25">Planning</a></p></div>';
   document.body.appendChild(box);
   document.getElementById('nethorStartupDetail').textContent=detail;
@@ -68,5 +69,5 @@
  setTimeout(showRecovery,9000);
 })();
 </script>
-<script src="runtime/home-runtime.js?v=21"></script>
+<script src="runtime/home-runtime.js?v=22"></script>
 </body></html>
