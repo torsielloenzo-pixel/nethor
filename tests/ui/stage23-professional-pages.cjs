@@ -90,7 +90,7 @@ async function main(){
  try{
   for(const v of viewports){
    const context=await browser.newContext({
-    viewport:{width:v.width,height:v.height},isMobile:v.mobile,hasTouch:v.mobile,deviceScaleFactor:1,
+    viewport:{width:v.width,height:v.height},isMobile:v.mobile,hasTouch:v.mobile,deviceScaleFactor:1,serviceWorkers:'block',
     userAgent:v.mobile?
       'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1':
       (engine==='webkit'?'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15':
@@ -104,6 +104,7 @@ async function main(){
    });
    for(const target of targets){
     const page=await context.newPage();
+    await page.addInitScript(()=>{try{localStorage.clear();sessionStorage.clear()}catch(_){}});
     const spaMobile=!!(v.mobile&&target.mobilePath);
     const url=spaMobile?origin+'/'+target.mobilePath:origin+'/'+target.file+'?nethor_platform='+v.platform;
     const selector=spaMobile?(target.mobileSelector||target.selector):target.selector;
