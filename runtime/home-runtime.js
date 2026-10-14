@@ -831,7 +831,11 @@ window.addEventListener('netto:profile',e=>{
 });
 
 async function boot(){
- const {data:{session},error:sessionError}=await db.auth.getSession();
+ window.__nethorHomeStage='session';
+ const {data:{session},error:sessionError}=await Promise.race([
+  db.auth.getSession(),
+  new Promise(resolve=>setTimeout(()=>resolve({data:{session:null},error:{message:'Délai de vérification de session dépassé'}}),6000))
+ ]);
  if(!session){
   // Never bounce indefinitely between home and login when sessions disagree.
   const key='nethorHomeLoginRedirectAt';
@@ -847,7 +851,13 @@ async function boot(){
  }
  try{sessionStorage.removeItem('nethorHomeLoginRedirectAt')}catch(_){}
  homeSession=session;
- const {data:p}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',session.user.id).maybeSingle();
+ window.__nethorHomeStage='profile';
+ const {data:p,error:profileError}=await Promise.race([
+  db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',session.user.id).maybeSingle(),
+  new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:'Délai de chargement du profil dépassé'}}),6000))
+ ]);
+ if(!p){throw new Error(profileError?.message||'Profil indisponible après connexion')}
+ window.__nethorHomeStage='render';
  window.currentRole=p?.role;
  document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',window.currentRole!=='admin'));
  const name=p?.display_name||p?.email?.split('@')[0]||'';
@@ -858,14 +868,19 @@ async function boot(){
  if(p?.avatar_path)homeAfterFirstPaint(async()=>{const {data:av}=await db.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);if(av?.signedUrl)paint(av.signedUrl)});
  ['userName','userMenuName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=name||'Utilisateur'});
  ['userRole','userMenuRole'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=role});
- await window.NettoProfileUI?.refresh?.();
- const sharedConfig=await loadSharedSiteConfig();
+ // Keep peripheral configuration requests out of the critical rendering path.
+ window.__nethorHomeStage='configuration';
+ const profileRefresh=window.NettoProfileUI?.refresh?.();
+ if(profileRefresh?.catch)profileRefresh.catch(e=>console.warn('[Nethor] Profil secondaire',e));
+ const sharedConfig=await Promise.race([loadSharedSiteConfig(),new Promise(resolve=>setTimeout(()=>resolve(null),2500))]);
  window.NettoProfileUI?.rebuildModules?.(sharedConfig||{});
  renderHomeCards(p,sharedConfig);
  if(p?.role==='admin'&&homePlatformKind()==='desktop')homeAfterFirstPaint(loadAdminPageViews);
- await loadHomeTodayPlanning(p,name);
- await renderHomeDashboard(p,name,sharedConfig||{});
+ window.__nethorHomeStage='dashboard';
+ await Promise.race([loadHomeTodayPlanning(p,name),new Promise(resolve=>setTimeout(resolve,3000))]);
+ await Promise.race([renderHomeDashboard(p,name,sharedConfig||{}),new Promise(resolve=>setTimeout(resolve,3000))]);
  homeBootReady=true;
+ window.__nethorHomeStage='ready';
  const status=document.getElementById('status');if(status)status.textContent='Session active'
 }
 function homeEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -880,7 +895,13 @@ function renderHomeCards(profile,cfg){
  host.querySelectorAll('.adminViewStat[data-view-key]').forEach(el=>el.onclick=e=>openPageViews(el.dataset.viewKey,el.dataset.viewLabel||'Page',e));
 }
 async function logout(){logoutSound();await new Promise(r=>setTimeout(r,380));await db.auth.signOut({scope:'local'});location.replace('index.html')} async function menuLogout(){await logout()}
-boot();
+boot().catch(error=>{
+ console.error('[Nethor] Accueil : démarrage interrompu',error);
+ window.__nethorHomeStage='error: '+String(error?.message||error);
+ document.documentElement.classList.remove('nettoAccessPageVerifying');
+ const target=document.querySelector('#status')||document.querySelector('main')||document.body;
+ if(target)target.textContent='Impossible de charger l’accueil : '+String(error?.message||'Erreur inconnue');
+});
 
 async function loadSharedSiteConfig(){
  try{
