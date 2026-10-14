@@ -13,9 +13,7 @@ function buildUserMenu(ctx){
  return '<div class="nettoUserDesktopMenu">'+
   '<div class="nettoUserHead"><span id="nettoMenuAvatar" class="nettoTopAvatar">U</span><span><strong>'+esc(name)+'</strong><small>'+esc(role)+'</small></span></div>'+
   navButton(settingsIcon,settingsModule?.label||'Personnalisation',settingsModule?.subtitle||'Mon accueil et mes raccourcis',settingsModule?.url||settingsUrl)+
-  (shortcuts?'<div class="nettoMenuSection">Raccourcis</div>'+shortcuts:'')+
-  '<button id="nettoThemeBtn" class="nettoNavBtn"><span class="nettoThemeIcon" '+(theme.url?'data-static-theme-icon="1"':'')+'>'+icon(theme,'☾')+'</span><span><strong class="nettoThemeLabel" '+(themeCustom?'data-static-theme-label="1"':'')+'>'+esc(theme.label)+'</strong><small>'+esc(theme.subtitle)+'</small></span></button>'+
-  '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>'+icon(logout,'↪')+'</span><span><strong>'+esc(logout.label)+'</strong><small>'+esc(logout.subtitle)+'</small></span></button>'+
+  (shortcuts?'<div class="nettoMenuSection">Raccourcis</div>'+shortcuts:'')+  '<button id="nettoLogoutBtn" class="nettoNavBtn nettoLogout"><span>'+icon(logout,'↪')+'</span><span><strong>'+esc(logout.label)+'</strong><small>'+esc(logout.subtitle)+'</small></span></button>'+
  '</div>'
 }
 const DEFAULT_STORE_GOOGLE_URL='https://www.google.com/maps/search/?api=1&query=Netto%20Le%20Thor&query_place_id=ChIJSY7JsE71tRIRRSih3toBniY&utm_source=nethor&utm_campaign=place_details_search';
@@ -24,12 +22,10 @@ const DESKTOP_SIDEBAR_DEFAULTS={
  management:{label:'Gestion',url:'admin-portal.html',icon:'reports',enabled:true},
  activity:{label:'Activité magasin',url:'home.html#nethorDesktopStatsRow',icon:'activity',enabled:true},
  planning:{label:'Planning',url:'planning.html',icon:'planning',enabled:true},
- promotions:{label:'Promotions',url:'promotions.html',icon:'promotions',enabled:true},
  team:{label:'Équipe',url:'team.html',icon:'team',enabled:true},
  tasks:{label:'Tâches',url:'home.html#nethorDesktopPriorities',icon:'tasks',enabled:true},
  receptions:{label:'Réceptions',url:'home.html#nethorDesktopDeliveriesKpi',icon:'receptions',enabled:true},
  articles:{label:'Fiches articles',url:'articles.html',icon:'articles',enabled:true},
- chat:{label:'Chat',url:'chat.html',icon:'chat',enabled:true},
  incidents:{label:'Incidents',url:'report-problem.html',icon:'incidents',enabled:true},
  reports:{label:'Rapports',url:'admin-portal.html?tab=logs',icon:'reports',enabled:true},
  settings:{label:'Paramètres',url:'settings.html',icon:'settings',enabled:true}
