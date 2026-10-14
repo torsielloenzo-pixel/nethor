@@ -1,5 +1,5 @@
-const APP_VERSION=457;
-const CACHE='netto-tools-v457';
+const APP_VERSION=458;
+const CACHE='netto-tools-v458';
 const DEPENDENCY_CACHE='nethor-deps-v1';
 const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
 const HTML5_QRCODE_UMD='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
@@ -43,6 +43,7 @@ self.addEventListener('install',e=>{e.waitUntil((async()=>{
   const response=await fetch(url,{mode:'no-cors',cache:'reload'});
   if(response)await dependencyCache.put(url,response.clone())
  }))
+ await self.skipWaiting();
 })())});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
  const keys=await caches.keys();
@@ -120,39 +121,13 @@ function navigationFile(url){
  const path=String(url?.pathname||'');
  return (path.split('/').pop()||'index.html').toLowerCase()
 }
+// Network-first without application asset caching: future changes load directly.
 self.addEventListener('fetch',e=>{
- const u=new URL(e.request.url);
  if(e.request.method!=='GET')return;
- if(EXTERNAL_RUNTIME_DEPS.has(e.request.url)){
-  e.respondWith(externalDependencyFromCache(e.request));
-  return
- }
- if(u.origin!==location.origin)return;
- if(e.request.mode==='navigate'){
-  const file=navigationFile(u);
-  if(file==='repair.html'){
-   e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>Response.error()));
-   return;
-  }
-  const fallback=file==='settings.html'?'./settings.html':'./home.html';
-  if(STRICT_NAVIGATION_FILES.has(file)){
-   e.respondWith(navigationNetworkFirst(e.request,fallback));
-   return;
-  }
-  e.respondWith(navigationFromCache(e.request,fallback));
-  return;
- }
- if(u.pathname.endsWith('/app-version.json')){
-  e.respondWith(networkFirst(e.request));
-  return;
- }
- if(/\.(?:js|css|svg|png|webp|jpe?g|gif|webmanifest)$/i.test(u.pathname)){
-  e.respondWith(staticFromCache(e.request));
-  return;
- }
- e.respondWith(stableCacheMatch(e.request).then(cached=>cached||networkFirst(e.request)));
+ const url=new URL(e.request.url);
+ if(url.origin!==self.location.origin)return;
+ e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>Response.error()));
 });
-
 
 self.addEventListener('push',e=>{
  let data={};
