@@ -323,7 +323,6 @@ async function prewarmMobileViews(){
  const tasks=[
   {id:'home',label:'Accueil',promise:window.NethorMobileHomeView?.preload?.()||Promise.resolve(services()?.ready?.()).then(()=>true)},
   {id:'planning',label:'Planning',promise:window.NethorMobilePlanningView?.preload?.()},
-  {id:'chat',label:'Chat',promise:window.NethorMobileChatView?.preload?.()}
  ].filter(item=>item.promise&&typeof item.promise.then==='function');
  if(!tasks.length){root.dataset.prewarm='ready';return[]}
  root.dataset.prewarm='running';
