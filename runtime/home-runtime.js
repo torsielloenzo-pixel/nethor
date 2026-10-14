@@ -830,6 +830,25 @@ window.addEventListener('netto:profile',e=>{
  scheduleHomeProfileRefresh(e.detail?.profile,e.detail?.siteConfig)
 });
 
+function ensureHomeLayout(){
+ // The layout loader can fail independently of authentication. Restore the real
+ // dashboard hosts before rendering rather than marking a blank page as ready.
+ let dashboard=document.getElementById('homeDashboard');
+ let pages=document.getElementById('homePages');
+ if(dashboard&&pages)return true;
+ try{window.NethorPageLayout?.mountHome?.('home')}catch(error){console.warn('[Nethor] Home layout mount',error)}
+ dashboard=document.getElementById('homeDashboard');
+ pages=document.getElementById('homePages');
+ if(dashboard&&pages)return true;
+ const main=document.querySelector('main')||document.body;
+ let root=document.querySelector('[data-nethor-home-platform]');
+ if(!root){root=document.createElement('div');root.className='homeDesktopLayout';root.dataset.nethorHomePlatform='desktop';main.appendChild(root)}
+ if(!dashboard){dashboard=document.createElement('section');dashboard.id='homeDashboard';dashboard.className='homeDashboard homeDesktopDashboard';root.appendChild(dashboard)}
+ if(!pages){pages=document.createElement('div');pages.id='homePages';pages.className='pages';root.appendChild(pages)}
+ if(!document.getElementById('status')){const status=document.createElement('div');status.id='status';status.className='status';status.textContent='Chargement de l’accueil…';root.appendChild(status)}
+ console.warn('[Nethor] Home layout recovered after missing platform mount');
+ return true;
+}
 async function boot(){
  window.__nethorHomeStage='session';
  const {data:{session},error:sessionError}=await Promise.race([
@@ -858,6 +877,7 @@ async function boot(){
  ]);
  if(!p){throw new Error(profileError?.message||'Profil indisponible après connexion')}
  window.__nethorHomeStage='render';
+ ensureHomeLayout();
  window.currentRole=p?.role;
  document.querySelectorAll('.adminOnlyMenu').forEach(x=>x.classList.toggle('hidden',window.currentRole!=='admin'));
  const name=p?.display_name||p?.email?.split('@')[0]||'';
@@ -881,6 +901,7 @@ async function boot(){
  await Promise.race([renderHomeDashboard(p,name,sharedConfig||{}),new Promise(resolve=>setTimeout(resolve,3000))]);
  homeBootReady=true;
  window.__nethorHomeStage='ready';
+ window.__nethorHomeRendered=!!(document.querySelector('#homePages > *')||document.querySelector('#homeDashboard > *'));
  const status=document.getElementById('status');if(status)status.textContent='Session active'
 }
 function homeEsc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
