@@ -1,14 +1,21 @@
 (function(){
 'use strict';
 const NETHOR_ESSENTIAL_MODE=true;
-const NETHOR_DISABLED_MODULES=new Set(['stock','chat','promotions','scanner','articles','fl_assistant','bakery','surveys']);
-const NETHOR_DISABLED_ROUTES=['index.html','chat.html','promotions.html','scanner.html','articles.html','fl-assistant.html','bakery.html'];
+/* Mode essentiel :
+   - ces modules restent disponibles uniquement pour l'Administrateur ;
+   - les modules retirés du portail restent désactivés pour tout le monde. */
+const NETHOR_ADMIN_ONLY_MODULES=new Set(['stock','chat','promotions','settings','scanner','articles','rewards']);
+const NETHOR_GLOBALLY_DISABLED_MODULES=new Set(['fl_assistant','bakery','surveys']);
+const NETHOR_ADMIN_ONLY_ROUTES=['index.html','chat.html','promotions.html','settings.html','scanner.html','articles.html','rewards.html'];
+const NETHOR_GLOBALLY_DISABLED_ROUTES=['fl-assistant.html','bakery.html'];
 function applyNethorEssentialMode(){
  document.documentElement.dataset.theme='light';document.documentElement.dataset.nethorEssential='1';
  try{localStorage.setItem('nettoTheme','light')}catch(_){}
  let style=document.getElementById('nethorEssentialModeStyle');
  if(!style){style=document.createElement('style');style.id='nethorEssentialModeStyle';document.head?.appendChild(style)}
- const selectors=NETHOR_DISABLED_ROUTES.flatMap(route=>['a[href*="'+route+'"]','button[data-url*="'+route+'"]','button[onclick*="'+route+'"]']).join(',');
+ const isAdmin=window.NettoProfileUI?.profile?.role==='admin';
+ const hiddenRoutes=[...NETHOR_GLOBALLY_DISABLED_ROUTES,...(isAdmin?[]:NETHOR_ADMIN_ONLY_ROUTES)];
+ const selectors=hiddenRoutes.flatMap(route=>['a[href*="'+route+'"]','button[data-url*="'+route+'"]','button[onclick*="'+route+'"]']).join(',');
  style.textContent=(selectors?selectors+'{display:none!important;}':'')+'#nettoThemeBtn,#nettoMobileThemeBtn,#nettoUpdateCheckBtn,#nettoMobileUpdateBtn,[data-action="update"],[data-action="theme"]{display:none!important;}';
 }
 applyNethorEssentialMode();
@@ -441,6 +448,8 @@ function configuredRoles(module,config=api?.siteConfig){
 function moduleAllowed(module,profileOrRole,config=api?.siteConfig){
  const role=typeof profileOrRole==='string'?profileOrRole:profileOrRole?.role;
  if(!role)return false;
+ if(NETHOR_GLOBALLY_DISABLED_MODULES.has(module.id))return false;
+ if(NETHOR_ADMIN_ONLY_MODULES.has(module.id)&&role!=='admin')return false;
  if(module.id!=='settings'&&config?.pages?.[module.id]?.enabled===false)return false;
  /* Sécurité Nethor : l'Administrateur conserve l'accès aux pages actives,
     même pendant une synchronisation ou avec un ancien cache de permissions. */
@@ -455,7 +464,9 @@ function permissionLevel(moduleOrId,profileOrRole,config=api?.siteConfig){
  const module=typeof moduleOrId==='string'?NAV_MODULES.find(m=>m.id===moduleOrId):moduleOrId;
  const role=typeof profileOrRole==='string'?profileOrRole:profileOrRole?.role;
  if(!module||!role)return'none';
- if(module.id==='settings')return role==='admin'?'manage':'view';
+ if(NETHOR_GLOBALLY_DISABLED_MODULES.has(module.id))return'none';
+ if(NETHOR_ADMIN_ONLY_MODULES.has(module.id)&&role!=='admin')return'none';
+ if(module.id==='settings')return'manage';
  if(module.id!=='settings'&&config?.pages?.[module.id]?.enabled===false)return'none';
  if(role==='admin')return'manage';
  const baseExplicit=config?.role_permissions?.[module.id]?.[role];
@@ -1810,7 +1821,7 @@ function mergeMobileThemeFrames(config,rows){
  config.platform_ui.mobile.profile_frames={themes};
  return config
 }
-async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,fr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences,account_enabled').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.from('mobile_theme_profile_frames').select('id,theme,name,asset_url,storage_path,file_name,created_at').order('created_at',{ascending:true}),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;if(p.account_enabled===false){await forceDisabledAccountLogout();return null}api.profile=p;api.siteConfig=mergeMobileThemeFrames(sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{},fr.error?[]:fr.data);api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
+async function refresh(){if(!api.client||!api.session)return null;const [pr,sr,fr,xr]=await Promise.all([api.client.from('profiles').select('display_name,role,avatar_path,profile_color,avatar_frame,ui_preferences,account_enabled').eq('id',api.session.user.id).maybeSingle(),api.client.from('app_settings').select('value').eq('key','site_config').maybeSingle(),api.client.from('mobile_theme_profile_frames').select('id,theme,name,asset_url,storage_path,file_name,created_at').order('created_at',{ascending:true}),api.client.rpc('my_subrole_permissions')]);const p=pr.data;if(!p)return null;if(p.account_enabled===false){await forceDisabledAccountLogout();return null}api.profile=p;applyNethorEssentialMode();api.siteConfig=mergeMobileThemeFrames(sr.data?.value&&typeof sr.data.value==='object'?sr.data.value:{},fr.error?[]:fr.data);api.subrolePermissions={};if(!xr.error)for(const row of xr.data||[])if(row?.module&&['view','operate','manage'].includes(row.permission))api.subrolePermissions[row.module]=row.permission;applyProfileTheme(p,true);rebuildModules(api.siteConfig);applyPortalTheme(api.siteConfig);if(enforceMaintenanceAccess())return p;api.avatarUrl=null;if(p.avatar_path){const {data:a}=await api.client.storage.from('profile-avatars').createSignedUrl(p.avatar_path,3600);api.avatarUrl=a?.signedUrl||null}document.documentElement.style.setProperty('--profile-accent',p.profile_color||'#ff5a2a');updateKnownUI();saveGlobalCache();window.dispatchEvent(new CustomEvent('netto:profile',{detail:{profile:p,avatarUrl:api.avatarUrl,siteConfig:api.siteConfig}}));return p}
 
 function syncGlobalDesignAsset(){
  document.querySelectorAll('link[rel="stylesheet"]').forEach(link=>{
