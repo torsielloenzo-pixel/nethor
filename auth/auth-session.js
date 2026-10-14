@@ -220,18 +220,15 @@ function ensureAuthBrandThemeObserver(){
  authBrandThemeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']})
 }
 
-function showProfileLoader(message='Application de tes préférences…'){const el=$('profileLoader'),txt=$('profileLoaderText');if(!el)return;if(txt)txt.textContent=message;profileLoaderShownAt=performance.now();el.classList.add('show')}
-async function hideProfileLoader(minMs=320){const el=$('profileLoader');if(!el)return;const elapsed=performance.now()-profileLoaderShownAt;if(elapsed<minMs)await new Promise(r=>setTimeout(r,minMs-elapsed));el.classList.remove('show');await new Promise(r=>setTimeout(r,245))}
+function showProfileLoader(){document.getElementById('profileLoader')?.classList.remove('show')}
+async function hideProfileLoader(){document.getElementById('profileLoader')?.classList.remove('show')}
 function profilePrefs(p){return p?.ui_preferences&&typeof p.ui_preferences==='object'&&!Array.isArray(p.ui_preferences)?p.ui_preferences:{}}
 function profileThemeKey(uid){return uid?'nettoProfileTheme:'+uid:null}
 function cachedProfileTheme(uid){try{const k=profileThemeKey(uid),v=k?localStorage.getItem(k):null;return v==='dark'||v==='light'?v:null}catch(_){return null}}
 function rememberProfileTheme(uid,theme){if(theme!=='dark'&&theme!=='light')return;try{const k=profileThemeKey(uid);if(k)localStorage.setItem(k,theme)}catch(_){}}
-function applyCachedProfileTheme(uid){const t=cachedProfileTheme(uid);if(t)applyTheme(t);return t}
+function applyCachedProfileTheme(){applyTheme('light');return 'light'}
 async function syncProfileTheme(p,uid){
- const prefs=profilePrefs(p),stored=prefs.theme==='dark'||prefs.theme==='light'?prefs.theme:null,theme=stored||cachedProfileTheme(uid)||currentTheme();
- applyTheme(theme);rememberProfileTheme(uid,theme);p.ui_preferences={...prefs,theme};applyAuthBranding();
- if(!stored&&uid){const {error}=await db.from('profiles').update({ui_preferences:p.ui_preferences}).eq('id',uid);if(error)console.warn('Initialisation thème profil:',error)}
- return theme
+ const prefs=profilePrefs(p);applyTheme('light');rememberProfileTheme(uid,'light');p.ui_preferences={...prefs,theme:'light'};return 'light'
 }
 function authIsRevokedSessionError(error){
  const code=String(error?.code||'').toUpperCase(),message=String(error?.message||'');
@@ -278,7 +275,7 @@ async function boot(){
 }
 function playLoginSound(){window.NettoSounds?.play?.('loginSuccess')}
 function playLogoutSound(){window.NettoSounds?.play?.('logout')}
-function showWelcome(){return new Promise(resolve=>{const t=$('welcomeToast'),name=profile?.display_name||profile?.email?.split('@')[0]||'utilisateur';applyWelcomeBranding();window.NettoSounds?.play?.('welcome');$('welcomeText').textContent='Bienvenue '+name+' 👋';requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(resolve,450)},1900)})}
+function showWelcome(){document.getElementById('welcomeToast')?.classList.remove('show');return Promise.resolve()}
 
 function loginDenied(msg='Email ou mot de passe incorrect.'){const card=document.querySelector('.loginCard'),err=$('loginError');err.textContent=msg;err.classList.remove('loginErrorPulse');card?.classList.remove('loginDenied');void card?.offsetWidth;void err.offsetWidth;card?.classList.add('loginDenied');err.classList.add('loginErrorPulse');window.NettoSounds?.play?.('error');setTimeout(()=>card?.classList.remove('loginDenied'),520)}
 function safeReturnPath(){const raw=new URLSearchParams(location.search).get('return')||'';if(!raw||raw.includes('://')||raw.startsWith('//'))return'';return /^accounts\.html(?:\?|$)/.test(raw)?raw:''}
