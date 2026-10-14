@@ -103,12 +103,17 @@ async function main(){
     const url=origin+'/'+target.file+'?nethor_platform='+v.platform;
     await page.goto(url,{waitUntil:'domcontentloaded',timeout:20000});
     await page.locator(target.selector).first().waitFor({state:'visible',timeout:12000});
-    await page.waitForTimeout(350);
+    await page.waitForFunction(expected=>document.documentElement.dataset.nethorPageLayout===expected,v.platform,{timeout:3500}).catch(()=>{});
     const state=await page.evaluate(selector=>{
       const node=document.querySelector(selector);
       const r=node?.getBoundingClientRect();
       return{
+       url:location.pathname+location.search,
        layout:document.documentElement.dataset.nethorPageLayout||'',
+       platform:document.documentElement.dataset.nethorPlatform||'',
+       pageId:document.documentElement.dataset.nethorPageId||'',
+       shellReady:!!(window.NethorDesktopShell||window.NethorMobileShell),
+       layoutApiReady:!!window.NethorPageLayout,
        scrollWidth:document.documentElement.scrollWidth,
        viewport:innerWidth,
        found:!!node,
@@ -118,7 +123,7 @@ async function main(){
     },target.selector);
     assert.equal(state.found,true,'Module absent '+target.file+' '+v.key);
     assert.equal(state.visible,true,'Module invisible '+target.file+' '+v.key);
-    assert.equal(state.layout,v.platform,'Mauvais layout '+target.file+' '+v.key);
+    assert.equal(state.layout,v.platform,'Mauvais layout '+target.file+' '+v.key+' '+JSON.stringify(state));
     assert.ok(state.scrollWidth<=v.width+5,'Débordement horizontal '+target.file+' '+v.key+' '+state.scrollWidth+'/'+v.width);
     assert.ok(state.left>=-5,'Module coupé à gauche '+target.file+' '+v.key);
     await page.screenshot({
