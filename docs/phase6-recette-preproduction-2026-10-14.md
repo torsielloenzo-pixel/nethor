@@ -21,11 +21,11 @@ Aucune étape de cette recette ne doit modifier les données de production.
 - [x] Connexion testée en Chromium et WebKit.
 - [x] Réinitialisation mot de passe testée en Chromium et WebKit.
 - [x] Viewports 375 / 390 / 1024 / 1440 contrôlés pour les écrans d'authentification.
-- [ ] Équipe contrôlée en Chromium + WebKit, mobile + desktop.
-- [ ] Promotions contrôlé en Chromium + WebKit, mobile + desktop.
-- [ ] Fiches articles contrôlées en Chromium + WebKit, mobile + desktop.
-- [ ] Signalements contrôlés en Chromium + WebKit, mobile + desktop.
-- [ ] Captures de recette générées sans accès Supabase production.
+- [x] Équipe contrôlée en Chromium + WebKit, mobile + desktop.
+- [x] Promotions contrôlé en Chromium + WebKit, mobile + desktop.
+- [x] Fiches articles contrôlées en Chromium + WebKit, mobile + desktop.
+- [x] Signalements contrôlés en Chromium + WebKit, mobile + desktop.
+- [x] Captures de recette générées sans accès Supabase production.
 
 Le test `tests/ui/stage23-professional-pages.cjs` bloque tout trafic externe et remplace Supabase par un client synthétique.
 
@@ -42,11 +42,28 @@ Le workflow Auth est explicitement rattaché à la recette professionnelle afin 
 
 ## Défauts détectés pendant la recette
 
-### 1. Montage du layout sur le signalement mobile
-- Détecté par le nouveau smoke Chromium : le formulaire était visible mais le marqueur `data-nethor-page-layout` pouvait rester absent au moment du contrôle.
-- Correction appliquée dans `platform-page-layout.js` : montage réessayé pendant le chargement au lieu d'un seul essai.
-- Version du layout incrémentée et Service Worker synchronisé.
-- Statut : **retest navigateur en cours**.
+### 1. Signalement mobile et route SPA
+- Le premier smoke attendait à tort un layout standalone sur `report-problem.html`.
+- Le comportement réel est volontaire : mobile bascule vers `mobile.html?view=report-problem`.
+- La recette contrôle désormais la vraie route SPA, son shell et sa vue active.
+- Le montage générique de `platform-page-layout.js` a aussi été rendu plus robuste et versionné.
+
+### 2. Débordement WebKit à 1024 px
+- WebKit a détecté un dépassement horizontal de 10 px sur l'entête global desktop.
+- Cause : `nettoGlobalTools` et le bouton utilisateur de 190 px à côté de la sidebar.
+- Correction : mode compact de l'entête entre 1001 et 1080 px, sans réduire la sidebar.
+- Retest Chromium + WebKit : **succès**.
+
+### 3. Isolation de la recette PWA
+- WebKit conservait un état d'un écran SPA vers le suivant pendant le smoke.
+- La recette de rendu bloque désormais le Service Worker et nettoie le stockage entre cibles.
+- Le Service Worker reste validé séparément par la suite de non-régression et la validation physique PWA.
+
+### Résultat navigateur
+- Chromium : Équipe, Promotions, Articles, Signalements, Profil, Paramètres, Notifications et Réglages notifications validés en mobile 390, desktop 1024 et desktop 1440.
+- WebKit : mêmes surfaces validées.
+- Authentification / récupération : viewports 375, 390, 1024 et 1440 validés sur Chromium et WebKit.
+- Aucun trafic externe ou Supabase production n'est autorisé dans cette recette.
 
 ## Parcours fonctionnels à valider avant publication
 
