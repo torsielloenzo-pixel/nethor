@@ -369,3 +369,16 @@ test('QA droits dynamiques : subroles desktop actualises et PWA hors ligne reval
  assert.match(mobile,/window\.addEventListener\('online',reconnect,\{passive:true\}\)/);
  assert.match(mobile,/if\(!await checkSecurityState\(\)\|\|!state\.session\)return;[\s\S]*?await refresh\(\)/);
 });
+
+test('QA phase 7 : la recette finale couvre les surfaces personnelles et le correctif WebKit 1024',()=>{
+ const sidebar=read('ui/desktop/desktop-sidebar.css');
+ const browser=read('tests/ui/stage23-professional-pages.cjs');
+ assert.match(sidebar,/PHASE6 WEBKIT HEADER COMPACT START/);
+ assert.match(sidebar,/@media\(max-width:1080px\) and \(min-width:1001px\)/);
+ assert.match(sidebar,/\.nettoUserBtn[\s\S]*?max-width:42px!important/);
+ for(const view of ['profile','settings','notifications','notification-settings']){
+  assert.ok(browser.includes("mobileView:'"+view+"'"),'Vue SPA absente de la recette : '+view);
+ }
+ assert.match(browser,/serviceWorkers:'block'/);
+ assert.match(browser,/localStorage\.clear\(\);sessionStorage\.clear\(\)/);
+});
