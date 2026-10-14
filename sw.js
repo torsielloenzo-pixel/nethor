@@ -1,5 +1,5 @@
-const APP_VERSION=458;
-const CACHE='netto-tools-v458';
+const APP_VERSION=459;
+const CACHE='netto-tools-v459';
 const DEPENDENCY_CACHE='nethor-deps-v1';
 const SUPABASE_UMD='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js';
 const HTML5_QRCODE_UMD='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
@@ -31,83 +31,10 @@ async function previousCoreResponse(url,oldCaches){
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
  const keys=await caches.keys();
- await Promise.all(keys.filter(key=>/^netto-tools-v\\d+$/.test(key)||key==='nethor-deps-v1').map(key=>caches.delete(key)));
+ await Promise.all(keys.filter(key=>/^netto-tools-v\d+$/.test(key)||key==='nethor-deps-v1').map(key=>caches.delete(key)));
  await self.clients.claim();
 })()));
-async function networkFirst(request,fallback){
- try{
-  const response=await fetch(request,{cache:'no-cache'});
-  if(response&&response.ok){const copy=response.clone();caches.open(CACHE).then(c=>c.put(request,copy)).catch(()=>{})}
-  return response
- }catch(_){
-  return (await stableCacheMatch(request))||(fallback?await stableCacheMatch(fallback):undefined)||Response.error()
- }
-}
-function cleanNavigationRequest(request){
- const u=new URL(request.url);u.search='';u.hash='';
- return new Request(u.href,{method:'GET'})
-}
-async function stableCacheMatch(request,options){
- const current=await caches.open(CACHE);
- return (await current.match(request,options))||null
-}
-async function fetchAndStore(request,cacheKey=request){
- try{
-  const response=await fetch(request,{cache:'no-cache'});
-  if(response&&response.ok){
-   const cache=await caches.open(CACHE);
-   await cache.put(cacheKey,response.clone())
-  }
-  return response
- }catch(_){return null}
-}
-async function navigationFromCache(request,fallback){
- const key=cleanNavigationRequest(request);
- const cached=await stableCacheMatch(key,{ignoreSearch:true});
- if(cached){fetchAndStore(request,key).catch(()=>{});return cached}
- const fresh=await fetchAndStore(request,key);
- if(fresh)return fresh;
- return (fallback?await stableCacheMatch(fallback,{ignoreSearch:true}):null)||Response.error()
-}
-async function navigationNetworkFirst(request,fallback){
- const key=cleanNavigationRequest(request);
- const fresh=await fetchAndStore(request,key);
- if(fresh)return fresh;
- return (await stableCacheMatch(key,{ignoreSearch:true}))||(fallback?await stableCacheMatch(fallback,{ignoreSearch:true}):null)||Response.error()
-}
-async function staticFromCache(request){
- const cached=await stableCacheMatch(request);
- if(cached)return cached;
- return (await fetchAndStore(request))||Response.error()
-}
-async function externalDependencyFromCache(request){
- const cache=await caches.open(DEPENDENCY_CACHE);
- const cached=await cache.match(request);
- if(cached){
-  fetch(request,{cache:'no-cache'}).then(response=>{
-   if(response)cache.put(request,response.clone()).catch(()=>{})
-  }).catch(()=>{});
-  return cached
- }
- try{
-  const response=await fetch(request,{cache:'no-cache'});
-  if(response)await cache.put(request,response.clone());
-  return response
- }catch(_){return Response.error()}
-}
-
-const STRICT_NAVIGATION_FILES=new Set(['index.html','mobile.html','home.html','promotions.html','planning.html','chat.html','team.html','notifications.html','user-menu.html','profile.html','settings.html','notification-settings.html','report-problem.html','maintenance.html','repair.html','welcome-animation-host.html']);
-function navigationFile(url){
- const path=String(url?.pathname||'');
- return (path.split('/').pop()||'index.html').toLowerCase()
-}
-// Network-first without application asset caching: future changes load directly.
-self.addEventListener('fetch',e=>{
- if(e.request.method!=='GET')return;
- const url=new URL(e.request.url);
- if(url.origin!==self.location.origin)return;
- e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>Response.error()));
-});
+// Do not intercept page or asset requests. The browser handles networking natively.
 
 self.addEventListener('push',e=>{
  let data={};
