@@ -5,6 +5,17 @@ on:
     paths:
       - '.github/workflows/nethor-viewport-staging.yml'
       - 'tests/ui/stage23-*'
+      - 'team.html'
+      - 'promotions.html'
+      - 'articles.html'
+      - 'report-problem.html'
+      - 'profile.html'
+      - 'settings.html'
+      - 'notifications.html'
+      - 'notification-settings.html'
+      - 'ui/desktop/**'
+      - 'ui/mobile/**'
+      - 'runtime/**'
       - 'index.html'
       - 'reset-password.html'
       - 'login-page-layout.js'
@@ -48,7 +59,9 @@ jobs:
             sleep 1
           done
           STAGE23_BROWSER=chromium node tests/ui/stage23-viewport-smoke.cjs
+          STAGE23_BROWSER=chromium node tests/ui/stage23-professional-pages.cjs
           STAGE23_BROWSER=webkit node tests/ui/stage23-viewport-smoke.cjs
+          STAGE23_BROWSER=webkit node tests/ui/stage23-professional-pages.cjs
       - name: Captures de contrôle des écrans
         if: always()
         uses: actions/upload-artifact@v4
