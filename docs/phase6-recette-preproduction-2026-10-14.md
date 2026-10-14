@@ -15,7 +15,7 @@ Aucune étape de cette recette ne doit modifier les données de production.
 ### A. Non-régression Node / SQL
 - [x] Syntaxe des scripts critiques contrôlée.
 - [x] Suite de non-régression professionnelle intégrée.
-- [ ] Simulation PostgreSQL jetable validée sur le dernier HEAD.
+- [x] Simulation PostgreSQL jetable validée sur le dernier HEAD.
 
 ### B. Recette navigateur isolée
 - [x] Connexion testée en Chromium et WebKit.
@@ -30,14 +30,23 @@ Aucune étape de cette recette ne doit modifier les données de production.
 Le test `tests/ui/stage23-professional-pages.cjs` bloque tout trafic externe et remplace Supabase par un client synthétique.
 
 ### C. Auth / rôles sur stack locale
-- [ ] Stack Supabase locale démarrée.
-- [ ] Sessions fictives testées.
-- [ ] Révocation / compte désactivé testés.
-- [ ] Politiques de rôle Planning testées.
-- [ ] Récupération de mot de passe locale testée.
-- [ ] Fonctions Edge locales testées.
+- [x] Stack Supabase locale démarrée.
+- [x] Sessions fictives testées.
+- [x] Révocation / compte désactivé testés.
+- [x] Politiques de rôle Planning testées.
+- [x] Récupération de mot de passe locale testée.
+- [x] Fonctions Edge locales testées.
 
 Le workflow Auth est explicitement rattaché à la recette professionnelle afin d'exécuter le banc isolé pendant cette phase.
+
+
+## Défauts détectés pendant la recette
+
+### 1. Montage du layout sur le signalement mobile
+- Détecté par le nouveau smoke Chromium : le formulaire était visible mais le marqueur `data-nethor-page-layout` pouvait rester absent au moment du contrôle.
+- Correction appliquée dans `platform-page-layout.js` : montage réessayé pendant le chargement au lieu d'un seul essai.
+- Version du layout incrémentée et Service Worker synchronisé.
+- Statut : **retest navigateur en cours**.
 
 ## Parcours fonctionnels à valider avant publication
 
