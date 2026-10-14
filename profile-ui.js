@@ -1,5 +1,18 @@
 (function(){
 'use strict';
+const NETHOR_ESSENTIAL_MODE=true;
+const NETHOR_DISABLED_MODULES=new Set(['stock','chat','promotions','scanner','articles','fl_assistant','bakery','surveys']);
+const NETHOR_DISABLED_ROUTES=['index.html','chat.html','promotions.html','scanner.html','articles.html','fl-assistant.html','bakery.html'];
+function applyNethorEssentialMode(){
+ document.documentElement.dataset.theme='light';document.documentElement.dataset.nethorEssential='1';
+ try{localStorage.setItem('nettoTheme','light')}catch(_){}
+ let style=document.getElementById('nethorEssentialModeStyle');
+ if(!style){style=document.createElement('style');style.id='nethorEssentialModeStyle';document.head?.appendChild(style)}
+ const selectors=NETHOR_DISABLED_ROUTES.flatMap(route=>['a[href*="'+route+'"]','button[data-url*="'+route+'"]','button[onclick*="'+route+'"]']).join(',');
+ style.textContent=(selectors?selectors+'{display:none!important;}':'')+'#nettoThemeBtn,#nettoMobileThemeBtn,#nettoUpdateCheckBtn,#nettoMobileUpdateBtn,[data-action="update"],[data-action="theme"]{display:none!important;}';
+}
+applyNethorEssentialMode();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyNethorEssentialMode,{once:true});
 /* Horodatages Nethor : données UTC serveur, affichage Europe/Paris (été/hiver).
    Connexion authentifiée != dernière activité/présence du navigateur. */
 const CONNECTION_TIME_ZONE='Europe/Paris';
@@ -361,17 +374,12 @@ function setAvatarFrame(el,frame){if(!el)return;const v=validAvatarFrame(frame);
 const BASE_MODULES=Object.freeze([
  {id:'home',label:'Accueil',homeLabel:'Accueil',subtitle:'Retour au portail',url:'home.html',icon:'⌂',asset:'assets/logo-home.svg',roles:null,rolesLocked:true,enabledLocked:true,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'PORTAIL',description:'Revenir à l’accueil principal de Nethor.',action:'Ouvrir l’accueil',cardClass:'homeCard',group:'principal',platform:'all'},
  {id:'profile',label:'Mon profil',homeLabel:'Mon profil',subtitle:'Profil et notifications',url:'profile.html',icon:'☺',asset:'assets/logo-profile.svg?v=3',roles:null,home:true,userMenu:true,defaultHome:false,defaultUser:true,kicker:'MON COMPTE',description:'Gérer ta photo, ton apparence et la sécurité de ton compte.',action:'Ouvrir mon profil',cardClass:'profileCard',group:'principal',platform:'all'},
- {id:'stock',label:'Stock F&L',homeLabel:'Stock F&L',subtitle:'Gestion du stock',url:'index.html',homeUrl:'index.html?mode=stock',asset:'assets/logo-stock.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'OPÉRATIONS',description:'Contrôler les quantités, préparer les commandes et administrer le référentiel produits depuis un espace optimisé terrain.',action:'Ouvrir le stock',cardClass:'stock',group:'principal',platform:'all'},
  {id:'planning',label:'Planning',homeLabel:'Planning équipe',subtitle:'Horaires de l’équipe',url:'planning.html',asset:'assets/logo-planning.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ORGANISATION',description:'Consulter les horaires, importer les plannings Excel et suivre précisément chaque modification.',action:'Consulter le planning',cardClass:'planning',group:'principal',platform:'all'},
- {id:'chat',label:'Chat',homeLabel:'Chat',subtitle:'Messagerie interne',url:'chat.html',asset:'assets/logo-chat.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'COMMUNICATION',description:'Centraliser les échanges, la présence des membres et les informations utiles au fonctionnement quotidien.',action:'Ouvrir le chat',cardClass:'chatCard',group:'principal',platform:'all'},
  {id:'team',label:'Équipe',homeLabel:'Équipe',subtitle:'Annuaire interne',url:'team.html',icon:'♙',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ORGANISATION',description:'Consulter les membres actifs de l’équipe, leur rôle et leur présence dans Nethor.',action:'Voir l’équipe',cardClass:'teamCard',group:'principal',platform:'all'},
  {id:'promotions',label:'Promotions',homeLabel:'Promotions',subtitle:'Catalogues et références',url:'promotions.html',icon:'%',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'OPÉRATIONS',description:'Consulter les catalogues promotionnels validés et, selon les droits, gérer leur préparation.',action:'Voir les promotions',cardClass:'promotionsCard',group:'terrain',platform:'all'},
- {id:'scanner',label:'Scanner (bêta)',homeLabel:'Scanner (bêta)',subtitle:'EAN13 vers fiche article',url:'scanner.html',icon:'⌁',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'OUTIL MOBILE',description:'Scanner un code-barres ou saisir une référence courte pour retrouver rapidement une fiche article.',action:'Ouvrir le scanner',cardClass:'scannerCard',group:'terrain',platform:'mobile',mobileBar:true},
- {id:'articles',label:'Fiches articles',homeLabel:'Fiches articles',subtitle:'Référentiel articles',url:'articles.html',asset:'assets/logo-article.svg',roles:null,home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'RÉFÉRENTIEL',description:'Retrouver rapidement les références, codes et informations produit utilisées dans les procédures du rayon.',action:'Ouvrir le référentiel',cardClass:'articlesCard',group:'principal',platform:'all'},
  {id:'notifications',label:'Notifications',homeLabel:'Notifications',subtitle:'Centre d’activité',url:'notifications.html',icon:'◇',roles:null,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'INFORMATIONS',description:'Consulter les notifications et informations reçues dans Nethor.',action:'Ouvrir les notifications',cardClass:'notificationsCard',group:'communication',platform:'all',mobileBar:true},
  {id:'notification_settings',label:'Réglages des notifications',homeLabel:'Réglages des notifications',subtitle:'Préférences et alertes',url:'notification-settings.html',icon:'♢',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'PRÉFÉRENCES',description:'Choisir les canaux et types de notifications à recevoir.',action:'Régler les notifications',cardClass:'notificationSettingsCard',group:'communication',platform:'all'},
  {id:'problem_report',label:'Signaler un problème',homeLabel:'Signaler un problème',subtitle:'Décrire et envoyer un bug',url:'report-problem.html',icon:'⚠',roles:null,home:false,userMenu:true,defaultHome:false,defaultUser:true,kicker:'ASSISTANCE',description:'Envoyer à l’administration un signalement détaillé depuis Nethor.',action:'Signaler un problème',cardClass:'problemReportCard',group:'communication',platform:'mobile'},
- {id:'fl_assistant',label:'Assistant Précommande',homeLabel:'Assistant Précommande',subtitle:'Analyse Fruits & Légumes',url:'fl-assistant.html',icon:'▤',roles:['admin','responsable'],home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'F&L',description:'Analyser les données utiles à la préparation des précommandes Fruits & Légumes.',action:'Ouvrir l’assistant',cardClass:'assistantCard',group:'terrain',platform:'all'},
  {id:'rewards',label:'Défis & Boutique',homeLabel:'Défis & Boutique',subtitle:'Missions et récompenses',url:'rewards.html',icon:'✦',asset:'assets/logo-rewards.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Créer les défis, gérer les récompenses et utiliser librement le catalogue administrateur.',action:'Ouvrir Défis & Boutique',cardClass:'rewardsCard',group:'administration',platform:'all'},
   {id:'bakery',label:'Boulangerie',homeLabel:'Boulangerie',subtitle:'Stock • Consulter • Gestion',url:'bakery.html',asset:'assets/logo-boulangerie.svg?v=3',roles:['admin'],home:true,userMenu:true,defaultHome:true,defaultUser:true,kicker:'ADMINISTRATION',description:'Gérer le stock, consulter les articles et administrer les catégories propres à la famille Boulangerie.',action:'Ouvrir la Boulangerie',cardClass:'bakeryCard',group:'administration',platform:'all'},
  {id:'accounts',label:'Gestion des comptes',homeLabel:'Gestion des comptes',subtitle:'Utilisateurs, accès et journal',url:'accounts.html',icon:'♙',asset:'assets/logo-accounts.svg',roles:['admin'],rolesLocked:true,enabledLocked:true,home:false,userMenu:false,defaultHome:false,defaultUser:false,kicker:'ADMINISTRATION',description:'Gérer les utilisateurs, leurs rôles, les demandes de mot de passe et le journal d’activité.',action:'Gérer les comptes',cardClass:'accountsCard',group:'administration',platform:'all'},
@@ -1101,7 +1109,7 @@ function mobileMenuRow(id,title,sub,url,extra=''){
  const icon=mobileNavIcon(id);
  return '<button class="nettoMobileMenuRow nettoMobileMenuLink '+extra+'" type="button" data-url="'+esc(url||'')+'"><span class="nettoMobileMenuIcon" aria-hidden="true">'+icon+'</span><span class="nettoMobileMenuCopy"><strong>'+esc(title)+'</strong>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</span><span class="nettoMobileMenuChevron" aria-hidden="true">›</span></button>'
 }
-function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light'}
+function currentTheme(){return 'light'}
 function validTheme(value){return value==='dark'||value==='light'?value:null}
 function localTheme(theme){
  theme=validTheme(theme)||'light';
@@ -1134,13 +1142,7 @@ function applyProfileTheme(profile=api.profile,persistMissing=false){
  if(!stored&&persistMissing&&api.client&&api.session)saveThemePreference(theme).catch(()=>{});
  return theme
 }
-function changeTheme(){
- const next=currentTheme()==='dark'?'light':'dark';
- if(typeof window.toggleTheme==='function')window.toggleTheme({stopPropagation(){}});
- else localTheme(next);
- saveThemePreference(next).catch(()=>{});
- updateThemeText()
-}
+function changeTheme(){localTheme('light');updateThemeText()}
 function updateThemeText(){const dark=currentTheme()==='dark';document.querySelectorAll('.nettoThemeLabel').forEach(x=>{if(!x.hasAttribute('data-static-theme-label'))x.textContent=dark?'Mode clair':'Mode sombre'});document.querySelectorAll('.nettoThemeIcon').forEach(x=>{if(!x.hasAttribute('data-static-theme-icon'))x.textContent=dark?'☀':'☾'})}
 function bindHomeMark(){
  document.querySelectorAll('.mark,.brandMark,.nMenuBtn,.brandMenuBtn').forEach(b=>{if((b.textContent||'').trim()!=='N')return;b.removeAttribute('onclick');b.removeAttribute('aria-expanded');b.setAttribute('aria-label','Retour à l’accueil');b.onclick=e=>{e.preventDefault();e.stopPropagation();location.href='home.html'}})
@@ -1170,16 +1172,10 @@ const APP_RELEASE=369;
 const APP_RELEASE_LABEL='v1.46.20';
 const APP_ICON='assets/app-icon-v63.svg';
 const APP_MOBILE_ICON='assets/app-icon-mobile-v74.svg';
-async function loadUpdateFeature(){return loadProfileFeature('update','profile-update.js?v=4')}
-async function openUpdateCenter(){
- const feature=await loadUpdateFeature();return feature.openCenter()
-}
-async function manualCheckForUpdates(){
- const feature=await loadUpdateFeature();return feature.manualCheck()
-}
-async function showUpdateAvailable(reg,forcedVersion=0,force=false){
- const feature=await loadUpdateFeature();return feature.showAvailable(reg,forcedVersion,force)
-}
+async function loadUpdateFeature(){return null}
+async function openUpdateCenter(){return false}
+async function manualCheckForUpdates(){return false}
+async function showUpdateAvailable(){return false}
 
 
 function platformControls(config=api?.siteConfig,kind=isMobileViewport()?'mobile':'desktop'){
