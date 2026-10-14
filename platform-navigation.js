@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const NETHOR_DISABLED_ESSENTIAL_ROUTES=new Set(['index.html','chat.html','promotions.html','bakery.html','scanner.html','articles.html','fl-assistant.html']);
+const NETHOR_DISABLED_ESSENTIAL_ROUTES=new Set(['bakery.html']);
 (function(){
  const current=(location.pathname.split('/').pop()||'').toLowerCase();
  const survey=current==='mobile.html'&&new URLSearchParams(location.search).get('view')==='surveys';
