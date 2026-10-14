@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#171717"><script>(function(){try{var t=localStorage.getItem('nettoTheme')||'light';document.documentElement.dataset.theme=t}catch(e){}})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://gioxrpaiwogqqtakjpnv.supabase.co" crossorigin><title>Nethor</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=4"></script><script>window.NethorPlatformAssets.style('ui/desktop/desktop-shell.css?v=9','ui/mobile/mobile-shell.css?v=5')</script><script src="platform-navigation.js?v=6"></script><script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=39','ui/mobile/mobile-shell.js?v=15')</script><script>window.NethorPlatformAssets.script('ui/desktop/home-layout.js?v=2','ui/mobile/home-layout.js?v=1')</script><link rel="stylesheet" href="profile-ui.css?v=3"><script src="profile-ui.js?v=232"></script><script src="operations-widget.js?v=4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script><script src="platform-resolver.js?v=3"></script><script src="platform-assets.js?v=4"></script><script>window.NethorPlatformAssets.style('ui/desktop/desktop-shell.css?v=9','ui/mobile/mobile-shell.css?v=5')</script><script src="platform-navigation.js?v=7"></script><script>window.NethorPlatformAssets.script('ui/desktop/desktop-shell.js?v=39','ui/mobile/mobile-shell.js?v=15')</script><script>window.NethorPlatformAssets.script('ui/desktop/home-layout.js?v=2','ui/mobile/home-layout.js?v=1')</script><link rel="stylesheet" href="profile-ui.css?v=3"><script src="profile-ui.js?v=233"></script><script src="operations-widget.js?v=4"></script>
 <link rel="stylesheet" href="runtime/home-base.css?v=1">
 <link rel="stylesheet" href="runtime/store-info-widget.css?v=8">
 <link rel="stylesheet" href="runtime/quick-planning-widget.css?v=9">
@@ -46,5 +46,27 @@
 <script src="runtime/delivery-schedule.js?v=1"></script>
 <script src="runtime/home-delivery-dialog.js?v=1"></script>
 <script src="runtime/desktop-home-dashboard.js?v=13"></script>
-<script src="runtime/home-runtime.js?v=20"></script>
+<script>
+(function(){
+ var startupError='';
+ function showRecovery(){
+  if(document.getElementById('nethorStartupRecovery'))return;
+  var ready=!!document.querySelector('#homeDashboard, #homePages');
+  var filled=!!document.querySelector('#homeDashboard .mhdCard, #homePages .pageCard, #homeDashboard .homeDashboard, #homePages > *');
+  var status=document.getElementById('status');
+  if(filled || (ready && status && /Session active/.test(status.textContent||'')))return;
+  var box=document.createElement('section');
+  box.id='nethorStartupRecovery';
+  box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#f7f8fa;color:#212936;display:flex;align-items:center;justify-content:center;padding:24px;font:15px system-ui,sans-serif';
+  var detail=startupError?'Erreur technique : '+startupError:'Le chargement de l’accueil ne se termine pas.';
+  box.innerHTML='<div style="max-width:450px;width:100%;background:white;border:1px solid #e5e7eb;border-radius:18px;padding:28px;box-shadow:0 12px 50px #1112"><h1 style="font-size:24px;margin:0 0 12px">Nethor</h1><p style="line-height:1.55">Impossible d’afficher l’accueil pour le moment.</p><p id="nethorStartupDetail" style="font-size:12px;line-height:1.5;overflow-wrap:anywhere;color:#626c7d"></p><p style="margin-top:20px"><a href="index.html?logout=1" style="color:#d44d25;font-weight:600">Retour à la connexion</a> · <a href="planning.html" style="color:#d44d25">Planning</a></p></div>';
+  document.body.appendChild(box);
+  document.getElementById('nethorStartupDetail').textContent=detail;
+ }
+ window.addEventListener('error',function(e){startupError=String(e.message||'Erreur JavaScript').slice(0,240)});
+ window.addEventListener('unhandledrejection',function(e){startupError=String(e.reason?.message||e.reason||'Erreur de chargement').slice(0,240)});
+ setTimeout(showRecovery,9000);
+})();
+</script>
+<script src="runtime/home-runtime.js?v=21"></script>
 </body></html>
