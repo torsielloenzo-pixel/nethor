@@ -73,7 +73,7 @@ const targets=[
  {file:'team.html',selector:'.teamShell'},
  {file:'promotions.html',selector:'.promoPage'},
  {file:'articles.html',selector:'main'},
- {file:'report-problem.html',selector:'main'}
+ {file:'report-problem.html',selector:'main',mobilePath:'mobile.html?view=report-problem&nethor_platform=mobile',mobileSelector:'.nethorReportView',mobileView:'report-problem'}
 ];
 const viewports=[
  {key:'mobile-390',width:390,height:844,platform:'mobile',mobile:true},
@@ -100,10 +100,16 @@ async function main(){
    });
    for(const target of targets){
     const page=await context.newPage();
-    const url=origin+'/'+target.file+'?nethor_platform='+v.platform;
+    const spaMobile=!!(v.mobile&&target.mobilePath);
+    const url=spaMobile?origin+'/'+target.mobilePath:origin+'/'+target.file+'?nethor_platform='+v.platform;
+    const selector=spaMobile?(target.mobileSelector||target.selector):target.selector;
     await page.goto(url,{waitUntil:'domcontentloaded',timeout:20000});
-    await page.locator(target.selector).first().waitFor({state:'visible',timeout:12000});
-    await page.waitForFunction(expected=>document.documentElement.dataset.nethorPageLayout===expected,v.platform,{timeout:3500}).catch(()=>{});
+    await page.locator(selector).first().waitFor({state:'visible',timeout:12000});
+    if(spaMobile){
+      await page.waitForFunction(expected=>document.querySelector('[data-mobile-view-host]')?.getAttribute('data-mobile-view')===expected,target.mobileView,{timeout:5000});
+    }else{
+      await page.waitForFunction(expected=>document.documentElement.dataset.nethorPageLayout===expected,v.platform,{timeout:3500}).catch(()=>{});
+    }
     const state=await page.evaluate(selector=>{
       const node=document.querySelector(selector);
       const r=node?.getBoundingClientRect();
@@ -114,16 +120,25 @@ async function main(){
        pageId:document.documentElement.dataset.nethorPageId||'',
        shellReady:!!(window.NethorDesktopShell||window.NethorMobileShell),
        layoutApiReady:!!window.NethorPageLayout,
+       mobileView:document.querySelector('[data-mobile-view-host]')?.getAttribute('data-mobile-view')||'',
+       mobileShell:!!document.querySelector('[data-mobile-app-shell]'),
        scrollWidth:document.documentElement.scrollWidth,
        viewport:innerWidth,
        found:!!node,
        visible:!!r&&r.width>0&&r.height>0,
        left:r?.left??0,right:r?.right??0
       };
-    },target.selector);
+    },selector);
     assert.equal(state.found,true,'Module absent '+target.file+' '+v.key);
     assert.equal(state.visible,true,'Module invisible '+target.file+' '+v.key);
-    assert.equal(state.layout,v.platform,'Mauvais layout '+target.file+' '+v.key+' '+JSON.stringify(state));
+    if(spaMobile){
+      assert.equal(state.platform,'mobile','Plateforme SPA incorrecte '+target.file+' '+v.key+' '+JSON.stringify(state));
+      assert.equal(state.mobileShell,true,'Shell mobile absent '+target.file+' '+v.key+' '+JSON.stringify(state));
+      assert.equal(state.mobileView,target.mobileView,'Vue SPA incorrecte '+target.file+' '+v.key+' '+JSON.stringify(state));
+      assert.match(state.url,/\/mobile\.html\?view=report-problem/,'Route SPA incorrecte '+JSON.stringify(state));
+    }else{
+      assert.equal(state.layout,v.platform,'Mauvais layout '+target.file+' '+v.key+' '+JSON.stringify(state));
+    }
     assert.ok(state.scrollWidth<=v.width+5,'Débordement horizontal '+target.file+' '+v.key+' '+state.scrollWidth+'/'+v.width);
     assert.ok(state.left>=-5,'Module coupé à gauche '+target.file+' '+v.key);
     await page.screenshot({
