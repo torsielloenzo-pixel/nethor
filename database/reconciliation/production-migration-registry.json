@@ -1,0 +1,1086 @@
+{
+  "generated_from": "supabase_migrations.schema_migrations",
+  "project": "stock-fl",
+  "project_ref": "gioxrpaiwogqqtakjpnv",
+  "captured_at": "2026-10-03",
+  "migration_count": 107,
+  "note": "SQL bodies are intentionally not embedded here. Hashes permit drift checks without republishing environment-specific literals.",
+  "environment_specific_versions": [
+    "20260925192818",
+    "20260925193237",
+    "20260925203337",
+    "20260925203756"
+  ],
+  "migrations": [
+    {
+      "name": "create_team_chat",
+      "chars": 2390,
+      "sql_md5": "634595a8dfa19ffb1198353cf6fea3ed",
+      "version": "20260923233643",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_site_settings_panel",
+      "chars": 3121,
+      "sql_md5": "68825d20fdf70f1dc4222b1895c00fbe",
+      "version": "20260923233931",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_user_profile_avatars",
+      "chars": 2223,
+      "sql_md5": "6916cae38c7e46e9e07ac4361fa20db6",
+      "version": "20260924000200",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_packaging_count_to_products",
+      "chars": 306,
+      "sql_md5": "872264303cd5d504df31cb8d648bdbb0",
+      "version": "20260924112922",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_unique_ean_product_reference",
+      "chars": 914,
+      "sql_md5": "44a73c66ddff8fff9a090e013f95db89",
+      "version": "20260924113328",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_on_sale_to_products",
+      "chars": 161,
+      "sql_md5": "c6370c53cd757332f50ae34fcca1ed78",
+      "version": "20260924122543",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "create_planning_logs",
+      "chars": 1399,
+      "sql_md5": "c812b78047e6886448bb7e99167e4ff0",
+      "version": "20260924135453",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_shelf_capacity_to_products",
+      "chars": 135,
+      "sql_md5": "4f5f8205692f9316be6b9ff7f308810f",
+      "version": "20260924143938",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "create_shared_planning_weeks",
+      "chars": 1821,
+      "sql_md5": "0ea22fb06ee4ff18aad20020e625ff1c",
+      "version": "20260924151120",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "extend_profiles_for_shared_ui_v2",
+      "chars": 1108,
+      "sql_md5": "e2374932012800c94a5fb12cd7edfb92",
+      "version": "20260924154544",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "protect_profile_identity_admin_only",
+      "chars": 1054,
+      "sql_md5": "702cfb500e17befc2ffb4b4f9cb23977",
+      "version": "20260924155346",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_identity_emails",
+      "chars": 537,
+      "sql_md5": "f7eb65aec4ad07962e0d457f17081b51",
+      "version": "20260924155859",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_logs_public_and_profile_notifications",
+      "chars": 2653,
+      "sql_md5": "35710ad251c90be34e724f825975430e",
+      "version": "20260924161606",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_notifications_sequence_grant",
+      "chars": 86,
+      "sql_md5": "60cb1f214f591bc13b99255559a19180",
+      "version": "20260924161928",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_notification_links_and_user_delete",
+      "chars": 540,
+      "sql_md5": "4dd607d4221c7015152d0545d90e40a4",
+      "version": "20260924162647",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "enable_planning_notifications_realtime",
+      "chars": 292,
+      "sql_md5": "70f324d882ca4b10d433fe033a4dd349",
+      "version": "20260924162716",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "product_families_and_modular_taxonomy",
+      "chars": 10740,
+      "sql_md5": "199d946f00296e575c3299a0e58a858f",
+      "version": "20260924183217",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "harden_product_taxonomy_trigger_search_paths",
+      "chars": 888,
+      "sql_md5": "ba00f87d0a1eaa67db36b4f1d4d00653",
+      "version": "20260924184042",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "make_unlisted_taxonomy_safe",
+      "chars": 863,
+      "sql_md5": "26fae62bb31498a3b29c768ee4d0db5c",
+      "version": "20260924184251",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "rewards_admin_pilot",
+      "chars": 10151,
+      "sql_md5": "b19dd5020e3add55a2565ca2d9b885ff",
+      "version": "20260924230329",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_profile_ui_preferences",
+      "chars": 510,
+      "sql_md5": "8549511533c5b1e284ee886c325afdde",
+      "version": "20260925110707",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "allow_employe_profile_role",
+      "chars": 241,
+      "sql_md5": "516b36fe13004ab3750d5d31b73107d0",
+      "version": "20260925115304",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "lock_down_web_push_tables",
+      "chars": 987,
+      "sql_md5": "1d4767cd67e42a4540fbd9de565aaab9",
+      "version": "20260925153242",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "fix_notification_admin_rpc",
+      "chars": 1780,
+      "sql_md5": "59e7b6861e68557eff9c6d45d0e094a0",
+      "version": "20260925190740",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "fix_admin_notification_test_send",
+      "chars": 2539,
+      "sql_md5": "44ed7f901eace24b55e4d6023d384c3b",
+      "version": "20260925191420",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "restore_service_role_push_permissions",
+      "chars": 364,
+      "sql_md5": "9abd5cded45a53ce2f33bae49f0bf749",
+      "version": "20260925191915",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "separate_admin_from_daily_enzo",
+      "chars": 1669,
+      "sql_md5": "931ec0f340c82b79aae71e8babd4aef8",
+      "version": "20260925192818",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": true,
+      "environment_specific": true
+    },
+    {
+      "name": "rename_admin_profile_administrateur",
+      "chars": 117,
+      "sql_md5": "3aa5ea7695388ef3a9d33a15d2f21064",
+      "version": "20260925193237",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": true,
+      "environment_specific": true
+    },
+    {
+      "name": "quick_healthcheck_performance_and_service_permissions",
+      "chars": 389,
+      "sql_md5": "5b48b7ee381b8e96203f1e7111507d5a",
+      "version": "20260925194417",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "create_fl_analysis_workspace",
+      "chars": 2922,
+      "sql_md5": "07f329b178d58bd565dd77851a9d4703",
+      "version": "20260925201745",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "grant_enzo_fl_responsable_scope",
+      "chars": 3951,
+      "sql_md5": "d290ea5c8660f2853df4e6431c581635",
+      "version": "20260925203337",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": true,
+      "environment_specific": true
+    },
+    {
+      "name": "allow_rls_use_fl_scope_helper",
+      "chars": 83,
+      "sql_md5": "c865015559e62b980214cd443574a41d",
+      "version": "20260925203419",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "ensure_enzo_fl_responsable_exception",
+      "chars": 656,
+      "sql_md5": "ef7b6e2a69161187e78eae0758e202a3",
+      "version": "20260925203756",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": true,
+      "environment_specific": true
+    },
+    {
+      "name": "fix_missing_table_privileges",
+      "chars": 362,
+      "sql_md5": "96e6f032268473b62dd39d10fd573ab5",
+      "version": "20260926033424",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "restrict_notification_target_urls",
+      "chars": 195,
+      "sql_md5": "80f5e16083a607e3a64ce3d9307f17a7",
+      "version": "20260926034141",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "reduce_security_definer_surface",
+      "chars": 257,
+      "sql_md5": "ad8c079ff74119bf481da2511e39f86f",
+      "version": "20260926034852",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "custom_application_roles",
+      "chars": 3008,
+      "sql_md5": "2ab6b5f777c2597225ef4ff7416ac6f6",
+      "version": "20260926120813",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "hidden_stackable_subroles",
+      "chars": 3018,
+      "sql_md5": "c90f47d78f4d92ddedc17e9619755961",
+      "version": "20260926121702",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "central_module_permissions_planning",
+      "chars": 3902,
+      "sql_md5": "795842a02d21b28fff824c2ca600481f",
+      "version": "20260926122509",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "central_module_permissions_operational",
+      "chars": 8747,
+      "sql_md5": "aabd7cb5cf71da145a43df0a88484727",
+      "version": "20260926122919",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "remove_legacy_chat_bypass_policies",
+      "chars": 139,
+      "sql_md5": "73af9c10533725e7706f779c0d9b77d0",
+      "version": "20260926122937",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "independent_application_roles",
+      "chars": 1129,
+      "sql_md5": "182249d1b1a0e9af8b352c1cdd8402c9",
+      "version": "20260926123838",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "grant_app_roles_select_to_service_role",
+      "chars": 55,
+      "sql_md5": "2fa3ead1e118a0c3dce6dfaec21cd984",
+      "version": "20260926124930",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "fl_operational_permission",
+      "chars": 5224,
+      "sql_md5": "1a77dc7428f9ddc32ecc864448a97e6d",
+      "version": "20260926130904",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_admin_managed_avatar_frames",
+      "chars": 1629,
+      "sql_md5": "8ec587a29426c07a4072aa773f3d8ae7",
+      "version": "20260926131536",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_planning_absences",
+      "chars": 2995,
+      "sql_md5": "fe779695b627f19325590e10c6366dcc",
+      "version": "20260926164103",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_absence_role_permissions",
+      "chars": 3224,
+      "sql_md5": "5d73667a6390c908dc90df62427b0aaa",
+      "version": "20260926171044",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_absence_notification_policy",
+      "chars": 674,
+      "sql_md5": "5fc3822860d15bf9263dcb0ddc37bbc1",
+      "version": "20260926171335",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_absence_reviewer_rpc_hardening",
+      "chars": 1014,
+      "sql_md5": "aa552aa35f258176b23e014f985c0c65",
+      "version": "20260926171439",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_logs_absence_management_and_admin_delete",
+      "chars": 1064,
+      "sql_md5": "c92c2ea765eb618bedca431fc991e796",
+      "version": "20260926172259",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "retire_legacy_virtual_avatars",
+      "chars": 124,
+      "sql_md5": "28441906ea5ff94b204e252008609508",
+      "version": "20260926172948",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_absence_admin_delete",
+      "chars": 327,
+      "sql_md5": "a4e4c99219877e5dd5636f7d60599d9f",
+      "version": "20260926173137",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "grant_authenticated_delete_planning_absences",
+      "chars": 66,
+      "sql_md5": "589696b4f2d002b21c5bc8297fe96690",
+      "version": "20260926173422",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_absence_expose_current_permission",
+      "chars": 399,
+      "sql_md5": "519aab788e732446492e8896505838c3",
+      "version": "20260926174143",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "reward_catalog_avatar_assets",
+      "chars": 210,
+      "sql_md5": "15d352d091f84bdeae17bc7329037737",
+      "version": "20260926174701",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "planning_source_file_download",
+      "chars": 1813,
+      "sql_md5": "63710914e35ce7df163eeba6e95cd368",
+      "version": "20260927095121",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "admin_visit_stats",
+      "chars": 1724,
+      "sql_md5": "3877c7dc18aaa7dda0d73a240805230e",
+      "version": "20260927101107",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "team_chat_conversations_v2",
+      "chars": 17696,
+      "sql_md5": "90c6ee5753a3b9065cb337f8efe23a99",
+      "version": "20260927110221",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "team_chat_helpers_v2",
+      "chars": 3292,
+      "sql_md5": "9b78ece648c8ec69096f19f001029dd3",
+      "version": "20260927110335",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "team_chat_permission_hardening_v2",
+      "chars": 4722,
+      "sql_md5": "090f033145dc36a4653db6284f8bc230",
+      "version": "20260927111006",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "team_chat_security_indexes_v2",
+      "chars": 1783,
+      "sql_md5": "d903e2cd4036b8925e1eedb0ed7514f7",
+      "version": "20260927111130",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "fix_chat_group_delete_storage_api",
+      "chars": 791,
+      "sql_md5": "616833d903e18494f088d9077eb70eb6",
+      "version": "20260927113326",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "chat_archives_and_bulk_actions",
+      "chars": 7617,
+      "sql_md5": "da437bba5688cfe0d8a4a8c0d935dd22",
+      "version": "20260927113714",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "chat_presence_history",
+      "chars": 3156,
+      "sql_md5": "6e9911405d376b6845c94a768392f0c3",
+      "version": "20260927114025",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "chat_personal_archives_hidden",
+      "chars": 8357,
+      "sql_md5": "681847aa948ce3e8d7e23f06a9a5a29a",
+      "version": "20260927115626",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "protect_general_channel_delete_admin_only",
+      "chars": 1750,
+      "sql_md5": "143edf4027ad0137b5d33f1460344bcc",
+      "version": "20260927133830",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "protect_general_channel_personal_removal",
+      "chars": 1692,
+      "sql_md5": "8741a1ce14bc3ecc03a751a043a64865",
+      "version": "20260927133908",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_missing_fk_indexes_for_app_performance",
+      "chars": 646,
+      "sql_md5": "b64635023cd2c038e6846243cd88dd7b",
+      "version": "20260927143108",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "chat_allow_soft_deleted_messages_without_content",
+      "chars": 241,
+      "sql_md5": "485ac04cac87f6bc6fa528ca0df12d81",
+      "version": "20260927145645",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "chat_admin_hard_delete_message_rpc",
+      "chars": 720,
+      "sql_md5": "4cd89a69cd65c91b7fa8d41b591a9dfb",
+      "version": "20260927150041",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "chat_admin_purge_soft_deleted_on_read",
+      "chars": 1045,
+      "sql_md5": "4fb7b968653231b254e20450fe195086",
+      "version": "20260927150512",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "notification_preferences_and_global_rules",
+      "chars": 10771,
+      "sql_md5": "367ce79abce7ee21fc97a1e955257cf3",
+      "version": "20260927205742",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "harden_notification_preferences",
+      "chars": 1002,
+      "sql_md5": "57a92cac35ada47c77c4646750468c23",
+      "version": "20260927210759",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "push_only_user_notification_preferences",
+      "chars": 2685,
+      "sql_md5": "e18ca581d3f27e9782dc2851e28a3785",
+      "version": "20260927211448",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "notification_channel_preferences",
+      "chars": 4903,
+      "sql_md5": "9557e392407df3beb920cf54c72c6a60",
+      "version": "20260927212118",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "notification_channel_functions_security_invoker",
+      "chars": 325,
+      "sql_md5": "abda6521a4181fe1a71753f157a10068",
+      "version": "20260927212802",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "portal_notification_delivery_filter",
+      "chars": 1932,
+      "sql_md5": "b425e3e9fe810933071f0b77639ffde8",
+      "version": "20260927212909",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "global_notification_channels",
+      "chars": 8002,
+      "sql_md5": "a45e9beef96509de923ab4d3dbc78708",
+      "version": "20260927213247",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "notification_channel_invoker_grants",
+      "chars": 2292,
+      "sql_md5": "2b29e65778d202daaae073e88cfac271",
+      "version": "20260927213609",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "home_mobile_subrole_keys",
+      "chars": 407,
+      "sql_md5": "184642287c7828d0035378b1216289b0",
+      "version": "20260927222036",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "daily_tasks_widget_schema",
+      "chars": 1669,
+      "sql_md5": "87a642911540dd3979658e2f41a721a7",
+      "version": "20260928114706",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "daily_tasks_widget_policies",
+      "chars": 4121,
+      "sql_md5": "9672cfa612e9eb89a024768fe752c197",
+      "version": "20260928114726",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "daily_tasks_widget_rls_hardening",
+      "chars": 1429,
+      "sql_md5": "29eb530bb5bfc4192f319d6e1bcd7c35",
+      "version": "20260928115009",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "daily_tasks_widget_user_indexes",
+      "chars": 221,
+      "sql_md5": "8cfe862b430f0277411b9240a975d572",
+      "version": "20260928115551",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_contract_hours_for_planning_anomalies",
+      "chars": 1693,
+      "sql_md5": "3666b17b9dcd4ac138ea0dd3fe3f7777",
+      "version": "20260928211834",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_rush_rayon_scores",
+      "chars": 2359,
+      "sql_md5": "d4c68bde231d458543ad92016f90abfe",
+      "version": "20260929020712",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "operations_hub_widget",
+      "chars": 8406,
+      "sql_md5": "0558b36d535377e462fe3cee179de0d8",
+      "version": "20260929111816",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "operations_hub_widget_indexes",
+      "chars": 314,
+      "sql_md5": "77319a49e256ecbb9b2abc7ae3def959",
+      "version": "20260929112419",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "enable_profile_config_realtime",
+      "chars": 794,
+      "sql_md5": "d0109d0336fbb1804a5831a2f7b31660",
+      "version": "20260929160534",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "restore_release_journal_sync",
+      "chars": 3529,
+      "sql_md5": "16ad8a4ab1481799c99434c16e104fd1",
+      "version": "20260930153544",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "scanner_read_access_to_article_catalog",
+      "chars": 4570,
+      "sql_md5": "29c3f03dc297d8878ca93915f541b92f",
+      "version": "20260930173952",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "grant_scanner_page_access_helper",
+      "chars": 78,
+      "sql_md5": "bec28811c752959f49a05a35da037c97",
+      "version": "20260930174106",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "secure_scanner_product_lookup_rpc",
+      "chars": 3677,
+      "sql_md5": "a9aa8414a11159770f309492639f55d5",
+      "version": "20260930174244",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "scanner_conservative_hypothesis_engine",
+      "chars": 4070,
+      "sql_md5": "0f216dcb0ab1824eaf87286140de0e3d",
+      "version": "20260930181549",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "allow_portal_js_animations",
+      "chars": 358,
+      "sql_md5": "8003517ef924755d3b69bb3a028fdcd2",
+      "version": "20261001003205",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "public_login_branding_rpc",
+      "chars": 3175,
+      "sql_md5": "0d85812ce9aaa755a7d97747ef6e5843",
+      "version": "20261002222719",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "add_user_recovery_email_flow",
+      "chars": 2114,
+      "sql_md5": "301896c059f9f2b9576b06ec6c14c32e",
+      "version": "20261002225731",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "explicitly_deny_direct_recovery_email_reads",
+      "chars": 215,
+      "sql_md5": "7ebf1007ae541387a703b4880bc025e0",
+      "version": "20261002230354",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "index_recovery_email_foreign_keys",
+      "chars": 222,
+      "sql_md5": "d87a0138e2c30c5dde0c3465652da905",
+      "version": "20261002230411",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "grant_recovery_email_service_role",
+      "chars": 184,
+      "sql_md5": "638cd31fa70e845f1f485706d11310ac",
+      "version": "20261002234133",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "nethor_security_foundation_phase_1",
+      "chars": 4056,
+      "sql_md5": "99cfe7611254fcf4b292e67d396dfb80",
+      "version": "20261003101254",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "nethor_active_session_guard",
+      "chars": 837,
+      "sql_md5": "3e1447e71a2130f2d906c714962daaf8",
+      "version": "20261003101339",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "nethor_data_api_session_pre_request",
+      "chars": 1279,
+      "sql_md5": "07a6cda274e32277ea374f50f75f3cdc",
+      "version": "20261003101440",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "nethor_account_session_cutoff",
+      "chars": 1930,
+      "sql_md5": "297b9825729db727fdc3bf33f9192f62",
+      "version": "20261003101648",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "nethor_deny_by_default_and_admin_view",
+      "chars": 1278,
+      "sql_md5": "d770def224bc489a1c79c564c4979f49",
+      "version": "20261003102050",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "grant_service_role_read_app_settings",
+      "chars": 58,
+      "sql_md5": "09f000d1d936f9806e66b19105337d27",
+      "version": "20261003103058",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    },
+    {
+      "name": "nethor_phase_a_data_architecture_health",
+      "chars": 2867,
+      "sql_md5": "524c8c52c82711c47cb9c40102995ccd",
+      "version": "20261003192707",
+      "statement_count": 1,
+      "contains_data_write": false,
+      "contains_uuid_literal": false,
+      "environment_specific": false
+    }
+  ]
+}
