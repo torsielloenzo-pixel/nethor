@@ -198,5 +198,22 @@ function mount(){
  return layout
 }
 window.NethorPageLayout=Object.freeze({mount,mountChat,mountRewards,mountDepartmentPage,mountAdminPortal,mountAccounts,mountArticles,mountToolPage,mountUserPage,mountProfile,mountHome,mountPlanning,pageId,platformKind});
-if(!mount()&&document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});
+function bootMount(){
+ let attempts=0,timer=null;
+ const tryMount=()=>{
+  if(ROOT.dataset.nethorPageLayout)return true;
+  const mounted=mount();
+  if(mounted)return true;
+  attempts++;
+  if(attempts<24){
+   clearTimeout(timer);
+   timer=setTimeout(tryMount,25)
+  }
+  return false
+ };
+ tryMount();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tryMount,{once:true});
+ window.addEventListener('load',tryMount,{once:true})
+}
+bootMount();
 })();
