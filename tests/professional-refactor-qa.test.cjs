@@ -21,7 +21,7 @@ test('QA refonte : les écrans principaux existent et chargent le shell professi
   assert.match(html,/platform-resolver\.js\?v=3/,'Resolver absent : '+page);
   assert.match(html,/platform-assets\.js\?v=4/,'Assets platform absents : '+page);
   assert.match(html,/ui\/desktop\/desktop-shell\.css\?v=9/,'Shell CSS desktop obsolète : '+page);
-  assert.match(html,/ui\/desktop\/desktop-shell\.js\?v=38/,'Shell JS desktop obsolète : '+page);
+  assert.match(html,/ui\/desktop\/desktop-shell\.js\?v=39/,'Shell JS desktop obsolète : '+page);
  }
 });
 
