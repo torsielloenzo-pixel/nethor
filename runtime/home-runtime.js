@@ -831,7 +831,21 @@ window.addEventListener('netto:profile',e=>{
 });
 
 async function boot(){
- const {data:{session}}=await db.auth.getSession();if(!session){location.replace('index.html');return}
+ const {data:{session},error:sessionError}=await db.auth.getSession();
+ if(!session){
+  // Never bounce indefinitely between home and login when sessions disagree.
+  const key='nethorHomeLoginRedirectAt';
+  let previous=0;try{previous=Number(sessionStorage.getItem(key)||0)}catch(_){}
+  if(Date.now()-previous<15000){
+   console.warn('[Nethor] Session unavailable after login redirect',sessionError);
+   document.body.innerHTML='<main style="font:16px system-ui,sans-serif;max-width:480px;margin:12vh auto;padding:24px;color:#222"><h1>Nethor</h1><p>Impossible de confirmer votre session. La redirection automatique a été interrompue.</p><a href="index.html?logout=1" style="color:#d44d25">Retour à la connexion</a></main>';
+   document.documentElement.classList.remove('nettoAccessPageVerifying');
+   return;
+  }
+  try{sessionStorage.setItem(key,String(Date.now()))}catch(_){}
+  location.replace('index.html');return;
+ }
+ try{sessionStorage.removeItem('nethorHomeLoginRedirectAt')}catch(_){}
  homeSession=session;
  const {data:p}=await db.from('profiles').select('display_name,email,role,avatar_path,profile_color,avatar_frame,ui_preferences').eq('id',session.user.id).maybeSingle();
  window.currentRole=p?.role;
