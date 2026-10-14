@@ -1,5 +1,11 @@
 (function(){
 'use strict';
+const NETHOR_DISABLED_ESSENTIAL_ROUTES=new Set(['index.html','chat.html','promotions.html','bakery.html','scanner.html','articles.html','fl-assistant.html']);
+(function(){
+ const current=(location.pathname.split('/').pop()||'').toLowerCase();
+ const survey=current==='mobile.html'&&new URLSearchParams(location.search).get('view')==='surveys';
+ if(NETHOR_DISABLED_ESSENTIAL_ROUTES.has(current)||survey){location.replace('home.html');}
+})();
 
 const USER_MENU_PARENT_KEY='nethorUserMenuParentV2';
 const MOBILE_PARENT_KEY='nethorMobileBackParentsV2';
