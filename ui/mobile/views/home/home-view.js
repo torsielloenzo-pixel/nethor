@@ -2,14 +2,8 @@
 'use strict';
 
 const MODULES=Object.freeze([
- {id:'stock',label:'Stock F&L',url:'index.html',roles:null,order:10},
  {id:'planning',label:'Planning',url:'planning.html',roles:null,order:20},
- {id:'chat',label:'Chat',url:'chat.html',roles:null,order:30},
- {id:'scanner',label:'Scanner',url:'scanner.html',roles:null,order:40},
- {id:'articles',label:'Fiches articles',url:'articles.html',roles:null,order:50},
  {id:'notifications',label:'Notifications',url:'notifications.html',roles:null,order:60},
- {id:'fl_assistant',label:'Assistant Précommande',url:'fl-assistant.html',roles:['admin','responsable'],order:70},
- {id:'bakery',label:'Boulangerie',url:'bakery.html',roles:['admin'],order:80},
  {id:'rewards',label:'Défis & Boutique',url:'rewards.html',roles:['admin'],order:90},
  {id:'accounts',label:'Gestion des comptes',url:'accounts.html',roles:['admin'],order:100},
  {id:'portal_admin',label:'Gestion',url:'admin-portal.html',roles:['admin'],order:110}
