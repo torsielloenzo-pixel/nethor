@@ -27,33 +27,13 @@ async function previousCoreResponse(url,oldCaches){
  }
  return null
 }
-self.addEventListener('install',e=>{e.waitUntil((async()=>{
- const cache=await caches.open(CACHE);
- const dependencyCache=await caches.open(DEPENDENCY_CACHE);
- const oldNames=(await caches.keys()).filter(k=>/^netto-tools-v\d+$/.test(String(k))&&k!==CACHE);
- const oldCaches=await Promise.all(oldNames.map(name=>caches.open(name)));
- await Promise.allSettled(INSTALL_CORE.map(async url=>{
-  const reusable=await previousCoreResponse(url,oldCaches);
-  if(reusable){await cache.put(url,reusable.clone());return}
-  const response=await fetch(url,{cache:'reload'});
-  if(response&&response.ok)await cache.put(url,response.clone())
- }));
- await Promise.allSettled(EXTERNAL_PRECACHE.map(async url=>{
-  if(await dependencyCache.match(url))return;
-  const response=await fetch(url,{mode:'no-cors',cache:'reload'});
-  if(response)await dependencyCache.put(url,response.clone())
- }))
- await self.skipWaiting();
-})())});
-self.addEventListener('activate',e=>{e.waitUntil((async()=>{
+// Minimal service worker: retain push notifications, never cache application assets.
+self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
  const keys=await caches.keys();
- await Promise.all(keys.filter(k=>/^netto-tools-v\d+$/.test(k)&&k!==CACHE).map(k=>caches.delete(k)));
- const dependencyCache=await caches.open(DEPENDENCY_CACHE);
- const dependencyKeys=await dependencyCache.keys();
- await Promise.all(dependencyKeys.filter(request=>!EXTERNAL_RUNTIME_DEPS.has(request.url)).map(request=>dependencyCache.delete(request)));
- await self.registration.getNotifications().then(list=>{list.forEach(n=>n.close())}).catch(()=>{});
- await self.clients.claim()
-})())});
+ await Promise.all(keys.filter(key=>/^netto-tools-v\\d+$/.test(key)||key==='nethor-deps-v1').map(key=>caches.delete(key)));
+ await self.clients.claim();
+})()));
 async function networkFirst(request,fallback){
  try{
   const response=await fetch(request,{cache:'no-cache'});
