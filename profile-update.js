@@ -1,5 +1,7 @@
 (function(){
 'use strict';
+window.NethorProfileFeatures.update={openCenter:async()=>false,manualCheck:async()=>false,showAvailable:async()=>false};
+return;
 window.NethorProfileFeatures=window.NethorProfileFeatures||{};
 const api=window.NettoProfileUI||{},sounds=window.NettoSounds||{play(){}};
 const APP_RELEASE=369;
