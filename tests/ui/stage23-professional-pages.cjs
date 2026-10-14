@@ -122,6 +122,12 @@ async function main(){
        layoutApiReady:!!window.NethorPageLayout,
        mobileView:document.querySelector('[data-mobile-view-host]')?.getAttribute('data-mobile-view')||'',
        mobileShell:!!document.querySelector('[data-mobile-app-shell]'),
+       overflowing:[...document.querySelectorAll('body *')].map(el=>{
+        const x=el.getBoundingClientRect(),cs=getComputedStyle(el);
+        if(cs.display==='none'||cs.visibility==='hidden'||x.width<=0||x.height<=0)return null;
+        if(x.right<=innerWidth+2&&x.left>=-2)return null;
+        return{tag:el.tagName,id:el.id||'',cls:String(el.className||'').slice(0,120),left:Math.round(x.left),right:Math.round(x.right),width:Math.round(x.width),position:cs.position,overflowX:cs.overflowX}
+       }).filter(Boolean).slice(0,12),
        scrollWidth:document.documentElement.scrollWidth,
        viewport:innerWidth,
        found:!!node,
@@ -139,7 +145,7 @@ async function main(){
     }else{
       assert.equal(state.layout,v.platform,'Mauvais layout '+target.file+' '+v.key+' '+JSON.stringify(state));
     }
-    assert.ok(state.scrollWidth<=v.width+5,'Débordement horizontal '+target.file+' '+v.key+' '+state.scrollWidth+'/'+v.width);
+    assert.ok(state.scrollWidth<=v.width+5,'Débordement horizontal '+target.file+' '+v.key+' '+state.scrollWidth+'/'+v.width+' '+JSON.stringify(state.overflowing));
     assert.ok(state.left>=-5,'Module coupé à gauche '+target.file+' '+v.key);
     await page.screenshot({
       path:path.join(output,'phase6-'+engine+'-'+v.key+'-'+target.file.replace('.html','')+'.png'),
