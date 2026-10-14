@@ -145,7 +145,7 @@ async function main(){
       assert.equal(state.platform,'mobile','Plateforme SPA incorrecte '+target.file+' '+v.key+' '+JSON.stringify(state));
       assert.equal(state.mobileShell,true,'Shell mobile absent '+target.file+' '+v.key+' '+JSON.stringify(state));
       assert.equal(state.mobileView,target.mobileView,'Vue SPA incorrecte '+target.file+' '+v.key+' '+JSON.stringify(state));
-      assert.match(state.url,/\/mobile\.html\?view=report-problem/,'Route SPA incorrecte '+JSON.stringify(state));
+      assert.ok(state.url.startsWith('/mobile.html?')&&new URL(origin+state.url).searchParams.get('view')===target.mobileView,'Route SPA incorrecte '+JSON.stringify(state));
     }else{
       assert.equal(state.layout,v.platform,'Mauvais layout '+target.file+' '+v.key+' '+JSON.stringify(state));
     }
