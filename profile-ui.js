@@ -4,10 +4,10 @@ const NETHOR_ESSENTIAL_MODE=true;
 /* Mode essentiel :
    - ces modules restent disponibles uniquement pour l'Administrateur ;
    - les modules retirés du portail restent désactivés pour tout le monde. */
-const NETHOR_ADMIN_ONLY_MODULES=new Set(['stock','chat','promotions','settings','scanner','articles','rewards']);
-const NETHOR_GLOBALLY_DISABLED_MODULES=new Set(['fl_assistant','bakery','surveys']);
-const NETHOR_ADMIN_ONLY_ROUTES=['index.html','chat.html','promotions.html','settings.html','scanner.html','articles.html','rewards.html'];
-const NETHOR_GLOBALLY_DISABLED_ROUTES=['fl-assistant.html','bakery.html'];
+const NETHOR_ADMIN_ONLY_MODULES=new Set(['chat','promotions','settings','scanner','articles','rewards','fl_assistant']);
+const NETHOR_GLOBALLY_DISABLED_MODULES=new Set(['bakery','surveys']);
+const NETHOR_ADMIN_ONLY_ROUTES=['chat.html','promotions.html','settings.html','scanner.html','articles.html','rewards.html','fl-assistant.html'];
+const NETHOR_GLOBALLY_DISABLED_ROUTES=['bakery.html'];
 function applyNethorEssentialMode(){
  document.documentElement.dataset.theme='light';document.documentElement.dataset.nethorEssential='1';
  try{localStorage.setItem('nettoTheme','light')}catch(_){}
