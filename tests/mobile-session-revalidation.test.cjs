@@ -118,7 +118,7 @@ test('stage21: PWA entrypoint and service worker precache the matching hardened 
  const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'..','app-version.json'),'utf8'));
  assert.match(mobile,/mobile-services\.js\?v=26/);
  assert.match(sw,/mobile-services\.js\?v=26/);
- assert.match(sw,/APP_VERSION=457/);
- assert.match(sw,/netto-tools-v457/);
- assert.equal(manifest.version,457);
+ assert.match(sw,new RegExp('APP_VERSION='+manifest.version+';'));
+ assert.match(sw,new RegExp('netto-tools-v'+manifest.version));
+ assert.ok(Number.isInteger(manifest.version)&&manifest.version>0);
 });

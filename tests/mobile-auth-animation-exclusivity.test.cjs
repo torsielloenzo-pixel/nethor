@@ -62,9 +62,9 @@ test('Connexion : le marqueur est créé uniquement après l’animation réussi
 test('Versions des fichiers et du cache PWA synchronisées',()=>{
  const index=read('index.html');
  const sw=read('sw.js');
- assert.match(index,/auth\/auth-login\.js\?v=5/);
+ assert.match(index,/auth\/auth-login\.js\?v=6/);
  assert.match(html,/ui\/mobile\/mobile-app\.js\?v=42/);
- for(const file of ['auth/auth-login.js?v=5','ui/mobile/mobile-app.js?v=42']){
+ for(const file of ['auth/auth-login.js?v=6','ui/mobile/mobile-app.js?v=42']){
   assert.ok(sw.includes('./'+file),'Non précaché : '+file);
  }
  const version=JSON.parse(read('app-version.json')).version;
