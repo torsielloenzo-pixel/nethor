@@ -115,7 +115,8 @@ test('Catégories, années ISO et contrôles côté serveur',()=>{
  assert.match(page,/file_sha256',hash/);
  assert.match(read('runtime/promotions-review-workshop.js'),/createSignedUrl\(/);
  assert.match(read('runtime/promotions-review-workshop.js'),/promoReviewCategory/);
- assert.match(shell,/promotions:\{label:'Promotions',url:'promotions\.html',icon:'promotions'/);
+ assert.match(shell,/const mainKeys=\['home','planning','team','promotions','articles','chat','management'\]/);
+ assert.match(shell,/permissionModules=\{[^}]*promotions:'promotions'/);
 });
 test('Cache PWA et scripts de promotions actualisés',()=>{
  const sw=read('sw.js'),v=JSON.parse(read('app-version.json'));

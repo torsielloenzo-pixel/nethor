@@ -75,8 +75,8 @@ test('QA rôles : les routes sensibles gardent leurs contrats et la Gestion rest
  assert.match(profile,/{id:'portal_admin'.*?roles:\['admin'\]/s);
  assert.match(profile,/{id:'accounts'.*?roles:\['admin'\]/s);
  assert.match(profile,/{id:'rewards'.*?roles:\['admin'\]/s);
- assert.match(profile,/{id:'bakery'.*?roles:\['admin'\]/s);
- assert.match(profile,/{id:'fl_assistant'.*?roles:\['admin','responsable'\]/s);
+ assert.match(profile,/NETHOR_GLOBALLY_DISABLED_MODULES=new Set\(\['bakery','surveys'\]\)/);
+ assert.match(profile,/NETHOR_ADMIN_ONLY_MODULES=new Set\(\['chat','promotions','settings','scanner','articles','rewards','fl_assistant'\]\)/);
  assert.match(profile,/{id:'team'.*?roles:null/s);
  assert.match(profile,/const explicit=config\?\.role_permissions\?\.\[module\.id\]\?\.\[role\]/);
  assert.match(profile,/const extra=api\?\.subrolePermissions\?\.\[module\.id\]/);
@@ -108,7 +108,8 @@ test('QA mobile : Promotions reste accessible depuis Outils et reconnu par le sh
 
 test('QA plateforme : les outils terrain conservent leur portée mobile explicite',()=>{
  const profile=read('profile-ui.js');
- assert.match(profile,/{id:'scanner'.*?platform:'mobile'/s);
+ assert.doesNotMatch(profile,/{id:'scanner'/);
+ assert.match(profile,/NETHOR_ADMIN_ONLY_MODULES=new Set\(\[[^\]]*'scanner'/);
  assert.match(profile,/{id:'problem_report'.*?platform:'mobile'/s);
  assert.match(profile,/DEFAULT_MOBILE_BAR_IDS=Object\.freeze\(\['home','planning','chat'\]\)/);
 });

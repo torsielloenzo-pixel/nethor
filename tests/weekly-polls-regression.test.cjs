@@ -10,9 +10,12 @@ test('Page dédiée aux sondages enregistrée dans le routeur et ouverte depuis 
  const html=read('mobile.html'),router=read('ui/mobile/mobile-router.js'),menu=read('ui/mobile/views/user-menu/user-menu-view.js');
  assert.match(html,/surveys\/surveys-view\.js\?v=1/);
  assert.match(html,/surveys\/surveys-view\.css\?v=1/);
- assert.match(router,/surveys:\{label:'Sondages de l’équipe'\}/);
- assert.match(menu,/id:'surveys'.*mobile\.html\?view=surveys/);
- assert.match(menu,/shellView.*router\(\)\?\.registered/);
+ // The archived survey implementation remains, but essential mode must not
+ // offer it to any user or admin in the active navigation.
+ const profile=read('profile-ui.js');
+ assert.doesNotMatch(router,/surveys:\{label:/);
+ assert.doesNotMatch(menu,/id:'surveys'/);
+ assert.match(profile,/NETHOR_GLOBALLY_DISABLED_MODULES=new Set\(\['bakery','surveys'\]\)/);
  assert.match(read('ui/mobile/views/surveys/surveys-view.js'),/register\?\.\('surveys',api\)/);
 });
 test('Sondages : base protégée et 8 semaines renseignées',()=>{
