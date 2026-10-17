@@ -32,7 +32,7 @@ test('Les pages desktop et le SW chargent les ressources corrigées',()=>{
  const home=read('home.html'),admin=read('admin-portal.html'),worker=read('sw.js');
  for(const page of [home,admin]){
   assert.match(page,/platform-resolver\.js\?v=4/);
-  assert.match(page,/ui\/desktop\/desktop-shell\.js\?v=40/);
+  assert.match(page,/ui\/desktop\/desktop-shell\.js\?v=41/);
  }
  assert.match(worker,/\.\/ui\/desktop\/desktop-sidebar\.css\?v=19/);
  assert.match(worker,/\.\/ui\/desktop\/home-dashboard-v3\.css\?v=12/);
