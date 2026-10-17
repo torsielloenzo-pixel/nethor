@@ -254,7 +254,7 @@ test('QA desktop : la sidebar respecte les permissions et inclut Fiches articles
  assert.match(shell,/const mainKeys=\['home','planning','team','promotions','articles','chat','management'\]/);
  assert.match(shell,/permissionModules=\{home:'home',planning:'planning',team:'team',promotions:'promotions',articles:'articles',chat:'chat',management:'portal_admin',signal:'problem_report',settings:'settings'\}/);
  assert.match(shell,/permissionLevel\?\.\(moduleId,user\)!=='none'/);
- assert.match(shell,/\['articles','management'\]\.includes\(key\)/);
+ assert.match(shell,/\['articles','management','promotions','chat'\]\.includes\(key\)/);
 });
 
 test('QA navigation secondaire : aucun module opérationnel n’est orphelin',()=>{
