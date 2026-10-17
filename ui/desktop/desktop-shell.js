@@ -19,6 +19,8 @@ function buildUserMenu(ctx){
 const DEFAULT_STORE_GOOGLE_URL='https://www.google.com/maps/search/?api=1&query=Netto%20Le%20Thor&query_place_id=ChIJSY7JsE71tRIRRSih3toBniY&utm_source=nethor&utm_campaign=place_details_search';
 const DESKTOP_SIDEBAR_DEFAULTS={
  home:{label:'Accueil',url:'home.html',icon:'home',enabled:true},
+ promotions:{label:'Promotions',url:'promotions.html',icon:'promotions',enabled:true},
+ chat:{label:'Chat',url:'chat.html',icon:'chat',enabled:true},
  management:{label:'Gestion',url:'admin-portal.html',icon:'reports',enabled:true},
  activity:{label:'Activité magasin',url:'home.html#nethorDesktopStatsRow',icon:'activity',enabled:true},
  planning:{label:'Planning',url:'planning.html',icon:'planning',enabled:true},
@@ -94,6 +96,10 @@ function ensureDesktopSidebarStyle(){
  document.head.appendChild(link)
 }
 function desktopSidebarItem(key,def,active,initialHidden=false){
+ if(!def||typeof def!=='object'){
+  console.error('[Nethor] Entrée de navigation desktop non configurée :',key);
+  return ''
+ }
  return '<button class="nethorSidebarItem'+(active?' active':'')+(initialHidden?' hidden':'')+'" data-sidebar-key="'+esc(key)+'" title="'+esc(def.label)+'" aria-label="'+esc(def.label)+'" type="button" data-sidebar-url="'+esc(def.url)+'" onclick="window.location.href=this.dataset.sidebarUrl"'+(active?' aria-current="page"':'')+'><span class="nethorSidebarIcon">'+desktopSidebarIcon(def.icon)+'</span><span class="nethorSidebarLabel">'+esc(def.label)+'</span><span class="nethorSidebarBadge hidden" aria-hidden="true"></span></button>'
 }
 function sidebarActiveKey(page){
@@ -140,7 +146,7 @@ function buildDesktopSidebar(page){
  return '<aside class="nethorDesktopSidebar" aria-label="Navigation principale Nethor">'+
   '<div class="nethorSidebarBrandRow"><button class="nethorSidebarBrand" type="button" onclick="location.href=\'home.html\'" aria-label="Accueil Nethor"><span class="nethorSidebarWordmark nethorDesktopWordmark"><span>ne</span><b>thor</b></span></button>'+
   '<button class="nethorSidebarCollapse" type="button" onclick="window.NethorDesktopShell?.toggleSidebar?.()" title="Réduire la barre latérale" aria-label="Réduire la barre latérale" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.8 5.5-6.3 6.5 6.3 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>'+
-  '<nav class="nethorDesktopSidebarNav" aria-label="Pages principales">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key,['articles','management'].includes(key))).join('')+'</nav>'+
+  '<nav class="nethorDesktopSidebarNav" aria-label="Pages principales">'+mainKeys.map(key=>desktopSidebarItem(key,DESKTOP_SIDEBAR_DEFAULTS[key],active===key,['articles','management','promotions','chat'].includes(key))).join('')+'</nav>'+
   '<div class="nethorDesktopSidebarBottom">'+
    desktopSidebarItem('signal',{label:'Signaler',url:'report-problem.html',icon:'incidents',enabled:true},active==='incidents')+
    desktopSidebarItem('settings',DESKTOP_SIDEBAR_DEFAULTS.settings,active==='settings')+

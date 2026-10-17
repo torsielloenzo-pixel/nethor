@@ -202,8 +202,13 @@ function bootMount(){
  let attempts=0,timer=null;
  const tryMount=()=>{
   if(ROOT.dataset.nethorPageLayout)return true;
-  const mounted=mount();
-  if(mounted)return true;
+  let mounted=null;
+  try{mounted=mount()}
+  catch(error){
+   ROOT.dataset.nethorLayoutError=String(error?.message||error).slice(0,160);
+   console.error('[Nethor] Montage de la page interrompu',error)
+  }
+  if(mounted){delete ROOT.dataset.nethorLayoutError;return true}
   attempts++;
   if(attempts<24){
    clearTimeout(timer);

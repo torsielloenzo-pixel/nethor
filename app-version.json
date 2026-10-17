@@ -1,18 +1,17 @@
 {
-  "version": 460,
-  "label": "v1.46.84",
+  "version": 461,
+  "label": "v1.46.85",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Correction de l’affichage ordinateur",
-  "message": "Réparation du responsive desktop, de la navigation et du chargement de l’accueil, pour tous les rôles.",
+  "title": "Réparation du démarrage Desktop",
+  "message": "Restauration du menu et de l'en-tête desktop avec contrôle de construction des pages.",
   "published_at": "2026-10-11T11:43:05.969Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Les règles responsive sont préservées sur desktop.",
-    "La barre latérale et Gestion s’adaptent aux fenêtres réduites.",
-    "L’accueil conserve les raccourcis en secours si le tableau de bord principal manque.",
-    "Mise à l’échelle des textes regroupée pour éviter les recalculs répétés.",
-    "Aucun changement des permissions ni des données."
+    "Les entrées Promotions et Chat sont définies dans la navigation desktop.",
+    "Une entrée de navigation manquante ne bloque plus le montage des pages.",
+    "La navigation préchargée reste masquée jusqu'à l'évaluation des permissions.",
+    "Aucun changement des comptes, du planning ni des permissions."
   ]
 }
