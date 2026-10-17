@@ -90,7 +90,7 @@ function ensureDesktopSidebarStyle(){
  const link=document.createElement('link');
  link.id='nethorDesktopSidebarCss';
  link.rel='stylesheet';
- link.href='ui/desktop/desktop-sidebar.css?v=18';
+ link.href='ui/desktop/desktop-sidebar.css?v=19';
  document.head.appendChild(link)
 }
 function desktopSidebarItem(key,def,active,initialHidden=false){
@@ -245,20 +245,45 @@ function scaleDesktopText(root=document.body){
  })
 }
 function startDesktopTextScaling(){
- if(window.__nethorDesktopTextScaleStarted)return;window.__nethorDesktopTextScaleStarted=true;
+ if(window.__nethorDesktopTextScaleStarted)return;
+ window.__nethorDesktopTextScaleStarted=true;
  const run=()=>scaleDesktopText(document.body);
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else requestAnimationFrame(run);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});
+ else requestAnimationFrame(run);
+ // Batch live changes in a single frame; repeated widgets and clock updates
+ // must not repeatedly scan the same ancestor or rescale the entire page.
+ const pending=new Set();
+ let scheduled=false;
+ const flush=()=>{
+  scheduled=false;
+  const nodes=[...pending].filter(node=>node.isConnected);
+  pending.clear();
+  const roots=nodes.filter(node=>!nodes.some(other=>other!==node&&other.contains(node)));
+  roots.forEach(root=>scaleDesktopText(root));
+ };
+ const queue=node=>{
+  if(!(node instanceof Element)||!node.isConnected)return;
+  pending.add(node);
+  if(scheduled)return;
+  scheduled=true;
+  requestAnimationFrame(flush);
+ };
  const observer=new MutationObserver(records=>{
-  const roots=new Set();
   records.forEach(record=>{
-   if(record.type==='characterData'){if(record.target.parentElement)roots.add(record.target.parentElement);return}
-   record.addedNodes.forEach(node=>{if(node.nodeType===1)roots.add(node);else if(node.nodeType===3&&node.parentElement)roots.add(node.parentElement)})
-  });
-  if(!roots.size)return;
-  requestAnimationFrame(()=>roots.forEach(root=>scaleDesktopText(root)))
+   if(record.type==='characterData'){
+    queue(record.target.parentElement);
+    return;
+   }
+   record.addedNodes.forEach(node=>{
+    if(node.nodeType===1)queue(node);
+    else if(node.nodeType===3)queue(node.parentElement||record.target);
+   })
+  })
  });
- const bind=()=>{if(document.body)observer.observe(document.body,{subtree:true,childList:true,characterData:true})};
- if(document.body)bind();else document.addEventListener('DOMContentLoaded',bind,{once:true})
+ const bind=()=>{
+  if(document.body)observer.observe(document.body,{subtree:true,childList:true,characterData:true});
+ };
+ if(document.body)bind();else document.addEventListener('DOMContentLoaded',bind,{once:true});
 }
 function safeDesktopWallpaperUrl(value){
  try{

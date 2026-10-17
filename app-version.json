@@ -1,18 +1,18 @@
 {
-  "version": 457,
-  "label": "v1.46.81",
+  "version": 460,
+  "label": "v1.46.84",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Sécurité mobile · validation des sessions",
-  "message": "La PWA mobile ne considère plus une simple validation de jeton comme une preuve de session encore active après révocation.",
+  "title": "Correction de l’affichage ordinateur",
+  "message": "Réparation du responsive desktop, de la navigation et du chargement de l’accueil, pour tous les rôles.",
   "published_at": "2026-10-11T11:43:05.969Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Reconnexion : vérification explicite de session_active côté serveur avant de relancer la synchronisation.",
-    "Une réponse réseau temporairement indisponible ne déconnecte pas arbitrairement le compte.",
-    "Révocation et désactivation connues : déconnexion et effacement du cache personnel prévus.",
-    "Tests automatisés supplémentaires sur les sessions actives, révoquées, concurrentes et les retours réseau.",
-    "Révision en brouillon : aucun déploiement sur le domaine ni changement Supabase."
+    "Les règles responsive sont préservées sur desktop.",
+    "La barre latérale et Gestion s’adaptent aux fenêtres réduites.",
+    "L’accueil conserve les raccourcis en secours si le tableau de bord principal manque.",
+    "Mise à l’échelle des textes regroupée pour éviter les recalculs répétés.",
+    "Aucun changement des permissions ni des données."
   ]
 }

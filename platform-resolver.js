@@ -93,60 +93,11 @@ function installIsolationStyle(){
  (document.head||document.documentElement).appendChild(style)
 }
 
-function mobileMediaCondition(text){
- const value=String(text||'').toLowerCase();
- if(/pointer\s*:\s*coarse|hover\s*:\s*none/.test(value))return true;
- const matches=[...value.matchAll(/max-width\s*:\s*([\d.]+)px/g)];
- return matches.some(m=>Number(m[1])<=900)
-}
-function disableDesktopMobileMediaRules(rules){
- if(!rules)return;
- for(const rule of Array.from(rules)){
-  try{
-   if(rule.media&&rule.cssRules&&mobileMediaCondition(rule.media.mediaText)){
-    rule.media.mediaText='not all';
-    continue
-   }
-   if(rule.cssRules)disableDesktopMobileMediaRules(rule.cssRules)
-  }catch(_){}
- }
-}
+// Desktop and mobile use distinct shell stylesheets. Do not rewrite CSSOM
+// @media rules: desktop pages also need narrow-window responsive breakpoints.
 function enforceDesktopMediaIsolation(){
  if(state.kind!=='desktop')return;
- let scanQueued=false;
- const scan=()=>{
-  if(state.kind!=='desktop')return;
-  for(const sheet of Array.from(document.styleSheets)){
-   try{disableDesktopMobileMediaRules(sheet.cssRules)}catch(_){}
-  }
-  ROOT.dataset.nethorDesktopMedia='isolated'
- };
- const queueScan=()=>{
-  if(scanQueued||state.kind!=='desktop')return;
-  scanQueued=true;
-  const run=()=>{scanQueued=false;scan()};
-  if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:180});
-  else requestAnimationFrame(run)
- };
- scan();
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueScan,{once:true});
- window.addEventListener('load',queueScan,{once:true});
- if(document.head&&typeof MutationObserver!=='undefined'){
-  const observer=new MutationObserver(mutations=>{
-   const relevant=mutations.some(m=>{
-    const targetTag=String(m.target?.tagName||'').toUpperCase();
-    if(targetTag==='STYLE')return true;
-    return [...m.addedNodes].some(node=>{
-     if(node.nodeType!==1)return false;
-     const tag=String(node.tagName||'').toUpperCase();
-     return tag==='STYLE'||(tag==='LINK'&&String(node.rel||'').toLowerCase()==='stylesheet')||!!node.querySelector?.('style,link[rel="stylesheet"]')
-    })
-   });
-   if(relevant)queueScan()
-  });
-  observer.observe(document.head,{childList:true,subtree:true});
-  window.addEventListener('pagehide',()=>observer.disconnect(),{once:true})
- }
+ ROOT.dataset.nethorDesktopMedia='isolated';
 }
 
 function shellKindForLink(link){

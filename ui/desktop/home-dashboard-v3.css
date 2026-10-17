@@ -475,3 +475,8 @@ html[data-theme="dark"] .ndCommandHeader{background:#1b222c!important;border-col
 html[data-theme="dark"] .ndCommandActions button{background:#252e3a!important;border-color:#3a4655!important;color:#eef3f9!important}
 html[data-theme="dark"] .ndCommandActions button.primary{background:#3a2b21!important;border-color:#68432d!important;color:#ffc39e!important}
 /* NETHOR PROFESSIONAL HOME V1 END */
+/* Keep real navigation visible if the optional reference dashboard fails.
+   An empty desktop mount must never hide the user's usable home cards. */
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopLayout:not(:has(.nethorDesktopReferenceDashboard)) #homePages{display:grid!important;width:100%;min-width:0;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+html[data-nethor-page-layout="desktop"][data-nethor-page-id="home"] .homeDesktopLayout:not(:has(.nethorDesktopReferenceDashboard)) #status{display:block!important}
+
