@@ -220,8 +220,15 @@ function ensureAuthBrandThemeObserver(){
  authBrandThemeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']})
 }
 
-function showProfileLoader(){document.getElementById('profileLoader')?.classList.remove('show')}
-async function hideProfileLoader(){document.getElementById('profileLoader')?.classList.remove('show')}
+function showProfileLoader(){
+ const loader=document.getElementById('profileLoader');if(!loader)return;
+ try{sessionStorage.setItem('nethorDesktopLaunchShownV1','1')}catch(_){}
+ loader.classList.add('show');loader.setAttribute('aria-hidden','false')
+}
+async function hideProfileLoader(){
+ const loader=document.getElementById('profileLoader');if(!loader)return;
+ loader.classList.remove('show');loader.setAttribute('aria-hidden','true')
+}
 function profilePrefs(p){return p?.ui_preferences&&typeof p.ui_preferences==='object'&&!Array.isArray(p.ui_preferences)?p.ui_preferences:{}}
 function profileThemeKey(uid){return uid?'nettoProfileTheme:'+uid:null}
 function cachedProfileTheme(uid){try{const k=profileThemeKey(uid),v=k?localStorage.getItem(k):null;return v==='dark'||v==='light'?v:null}catch(_){return null}}
