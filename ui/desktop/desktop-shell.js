@@ -1,5 +1,52 @@
 (function(){
 'use strict';
+function desktopHasStoredSession(){
+ try{
+  for(let i=0;i<localStorage.length;i++){
+   const key=localStorage.key(i)||'';
+   if(!key.includes('auth-token'))continue;
+   const value=JSON.parse(localStorage.getItem(key)||'null');
+   if(value?.access_token||value?.currentSession?.access_token)return true
+  }
+ }catch(_){}
+ return false
+}
+function startDesktopLaunchLoader(){
+ if(String(window.NethorPlatform?.current?.()||'desktop').toLowerCase()!=='desktop')return;
+ if(document.querySelector('[data-nethor-login-layout]'))return;
+ try{if(sessionStorage.getItem('nethorDesktopLaunchShownV1')==='1')return}catch(_){}
+ if(!desktopHasStoredSession())return;
+ let overlay=null,ready=false,startedAt=0,hideTimer=0,fallback=0;
+ const remove=()=>{
+  if(!overlay)return;
+  overlay.classList.add('isLeaving');
+  setTimeout(()=>{overlay?.remove();overlay=null},260)
+ };
+ const complete=()=>{
+  ready=true;
+  if(!overlay)return;
+  clearTimeout(fallback);
+  const wait=Math.max(0,480-(Date.now()-startedAt));
+  clearTimeout(hideTimer);
+  hideTimer=setTimeout(remove,wait)
+ };
+ window.addEventListener('netto:profile',complete,{once:true});
+ const mount=()=>{
+  if(ready||overlay||!document.body)return;
+  try{sessionStorage.setItem('nethorDesktopLaunchShownV1','1')}catch(_){}
+  startedAt=Date.now();
+  overlay=document.createElement('section');
+  overlay.className='nethorDesktopLaunchLoader';
+  overlay.setAttribute('role','status');
+  overlay.setAttribute('aria-label','Chargement de Nethor');
+  overlay.innerHTML='<div class="nethorDesktopLaunchTrack" aria-hidden="true"><i></i><i></i><i></i><i></i><img src="assets/nethor-mark.svg" alt=""></div>';
+  document.body.appendChild(overlay);
+  fallback=setTimeout(complete,9000)
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});
+ else mount()
+}
+startDesktopLaunchLoader();
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function navButton(icon,title,sub,url,cls=''){
  return '<button class="nettoNavBtn '+cls+'" data-url="'+esc(url||'')+'"><span>'+icon+'</span><span><strong>'+esc(title)+'</strong><small>'+esc(sub||'')+'</small></span></button>'
