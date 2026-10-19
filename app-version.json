@@ -1,17 +1,16 @@
 {
-  "version": 461,
-  "label": "v1.46.85",
+  "version": 462,
+  "label": "v1.46.86",
   "important": false,
   "clear_cache": false,
   "mode": "manual",
-  "title": "Réparation du démarrage Desktop",
-  "message": "Restauration du menu et de l'en-tête desktop avec contrôle de construction des pages.",
+  "title": "Animation de chargement sur Desktop",
+  "message": "L’animation Nethor accompagne désormais le démarrage sur Desktop et PWA Desktop.",
   "published_at": "2026-10-11T11:43:05.969Z",
   "icon": "assets/app-icon-v63.svg",
   "notes": [
-    "Les entrées Promotions et Chat sont définies dans la navigation desktop.",
-    "Une entrée de navigation manquante ne bloque plus le montage des pages.",
-    "La navigation préchargée reste masquée jusqu'à l'évaluation des permissions.",
-    "Aucun changement des comptes, du planning ni des permissions."
+    "Animation affichée pendant le démarrage Desktop et la vérification de connexion.",
+    "Le logo Nethor parcourt les quatre carrés sur fond bleu, sans texte à l’écran.",
+    "Le cache PWA est synchronisé pour récupérer les nouveaux fichiers."
   ]
 }
