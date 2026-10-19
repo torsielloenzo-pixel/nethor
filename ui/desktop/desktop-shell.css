@@ -1521,3 +1521,20 @@ html[data-nethor-page-layout="desktop"] :is(button,[role="button"],a){-webkit-ta
  html[data-nethor-page-layout="desktop"] body{overflow-x:hidden!important}
 }
 /* NETHOR PROFESSIONAL GLOBAL FINISH V1 END */
+
+/* Chargement de démarrage Desktop et PWA Desktop */
+.nethorDesktopLaunchLoader{
+ position:fixed;inset:0;z-index:2147483600;display:grid;place-items:center;
+ background:radial-gradient(circle at 50% 46%,rgba(56,105,190,.22),transparent 34%),#101f40;
+ opacity:1;visibility:visible;transition:opacity .24s ease,visibility .24s ease
+}
+.nethorDesktopLaunchLoader.isLeaving{opacity:0;visibility:hidden;pointer-events:none}
+.nethorDesktopLaunchTrack{position:relative;width:96px;height:96px;display:grid;grid-template-columns:40px 40px;grid-template-rows:40px 40px;gap:8px}
+.nethorDesktopLaunchTrack>i{display:block;border:1px solid rgba(181,208,255,.28);border-radius:12px;background:rgba(123,165,236,.12);box-shadow:inset 0 0 18px rgba(131,175,255,.08);animation:nethorDesktopSquarePulse 1.28s ease-in-out infinite}
+.nethorDesktopLaunchTrack>i:nth-child(2){animation-delay:.32s}
+.nethorDesktopLaunchTrack>i:nth-child(3){animation-delay:.64s}
+.nethorDesktopLaunchTrack>i:nth-child(4){animation-delay:.96s}
+.nethorDesktopLaunchTrack>img{position:absolute;left:3px;top:3px;width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(255,111,48,.48));animation:nethorDesktopLogoTravel 1.28s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes nethorDesktopSquarePulse{0%,22%,100%{background:rgba(123,165,236,.12);box-shadow:inset 0 0 18px rgba(131,175,255,.08)}10%{background:rgba(178,207,255,.3);box-shadow:inset 0 0 20px rgba(178,207,255,.22),0 0 16px rgba(102,157,255,.2)}}
+@keyframes nethorDesktopLogoTravel{0%,22%{transform:translate(0,0)}25%,47%{transform:translate(48px,0)}50%,72%{transform:translate(48px,48px)}75%,97%{transform:translate(0,48px)}100%{transform:translate(0,0)}}
+@media(prefers-reduced-motion:reduce){.nethorDesktopLaunchLoader{transition:none}.nethorDesktopLaunchTrack>i,.nethorDesktopLaunchTrack>img{animation:none}.nethorDesktopLaunchTrack>img{left:51px;top:3px}}
