@@ -1,0 +1,235 @@
+{
+  "branch": "phase-a-architecture-database-20261003",
+  "captured_at": "2026-10-03",
+  "sql_artifact_count": 38,
+  "artifacts": [
+    {
+      "name": "2026-09-26-avatar-frames.sql",
+      "path": "database/2026-09-26-avatar-frames.sql",
+      "blob_sha": "68fb53e418659616cb03caa1dd470b6bd4f43bf7",
+      "size": 1852
+    },
+    {
+      "name": "2026-09-26-grant-app-roles-service-role.sql",
+      "path": "database/2026-09-26-grant-app-roles-service-role.sql",
+      "blob_sha": "afd810040f785c76b57b77dfc5f2e5931b019bd1",
+      "size": 267
+    },
+    {
+      "name": "2026-09-26-maintenance.sql",
+      "path": "database/2026-09-26-maintenance.sql",
+      "blob_sha": "2844e2e81f11d03f89fa34beaa51b83b5fd00a87",
+      "size": 4216
+    },
+    {
+      "name": "2026-09-26-planning-absence-admin-delete.sql",
+      "path": "database/2026-09-26-planning-absence-admin-delete.sql",
+      "blob_sha": "3c5292623f8c2d29cbc96b1288a56359018611d1",
+      "size": 547
+    },
+    {
+      "name": "2026-09-26-planning-absence-notifications.sql",
+      "path": "database/2026-09-26-planning-absence-notifications.sql",
+      "blob_sha": "fdd0b75e123f0f542df76c667509de3a00119459",
+      "size": 800
+    },
+    {
+      "name": "2026-09-26-planning-absence-permissions.sql",
+      "path": "database/2026-09-26-planning-absence-permissions.sql",
+      "blob_sha": "3a084ae6ad644e1c0594875e293b72fad65809ee",
+      "size": 3446
+    },
+    {
+      "name": "2026-09-26-planning-absence-reviewers-hardening.sql",
+      "path": "database/2026-09-26-planning-absence-reviewers-hardening.sql",
+      "blob_sha": "cf1a0c9e97e83e78e914adb393142b97c768f617",
+      "size": 1199
+    },
+    {
+      "name": "2026-09-26-planning-logs-absence-management.sql",
+      "path": "database/2026-09-26-planning-logs-absence-management.sql",
+      "blob_sha": "5f853fedb5d21834cd5f6568530accadb093a3be",
+      "size": 1226
+    },
+    {
+      "name": "2026-09-26-retire-legacy-virtual-avatars.sql",
+      "path": "database/2026-09-26-retire-legacy-virtual-avatars.sql",
+      "blob_sha": "fe673f130b38ec0f38cdc97637d63bfa292ba427",
+      "size": 303
+    },
+    {
+      "name": "2026-09-26-role-avatars.sql",
+      "path": "database/2026-09-26-role-avatars.sql",
+      "blob_sha": "c3857f57d6b9c30a49448ba1b74c2e44ac525c1f",
+      "size": 985
+    },
+    {
+      "name": "2026-09-27-admin-visit-stats.sql",
+      "path": "database/2026-09-27-admin-visit-stats.sql",
+      "blob_sha": "e89dbc0f4deeac7d13c12217404a412beda738ca",
+      "size": 1842
+    },
+    {
+      "name": "2026-09-27-chat-archives-actions.sql",
+      "path": "database/2026-09-27-chat-archives-actions.sql",
+      "blob_sha": "8feb27359f31dbe1f7bcb33037079e69c2d4fae4",
+      "size": 1164
+    },
+    {
+      "name": "2026-09-27-chat-personal-archives.sql",
+      "path": "database/2026-09-27-chat-personal-archives.sql",
+      "blob_sha": "a3198ffb4835d56323f74bd42bbed5e3b6e1c951",
+      "size": 5157
+    },
+    {
+      "name": "2026-09-27-chat-presence-history.sql",
+      "path": "database/2026-09-27-chat-presence-history.sql",
+      "blob_sha": "7fb059098ae459f44ba70c212d15ee8115133bc5",
+      "size": 3041
+    },
+    {
+      "name": "2026-09-27-notification-channel-controls.sql",
+      "path": "database/2026-09-27-notification-channel-controls.sql",
+      "blob_sha": "a208b53564144bece64ac0f79097f876e3d2f688",
+      "size": 10490
+    },
+    {
+      "name": "2026-09-27-notification-preferences-rules.sql",
+      "path": "database/2026-09-27-notification-preferences-rules.sql",
+      "blob_sha": "915d3cd6053be4d6b0f1613727db09c78b454be9",
+      "size": 11371
+    },
+    {
+      "name": "2026-09-27-planning-source-download.sql",
+      "path": "database/2026-09-27-planning-source-download.sql",
+      "blob_sha": "94caf72fd7e4d94f3fa0b12ff513bca789fc8e53",
+      "size": 2046
+    },
+    {
+      "name": "2026-09-27-push-only-notification-preferences.sql",
+      "path": "database/2026-09-27-push-only-notification-preferences.sql",
+      "blob_sha": "5350307712581973a2c1237d4761f0fe8be4c99e",
+      "size": 2291
+    },
+    {
+      "name": "2026-09-27-team-chat-v2-rpcs.sql",
+      "path": "database/2026-09-27-team-chat-v2-rpcs.sql",
+      "blob_sha": "b2a28d464958d3c0d0d249653f476bd9799c1dbb",
+      "size": 12410
+    },
+    {
+      "name": "2026-09-27-team-chat-v2.sql",
+      "path": "database/2026-09-27-team-chat-v2.sql",
+      "blob_sha": "57d9f66e5ec48dd79b76c707c4e3c40a75e7c705",
+      "size": 8532
+    },
+    {
+      "name": "2026-09-28-contract-hours.sql",
+      "path": "database/2026-09-28-contract-hours.sql",
+      "blob_sha": "78ec97525f90b7f70188c07c55899d2f20b33838",
+      "size": 1782
+    },
+    {
+      "name": "2026-09-28-daily-tasks-widget.sql",
+      "path": "database/2026-09-28-daily-tasks-widget.sql",
+      "blob_sha": "a20feff1a3709abfd4495eb33550726cbbcca4e5",
+      "size": 10079
+    },
+    {
+      "name": "2026-09-28-home-mobile-subrole-keys.sql",
+      "path": "database/2026-09-28-home-mobile-subrole-keys.sql",
+      "blob_sha": "e7b6b26c7e413d42f199d6bc90233124a4a4da2a",
+      "size": 507
+    },
+    {
+      "name": "2026-09-28-reported-problems.sql",
+      "path": "database/2026-09-28-reported-problems.sql",
+      "blob_sha": "70bbf27937f5884f873c8f22625bdcf4c24de140",
+      "size": 2534
+    },
+    {
+      "name": "2026-09-29-normalize-ean13.sql",
+      "path": "database/2026-09-29-normalize-ean13.sql",
+      "blob_sha": "ba3713eb845b5e905ef555b3be1d3ceb4fbd88e3",
+      "size": 457
+    },
+    {
+      "name": "2026-09-29-operations-hub-widget-indexes.sql",
+      "path": "database/2026-09-29-operations-hub-widget-indexes.sql",
+      "blob_sha": "b3233869ba3dd140cc81a7b1a8e5975bffb3af8a",
+      "size": 468
+    },
+    {
+      "name": "2026-09-29-operations-hub-widget.sql",
+      "path": "database/2026-09-29-operations-hub-widget.sql",
+      "blob_sha": "1f19af25a6f9b51a51600df3c77550bd1a7dba00",
+      "size": 8372
+    },
+    {
+      "name": "2026-09-29-reported-problems-diagnostics.sql",
+      "path": "database/2026-09-29-reported-problems-diagnostics.sql",
+      "blob_sha": "6c49645ec07dee599191ada458a2768b95644403",
+      "size": 462
+    },
+    {
+      "name": "2026-09-30-release-journal-sync.sql",
+      "path": "database/2026-09-30-release-journal-sync.sql",
+      "blob_sha": "c54eda6bad6a679bd9d6bb4e92921a7e0ab1de0c",
+      "size": 4110
+    },
+    {
+      "name": "2026-09-30-scanner-article-lookup.sql",
+      "path": "database/2026-09-30-scanner-article-lookup.sql",
+      "blob_sha": "c86d0693749e71ceb0683bf583a67bfe4849fd76",
+      "size": 6180
+    },
+    {
+      "name": "2026-09-30-scanner-hypothesis-engine.sql",
+      "path": "database/2026-09-30-scanner-hypothesis-engine.sql",
+      "blob_sha": "b382d1f399834bb33c84711d346e4aeda7678458",
+      "size": 4767
+    },
+    {
+      "name": "2026-10-03-phase-a-data-architecture-health.sql",
+      "path": "database/2026-10-03-phase-a-data-architecture-health.sql",
+      "blob_sha": "bee2b649a27207a0a183104dcac00e0766907ebc",
+      "size": 3123
+    },
+    {
+      "name": "2026-10-03-security-foundation.sql",
+      "path": "database/2026-10-03-security-foundation.sql",
+      "blob_sha": "c1f12e40de06957e8c781514a038af940c91ec11",
+      "size": 8205
+    },
+    {
+      "name": "2026-10-03-user-recovery-email.sql",
+      "path": "database/2026-10-03-user-recovery-email.sql",
+      "blob_sha": "46dc2ee5c27fd40b6dea80f2a3a490ddbc6474b1",
+      "size": 2918
+    },
+    {
+      "name": "chat.sql",
+      "path": "database/chat.sql",
+      "blob_sha": "5f84bb12a79b1b84897e634397781e5b794482fc",
+      "size": 2340
+    },
+    {
+      "name": "password-reset.sql",
+      "path": "database/password-reset.sql",
+      "blob_sha": "41738a6a6eeabde55a1157c35b06d29aee940ff8",
+      "size": 2381
+    },
+    {
+      "name": "rewards-test.sql",
+      "path": "database/rewards-test.sql",
+      "blob_sha": "f2e7f390516540b5949dd3233aa8e5d8f156f344",
+      "size": 6371
+    },
+    {
+      "name": "rewards.sql",
+      "path": "database/rewards.sql",
+      "blob_sha": "19fae6d5640305909f6b81e514efd06ce725e89e",
+      "size": 11778
+    }
+  ]
+}
